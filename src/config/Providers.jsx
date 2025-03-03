@@ -1,5 +1,6 @@
 "use client";
 
+import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
 import { SettingsProvider } from "../hooks/SettingsContext";
 import store from "../redux/store";
@@ -11,7 +12,9 @@ export default function Providers({ children }) {
     <Provider store={store}>
       <SettingsProvider>
         <MUIProvider>
-          <TanstackProvider>{children}</TanstackProvider>
+          <TanstackProvider>
+            <SnackbarProvider maxSnack={3}>{children}</SnackbarProvider>
+          </TanstackProvider>
         </MUIProvider>
       </SettingsProvider>
     </Provider>

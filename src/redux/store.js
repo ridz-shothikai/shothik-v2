@@ -6,7 +6,7 @@ import pricing from "./slice/pricing";
 
 const store = configureStore({
   reducer: {
-    user,
+    auth: user,
     inputOutput,
     pricing,
     [apiSlice.reducerPath]: apiSlice.reducer,
