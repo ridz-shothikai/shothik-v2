@@ -1,3 +1,4 @@
+"use client";
 import { Box, Link, useTheme } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";

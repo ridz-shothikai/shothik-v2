@@ -9,22 +9,27 @@ import {
 } from "@mui/material";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
+import { useGoogleLoginMutation } from "../../redux/api/authApi";
+import {
+  setShowLoginModal,
+  setShowRegisterModal,
+} from "../../redux/slice/auth";
 // ----------------------------------------------------------------------
 
-export default function AuthWithSocial({ loading, setLoading }) {
+export default function AuthWithSocial({ loading, setLoading, title = "in" }) {
   const theme = useTheme();
-  // const [googleLogin] = useGoogleLoginMutation();
+  const [googleLogin] = useGoogleLoginMutation();
   const dispatch = useDispatch();
 
   const onGoogleLogin = useGoogleLogin({
     onSuccess: async (res) => {
       const { code } = res;
       if (code) {
-        // const res = await googleLogin({ code });
-        // if (res?.data) {
-        //   dispatch(setShowLoginModal(false));
-        //   dispatch(setShowRegisterModal(false));
-        // }
+        const res = await googleLogin({ code });
+        if (res?.data) {
+          dispatch(setShowLoginModal(false));
+          dispatch(setShowRegisterModal(false));
+        }
       }
       setLoading(false);
     },
@@ -77,7 +82,7 @@ export default function AuthWithSocial({ loading, setLoading }) {
                   : "rgb(75 85 99)",
             }}
           >
-            Sign in with Google
+            Sign {title} with Google
           </Typography>
         </Button>
       </Stack>

@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { useLoginMutation } from "../../redux/api/authApi";
 import {
+  setShowForgotPasswordModal,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";

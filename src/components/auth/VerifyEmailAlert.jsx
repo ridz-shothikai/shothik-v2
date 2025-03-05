@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { useSendVerifyEmailMutation } from "../../redux/api/authApi";
 
 const VerifyEmailAlert = () => {
   const { user } = useSelector((state) => state.auth);
@@ -19,18 +20,16 @@ const VerifyEmailAlert = () => {
     : "Your account is not verified yet. Verify your mail to write with confidence.";
   const action = sent ? "Resend" : "Verify";
 
-  // const [sendVerificationEmail, { isLoading, isError, error }] =
-  //   useSendVerifyEmailMutation();
+  const [sendVerificationEmail, { isLoading }] = useSendVerifyEmailMutation();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleVerify = async () => {
     try {
-      // const result = await sendVerificationEmail({ email: user?.email });
-      // if (result.data.success) {
-
-      setSent(true);
-      enqueueSnackbar("Sent a verification email to " + user.email + ".");
-      // }
+      const result = await sendVerificationEmail({ email: user?.email });
+      if (result.data.success) {
+        setSent(true);
+        enqueueSnackbar("Sent a verification email to " + user.email + ".");
+      }
     } catch (error) {
       console.error(error);
       enqueueSnackbar("Sorry, something went wrong. Please try again.");
@@ -38,7 +37,7 @@ const VerifyEmailAlert = () => {
   };
 
   return email && showVerifyModal ? (
-    <Box sx={{ position: "relative", px: { xs: 2, sm: 0 } }}>
+    <Box sx={{ position: "relative", px: { xs: 2, sm: 0 }, mb: 2 }}>
       <Alert
         severity='warning'
         action={
@@ -46,6 +45,7 @@ const VerifyEmailAlert = () => {
             color='warning'
             variant='contained'
             size='small'
+            disabled={isLoading}
             onClick={handleVerify}
             sx={{ zIndex: 1000 }}
           >

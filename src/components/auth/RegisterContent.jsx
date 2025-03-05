@@ -1,18 +1,20 @@
 "use client";
 import { Box, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import useGeolocation from "../../hooks/useGeolocation";
 import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";
-import AuthLoginForm from "./AuthLoginForm";
+import AuthRegisterForm from "./AuthRegisterForm";
 import AuthWithSocial from "./AuthWithSocial";
-import ForgetPasswordModal from "./ForgetPasswordModal";
 
-const LoginContend = () => {
+// ----------------------------------------------------------------------
+
+export default function RegisterContent() {
   const [loading, setLoading] = useState(false);
-  const { showForgotPasswordModal } = useSelector((state) => state.auth);
+  const { location } = useGeolocation();
   const dispatch = useDispatch();
 
   return (
@@ -20,13 +22,14 @@ const LoginContend = () => {
       <Box
         sx={{
           backgroundColor: "background.paper",
-          padding: { sm: "2rem 2.5rem" },
           borderRadius: 2,
           marginBottom: 1,
+          paddingBottom: { xs: 2 },
+          padding: { sm: "2rem 2.5rem" },
         }}
       >
-        <AuthLoginForm loading={loading} setLoading={setLoading} />
-        <AuthWithSocial loading={loading} setLoading={setLoading} />
+        <AuthRegisterForm country={location} loading={loading} />
+        <AuthWithSocial title='up' loading={loading} setLoading={setLoading} />
       </Box>
 
       <Stack direction='row' justifyContent='center' spacing={0.5}>
@@ -38,13 +41,13 @@ const LoginContend = () => {
             color: "text.secondary",
           }}
         >
-          Don't have an account?
+          Already have an account?
         </Typography>
 
         <Typography
           onClick={() => {
-            dispatch(setShowLoginModal(false));
-            dispatch(setShowRegisterModal(true));
+            dispatch(setShowRegisterModal(false));
+            dispatch(setShowLoginModal(true));
           }}
           variant='body2'
           sx={{
@@ -56,12 +59,9 @@ const LoginContend = () => {
             cursor: "pointer",
           }}
         >
-          Sign Up
+          Sign In
         </Typography>
       </Stack>
-      {showForgotPasswordModal && <ForgetPasswordModal />}
     </>
   );
-};
-
-export default LoginContend;
+}
