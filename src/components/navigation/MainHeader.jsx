@@ -9,30 +9,30 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { usePathname } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
-import { useSettingsContext } from "../../hooks/SettingsContext";
 import useResponsive from "../../hooks/useResponsive";
+import { useGetUserQuery } from "../../redux/api/authApi";
+import { setOpen } from "../../redux/slice/settings";
+import DotFlashing from "../../resource/DotFlashing";
 import SvgColor from "../../resource/SvgColor";
 import Logo from "../../resource/assets/Logo";
 import { bgBlur } from "../../resource/cssStyles";
 import AccountPopover from "./components/AccountProper";
 
-export default function MainHeader({ onOpenNav, sx }) {
+export default function MainHeader() {
   const { accessToken, user } = useSelector((state) => state.auth);
-  const { themeLayout } = useSettingsContext();
-  const pathname = usePathname();
-  const theme = useTheme();
-  const router = useRouter();
+  const { themeLayout } = useSelector((state) => state.settings);
   const isNavHorizontal = themeLayout === "horizontal";
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
   const isMd = useResponsive("up", "sm");
   const isMobile = useResponsive("down", "sm");
-
-  // const { isLoading } = useGetUserQuery();
-  const isLoading = false;
+  const { isLoading } = useGetUserQuery();
+  const pathname = usePathname();
+  const theme = useTheme();
+  const dispatch = useDispatch();
 
   const title = () => {
     const routeTitles = {
@@ -42,17 +42,11 @@ export default function MainHeader({ onOpenNav, sx }) {
       "/grammar-check": "Grammar Checker",
       "/summarize": "Summarize",
       "/translator": "Translate",
-      "/meeting-minutes": "Meeting Minutes Dashboard",
-      "/meeting-minutes/upcoming-meetings": "Upcoming Meetings",
-      "/meeting-minutes/past-meetings": "Past Meetings",
-      "/meeting-minutes/upload": "Upload Meetings",
-      "/meeting-minutes/integrations": "Integrated Services",
-      "/meeting-minutes/settings": "Meeting Settings",
-      "/meeting-minutes/faq": "Meeting Minutes FAQ",
       "/pricing": "Shothik.ai Premium",
+      "/research": "Research",
     };
 
-    return routeTitles[router.pathname] || "";
+    return routeTitles[pathname] || "";
   };
 
   const renderContent = (
@@ -60,16 +54,16 @@ export default function MainHeader({ onOpenNav, sx }) {
       {!isDesktop && (
         <>
           <IconButton
-            onClick={onOpenNav}
+            onClick={() => dispatch(setOpen(true))}
             sx={{
               mr: 1,
               ml: { xs: 0, sm: 1 },
               color: "primary.main",
             }}
           >
-            <SvgColor src='/assets/icons/navbar/ic_menu_item.svg' />
+            <SvgColor src='/navbar/ic_menu_item.svg' />
           </IconButton>
-          <Logo sx={{ mr: 2.5 }} openNav={onOpenNav} />
+          <Logo sx={{ mr: 2.5 }} />
         </>
       )}
 
@@ -95,36 +89,37 @@ export default function MainHeader({ onOpenNav, sx }) {
           </Box>
         )}
 
-        {isLoading // Show loading state
-          ? // <DotFlashing />
-            null
-          : user?.package !== "unlimited" && (
-              <Link href={"/pricing?redirect=" + pathname}>
-                <Button
-                  color='primary'
-                  size={isMd ? "medium" : "small"}
-                  variant='contained'
-                  rel='noopener'
-                  startIcon={
-                    <SvgColor
-                      src='/assets/icons/navbar/diamond.svg'
-                      sx={{
-                        width: { xs: 20, md: 24 },
-                        height: { xs: 20, md: 24 },
-                      }}
-                    />
-                  }
-                >
-                  {user?.email
-                    ? isMobile
-                      ? "Upgrade"
-                      : "Upgrade Plan"
-                    : isMobile
-                    ? "Premium"
-                    : "Upgrade To Premium"}
-                </Button>
-              </Link>
-            )}
+        {isLoading ? (
+          <DotFlashing />
+        ) : (
+          user?.package !== "unlimited" && (
+            <Link href={"/pricing?redirect=" + pathname}>
+              <Button
+                color='primary'
+                size={isMd ? "medium" : "small"}
+                variant='contained'
+                rel='noopener'
+                startIcon={
+                  <SvgColor
+                    src='/navbar/diamond.svg'
+                    sx={{
+                      width: { xs: 20, md: 24 },
+                      height: { xs: 20, md: 24 },
+                    }}
+                  />
+                }
+              >
+                {user?.email
+                  ? isMobile
+                    ? "Upgrade"
+                    : "Upgrade Plan"
+                  : isMobile
+                  ? "Premium"
+                  : "Upgrade To Premium"}
+              </Button>
+            </Link>
+          )
+        )}
 
         {!isLoading && (
           <>
@@ -161,7 +156,6 @@ export default function MainHeader({ onOpenNav, sx }) {
             width: `calc(100% - ${NAV.W_DASHBOARD_MINI + 1}px)`,
           }),
         }),
-        ...sx,
       }}
     >
       <Toolbar

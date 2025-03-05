@@ -1,10 +1,23 @@
+import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
+import { Login } from "../components/auth/components/Login";
+import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
 
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+
+          {/* login modal  */}
+          <LoginModal>
+            <Login />
+          </LoginModal>
+          <RegisterModal>
+            <Register />
+          </RegisterModal>
+        </Providers>
       </body>
     </html>
   );

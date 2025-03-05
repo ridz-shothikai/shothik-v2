@@ -8,25 +8,23 @@ import { useDispatch, useSelector } from "react-redux";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
-import { useSettingsContext } from "../../../hooks/SettingsContext";
+import { useGetUserQuery } from "../../../redux/api/authApi";
 import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../../redux/slice/auth";
+import DotFlashing from "../../../resource/DotFlashing";
 import CustomAvatar from "./Avater";
 // ----------------------------------------------------------------------
 
 export default function UserInfo() {
-  const { themeMode } = useSettingsContext();
-  const theme = useTheme();
   const { user } = useSelector((state) => state.auth);
+  const { isLoading } = useGetUserQuery();
   const dispatch = useDispatch();
   const router = useRouter();
-
-  // const { isLoading } = useGetUserQuery();
-
-  const isDark = themeMode === "dark";
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const handleLogout = async () => {
     try {
@@ -38,21 +36,21 @@ export default function UserInfo() {
   };
 
   // Show loading state
-  // if (isLoading) {
-  //   return (
-  //     <Stack
-  //       sx={{
-  //         px: { xs: 2, sm: 2 },
-  //         py: { xs: 5, sm: 5 },
-  //         textAlign: "center",
-  //         minHeight: "200px",
-  //         justifyContent: "center",
-  //       }}
-  //     >
-  //       <DotFlashing />
-  //     </Stack>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <Stack
+        sx={{
+          px: { xs: 2, sm: 2 },
+          py: { xs: 5, sm: 5 },
+          textAlign: "center",
+          minHeight: "200px",
+          justifyContent: "center",
+        }}
+      >
+        <DotFlashing />
+      </Stack>
+    );
+  }
 
   return (
     <Stack
@@ -111,15 +109,15 @@ export default function UserInfo() {
                 cursor: "pointer",
                 background: isDark ? "#454F5B" : "#eceff8",
                 height: 40,
-                marginTop: 20,
                 lineHeight: "40px",
-                color: isDark ? "text.primary" : "text.primary",
+                color: "text.primary",
                 fontWeight: 500,
                 borderRadius: "5px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "5px",
+                marginTop: 2,
               }}
             >
               Logout

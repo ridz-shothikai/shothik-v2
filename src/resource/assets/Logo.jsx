@@ -1,14 +1,13 @@
-import { Box, Link } from "@mui/material";
+import { Box, Link, useTheme } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
 import { forwardRef } from "react";
-import { useSettingsContext } from "../../hooks/SettingsContext";
 
 // ----------------------------------------------------------------------
 
 const Logo = forwardRef((_, ref) => {
-  const { themeMode } = useSettingsContext();
-  const isLight = themeMode === "light";
+  const theme = useTheme();
+  const isLight = theme.palette.mode === "light";
 
   return (
     <Link

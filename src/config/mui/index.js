@@ -4,9 +4,8 @@ import {
   ThemeProvider as MUIThemeProvider,
   StyledEngineProvider,
 } from "@mui/material/styles";
-import PropTypes from "prop-types";
 import { useMemo } from "react";
-import { useSettingsContext } from "../../hooks/SettingsContext";
+import { useSelector } from "react-redux";
 import customShadows from "./customShadows";
 import GlobalStyles from "./globalStyles";
 import componentsOverride from "./overrides";
@@ -16,23 +15,17 @@ import typography from "./typography";
 
 // ----------------------------------------------------------------------
 
-ThemeProvider.propTypes = {
-  children: PropTypes.node,
-};
-
 export default function ThemeProvider({ children }) {
-  const { themeMode, themeDirection } = useSettingsContext();
-
+  const { themeMode } = useSelector((state) => state.settings);
   const themeOptions = useMemo(
     () => ({
       palette: palette(themeMode),
       typography,
       shape: { borderRadius: 8 },
-      direction: themeDirection,
       shadows: shadows(themeMode),
       customShadows: customShadows(themeMode),
     }),
-    [themeDirection, themeMode]
+    [themeMode]
   );
 
   const theme = createTheme(themeOptions);

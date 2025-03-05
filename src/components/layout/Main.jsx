@@ -1,13 +1,14 @@
 import { Box } from "@mui/material";
+import { useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
-import { useSettingsContext } from "../../hooks/SettingsContext";
 import useResponsive from "../../hooks/useResponsive";
+import FooterServerComponent from "../navigation/components/FooterServerComponent";
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
 
-export default function Main({ children, sx, ...other }) {
-  const { themeLayout } = useSettingsContext();
+export default function Main({ children }) {
+  const { themeLayout } = useSelector((state) => state.settings);
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
 
@@ -26,11 +27,10 @@ export default function Main({ children, sx, ...other }) {
             ml: { sm: "95px" },
           }),
         }),
-        ...sx,
       }}
-      {...other}
     >
-      {children}
+      <Box sx={{ minHeight: "calc(100vh - 200px)" }}>{children}</Box>
+      <FooterServerComponent />
     </Box>
   );
 }

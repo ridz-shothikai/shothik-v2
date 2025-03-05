@@ -1,17 +1,19 @@
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useDispatch, useSelector } from "react-redux";
 import { NAV } from "../../../config/config/nav";
-import { useSettingsContext } from "../../../hooks/SettingsContext";
 import useResponsive from "../../../hooks/useResponsive";
+import { toggleThemeLayout } from "../../../redux/slice/settings";
 import { bgBlur } from "../../../resource/cssStyles";
 
 // ----------------------------------------------------------------------
 
 export default function NavToggleButton({ sx, ...other }) {
   const theme = useTheme();
-  const { themeLayout, onToggleLayout } = useSettingsContext();
+  const { themeLayout } = useSelector((state) => state.settings);
   const isDesktop = useResponsive("up", "sm");
+  const dispatch = useDispatch();
 
   if (!isDesktop) {
     return null;
@@ -20,7 +22,7 @@ export default function NavToggleButton({ sx, ...other }) {
   return (
     <IconButton
       size='small'
-      onClick={onToggleLayout}
+      onClick={() => dispatch(toggleThemeLayout())}
       sx={{
         p: 0.5,
         top: 50,

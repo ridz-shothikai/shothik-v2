@@ -17,26 +17,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PATH_ACCOUNT } from "../../../config/config/route";
-import { useSettingsContext } from "../../../hooks/SettingsContext";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../../redux/slice/auth";
+import { toggleThemeMode } from "../../../redux/slice/settings";
 import Discord from "../../../resource/assets/Discord";
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover({ accessToken, user }) {
-  const { push } = useRouter();
-  const { themeMode, onToggleMode } = useSettingsContext();
-  const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { themeMode } = useSelector((state) => state.settings);
   const [openPopover, setOpenPopover] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+  const { push } = useRouter();
 
   const handleOpenPopover = (event) => {
     setOpenPopover(event.currentTarget);
@@ -168,7 +167,7 @@ export default function AccountPopover({ accessToken, user }) {
         )}
 
         <Stack
-          onChange={onToggleMode}
+          onChange={() => dispatch(toggleThemeMode())}
           sx={{
             cursor: "pointer",
             pl: 2.5,

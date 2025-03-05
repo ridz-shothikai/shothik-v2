@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Drawer, Stack, Typography } from "@mui/material";
+import { Box, Drawer, Stack } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -85,7 +85,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ px: 2 }}>
             <UserInfo />
-            <Typography>Nav Docs</Typography>
           </Box>
         </Scrollbar>
       </Drawer>
