@@ -11,7 +11,6 @@ const initialState = {
   showLoginModal: false,
   showRegisterModal: false,
   showForgotPasswordModal: false,
-  livePathname: "/",
 };
 
 const authSlice = createSlice({
@@ -52,9 +51,6 @@ const authSlice = createSlice({
     setShowForgotPasswordModal: (state, action) => {
       state.showForgotPasswordModal = action.payload;
     },
-    setLivePathname: (state, action) => {
-      state.livePathname = action.payload;
-    },
   },
 });
 
@@ -69,7 +65,6 @@ export const {
   setShowLoginModal,
   setShowRegisterModal,
   setShowForgotPasswordModal,
-  setLivePathname,
 } = authSlice.actions;
 
 export default authSlice.reducer;

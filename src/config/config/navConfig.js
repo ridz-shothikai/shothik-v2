@@ -78,5 +78,56 @@ const navConfig = [
   },
 ];
 
+const tools = [
+  {
+    icon: ICONS.paraphrase,
+    title: "Paraphrase",
+    description: "Text transformation",
+    label: null,
+    link: "/paraphrase",
+    iconColor: "#FF595E",
+  },
+  {
+    icon: ICONS.humanize,
+    title: "Humanize GPT",
+    description: "Overcome limitations",
+    label: null,
+    link: "/humanize-gpt",
+    iconColor: "#FF595E",
+  },
+  {
+    icon: ICONS.ai_detector,
+    title: "AI Detector",
+    description: "Authenticity checker",
+    link: "/ai-detector",
+    label: null,
+    iconColor: "#f29b18",
+  },
+  {
+    icon: ICONS.grammar,
+    title: "Grammar Fix",
+    description: "Error correction",
+    label: null,
+    link: "/grammar-check",
+    iconColor: "#8AC926",
+  },
+  {
+    icon: ICONS.summarize,
+    title: "Summarize",
+    description: "Content rephrasing",
+    label: null,
+    link: "/summarize",
+    iconColor: "#FFAB00",
+  },
+  {
+    icon: ICONS.translator,
+    title: "Translator",
+    description: "Language converter",
+    label: null,
+    link: "/translator",
+    iconColor: "#A07EFB",
+  },
+];
+
 // export
-export { navConfig as default, ICONS };
+export { navConfig as default, ICONS, tools };

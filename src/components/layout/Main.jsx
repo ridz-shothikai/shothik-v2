@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
 import useResponsive from "../../hooks/useResponsive";
@@ -29,7 +29,14 @@ export default function Main({ children }) {
         }),
       }}
     >
-      <Box sx={{ minHeight: "calc(100vh - 200px)" }}>{children}</Box>
+      <Container
+        maxWidth='xl'
+        overflow='hidden'
+        disableGutters
+        sx={{ minHeight: "calc(100vh - 200px)"}}
+      >
+        {children}
+      </Container>
       <FooterServerComponent />
     </Box>
   );
