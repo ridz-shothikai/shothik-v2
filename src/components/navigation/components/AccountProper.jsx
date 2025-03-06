@@ -15,11 +15,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PATH_ACCOUNT } from "../../../config/config/route";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import useSnackbar from "../../../hooks/useSnackbar";
 import {
   logout,
   setShowLoginModal,
@@ -33,7 +33,7 @@ import Discord from "../../../resource/assets/Discord";
 export default function AccountPopover({ accessToken, user }) {
   const { themeMode } = useSelector((state) => state.settings);
   const [openPopover, setOpenPopover] = useState(null);
-  const { enqueueSnackbar } = useSnackbar();
+    const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const { push } = useRouter();
 

@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
+import useSnackbar from "../../hooks/useSnackbar";
 import { useResetPasswordMutation } from "../../redux/api/authApi";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
@@ -42,7 +42,7 @@ const commonPasswords = [
 export default function AuthForgotPasswordForm() {
   const { push } = useRouter();
   const { token } = useParams();
-  const { enqueueSnackbar } = useSnackbar();
+  const enqueueSnackbar = useSnackbar();
   const [resetPassword, { isLoading, isError, error }] =
     useResetPasswordMutation();
   const [showPassword, setShowPassword] = useState(false);

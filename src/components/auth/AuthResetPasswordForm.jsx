@@ -1,11 +1,12 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@mui/material";
-import { useSnackbar } from "notistack";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
+import useSnackbar from "../../hooks/useSnackbar";
 import { useForgotPasswordMutation } from "../../redux/api/authApi";
 import { setShowLoginModal } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
@@ -14,7 +15,7 @@ import RHFTextField from "../../resource/RHFTextField";
 // ----------------------------------------------------------------------
 
 export default function AuthResetPasswordForm() {
-  const { enqueueSnackbar } = useSnackbar();
+  const enqueueSnackbar = useSnackbar();
   const [forgotPassword] = useForgotPasswordMutation();
   const [isSentMail, setIsSentMail] = useState(false);
   const dispatch = useDispatch();

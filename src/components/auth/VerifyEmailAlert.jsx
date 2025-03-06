@@ -1,9 +1,9 @@
 import { Alert, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/navigation";
-import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import useSnackbar from "../../hooks/useSnackbar";
 import { useSendVerifyEmailMutation } from "../../redux/api/authApi";
 
 const VerifyEmailAlert = () => {
@@ -21,7 +21,7 @@ const VerifyEmailAlert = () => {
   const action = sent ? "Resend" : "Verify";
 
   const [sendVerificationEmail, { isLoading }] = useSendVerifyEmailMutation();
-  const { enqueueSnackbar } = useSnackbar();
+  const enqueueSnackbar = useSnackbar();
 
   const handleVerify = async () => {
     try {
