@@ -39,7 +39,7 @@ const commonPasswords = [
   "dragon",
 ];
 
-export default function AuthResetPasswordForm() {
+export default function AuthForgotPasswordForm() {
   const { push } = useRouter();
   const { token } = useParams();
   const { enqueueSnackbar } = useSnackbar();

@@ -1,7 +1,6 @@
-import { ChevronLeft } from "@mui/icons-material";
-import { Box, Link, Stack, Typography } from "@mui/material";
-import NextLink from "next/link";
+import { Box, Stack, Typography } from "@mui/material";
 import AuthForgotPasswordForm from "../../../../components/auth/AuthForgotPasswordForm";
+import ReturnToHome from "../../../../components/auth/components/ReturnToHome";
 import Logo from "../../../../resource/assets/Logo";
 import PasswordIcon from "../../../../resource/assets/PasswordIcon";
 
@@ -50,21 +49,7 @@ export default function ResetPasswordPage() {
 
           <AuthForgotPasswordForm />
 
-          <Link
-            component={NextLink}
-            href='/?login=true'
-            color='inherit'
-            variant='subtitle2'
-            sx={{
-              mt: 3,
-              mx: "auto",
-              alignItems: "center",
-              display: "inline-flex",
-            }}
-          >
-            <ChevronLeft fontSize='small' />
-            Return to sign in
-          </Link>
+          <ReturnToHome />
         </Box>
       </Stack>
     </Stack>

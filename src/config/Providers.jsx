@@ -1,10 +1,10 @@
 "use client";
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 import MUIProvider from "./MUIProvider";
+import { NotificationProvider } from "./NotificationProvider";
 import TanstackProvider from "./TanstackProvider";
 
 export default function Providers({ children }) {
@@ -12,13 +12,13 @@ export default function Providers({ children }) {
     <Provider store={store}>
       <MUIProvider>
         <TanstackProvider>
-          <SnackbarProvider maxSnack={3}>
+          <NotificationProvider>
             <GoogleOAuthProvider
               clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
             >
               {children}
             </GoogleOAuthProvider>
-          </SnackbarProvider>
+          </NotificationProvider>
         </TanstackProvider>
       </MUIProvider>
     </Provider>

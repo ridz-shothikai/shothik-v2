@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowForgotPasswordModal } from "../../redux/slice/auth";
 import PasswordIcon from "../../resource/assets/PasswordIcon";
-import AuthForgotPasswordForm from "./AuthForgotPasswordForm";
+import AuthResetPasswordForm from "./AuthResetPasswordForm";
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ export default function ForgetPasswordModal() {
               we will email you a link to reset your password.
             </Typography>
 
-            <AuthForgotPasswordForm />
+            <AuthResetPasswordForm />
 
             <Link
               component={NextLink}

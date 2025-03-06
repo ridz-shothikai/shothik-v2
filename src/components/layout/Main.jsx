@@ -1,10 +1,7 @@
 import { Box } from "@mui/material";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
 import useResponsive from "../../hooks/useResponsive";
-import { setShowLoginModal } from "../../redux/slice/auth";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 // ----------------------------------------------------------------------
 
@@ -12,17 +9,8 @@ const SPACING = 8;
 
 export default function Main({ children }) {
   const { themeLayout } = useSelector((state) => state.settings);
-  const dispatch = useDispatch();
-  const useparams = useSearchParams();
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
-  const login = useparams.get("login");
-
-  useEffect(() => {
-    if (login) {
-      dispatch(setShowLoginModal(true));
-    }
-  }, [login]);
 
   return (
     <Box

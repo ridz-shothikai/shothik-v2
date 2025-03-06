@@ -9,7 +9,7 @@ const pricingSlice = createSlice({
   initialState,
   reducers: {
     getPricingPlans: (state, action) => {
-      state.pricingPlans = { ...action.payload };
+      state.pricingPlans = action.payload;
     },
   },
 });

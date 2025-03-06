@@ -7,7 +7,6 @@ import { setIsNewRegistered } from "../../redux/slice/auth";
 export default function AuthSuccessPopup() {
   const { isNewRegistered } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  console.log({ isNewRegistered });
 
   return (
     <Dialog

@@ -25,11 +25,10 @@ const authSlice = createSlice({
     logout: (state) => {
       state.accessToken = null;
       state.user = {};
-      state.isNewRegistered = false;
       localStorage.removeItem("accessToken");
     },
     getUser: (state, action) => {
-      state.user = { ...action.payload };
+      state.user = action.payload;
     },
     setUserLimit: (state, action) => {
       state.userLimit = action.payload;
