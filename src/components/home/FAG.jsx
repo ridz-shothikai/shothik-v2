@@ -110,7 +110,7 @@ export default function FAQ() {
           }}
         >
           {faqData[activeTab].map((faq, index) => (
-            <Grid2 item size={{ xs: 12 }} key={index}>
+            <Grid2 size={{ xs: 12 }} key={index}>
               <Accordion
                 expanded={expanded === `panel${index}`}
                 onChange={handleAccordionChange(`panel${index}`)}
