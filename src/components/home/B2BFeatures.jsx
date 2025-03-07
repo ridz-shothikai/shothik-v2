@@ -1,4 +1,5 @@
 import { Box, Grid2, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import ViewMoreButton from "./components/b2b/ViewMoreButton";
 import BgContainer from "./components/hero/BgContainer";
 
@@ -9,8 +10,13 @@ export default function B2bFeatures() {
       image='url(/home/b2b-background.png)'
     >
       <Box
+        component={motion.div}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
         fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        align='center'
+        textAlign='center'
         fontWeight='bold'
         marginBottom={{ xs: 8, sm: 6 }}
         sx={{
@@ -47,11 +53,12 @@ export default function B2bFeatures() {
 
       <Grid2 container alignItems='center'>
         <Grid2
-          item
           size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{
-            animation: "slideInFromLeft 0.5s ease-in-out",
-          }}
+          component={motion.div}
+          initial={{ x: -100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
         >
           <Box
             sx={{

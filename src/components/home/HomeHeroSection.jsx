@@ -10,7 +10,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
 import * as motion from "motion/react-client";
 import Image from "next/image";
-import { container } from "../../resource/motion/container";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
 import VideoImage from "./components/VideoImage";
@@ -30,7 +29,6 @@ export default function HomeHeroSection() {
       >
         <Details />
         <Grid2
-          item
           size={{ xs: 12, md: 6 }}
           sx={{ display: { xs: "none", md: "block", lg: "block" } }}
         >
@@ -42,10 +40,9 @@ export default function HomeHeroSection() {
           >
             <Box
               component={motion.div}
-              initial='initial'
-              whileinview='animate'
-              viewport={{ once: true, amount: 0.3 }}
-              variants={container()}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
               sx={{
                 position: "absolute",
                 bottom: "-30px",
@@ -60,25 +57,26 @@ export default function HomeHeroSection() {
                 height={140}
               />
             </Box>
-            <Box
-              initial='initial'
-              whileinview='animate'
-              viewport={{ once: true, amount: 0.3 }}
-              variants={container()}
-              sx={{
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{
                 position: "absolute",
                 bottom: "-50px",
                 right: "80px",
                 zIndex: 0,
               }}
             >
-              <Image
-                src='/home/hero/pattern.svg'
-                alt='button'
-                width={140}
-                height={140}
-              />
-            </Box>
+              <div>
+                <Image
+                  src='/home/hero/pattern.svg'
+                  alt='button'
+                  width={140}
+                  height={140}
+                />
+              </div>
+            </motion.div>
 
             {/* Hero Video */}
             <VideoImage
@@ -92,7 +90,7 @@ export default function HomeHeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Paper
                 elevation={4}
@@ -167,8 +165,9 @@ export default function HomeHeroSection() {
 
             {/* Button */}
             <motion.div
-              initial={{ opacity: 0, x: 0 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               <Paper
                 elevation={2}

@@ -15,20 +15,13 @@ const UserActionButton = () => {
   const userMsg = !packageName ? "Sign up for free" : "Explore the Features";
 
   return (
-    <Box
-      component={motion.div}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.2 }}
-      sx={{
-        display: "inline-block",
-      }}
+    <motion.div
+      initial={{ opacity: 0, x: -30 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
     >
       <Button
-        component={motion.div}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2 }}
         variant='contained'
         size='large'
         sx={{
@@ -68,7 +61,7 @@ const UserActionButton = () => {
           <ArrowForward style={{ height: "1.25rem", width: "1.25rem" }} />
         </Box>
       </Button>
-    </Box>
+    </motion.div>
   );
 };
 

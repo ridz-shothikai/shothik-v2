@@ -1,4 +1,5 @@
 import { Box, Card, Grid2, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import Link from "next/link";
 import { tools } from "../../config/config/navConfig";
 import BgContainer from "./components/hero/BgContainer";
@@ -12,6 +13,11 @@ export default function HomeTools() {
     >
       <Box>
         <Typography
+          component={motion.h2}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
           variant='h2'
           align='center'
           sx={{
@@ -38,9 +44,18 @@ export default function HomeTools() {
         </Typography>
 
         <Grid2 container spacing={3}>
-          {tools.map((tool) =>
+          {tools.map((tool, i) =>
             tool.link ? (
-              <Grid2 size={{ xs: 12, md: 4, sm: 6 }} item key={tool.title}>
+              <Grid2
+                component={motion.div}
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.2 * (i + 1) }}
+                viewport={{ once: true }}
+                size={{ xs: 12, md: 4, sm: 6 }}
+                item
+                key={tool.title}
+              >
                 <Card
                   component={Link}
                   href={tool.link}

@@ -11,9 +11,9 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
   return (
     <Box
       component={motion.div}
-      initial={{ opacity: 0, x: 20 }}
+      initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
       sx={{
         borderRadius: "70px",
         height: { sm: "380px", md: "330px", lg: "480px" },

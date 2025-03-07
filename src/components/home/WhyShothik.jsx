@@ -1,7 +1,6 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import Image from "next/image";
-import { container } from "../../resource/motion/container";
 import BgContainer from "./components/hero/BgContainer";
 
 export default function WhyShothik() {
@@ -10,35 +9,36 @@ export default function WhyShothik() {
       sx={{ py: 8, px: { xs: 2, sm: 4, md: 6 } }}
       image='url(/home/bg.png)'
     >
-      <Typography
-        component={motion.div}
-        initial='hidden'
-        whileinview='visible'
-        viewport={{ once: true }}
-        variants={container()}
+      <motion.div
+        initial={{ y: 100, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
-        fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        align='center'
-        gutterBottom
-        fontWeight='bold'
-        marginBottom={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }}
-        marginTop={{ xs: 2, sm: 6, md: 8, lg: 8, xl: 10 }}
+        viewport={{ once: true }}
       >
-        Why Choose{" "}
         <Typography
-          component='span'
-          variant='inherit'
-          style={{ color: "#00A76F" }}
-          sx={{
-            background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
+          fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
+          align='center'
+          gutterBottom
+          fontWeight='bold'
+          marginBottom={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }}
+          marginTop={{ xs: 2, sm: 6, md: 8, lg: 8, xl: 10 }}
         >
-          Shothik AI ?
+          Why Choose{" "}
+          <Typography
+            component='span'
+            variant='inherit'
+            style={{ color: "#00A76F" }}
+            sx={{
+              background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Shothik AI ?
+          </Typography>
         </Typography>
-      </Typography>
+      </motion.div>
 
       {/* Boost productivity */}
       <Grid2
@@ -49,13 +49,11 @@ export default function WhyShothik() {
         mb={{ xs: 4, sm: 5, md: 6 }}
       >
         <Grid2 size={{ xs: 12, sm: 6 }} item>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -77,14 +75,12 @@ export default function WhyShothik() {
             >
               Boost Productivity
             </Typography>
-          </Box>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+          </motion.div>
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -94,7 +90,7 @@ export default function WhyShothik() {
               Streamline your workflow with AI-powered tools that handle complex
               tasks, letting you focus on what matters most.
             </Typography>
-          </Box>
+          </motion.div>
         </Grid2>
         <Grid2
           item
@@ -107,13 +103,11 @@ export default function WhyShothik() {
             alignItems: "center",
           }}
         >
-          <Box
-            component={motion.div}
-            initial='hidden'
-            whileinview='visible'
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
-            variants={container()}
-            transition={{ duration: 0.6, delay: 0.4 }}
           >
             <Image
               src='/home/why-1.png'
@@ -127,7 +121,7 @@ export default function WhyShothik() {
               width={400}
               height={400}
             />
-          </Box>
+          </motion.div>
         </Grid2>
       </Grid2>
 
@@ -150,13 +144,11 @@ export default function WhyShothik() {
             alignItems: "center",
           }}
         >
-          <Box
-            component={motion.div}
-            initial='hidden'
-            whileinview='visible'
-            viewport={{ once: true }}
-            variants={container()}
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
           >
             <Image
               width={400}
@@ -170,16 +162,14 @@ export default function WhyShothik() {
                 margin: "auto",
               }}
             />
-          </Box>
+          </motion.div>
         </Grid2>
-        <Grid2 item size={{ xs: 12, sm: 6 }} order={{ xs: 1, sm: 2 }}>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+        <Grid2 size={{ xs: 12, sm: 6 }} order={{ xs: 1, sm: 2 }}>
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -201,14 +191,12 @@ export default function WhyShothik() {
             >
               Perfect Your Language
             </Typography>
-          </Box>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+          </motion.div>
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -218,7 +206,7 @@ export default function WhyShothik() {
               From grammar fixes to flawless translations, Shothik.ai ensures
               every word you write is polished and impactful.
             </Typography>
-          </Box>
+          </motion.div>
         </Grid2>
       </Grid2>
 
@@ -230,14 +218,12 @@ export default function WhyShothik() {
         justifyContent='center'
         mb={{ xs: 4, sm: 5, md: 6 }}
       >
-        <Grid2 size={{ xs: 12, sm: 6 }} item>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+        <Grid2 size={{ xs: 12, sm: 6 }}>
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -259,14 +245,12 @@ export default function WhyShothik() {
             >
               Tailored to Your Needs
             </Typography>
-          </Box>
-          <Box
-            initial='hidden'
-            whileinview='visible'
-            component={motion.div}
-            viewport={{ once: true }}
-            variants={container()}
+          </motion.div>
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
           >
             <Typography
               variant='body1'
@@ -276,7 +260,7 @@ export default function WhyShothik() {
               No matter your industry or goal, our features adapt to your unique
               requirements, making Shothik.ai your versatile language partner.
             </Typography>
-          </Box>
+          </motion.div>
         </Grid2>
         <Grid2
           item
@@ -289,13 +273,11 @@ export default function WhyShothik() {
             alignItems: "center",
           }}
         >
-          <Box
-            component={motion.div}
-            initial='hidden'
-            whileinview='visible'
-            viewport={{ once: true }}
-            variants={container()}
+          <motion.div
+            initial={{ x: 100, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
           >
             <Image
               width={400}
@@ -309,7 +291,7 @@ export default function WhyShothik() {
                 margin: "auto",
               }}
             />
-          </Box>
+          </motion.div>
         </Grid2>
       </Grid2>
     </BgContainer>

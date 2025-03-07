@@ -1,4 +1,5 @@
 import { Box, Grid2, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import BgContainer from "./components/hero/BgContainer";
 import UserActionButton from "./components/hero/UserActionButton";
 import VideoImage from "./components/VideoImage";
@@ -10,9 +11,14 @@ export default function HomeFeatures() {
       image='url(/home/bg.png)'
     >
       <Box
+        component={motion.div}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
         fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        align='center'
         fontWeight='bold'
+        textAlign='center'
         marginBottom={{ xs: 8, sm: 6 }}
         sx={{
           lineHeight: 1.2,
@@ -52,11 +58,12 @@ export default function HomeFeatures() {
       {/* Bypass GPT Section */}
       <Grid2 container justifyContent='space-between' alignItems='center'>
         <Grid2
-          item
+          component={motion.div}
+          initial={{ x: -100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
           size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{
-            animation: "slideInFromLeft 0.5s ease-in-out",
-          }}
         >
           <Box
             sx={{
@@ -111,11 +118,12 @@ export default function HomeFeatures() {
         </Grid2>
 
         <Grid2
-          item
           size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{
-            animation: "slideInFromRight 0.5s ease-in-out",
-          }}
+          component={motion.div}
+          initial={{ x: 100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
         >
           <VideoImage
             lightImage='/home/bypass-light.webp'
@@ -130,11 +138,15 @@ export default function HomeFeatures() {
       <Grid2 container justifyContent='space-between' alignItems='center'>
         {/* Video Grid */}
         <Grid2
-          item
           size={{ xs: 12, sm: 6, md: 6 }}
           sx={{
             order: { xs: 2, sm: 1 },
           }}
+          component={motion.div}
+          initial={{ x: -100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          viewport={{ once: true }}
         >
           <VideoImage
             lightImage='/home/ai-detector-light.webp'
@@ -146,11 +158,15 @@ export default function HomeFeatures() {
 
         {/* Text Content Grid */}
         <Grid2
-          item
           size={{ xs: 12, sm: 6, md: 6 }}
           sx={{
             order: { xs: 1, sm: 2 },
           }}
+          component={motion.div}
+          initial={{ x: 100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.12 }}
+          viewport={{ once: true }}
         >
           <Box
             sx={{
@@ -213,7 +229,14 @@ export default function HomeFeatures() {
         spacing={4}
         alignItems='center'
       >
-        <Grid2 size={{ xs: 12, sm: 6, md: 6 }} item>
+        <Grid2
+          component={motion.div}
+          initial={{ x: -100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.16 }}
+          viewport={{ once: true }}
+          size={{ xs: 12, sm: 6, md: 6 }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -266,7 +289,14 @@ export default function HomeFeatures() {
           </Box>
           <UserActionButton />
         </Grid2>
-        <Grid2 size={{ xs: 12, sm: 6, md: 6 }} item>
+        <Grid2
+          component={motion.div}
+          initial={{ x: 100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.19 }}
+          viewport={{ once: true }}
+          size={{ xs: 12, sm: 6, md: 6 }}
+        >
           <VideoImage
             lightImage='/home/translator-light.webp'
             darkImage='/home/translator-dark.webp'

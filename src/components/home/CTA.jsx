@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import Caption from "./components/cta/Caption";
 import CTAImage from "./components/cta/CTAImage";
 import UserActionButton from "./components/hero/UserActionButton";
@@ -7,8 +8,13 @@ export default function CTA() {
   return (
     <Stack spacing={2} alignItems='center'>
       <Typography
+        component={motion.h2}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
+        textAlign='center'
         fontWeight='bold'
-        align='center'
         lineHeight={1.2}
         fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
       >
@@ -29,8 +35,13 @@ export default function CTA() {
       </Typography>
 
       <Typography
+        component={motion.p}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        viewport={{ once: true }}
+        textAlign='center'
         variant='body1'
-        align='center'
         color='text.secondary'
         sx={{ maxWidth: "md" }}
       >

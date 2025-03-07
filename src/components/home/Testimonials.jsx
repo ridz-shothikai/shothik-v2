@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
+import * as motion from "motion/react-client";
 import { useState } from "react";
 import { testimonials } from "../../config/_mock/testimonials";
 
@@ -50,8 +51,12 @@ export default function Testimonials() {
   return (
     <Box sx={{ marginBottom: 6 }}>
       <Typography
-        component='h2'
-        align='center'
+        component={motion.h2}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
+        textAlign='center'
         sx={{
           mb: { xs: 6, md: 8 },
           fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem", lg: "3rem" },
