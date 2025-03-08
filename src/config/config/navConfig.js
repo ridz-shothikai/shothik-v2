@@ -13,6 +13,7 @@ const ICONS = {
   grammar: icon("grammar"),
   translator: icon("translator"),
   research: icon("research"),
+  user: icon("user"),
 };
 
 const navConfig = [

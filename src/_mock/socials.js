@@ -1,5 +1,5 @@
 import { Facebook, Instagram, LinkedIn, Twitter } from "@mui/icons-material";
-import Discord from "../../resource/assets/Discord";
+import Discord from "../resource/assets/Discord";
 
 export const _socials = [
   {

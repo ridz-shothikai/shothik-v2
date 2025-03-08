@@ -53,7 +53,6 @@ export default function HomeTools() {
                 transition={{ duration: 0.4, delay: 0.2 * (i + 1) }}
                 viewport={{ once: true }}
                 size={{ xs: 12, md: 4, sm: 6 }}
-                item
                 key={tool.title}
               >
                 <Card

@@ -12,7 +12,7 @@ import {
 import { Stack } from "@mui/system";
 import * as motion from "motion/react-client";
 import { useState } from "react";
-import { testimonials } from "../../config/_mock/testimonials";
+import { testimonials } from "../../_mock/testimonials";
 
 const StyledDot = styled(Box, {
   shouldForwardProp: (prop) => prop !== "active",

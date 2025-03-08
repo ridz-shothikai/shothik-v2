@@ -48,7 +48,7 @@ export default function WhyShothik() {
         justifyContent='center'
         mb={{ xs: 4, sm: 5, md: 6 }}
       >
-        <Grid2 size={{ xs: 12, sm: 6 }} item>
+        <Grid2 size={{ xs: 12, sm: 6 }}>
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -93,7 +93,6 @@ export default function WhyShothik() {
           </motion.div>
         </Grid2>
         <Grid2
-          item
           size={{ xs: 12, sm: 6 }}
           sx={{
             position: "relative",
@@ -134,7 +133,6 @@ export default function WhyShothik() {
         mb={{ xs: 4, sm: 5, md: 6 }}
       >
         <Grid2
-          item
           size={{ xs: 12, sm: 6 }}
           order={{ xs: 2, sm: 1 }}
           sx={{
@@ -263,7 +261,6 @@ export default function WhyShothik() {
           </motion.div>
         </Grid2>
         <Grid2
-          item
           size={{ xs: 12, sm: 6 }}
           sx={{
             position: "relative",

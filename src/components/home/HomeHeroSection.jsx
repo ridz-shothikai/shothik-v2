@@ -45,8 +45,8 @@ export default function HomeHeroSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               sx={{
                 position: "absolute",
-                bottom: "-30px",
-                right: "100px",
+                bottom: "-50px",
+                right: "80px",
                 zIndex: 0,
               }}
             >
@@ -174,7 +174,7 @@ export default function HomeHeroSection() {
                 sx={{
                   position: "absolute",
                   top: { md: 130, lg: 180, xl: 180 },
-                  left: { md: -80 },
+                  left: { md: -120 },
                   borderRadius: 2,
                   width: { md: 166, lg: 220, xl: 220 },
                   zIndex: 1,

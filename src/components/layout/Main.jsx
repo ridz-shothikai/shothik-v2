@@ -1,7 +1,9 @@
 import { Box, Container } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
 import useResponsive from "../../hooks/useResponsive";
+import { loadSettingsFromLocalStorage } from "../../redux/slice/settings";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 // ----------------------------------------------------------------------
 
@@ -11,6 +13,11 @@ export default function Main({ children }) {
   const { themeLayout } = useSelector((state) => state.settings);
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadSettingsFromLocalStorage());
+  }, []);
 
   return (
     <Box
@@ -33,7 +40,7 @@ export default function Main({ children }) {
         maxWidth='xl'
         overflow='hidden'
         disableGutters
-        sx={{ minHeight: "calc(100vh - 200px)"}}
+        sx={{ minHeight: "calc(100vh - 200px)" }}
       >
         {children}
       </Container>

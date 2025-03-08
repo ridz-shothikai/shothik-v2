@@ -15,7 +15,7 @@ export default function NavSectionVertical({ data, user }) {
   return (
     <Stack>
       {data.map((group) => {
-        if (group.roles && !group.roles.includes(user?.package)) {
+        if (group.roles && !group.roles.includes(user?.role)) {
           return null;
         }
         const key = group.subheader || group.items[0].title;

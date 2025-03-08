@@ -16,8 +16,8 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
       transition={{ duration: 0.6, delay: 0.2 }}
       sx={{
         borderRadius: "70px",
-        height: { sm: "380px", md: "330px", lg: "480px" },
-        width: { sm: "300px", md: "250px", lg: "400px" },
+        height: { sm: "380px", lg: "480px" },
+        width: { sm: "300px", lg: "400px" },
         overflow: "hidden",
         position: "relative",
         zIndex: 0,
@@ -30,6 +30,7 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
           height: "100%",
           objectFit: "cover",
           backgroundColor: "transparent",
+          borderRadius: "70px",
         }}
         alt='Hero video'
         unoptimized

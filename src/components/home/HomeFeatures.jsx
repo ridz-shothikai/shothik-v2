@@ -124,12 +124,14 @@ export default function HomeFeatures() {
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
+          sx={{ pl: { md: 10 } }}
         >
           <VideoImage
             lightImage='/home/bypass-light.webp'
             darkImage='/home/bypass-dark.webp'
             width={450}
             height={450}
+            object='fill'
           />
         </Grid2>
       </Grid2>
@@ -296,6 +298,7 @@ export default function HomeFeatures() {
           transition={{ duration: 0.6, delay: 0.19 }}
           viewport={{ once: true }}
           size={{ xs: 12, sm: 6, md: 6 }}
+          sx={{ pl: { md: 10 } }}
         >
           <VideoImage
             lightImage='/home/translator-light.webp'

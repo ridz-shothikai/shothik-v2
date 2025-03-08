@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import NextLink from "next/link";
 import { Fragment } from "react";
-import { _socials } from "../../config/_mock/socials";
+import { _socials } from "../../_mock/socials";
 import { PATH_PAGE, PATH_TOOLS } from "../../config/config/route";
 import Logo from "../../resource/assets/Logo";
 

@@ -196,6 +196,15 @@ export const authApi = apiSlice.injectEndpoints({
         };
       },
     }),
+    uploadImage: builder.mutation({
+      query: (data) => {
+        return {
+          url: "/user/upload",
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -215,4 +224,5 @@ export const {
   useSendVerifyEmailMutation,
   useVerifyEmailMutation,
   useGetTokenQuery,
+  useUploadImageMutation,
 } = authApi;

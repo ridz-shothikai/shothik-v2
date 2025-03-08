@@ -11,14 +11,14 @@ import {
 const AuthModal = ({ isOpen, onClose, children, title }) => {
   const [originalTitle, setOriginalTitle] = useState("");
 
+  if (!isOpen) return null;
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (title) {
-        setOriginalTitle(document.title);
-        document.title = `${title} || Shothik AI`;
-      } else {
-        document.title = originalTitle || "Shothik AI";
-      }
+    if (title) {
+      setOriginalTitle(document.title);
+      document.title = `${title} || Shothik AI`;
+    } else {
+      document.title = originalTitle || "Shothik AI";
     }
   }, [isOpen]);
 

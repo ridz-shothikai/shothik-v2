@@ -6,6 +6,7 @@ import { Controller, useFormContext } from "react-hook-form";
 export default function RHFTextField({
   name,
   helperText,
+  endAdornment,
   border = true,
   ...other
 }) {
@@ -24,6 +25,7 @@ export default function RHFTextField({
           helperText={error ? error?.message : helperText}
           slotProps={{
             inputLabel: { style: { color: error ? "red" : "inherit" } },
+            input: { endAdornment },
           }}
           sx={{
             "& .MuiInputLabel-root": {
