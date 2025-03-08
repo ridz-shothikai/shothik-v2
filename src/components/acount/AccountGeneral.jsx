@@ -214,6 +214,7 @@ export default function AccountGeneral({ user }) {
                       )}
                     </InputAdornment>
                   }
+                  readOnly={true}
                 />
               </Stack>
               <RHFTextField name='address' label='Address' multiline rows={2} />
