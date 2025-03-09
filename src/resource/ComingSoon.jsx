@@ -2,10 +2,19 @@ import { Box, Container, IconButton, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import NextLink from "next/link";
 import { _socials } from "../_mock/socials";
+import VideoImage from "../components/home/components/VideoImage";
 
 export default function ComingSoon() {
   return (
-    <Container>
+    <Container
+      sx={{
+        height: "calc(100vh - 100px)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Box>
         <Typography
           variant='h2'
@@ -23,6 +32,13 @@ export default function ComingSoon() {
           We are currently working hard on this page!
         </Typography>
       </Box>
+
+      <VideoImage
+        lightImage='/home/hero/hero-light.webp'
+        darkImage='/home/hero/hero-dark.webp'
+        height={400}
+        width={400}
+      />
 
       <Stack
         spacing={1}

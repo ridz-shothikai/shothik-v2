@@ -1,14 +1,14 @@
 import { Container, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 
-export default function FaqsHero() {
+export default function AboutHero() {
   return (
     <Stack
       sx={{
         position: "relative",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundImage: "url(/overlay_1.svg), url(/secondary/hero.jpg)",
+        backgroundImage: "url(/overlay_1.svg), url(/secondary/who.jpg)",
         paddingX: { xs: 4, sm: 6, md: 10 },
         paddingY: 10,
         height: 560,
@@ -17,7 +17,7 @@ export default function FaqsHero() {
     >
       <Container>
         <Stack direction='row' alignItems='center' spacing={0.2}>
-          {["H", "o", "w"].map((w, i) => (
+          {["W", "h", "o"].map((w, i) => (
             <Typography
               key={w}
               component={motion.p}
@@ -37,7 +37,7 @@ export default function FaqsHero() {
           direction='row'
           sx={{ color: "common.white" }}
         >
-          {["can", "we", "help", "you?"].map((w, i) => (
+          {["we", "are?"].map((w, i) => (
             <Typography
               key={w}
               component={motion.p}
@@ -50,6 +50,16 @@ export default function FaqsHero() {
             </Typography>
           ))}
         </Stack>
+        <Typography
+          component={motion.p}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          sx={{ color: "common.white" }}
+          variant='h4'
+        >
+          Let's work together and <br /> make awesome writing easily
+        </Typography>
       </Container>
     </Stack>
   );
