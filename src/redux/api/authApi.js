@@ -205,6 +205,24 @@ export const authApi = apiSlice.injectEndpoints({
         };
       },
     }),
+    contact: builder.mutation({
+      query: (data) => {
+        return {
+          url: "/contact",
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
+    affiliate: builder.mutation({
+      query: (data) => {
+        return {
+          url: "/user/affiliate",
+          method: "POST",
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
@@ -225,4 +243,6 @@ export const {
   useVerifyEmailMutation,
   useGetTokenQuery,
   useUploadImageMutation,
+  useContactMutation,
+  useAffiliateMutation,
 } = authApi;

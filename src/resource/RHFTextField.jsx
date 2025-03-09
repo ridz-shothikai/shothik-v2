@@ -7,6 +7,7 @@ export default function RHFTextField({
   name,
   helperText,
   endAdornment,
+  startAdornment,
   readOnly,
   border = true,
   ...other
@@ -26,7 +27,7 @@ export default function RHFTextField({
           helperText={error ? error?.message : helperText}
           slotProps={{
             inputLabel: { style: { color: error ? "red" : "inherit" } },
-            input: { endAdornment, readOnly },
+            input: { endAdornment, readOnly, startAdornment },
           }}
           sx={{
             "& .MuiInputLabel-root": {
