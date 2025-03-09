@@ -34,7 +34,7 @@ export default function Breadcrumb({ links, heading, activeLast }) {
   );
 }
 
-function Separator() {
+export function Separator() {
   return (
     <Box
       component='span'
