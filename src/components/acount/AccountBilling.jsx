@@ -1,7 +1,7 @@
 import { Box, Button, Card, Grid2, Typography, useTheme } from "@mui/material";
 import { Stack } from "@mui/system";
 import Link from "next/link";
-import { useGetTransectionHistoryQuery } from "../../redux/api/authApi";
+import { useGetTransectionHistoryQuery } from "../../redux/api/auth/authApi";
 import SvgColor from "../../resource/SvgColor";
 
 export default function AccountBilling({ user }) {

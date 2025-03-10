@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
-import { useLoginMutation } from "../../redux/api/authApi";
+import { useLoginMutation } from "../../redux/api/auth/authApi";
 import {
   setShowForgotPasswordModal,
   setShowLoginModal,

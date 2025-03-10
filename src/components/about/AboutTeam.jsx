@@ -1,16 +1,16 @@
 "use client";
 import { Box, Card, IconButton, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
+import Image from "next/image";
 import { useRef, useState } from "react";
+import Carousel from "react-slick";
 import { _socials } from "../../_mock/socials";
 import { team } from "../../_mock/team";
-import Image from "next/image"
+import CarouselArrows from "../../resource/carousel/CarouselArrows";
 
-
-export default function AboutTeam(props) {
-  const { subtitle, title, description, members } = props;
-  const carouselRef = useRef(null);
+export default function AboutTeam() {
   const [_, setCurrentSlide] = useState(0);
+  const carouselRef = useRef(null);
 
   const carouselSettings = {
     infinite: false,
@@ -45,7 +45,12 @@ export default function AboutTeam(props) {
 
   return (
     <Box sx={{ pb: 10, textAlign: "center" }}>
-      <motion.div>
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
+      >
         <Typography
           component='p'
           variant='overline'
@@ -55,13 +60,23 @@ export default function AboutTeam(props) {
         </Typography>
       </motion.div>
 
-      <motion.div>
+      <motion.div
+        initial={{ x: -30, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        viewport={{ once: true }}
+      >
         <Typography variant='h2' sx={{ my: 2 }}>
           Great team is the key
         </Typography>
       </motion.div>
 
-      <motion.div>
+      <motion.div
+        initial={{ x: -30, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        viewport={{ once: true }}
+      >
         <Typography
           sx={{
             mx: "auto",
@@ -73,14 +88,9 @@ export default function AboutTeam(props) {
           team will reply within a day and we also have detailed documentation.
         </Typography>
       </motion.div>
-      {team.map((member) => (
-        <Box key={member.id} component={motion.div} sx={{ px: 1, py: 10 }}>
-          <MemberCard member={member} isFirst={index === 0} />
-        </Box>
-      ))}
 
       <Box sx={{ position: "relative", mt: 0 }}>
-        {/* <CarouselArrows
+        <CarouselArrows
           filled
           shape='rounded'
           onNext={handleNext}
@@ -100,13 +110,13 @@ export default function AboutTeam(props) {
           }}
         >
           <Carousel ref={carouselRef} {...carouselSettings}>
-            {members
-              .sort((a, b) => a.order - b.order)
-              .map((member, index) => ( */}
-
-        {/* ))} */}
-        {/* </Carousel>
-         </CarouselArrows> */}
+            {team.map((member, index) => (
+              <Box key={index} component={motion.div} sx={{ px: 1, py: 10 }}>
+                <MemberCard member={member} isFirst={index === 0} />
+              </Box>
+            ))}
+          </Carousel>
+        </CarouselArrows>
       </Box>
     </Box>
   );
@@ -124,7 +134,6 @@ function MemberCard({ member, isFirst }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
         p: 2,
         borderRadius: 2,
         boxShadow: 2,
@@ -136,34 +145,24 @@ function MemberCard({ member, isFirst }) {
         },
       }}
     >
-      <Box
-        sx={{
+      <Image
+        alt={name}
+        src={image}
+        style={{
+          borderRadius: "10px",
           width: "100%",
-          height: "200px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          height: "260px",
+          objectFit: "cover",
         }}
-      >
-        <Image
-          alt={name}
-          src={image}
-          sx={{
-            borderRadius: 1,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-          height={400}
-          width={400}
-        />
-      </Box>
+        height={400}
+        width={250}
+      />
 
-      <Typography variant='subtitle1' sx={{ mt: 8, mb: 0.5 }}>
+      <Typography variant='subtitle1' sx={{ mt: 4, mb: 0.5 }}>
         {name}
       </Typography>
 
-      <Typography variant='body2' sx={{ mb: 2, color: "text.secondary" }}>
+      <Typography variant='body2' sx={{ color: "text.secondary" }}>
         {designation}
       </Typography>
 
@@ -213,15 +212,15 @@ function MemberCard({ member, isFirst }) {
         }}
       >
         {member.social.map((link, index) => {
-          const Icon = _socials[index]?.icon;
+          const Icon = _socials[index];
           return (
             <IconButton
-              key={_socials[index]?.name}
+              key={index}
               href={link}
               target='_blank'
               rel='noopener noreferrer'
             >
-              {Icon ? <Icon /> : null}
+              {Icon ? <Icon.icon sx={{ color: Icon.color }} /> : null}
             </IconButton>
           );
         })}

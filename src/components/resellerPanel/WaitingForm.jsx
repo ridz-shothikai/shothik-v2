@@ -6,7 +6,7 @@ import { Box, Button, InputAdornment } from "@mui/material";
 import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
-import { useAffiliateMutation } from "../../redux/api/authApi";
+import { useAffiliateMutation } from "../../redux/api/auth/authApi";
 import RHFTextField from "../../resource/RHFTextField";
 
 export default function WaitlistForm({ userType }) {

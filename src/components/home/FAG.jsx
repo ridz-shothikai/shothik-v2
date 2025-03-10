@@ -29,7 +29,7 @@ export default function FAQ() {
   };
 
   return (
-    <Box sx={{ marginBottom: 6 }}>
+    <Box sx={{ marginY: 6 }}>
       {/* Title */}
       <Typography
         variant='h2'

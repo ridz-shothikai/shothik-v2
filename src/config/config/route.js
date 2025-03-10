@@ -24,19 +24,17 @@ export const PATH_PAGE = {
   payment: "/payment",
   about: "/about-us",
   contact: "/contact-us",
+  career: "career",
   faqs: "/faqs",
   page403: "/403",
   page404: "/404",
   page500: "/500",
-
   howToVideos: "/how-to-videos",
   resellerPanel: "/reseller-panel",
   affiliateMarketing: "/affiliate-marketing",
   community: "/blogs",
   blogDetail: (id) => `/blogs/${id}`,
-
   tutorials: "/tutorials",
-
   privacy: "/privacy",
   terms: "/terms",
   paymentPolicy: "/payment/payment-policy",

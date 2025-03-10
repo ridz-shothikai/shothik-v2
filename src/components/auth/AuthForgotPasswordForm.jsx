@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
-import { useResetPasswordMutation } from "../../redux/api/authApi";
+import { useResetPasswordMutation } from "../../redux/api/auth/authApi";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
 

@@ -1,20 +1,25 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice } from "./apiSlice";
-import user from "./slice/auth";
+import { authApiSlice } from "./api/auth/authApiSlice";
+import { blogApiSlice } from "./api/blog/blogApiSlice";
+import auth from "./slice/auth";
 import inputOutput from "./slice/inputOutput";
 import pricing from "./slice/pricing";
 import settings from "./slice/settings";
 
 const store = configureStore({
   reducer: {
-    auth: user,
+    auth,
     inputOutput,
     pricing,
     settings,
-    [apiSlice.reducerPath]: apiSlice.reducer,
+    [authApiSlice.reducerPath]: authApiSlice.reducer,
+    [blogApiSlice.reducerPath]: blogApiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(
+      authApiSlice.middleware,
+      blogApiSlice.middleware
+    ),
 });
 
 export default store;

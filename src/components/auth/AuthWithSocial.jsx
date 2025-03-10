@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-import { useGoogleLoginMutation } from "../../redux/api/authApi";
+import { useGoogleLoginMutation } from "../../redux/api/auth/authApi";
 import {
   setShowLoginModal,
   setShowRegisterModal,

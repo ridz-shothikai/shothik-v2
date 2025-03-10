@@ -64,8 +64,8 @@ export default function AboutVision() {
         </Stack>
       </Box>
       <motion.div
-        initial={{ x: 30, opacity: 0 }}
-        whileInView={{ x: 0, opacity: 1 }}
+        initial={{ y: 30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
       >

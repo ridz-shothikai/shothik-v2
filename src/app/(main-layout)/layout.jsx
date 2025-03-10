@@ -13,7 +13,7 @@ import {
   useGetUserLimitQuery,
   useGetUserQuery,
   useLoginMutation,
-} from "../../redux/api/authApi";
+} from "../../redux/api/auth/authApi";
 import {
   setShowLoginModal,
   setShowRegisterModal,

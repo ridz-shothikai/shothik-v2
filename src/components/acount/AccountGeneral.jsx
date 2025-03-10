@@ -20,7 +20,7 @@ import useSnackbar from "../../hooks/useSnackbar";
 import {
   useUpdateProfileMutation,
   useUploadImageMutation,
-} from "../../redux/api/authApi";
+} from "../../redux/api/auth/authApi";
 import { getUser, setUser } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import { RHFSelect } from "../../resource/RHFSelect";

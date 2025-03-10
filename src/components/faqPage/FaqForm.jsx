@@ -4,7 +4,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
-import { useContactMutation } from "../../redux/api/authApi";
+import { useContactMutation } from "../../redux/api/auth/authApi";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
 

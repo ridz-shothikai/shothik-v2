@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
-import { useForgotPasswordMutation } from "../../redux/api/authApi";
+import { useForgotPasswordMutation } from "../../redux/api/auth/authApi";
 import { setShowLoginModal } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";

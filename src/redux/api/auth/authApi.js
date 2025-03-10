@@ -1,7 +1,7 @@
-import { apiSlice } from "../apiSlice";
-import { getUser, loggedIn, logout, setUserLimit } from "../slice/auth";
+import { getUser, loggedIn, logout, setUserLimit } from "../../slice/auth";
+import { authApiSlice } from "./authApiSlice";
 
-export const authApi = apiSlice.injectEndpoints({
+export const authApi = authApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query({
       query: () => {

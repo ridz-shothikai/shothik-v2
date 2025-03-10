@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
 import useResponsive from "../../hooks/useResponsive";
-import { useGetUserQuery } from "../../redux/api/authApi";
+import { useGetUserQuery } from "../../redux/api/auth/authApi";
 import { setOpen } from "../../redux/slice/settings";
 import DotFlashing from "../../resource/DotFlashing";
 import SvgColor from "../../resource/SvgColor";

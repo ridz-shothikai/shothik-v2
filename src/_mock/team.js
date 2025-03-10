@@ -11,13 +11,13 @@ export const team = [
       "#",
       "#",
     ],
-    image: "/assets/images/about/habib.jpg",
+    image: "/team/habib.jpg",
     id: "1",
   },
   {
     order: 2,
     id: "2",
-    image: "/assets/images/about/alamgir.jpg",
+    image: "/team/alamgir.jpg",
     name: "Alamgir Ahamed",
     designation: "Chief Technology Officer",
     social: [
@@ -35,7 +35,7 @@ export const team = [
     designation: "Advisor",
     id: "12",
     name: "Sudip Majumder",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     social: ["#", "#", "#", "#", "#"],
   },
   {
@@ -43,20 +43,20 @@ export const team = [
     id: "5",
     social: ["#", "#", "#", "#", "#"],
     name: "MST Atika ",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     designation: "UI /UX Designer",
   },
 
   {
     designation: "Director & Talent acquisition Specialist",
     order: 6,
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     id: "6",
     social: ["#", "#", "#", "#", "#"],
     name: "Salvia Benazir",
   },
   {
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     order: 8,
     designation: "Ai Engineer",
     id: "8",
@@ -68,7 +68,7 @@ export const team = [
     designation: "Fullstack Developer",
     id: "8",
     name: "Md. Iqbal Hossen",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/iqbal.jpg",
     social: ["#", "#", "#", "#", "#"],
   },
 
@@ -77,7 +77,7 @@ export const team = [
     designation: "Frontend Developer",
     id: "10",
     name: "Jobayer Ahmed",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/jobayer.jpg",
     social: ["#", "#", "#", "#", "#"],
   },
   {
@@ -85,7 +85,7 @@ export const team = [
     designation: "Executive Assistant",
     id: "11",
     name: "Arpan Das",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     social: ["#", "#", "#", "#", "#"],
   },
 
@@ -93,7 +93,7 @@ export const team = [
   {
     name: "Barrister Riazuddin",
     id: "17",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     social: ["#", "#", "#", "#", "#"],
     order: 17,
     designation: "Legal Advisor",
@@ -101,7 +101,7 @@ export const team = [
   {
     social: ["#", "#", "#", "#", "#"],
     order: 18,
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     name: "Barrister Sm Saad",
     id: "18",
     designation: "Legal Consultant",
@@ -111,7 +111,7 @@ export const team = [
     order: 19,
     designation: "Legal Advisor",
     id: "19",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     name: "Barrister Shanjid Siddique",
   },
   {
@@ -119,7 +119,7 @@ export const team = [
     id: "20",
     order: 20,
     name: "Advocate Obayed Enam",
-    image: "/assets/images/about/placeholder.png",
+    image: "/team/placeholder.png",
     designation: "Legal Advisor",
   },
 ];

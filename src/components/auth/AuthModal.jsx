@@ -1,26 +1,15 @@
 "use client";
 import { Close } from "@mui/icons-material";
 import { Box, IconButton, Modal } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";
 
-const AuthModal = ({ isOpen, onClose, children, title }) => {
-  const [originalTitle, setOriginalTitle] = useState("");
-
+const AuthModal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
-
-  useEffect(() => {
-    if (title) {
-      setOriginalTitle(document.title);
-      document.title = `${title} || Shothik AI`;
-    } else {
-      document.title = originalTitle || "Shothik AI";
-    }
-  }, [isOpen]);
 
   return (
     <Modal
@@ -77,7 +66,7 @@ export const LoginModal = ({ children }) => {
   };
 
   return (
-    <AuthModal isOpen={showLoginModal} onClose={handleClose} title='Login'>
+    <AuthModal isOpen={showLoginModal} onClose={handleClose}>
       {children}
     </AuthModal>
   );
@@ -92,11 +81,7 @@ export const RegisterModal = ({ children }) => {
   };
 
   return (
-    <AuthModal
-      isOpen={showRegisterModal}
-      onClose={handleClose}
-      title='Register'
-    >
+    <AuthModal isOpen={showRegisterModal} onClose={handleClose}>
       {children}
     </AuthModal>
   );

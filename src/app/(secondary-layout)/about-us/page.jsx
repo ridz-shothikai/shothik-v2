@@ -1,5 +1,6 @@
 import { Container, Divider } from "@mui/material";
 import AboutHero from "../../../components/about/AboutHero";
+import AboutTeam from "../../../components/about/AboutTeam";
 import AboutVision from "../../../components/about/AboutVision";
 import AboutWhat from "../../../components/about/AboutWhat";
 
@@ -25,7 +26,7 @@ export default function AboutPage() {
           orientation='horizontal'
           sx={{ mb: 3, mx: "auto", width: 100, height: 2 }}
         />
-        {/* <AboutTeam /> */}
+        <AboutTeam />
       </Container>
     </>
   );

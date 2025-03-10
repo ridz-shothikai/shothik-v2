@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
-import { useGetUserQuery } from "../../../redux/api/authApi";
+import { useGetUserQuery } from "../../../redux/api/auth/authApi";
 import {
   logout,
   setShowLoginModal,
