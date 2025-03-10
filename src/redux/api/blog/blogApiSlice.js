@@ -34,8 +34,31 @@ export const blogApiSlice = createApi({
         };
       },
     }),
+    likeContend: builder.mutation({
+      query: (options) => {
+        return {
+          url: `${options.api}/like/${options.id}`,
+          method: "PATCH",
+          body: options.body,
+        };
+      },
+    }),
+    disLikeContend: builder.mutation({
+      query: (options) => {
+        return {
+          url: `${options.api}/dislike/${options.id}`,
+          method: "PATCH",
+          body: options.body,
+        };
+      },
+    }),
   }),
 });
 
-export const { useCategoryQuery, useGetBlogsQuery, useNewsletterMutation } =
-  blogApiSlice;
+export const {
+  useCategoryQuery,
+  useGetBlogsQuery,
+  useNewsletterMutation,
+  useLikeContendMutation,
+  useDisLikeContendMutation,
+} = blogApiSlice;

@@ -84,7 +84,7 @@ function BlogCard({ blog }) {
                 year: "numeric",
                 month: "long",
                 day: "2-digit",
-              }).format(new Date(blog.createdAt))}
+              }).format(new Date(blog.updatedAt))}
             </Typography>
           </CardContent>
         </Card>
