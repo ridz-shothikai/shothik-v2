@@ -2,8 +2,8 @@ import { Box, Typography } from "@mui/material";
 import MainLayout from "../../../../components/blog/details/MainLayout";
 
 export async function generateMetadata({ params }) {
-  const { slug } = params;
   try {
+    const { slug } = await params;
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/blog/${slug}`);
     const blogData = await res.json();
 
@@ -53,10 +53,10 @@ export async function generateMetadata({ params }) {
 }
 
 const BlogDetails = async ({ params }) => {
-  const { slug } = params;
   let blog = null;
-
   try {
+    const { slug } = await params;
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/blog/${slug}`);
     const blogData = await res.json();
 
