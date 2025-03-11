@@ -8,6 +8,7 @@ import {
 import { Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { refetchBlogDetails } from "../../../app/actions";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useDisLikeContendMutation,
@@ -15,32 +16,28 @@ import {
 } from "../../../redux/api/blog/blogApiSlice";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 
-export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
+export function LikeDislike({ id, api, like, dislike, size = "30px", slug }) {
   const enqueueSnackbar = useSnackbar();
-  const [disLikeContend] = useDisLikeContendMutation();
-  const [likeContend] = useLikeContendMutation();
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const [likeContend] = useLikeContendMutation();
+  const [disLikeContend] = useDisLikeContendMutation();
   const dispatch = useDispatch();
   const userId = user._id;
 
   const handleLike = async (e) => {
+    e.stopPropagation();
+    if (!userId) {
+      return dispatch(setShowLoginModal(true));
+    }
+    setLoading(true);
     try {
-      e.stopPropagation();
-
-      if (!userId) {
-        return dispatch(setShowLoginModal(true));
-      }
-
-      setLoading(true);
       await likeContend({ api, id, body: { userId } }).unwrap();
-
-      enqueueSnackbar("Liked successfylly", { variant: "success" });
-      data.likes = [...data?.likes, userId];
-      const isDislike = data?.dislikes?.includes(userId);
-      if (isDislike) {
-        const filter = data?.dislikes?.filter((item) => item !== userId);
-        data.dislikes = [...filter];
+      const result = await refetchBlogDetails(slug);
+      if (result.success) {
+        enqueueSnackbar("Liked successfully", { variant: "success" });
+      } else {
+        enqueueSnackbar("Unable to like", { variant: "error" });
       }
     } catch (error) {
       enqueueSnackbar("Unable to like", { variant: "error" });
@@ -48,25 +45,23 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
       setLoading(false);
     }
   };
+
   const handleDislike = async (e) => {
+    e.stopPropagation();
+    if (!userId) {
+      return dispatch(setShowLoginModal(true));
+    }
+    setLoading(true);
     try {
-      e.stopPropagation();
-      if (!userId) {
-        return dispatch(setShowLoginModal(true));
-      }
-
-      setLoading(true);
       await disLikeContend({ api, id, body: { userId } }).unwrap();
-
-      enqueueSnackbar("Dislike successfylly", { variant: "success" });
-      data.dislikes = [...data?.dislikes, userId];
-      const islike = data?.likes?.includes(userId);
-      if (islike) {
-        const filter = data?.likes?.filter((item) => item !== userId);
-        data.likes = [...filter];
+      const result = await refetchBlogDetails(slug);
+      if (result.success) {
+        enqueueSnackbar("Disliked successfully", { variant: "success" });
+      } else {
+        enqueueSnackbar("Unable to dislike", { variant: "error" });
       }
     } catch (error) {
-      enqueueSnackbar("Unable to Dislike", { variant: "error" });
+      enqueueSnackbar("Unable to dislike", { variant: "error" });
     } finally {
       setLoading(false);
     }
@@ -85,6 +80,7 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
           />
         ) : (
           <ThumbUpOffAlt
+            onClick={handleLike}
             sx={{
               height: size,
               width: size,
@@ -92,7 +88,6 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
               cursor: "pointer",
             }}
             disabled={loading}
-            onClick={handleLike}
           />
         )}
         <Typography align='center' fontWeight={"700"} color='primary.main'>
@@ -110,6 +105,7 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
           />
         ) : (
           <ThumbDownOffAlt
+            onClick={handleDislike}
             sx={{
               height: size,
               width: size,
@@ -117,7 +113,6 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", data }) {
               cursor: "pointer",
             }}
             disabled={loading}
-            onClick={handleDislike}
           />
         )}
         <Typography align='center' fontWeight={"700"} color='warning.main'>

@@ -7,7 +7,7 @@ export const blogApiSlice = createApi({
     let result = await baseQuery(args, api, extraOptions);
     return result;
   },
-  tagTypes: ["blog", "blog-categories"],
+  tagTypes: ["Blog", "blog-categories", { type: "Blog", id: (id) => id._id }],
   endpoints: (builder) => ({
     category: builder.query({
       query: () => {
@@ -24,6 +24,10 @@ export const blogApiSlice = createApi({
           method: "GET",
         };
       },
+      providesTags: (result, error, id) => [
+        ...result.data.map(({ _id }) => ({ type: "Blog", id: _id })),
+        "Blog",
+      ],
     }),
     newsletter: builder.mutation({
       query: (body) => {
@@ -36,12 +40,16 @@ export const blogApiSlice = createApi({
     }),
     likeContend: builder.mutation({
       query: (options) => {
+        console.log("url: ", `${options.api}/like/${options.id}`);
         return {
           url: `${options.api}/like/${options.id}`,
           method: "PATCH",
           body: options.body,
         };
       },
+      invalidatesTags: (result, error, arg) => [
+        { type: "Blog", id: arg.id._id },
+      ],
     }),
     disLikeContend: builder.mutation({
       query: (options) => {
@@ -50,6 +58,32 @@ export const blogApiSlice = createApi({
           method: "PATCH",
           body: options.body,
         };
+      },
+      invalidatesTags: (result, error, arg) => [
+        { type: "Blog", id: arg.id._id },
+      ],
+    }),
+    postComment: builder.mutation({
+      query: (data) => {
+        return {
+          url: "/blog/comment",
+          method: "POST",
+          body: data,
+        };
+      },
+      invalidatesTags: (result, error, arg) => {
+        return [{ type: "Blog", id: arg.blogId }];
+      },
+    }),
+    removeComment: builder.mutation({
+      query: (commentId) => {
+        return {
+          url: `/blog/comment/remove/${commentId}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: (result, error, arg) => {
+        return [{ type: "Blog", id: arg.blogId }];
       },
     }),
   }),
@@ -61,4 +95,6 @@ export const {
   useNewsletterMutation,
   useLikeContendMutation,
   useDisLikeContendMutation,
+  usePostCommentMutation,
+  useRemoveCommentMutation,
 } = blogApiSlice;

@@ -11,6 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import CommentSection from "./CommentSection";
 import { LikeDislike } from "./LikeDislike";
 import ShareIcons from "./ShareIcons";
 
@@ -224,11 +225,7 @@ export default function MainLayout({ blog }) {
         </Card>
       </Stack>
 
-      {/* <CommentSection
-        data={blog}
-        comments={blog?.comments}
-        setUpdate={() => {}}
-      /> */}
+      <CommentSection data={blog} comments={blog?.comments} />
     </Container>
   );
 }
