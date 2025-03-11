@@ -28,7 +28,13 @@ import RHFTextField from "../../resource/RHFTextField";
 import { RHFUploadAvatar } from "../../resource/RHFUploadAvatar";
 // ----------------------------------------------------------------------
 
-const Label = ({ children, color = "default", startIcon }) => {
+export const Label = ({
+  children,
+  color = "default",
+  fontColor = "white",
+  startIcon,
+  sx,
+}) => {
   return (
     <Stack
       direction='row'
@@ -36,10 +42,11 @@ const Label = ({ children, color = "default", startIcon }) => {
       gap={0.5}
       sx={{
         backgroundColor: color,
-        color: "white",
+        color: fontColor,
         px: 1.5,
         py: 0.5,
         borderRadius: 1.5,
+        ...sx,
       }}
     >
       {startIcon}

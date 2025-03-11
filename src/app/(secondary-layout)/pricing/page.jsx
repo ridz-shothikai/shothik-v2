@@ -1,12 +1,39 @@
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Typography } from "@mui/material";
+import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
+import PricingLayout from "../../../components/pricing/PricingLayout";
 
-const Pricingpage = () => {
+export async function generateMetadata() {
+  return {
+    title: "Pricing | Shothik AI",
+    description: "This is the Pricing page",
+  };
+}
+
+export default function PricingPage() {
   return (
-    <Box>
-      <Typography>This is pricing page</Typography>
-    </Box>
-  );
-};
+    <PricingLayout
+      TitleContend={
+        <>
+          <Typography
+            variant='h3'
+            align='center'
+            sx={{ color: "error.contrastText" }}
+          >
+            Our pricing plan made simple.
+          </Typography>
 
-export default Pricingpage;
+          <Typography
+            align='center'
+            sx={{ color: "error.contrastText", maxWidth: "sm" }}
+          >
+            Discover the right plan for your needs and take advantage of
+            Shothik.ai's powerful tools. Whether you're just getting started or
+            need advanced features for your business, we've got you covered.
+          </Typography>
+        </>
+      }
+    >
+      <HomeAdvertisement />
+    </PricingLayout>
+  );
+}
