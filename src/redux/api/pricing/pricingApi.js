@@ -5,7 +5,7 @@ export const pricingApiSlice = createApi({
   reducerPath: "pricingApi",
   baseQuery: async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
-    if (!result || !result.data) {
+    if (!result) {
       console.error("Unexpected API response:", result);
       return {
         error: { status: "CUSTOM_ERROR", message: "Invalid API response" },
