@@ -23,7 +23,7 @@ export default function PaymentSummary({
 }) {
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
-  const { title, bn, global, amount_monthly, amount_yearly, type } = plan;
+  const { title, bn, global, amount_monthly, amount_yearly } = plan;
 
   let {
     amount_monthly: price = 0,
@@ -209,7 +209,7 @@ export default function PaymentSummary({
           onSubmit(e);
           // trackEvent("click", "payment", `${type}-checkout`, billtopaid);
         }}
-        loading={isSubmitting}
+        disabled={isSubmitting || billtopaid < 0}
       >
         {isSubmitting ? "Please wait..." : "Upgrade My Plan"}
       </Button>

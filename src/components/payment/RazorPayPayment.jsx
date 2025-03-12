@@ -3,39 +3,19 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PAYMENT } from "../../config/config/route";
-import useGeolocation from "../../hooks/useGeolocation";
 import useSnackbar from "../../hooks/useSnackbar";
-import {
-  useGetPricingPlansQuery,
-  useRazorPaymentMutation,
-} from "../../redux/api/pricing/pricingApi";
-import LoadingScreen from "../../resource/LoadingScreen";
-import PaymentSummary from "./PaymentSummary";
+import { useRazorPaymentMutation } from "../../redux/api/pricing/pricingApi";
+import PaymentLayout from "./PaymentLayout";
 
 export default function RazorPayPayment() {
-  const { data, isLoading: pricingLoading } = useGetPricingPlansQuery();
   const [razorPayment, { isLoading }] = useRazorPaymentMutation();
-  const { location, isLoading: geoLoading } = useGeolocation();
   const { user } = useSelector((state) => state.auth);
-  const [monthly, setMonthly] = useState("monthly");
   const [totalBill, setTotalBill] = useState(0);
   const enqueueSnackbar = useSnackbar();
   const [plan, setPlan] = useState({});
   const params = useSearchParams();
-  const subscription = params.get("subscription");
   const tenure = params.get("tenure");
   const router = useRouter();
-
-  const handleMonthly = (event) => {
-    let { value } = event?.target;
-    window.history.pushState(
-      {},
-      "",
-      `${PAYMENT.razor}/?subscription=${subscription}&tenure=${value}`
-    );
-
-    setMonthly(value);
-  };
 
   useEffect(() => {
     if (!document.getElementById("razorpay-script")) {
@@ -103,29 +83,14 @@ export default function RazorPayPayment() {
     }
   };
 
-  useEffect(() => {
-    if (data) {
-      const planData = data?.data.filter(
-        (item) => item._id === subscription
-      )[0];
-      setPlan(planData);
-      setMonthly(tenure);
-    }
-  }, [data, subscription, tenure]);
-
-  if (pricingLoading || geoLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <PaymentSummary
-      plan={plan}
-      monthly={monthly}
+    <PaymentLayout
       setTotalBill={setTotalBill}
-      handleMonthly={handleMonthly}
-      isSubmitting={isLoading}
-      onSubmit={handleSubmit}
-      country={location}
+      handleSubmit={handleSubmit}
+      isLoading={isLoading}
+      route={PAYMENT.razor}
+      plan={plan}
+      setPlan={setPlan}
     />
   );
 }

@@ -11,11 +11,12 @@ export default function PaymentLayout({
   handleSubmit,
   isLoading,
   setTotalBill,
+  plan,
+  setPlan,
 }) {
   const { data, isLoading: pricingLoading } = useGetPricingPlansQuery();
   const { location, isLoading: geoLoading } = useGeolocation();
   const [monthly, setMonthly] = useState("monthly");
-  const [plan, setPlan] = useState({});
   const params = useSearchParams();
   const subscription = params.get("subscription");
   const tenure = params.get("tenure");

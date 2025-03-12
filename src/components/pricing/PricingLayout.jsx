@@ -2,6 +2,7 @@
 import { Box, Stack, Switch, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import useGeolocation from "../../hooks/useGeolocation";
 import useResponsive from "../../hooks/useResponsive";
 import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
 import LoadingScreen from "../../resource/LoadingScreen";
@@ -13,8 +14,7 @@ export default function PricingLayout({ children, TitleContend }) {
   const { user } = useSelector((state) => state.auth);
   const [isMonthly, setIsMonthly] = useState(false);
   const { data, isLoading } = useGetPricingPlansQuery();
-  // const { location } = useGeolocation();
-  const location = "qutar";
+  const { location } = useGeolocation();
   const isMobile = useResponsive("down", "sm");
 
   useEffect(() => {
