@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <Stack sx={{ height: "calc(100vh - 200px)" }} alignItems='center'>
+    <Stack sx={{ height: "100vh" }} alignItems='center' justifyContent='center'>
       <Typography variant='h3' sx={{ animation: "fadeIn 1s ease-in-out" }}>
         Sorry, page not found!
       </Typography>
