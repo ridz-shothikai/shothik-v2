@@ -1,10 +1,12 @@
 import { Box, Container } from "@mui/material";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HEADER, NAV } from "../../config/config/nav";
 import useResponsive from "../../hooks/useResponsive";
 import { loadSettingsFromLocalStorage } from "../../redux/slice/settings";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
+import MobileNavigation from "../navigation/MobileNavigation";
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
@@ -14,6 +16,7 @@ export default function Main({ children }) {
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
   const dispatch = useDispatch();
+  const pathName = usePathname();
 
   useEffect(() => {
     dispatch(loadSettingsFromLocalStorage());
@@ -42,6 +45,7 @@ export default function Main({ children }) {
         disableGutters
         sx={{ minHeight: "calc(100vh - 100px)" }}
       >
+        {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {children}
       </Container>
       <FooterServerComponent />

@@ -7,7 +7,6 @@ import HomeHeroSection from "../../components/home/HomeHeroSection";
 import HomeTools from "../../components/home/HomeTools";
 import Testimonials from "../../components/home/Testimonials";
 import WhyShothik from "../../components/home/WhyShothik";
-import MobileNavigation from "../../components/navigation/MobileNavigation";
 
 export async function generateMetadata() {
   return {
@@ -19,8 +18,6 @@ export async function generateMetadata() {
 const Home = () => {
   return (
     <>
-      <MobileNavigation />
-
       <HomeHeroSection />
       <HomeTools />
       <HomeFeatures />

@@ -8,6 +8,7 @@ import Main from "../../components/layout/Main";
 import MainHeader from "../../components/navigation/MainHeader";
 import NavMini from "../../components/navigation/NavMini";
 import NavVertical from "../../components/navigation/NavVertical";
+import AlertDialog from "../../components/tools/common/AlertDialog";
 import useResponsive from "../../hooks/useResponsive";
 import {
   useGetUserLimitQuery,
@@ -88,6 +89,7 @@ export default function MainLayout({ children }) {
           <VerifyEmailAlert />
           {children}
           <AuthSuccessPopup />
+          <AlertDialog />
         </Main>
       </Box>
     </>

@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import PricingLayout from "../../../components/pricing/PricingLayout";
 
@@ -33,7 +33,9 @@ export default function PricingPage() {
         </>
       }
     >
-      <HomeAdvertisement />
+      <Container sx={{ my: { xs: 5, md: 7 } }}>
+        <HomeAdvertisement />
+      </Container>
     </PricingLayout>
   );
 }

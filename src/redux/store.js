@@ -5,12 +5,14 @@ import { pricingApiSlice } from "./api/pricing/pricingApi";
 import auth from "./slice/auth";
 import inputOutput from "./slice/inputOutput";
 import settings from "./slice/settings";
+import tools from "./slice/tools";
 
 const store = configureStore({
   reducer: {
     auth,
     inputOutput,
     settings,
+    tools,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,

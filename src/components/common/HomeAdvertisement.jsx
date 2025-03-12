@@ -1,25 +1,23 @@
 import { KeyboardDoubleArrowRightRounded } from "@mui/icons-material";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import { PATH_PAGE, PATH_TOOLS } from "../../config/config/route";
 
 export default function HomeAdvertisement() {
   return (
-    <Container sx={{ py: { xs: 5, md: 15 } }}>
-      <Stack
-        alignItems='center'
-        direction={{ xs: "column", md: "row" }}
-        sx={{
-          background: "linear-gradient(135deg,#00AB55,#007B55)",
-          borderRadius: 2,
-          py: { xs: 5, md: 8 },
-        }}
-      >
-        <Content />
-        <Description />
-      </Stack>
-    </Container>
+    <Stack
+      alignItems='center'
+      direction={{ xs: "column", md: "row" }}
+      sx={{
+        background: "linear-gradient(135deg,#00AB55,#007B55)",
+        borderRadius: 2,
+        py: { xs: 5, md: 8 },
+      }}
+    >
+      <Content />
+      <Description />
+    </Stack>
   );
 }
 
@@ -48,17 +46,17 @@ function Description() {
         Shothik.ai today
       </Typography>
 
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        justifyContent={{ xs: "center", md: "flex-start" }}
-        flexWrap='wrap'
-        gap={2}
+      <motion.div
+        initial={{ x: 30, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
       >
-        <motion.div
-          initial={{ x: 30, opacity: 0 }}
-          whileInView={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent={{ xs: "center", md: "flex-start" }}
+          flexWrap='wrap'
+          gap={2}
         >
           <Button
             color='inherit'
@@ -93,8 +91,8 @@ function Description() {
           >
             Join us on Discord
           </Button>
-        </motion.div>
-      </Stack>
+        </Stack>
+      </motion.div>
     </Box>
   );
 }
