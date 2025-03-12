@@ -1,6 +1,6 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PAYMENT } from "../../config/config/route";
 import useSnackbar from "../../hooks/useSnackbar";
@@ -8,6 +8,14 @@ import { useRazorPaymentMutation } from "../../redux/api/pricing/pricingApi";
 import PaymentLayout from "./PaymentLayout";
 
 export default function RazorPayPayment() {
+  return (
+    <Suspense fallback={null}>
+      <RazorPayPaymentComponent />
+    </Suspense>
+  );
+}
+
+function RazorPayPaymentComponent() {
   const [razorPayment, { isLoading }] = useRazorPaymentMutation();
   const { user } = useSelector((state) => state.auth);
   const [totalBill, setTotalBill] = useState(0);
@@ -84,13 +92,15 @@ export default function RazorPayPayment() {
   };
 
   return (
-    <PaymentLayout
-      setTotalBill={setTotalBill}
-      handleSubmit={handleSubmit}
-      isLoading={isLoading}
-      route={PAYMENT.razor}
-      plan={plan}
-      setPlan={setPlan}
-    />
+    <Suspense fallback={null}>
+      <PaymentLayout
+        setTotalBill={setTotalBill}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        route={PAYMENT.razor}
+        plan={plan}
+        setPlan={setPlan}
+      />
+    </Suspense>
   );
 }

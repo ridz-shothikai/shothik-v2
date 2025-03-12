@@ -1,12 +1,20 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { PAYMENT } from "../../config/config/route";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useBkashPaymentMutation } from "../../redux/api/pricing/pricingApi";
 import PaymentLayout from "./PaymentLayout";
 
 export default function BkashPyament() {
+  return (
+    <Suspense fallback={null}>
+      <BkashPyamentComponent />
+    </Suspense>
+  );
+}
+
+function BkashPyamentComponent() {
   const [bkashPayment, { isLoading }] = useBkashPaymentMutation();
   const [totalBill, setTotalBill] = useState(0);
   const params = useSearchParams();
@@ -31,13 +39,15 @@ export default function BkashPyament() {
   };
 
   return (
-    <PaymentLayout
-      setTotalBill={setTotalBill}
-      handleSubmit={handleSubmit}
-      isLoading={isLoading}
-      route={PAYMENT.bkash}
-      plan={plan}
-      setPlan={setPlan}
-    />
+    <Suspense fallback={null}>
+      <PaymentLayout
+        setTotalBill={setTotalBill}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        route={PAYMENT.bkash}
+        plan={plan}
+        setPlan={setPlan}
+      />
+    </Suspense>
   );
 }

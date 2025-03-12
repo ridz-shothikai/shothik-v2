@@ -1,7 +1,7 @@
 "use client";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { PAYMENT } from "../../config/config/route";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useStripePaymentMutation } from "../../redux/api/pricing/pricingApi";
@@ -10,6 +10,14 @@ import PaymentLayout from "./PaymentLayout";
 const stripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function StripePayment() {
+  return (
+    <Suspense fallback={null}>
+      <StripePaymentComponent />
+    </Suspense>
+  );
+}
+
+function StripePaymentComponent() {
   const [stripePayment, { isLoading }] = useStripePaymentMutation();
   const [totalBill, setTotalBill] = useState(0);
   const enqueueSnackbar = useSnackbar();
@@ -42,13 +50,15 @@ export default function StripePayment() {
   };
 
   return (
-    <PaymentLayout
-      setTotalBill={setTotalBill}
-      handleSubmit={handleSubmit}
-      isLoading={isLoading}
-      route={PAYMENT.stripe}
-      plan={plan}
-      setPlan={setPlan}
-    />
+    <Suspense fallback={null}>
+      <PaymentLayout
+        setTotalBill={setTotalBill}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        route={PAYMENT.stripe}
+        plan={plan}
+        setPlan={setPlan}
+      />
+    </Suspense>
   );
 }
