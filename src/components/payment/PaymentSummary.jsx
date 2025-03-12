@@ -20,7 +20,6 @@ export default function PaymentSummary({
   isSubmitting,
   setTotalBill,
   country,
-  status,
 }) {
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
@@ -53,7 +52,7 @@ export default function PaymentSummary({
   });
 
   const paidAmount = transection?.amount || 0;
-  const billtopaid = /dev|test/.test(modeResult?.appMode)
+  const billtopaid = /dev|test/.test(modeResult?.data?.appMode)
     ? modePrice
     : monthly === "monthly"
     ? price - paidAmount
@@ -61,7 +60,7 @@ export default function PaymentSummary({
 
   useEffect(() => {
     setTotalBill(billtopaid);
-  }, []);
+  }, [monthly]);
 
   if (isLoading)
     return (
@@ -211,9 +210,8 @@ export default function PaymentSummary({
           // trackEvent("click", "payment", `${type}-checkout`, billtopaid);
         }}
         loading={isSubmitting}
-        disabled={status === "pending"}
       >
-        {status === "pending" ? "Please wait..." : "Upgrade My Plan"}
+        {isSubmitting ? "Please wait..." : "Upgrade My Plan"}
       </Button>
 
       <Stack alignItems='center' spacing={1}>

@@ -23,13 +23,7 @@ export const authApi = authApiSlice.injectEndpoints({
       },
       providesTags: ["User"],
     }),
-    getPricing: builder.mutation({
-      query: (data) => ({
-        url: `/payment/bkash/create`,
-        method: "POST",
-        body: data,
-      }),
-    }),
+
     getUserLimit: builder.query({
       query: () => {
         return {
@@ -231,7 +225,6 @@ export const {
   useGetUserQuery,
   useGetUserLimitQuery,
   useRegisterMutation,
-  useGetPricingMutation,
   useLoginMutation,
   useGoogleLoginMutation,
   useUpdateProfileMutation,

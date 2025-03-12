@@ -1,52 +1,64 @@
 "use client";
+import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PAYMENT } from "../../config/config/route";
 import useGeolocation from "../../hooks/useGeolocation";
 import useSnackbar from "../../hooks/useSnackbar";
 import {
-  useBkashPaymentMutation,
   useGetPricingPlansQuery,
+  useStripePaymentMutation,
 } from "../../redux/api/pricing/pricingApi";
 import LoadingScreen from "../../resource/LoadingScreen";
 import PaymentSummary from "./PaymentSummary";
 
-export default function BkashPyament() {
+const stripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+export default function StripePayment() {
   const { data, isLoading: pricingLoading } = useGetPricingPlansQuery();
-  const [bkashPayment, { isLoading }] = useBkashPaymentMutation();
-  const { location, isLoading: geoLoading } = useGeolocation();
+  const [stripePayment, { isLoading }] = useStripePaymentMutation();
+  const { location: k, isLoading: geoLoading } = useGeolocation();
   const [monthly, setMonthly] = useState("monthly");
   const [totalBill, setTotalBill] = useState(0);
+  const enqueueSnackbar = useSnackbar();
+  const [plan, setPlan] = useState({});
   const params = useSearchParams();
   const subscription = params.get("subscription");
   const tenure = params.get("tenure");
-  const [plan, setPlan] = useState({});
-  const snackbar = useSnackbar();
+  const location = "quatar";
 
   const handleMonthly = (event) => {
     let { value } = event?.target;
     window.history.pushState(
       {},
       "",
-      `${PAYMENT.bkash}/?subscription=${subscription}&tenure=${value}`
+      `${PAYMENT.razor}/?subscription=${subscription}&tenure=${value}`
     );
 
     setMonthly(value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (event) => {
     try {
-      e.preventDefault();
+      event.preventDefault();
       const payload = {
         pricingId: plan?._id,
         amount: totalBill,
         payment_type: tenure,
       };
-      const data = await bkashPayment(payload).unwrap();
-      window.location.href = data?.bkashURL;
+      const res = await stripePayment(payload).unwrap();
+      const order = res.data;
+      if (order) {
+        const result = (await stripe).redirectToCheckout({
+          sessionId: order.id,
+        });
+        if (result.error) {
+          throw { message: "An error occured" };
+        }
+      }
     } catch (error) {
-      console.error("Error:", error);
-      snackbar(error.data?.error || "An error ocured", { variant: "error" });
+      console.log(error);
+      enqueueSnackbar(error.message || error.data.error, { variant: "error" });
     }
   };
 

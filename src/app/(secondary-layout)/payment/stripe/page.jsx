@@ -1,15 +1,15 @@
 import { Box, Container, Typography } from "@mui/material";
 import React from "react";
-import BkashPyament from "../../../../components/payment/BkashPayment";
+import StripePayment from "../../../../components/payment/StripePayment";
 
 export async function generateMetadata() {
   return {
-    title: "Payment With Bkash | Shothik AI",
-    description: "This is Bkash payment page",
+    title: "Payment With Stripe | Shothik AI",
+    description: "This is Stripe payment for international payment system",
   };
 }
 
-const BkashPyamentPage = () => {
+const StripePyamentPage = () => {
   return (
     <Container
       sx={{
@@ -34,10 +34,10 @@ const BkashPyamentPage = () => {
           justifyContent: "center",
         }}
       >
-        <BkashPyament />
+        <StripePayment />
       </Box>
     </Container>
   );
 };
 
-export default BkashPyamentPage;
+export default StripePyamentPage;

@@ -5,6 +5,12 @@ export const pricingApiSlice = createApi({
   reducerPath: "pricingApi",
   baseQuery: async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
+    if (!result || !result.data) {
+      console.error("Unexpected API response:", result);
+      return {
+        error: { status: "CUSTOM_ERROR", message: "Invalid API response" },
+      };
+    }
     return result;
   },
   tagTypes: ["Pricing"],
@@ -34,6 +40,24 @@ export const pricingApiSlice = createApi({
         };
       },
     }),
+    razorPayment: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/payment/razor/create",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+    stripePayment: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/payment/stripe/create",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
     getTransaction: builder.query({
       query: (user) => {
         const { userId, packageName } = user;
@@ -54,4 +78,6 @@ export const {
   useGetTransactionQuery,
   useGetAppModeQuery,
   useBkashPaymentMutation,
+  useRazorPaymentMutation,
+  useStripePaymentMutation,
 } = pricingApiSlice;

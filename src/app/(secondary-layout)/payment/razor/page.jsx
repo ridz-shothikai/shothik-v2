@@ -1,15 +1,14 @@
 import { Box, Container, Typography } from "@mui/material";
-import React from "react";
-import BkashPyament from "../../../../components/payment/BkashPayment";
+import RazorPayPayment from "../../../../components/payment/RazorPayPayment";
 
 export async function generateMetadata() {
   return {
-    title: "Payment With Bkash | Shothik AI",
-    description: "This is Bkash payment page",
+    title: "Payment With Razor Pay | Shothik AI",
+    description: "This is Razor payment page",
   };
 }
 
-const BkashPyamentPage = () => {
+const RazorPyamentPage = () => {
   return (
     <Container
       sx={{
@@ -34,10 +33,10 @@ const BkashPyamentPage = () => {
           justifyContent: "center",
         }}
       >
-        <BkashPyament />
+        <RazorPayPayment />
       </Box>
     </Container>
   );
 };
 
-export default BkashPyamentPage;
+export default RazorPyamentPage;
