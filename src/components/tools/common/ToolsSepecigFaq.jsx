@@ -6,9 +6,8 @@ import {
   Box,
   Typography,
 } from "@mui/material";
-import { transtorFaq } from "../../../_mock/tools/translator";
 
-export default function TranslatorFAQ() {
+export default function ToolsSepecigFaq({ tag, data }) {
   return (
     <Box>
       <Typography variant='h3' align='center'>
@@ -21,11 +20,11 @@ export default function TranslatorFAQ() {
         color='text.secondary'
         sx={{ mb: 5 }}
       >
-        All you need to know about Translator feature
+        {tag}
       </Typography>
 
       <Box sx={{ maxWidth: 800, mx: "auto" }}>
-        {transtorFaq.map((faq, index) => (
+        {data.map((faq, index) => (
           <Accordion key={index} sx={{ mb: 3 }}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}

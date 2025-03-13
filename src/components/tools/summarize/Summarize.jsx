@@ -1,6 +1,10 @@
 "use client";
+import {
+  FormatListBulleted,
+  FormatTextdirectionLToRRounded,
+} from "@mui/icons-material";
 import { Card, Grid2, TextField } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -8,40 +12,39 @@ import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
 import BottomBar from "./BottomBar";
-import LanguageMenu from "./LanguageMenu";
+import TopNavigations from "./TopNavigations";
 
-const Translator = () => {
+const modes = [
+  {
+    icon: <FormatListBulleted fontSize='small' />,
+    name: "Key Sentences",
+  },
+  {
+    icon: <FormatTextdirectionLToRRounded fontSize='small' />,
+    name: "Paragraph",
+  },
+];
+const LENGTH = {
+  20: "Short",
+  40: "Regular",
+  60: "Medium",
+  80: "Long",
+};
+
+const SummarizeContend = () => {
+  const [selectedMode, setSelectedMode] = useState(modes[0].name);
+  const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [outputContend, setOutputContend] = useState("");
-  const { user, accessToken } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHumanizing, setIsHumanizing] = useState(false);
+  const { user, accessToken } = useSelector((state) => state.auth);
   const [userInput, setUserInput] = useState("");
   const isMobile = useResponsive("down", "sm");
-  const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const [translateLang, setTranslateLang] = useState({
-    fromLang: "Auto Detect",
-    toLang: "English",
-  });
+  const enqueueSnackbar = useSnackbar();
 
-  function handleInput(e) {
-    const value = e.target.value;
-    setUserInput(value);
-  }
-
-  function handleClear() {
-    setUserInput("");
-    setOutputContend("");
-  }
-  function handleSampleText() {
-    setUserInput(
-      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
-    );
-  }
-
-  async function fetchWithStreaming(payload, api = "/translator") {
+  async function fetchWithStreaming(payload) {
     try {
-      const url = process.env.NEXT_PUBLIC_API_URI + api;
+      const url = process.env.NEXT_PUBLIC_API_URI + "/summarize";
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -63,6 +66,7 @@ const Translator = () => {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+          // Decode the chunk and add it to the buffer
           const buffer = decoder.decode(value, { stream: true });
           setOutputContend((prev) => prev + buffer);
         }
@@ -72,75 +76,57 @@ const Translator = () => {
     }
   }
 
-  async function handleSubmit(payloads, url) {
+  const handleSubmit = async () => {
     try {
-      setOutputContend("");
       setIsLoading(true);
-      const direction = translateLang.fromLang + " to " + translateLang.toLang;
-      const payload = payloads ? payloads : { data: userInput, direction };
+      setOutputContend("");
 
-      await fetchWithStreaming(payload, url);
+      const payload = {
+        text: userInput,
+        mode: selectedMode,
+        length: currentLength.toLowerCase(),
+      };
+
+      await fetchWithStreaming(payload);
     } catch (error) {
-      console.error(error);
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));
         dispatch(setAlertMessage(error?.message));
-      } else if (error?.error === "UNAUTHORIZED") {
+      } else if (error.error === "UNAUTHORIZED") {
         dispatch(setShowLoginModal(true));
       } else {
         enqueueSnackbar(error?.message, { variant: "error" });
       }
-      setOutputContend("");
     } finally {
       setIsLoading(false);
     }
-  }
-
-  const handleHumanize = async () => {
-    try {
-      setIsHumanizing(true);
-      const payload = {
-        data: outputContend,
-        language: translateLang.toLang,
-      };
-      await handleSubmit(payload, "/fix-grammar");
-
-      enqueueSnackbar("Translation humanized successfully.", {
-        variant: "success",
-      });
-    } catch (err) {
-      console.log(err);
-      const error = err?.response?.data;
-      if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
-        dispatch(setShowAlert(true));
-        dispatch(setAlertMessage("Humanize limit exceeded, Please upgrade"));
-      } else if (error?.error === "UNAUTHORIZED") {
-        dispatch(setShowLoginModal(true));
-      } else {
-        enqueueSnackbar(error?.message, { variant: "error" });
-      }
-    } finally {
-      setIsHumanizing(false);
-    }
   };
 
-  function reverseText() {
-    if (!outputContend) return;
-    const input = userInput;
-    setUserInput(outputContend);
-    setOutputContend(input);
+  function handleInput(e) {
+    const value = e.target.value;
+    setUserInput(value);
+  }
+
+  function handleClear() {
+    setUserInput("");
+    setOutputContend("");
+  }
+  function handleSampleText() {
+    setUserInput(
+      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
+    );
   }
 
   return (
     <Card sx={{ mt: 1, paddingX: 2, paddingTop: 3 }}>
-      <LanguageMenu
-        isLoading={isLoading || isHumanizing}
-        userInput={userInput}
-        reverseText={reverseText}
-        translateLang={translateLang}
-        setTranslateLang={setTranslateLang}
+      <TopNavigations
+        LENGTH={LENGTH}
+        currentLength={currentLength}
+        modes={modes}
+        selectedMode={selectedMode}
+        setCurrentLength={setCurrentLength}
+        setSelectedMode={setSelectedMode}
       />
-
       <Grid2
         container
         sx={{ height: "cale(100vh - 200px)", overflow: "hidden" }}
@@ -157,7 +143,7 @@ const Translator = () => {
             maxRows={isMobile ? 12 : 19}
             fullWidth
             multiline
-            placeholder={"Input your text here..."}
+            placeholder='Input your text here...'
             value={userInput}
             onChange={handleInput}
             sx={{
@@ -194,7 +180,7 @@ const Translator = () => {
             maxRows={isMobile ? 12 : 19}
             fullWidth
             multiline
-            placeholder={"Translated text"}
+            placeholder='Summarized text'
             value={outputContend}
             disabled
             sx={{
@@ -221,12 +207,9 @@ const Translator = () => {
           />
         </Grid2>
       </Grid2>
-
       <BottomBar
         handleClear={handleClear}
-        handleHumanize={handleHumanize}
         handleSubmit={handleSubmit}
-        isHumanizing={isHumanizing}
         isLoading={isLoading}
         outputContend={outputContend}
         userInput={userInput}
@@ -236,4 +219,4 @@ const Translator = () => {
   );
 };
 
-export default Translator;
+export default SummarizeContend;

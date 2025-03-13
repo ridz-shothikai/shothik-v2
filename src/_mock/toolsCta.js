@@ -120,8 +120,8 @@ export const toolsCta = {
       </>
     ),
     image: {
-      light: "/assets/images/home/summarize_light.png",
-      dark: "/assets/images/home/summarize_dark.png",
+      light: "/cta/summarize_light.png",
+      dark: "/cta/summarize_dark.png",
     },
     buttonText: "Explore it Now",
     buttonLink: "/pricing",
