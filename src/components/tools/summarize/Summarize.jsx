@@ -118,7 +118,7 @@ const SummarizeContend = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 3 }}>
+    <Card sx={{ mt: 1, paddingX: 2, overflow: "visible" }}>
       <TopNavigations
         LENGTH={LENGTH}
         currentLength={currentLength}

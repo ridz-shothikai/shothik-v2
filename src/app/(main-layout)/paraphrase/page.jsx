@@ -1,5 +1,10 @@
-import { Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import React from "react";
+import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
+import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
+import ToolsCTA from "../../../components/tools/common/ToolsCTA";
+import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
+import ParaphraseContend from "../../../components/tools/paraphrase/ParaphraseContend";
 
 export async function generateMetadata() {
   return {
@@ -10,9 +15,17 @@ export async function generateMetadata() {
 
 const Paraphrase = () => {
   return (
-    <div>
-      <Typography>paraphrase page</Typography>
-    </div>
+    <Container
+      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
+    >
+      <ParaphraseContend />
+      <ToolsSepecigFaq
+        tag='All you need to know about Paraphrase feature'
+        data={paraphraseFaq}
+      />
+      <ToolsCTA toolType='paraphrase' />
+      <HomeAdvertisement />
+    </Container>
   );
 };
 

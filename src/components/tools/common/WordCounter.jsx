@@ -24,6 +24,7 @@ const WordCounter = ({
   btnText,
   ExtraBtn = null,
   ExtraCounter = null,
+  btnIcon = null,
 }) => {
   const [wordCount, setWordCount] = useState(0);
   const isMobile = useResponsive("down", "sm");
@@ -109,6 +110,7 @@ const WordCounter = ({
           loading={isLoading}
           disabled={wordCount > wordLimit}
           sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
+          startIcon={btnIcon}
         >
           {btnText}
         </Button>

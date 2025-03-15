@@ -18,7 +18,39 @@ export const toolsApiSlice = createApi({
         };
       },
     }),
+    paraphraseForTagging: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/paraphrase-for-tagging",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+    reportForSentence: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/report/send-report",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+    paraphrased: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/paraphraseV2",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
   }),
 });
 
-export const { useSpellCheckerMutation } = toolsApiSlice;
+export const {
+  useSpellCheckerMutation,
+  useParaphraseForTaggingMutation,
+  useReportForSentenceMutation,
+  useParaphrasedMutation,
+} = toolsApiSlice;

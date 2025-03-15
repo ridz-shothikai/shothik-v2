@@ -50,7 +50,7 @@ const BottomContend = ({
     try {
       setErrorChecking(true);
       const payload = { content: userInput, language };
-      const res = await spellChecker(payload);
+      const res = await spellChecker(payload).unwrap();
       const data = res?.data?.result || [];
       setErrors(data);
     } catch (error) {
