@@ -1,0 +1,202 @@
+"use client";
+import { Card, Grid2, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { detectLanguage } from "../../../hooks/languageDitector";
+import useResponsive from "../../../hooks/useResponsive";
+import useSnackbar from "../../../hooks/useSnackbar";
+import { setShowLoginModal } from "../../../redux/slice/auth";
+import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
+import UserActionInput from "../common/UserActionInput";
+import BottomContend from "./BottomContend";
+import LanguageMenu from "./LanguageMenu";
+
+const GrammarContend = () => {
+  const { user, accessToken } = useSelector((state) => state.auth);
+  const [outputContend, setOutputContend] = useState("");
+  const [language, setLanguage] = useState("English");
+  const [isLoading, setIsLoading] = useState(false);
+  const [userInput, setUserInput] = useState("");
+  const [errors, setErrors] = useState([]);
+  const enqueueSnackbar = useSnackbar();
+  const isMobile = useResponsive();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!userInput) return;
+    const language = detectLanguage(userInput);
+    setLanguage(language);
+  }, [userInput]);
+
+  function handleInput(e) {
+    const value = e.target.value;
+    setUserInput(value);
+  }
+
+  function handleClear() {
+    setUserInput("");
+    setOutputContend("");
+  }
+  function handleSampleText() {
+    setUserInput(
+      "The annual music festival drew in thousands of attendees from all over the country. The headlining band put on an unforgettable performanc that had the crowd jumping and singing along. Despite the scorching heat, peopl danced until the early hours of the morning."
+    );
+  }
+
+  async function fetchWithStreaming(payload) {
+    try {
+      const url = process.env.NEXT_PUBLIC_API_URI + "/fix-grammar";
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw { message: error.message, error: error.error };
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          // Decode the chunk and add it to the buffer
+          const buffer = decoder.decode(value, { stream: true });
+          setOutputContend((prev) => prev + buffer);
+        }
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async function handleSubmit() {
+    try {
+      setIsLoading(true);
+
+      const payload = { data: userInput, language };
+      await fetchWithStreaming(payload);
+      setErrors([]);
+    } catch (error) {
+      if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
+        dispatch(setShowAlert(true));
+        dispatch(setAlertMessage(error?.message));
+      } else if (error?.error === "UNAUTHORIZED") {
+        dispatch(setShowLoginModal(true));
+      } else {
+        enqueueSnackbar(error?.message, { variant: "error" });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 1 }}>
+      <LanguageMenu
+        isLoading={isLoading}
+        setLanguage={setLanguage}
+        language={language}
+      />
+      <Grid2
+        container
+        sx={{ height: "cale(100vh - 200px)", overflow: "hidden" }}
+        spacing={2}
+      >
+        <Grid2
+          sx={{ height: "100%", overflowY: "auto", position: "relative" }}
+          size={{ xs: 12, md: 6 }}
+        >
+          <TextField
+            name='input'
+            variant='outlined'
+            minRows={isMobile ? 12 : 19}
+            maxRows={isMobile ? 12 : 19}
+            fullWidth
+            multiline
+            placeholder='Input your text here...'
+            value={userInput}
+            onChange={handleInput}
+            sx={{
+              flexGrow: 1,
+              "& .MuiOutlinedInput-root": {
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+              },
+            }}
+          />
+          {!userInput ? (
+            <UserActionInput
+              setUserInput={setUserInput}
+              isMobile={isMobile}
+              handleSampleText={handleSampleText}
+            />
+          ) : null}
+        </Grid2>
+        <Grid2
+          sx={{ height: "100%", overflowY: "auto" }}
+          size={{ xs: 12, md: 6 }}
+        >
+          <TextField
+            name='input'
+            variant='outlined'
+            minRows={isMobile ? 12 : 19}
+            maxRows={isMobile ? 12 : 19}
+            fullWidth
+            multiline
+            placeholder='Corrected output'
+            value={outputContend}
+            disabled
+            sx={{
+              flexGrow: 1,
+              color: "text.primary",
+              "& .MuiOutlinedInput-root": {
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                },
+                "& .MuiInputBase-input.Mui-disabled": {
+                  color: "inherit",
+                  WebkitTextFillColor: "inherit",
+                  opacity: 1,
+                },
+                color: "text.primary",
+              },
+            }}
+          />
+        </Grid2>
+      </Grid2>
+      <BottomContend
+        handleClear={handleClear}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        outputContend={outputContend}
+        userInput={userInput}
+        userPackage={user?.package}
+        language={language}
+        errors={errors}
+        setErrors={setErrors}
+      />
+    </Card>
+  );
+};
+
+export default GrammarContend;

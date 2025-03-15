@@ -78,8 +78,8 @@ export const toolsCta = {
       </>
     ),
     image: {
-      light: "/assets/images/home/grammar_light.png",
-      dark: "/assets/images/home/grammar_dark.png",
+      light: "/cta/grammar_light.png",
+      dark: "/cta/grammar_dark.png",
     },
     buttonText: "Explore it Now",
     buttonLink: "/pricing",

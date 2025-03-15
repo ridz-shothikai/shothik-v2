@@ -8,7 +8,17 @@ export const toolsApiSlice = createApi({
     return result;
   },
   tagTypes: ["tools"],
-  endpoints: (builder) => ({}),
+  endpoints: (builder) => ({
+    spellChecker: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/bangla-speel-check",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+  }),
 });
 
-export const {} = toolsApiSlice;
+export const { useSpellCheckerMutation } = toolsApiSlice;

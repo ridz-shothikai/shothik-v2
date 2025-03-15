@@ -17,6 +17,7 @@ const LanguageMenu = ({
   const [anchorEl, setEnchorEl] = useState(null);
 
   useEffect(() => {
+    if (!userInput) return;
     const language = detectLanguage(userInput);
     setTranslateLang((prev) => {
       return { ...prev, fromLang: language };

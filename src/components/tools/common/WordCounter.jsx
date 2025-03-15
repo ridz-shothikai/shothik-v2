@@ -23,6 +23,7 @@ const WordCounter = ({
   handleSubmit,
   btnText,
   ExtraBtn = null,
+  ExtraCounter = null,
 }) => {
   const [wordCount, setWordCount] = useState(0);
   const isMobile = useResponsive("down", "sm");
@@ -89,6 +90,7 @@ const WordCounter = ({
             </Tooltip>
           </Stack>
         )}
+        {ExtraCounter}
       </Stack>
 
       <Stack sx={{ flexDirection: "row", gap: 2 }}>
