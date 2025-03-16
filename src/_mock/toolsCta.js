@@ -32,8 +32,8 @@ export const toolsCta = {
       </>
     ),
     image: {
-      light: "/assets/images/home/humanize_dark.png",
-      dark: "/assets/images/home/humanize_light.png",
+      light: "/cta/humanize_dark.png",
+      dark: "/cta/humanize_light.png",
     },
     buttonText: "Explore it Now",
     buttonLink: "/pricing",

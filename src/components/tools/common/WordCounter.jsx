@@ -99,7 +99,7 @@ const WordCounter = ({
       </Stack>
 
       <Stack sx={{ flexDirection: "row", gap: 2 }}>
-        {wordCount > wordLimit && userPackage !== "premium" && (
+        {wordCount > wordLimit && userPackage !== "unlimited" && (
           <Link href='/pricing'>
             <Button
               sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}

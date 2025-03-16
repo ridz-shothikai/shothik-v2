@@ -72,7 +72,7 @@ function Description({ config }) {
       </Typography>
 
       <Typography
-        component={motion.p}
+        component={motion.div}
         initial={{ x: -40, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}

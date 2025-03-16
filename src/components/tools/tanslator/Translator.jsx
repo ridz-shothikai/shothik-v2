@@ -132,7 +132,7 @@ const Translator = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 3 }}>
+    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 2 }}>
       <LanguageMenu
         isLoading={isLoading || isHumanizing}
         userInput={userInput}

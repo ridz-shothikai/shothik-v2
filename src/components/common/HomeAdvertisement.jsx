@@ -13,6 +13,7 @@ export default function HomeAdvertisement() {
         background: "linear-gradient(135deg,#00AB55,#007B55)",
         borderRadius: 2,
         py: { xs: 5, md: 8 },
+        mb: 5,
       }}
     >
       <Content />

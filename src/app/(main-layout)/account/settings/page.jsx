@@ -16,8 +16,7 @@ export default function AccountSettings() {
 
   useEffect(() => {
     if (!accessToken || !user) {
-      push("/auth/login?redirect=/account/settings/");
-      return null;
+      push("/");
     }
   }, [accessToken, user, push]);
 
