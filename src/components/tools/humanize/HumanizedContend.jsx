@@ -1,11 +1,20 @@
 "use client";
 
-import { Box, Card, TextField } from "@mui/material";
+import { Card, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useResponsive from "../../../hooks/useResponsive";
+import useSnackbar from "../../../hooks/useSnackbar";
+import useWordLimit from "../../../hooks/useWordLimit";
+import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
+import { setShowLoginModal } from "../../../redux/slice/auth";
+import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
+import LanguageMenu from "../grammar/LanguageMenu";
+import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
+import Navigations from "./Navigations";
+import OutputNavigation from "./OutputNavigation";
 import TopNavigation from "./TopNavigation";
 
 const LENGTH = {
@@ -18,12 +27,23 @@ const LENGTH = {
 const HumanizedContend = () => {
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [showShalowAlert, setShalowAlert] = useState(false);
+  const [outputContend, setOutputContend] = useState([]);
+  const [humanizeContend] = useHumanizeContendMutation();
   const miniLabel = useResponsive("between", "md", "xl");
   const { user } = useSelector((state) => state.auth);
+  const [language, setLanguage] = useState("English");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const [wordCount, setWordCount] = useState(0);
+  const [showIndex, setShowIndex] = useState(0);
   const isMobile = useResponsive("down", "sm");
+  const { wordLimit } = useWordLimit("bypass");
+  const [update, setUpdate] = useState(false);
   const [model, setModel] = useState("Panda");
+  const [scores, setScores] = useState([]);
+  const enqueueSnackbar = useSnackbar();
+  const dispatch = useDispatch();
 
   function handleSampleText() {
     setUserInput(
@@ -33,10 +53,70 @@ const HumanizedContend = () => {
 
   function handleClear() {
     setUserInput("");
+    setScores([]);
+    setShowIndex(0);
+    setOutputContend([]);
   }
 
+  const handleAiDitectors = () => {
+    setLoadingAi(true);
+    setTimeout(() => {
+      setLoadingAi(false);
+    }, 1000);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoadingAi(true);
+      setIsLoading(true);
+      setOutputContend([]);
+      setScores([]);
+      setShowIndex(0);
+      let text = userInput;
+
+      const payload = {
+        text,
+        model: model.toLowerCase(),
+        level: currentLength,
+        language,
+      };
+      const data = await humanizeContend(payload).unwrap();
+
+      if (!data.output?.length) {
+        throw {
+          error: "NOT_FOUND",
+          message: "No humanized content found",
+        };
+      }
+      const scores = data.output.map((item) => item.score);
+      setOutputContend(data.output);
+      setScores(scores);
+      setUpdate((prev) => !prev);
+    } catch (err) {
+      const error = err?.data;
+      const reg = /LIMIT_REQUEST|PACAKGE_EXPIRED|WORD_COUNT_LIMIT_REQUEST/;
+      if (reg.test(error?.error)) {
+        dispatch(setShowAlert(true));
+        dispatch(setAlertMessage(error?.message));
+      } else if (error?.error === "UNAUTHORIZED") {
+        dispatch(setShowLoginModal(true));
+      } else {
+        enqueueSnackbar(error?.message, { variant: "error" });
+      }
+    } finally {
+      setLoadingAi(false);
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Box sx={{ mt: 2 }}>
+    <Stack>
+      <LanguageMenu
+        isLoading={isLoading}
+        setLanguage={setLanguage}
+        language={language}
+      />
+
       <Card
         sx={{
           position: "relative",
@@ -79,7 +159,7 @@ const HumanizedContend = () => {
               },
             },
             "& .MuiInputBase-root": {
-              paddingBottom: "0px",
+              paddingY: "4px",
             },
           }}
         />
@@ -97,10 +177,57 @@ const HumanizedContend = () => {
             miniLabel={miniLabel}
             userInput={userInput}
             userPackage={user?.package}
+            setWordCount={setWordCount}
           />
         )}
       </Card>
-    </Box>
+
+      <Navigations
+        hasOutput={outputContend.length}
+        isLoading={isLoading}
+        isMobile={isMobile}
+        miniLabel={miniLabel}
+        model={model}
+        userInput={userInput}
+        wordCount={wordCount}
+        wordLimit={wordLimit}
+        handleAiDitectors={handleAiDitectors}
+        handleSubmit={handleSubmit}
+        loadingAi={loadingAi}
+        userPackage={user?.package}
+        update={update}
+      />
+
+      {scores.length ? (
+        <HumanizeScrores
+          isMobile={isMobile}
+          loadingAi={loadingAi}
+          scores={scores}
+          showIndex={showIndex}
+        />
+      ) : null}
+
+      {outputContend.length ? (
+        <OutputNavigation
+          isMobile={isMobile}
+          outputs={outputContend.length}
+          selectedContend={outputContend[showIndex]?.text}
+          setShowIndex={setShowIndex}
+          showIndex={showIndex}
+        />
+      ) : null}
+
+      {/* output  */}
+      <Card sx={{ height: 380, overflowY: "auto", padding: 2 }}>
+        {outputContend[showIndex] ? (
+          <Typography>{outputContend[showIndex].text}</Typography>
+        ) : (
+          <Typography sx={{ color: "text.disabled" }}>
+            Humanized Contend
+          </Typography>
+        )}
+      </Card>
+    </Stack>
   );
 };
 

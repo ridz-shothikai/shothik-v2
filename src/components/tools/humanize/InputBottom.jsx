@@ -9,7 +9,7 @@ const InputBottom = ({
   miniLabel,
   isLoading,
   handleClear,
-  userPackage,
+  setWordCount,
 }) => {
   const { wordLimit } = useWordLimit("bypass");
   const [userInputInfo, setUserInputInfo] = useState({
@@ -24,6 +24,7 @@ const InputBottom = ({
     const charecters = userInput.length;
     const sentences = userInput.split(/[.!?]/).filter(Boolean).length;
     setUserInputInfo({ words, charecters, sentences });
+    setWordCount(words);
   }, [userInput]);
 
   return (

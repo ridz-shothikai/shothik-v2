@@ -45,6 +45,24 @@ export const toolsApiSlice = createApi({
         };
       },
     }),
+    getUsesLimit: builder.query({
+      query: (payload) => {
+        return {
+          url: "/uses-limit",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+    humanizeContend: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/humanizerV4",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
   }),
 });
 
@@ -53,4 +71,6 @@ export const {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
   useParaphrasedMutation,
+  useGetUsesLimitQuery,
+  useHumanizeContendMutation,
 } = toolsApiSlice;
