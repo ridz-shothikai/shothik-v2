@@ -2,8 +2,10 @@
 import { UploadFileRounded } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Tooltip } from "@mui/material";
 import mammoth from "mammoth";
+import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
-import pdfToText from "./pdftotext";
+
+const pdfToText = dynamic(() => import("./pdftotext"), { ssr: false });
 
 function FileUpload({ isMobile, setInput }) {
   const [isProcessing, setIsProcessing] = useState(false);

@@ -56,16 +56,16 @@ const Translator = () => {
         throw { message: error.message, error: error.error };
       }
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
+      const stream = response.body;
+      const decoder = new TextDecoderStream();
+      const reader = stream.pipeThrough(decoder).getReader();
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const buffer = decoder.decode(value, { stream: true });
-          setOutputContend((prev) => prev + buffer);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
         }
+        setOutputContend((prev) => prev + value);
       }
     } catch (error) {
       throw error;
