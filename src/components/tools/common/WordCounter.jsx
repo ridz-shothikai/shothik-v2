@@ -25,6 +25,8 @@ const WordCounter = ({
   ExtraBtn = null,
   ExtraCounter = null,
   btnIcon = null,
+  sx = {},
+  dontDisable = false,
 }) => {
   const [wordCount, setWordCount] = useState(0);
   const isMobile = useResponsive("down", "sm");
@@ -34,6 +36,7 @@ const WordCounter = ({
     const words = userInput.trim() ? String(userInput).split(" ").length : 0;
     setWordCount(words);
   }, [userInput]);
+
   if (!userInput) return <Box sx={{ height: 48 }} />;
   return (
     <Stack
@@ -45,6 +48,7 @@ const WordCounter = ({
         flexWrap: "wrap",
         gap: 1,
         py: 1,
+        ...sx,
       }}
       bgcolor='background.paper'
     >
@@ -97,18 +101,19 @@ const WordCounter = ({
       <Stack sx={{ flexDirection: "row", gap: 2 }}>
         {wordCount > wordLimit && userPackage !== "premium" && (
           <Link href='/pricing'>
-            <Button variant='contained' size={isMobile ? "small" : "large"}>
+            <Button
+              sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
+              variant='contained'
+            >
               Upgrade
             </Button>
           </Link>
         )}
         <Button
           onClick={() => handleSubmit()}
-          color='success'
-          size={isMobile ? "small" : "large"}
           variant='contained'
           loading={isLoading}
-          disabled={wordCount > wordLimit}
+          disabled={!dontDisable ? wordCount > wordLimit : false}
           sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
           startIcon={btnIcon}
         >

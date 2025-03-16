@@ -13,7 +13,7 @@ const toolsSlice = createSlice({
       state.showAlert = action.payload;
     },
     setAlertMessage: (state, action) => {
-      state.showAlert = action.payload;
+      state.alertMessage = action.payload;
     },
   },
 });

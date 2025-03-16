@@ -5,10 +5,16 @@ import React from "react";
 import FileUpload from "./FileUpload";
 const supportedFileFormats = ["pdf", "docx"];
 
-const UserActionInput = ({ isMobile, handleSampleText, setUserInput }) => {
+const UserActionInput = ({
+  isMobile,
+  handleSampleText,
+  setUserInput,
+  extraAction,
+}) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
     setUserInput(clipboardText);
+    if (extraAction) extraAction();
   }
 
   const handleFileData = (htmlValue) => {
@@ -20,6 +26,7 @@ const UserActionInput = ({ isMobile, handleSampleText, setUserInput }) => {
       .map((line) => line.trim())
       .join("\n");
     setUserInput(removeBreakTags.trim());
+    if (extraAction) extraAction();
   };
 
   return (

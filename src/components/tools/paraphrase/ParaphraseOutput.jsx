@@ -30,6 +30,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
+import { modes } from "../../../_mock/tools/paraphrase";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
@@ -42,7 +43,6 @@ const ParaphraseOutput = ({
   input,
   setData,
   synonymLevel,
-  dataModes,
   userPackage,
   selectedLang,
   highlightSentence,
@@ -117,7 +117,6 @@ const ParaphraseOutput = ({
     let newData = [...data];
     newData[synonymsOptions.sentenceIndex] = sentenceData;
     setData(newData);
-
     setOutputHistory((prevHistory) => {
       const arr = [];
       if (!prevHistory.length) {
@@ -274,7 +273,7 @@ const ParaphraseOutput = ({
   const freezeColor = "#006ACC";
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
       {data.map((sentence, index) => (
         <Typography
           component='span'
@@ -355,7 +354,6 @@ const ParaphraseOutput = ({
         open={showRephrase}
         anchorEl={anchorEl}
         handleClose={() => setShowRephrase(false)}
-        dataModes={dataModes}
         userPackage={userPackage}
         replaceSentence={replaceSentence}
         rephraseData={rephraseData}
@@ -487,7 +485,6 @@ function RephraseSentences(props) {
     open,
     anchorEl,
     handleClose,
-    dataModes,
     userPackage,
     replaceSentence,
     setRephraseMode,
@@ -541,23 +538,35 @@ function RephraseSentences(props) {
           <Grid2 size={{ xs: 11 }}>
             <Tabs
               value={rephraseMode}
-              onChange={(e, selectedMode) => {
-                if (userPackage?.includes(selectedMode.toLocaleLowerCase())) {
-                  setRephraseMode(selectedMode);
-                }
+              onChange={(_, selectedMode) => {
+                // if (userPackage?.includes(selectedMode.toLocaleLowerCase())) {
+                // }
+                setRephraseMode(selectedMode);
               }}
               variant='scrollable'
               scrollButtons='auto'
+              textColor='primary'
+              sx={{
+                "& .MuiTabs-indicator": {
+                  display: "none",
+                },
+                "& .MuiTabs-scrollButtons": {
+                  width: "24px",
+                  height: "24px",
+                },
+                "& .MuiTabs-scrollButtons.Mui-disabled": {
+                  display: "none",
+                },
+                alignItems: "center",
+              }}
             >
-              {dataModes.map((mode, index) => {
-                const isDisabled = !userPackage?.includes(
-                  mode.name.toLocaleLowerCase()
-                );
+              {modes.map((mode, index) => {
+                const isDisabled = !mode.package.includes(userPackage);
 
                 return (
                   <Tab
                     key={index}
-                    value={mode.name}
+                    value={mode.value}
                     label={
                       isDisabled ? (
                         <HtmlTooltip
@@ -591,11 +600,11 @@ function RephraseSentences(props) {
                           }
                         >
                           <span style={{ cursor: "not-allowed" }}>
-                            {mode.name}
+                            {mode.value}
                           </span>
                         </HtmlTooltip>
                       ) : (
-                        mode.name
+                        mode.value
                       )
                     }
                     icon={
@@ -639,7 +648,7 @@ function RephraseSentences(props) {
               return (
                 <Fragment key={index}>
                   <ListItem
-                    sx={{ py: 0 }}
+                    sx={{ p: 0 }}
                     onClick={() => replaceSentence(sentence)}
                   >
                     <ListItemButton>

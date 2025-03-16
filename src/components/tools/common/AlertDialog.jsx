@@ -22,8 +22,8 @@ export default function AlertDialog() {
     <Dialog
       open={showAlert}
       onClose={() => dispatch(setAlertMessage(false))}
-      aria-labelledby='alert-dialog-title'
-      aria-describedby='alert-dialog-description'
+      fullWidth
+      maxWidth='xs'
     >
       <span
         style={{

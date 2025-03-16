@@ -3,6 +3,7 @@ import { InsertDriveFile } from "@mui/icons-material";
 import { Box, Card, Divider, Grid2 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
@@ -16,6 +17,7 @@ import WordCounter from "../common/WordCounter";
 import LanguageMenu from "../grammar/LanguageMenu";
 import ModeNavigation from "./ModeNavigation";
 import ModeNavigationForMobile from "./ModeNavigationForMobile";
+import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseEditor from "./ParaphraseEditor";
 import ParaphraseOutput from "./ParaphraseOutput";
 import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
@@ -29,15 +31,16 @@ const SYNONYMS = {
 
 const ParaphraseContend = () => {
   const [selectedSynonyms, setSelectedSynonyms] = useState(SYNONYMS[20]);
-  const { user, accessToken } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [outputHistoryIndex, setOutputHistoryIndex] = useState(0);
   const [highlightSentence, setHighlightSentence] = useState(0);
   const [selectedMode, setSelectedMode] = useState("Standard");
+  const [outputWordCount, setOutputWordCount] = useState(0);
   const [outputHistory, setOutputHistory] = useState([]);
   const [outputContend, setOutputContend] = useState("");
   const [language, setLanguage] = useState("English");
   const [updateHtml, setUpdateHtml] = useState(false);
-  const [procession, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [freezeWords, setFreezeWords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
@@ -60,14 +63,121 @@ const ParaphraseContend = () => {
     setLanguage(language);
   }, [userInput]);
 
-  function handleClear() {
-    setUserInput("");
-    setOutputContend("");
-  }
+  useEffect(() => {
+    if (!outputHistory.length) {
+      return;
+    }
+
+    const historyData = outputHistory[outputHistoryIndex];
+
+    if (historyData) {
+      setResult(historyData);
+    }
+  }, [outputHistoryIndex]);
+
+  useEffect(() => {
+    const socket = io(process.env.NEXT_PUBLIC_SOCKET, {
+      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+    });
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+      setSocketId(socket.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.warn("Socket disconnected");
+      setSocketId("");
+    });
+
+    let accumulatedText = "";
+    socket.on("paraphrase-plain", (data) => {
+      if (data === ":end:") {
+        accumulatedText = "";
+        setIsLoading(false);
+        return;
+      }
+
+      accumulatedText += data.replace(/[{}]/g, "");
+
+      const separator = language === "Bangla" ? "। " : ". ";
+      const sentences = accumulatedText.split(separator).map((sentence) => {
+        const words = sentence
+          .trim()
+          .split(/\s+/)
+          .map((word) => ({ word, type: "none", synonyms: [] }));
+
+        // Add punctuation if it’s a full sentence
+        if (sentence) {
+          words.push({
+            word: separator.trim(),
+            type: "punctuation",
+            synonyms: [],
+          });
+        }
+
+        return words;
+      });
+
+      setResult(sentences);
+      setOutputContend(accumulatedText.replace(/[()]/g, ""));
+      setOutputWordCount(accumulatedText.split(/\s+/).filter(Boolean).length);
+    });
+
+    socket.on("paraphrase-tagging", (data) => {
+      try {
+        const sentence = JSON.parse(data);
+        if (sentence.eventId === eventId) {
+          setResult((prev) => {
+            const updated = [...prev];
+            updated[sentence.index] = sentence.data;
+            return updated;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing paraphrase-tagging data:", error);
+      }
+    });
+
+    socket.on("paraphrase-synonyms", (data) => {
+      if (data === ":end:") {
+        console.log("Synonyms processing completed.");
+        setProcessing({ success: true, loading: false });
+        return;
+      }
+
+      try {
+        const sentence = JSON.parse(data);
+        if (sentence.eventId === eventId) {
+          setResult((prev) => {
+            const updated = [...prev];
+            updated[sentence.index] = sentence.data;
+            return updated;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing paraphrase-synonyms data:", error);
+      }
+    });
+  }, [language, eventId]);
+
+  const handleClear = (_, action = "all") => {
+    if (action === "all") {
+      setUserInput("");
+      setFreezeWords([]);
+    }
+    setResult([]);
+    setOutputHistory([]);
+  };
+
   function handleSampleText() {
     setUserInput(
       "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
     );
+    setUpdateHtml((prev) => !prev);
   }
 
   const handleSubmit = async (rephrase) => {
@@ -107,12 +217,11 @@ const ParaphraseContend = () => {
 
       await paraphrased(payload).unwrap();
     } catch (error) {
-      console.log(error);
       const actualError = error?.data?.error;
       setResult([]);
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(actualError)) {
         dispatch(setShowAlert(true));
-        dispatch(setAlertMessage(actualError));
+        dispatch(setAlertMessage(error?.data?.message));
       } else if (error?.error === "UNAUTHORIZED") {
         dispatch(setShowLoginModal(true));
       } else {
@@ -162,8 +271,7 @@ const ParaphraseContend = () => {
         <Grid2 container>
           <Grid2
             sx={{
-              height: 520,
-              overflowY: "auto",
+              height: 530,
               position: "relative",
               borderRight: { md: "2px solid" },
               borderRightColor: { md: "divider" },
@@ -188,6 +296,7 @@ const ParaphraseContend = () => {
                 setUserInput={setUserInput}
                 isMobile={isMobile}
                 handleSampleText={handleSampleText}
+                extraAction={() => setUpdateHtml((prev) => !prev)}
               />
             ) : null}
             <WordCounter
@@ -199,43 +308,62 @@ const ParaphraseContend = () => {
               userPackage={user?.package}
               toolName='paraphrase'
               btnIcon={isMobile ? null : <InsertDriveFile />}
+              sx={{ py: 0 }}
+              dontDisable={true}
             />
           </Grid2>
           <Grid2
             size={{ xs: 12, md: 6 }}
             sx={{
-              height: 520,
-              overflowY: "auto",
+              height: 530,
+              overflow: "hidden",
               borderTop: { xs: "2px solid", md: "none" },
               borderTopColor: { xs: "divider", md: undefined },
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <div style={{ color: "darkgray", paddingLeft: 15 }}>
               {isLoading ? (
-                <ViewInputInOutAsDemo input={input} wordLimit={wordLimit} />
+                <ViewInputInOutAsDemo input={userInput} wordLimit={wordLimit} />
               ) : !result.length ? (
                 <p>{!showMessage.show && "Paraphrased Text"}</p>
               ) : null}
             </div>
 
             {result.length ? (
-              <ParaphraseOutput
-                data={result}
-                setData={setResult}
-                synonymLevel={selectedSynonyms}
-                dataModes={modes}
-                userPackage={user?.package}
-                selectedLang={language}
-                highlightSentence={highlightSentence}
-                setOutputHistory={setOutputHistory}
-                input={userInput}
-                freezeWords={freezeWords}
-                socketId={socketId}
-                language={language}
-                setProcessing={setProcessing}
-                eventId={eventId}
-                setEventId={setEventId}
-              />
+              <>
+                <ParaphraseOutput
+                  data={result}
+                  setData={setResult}
+                  synonymLevel={selectedSynonyms}
+                  dataModes={modes}
+                  userPackage={user?.package}
+                  selectedLang={language}
+                  highlightSentence={highlightSentence}
+                  setOutputHistory={setOutputHistory}
+                  input={userInput}
+                  freezeWords={freezeWords}
+                  socketId={socketId}
+                  language={language}
+                  setProcessing={setProcessing}
+                  eventId={eventId}
+                  setEventId={setEventId}
+                />
+                <OutputBotomNavigation
+                  handleClear={handleClear}
+                  highlightSentence={highlightSentence}
+                  outputContend={outputContend}
+                  outputHistory={outputHistory}
+                  outputHistoryIndex={outputHistoryIndex}
+                  outputWordCount={outputWordCount}
+                  proccessing={processing}
+                  sentenceCount={result.length}
+                  setHighlightSentence={setHighlightSentence}
+                  setOutputHistoryIndex={setOutputHistoryIndex}
+                />
+              </>
             ) : null}
           </Grid2>
         </Grid2>

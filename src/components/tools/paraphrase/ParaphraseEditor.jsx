@@ -174,7 +174,12 @@ const ParaphraseEditor = ({
 
   return (
     <Box
-      sx={{ height: "85%", cursor: "text", position: "relative" }}
+      sx={{
+        height: "90%",
+        cursor: "text",
+        position: "relative",
+        overflowY: "auto",
+      }}
       onClick={() => nodeSelect.current?.focus()}
     >
       <div
