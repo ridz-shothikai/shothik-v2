@@ -20,6 +20,7 @@ import ModeNavigationForMobile from "./ModeNavigationForMobile";
 import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseEditor from "./ParaphraseEditor";
 import ParaphraseOutput from "./ParaphraseOutput";
+import UpdateComponent from "./UpdateComponent";
 import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
 
 const SYNONYMS = {
@@ -256,6 +257,7 @@ const ParaphraseContend = () => {
             selectedSynonyms={selectedSynonyms}
             setSelectedSynonyms={setSelectedSynonyms}
             SYNONYMS={SYNONYMS}
+            setShowMessage={setShowMessage}
           />
         ) : (
           <ModeNavigationForMobile
@@ -328,7 +330,7 @@ const ParaphraseContend = () => {
               {isLoading ? (
                 <ViewInputInOutAsDemo input={userInput} wordLimit={wordLimit} />
               ) : !result.length ? (
-                <p>{!showMessage.show && "Paraphrased Text"}</p>
+                <p>Paraphrased Text</p>
               ) : null}
             </div>
 
@@ -364,6 +366,10 @@ const ParaphraseContend = () => {
                   setOutputHistoryIndex={setOutputHistoryIndex}
                 />
               </>
+            ) : null}
+
+            {user?.package === "free" && showMessage.show ? (
+              <UpdateComponent Component={showMessage.Component} />
             ) : null}
           </Grid2>
         </Grid2>

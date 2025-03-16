@@ -21,7 +21,7 @@ export default function AlertDialog() {
   return (
     <Dialog
       open={showAlert}
-      onClose={() => dispatch(setAlertMessage(false))}
+      onClose={() => dispatch(setShowAlert(false))}
       fullWidth
       maxWidth='xs'
     >

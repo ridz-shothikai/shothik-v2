@@ -37,10 +37,11 @@ const ModeNavigationForMobile = ({
         {selectedMode || "Modes"}
       </Button>
       <Button
+        onClick={() => setShowFreezeModal(true)}
+        disabled={!userPackage || userPackage === "free"}
         sx={{ textAlign: "right" }}
-        variant='outlined'
-        onClick={(e) => setShowFreezeModal(true)}
         startIcon={<AcUnit />}
+        variant='outlined'
       >
         Freeze Words
       </Button>

@@ -10,6 +10,7 @@ const ModeNavigation = ({
   selectedSynonyms,
   setSelectedSynonyms,
   SYNONYMS,
+  setShowMessage,
 }) => {
   return (
     <Stack
@@ -21,7 +22,17 @@ const ModeNavigation = ({
     >
       <Tabs
         value={selectedMode}
-        onChange={(_, value) => setSelectedMode(value)}
+        onChange={(_, value) => {
+          const isValid = modes
+            .find((item) => item.value === value)
+            .package.includes(userPackage || "free");
+          if (isValid) {
+            setSelectedMode(value);
+            setShowMessage({ show: false, Component: null });
+          } else {
+            setShowMessage({ show: true, Component: value });
+          }
+        }}
         sx={{
           "& .MuiTabs-indicator": {
             display: "none",
@@ -43,7 +54,6 @@ const ModeNavigation = ({
           <Tab
             key={index}
             value={mode.value}
-            disabled={!mode.package.includes(userPackage || "free")}
             label={
               <Stack
                 direction='row'
