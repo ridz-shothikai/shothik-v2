@@ -20,8 +20,8 @@ export const faqData = {
             <li>Accurate AI content detection</li>
           </ul>
           <p>
-            Whether you're a student, researcher, or professional, Shothik AI
-            empowers you to create polished, engaging content efficiently.
+            Whether you&apos;re a student, researcher, or professional, Shothik
+            AI empowers you to create polished, engaging content efficiently.
           </p>
         </>
       ),
@@ -30,7 +30,7 @@ export const faqData = {
       question: "Why should I use Shothik Humanize GPT?",
       answer: (
         <>
-          <p>Here's why you should use Shothik AI for optimal results:</p>
+          <p>Here&apos;s why you should use Shothik AI for optimal results:</p>
           <ul style={{ marginLeft: "1.5em" }}>
             <li>
               Transforms AI-generated text using <strong>Panda</strong> and{" "}
@@ -61,7 +61,7 @@ export const faqData = {
         <>
           <p>
             While Shothik AI is designed to produce text that can bypass many AI
-            detection systems, it's important to note that no solution can
+            detection systems, it&apos;s important to note that no solution can
             guarantee 100% undetectability. AI detection technology is
             constantly evolving, and results may vary depending on the specific
             detector used. However, Shothik AI is built to stay ahead of the
@@ -77,7 +77,7 @@ export const faqData = {
       answer: (
         <>
           <p>
-            To make the most of Shothik's advanced AI tools, follow these
+            To make the most of Shothik&apos;s advanced AI tools, follow these
             recommendations tailored to each feature:
           </p>
 
@@ -210,10 +210,10 @@ export const faqData = {
           <p>
             Yes, we offer a discount on annual subscriptions. When you commit to
             an annual plan, we reward you with a 2-month discount. This means
-            you'll get 12 months of access to our tools and services for the
-            price of 10 months. We apply this discount automatically when you
-            sign up for an annual plan, so you can enjoy the savings without any
-            hassle.
+            you&apos;ll get 12 months of access to our tools and services for
+            the price of 10 months. We apply this discount automatically when
+            you sign up for an annual plan, so you can enjoy the savings without
+            any hassle.
           </p>
         </>
       ),
@@ -223,7 +223,7 @@ export const faqData = {
       answer: (
         <>
           <p>
-            Yes, Shothik AI's Value Plan is specifically designed to be
+            Yes, Shothik AI&apos;s Value Plan is specifically designed to be
             budget-friendly for students.
           </p>
         </>
@@ -264,12 +264,12 @@ export const faqData = {
         <>
           <p>
             Traditional paraphrasing tools restrict you with limited freeze
-            words and inflexible writing options. Shothik AI's paid plan offers
-            the solution with:
+            words and inflexible writing options. Shothik AI&apos;s paid plan
+            offers the solution with:
           </p>
           <ul style={{ marginLeft: "1.5em" }}>
             <li>
-              Unlimited <strong>Freeze words</strong>{" "}
+              Unlimited <strong>Freeze words</strong>
             </li>
             <li>
               Multiple writing <strong>modes</strong> to suit your desired tone
@@ -287,7 +287,7 @@ export const faqData = {
       question: "How does Shothik Humanize GPT work?",
       answer: (
         <>
-          <p> Shothik AI's Humanize GPT tool:</p>
+          <p> Shothik AI&apos;s Humanize GPT tool:</p>
           <ul style={{ marginLeft: "1.5em" }}>
             <li>
               Transforms AI-generated text using <strong>Panda</strong> and{" "}
@@ -313,7 +313,7 @@ export const faqData = {
       question: "How does AI Detector work?",
       answer: (
         <>
-          <p> Shothik AI's AI Detector tool:</p>
+          <p> Shothik AI&apos;s AI Detector tool:</p>
           <ul style={{ marginLeft: "1.5em" }}>
             <li>Analyzes text using advanced algorithms.</li>
             <li>Identifies patterns typical of AI-generated content.</li>
@@ -416,8 +416,8 @@ export const faqData = {
       answer: (
         <>
           <p>
-            Shothik AI's humanize tool, using our <strong>Panda</strong> and{" "}
-            <strong>Raven</strong> models, is designed to make AI text
+            Shothik AI&apos;s humanize tool, using our <strong>Panda</strong>{" "}
+            and <strong>Raven</strong> models, is designed to make AI text
             undetectable for{" "}
             <strong>students, academics, and SEO professionals</strong>, helping
             them bypass tools like Turnitin and GPTZero.
@@ -438,9 +438,9 @@ export const faqData = {
           </p>
           <p>
             <strong>No Refunds for Unmanaged Subscriptions: </strong> <br /> We
-            can't issue a refund if you forget to unsubscribe on time, as the
-            subscription is initiated, no refund will be given. It's your
-            responsibility to manage the subscription plan & update it.
+            can&apos;t issue a refund if you forget to unsubscribe on time, as
+            the subscription is initiated, no refund will be given. It&apos;s
+            your responsibility to manage the subscription plan & update it.
           </p>
           <p>
             <strong>Free Plan:</strong> <br /> Shothik AI offers a free plan
@@ -450,9 +450,9 @@ export const faqData = {
           </p>
           <p>
             <strong>Refund Requests:</strong> <br /> To request a refund, users
-            must contact Shothik AI's customer support within the specified
+            must contact Shothik AI&apos;s customer support within the specified
             timeframe. Refund requests will be evaluated on a case-by-case basis
-            and granted at Shothik AI's sole discretion.
+            and granted at Shothik AI&apos;s sole discretion.
           </p>
         </>
       ),
