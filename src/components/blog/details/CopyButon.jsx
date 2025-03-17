@@ -4,12 +4,12 @@ import { IconButton } from "@mui/material";
 import React, { useState } from "react";
 import useSnackbar from "../../../hooks/useSnackbar";
 
-const CopyButon = ({ shareUrl }) => {
+const CopyButon = ({ text }) => {
   const enqueueSnackbar = useSnackbar();
   const [showCopy, setShowCopy] = useState(true);
 
   function handleCopy() {
-    navigator.clipboard.writeText(shareUrl);
+    navigator.clipboard.writeText(text);
     enqueueSnackbar("Copied URL");
     setShowCopy(false);
     setTimeout(() => {

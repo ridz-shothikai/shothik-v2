@@ -1,11 +1,21 @@
-import { Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import React from "react";
+import ResearchContend from "../../../components/tools/research/ResearchContend";
+
+export async function generateMetadata() {
+  return {
+    title: "Research || Shothik AI",
+    description: "Research description",
+  };
+}
 
 const Research = () => {
   return (
-    <div>
-      <Typography>Research page</Typography>
-    </div>
+    <Container
+      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
+    >
+      <ResearchContend />
+    </Container>
   );
 };
 

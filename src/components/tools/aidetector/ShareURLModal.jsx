@@ -48,7 +48,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
           fullWidth
           slotProps={{
             input: {
-              endAdornment: <CopyButon shareUrl={shareUrl} />,
+              endAdornment: <CopyButon text={shareUrl} />,
             },
           }}
           sx={{

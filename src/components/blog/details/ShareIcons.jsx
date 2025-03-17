@@ -40,7 +40,7 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
       </Box>
       <Box>
         <Tooltip title='Copy URL' arrow placement='top'>
-          <CopyButon shareUrl={shareUrl} />
+          <CopyButon text={shareUrl} />
         </Tooltip>
       </Box>
     </Stack>

@@ -1,5 +1,5 @@
 import { Container } from "@mui/material";
-import React from "react";
+import React, { Suspense } from "react";
 import { aidetectorFaq } from "../../../_mock/tools/aidetectorFaq";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import AiDetector from "../../../components/tools/aidetector/AiDetector";
@@ -18,7 +18,9 @@ const Aidetector = () => {
     <Container
       sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
     >
-      <AiDetector />
+      <Suspense fallback={null}>
+        <AiDetector />
+      </Suspense>
       <ToolsSepecigFaq
         tag='All you need to know about AI Detector feature'
         data={aidetectorFaq}

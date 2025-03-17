@@ -80,6 +80,32 @@ export const toolsApiSlice = createApi({
         };
       },
     }),
+    researchTrending: builder.query({
+      query: () => {
+        return {
+          url: "/research/trending-queries",
+          method: "GET",
+        };
+      },
+    }),
+    getResearchQuestion: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/research/questions",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
+    getResearchMetaData: builder.query({
+      query: (payload) => ({
+        url: "/research/meta",
+        method: "POST",
+        body: payload,
+      }),
+      keepUnusedDataFor: 24 * 60 * 60,
+      refetchOnMountOrArgChange: false,
+    }),
   }),
 });
 
@@ -92,4 +118,7 @@ export const {
   useHumanizeContendMutation,
   useScanAidetectorMutation,
   useGetShareAidetectorContendQuery,
+  useResearchTrendingQuery,
+  useGetResearchQuestionMutation,
+  useGetResearchMetaDataQuery,
 } = toolsApiSlice;

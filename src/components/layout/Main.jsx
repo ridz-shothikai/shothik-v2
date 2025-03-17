@@ -48,7 +48,7 @@ export default function Main({ children }) {
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {children}
       </Container>
-      <FooterServerComponent />
+      {pathName !== "/research" ? <FooterServerComponent /> : null}
     </Box>
   );
 }
