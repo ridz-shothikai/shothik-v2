@@ -72,6 +72,14 @@ export const toolsApiSlice = createApi({
         };
       },
     }),
+    getShareAidetectorContend: builder.query({
+      query: (id) => {
+        return {
+          url: `/ai-detector/share/${id}`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -83,4 +91,5 @@ export const {
   useGetUsesLimitQuery,
   useHumanizeContendMutation,
   useScanAidetectorMutation,
+  useGetShareAidetectorContendQuery,
 } = toolsApiSlice;
