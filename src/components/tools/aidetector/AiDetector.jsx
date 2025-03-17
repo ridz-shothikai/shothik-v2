@@ -1,5 +1,13 @@
 "use client";
-import { Box, Card, Grid2, TextField } from "@mui/material";
+import {
+  Box,
+  Card,
+  Grid2,
+  LinearProgress,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +16,7 @@ import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useGetShareAidetectorContendQuery,
+  useGetUsesLimitQuery,
   useScanAidetectorMutation,
 } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
@@ -18,6 +27,15 @@ import WordCounter from "../common/WordCounter";
 import OutputResult, { getColorByPerplexity } from "./OutputResult";
 import SampleText from "./SampleText";
 import ShareURLModal from "./ShareURLModal";
+
+function formatNumber(number) {
+  if (!number) return 0;
+  const length = number.toString().length;
+  if (length >= 4) {
+    return number.toLocaleString("en-US");
+  }
+  return number.toString();
+}
 
 const AiDetector = () => {
   const [openSampleDrawer, setOpenSampleDrawer] = useState(false);
@@ -40,6 +58,9 @@ const AiDetector = () => {
     useGetShareAidetectorContendQuery(share_id, {
       skip: !share_id,
     });
+  const { data: userLimit, refetch } = useGetUsesLimitQuery({
+    service: "ai-detector",
+  });
 
   useEffect(() => {
     if (!shareContend) return;
@@ -83,6 +104,7 @@ const AiDetector = () => {
         ),
       });
       setEnableEdit(false);
+      refetch();
     } catch (err) {
       console.log(err);
       const error = err?.data;
@@ -110,7 +132,7 @@ const AiDetector = () => {
   if (isContendLoading) {
     return <LoadingScreen />;
   }
-  console.log({ share_id });
+
   return (
     <Box sx={{ mt: 2 }}>
       <Grid2 container spacing={2}>
@@ -193,7 +215,12 @@ const AiDetector = () => {
                 />
               </Box>
             ) : null}
+            {userLimit && !userInput ? (
+              <UsesLimit userLimit={userLimit} />
+            ) : null}
           </Card>
+
+          {userLimit && userInput ? <UsesLimit userLimit={userLimit} /> : null}
         </Grid2>
 
         <Grid2 size={{ xs: 12, md: 6 }}>
@@ -226,5 +253,32 @@ const AiDetector = () => {
     </Box>
   );
 };
+
+function UsesLimit({ userLimit }) {
+  const progressPercentage = () => {
+    if (!userLimit) return 0;
+
+    const totalWords = userLimit.totalWordLimit;
+    const remainingWords = userLimit.remainingWord;
+    const progress = (remainingWords / totalWords) * 100;
+    return progress;
+  };
+
+  return (
+    <Stack sx={{ padding: 2 }} alignItems='flex-end'>
+      <Box sx={{ width: { xs: "160px", sm: "235px" } }}>
+        <LinearProgress
+          sx={{ height: 6 }}
+          variant='determinate'
+          value={progressPercentage()}
+        />
+        <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
+          {formatNumber(userLimit?.totalWordLimit)} words /{" "}
+          {formatNumber(userLimit?.remainingWord)} words left
+        </Typography>
+      </Box>
+    </Stack>
+  );
+}
 
 export default AiDetector;
