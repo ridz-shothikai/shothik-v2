@@ -110,7 +110,7 @@ const AiDetector = () => {
   if (isContendLoading) {
     return <LoadingScreen />;
   }
-
+  console.log({ share_id });
   return (
     <Box sx={{ mt: 2 }}>
       <Grid2 container spacing={2}>
@@ -164,12 +164,17 @@ const AiDetector = () => {
             )}
 
             {!userInput ? (
-              <UserActionInput
-                setUserInput={setUserInput}
-                isMobile={isMobile}
-                disableTrySample={true}
-              />
-            ) : (
+              <>
+                {!share_id ? (
+                  <UserActionInput
+                    setUserInput={setUserInput}
+                    isMobile={isMobile}
+                    disableTrySample={true}
+                  />
+                ) : null}
+              </>
+            ) : null}
+            {userInput ? (
               <Box
                 sx={{
                   borderTop: "1px solid",
@@ -187,7 +192,7 @@ const AiDetector = () => {
                   userPackage={user?.package}
                 />
               </Box>
-            )}
+            ) : null}
           </Card>
         </Grid2>
 
