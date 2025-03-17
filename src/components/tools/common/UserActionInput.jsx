@@ -1,6 +1,6 @@
 "use client";
 import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 import FileUpload from "./FileUpload";
 const supportedFileFormats = ["pdf", "docx"];
@@ -10,6 +10,7 @@ const UserActionInput = ({
   handleSampleText,
   setUserInput,
   extraAction,
+  disableTrySample = false,
 }) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
@@ -32,73 +33,79 @@ const UserActionInput = ({
   return (
     <Box
       sx={{
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "center",
-        justifyContent: "center",
         width: "100%",
         position: "absolute",
-        bottom: { md: 50, xs: 30 },
+        bottom: { md: 80, xs: 30 },
         left: "0px",
         right: "0px",
-        gap: 2,
       }}
     >
-      <Button
-        color='warning'
-        size={isMobile ? "small" : "large"}
-        variant='soft'
-        onClick={handleSampleText}
-        startIcon={<SaveAsOutlined />}
-        sx={{
-          border: { sm: "none", xs: "2px solid" },
-          borderColor: "primary.warning",
-          borderRadius: "5px",
-          "&:hover": {
-            borderColor: "primary.dark",
-          },
-        }}
+      <Stack
+        direction='row'
+        alignItems='start'
+        justifyContent='center'
+        flexWrap='wrap'
+        rowGap={1.5}
+        columnGap={2}
+        sx={{ width: "80%", mx: "auto" }}
       >
-        {!isMobile ? "Try Sample Text" : "Try Sample"}
-      </Button>
+        {!disableTrySample ? (
+          <Button
+            color='warning'
+            size={isMobile ? "small" : "large"}
+            variant='soft'
+            onClick={handleSampleText}
+            startIcon={<SaveAsOutlined />}
+            sx={{
+              border: { sm: "none", xs: "2px solid" },
+              borderColor: "primary.warning",
+              borderRadius: "5px",
+              "&:hover": {
+                borderColor: "primary.dark",
+              },
+            }}
+          >
+            {!isMobile ? "Try Sample Text" : "Try Sample"}
+          </Button>
+        ) : null}
 
-      <Button
-        size={isMobile ? "small" : "large"}
-        variant='soft'
-        color='secondary'
-        onClick={handlePaste}
-        sx={{
-          border: { sm: "none", xs: "2px solid" },
-          borderColor: "primary.secondary",
-          borderRadius: "5px",
-          "&:hover": {
-            borderColor: "primary.dark",
-          },
-        }}
-        startIcon={<ContentPaste />}
-      >
-        {!isMobile ? "Paste Text" : "Paste"}
-      </Button>
-      <Box sx={{ width: "100%", textAlign: "center" }}>
-        <FileUpload isMobile={isMobile} setInput={handleFileData} />
-      </Box>
-      <Typography
-        variant='caption'
-        sx={{
-          width: "80%",
-          color: "text.secondary",
-          textAlign: "center",
-          mt: -1,
-        }}
-      >
-        Supported {isMobile ? "" : "file"} formats:{" "}
-        {supportedFileFormats.map((format, i) => (
-          <React.Fragment key={i}>
-            {format}
-            {supportedFileFormats.length - 1 === i ? "." : ", "}
-          </React.Fragment>
-        ))}
-      </Typography>
+        <Button
+          size={isMobile ? "small" : "large"}
+          variant='soft'
+          color='secondary'
+          onClick={handlePaste}
+          sx={{
+            border: { sm: "none", xs: "2px solid" },
+            borderColor: "primary.secondary",
+            borderRadius: "5px",
+            "&:hover": {
+              borderColor: "primary.dark",
+            },
+          }}
+          startIcon={<ContentPaste />}
+        >
+          {!isMobile ? "Paste Text" : "Paste"}
+        </Button>
+        <Box>
+          <FileUpload isMobile={isMobile} setInput={handleFileData} />
+          <Typography
+            component='p'
+            variant='caption'
+            sx={{
+              color: "text.secondary",
+              textAlign: "center",
+            }}
+          >
+            Supported {isMobile ? "" : "file"} formats:{" "}
+            {supportedFileFormats.map((format, i) => (
+              <React.Fragment key={i}>
+                {format}
+                {supportedFileFormats.length - 1 === i ? "." : ", "}
+              </React.Fragment>
+            ))}
+          </Typography>
+        </Box>
+      </Stack>
     </Box>
   );
 };

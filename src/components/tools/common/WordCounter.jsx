@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
+import SvgColor from "../../../resource/SvgColor";
 
 const WordCounter = ({
   userInput,
@@ -104,6 +105,12 @@ const WordCounter = ({
             <Button
               sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
               variant='contained'
+              startIcon={
+                <SvgColor
+                  src='/navbar/diamond.svg'
+                  sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
+                />
+              }
             >
               Upgrade
             </Button>

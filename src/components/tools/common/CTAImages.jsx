@@ -21,8 +21,9 @@ const CTAImages = ({ lightImage, darkImage, title }) => {
       <Image
         src={theme.palette.mode === "light" ? lightImage : darkImage}
         alt={title}
-        width={400}
+        width={500}
         height={400}
+        objectFit='cover'
         sx={{
           width: "100%",
           height: "auto",

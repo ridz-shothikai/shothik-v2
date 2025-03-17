@@ -19,6 +19,8 @@ export default function ToolsCTA({ toolType }) {
         width: "100%",
         boxShadow: `0px 7px 88px 19px #22C55E36 inset`,
         backgroundColor: "background.neutral",
+        paddingY: 5,
+        paddingX: 2,
       }}
     >
       <Grid2 container spacing={3} alignItems='center'>

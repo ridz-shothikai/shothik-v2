@@ -57,8 +57,8 @@ export const toolsCta = {
       </>
     ),
     image: {
-      light: "/assets/images/home/aidetector_light.png",
-      dark: "/assets/images/home/aidetector_dark.png",
+      light: "/cta/aidetector_light.png",
+      dark: "/cta/aidetector_dark.png",
     },
     buttonText: "Explore it Now",
     buttonLink: "/pricing",

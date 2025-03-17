@@ -63,6 +63,15 @@ export const toolsApiSlice = createApi({
         };
       },
     }),
+    scanAidetector: builder.mutation({
+      query: (payload) => {
+        return {
+          url: "/ai-detector",
+          method: "POST",
+          body: payload,
+        };
+      },
+    }),
   }),
 });
 
@@ -73,4 +82,5 @@ export const {
   useParaphrasedMutation,
   useGetUsesLimitQuery,
   useHumanizeContendMutation,
+  useScanAidetectorMutation,
 } = toolsApiSlice;
