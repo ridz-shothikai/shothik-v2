@@ -1,6 +1,8 @@
 import { ArrowForward } from "@mui/icons-material";
 import { Box, Button, Grid2, Stack, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import Image from "next/image";
+import Link from "next/link";
 
 const stats = [
   { value: "10+", label: "Years of Experience" },
@@ -10,7 +12,7 @@ const stats = [
 
 export const StatsSection = () => {
   return (
-    <Grid2 container mt={{ xs: "2rem", md: "4rem" }}>
+    <Grid2 container>
       <Grid2
         size={{ xs: 12, md: 6 }}
         sx={{
@@ -27,35 +29,55 @@ export const StatsSection = () => {
       >
         <Stack direction='column' justifyContent='center' gap={1}>
           <Typography
-            sx={{
-              fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-              fontStyle: "normal",
-              fontWeight: "500",
-              lineHeight: { xs: "2.5rem", md: "3.125rem" },
-            }}
+            component={motion.p}
+            initial={{ x: -20, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            variant='h3'
           >
             Powering Smarter, Safer & More Efficient Business Operations
           </Typography>
-          <Typography variant='body1'>
+          <Typography
+            component={motion.p}
+            initial={{ x: -20, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+            variant='body1'
+          >
             At Shothik.ai, we don't just offer solutions—we transform businesses
             with AI-driven efficiency, security, and innovation. Whether it's
             travel, fashion, trade, or healthcare, we ensure seamless
             automation, data-driven decision-making, and operational excellence.
           </Typography>
-          <Box>
-            <Button
-              variant='contained'
-              sx={{ backgroundColor: "primary.darker" }}
-              endIcon={<ArrowForward />}
-              size='large'
-            >
-              Services
-            </Button>
+          <Box
+            component={motion.p}
+            initial={{ x: -20, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Link href='#services'>
+              <Button
+                variant='contained'
+                sx={{ backgroundColor: "primary.darker" }}
+                endIcon={<ArrowForward />}
+                size='large'
+              >
+                Services
+              </Button>
+            </Link>
           </Box>
         </Stack>
         <Grid2 container>
           {stats.map((stat, index) => (
             <Grid2
+              component={motion.div}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
+              viewport={{ once: true }}
               size={{ xs: 4 }}
               key={stat.value}
               sx={{
@@ -83,6 +105,11 @@ export const StatsSection = () => {
         size={{ xs: 12, md: 6 }}
       >
         <Stack
+          component={motion.div}
+          initial={{ x: 20, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
           sx={{
             width: { xs: "100%", sm: "80%" },
             height: { xs: "100%", sm: "80%" },

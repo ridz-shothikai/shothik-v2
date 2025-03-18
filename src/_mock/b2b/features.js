@@ -1,62 +1,49 @@
 export const features = [
   {
-    title: "Content Solutions",
-    content:
-      "Leverage AI-powered content optimization and generation to enhance your marketing and communication strategies.",
+    title: "DocuSort",
+    content: "Streamline document management with intelligent organization.",
     readMore: "#",
+    slug: "docusort",
+    positionNumber: "01",
   },
   {
-    title: "Document Automation",
+    title: "Doclyze",
     content:
-      "Streamline your document processing with intelligent automation that saves time and reduces errors.",
+      "Extract, analyze, and utilize crucial information from technical documents, essential for engineering and complex industries.",
     readMore: "#",
+    slug: "doclyze",
+    positionNumber: "02",
   },
   {
-    title: "AI-Powered Chatbots",
+    title: "Verific",
     content:
-      "Deploy sophisticated conversational AI to provide 24/7 customer support and engagement.",
+      "Securely authenticate customer identities with our KYC solution, allowing verification through personal smartphones.",
     readMore: "#",
+    slug: "verific",
+    positionNumber: "03",
   },
   {
-    title: "Fraud Detection & Cybersecurity",
+    title: "PublEnabler",
     content:
-      "Protect your business with advanced AI systems that detect and prevent fraudulent activities.",
+      " Automate publishing workflows and editorial processes with our AI-driven solution. Effortlessly manage content creation, editing, and distribution at scale.",
     readMore: "#",
+    slug: "publenabler",
+    positionNumber: "04",
   },
   {
-    title: "Fraud Detection & Cybersecurity",
+    title: "SmartCrawl",
     content:
-      "Protect your business with advanced AI systems that detect and prevent fraudulent activities.",
+      "Extract, structure, and automate web data with our AI-powered solution. Build advanced chatbots, optimize workflows, and enhance business efficiency at scale.",
     readMore: "#",
+    slug: "smartcrawl",
+    positionNumber: "05",
   },
   {
-    title: "Custom AI Development",
+    title: "AudioPub",
     content:
-      "Get tailored AI solutions designed specifically for your unique business challenges and goals.",
+      "Convert your content into high-quality audiobooks and EPUB formats with our seamless solution. Effortlessly expand your reach across audio and digital book platforms.",
     readMore: "#",
-  },
-  {
-    title: "Predictive Analytics & Insights",
-    content:
-      "Make data-driven decisions with powerful predictive analytics and business intelligence tools.",
-    readMore: "#",
-  },
-  {
-    title: "Fraud Detection & Cybersecurity",
-    content:
-      "Protect your business with advanced AI systems that detect and prevent fraudulent activities.",
-    readMore: "#",
-  },
-  {
-    title: "Custom AI Development",
-    content:
-      "Get tailored AI solutions designed specifically for your unique business challenges and goals.",
-    readMore: "#",
-  },
-  {
-    title: "Predictive Analytics & Insights",
-    content:
-      "Make data-driven decisions with powerful predictive analytics and business intelligence tools.",
-    readMore: "#",
+    slug: "audiopub",
+    positionNumber: "06",
   },
 ];

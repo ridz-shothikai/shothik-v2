@@ -1,4 +1,5 @@
 import { Grid2, Typography } from "@mui/material";
+import * as motion from "motion/react-client";
 import Image from "next/image";
 import { whyChooseUs } from "../../_mock/b2b/whychooseusdata";
 
@@ -10,7 +11,6 @@ export const WhyChooseUsSection = () => (
       color: "common.white",
       height: { xs: "auto", md: "40rem" },
       pt: { xs: 4, md: 0 },
-      mt: 2,
     }}
   >
     <Grid2
@@ -27,9 +27,14 @@ export const WhyChooseUsSection = () => (
       }}
     >
       <Typography
+        component={motion.p}
+        initial={{ x: -20, opacity: 0 }}
+        whileInView={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
         variant='h1'
         sx={{
-          color: "#FFF",
+          color: "common.white",
           fontSize: { xs: "3rem", md: "6rem" },
           fontStyle: "normal",
           fontWeight: "600",
@@ -61,6 +66,11 @@ export const WhyChooseUsSection = () => (
       <Grid2 container sx={{ width: "100%", height: "100%" }}>
         {whyChooseUs.map((item, index) => (
           <Grid2
+            component={motion.div}
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
+            viewport={{ once: true }}
             size={{ xs: 12, md: 6 }}
             key={index}
             sx={{

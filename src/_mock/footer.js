@@ -22,7 +22,7 @@ export const LINKS = [
   },
 
   {
-    headline: "For Busines",
+    headline: "For Business",
     children: [
       { name: "Reseller Program", href: PATH_PAGE.resellerPanel },
       { name: "Affiliate Program", href: PATH_PAGE.affiliateMarketing },

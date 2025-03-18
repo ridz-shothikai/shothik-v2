@@ -1,6 +1,6 @@
 "use client";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import React, { useState } from "react";
 import Carousel from "react-slick";
@@ -10,8 +10,6 @@ import useResponsive from "../../hooks/useResponsive";
 export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const isMobile = useResponsive("down", "sm");
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
 
   const sliderSettings = {
     dots: true,
@@ -96,7 +94,7 @@ export const HeroSection = () => {
           >
             <Typography
               sx={{
-                color: isDarkMode ? "common.white" : "#fff",
+                color: "common.white",
                 fontFamily: "Public Sans",
                 fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3.875rem" },
                 fontStyle: "normal",
@@ -108,7 +106,7 @@ export const HeroSection = () => {
             </Typography>
             <Typography
               sx={{
-                color: isDarkMode ? "common.white" : "#FFF",
+                color: "common.white",
                 fontFamily: "Public Sans",
                 fontSize: { xs: "0.875rem", sm: "0.9375rem", md: "1rem" },
                 fontStyle: "normal",
@@ -140,11 +138,10 @@ export const HeroSection = () => {
                       ...(!button.primary && {
                         color: "common.white",
                         borderColor: "common.white",
+                        "&:hover": { borderColor: "primary.darker" },
                       }),
-
                       width: { xs: "8.375rem", sm: "12.625rem" },
                       padding: { xs: "0.625rem", sm: "1rem" },
-
                       color: "common.white",
                     }}
                     endIcon={button.primary ? <ArrowForwardIcon /> : null}
