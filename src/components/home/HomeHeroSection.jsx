@@ -35,7 +35,7 @@ export default function HomeHeroSection() {
           <Box
             sx={{
               position: "relative",
-              right: { xs: 0, md: -100 },
+              right: { xs: 0, md: -150 },
             }}
           >
             <Box
@@ -46,7 +46,7 @@ export default function HomeHeroSection() {
               sx={{
                 position: "absolute",
                 bottom: "-50px",
-                right: "80px",
+                right: "130px",
                 zIndex: 0,
               }}
             >
@@ -64,7 +64,7 @@ export default function HomeHeroSection() {
               style={{
                 position: "absolute",
                 bottom: "-50px",
-                right: "80px",
+                right: "130px",
                 zIndex: 0,
               }}
             >
