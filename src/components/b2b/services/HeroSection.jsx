@@ -73,9 +73,6 @@ export const HeroSection = () => {
               transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
               viewport={{ once: true }}
               size={{ xs: 12, sm: 6, md: 3 }}
-              xs={12}
-              sm={6}
-              md={3}
               key={index}
               sx={{
                 display: "flex",
