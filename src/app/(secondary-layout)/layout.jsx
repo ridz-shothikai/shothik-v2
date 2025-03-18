@@ -14,7 +14,7 @@ export default function SecondaryLayout({ children }) {
   useGetUserLimitQuery();
 
   return (
-    <>
+    <Box>
       <SecondaryHeader />
 
       <Box component='main' sx={{ minHeight: "calc(100vh - 100px)" }}>
@@ -22,6 +22,6 @@ export default function SecondaryLayout({ children }) {
       </Box>
 
       <FooterServerComponent />
-    </>
+    </Box>
   );
 }
