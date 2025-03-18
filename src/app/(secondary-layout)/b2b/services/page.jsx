@@ -1,6 +1,7 @@
-import { Container } from "@mui/material";
+import { Container, Stack } from "@mui/material";
 import { Suspense } from "react";
-import { HeroSection } from "../../../../components/b2b/services/HeroSection";
+import { BookACall } from "../../../../components/b2b/BookACall";
+import ServicesContend from "../../../../components/b2b/services/ServicesContend";
 
 export async function generateMetadata() {
   return {
@@ -12,9 +13,12 @@ export async function generateMetadata() {
 const Services = () => {
   return (
     <Container>
-      <Suspense fallback={null}>
-        <HeroSection />
-      </Suspense>
+      <Stack spacing={5}>
+        <Suspense fallback={null}>
+          <ServicesContend />
+        </Suspense>
+        <BookACall />
+      </Stack>
     </Container>
   );
 };

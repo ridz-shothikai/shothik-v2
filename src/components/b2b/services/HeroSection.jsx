@@ -1,16 +1,13 @@
 "use client";
 import { Box, Grid2, Link, Typography, useTheme } from "@mui/material";
 import * as motion from "motion/react-client";
-import { useSearchParams } from "next/navigation";
 import React from "react";
 import { headerInformation } from "../../../_mock/b2b/headerInformantion";
 import { informations } from "../../../_mock/b2b/informations";
 
-export const HeroSection = () => {
+export const HeroSection = ({ slug }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
-  const searchParams = useSearchParams();
-  const slug = searchParams.get("slug");
   const information = informations[slug];
   const headerInfo = headerInformation[slug];
 
