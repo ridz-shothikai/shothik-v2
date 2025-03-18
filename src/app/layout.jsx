@@ -5,7 +5,8 @@ import Providers from "../config/Providers";
 
 export const metadata = {
   title: "Shothik AI",
-  description: "AI Assistant",
+  description:
+    "Shothik AI: Paraphrase, humanize, detect AI & translate text to bypass Turnitin & GPTZero. Get a 100% human score & better writing for students, academics & SEOs.",
   icons: {
     icon: "/favicon.png",
   },

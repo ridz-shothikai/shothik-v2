@@ -9,9 +9,35 @@ import Testimonials from "../../components/home/Testimonials";
 import WhyShothik from "../../components/home/WhyShothik";
 
 export async function generateMetadata() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_FRONTEND_URL || "https://shothikai.com";
+
   return {
     title: "Home || Shothik AI",
-    description: "Home description",
+    description:
+      "Shothik AI: Paraphrase, humanize, detect AI & translate text to bypass Turnitin & GPTZero. Get a 100% human score & better writing for students, academics & SEOs.",
+    openGraph: {
+      title: "Shothik AI: Humanize Your AI Text & AI Detectors",
+      description:
+        "Paraphrase, humanize, detect & translate AI text with Shothik AI. Get better writing and bypass Turnitin & GPTZero. Perfect for students, academics & SEOs.",
+      images: [
+        {
+          url: `${siteUrl}/shothik_light_logo.png`,
+          width: 1200,
+          height: 630,
+          alt: "Shothik AI Logo",
+        },
+      ],
+      type: "website",
+      url: siteUrl,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Shothik AI: Humanize AI Text, Avoid Plagiarism",
+      description:
+        "Transform AI text with Shothik AI! Paraphrase, humanize, detect & translate. Perfect for students, academics, and SEOs. #AIWriting #HumanizeText",
+      images: [`${siteUrl}/shothik_light_logo.png`],
+    },
   };
 }
 
