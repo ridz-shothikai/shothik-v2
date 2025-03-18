@@ -21,7 +21,7 @@ const GrammarContend = () => {
   const enqueueSnackbar = useSnackbar();
   const isMobile = useResponsive();
   const dispatch = useDispatch();
-  console.log(errors);
+
   useEffect(() => {
     if (!userInput) return;
     const language = detectLanguage(userInput);

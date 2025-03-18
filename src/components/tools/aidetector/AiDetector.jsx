@@ -106,7 +106,6 @@ const AiDetector = () => {
       setEnableEdit(false);
       refetch();
     } catch (err) {
-      console.log(err);
       const error = err?.data;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));

@@ -81,7 +81,6 @@ const Translator = () => {
 
       await fetchWithStreaming(payload, url);
     } catch (error) {
-      console.error(error);
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));
         dispatch(setAlertMessage(error?.message));
@@ -109,7 +108,6 @@ const Translator = () => {
         variant: "success",
       });
     } catch (err) {
-      console.log(err);
       const error = err?.response?.data;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));

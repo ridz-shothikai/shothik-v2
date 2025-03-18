@@ -219,14 +219,13 @@ const ParaphraseContend = () => {
       await paraphrased(payload).unwrap();
     } catch (error) {
       const actualError = error?.data?.error;
-      setResult([]);
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(actualError)) {
         dispatch(setShowAlert(true));
         dispatch(setAlertMessage(error?.data?.message));
-      } else if (error?.error === "UNAUTHORIZED") {
+      } else if (actualError === "UNAUTHORIZED") {
         dispatch(setShowLoginModal(true));
       } else {
-        enqueueSnackbar(error?.message, { variant: "error" });
+        enqueueSnackbar(error?.data?.message, { variant: "error" });
       }
       setProcessing({ success: false, loading: false });
       setIsLoading(false);
