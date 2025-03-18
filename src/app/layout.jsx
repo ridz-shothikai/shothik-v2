@@ -3,6 +3,14 @@ import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
 
+export const metadata = {
+  title: "Shothik AI",
+  description: "AI Assistant",
+  icons: {
+    icon: "/favicon.png",
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
