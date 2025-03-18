@@ -42,7 +42,7 @@ export const humanizeFaq = [
       <>
         <p>
           While Shothik AI is designed to produce text that can bypass many AI
-          detection systems, it's important to note that no solution can
+          detection systems, it&apos;s important to note that no solution can
           guarantee<strong> 100%</strong> undetectability. AI detection
           technology is constantly evolving, and results may vary depending on
           the specific detector used. However, Shothik AI is built to stay ahead
@@ -62,7 +62,7 @@ export const humanizeFaq = [
     question: "Why should I use Shothik Humanize GPT?",
     answer: (
       <>
-        <p>Here's why you should use Shothik AI for optimal results:</p>
+        <p>Here&apos;s why you should use Shothik AI for optimal results:</p>
         <ul style={{ marginLeft: "1.5em" }}>
           <li>
             Transforms AI-generated text using <strong>Panda</strong> and{" "}
