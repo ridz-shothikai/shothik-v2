@@ -21,7 +21,7 @@ const GrammarContend = () => {
   const enqueueSnackbar = useSnackbar();
   const isMobile = useResponsive();
   const dispatch = useDispatch();
-
+  console.log(errors);
   useEffect(() => {
     if (!userInput) return;
     const language = detectLanguage(userInput);
@@ -78,6 +78,7 @@ const GrammarContend = () => {
   async function handleSubmit() {
     try {
       setIsLoading(true);
+      setOutputContend("");
 
       const payload = { data: userInput, language };
       await fetchWithStreaming(payload);

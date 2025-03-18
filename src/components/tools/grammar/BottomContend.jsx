@@ -51,7 +51,7 @@ const BottomContend = ({
       setErrorChecking(true);
       const payload = { content: userInput, language };
       const res = await spellChecker(payload).unwrap();
-      const data = res?.data?.result || [];
+      const data = res?.result || [];
       setErrors(data);
     } catch (error) {
       enqueueSnackbar(error.message || "Something went wrong", {
