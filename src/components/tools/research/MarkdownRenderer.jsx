@@ -14,9 +14,6 @@ import {
 import Marked from "marked-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import Latex from "react-latex-next";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomDark, vs } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useGetResearchMetaDataQuery } from "../../../redux/api/tools/toolsApi";
 
 const isValidUrl = (str) => {
@@ -285,34 +282,7 @@ const MarkdownRenderer = ({ content }) => {
               },
             }}
           >
-            <SyntaxHighlighter
-              language={language || "text"}
-              style={theme === "dark" ? atomDark : vs}
-              showLineNumbers
-              wrapLines
-              customStyle={{
-                margin: 0,
-                padding: "1.5rem",
-                fontSize: "0.875rem",
-                background: theme === "dark" ? "#171717" : "#ffffff",
-                lineHeight: 1.6,
-                borderBottomLeftRadius: "0.5rem",
-                borderBottomRightRadius: "0.5rem",
-              }}
-              lineNumberStyle={{
-                minWidth: "2.5em",
-                paddingRight: "1em",
-                color: theme === "dark" ? "#404040" : "#94a3b8",
-                userSelect: "none",
-              }}
-              codeTagProps={{
-                style: {
-                  color: theme === "dark" ? "#e5e5e5" : "#1e293b",
-                },
-              }}
-            >
-              {children}
-            </SyntaxHighlighter>
+            {children}
           </Box>
         </Box>
       </Box>
@@ -321,34 +291,9 @@ const MarkdownRenderer = ({ content }) => {
 
   const renderer = {
     text(text) {
-      if (!text.includes("$")) return text;
-      return (
-        <Latex
-          key={children}
-          delimiters={[
-            { left: "$$", right: "$$", display: true },
-            { left: "$", right: "$", display: false },
-          ]}
-        >
-          {text}
-        </Latex>
-      );
+      return text;
     },
     paragraph(children) {
-      if (typeof children === "string" && children.includes("$")) {
-        return (
-          <Typography key={children}>
-            <Latex
-              delimiters={[
-                { left: "$$", right: "$$", display: true },
-                { left: "$", right: "$", display: false },
-              ]}
-            >
-              {children}
-            </Latex>
-          </Typography>
-        );
-      }
       return <Typography key={children}>{children}</Typography>;
     },
     code(children, language) {
