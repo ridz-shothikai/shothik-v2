@@ -14,7 +14,7 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   function handleLanguage(e) {
-    setAnchorEl(e.target);
+    setAnchorEl(e.currentTarget);
     setShowMenu(true);
   }
 

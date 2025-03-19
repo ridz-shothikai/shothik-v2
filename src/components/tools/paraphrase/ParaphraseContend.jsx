@@ -272,12 +272,14 @@ const ParaphraseContend = () => {
         <Grid2 container>
           <Grid2
             sx={{
-              height: 530,
+              height: isMobile ? 350 : 530,
               position: "relative",
               borderRight: { md: "2px solid" },
               borderRightColor: { md: "divider" },
               padding: 2,
               paddingBottom: 0,
+              display: "flex",
+              flexDirection: "column",
             }}
             size={{ xs: 12, md: 6 }}
           >
@@ -313,64 +315,69 @@ const ParaphraseContend = () => {
               dontDisable={true}
             />
           </Grid2>
-          <Grid2
-            size={{ xs: 12, md: 6 }}
-            sx={{
-              height: 530,
-              overflow: "hidden",
-              borderTop: { xs: "2px solid", md: "none" },
-              borderTopColor: { xs: "divider", md: undefined },
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <div style={{ color: "darkgray", paddingLeft: 15 }}>
-              {isLoading ? (
-                <ViewInputInOutAsDemo input={userInput} wordLimit={wordLimit} />
-              ) : !result.length ? (
-                <p>Paraphrased Text</p>
+          {isMobile && !userInput ? null : (
+            <Grid2
+              size={{ xs: 12, md: 6 }}
+              sx={{
+                height: isMobile ? 350 : 530,
+                overflow: "hidden",
+                borderTop: { xs: "2px solid", md: "none" },
+                borderTopColor: { xs: "divider", md: undefined },
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ color: "darkgray", paddingLeft: 15 }}>
+                {isLoading ? (
+                  <ViewInputInOutAsDemo
+                    input={userInput}
+                    wordLimit={wordLimit}
+                  />
+                ) : !result.length ? (
+                  <p>Paraphrased Text</p>
+                ) : null}
+              </div>
+
+              {result.length ? (
+                <>
+                  <ParaphraseOutput
+                    data={result}
+                    setData={setResult}
+                    synonymLevel={selectedSynonyms}
+                    dataModes={modes}
+                    userPackage={user?.package}
+                    selectedLang={language}
+                    highlightSentence={highlightSentence}
+                    setOutputHistory={setOutputHistory}
+                    input={userInput}
+                    freezeWords={freezeWords}
+                    socketId={socketId}
+                    language={language}
+                    setProcessing={setProcessing}
+                    eventId={eventId}
+                    setEventId={setEventId}
+                  />
+                  <OutputBotomNavigation
+                    handleClear={handleClear}
+                    highlightSentence={highlightSentence}
+                    outputContend={outputContend}
+                    outputHistory={outputHistory}
+                    outputHistoryIndex={outputHistoryIndex}
+                    outputWordCount={outputWordCount}
+                    proccessing={processing}
+                    sentenceCount={result.length}
+                    setHighlightSentence={setHighlightSentence}
+                    setOutputHistoryIndex={setOutputHistoryIndex}
+                  />
+                </>
               ) : null}
-            </div>
 
-            {result.length ? (
-              <>
-                <ParaphraseOutput
-                  data={result}
-                  setData={setResult}
-                  synonymLevel={selectedSynonyms}
-                  dataModes={modes}
-                  userPackage={user?.package}
-                  selectedLang={language}
-                  highlightSentence={highlightSentence}
-                  setOutputHistory={setOutputHistory}
-                  input={userInput}
-                  freezeWords={freezeWords}
-                  socketId={socketId}
-                  language={language}
-                  setProcessing={setProcessing}
-                  eventId={eventId}
-                  setEventId={setEventId}
-                />
-                <OutputBotomNavigation
-                  handleClear={handleClear}
-                  highlightSentence={highlightSentence}
-                  outputContend={outputContend}
-                  outputHistory={outputHistory}
-                  outputHistoryIndex={outputHistoryIndex}
-                  outputWordCount={outputWordCount}
-                  proccessing={processing}
-                  sentenceCount={result.length}
-                  setHighlightSentence={setHighlightSentence}
-                  setOutputHistoryIndex={setOutputHistoryIndex}
-                />
-              </>
-            ) : null}
-
-            {user?.package === "free" && showMessage.show ? (
-              <UpdateComponent Component={showMessage.Component} />
-            ) : null}
-          </Grid2>
+              {user?.package === "free" && showMessage.show ? (
+                <UpdateComponent Component={showMessage.Component} />
+              ) : null}
+            </Grid2>
+          )}
         </Grid2>
       </Card>
     </Box>

@@ -175,7 +175,7 @@ const ParaphraseEditor = ({
   return (
     <Box
       sx={{
-        height: "90%",
+        flexGrow: 1,
         cursor: "text",
         position: "relative",
         overflowY: "auto",
