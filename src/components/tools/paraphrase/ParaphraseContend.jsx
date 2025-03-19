@@ -313,6 +313,7 @@ const ParaphraseContend = () => {
               btnIcon={isMobile ? null : <InsertDriveFile />}
               sx={{ py: 0 }}
               dontDisable={true}
+              sticky={320}
             />
           </Grid2>
           {isMobile && !userInput ? null : (

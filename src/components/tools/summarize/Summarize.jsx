@@ -168,43 +168,45 @@ const SummarizeContend = () => {
             />
           ) : null}
         </Grid2>
-        <Grid2
-          sx={{ height: "100%", overflowY: "auto" }}
-          size={{ xs: 12, md: 6 }}
-        >
-          <TextField
-            name='input'
-            variant='outlined'
-            minRows={isMobile ? 12 : 19}
-            maxRows={isMobile ? 12 : 19}
-            fullWidth
-            multiline
-            placeholder='Summarized text'
-            value={outputContend}
-            disabled
-            sx={{
-              flexGrow: 1,
-              color: "text.primary",
-              "& .MuiOutlinedInput-root": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "& .MuiInputBase-input.Mui-disabled": {
-                  color: "inherit",
-                  WebkitTextFillColor: "inherit",
-                  opacity: 1,
-                },
+        {!userInput && isMobile ? null : (
+          <Grid2
+            sx={{ height: "100%", overflowY: "auto" }}
+            size={{ xs: 12, md: 6 }}
+          >
+            <TextField
+              name='input'
+              variant='outlined'
+              minRows={isMobile ? 12 : 19}
+              maxRows={isMobile ? 12 : 19}
+              fullWidth
+              multiline
+              placeholder='Summarized text'
+              value={outputContend}
+              disabled
+              sx={{
+                flexGrow: 1,
                 color: "text.primary",
-              },
-            }}
-          />
-        </Grid2>
+                "& .MuiOutlinedInput-root": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    color: "inherit",
+                    WebkitTextFillColor: "inherit",
+                    opacity: 1,
+                  },
+                  color: "text.primary",
+                },
+              }}
+            />
+          </Grid2>
+        )}
       </Grid2>
       <BottomBar
         handleClear={handleClear}

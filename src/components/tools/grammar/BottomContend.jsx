@@ -77,6 +77,7 @@ const BottomContend = ({
         userPackage={userPackage}
         handleSubmit={handleSubmit}
         toolName='grammar'
+        sticky={530}
         ExtraCounter={
           userInput ? (
             <Stack direction='row' spacing={1} alignItems='center'>

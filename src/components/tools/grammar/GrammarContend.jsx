@@ -19,7 +19,7 @@ const GrammarContend = () => {
   const [userInput, setUserInput] = useState("");
   const [errors, setErrors] = useState([]);
   const enqueueSnackbar = useSnackbar();
-  const isMobile = useResponsive();
+  const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,6 +36,7 @@ const GrammarContend = () => {
   function handleClear() {
     setUserInput("");
     setOutputContend("");
+    setErrors([]);
   }
   function handleSampleText() {
     setUserInput(
@@ -104,22 +105,21 @@ const GrammarContend = () => {
         setLanguage={setLanguage}
         language={language}
       />
-      <Grid2
-        container
-        sx={{ height: "cale(100vh - 200px)", overflow: "hidden" }}
-        spacing={2}
-      >
+      <Grid2 container spacing={2}>
         <Grid2
-          sx={{ height: "100%", overflowY: "auto", position: "relative" }}
+          sx={{
+            height: { xs: 400, sm: 480 },
+            overflowY: "auto",
+            position: "relative",
+          }}
           size={{ xs: 12, md: 6 }}
         >
           <TextField
             name='input'
             variant='outlined'
-            minRows={isMobile ? 12 : 19}
-            maxRows={isMobile ? 12 : 19}
             fullWidth
             multiline
+            rows={isMobile ? 15 : 19}
             placeholder='Input your text here...'
             value={userInput}
             onChange={handleInput}
@@ -146,43 +146,44 @@ const GrammarContend = () => {
             />
           ) : null}
         </Grid2>
-        <Grid2
-          sx={{ height: "100%", overflowY: "auto" }}
-          size={{ xs: 12, md: 6 }}
-        >
-          <TextField
-            name='input'
-            variant='outlined'
-            minRows={isMobile ? 12 : 19}
-            maxRows={isMobile ? 12 : 19}
-            fullWidth
-            multiline
-            placeholder='Corrected output'
-            value={outputContend}
-            disabled
-            sx={{
-              flexGrow: 1,
-              color: "text.primary",
-              "& .MuiOutlinedInput-root": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "& .MuiInputBase-input.Mui-disabled": {
-                  color: "inherit",
-                  WebkitTextFillColor: "inherit",
-                  opacity: 1,
-                },
+        {isMobile && !userInput ? null : (
+          <Grid2
+            sx={{ height: { xs: 400, sm: 480 }, overflowY: "auto" }}
+            size={{ xs: 12, md: 6 }}
+          >
+            <TextField
+              name='input'
+              variant='outlined'
+              rows={isMobile ? 15 : 19}
+              fullWidth
+              multiline
+              placeholder='Corrected output'
+              value={outputContend}
+              disabled
+              sx={{
+                flexGrow: 1,
                 color: "text.primary",
-              },
-            }}
-          />
-        </Grid2>
+                "& .MuiOutlinedInput-root": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    color: "inherit",
+                    WebkitTextFillColor: "inherit",
+                    opacity: 1,
+                  },
+                  color: "text.primary",
+                },
+              }}
+            />
+          </Grid2>
+        )}
       </Grid2>
       <BottomContend
         handleClear={handleClear}

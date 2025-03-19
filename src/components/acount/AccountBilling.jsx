@@ -138,13 +138,13 @@ export default function AccountBilling({ user }) {
                     <Typography>
                       Payment date:{" "}
                       <Typography fontWeight={500} component='span'>
-                        {invoice.updatedAt.slice(0, 10)}
+                        {new Date(invoice._date).toLocaleDateString()}
                       </Typography>{" "}
                     </Typography>
                     <Typography>
                       Expired date:{" "}
                       <Typography fontWeight={500} component='span'>
-                        {invoice.validTil.slice(0, 10)}
+                        {new Date(invoice.validTil).toLocaleDateString()}
                       </Typography>{" "}
                     </Typography>
                   </Box>

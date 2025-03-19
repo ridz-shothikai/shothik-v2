@@ -139,20 +139,19 @@ const Translator = () => {
         setTranslateLang={setTranslateLang}
       />
 
-      <Grid2
-        container
-        sx={{ height: "cale(100vh - 200px)", overflow: "hidden" }}
-        spacing={2}
-      >
+      <Grid2 container spacing={2}>
         <Grid2
-          sx={{ height: "100%", overflowY: "auto", position: "relative" }}
+          sx={{
+            height: { xs: 400, sm: 480 },
+            overflowY: "auto",
+            position: "relative",
+          }}
           size={{ xs: 12, md: 6 }}
         >
           <TextField
             name='input'
             variant='outlined'
-            minRows={isMobile ? 12 : 19}
-            maxRows={isMobile ? 12 : 19}
+            rows={isMobile ? 15 : 19}
             fullWidth
             multiline
             placeholder={"Input your text here..."}
@@ -181,43 +180,44 @@ const Translator = () => {
             />
           ) : null}
         </Grid2>
-        <Grid2
-          sx={{ height: "100%", overflowY: "auto" }}
-          size={{ xs: 12, md: 6 }}
-        >
-          <TextField
-            name='input'
-            variant='outlined'
-            minRows={isMobile ? 12 : 19}
-            maxRows={isMobile ? 12 : 19}
-            fullWidth
-            multiline
-            placeholder={"Translated text"}
-            value={outputContend}
-            disabled
-            sx={{
-              flexGrow: 1,
-              color: "text.primary",
-              "& .MuiOutlinedInput-root": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "& .MuiInputBase-input.Mui-disabled": {
-                  color: "inherit",
-                  WebkitTextFillColor: "inherit",
-                  opacity: 1,
-                },
+        {isMobile && !userInput ? null : (
+          <Grid2
+            sx={{ height: { xs: 400, sm: 480 }, overflowY: "auto" }}
+            size={{ xs: 12, md: 6 }}
+          >
+            <TextField
+              name='input'
+              variant='outlined'
+              rows={isMobile ? 15 : 19}
+              fullWidth
+              multiline
+              placeholder={"Translated text"}
+              value={outputContend}
+              disabled
+              sx={{
+                flexGrow: 1,
                 color: "text.primary",
-              },
-            }}
-          />
-        </Grid2>
+                "& .MuiOutlinedInput-root": {
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "divider",
+                  },
+                  "& .MuiInputBase-input.Mui-disabled": {
+                    color: "inherit",
+                    WebkitTextFillColor: "inherit",
+                    opacity: 1,
+                  },
+                  color: "text.primary",
+                },
+              }}
+            />
+          </Grid2>
+        )}
       </Grid2>
 
       <BottomBar

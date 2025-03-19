@@ -10,11 +10,52 @@ import {
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
+import useStickyBottom from "../../../hooks/useStickyBottom";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
 
-const WordCounter = ({
+function WordCounter({
+  userInput,
+  isLoading,
+  toolName,
+  handleClearInput,
+  children,
+  userPackage,
+  handleSubmit,
+  btnText,
+  ExtraBtn = null,
+  ExtraCounter = null,
+  btnIcon = null,
+  sx = {},
+  dontDisable = false,
+  sticky = 635,
+}) {
+  const { ref, style } = useStickyBottom(sticky);
+
+  return (
+    <Box ref={ref} sx={style}>
+      <Contend
+        btnText={btnText}
+        handleClearInput={handleClearInput}
+        handleSubmit={handleSubmit}
+        isLoading={isLoading}
+        toolName={toolName}
+        userInput={userInput}
+        userPackage={userPackage}
+        ExtraBtn={ExtraBtn}
+        ExtraCounter={ExtraCounter}
+        btnIcon={btnIcon}
+        dontDisable={dontDisable}
+        sx={sx}
+      >
+        {children}
+      </Contend>
+    </Box>
+  );
+}
+
+const Contend = ({
   userInput,
   isLoading,
   toolName,
@@ -57,45 +98,48 @@ const WordCounter = ({
         direction='row'
         spacing={2}
         alignItems='center'
-        justifyContent={{ xs: "center", md: "space-between" }}
+        justifyContent='space-between'
         height={48}
+        sx={
+          btnText === "Fix Grammar"
+            ? { width: { xs: "100%", sm: "auto" } }
+            : undefined
+        }
       >
-        {userInput && (
-          <Stack direction='row' spacing={1} alignItems='center'>
-            <WordIcon />
-            <Typography
-              variant='subtitle2'
-              sx={{
-                color: `${wordCount > wordLimit ? "error.main" : ""}`,
-                whiteSpace: "nowrap",
-              }}
-            >
-              <b>{wordCount}</b> /{" "}
-              {wordLimit === 9999 ? (
-                <Typography component='span' sx={{ color: "primary.main" }}>
-                  Unlimited
-                </Typography>
-              ) : (
-                wordLimit
-              )}
-            </Typography>
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <WordIcon />
+          <Typography
+            variant='subtitle2'
+            sx={{
+              color: `${wordCount > wordLimit ? "error.main" : ""}`,
+              whiteSpace: "nowrap",
+            }}
+          >
+            <b>{wordCount}</b> /{" "}
+            {wordLimit === 9999 ? (
+              <Typography component='span' sx={{ color: "primary.main" }}>
+                Unlimited
+              </Typography>
+            ) : (
+              wordLimit
+            )}
+          </Typography>
 
-            <Tooltip title='Clear text' placement='top' arrow>
-              <IconButton
-                aria-label='delete'
-                size={isMobile ? "small" : "large"}
-                variant={"outlined"}
-                color='inherit'
-                disabled={isLoading}
-                onClick={handleClearInput}
-                style={{ marginLeft: "-4px" }}
-                disableRipple
-              >
-                <DeleteRounded sx={{ color: "text.secondary" }} />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        )}
+          <Tooltip title='Clear text' placement='top' arrow>
+            <IconButton
+              aria-label='delete'
+              size={isMobile ? "small" : "large"}
+              variant={"outlined"}
+              color='inherit'
+              disabled={isLoading}
+              onClick={handleClearInput}
+              style={{ marginLeft: "-4px" }}
+              disableRipple
+            >
+              <DeleteRounded sx={{ color: "text.secondary" }} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
         {ExtraCounter}
       </Stack>
 

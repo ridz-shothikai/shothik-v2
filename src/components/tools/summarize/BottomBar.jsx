@@ -42,6 +42,7 @@ const BottomBar = ({
       userPackage={userPackage}
       handleSubmit={handleSubmit}
       toolName='summarize'
+      sticky={220}
     >
       <Stack direction='row' spacing={1} alignItems='center'>
         {outputContend && (
