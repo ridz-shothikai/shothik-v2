@@ -376,69 +376,6 @@ const FormComponent = ({
     ]
   );
 
-  const handlePaste = useCallback(
-    async (e) => {
-      const items = Array.from(e.clipboardData.items);
-      const imageItems = items.filter((item) => item.type.startsWith("image/"));
-
-      if (imageItems.length === 0) return;
-
-      // Prevent default paste behavior if there are images
-      e.preventDefault();
-
-      const totalAttachments = attachments.length + imageItems.length;
-      if (totalAttachments > MAX_IMAGES) {
-        enqueueSnackbar("You can only attach up to 5 images.", {
-          variant: "error",
-        });
-        return;
-      }
-
-      // Switch to vision model if needed
-      const currentModel = models.find((m) => m.value === selectedModel);
-      if (!currentModel?.vision) {
-        const visionModel = getFirstVisionModel();
-        setSelectedModel(visionModel);
-        enqueueSnackbar(
-          `Switched to ${
-            models.find((m) => m.value === visionModel)?.label
-          } for image support`
-        );
-      }
-
-      setUploadQueue(imageItems.map((_, i) => `Pasted Image ${i + 1}`));
-
-      try {
-        const files = imageItems
-          .map((item) => item.getAsFile())
-          .filter(Boolean);
-        const uploadPromises = files.map((file) => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-
-        setAttachments((currentAttachments) => [
-          ...currentAttachments,
-          ...uploadedAttachments,
-        ]);
-        enqueueSnackbar("Image pasted successfully");
-      } catch (error) {
-        console.error("Error uploading pasted files!", error);
-        enqueueSnackbar("Failed to upload pasted image. Please try again.", {
-          variant: "error",
-        });
-      } finally {
-        setUploadQueue([]);
-      }
-    },
-    [
-      attachments.length,
-      setAttachments,
-      uploadFile,
-      selectedModel,
-      setSelectedModel,
-      getFirstVisionModel,
-    ]
-  );
-
   useEffect(() => {
     if (!isLoading && hasSubmitted && inputRef.current) {
       const focusTimeout = setTimeout(() => {
@@ -454,42 +391,22 @@ const FormComponent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, hasSubmitted]);
 
-  const onSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
+  const onSubmit = (event) => {
+    event.preventDefault();
 
-      if (input.trim() || attachments.length > 0) {
-        setHasSubmitted(true);
-        lastSubmittedQueryRef.current = input.trim();
+    if (input.trim() || attachments.length > 0) {
+      setHasSubmitted(true);
 
-        handleSubmit(event, {
-          experimental_attachments: attachments,
-        });
+      handleSubmit();
 
-        setAttachments([]);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      } else {
-        enqueueSnackbar("Please enter a search query or attach an image.");
+      setAttachments([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
-    },
-    [
-      input,
-      attachments,
-      setHasSubmitted,
-      handleSubmit,
-      setAttachments,
-      fileInputRef,
-      lastSubmittedQueryRef,
-    ]
-  );
-
-  const submitForm = useCallback(() => {
-    onSubmit({ preventDefault: () => {}, stopPropagation: () => {} });
-    resetSuggestedQuestions();
-  }, [onSubmit, resetSuggestedQuestions, inputRef]);
+    } else {
+      enqueueSnackbar("Please enter a search query or attach an image.");
+    }
+  };
 
   const triggerFileInput = useCallback(() => {
     if (attachments.length >= MAX_IMAGES) {
@@ -506,21 +423,9 @@ const FormComponent = ({
     }
   }, [attachments.length, hasSubmitted, fileInputRef]);
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      if (isLoading) {
-        enqueueSnackbar("Please wait for the response to complete!");
-      } else {
-        submitForm();
-      }
-    }
-  };
-
   const methods = useForm({
     defaultValues: { question: "" },
   });
-  const FormSubmitter = methods.handleSubmit;
 
   return (
     <Card
@@ -634,15 +539,6 @@ const FormComponent = ({
         accept='image/*'
         tabIndex={-1}
       />
-      <input
-        type='file'
-        hidden
-        ref={postSubmitFileInputRef}
-        multiple
-        onChange={handleFileChange}
-        accept='image/*'
-        tabIndex={-1}
-      />
 
       {(attachments.length > 0 || uploadQueue.length > 0) && (
         <Stack direction='row' flexWrap='wrap' gap={1}>
@@ -672,10 +568,7 @@ const FormComponent = ({
       )}
 
       <Box sx={{ position: "relative" }}>
-        <FormProvider
-          methods={methods}
-          onSubmit={FormSubmitter((data) => console.log(data))}
-        >
+        <FormProvider methods={methods}>
           <RHFTextField
             name='question'
             border={false}
@@ -687,8 +580,6 @@ const FormComponent = ({
             value={input || ""}
             onChange={handleInput}
             disabled={isLoading}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
           />
         </FormProvider>
 
@@ -750,10 +641,7 @@ const FormComponent = ({
                 color='text.secondary'
                 aria-label='Submit'
                 sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-                onClick={(event) => {
-                  event.preventDefault();
-                  submitForm();
-                }}
+                onClick={onSubmit}
                 disabled={
                   (input.length === 0 && attachments.length === 0) ||
                   uploadQueue.length > 0

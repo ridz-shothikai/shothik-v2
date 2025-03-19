@@ -101,28 +101,6 @@ const SearchLoadingState = ({ queries }) => (
       >
         <Stack
           direction='row'
-          spacing={1}
-          sx={{
-            overflowX: "auto",
-            pb: 1,
-            scrollbarWidth: "none",
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
-        >
-          {queries.map((query, i) => (
-            <Chip
-              key={i}
-              sx={{ paddingX: 0.5 }}
-              icon={<SearchIcon sx={{ mt: 0.3 }} fontSize='small' />}
-              label={query}
-              variant='outlined'
-            />
-          ))}
-        </Stack>
-        <Stack
-          direction='row'
           spacing={2}
           sx={{
             overflowX: "auto",
@@ -446,20 +424,10 @@ const ImageGrid = ({ images, showAll = false }) => {
   );
 };
 
-const MultiSearch = ({ result, args }) => {
-  if (!result) {
-    return <SearchLoadingState queries={args.queries} />;
+const MultiSearch = ({ data, isLoading }) => {
+  if (isLoading) {
+    return <SearchLoadingState />;
   }
-
-  // Collect all images from all searches
-  const allImages = result.searches.reduce((acc, search) => {
-    return [...acc, ...search.images];
-  }, []);
-
-  const totalResults = result.searches.reduce(
-    (sum, search) => sum + search.results.length,
-    0
-  );
 
   return (
     <Stack gap={1} sx={{ width: "100%" }}>
@@ -494,7 +462,7 @@ const MultiSearch = ({ result, args }) => {
             </Stack>
             <Chip
               icon={<SearchIcon fontSize='small' sx={{ color: "inherit" }} />}
-              label={`${totalResults} Results`}
+              label={`${data?.results?.length} Results`}
               sx={{
                 bgcolor: "rgba(73, 149, 87, 0.04)",
                 color: "text.secondary",
@@ -521,12 +489,12 @@ const MultiSearch = ({ result, args }) => {
               },
             }}
           >
-            {result.searches.map((search, i) => (
+            {data.queries.map((query, i) => (
               <Chip
                 key={i}
                 sx={{ paddingX: 0.5 }}
                 icon={<SearchIcon sx={{ mt: 0.3 }} fontSize='small' />}
-                label={search.query}
+                label={query}
                 variant='outlined'
               />
             ))}
@@ -544,126 +512,121 @@ const MultiSearch = ({ result, args }) => {
               "&::-webkit-scrollbar": { display: "none" },
             }}
           >
-            {result.searches.map((search) =>
-              search.results.map((result, index) => (
-                <motion.div
-                  key={`${search.query}-${index}`}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
+            {data.results.map((result, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <Card
+                  sx={{
+                    width: 300,
+                    flexShrink: 0,
+                    bgcolor: "background.paper",
+                    boxShadow: 0,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "divider",
+                    borderRadius: "10px",
+                    transition: "all 0.2s",
+                    "&:hover": { boxShadow: 3 },
+                  }}
                 >
-                  <Card
-                    sx={{
-                      width: 300,
-                      flexShrink: 0,
-                      bgcolor: "background.paper",
-                      boxShadow: 0,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                      borderColor: "divider",
-                      borderRadius: "10px",
-                      transition: "all 0.2s",
-                      "&:hover": { boxShadow: 3 },
-                    }}
-                  >
-                    <CardContent>
-                      {/* Header */}
-                      <Box display='flex' alignItems='center' gap={2.5} mb={2}>
-                        <Avatar
-                          src={`https://www.google.com/s2/favicons?sz=128&domain=${
-                            new URL(result.url).hostname
-                          }`}
-                          alt=''
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            bgcolor: "grey.200",
-                            borderRadius: 1,
-                          }}
-                          onError={(e) =>
-                            (e.currentTarget.src =
-                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='16'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E")
-                          }
-                        />
-                        <Box>
-                          <Typography
-                            sx={{
-                              display: "-webkit-box",
-                              WebkitLineClamp: 1,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                            variant='subtitle2'
-                          >
-                            {result.title}
-                          </Typography>
-                          <Link
-                            href={result.url}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            variant='caption'
-                            color='text.secondary'
-                            underline='hover'
-                            display='flex'
-                            alignItems='center'
-                            gap={0.5}
-                          >
-                            {new URL(result.url).hostname}
-                            <Launch sx={{ fontSize: 12 }} />
-                          </Link>
-                        </Box>
-                      </Box>
-
-                      {/* Content */}
-                      <Typography
-                        variant='body2'
-                        color='text.secondary'
+                  <CardContent>
+                    {/* Header */}
+                    <Box display='flex' alignItems='center' gap={2.5} mb={2}>
+                      <Avatar
+                        src={`https://www.google.com/s2/favicons?sz=128&domain=${
+                          new URL(result.url).hostname
+                        }`}
+                        alt=''
                         sx={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          mb: 2,
+                          width: 40,
+                          height: 40,
+                          bgcolor: "grey.200",
+                          borderRadius: 1,
                         }}
-                      >
-                        {result.content}
-                      </Typography>
+                        onError={(e) =>
+                          (e.currentTarget.src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='16'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E")
+                        }
+                      />
+                      <Box>
+                        <Typography
+                          sx={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 1,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                          variant='subtitle2'
+                        >
+                          {result.title}
+                        </Typography>
+                        <Link
+                          href={result.url}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          variant='caption'
+                          color='text.secondary'
+                          underline='hover'
+                          display='flex'
+                          alignItems='center'
+                          gap={0.5}
+                        >
+                          {new URL(result.url).hostname}
+                          <Launch sx={{ fontSize: 12 }} />
+                        </Link>
+                      </Box>
+                    </Box>
 
-                      {/* Published Date */}
-                      {result.published_date && (
-                        <>
-                          <Divider />
-                          <Box
-                            display='flex'
-                            alignItems='center'
-                            gap={1.5}
-                            mt={2}
-                          >
-                            <CalendarToday
-                              sx={{ fontSize: 14, color: "text.secondary" }}
-                            />
-                            <Typography
-                              variant='caption'
-                              color='text.secondary'
-                            >
-                              {new Date(
-                                result.published_date
-                              ).toLocaleDateString()}
-                            </Typography>
-                          </Box>
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))
-            )}
+                    {/* Content */}
+                    <Typography
+                      variant='body2'
+                      color='text.secondary'
+                      sx={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        mb: 2,
+                      }}
+                    >
+                      {result.content}
+                    </Typography>
+
+                    {/* Published Date */}
+                    {result.published_date && (
+                      <>
+                        <Divider />
+                        <Box
+                          display='flex'
+                          alignItems='center'
+                          gap={1.5}
+                          mt={2}
+                        >
+                          <CalendarToday
+                            sx={{ fontSize: 14, color: "text.secondary" }}
+                          />
+                          <Typography variant='caption' color='text.secondary'>
+                            {new Date(
+                              result.published_date
+                            ).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </Stack>
         </AccordionDetails>
       </MUIAccordion>
 
       {/* Images section outside accordion */}
-      {allImages.length > 0 && <ImageGrid images={allImages} />}
+      {data.images?.length > 0 && <ImageGrid images={data.images} />}
     </Stack>
   );
 };

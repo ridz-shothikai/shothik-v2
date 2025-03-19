@@ -1,25 +1,14 @@
-import { AutoAwesome, Book } from "@mui/icons-material";
+import { AutoAwesome } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import CopyButon from "../../blog/details/CopyButon";
-import Academic from "./Academic";
 import MarkdownRenderer from "./MarkdownRenderer";
 import MultiSearch from "./multi-search";
-import { SearchLoadingState } from "./SearchLoadingState";
 
-const RenderPart = ({ part, messageIndex, partIndex, parts }) => {
-  if (
-    part.type === "text" &&
-    partIndex === 0 &&
-    parts.some((p, i) => i > partIndex && p.type === "tool-invocation")
-  ) {
-    return null;
-  }
-
-  switch (part.type) {
+const RenderPart = ({ data, group, isLoading }) => {
+  switch (data.type) {
     case "text":
-      if (!part?.text?.trim()) return null;
       return (
-        <Box key={`${messageIndex}-${partIndex}-text`}>
+        <Box>
           <Box
             sx={{
               display: "flex",
@@ -35,39 +24,32 @@ const RenderPart = ({ part, messageIndex, partIndex, parts }) => {
               </Typography>
             </Box>
             <Box>
-              <CopyButon text={part.text} />
+              <CopyButon text={data.data} />
             </Box>
           </Box>
-          <MarkdownRenderer content={part.text} />
+          <MarkdownRenderer content={data.data} />
         </Box>
       );
     case "tool-invocation": {
-      const toolInvocation = part.toolInvocation;
-      const args = JSON.parse(JSON.stringify(toolInvocation.args));
-      const result =
-        "result" in toolInvocation
-          ? JSON.parse(JSON.stringify(toolInvocation.result))
-          : null;
-
-      if (toolInvocation.toolName === "web_search") {
-        return <MultiSearch result={result} args={args} />;
+      if (group === "web") {
+        return <MultiSearch data={data.data} isLoading={isLoading} />;
       }
 
-      if (toolInvocation.toolName === "academic_search") {
-        if (!result) {
-          return (
-            <SearchLoadingState
-              icon={Book}
-              text='Searching academic papers...'
-            />
-          );
-        }
+      // if (group === "academic") {
+      //   if (!result) {
+      //     return (
+      //       <SearchLoadingState
+      //         icon={Book}
+      //         text='Searching academic papers...'
+      //       />
+      //     );
+      //   }
 
-        return <Academic result={result} />;
-      }
+      //   return <Academic result={result} />;
+      // }
     }
     case "reasoning": {
-      console.log("reasoning", part);
+      console.log("reasoning", data);
       return null;
     }
     default:
