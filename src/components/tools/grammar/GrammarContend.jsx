@@ -81,7 +81,12 @@ const GrammarContend = () => {
       setIsLoading(true);
       setOutputContend("");
 
-      const payload = { data: userInput, language };
+      const payload = {
+        data: userInput,
+        language,
+        mode: "Fixed",
+        synonym: "Basic",
+      };
       await fetchWithStreaming(payload);
       setErrors([]);
     } catch (error) {
