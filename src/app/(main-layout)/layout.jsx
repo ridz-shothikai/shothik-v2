@@ -82,29 +82,31 @@ export default function MainLayout({ children }) {
       options={{ showSpinner: false }}
       shallowRouting
     >
-      <MainHeader />
-      <Box
-        sx={{
-          bgcolor: "background.neutral",
-          display: { sm: "flex" },
-          minHeight: { sm: 1 },
-          overflow: "hidden",
-        }}
-      >
-        {!isMobile && isNavMini ? (
-          <NavMini />
-        ) : (
-          <NavVertical
-            openNav={open}
-            onCloseNav={() => dispatch(setOpen(false))}
-          />
-        )}
-        <Main>
-          <VerifyEmailAlert />
-          {children}
-          <AuthSuccessPopup />
-          <AlertDialog />
-        </Main>
+      <Box>
+        <MainHeader />
+        <Box
+          sx={{
+            bgcolor: "background.neutral",
+            display: { sm: "flex" },
+            minHeight: { sm: 1 },
+            overflow: "hidden",
+          }}
+        >
+          {!isMobile && isNavMini ? (
+            <NavMini />
+          ) : (
+            <NavVertical
+              openNav={open}
+              onCloseNav={() => dispatch(setOpen(false))}
+            />
+          )}
+          <Main>
+            <VerifyEmailAlert />
+            {children}
+            <AuthSuccessPopup />
+            <AlertDialog />
+          </Main>
+        </Box>
       </Box>
     </ProgressProvider>
   );
