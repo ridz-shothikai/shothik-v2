@@ -9,15 +9,39 @@ import Testimonials from "../../components/home/Testimonials";
 import WhyShothik from "../../components/home/WhyShothik";
 
 export async function generateMetadata() {
-  const siteUrl =
-    process.env.NEXT_PUBLIC_FRONTEND_URL || "https://shothikai.com";
+  const siteUrl = "https://www.shothik.ai";
 
   return {
-    title: "Home || Shothik AI",
+    title:
+      "Shothik AI: Paraphrasing, Humanizing, AI Detector & Improve Writing",
     description:
       "Shothik AI: Paraphrase, humanize, detect AI & translate text to bypass Turnitin & GPTZero. Get a 100% human score & better writing for students, academics & SEOs.",
+    keywords: [
+      "Shothik",
+      "Shothik AI",
+      "AI writing tool",
+      "Grammar checker",
+      "Sentence rephrasing",
+      "Natural language generation",
+      "Writing assistant",
+      "Error-free writing",
+      "Content optimization",
+      "Writing enhancement",
+      "Online writing tool",
+      "AI-powered writing",
+      "Writing productivity",
+      "Writing efficiency",
+      "Writing automation",
+      "Online proofreading",
+      "Writing software",
+      "Language processing",
+      "Contextual writing",
+      "Automated writing",
+      "Writing analysis",
+    ],
     openGraph: {
-      title: "Shothik AI: Humanize Your AI Text & AI Detectors",
+      title:
+        "Shothik AI: Paraphrasing, Humanizing, AI Detector & Improve Writing",
       description:
         "Paraphrase, humanize, detect & translate AI text with Shothik AI. Get better writing and bypass Turnitin & GPTZero. Perfect for students, academics & SEOs.",
       images: [
@@ -33,9 +57,10 @@ export async function generateMetadata() {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Shothik AI: Humanize AI Text, Avoid Plagiarism",
+      title:
+        "Shothik AI: Paraphrasing, Humanizing, AI Detector & Improve Writing",
       description:
-        "Transform AI text with Shothik AI! Paraphrase, humanize, detect & translate. Perfect for students, academics, and SEOs. #AIWriting #HumanizeText",
+        "Transform AI text with Shothik AI! Paraphrase, humanize, detect & translate. Perfect for students, academics, and SEOs. #Paraphrase #HumanizeText",
       images: [`${siteUrl}/shothik_light_logo.png`],
     },
   };
