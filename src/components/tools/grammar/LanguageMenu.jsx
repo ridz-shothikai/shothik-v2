@@ -30,7 +30,12 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   }
 
   return (
-    <Stack direction='row' alignItems='center' spacing={{ xs: 2, sm: 4 }}>
+    <Stack
+      direction='row'
+      alignItems='center'
+      spacing={{ xs: 2, sm: 4 }}
+      sx={{ paddingX: 2 }}
+    >
       <Tabs
         onChange={(_, value) => setLanguage(value)}
         textColor='primary'
