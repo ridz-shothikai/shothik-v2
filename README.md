@@ -1,5 +1,5 @@
 ## Docker - Development (Watch Mode)
-#
+
 To run the Docker container in watch mode for development:
 
 1. Build the Docker image:
