@@ -26,7 +26,7 @@ export const LINKS = [
     children: [
       { name: "Reseller Program", href: PATH_PAGE.resellerPanel },
       { name: "Affiliate Program", href: PATH_PAGE.affiliateMarketing },
-      { name: "B2B Portfolios", href: "/portfolio" },
+      { name: "B2B Portfolios", href: "/b2b" },
     ],
   },
   {

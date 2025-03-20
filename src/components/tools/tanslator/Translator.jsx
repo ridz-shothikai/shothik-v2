@@ -101,6 +101,8 @@ const Translator = () => {
       const payload = {
         data: outputContend,
         language: translateLang.toLang,
+        mode: "Fixed",
+        synonym: "Basic",
       };
       await handleSubmit(payload, "/fix-grammar");
 

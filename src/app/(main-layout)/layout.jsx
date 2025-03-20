@@ -1,6 +1,7 @@
 "use client";
 import { Box } from "@mui/material";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";

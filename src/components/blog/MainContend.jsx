@@ -18,6 +18,7 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
   const debouncedValue = useDebounce(searchQuery);
   const options = { page, selectedCategory, debouncedValue };
   const { data: blogs, isLoading } = useGetBlogsQuery(options);
+  const totalPages = blogs?.totalPages || 1;
 
   return (
     <Grid2 size={{ xs: 12, md: 9 }}>
@@ -39,14 +40,16 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
       </Grid2>
 
       {/* Pagination */}
-      <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
-        <Pagination
-          count={blogs?.totalPages || 1}
-          page={page}
-          onChange={(e, value) => setPage(value)}
-          color='primary'
-        />
-      </Box>
+      {totalPages > 1 ? (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(e, value) => setPage(value)}
+            color='primary'
+          />
+        </Box>
+      ) : null}
 
       {children}
     </Grid2>
@@ -74,7 +77,7 @@ function BlogCard({ blog }) {
               fontWeight='bold'
               marginBottom={2}
             >
-              // Blog //
+              // {blog.category?.title || "Blog"} //
             </Typography>
             <Typography variant='h6' gutterBottom>
               {blog.title}
