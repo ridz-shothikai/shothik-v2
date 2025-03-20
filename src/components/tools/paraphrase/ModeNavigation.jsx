@@ -44,6 +44,9 @@ const ModeNavigation = ({
           "& .MuiTabs-scrollButtons.Mui-disabled": {
             display: "none",
           },
+          "& .MuiButtonBase-root": {
+            marginRight: { sm: "20px", md: "30px" },
+          },
           alignItems: "center",
         }}
         textColor='primary'

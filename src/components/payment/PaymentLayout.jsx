@@ -20,6 +20,7 @@ export default function PaymentLayout({
   const params = useSearchParams();
   const subscription = params.get("subscription");
   const tenure = params.get("tenure");
+  console.log({ location });
 
   const handleMonthly = (event) => {
     let { value } = event?.target;
