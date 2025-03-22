@@ -14,10 +14,9 @@ import Suggestion from "./Suggestion";
 import { SuggestionCards } from "./SuggetionCard";
 import UserMessage from "./UserMessage";
 
-const ResearchComponent = () => {
+const ResearchContend = () => {
   const [selectedModel, setSelectedModel] = useState("shothik-brain-1.0");
   const [suggestedQuestions, setSuggestedQuestions] = useState([]);
-  const [isBottomVisible, setIsBottomVisible] = useState(false);
   const { accessToken } = useSelector((state) => state.auth);
   const [getResearchQuestion] = useGetResearchQuestionMutation();
   const { data: trendingQueries } = useResearchTrendingQuery();
@@ -27,7 +26,6 @@ const ResearchComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [userInput, setUserInput] = useState("");
-  const lastSubmittedQueryRef = useRef();
   const enqueueSnackbar = useSnackbar();
   const fileInputRef = useRef(null);
   const bottomRef = useRef(null);
@@ -97,7 +95,6 @@ const ResearchComponent = () => {
         } else if (value.startsWith("inovation:")) {
           try {
             const content = JSON.parse(value.replace("inovation:", ""));
-            console.log({ content });
             const TextMessage = {
               role: "assistant",
               type: "text",
@@ -129,6 +126,7 @@ const ResearchComponent = () => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      enqueueSnackbar(error.message, { variant: "error" });
     }
   }
 
@@ -145,33 +143,11 @@ const ResearchComponent = () => {
     })();
   }, [isLoading]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (bottomRef.current) {
-        const bottomRefBottom =
-          bottomRef.current.getBoundingClientRect().bottom;
-        // console.log(bottomRefBottom);
-        setIsBottomVisible(bottomRefBottom < 800);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   if (bottomRef.current) {
-  //     bottomRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
-  //   }
-  // }, [outputContend]);
-
   const handleExampleClick = async (card) => {
     const exampleText = card.text;
-    lastSubmittedQueryRef.current = exampleText;
     setHasSubmitted(true);
     setSuggestedQuestions([]);
+    handleSubmit(exampleText);
   };
 
   const handleSuggestedQuestionClick = async (question) => {
@@ -185,7 +161,16 @@ const ResearchComponent = () => {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        width: { xs: "100%", md: "80%", lg: "60%" },
+        mx: "auto",
+        paddingTop: 2,
+        paddingBottom: 2,
+        height: "calc(100vh - 90px)",
+        overflow: "auto",
+      }}
+    >
       {!hasSubmitted ? (
         <Stack>
           <Typography
@@ -194,7 +179,7 @@ const ResearchComponent = () => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             variant='h4'
-            sx={{ textAlign: "center", mb: 2 }}
+            sx={{ textAlign: "center", mb: 2, mt: { xs: 10, sm: 15, lg: 20 } }}
           >
             What do you want to explore?
           </Typography>
@@ -247,17 +232,35 @@ const ResearchComponent = () => {
           />
         ) : null}
       </Stack>
-      <div ref={bottomRef} />
-    </>
-  );
-};
 
-function ResearchContend() {
-  return (
-    <Box sx={{ width: { xs: "100%", lg: "55%" }, mx: "auto", mt: 2 }}>
-      <ResearchComponent />
+      <Box
+        sx={{
+          position: "sticky",
+          bottom: 0,
+        }}
+      >
+        {hasSubmitted && (
+          <FormComponent
+            input={userInput}
+            setInput={setUserInput}
+            attachments={attachments}
+            setAttachments={setAttachments}
+            hasSubmitted={hasSubmitted}
+            setHasSubmitted={setHasSubmitted}
+            isLoading={isLoading}
+            handleSubmit={handleSubmit}
+            fileInputRef={fileInputRef}
+            inputRef={inputRef}
+            selectedModel={selectedModel}
+            setSelectedModel={handleModelChange}
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
+          />
+        )}
+      </Box>
+      <div ref={bottomRef} />
     </Box>
   );
-}
+};
 
 export default ResearchContend;

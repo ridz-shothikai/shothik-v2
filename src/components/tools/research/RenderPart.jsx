@@ -39,7 +39,6 @@ const RenderPart = ({ data, group }) => {
           <WebLoadingState />
         );
       } else if (group === "academic") {
-        console.log(data.content);
         return data.content && typeof data.content !== "string" ? (
           <AcademicSearch data={data.content} />
         ) : (
@@ -48,7 +47,6 @@ const RenderPart = ({ data, group }) => {
       }
     }
     case "reasoning": {
-      console.log("reasoning", data);
       return null;
     }
     default:

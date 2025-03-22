@@ -43,7 +43,7 @@ export default function Main({ children }) {
         maxWidth='xl'
         overflow='hidden'
         disableGutters
-        sx={{ minHeight: "calc(100vh - 100px)" }}
+        sx={{ minHeight: "calc(100vh - 90px)" }}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {children}
