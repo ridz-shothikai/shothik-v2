@@ -27,7 +27,7 @@ export async function generateMetadata() {
         },
       ],
       locale: "en_US",
-      type: "https://www.shothik.ai",
+      type: "website",
     },
     twitter: {
       card: "summary_large_image",
