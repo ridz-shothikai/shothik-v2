@@ -167,7 +167,7 @@ const ResearchContend = () => {
         mx: "auto",
         paddingTop: 2,
         paddingBottom: 2,
-        height: "calc(100vh - 90px)",
+        height: "calc(100vh - 70px)",
         overflow: "auto",
       }}
     >
