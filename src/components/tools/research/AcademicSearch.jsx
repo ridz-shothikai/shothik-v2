@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import * as motion from "motion/react-client";
 
-const Academic = ({ result }) => {
+const AcademicSearch = ({ data }) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
 
@@ -41,7 +41,7 @@ const Academic = ({ result }) => {
             </Typography>
             <Typography
               sx={{ color: "text.secondary", fontSize: 15 }}
-            >{`Found ${result.results.length} papers`}</Typography>
+            >{`Found ${data?.length} papers`}</Typography>
           </Box>
         </Stack>
         <Stack
@@ -55,7 +55,7 @@ const Academic = ({ result }) => {
             "&::-webkit-scrollbar": { display: "none" },
           }}
         >
-          {result.results.map((paper, index) => (
+          {data?.map((paper, index) => (
             <motion.div
               key={paper.url || index}
               initial={{ opacity: 0, x: 20 }}
@@ -183,4 +183,4 @@ const Academic = ({ result }) => {
   );
 };
 
-export default Academic;
+export default AcademicSearch;

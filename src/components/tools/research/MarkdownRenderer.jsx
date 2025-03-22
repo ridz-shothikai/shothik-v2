@@ -294,11 +294,11 @@ const MarkdownRenderer = ({ content }) => {
       return text;
     },
     paragraph(children) {
-      return <Typography key={children}>{children}</Typography>;
+      return <Typography key={this.elementId}>{children}</Typography>;
     },
     code(children, language) {
       return (
-        <CodeBlock key={children} language={language}>
+        <CodeBlock key={this.elementId} language={language}>
           {String(children)}
         </CodeBlock>
       );
@@ -306,16 +306,16 @@ const MarkdownRenderer = ({ content }) => {
     link(href) {
       if (!isValidUrl(href)) return null;
       linkItem += 1;
-      console.log({ linkItem });
+      // console.log({ linkItem });
       return (
-        <Typography key={linkItem} component='sup'>
+        <Typography key={this.elementId} component='sup'>
           <RenderHoverCard href={href} text={linkItem} isCitation={true} />
         </Typography>
       );
     },
     heading(children) {
       return (
-        <Typography key={children} variant='h4' sx={{ my: 2 }}>
+        <Typography key={this.elementId} variant='h4' sx={{ my: 2 }}>
           {children}
         </Typography>
       );
@@ -323,13 +323,13 @@ const MarkdownRenderer = ({ content }) => {
     list(children, ordered) {
       return (
         <List
-          key={children}
+          key={this.elementId}
           component={ordered ? "ol" : "ul"}
           sx={{
             listStyleType: ordered ? "decimal" : "disc",
             pl: 4,
             color: "text.primary",
-            "& li": { display: "list-item" }, // Ensures proper list styling
+            "& li": { display: "list-item" },
           }}
         >
           {children}
@@ -339,7 +339,7 @@ const MarkdownRenderer = ({ content }) => {
     listItem(children) {
       return (
         <ListItem
-          key={children}
+          key={this.elementId}
           sx={{
             color: "text.primary",
             display: "list-item",
@@ -353,7 +353,7 @@ const MarkdownRenderer = ({ content }) => {
     blockquote(children) {
       return (
         <Box
-          key={children}
+          key={this.elementId}
           component='blockquote'
           sx={{
             borderLeft: 4,

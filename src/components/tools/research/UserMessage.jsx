@@ -30,27 +30,4 @@ const UserMessage = ({ message }) => {
   );
 };
 
-{
-  /* <Stack gap={1}>
-              {message.experimental_attachments?.map(
-                (attachment, attachmentIndex) => (
-                  <Box sx={{ mt: 1 }} key={attachmentIndex}>
-                    {attachment.contentType.startsWith("image/") && (
-                      <Avatar
-                        src={attachment.url}
-                        alt={`Attachment ${attachmentIndex + 1}`}
-                        sx={{
-                          width: 150,
-                          height: 100,
-                          borderRadius: 2,
-                          objectFit: "fill",
-                        }}
-                      />
-                    )}
-                  </Box>
-                )
-              )}
-            </Stack> */
-}
-
 export default UserMessage;

@@ -1,52 +1,51 @@
 import { AutoAwesome } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import CopyButon from "../../blog/details/CopyButon";
+import { AcademicLoadingState } from "./AcademicLoadingState";
+import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
-import MultiSearch from "./multi-search";
+import WebLoadingState from "./WebLoading";
+import WebSearch from "./WebSearch";
 
-const RenderPart = ({ data, group, isLoading }) => {
+const RenderPart = ({ data, group }) => {
   switch (data.type) {
     case "text":
       return (
         <Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mt: 2,
-              mb: 1,
-            }}
+          <Stack
+            flexDirection='row'
+            justifyContent='space-between'
+            mt={2}
+            mb={1}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Stack flexDirection='row' alignItems='center' gap={1}>
               <AutoAwesome sx={{ fontSize: 28, color: "primary.main" }} />
               <Typography variant='body1' fontWeight={600} color='text.primary'>
                 Answer
               </Typography>
-            </Box>
+            </Stack>
             <Box>
-              <CopyButon text={data.data} />
+              <CopyButon text={data.content} />
             </Box>
-          </Box>
-          <MarkdownRenderer content={data.data} />
+          </Stack>
+          <MarkdownRenderer content={data.content} />
         </Box>
       );
     case "tool-invocation": {
       if (group === "web") {
-        return <MultiSearch data={data.data} isLoading={isLoading} />;
+        return data.content && typeof data.content !== "string" ? (
+          <WebSearch data={data.content} />
+        ) : (
+          <WebLoadingState />
+        );
+      } else if (group === "academic") {
+        console.log(data.content);
+        return data.content && typeof data.content !== "string" ? (
+          <AcademicSearch data={data.content} />
+        ) : (
+          <AcademicLoadingState />
+        );
       }
-
-      // if (group === "academic") {
-      //   if (!result) {
-      //     return (
-      //       <SearchLoadingState
-      //         icon={Book}
-      //         text='Searching academic papers...'
-      //       />
-      //     );
-      //   }
-
-      //   return <Academic result={result} />;
-      // }
     }
     case "reasoning": {
       console.log("reasoning", data);

@@ -1,29 +1,22 @@
 import styled from "@emotion/styled";
-import {
-  ArrowUpward,
-  Attachment,
-  CloudUpload,
-  Stop,
-} from "@mui/icons-material";
+import { ArrowUpward, Attachment, CloudUpload } from "@mui/icons-material";
 import {
   Box,
   Card,
   IconButton,
   Paper,
   Stack,
+  TextField,
   Tooltip,
   tooltipClasses,
   Typography,
   useTheme,
 } from "@mui/material";
 import * as motion from "motion/react-client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useRef, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { useUploadImageMutation } from "../../../redux/api/auth/authApi";
-import FormProvider from "../../../resource/FormProvider";
-import RHFTextField from "../../../resource/RHFTextField";
 import AttachmentPreview from "./AttachmentPreview";
 import ModelSwitcher from "./ModelSwitcher";
 import { searchGroups } from "./utils";
@@ -195,11 +188,8 @@ const FormComponent = ({
   handleSubmit,
   fileInputRef,
   inputRef,
-  stop,
   selectedModel,
   setSelectedModel,
-  resetSuggestedQuestions,
-  lastSubmittedQueryRef,
   selectedGroup,
   setSelectedGroup,
 }) => {
@@ -208,22 +198,15 @@ const FormComponent = ({
   const postSubmitFileInputRef = useRef(null);
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
-  const isMounted = useRef(true);
   const enqueueSnackbar = useSnackbar();
   const [uploadImage] = useUploadImageMutation();
-
-  const handleInput = (event) => {
-    event.preventDefault();
-    setInput(event.target.value);
-  };
 
   const handleGroupSelect = useCallback(
     (group) => {
       setSelectedGroup(group.id);
-      resetSuggestedQuestions();
       inputRef.current?.focus();
     },
-    [setSelectedGroup, resetSuggestedQuestions, inputRef]
+    [setSelectedGroup, inputRef]
   );
 
   const uploadFile = async (file) => {
@@ -376,21 +359,6 @@ const FormComponent = ({
     ]
   );
 
-  useEffect(() => {
-    if (!isLoading && hasSubmitted && inputRef.current) {
-      const focusTimeout = setTimeout(() => {
-        if (isMounted.current && inputRef.current) {
-          inputRef.current.focus({
-            preventScroll: true,
-          });
-        }
-      }, 300);
-
-      return () => clearTimeout(focusTimeout);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading, hasSubmitted]);
-
   const onSubmit = (event) => {
     event.preventDefault();
 
@@ -422,10 +390,6 @@ const FormComponent = ({
       fileInputRef.current?.click();
     }
   }, [attachments.length, hasSubmitted, fileInputRef]);
-
-  const methods = useForm({
-    defaultValues: { question: "" },
-  });
 
   return (
     <Card
@@ -568,20 +532,19 @@ const FormComponent = ({
       )}
 
       <Box sx={{ position: "relative" }}>
-        <FormProvider methods={methods}>
-          <RHFTextField
-            name='question'
-            border={false}
-            type='text'
-            ref={inputRef}
-            placeholder={
-              hasSubmitted ? "Ask a new question..." : "Ask a question..."
-            }
-            value={input || ""}
-            onChange={handleInput}
-            disabled={isLoading}
-          />
-        </FormProvider>
+        <TextField
+          name='question'
+          type='text'
+          ref={inputRef}
+          placeholder={
+            hasSubmitted ? "Ask a new question..." : "Ask a question..."
+          }
+          fullWidth
+          sx={{ "& .MuiOutlinedInput-notchedOutline": { border: "none" } }}
+          value={input || ""}
+          onChange={(e) => setInput(e.target.value)}
+          disabled={isLoading}
+        />
 
         <Stack
           flexDirection='row'
@@ -623,33 +586,15 @@ const FormComponent = ({
               />
             </IconButton>
 
-            {isLoading ? (
-              <IconButton
-                color='text.secondary'
-                aria-label='Stop'
-                sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-                onClick={(event) => {
-                  event.preventDefault();
-                  stop();
-                }}
-                disabled={!isLoading}
-              >
-                <Stop fontSize='small' />
-              </IconButton>
-            ) : (
-              <IconButton
-                color='text.secondary'
-                aria-label='Submit'
-                sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-                onClick={onSubmit}
-                disabled={
-                  (input.length === 0 && attachments.length === 0) ||
-                  uploadQueue.length > 0
-                }
-              >
-                <ArrowUpward fontSize='small' />
-              </IconButton>
-            )}
+            <IconButton
+              color='text.secondary'
+              aria-label='Submit'
+              sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
+              onClick={onSubmit}
+              disabled={!input || isLoading}
+            >
+              <ArrowUpward fontSize='small' />
+            </IconButton>
           </Stack>
         </Stack>
       </Box>
