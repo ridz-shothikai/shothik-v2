@@ -118,7 +118,7 @@ export default function PricingPlanCard({
                     ? "₹"
                     : "$"}
                 </Typography>
-                {/dev|test/.test(modeResult?.appMode)
+                {/dev|test/.test(modeResult?.data?.appMode)
                   ? modePrice
                   : yearly
                   ? priceYearly

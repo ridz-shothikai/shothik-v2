@@ -1,7 +1,9 @@
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
+import { trackEvent } from "../../analysers/eventTracker";
 import { PAYMENT } from "../../config/config/route";
+import { setShowLoginModal } from "../../redux/slice/auth";
 
 export default function PricingButton({
   user,
@@ -18,7 +20,7 @@ export default function PricingButton({
 
   //track event
   const handleTrigger = () => {
-    // trackEvent("click", "payment", subscription, 1);
+    trackEvent("click", "payment", subscription, 1);
   };
   return (
     <Box>

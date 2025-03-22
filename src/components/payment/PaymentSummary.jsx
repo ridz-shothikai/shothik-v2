@@ -5,6 +5,7 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { trackEvent } from "../../analysers/eventTracker";
 import {
   useGetAppModeQuery,
   useGetTransactionQuery,
@@ -207,7 +208,7 @@ export default function PaymentSummary({
         sx={{ mt: 5, mb: 3 }}
         onClick={(e) => {
           onSubmit(e);
-          // trackEvent("click", "payment", `${type}-checkout`, billtopaid);
+          trackEvent("click", "payment", `${type}-checkout`, billtopaid);
         }}
         disabled={isSubmitting || billtopaid < 0}
       >

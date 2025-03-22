@@ -3,6 +3,7 @@
 import { Card, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
@@ -67,6 +68,9 @@ const HumanizedContend = () => {
 
   const handleSubmit = async () => {
     try {
+      //track event
+      trackEvent("click", "humanize", "humanize_click", 1);
+
       setLoadingAi(true);
       setIsLoading(true);
       setOutputContend([]);

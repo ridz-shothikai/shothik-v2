@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { aiDetectorSampleText } from "../../../_mock/tools/sampleText";
+import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
@@ -89,6 +90,9 @@ const AiDetector = () => {
         setEnableEdit(true);
         return;
       }
+
+      //track event
+      trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
       const res = await scanAidetector({ text: userInput }).unwrap();

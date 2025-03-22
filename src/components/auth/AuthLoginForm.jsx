@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
+import { trackEvent } from "../../analysers/eventTracker";
 import { useLoginMutation } from "../../redux/api/auth/authApi";
 import {
   setShowForgotPasswordModal,
@@ -50,7 +51,8 @@ export default function AuthLoginForm({ loading, setLoading }) {
 
   const onSubmit = async (data) => {
     try {
-      // trackEvent("click", "auth", "login-button", 1);
+      trackEvent("click", "auth", "login-button", 1);
+
       let payload = {
         email: data.email,
         auth_type: "manual",

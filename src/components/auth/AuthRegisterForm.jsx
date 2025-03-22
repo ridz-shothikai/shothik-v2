@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
+import { trackEvent } from "../../analysers/eventTracker";
 import { useRegisterMutation } from "../../redux/api/auth/authApi";
 import {
   setIsNewRegistered,
@@ -98,7 +99,7 @@ export default function AuthRegisterForm({ country, loading }) {
 
   const onSubmit = async (data) => {
     try {
-      // trackEvent("click", "auth", "sign-up-button", 1);
+      trackEvent("click", "auth", "sign-up-button", 1);
 
       let payload = {
         name: `${data.firstName} ${data.lastName}`,

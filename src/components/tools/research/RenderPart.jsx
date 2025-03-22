@@ -1,73 +1,52 @@
-import { AutoAwesome, Book } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { AutoAwesome } from "@mui/icons-material";
+import { Box, Stack, Typography } from "@mui/material";
 import CopyButon from "../../blog/details/CopyButon";
-import Academic from "./Academic";
+import { AcademicLoadingState } from "./AcademicLoadingState";
+import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
-import MultiSearch from "./multi-search";
-import { SearchLoadingState } from "./SearchLoadingState";
+import WebLoadingState from "./WebLoading";
+import WebSearch from "./WebSearch";
 
-const RenderPart = ({ part, messageIndex, partIndex, parts }) => {
-  if (
-    part.type === "text" &&
-    partIndex === 0 &&
-    parts.some((p, i) => i > partIndex && p.type === "tool-invocation")
-  ) {
-    return null;
-  }
-
-  switch (part.type) {
+const RenderPart = ({ data, group }) => {
+  switch (data.type) {
     case "text":
-      if (!part?.text?.trim()) return null;
       return (
-        <Box key={`${messageIndex}-${partIndex}-text`}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              mt: 2,
-              mb: 1,
-            }}
+        <Box>
+          <Stack
+            flexDirection='row'
+            justifyContent='space-between'
+            mt={2}
+            mb={1}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Stack flexDirection='row' alignItems='center' gap={1}>
               <AutoAwesome sx={{ fontSize: 28, color: "primary.main" }} />
               <Typography variant='body1' fontWeight={600} color='text.primary'>
                 Answer
               </Typography>
-            </Box>
+            </Stack>
             <Box>
-              <CopyButon text={part.text} />
+              <CopyButon text={data.content} />
             </Box>
-          </Box>
-          <MarkdownRenderer content={part.text} />
+          </Stack>
+          <MarkdownRenderer content={data.content} />
         </Box>
       );
     case "tool-invocation": {
-      const toolInvocation = part.toolInvocation;
-      const args = JSON.parse(JSON.stringify(toolInvocation.args));
-      const result =
-        "result" in toolInvocation
-          ? JSON.parse(JSON.stringify(toolInvocation.result))
-          : null;
-
-      if (toolInvocation.toolName === "web_search") {
-        return <MultiSearch result={result} args={args} />;
-      }
-
-      if (toolInvocation.toolName === "academic_search") {
-        if (!result) {
-          return (
-            <SearchLoadingState
-              icon={Book}
-              text='Searching academic papers...'
-            />
-          );
-        }
-
-        return <Academic result={result} />;
+      if (group === "web") {
+        return data.content && typeof data.content !== "string" ? (
+          <WebSearch data={data.content} />
+        ) : (
+          <WebLoadingState />
+        );
+      } else if (group === "academic") {
+        return data.content && typeof data.content !== "string" ? (
+          <AcademicSearch data={data.content} />
+        ) : (
+          <AcademicLoadingState />
+        );
       }
     }
     case "reasoning": {
-      console.log("reasoning", part);
       return null;
     }
     default:

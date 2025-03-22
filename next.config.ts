@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "google.com",
+        hostname: "www.google.com",
       },
       {
         protocol: "https",
