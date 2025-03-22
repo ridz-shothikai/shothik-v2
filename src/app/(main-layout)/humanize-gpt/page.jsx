@@ -8,8 +8,28 @@ import HumanizedContend from "../../../components/tools/humanize/HumanizedConten
 
 export async function generateMetadata() {
   return {
-    title: "Humanize || Shothik AI",
-    description: "Humanize description",
+    title: "Shothik AI: Humanize AI Text & Bypass Detection - 100% Human Score",
+    description:
+      "Transform AI text with Shothik AI's Humanize GPT. Get a 100% human score, bypass detection, & create engaging content that sounds human. Try it for free!",
+    openGraph: {
+      title:
+        "Shothik AI: Humanize AI Text & Bypass Detection - 100% Human Score",
+      description:
+        "Transform AI text with Shothik AI's Humanize GPT. Get a 100% human score, bypass detection, & create engaging content that sounds human. Try it for free!",
+      image: "https://www.shothik.ai/shothik_light_logo.png",
+      url: "https://www.shothik.ai/shothik_light_logo.png",
+      type: "website",
+      imageWidth: "1200",
+      imageHeight: "630",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Shothik AI: Humanize AI Text, Avoid Plagiarism",
+      description:
+        "Transform AI text with Shothik AI! Get a 100% human score, bypass detection, & improve your writing. #AIWriting #HumanizeText",
+      image: "URL of your social sharing image",
+      site: "@your_twitter_handle",
+    },
   };
 }
 

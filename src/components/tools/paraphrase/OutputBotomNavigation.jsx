@@ -3,15 +3,16 @@ import {
   ChevronRight,
   ContentCopy,
   DeleteRounded,
-  Download,
   GppMaybe,
   History,
   KeyboardArrowDown,
   KeyboardArrowUp,
+  VerticalAlignBottom,
 } from "@mui/icons-material";
 import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import Image from "next/image";
 import React from "react";
+import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import WordIcon from "../../../resource/assets/WordIcon";
 import { downloadFile } from "../common/downloadfile";
@@ -29,6 +30,7 @@ const OutputBotomNavigation = ({
   outputContend,
 }) => {
   const enqueueSnackbar = useSnackbar();
+  const isMobile = useResponsive("down", "sm");
 
   const handleDownload = () => {
     downloadFile(outputContend, "paraphrase");
@@ -113,54 +115,56 @@ const OutputBotomNavigation = ({
             <GppMaybe sx={{ color: "#991006", fontSize: "16px" }} />
           ) : null}
         </Box>
-        <Stack direction='row' spacing={0.5} alignItems='center'>
-          <Tooltip title='Previous history' arrow placement='top'>
+        {!isMobile && (
+          <Stack direction='row' spacing={0.5} alignItems='center'>
+            <Tooltip title='Previous history' arrow placement='top'>
+              <IconButton
+                size='small'
+                onClick={() => setOutputHistoryIndex((prev) => prev + 1)}
+                disabled={
+                  !outputHistory.length ||
+                  outputHistoryIndex === outputHistory.length - 1
+                }
+                color='primary'
+                aria-label='delete'
+                sx={{
+                  bgcolor: "rgba(73, 149, 87, 0.04)",
+                  borderRadius: "5px",
+                }}
+              >
+                <ChevronLeft />
+              </IconButton>
+            </Tooltip>
+
             <IconButton
+              color='text.secondary'
+              aria-label='History'
               size='small'
-              onClick={() => setOutputHistoryIndex((prev) => prev + 1)}
-              disabled={
-                !outputHistory.length ||
-                outputHistoryIndex === outputHistory.length - 1
-              }
-              color='primary'
-              aria-label='delete'
               sx={{
                 bgcolor: "rgba(73, 149, 87, 0.04)",
                 borderRadius: "5px",
               }}
             >
-              <ChevronLeft />
+              <History />
             </IconButton>
-          </Tooltip>
 
-          <IconButton
-            color='text.secondary'
-            aria-label='History'
-            size='small'
-            sx={{
-              bgcolor: "rgba(73, 149, 87, 0.04)",
-              borderRadius: "5px",
-            }}
-          >
-            <History />
-          </IconButton>
-
-          <Tooltip title='Next history' arrow placement='top'>
-            <IconButton
-              onClick={() => setOutputHistoryIndex((prev) => prev - 1)}
-              disabled={outputHistoryIndex === 0}
-              sx={{
-                bgcolor: "rgba(73, 149, 87, 0.04)",
-                borderRadius: "5px",
-                mr: 0.5,
-              }}
-              aria-label='delete'
-              color='primary'
-            >
-              <ChevronRight />
-            </IconButton>
-          </Tooltip>
-        </Stack>
+            <Tooltip title='Next history' arrow placement='top'>
+              <IconButton
+                onClick={() => setOutputHistoryIndex((prev) => prev - 1)}
+                disabled={outputHistoryIndex === 0}
+                sx={{
+                  bgcolor: "rgba(73, 149, 87, 0.04)",
+                  borderRadius: "5px",
+                  mr: 0.5,
+                }}
+                aria-label='delete'
+                color='primary'
+              >
+                <ChevronRight />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        )}
 
         <Tooltip title='Clear result' placement='top' arrow>
           <IconButton
@@ -195,7 +199,7 @@ const OutputBotomNavigation = ({
             aria-label='download'
             size='large'
           >
-            <Download />
+            <VerticalAlignBottom sx={{ fontWeight: 600 }} />
           </IconButton>
         </Tooltip>
 

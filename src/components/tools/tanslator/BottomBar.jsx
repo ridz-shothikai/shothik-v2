@@ -38,12 +38,11 @@ const BottomBar = ({
       handleClearInput={handleClear}
       handleSubmit={handleSubmit}
       btnText={outputContend ? "Regenerate" : "Translate"}
+      sticky={320}
       ExtraBtn={
         outputContend ? (
           <Button
             onClick={handleHumanize}
-            color='success'
-            size={isMobile ? "small" : "large"}
             variant='contained'
             disabled={isLoading}
             loading={isHumanizing}

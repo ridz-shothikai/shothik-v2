@@ -34,7 +34,7 @@ const NewsLetter = () => {
     }
   }
   return (
-    <Box onSubmit={handlenewLatter} component='form' sx={{ mt: 6 }}>
+    <Box onSubmit={handlenewLatter} component='form' sx={{ mt: 10 }}>
       <Typography variant='h6' gutterBottom>
         Get our newsletter
       </Typography>

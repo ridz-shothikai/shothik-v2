@@ -57,11 +57,11 @@ const InputBottom = ({
         </Typography>
         <Typography color='gray'>|</Typography>
         <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
-          {userInputInfo.charecters} Characters
+          {userInputInfo.charecters} {isMobile ? "Char" : "Characters"}
         </Typography>
         <Typography color='gray'>|</Typography>
         <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
-          {userInputInfo.sentences} Sentences
+          {userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}
         </Typography>
       </Box>
       <IconButton

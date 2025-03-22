@@ -1,6 +1,6 @@
 "use client";
 import { Box, Tab, Tabs } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useResponsive from "../../hooks/useResponsive";
 import SvgColor from "../../resource/SvgColor";
 
@@ -50,7 +50,8 @@ const links = [
 ];
 
 const MobileNavigation = () => {
-  const { pathname, push } = useRouter();
+  const { push } = useRouter();
+  const pathname = usePathname();
   const isMobile = useResponsive("down", "sm");
 
   if (!isMobile) return null;

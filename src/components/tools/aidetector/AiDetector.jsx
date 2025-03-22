@@ -139,7 +139,7 @@ const AiDetector = () => {
           <Card
             sx={{
               position: "relative",
-              height: 600,
+              height: isMobile ? 400 : 600,
               display: "flex",
               flexDirection: "column",
             }}
@@ -148,7 +148,7 @@ const AiDetector = () => {
               <TextField
                 name='input'
                 variant='outlined'
-                rows={18}
+                rows={isMobile ? 13 : 18}
                 fullWidth
                 multiline
                 placeholder='Enter your text here...'
@@ -214,6 +214,7 @@ const AiDetector = () => {
                 />
               </Box>
             ) : null}
+
             {userLimit && !userInput ? (
               <UsesLimit userLimit={userLimit} />
             ) : null}
@@ -265,7 +266,7 @@ function UsesLimit({ userLimit }) {
 
   return (
     <Stack sx={{ padding: 2 }} alignItems='flex-end'>
-      <Box sx={{ width: { xs: "160px", sm: "235px" } }}>
+      <Box sx={{ width: { xs: 220, sm: 250 } }}>
         <LinearProgress
           sx={{ height: 6 }}
           variant='determinate'

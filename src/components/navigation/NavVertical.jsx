@@ -1,14 +1,11 @@
 "use client";
 
 import { Box, Drawer, Stack } from "@mui/material";
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NAV } from "../../config/config/nav";
 import navConfig from "../../config/config/navConfig";
 import useResponsive from "../../hooks/useResponsive";
 import Logo from "../../resource/assets/Logo";
-import Scrollbar from "../../resource/scrollbar";
 import NavSectionVertical from "./components/NavSectionVertical";
 import NavToggleButton from "./components/toggleButton";
 import UserInfo from "./components/UserInfo";
@@ -16,15 +13,8 @@ import UserInfo from "./components/UserInfo";
 // ----------------------------------------------------------------------
 
 export default function NavVertical({ openNav, onCloseNav }) {
-  const pathname = usePathname();
   const { user } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
-
-  useEffect(() => {
-    if (openNav) {
-      onCloseNav();
-    }
-  }, [pathname]);
 
   return (
     <Box
@@ -57,17 +47,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
           },
         }}
       >
-        <Scrollbar
-          sx={{
-            bgcolor: "background.paper",
-            height: 1,
-            "& .simplebar-content": {
-              height: 1,
-              display: "flex",
-              flexDirection: "column",
-            },
-          }}
-        >
+        <Box sx={{ bgcolor: "background.paper", height: 1 }}>
           <Stack
             spacing={3}
             sx={{
@@ -86,7 +66,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
           <Box sx={{ px: 2 }}>
             <UserInfo />
           </Box>
-        </Scrollbar>
+        </Box>
       </Drawer>
     </Box>
   );

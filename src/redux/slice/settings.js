@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const getInitialState = () => ({
   themeMode: "light",
-  themeLayout: "vertical",
+  themeLayout: "mini",
   open: false,
 });
 
@@ -29,11 +29,9 @@ const settingsSlice = createSlice({
     toggleThemeLayout: (state) => {
       state.themeLayout =
         state.themeLayout === "vertical" ? "mini" : "vertical";
-      localStorage.setItem("themeLayout", state.themeLayout);
     },
     loadSettingsFromLocalStorage: (state) => {
       state.themeMode = localStorage.getItem("themeMode") || "light";
-      state.themeLayout = localStorage.getItem("themeLayout") || "vertical";
       state.open = localStorage.getItem("open") === "true";
     },
   },

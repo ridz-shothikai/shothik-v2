@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import useGeolocation from "../../hooks/useGeolocation";
 import useResponsive from "../../hooks/useResponsive";
 import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
-import LoadingScreen from "../../resource/LoadingScreen";
 import PricingPlanCard from "./PricingPlanCard";
 import PricingSlider from "./PricingSlider";
 import PricingTable from "./PricingTable";
@@ -28,10 +27,6 @@ export default function PricingLayout({ children, TitleContend }) {
     setIsMonthly((prev) => !prev);
     localStorage.setItem("isMonthly", !isMonthly);
   };
-
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
 
   return (
     <Box sx={{ pt: { xs: 4, md: 0 }, mt: -2 }}>
@@ -82,23 +77,25 @@ export default function PricingLayout({ children, TitleContend }) {
         }}
         className='pricing_card_style'
       >
-        {data?.data?.map((card, index) => (
-          <PricingPlanCard
-            key={index}
-            user={user}
-            card={card}
-            index={index}
-            yearly={isMonthly}
-            paymentMethod={
-              location === "bangladesh"
-                ? "bkash"
-                : location === "india"
-                ? "razor"
-                : "stripe"
-            }
-            country={location}
-          />
-        ))}
+        {data?.data
+          ? data.data.map((card, index) => (
+              <PricingPlanCard
+                key={index}
+                user={user}
+                card={card}
+                index={index}
+                yearly={isMonthly}
+                paymentMethod={
+                  location === "bangladesh"
+                    ? "bkash"
+                    : location === "india"
+                    ? "razor"
+                    : "stripe"
+                }
+                country={location}
+              />
+            ))
+          : null}
       </Box>
       {!isLoading && data?.data ? (
         <Stack

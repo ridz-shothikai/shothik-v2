@@ -1,6 +1,9 @@
 "use client";
+import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { Box } from "@mui/material";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
@@ -20,11 +23,11 @@ import {
   setShowRegisterModal,
 } from "../../redux/slice/auth";
 import { setOpen } from "../../redux/slice/settings";
-
-// ----------------------------------------------------------------------
+import LoadingScreen from "../../resource/LoadingScreen";
 
 export default function MainLayout({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const dispatch = useDispatch();
@@ -33,6 +36,10 @@ export default function MainLayout({ children }) {
 
   const [login] = useLoginMutation();
   const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    setIsLoadingPage(false);
+  }, []);
 
   useGoogleOneTapLogin({
     onSuccess: async (res) => {
@@ -66,32 +73,41 @@ export default function MainLayout({ children }) {
     disabled: isLoading || user?.email,
   });
 
+  if (isLoadingPage) return <LoadingScreen />;
+
   return (
-    <>
-      <MainHeader />
-      <Box
-        sx={{
-          bgcolor: "background.neutral",
-          display: { sm: "flex" },
-          minHeight: { sm: 1 },
-          overflow: "hidden",
-        }}
-      >
-        {!isMobile && isNavMini ? (
-          <NavMini />
-        ) : (
-          <NavVertical
-            openNav={open}
-            onCloseNav={() => dispatch(setOpen(false))}
-          />
-        )}
-        <Main>
-          <VerifyEmailAlert />
-          {children}
-          <AuthSuccessPopup />
-          <AlertDialog />
-        </Main>
+    <ProgressProvider
+      height='3px'
+      color='#00AB55'
+      options={{ showSpinner: false }}
+      shallowRouting
+    >
+      <Box>
+        <MainHeader />
+        <Box
+          sx={{
+            bgcolor: "background.neutral",
+            display: { sm: "flex" },
+            minHeight: { sm: 1 },
+            overflow: "hidden",
+          }}
+        >
+          {!isMobile && isNavMini ? (
+            <NavMini />
+          ) : (
+            <NavVertical
+              openNav={open}
+              onCloseNav={() => dispatch(setOpen(false))}
+            />
+          )}
+          <Main>
+            <VerifyEmailAlert />
+            {children}
+            <AuthSuccessPopup />
+            <AlertDialog />
+          </Main>
+        </Box>
       </Box>
-    </>
+    </ProgressProvider>
   );
 }

@@ -1,3 +1,4 @@
+import Analytics from "../analysers/Analytics";
 import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
 import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
@@ -27,22 +28,8 @@ export default function RootLayout({ children }) {
             <Register />
           </RegisterModal>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
 }
-
-// for blog page
-// export async function generateMetadata({ params }) {
-//   const blog = await fetchBlogData(params.slug);
-
-//   return {
-//     title: blog?.title || "Default Title",
-//     description: blog?.description || "Default description",
-//     openGraph: {
-//       title: blog?.title || "Default Title",
-//       description: blog?.description || "Default description",
-//       images: [{ url: blog?.image || "/default-image.jpg" }],
-//     },
-//   };
-// }

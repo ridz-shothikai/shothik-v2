@@ -3,7 +3,6 @@ import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import React from "react";
 import FileUpload from "./FileUpload";
-const supportedFileFormats = ["pdf", "docx"];
 
 const UserActionInput = ({
   isMobile,
@@ -35,7 +34,7 @@ const UserActionInput = ({
       sx={{
         width: "100%",
         position: "absolute",
-        bottom: { md: 80, xs: 30 },
+        bottom: { sm: 80, xs: 80 },
         left: "0px",
         right: "0px",
       }}
@@ -96,13 +95,7 @@ const UserActionInput = ({
               textAlign: "center",
             }}
           >
-            Supported {isMobile ? "" : "file"} formats:{" "}
-            {supportedFileFormats.map((format, i) => (
-              <React.Fragment key={i}>
-                {format}
-                {supportedFileFormats.length - 1 === i ? "." : ", "}
-              </React.Fragment>
-            ))}
+            {isMobile ? "" : "Supported file"} formats: pdf,docx.
           </Typography>
         </Box>
       </Stack>
