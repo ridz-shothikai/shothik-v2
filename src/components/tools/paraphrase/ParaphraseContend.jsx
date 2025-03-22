@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
+import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -183,6 +184,9 @@ const ParaphraseContend = () => {
 
   const handleSubmit = async (rephrase) => {
     try {
+      // track event
+      trackEvent("click", "paraphrase", "paraphrase_click", 1);
+
       const lastOutput = outputContend;
       let payload;
 

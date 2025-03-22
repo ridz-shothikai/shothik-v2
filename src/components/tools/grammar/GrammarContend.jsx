@@ -2,6 +2,7 @@
 import { Card, Grid2, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -80,6 +81,9 @@ const GrammarContend = () => {
     try {
       setIsLoading(true);
       setOutputContend("");
+
+      //track event
+      trackEvent("click", "grammar", "grammar_fixed_click", 1);
 
       const payload = {
         data: userInput,

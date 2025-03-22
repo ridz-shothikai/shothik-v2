@@ -136,7 +136,9 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
                 <Typography variant='h3' component='sup' fontWeight={400}>
                   {item.currency}
                 </Typography>
-                {/dev|test/.test(modeResult?.appMode) ? modePrice : item.price}
+                {/dev|test/.test(modeResult?.data?.appMode)
+                  ? modePrice
+                  : item.price}
                 <Typography component='sub' color='text.secondary'>
                   / {item.plan}
                 </Typography>

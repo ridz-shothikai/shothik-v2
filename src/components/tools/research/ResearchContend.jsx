@@ -33,7 +33,7 @@ const ResearchContend = () => {
   const fileInputRef = useRef(null);
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
-  console.log(outputContend);
+
   const chatOptions = useMemo(
     () => ({
       api: process.env.NEXT_PUBLIC_API_URI + "/research",
@@ -76,18 +76,18 @@ const ResearchContend = () => {
   const { messages, append, reload, stop } = useChat(chatOptions);
 
   async function fetchWithStreaming() {
-    setIsLoading(true);
-    const payload = {
-      messages: [{ role: "user", content: userInput }],
-      model: selectedModel,
-      group: selectedGroup,
-    };
-
-    setOutputContend((prev) => {
-      return [...prev, { role: "user", content: userInput, images: [] }];
-    });
-
     try {
+      setIsLoading(true);
+      const payload = {
+        messages: [{ role: "user", content: userInput }],
+        model: selectedModel,
+        group: selectedGroup,
+      };
+
+      setOutputContend((prev) => {
+        return [...prev, { role: "user", content: userInput, images: [] }];
+      });
+
       const url = process.env.NEXT_PUBLIC_API_URI + "/research";
       const response = await fetch(url, {
         method: "POST",
@@ -118,7 +118,7 @@ const ResearchContend = () => {
         if (value.startsWith("0:")) {
           setOutputContend((prev) => {
             return prev.map((item, index) => {
-              const cleanedValue = value.replace("0:", "").trim();
+              const cleanedValue = value.replaceAll("0: ", "");
 
               console.log(cleanedValue);
               if (index === prev.length - 1) {
@@ -157,7 +157,7 @@ const ResearchContend = () => {
         }
       }
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   }
 

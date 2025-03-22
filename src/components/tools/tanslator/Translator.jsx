@@ -2,6 +2,7 @@
 import { Card, Grid2, TextField } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { setShowLoginModal } from "../../../redux/slice/auth";
@@ -74,6 +75,9 @@ const Translator = () => {
 
   async function handleSubmit(payloads, url) {
     try {
+      //track event
+      trackEvent("click", "translator", "translator_click", 1);
+
       setOutputContend("");
       setIsLoading(true);
       const direction = translateLang.fromLang + " to " + translateLang.toLang;
