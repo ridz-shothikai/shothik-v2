@@ -1,7 +1,8 @@
 "use client";
 import { Card, Grid2, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
@@ -18,10 +19,11 @@ const GrammarContend = () => {
   const [language, setLanguage] = useState("English");
   const [isLoading, setIsLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const isMobile = useResponsive("down", "sm");
   const [errors, setErrors] = useState([]);
   const enqueueSnackbar = useSnackbar();
-  const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
+  const sampleText = trySamples.grammar[language];
 
   useEffect(() => {
     if (!userInput) return;
@@ -38,11 +40,6 @@ const GrammarContend = () => {
     setUserInput("");
     setOutputContend("");
     setErrors([]);
-  }
-  function handleSampleText() {
-    setUserInput(
-      "The annual music festival drew in thousands of attendees from all over the country. The headlining band put on an unforgettable performanc that had the crowd jumping and singing along. Despite the scorching heat, peopl danced until the early hours of the morning."
-    );
   }
 
   async function fetchWithStreaming(payload) {
@@ -151,7 +148,7 @@ const GrammarContend = () => {
             <UserActionInput
               setUserInput={setUserInput}
               isMobile={isMobile}
-              handleSampleText={handleSampleText}
+              sampleText={sampleText}
             />
           ) : null}
         </Grid2>

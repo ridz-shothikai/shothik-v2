@@ -4,8 +4,9 @@ import {
   FormatTextdirectionLToRRounded,
 } from "@mui/icons-material";
 import { Card, Grid2, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -34,14 +35,15 @@ const LENGTH = {
 
 const SummarizeContend = () => {
   const [selectedMode, setSelectedMode] = useState(modes[0].name);
+  const { user, accessToken } = useSelector((state) => state.auth);
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [outputContend, setOutputContend] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { user, accessToken } = useSelector((state) => state.auth);
   const [userInput, setUserInput] = useState("");
   const isMobile = useResponsive("down", "sm");
-  const dispatch = useDispatch();
   const enqueueSnackbar = useSnackbar();
+  const dispatch = useDispatch();
+  const sampleText = trySamples.summarize.English;
 
   async function fetchWithStreaming(payload) {
     try {
@@ -114,11 +116,6 @@ const SummarizeContend = () => {
     setUserInput("");
     setOutputContend("");
   }
-  function handleSampleText() {
-    setUserInput(
-      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
-    );
-  }
 
   return (
     <Card sx={{ mt: 1, paddingX: 2, overflow: "visible" }}>
@@ -168,7 +165,7 @@ const SummarizeContend = () => {
             <UserActionInput
               setUserInput={setUserInput}
               isMobile={isMobile}
-              handleSampleText={handleSampleText}
+              sampleText={sampleText}
             />
           ) : null}
         </Grid2>

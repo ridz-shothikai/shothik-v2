@@ -1,19 +1,24 @@
 "use client";
 import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import React from "react";
 import FileUpload from "./FileUpload";
 
 const UserActionInput = ({
   isMobile,
-  handleSampleText,
   setUserInput,
   extraAction,
   disableTrySample = false,
+  sampleText,
 }) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
     setUserInput(clipboardText);
+    if (extraAction) extraAction();
+  }
+
+  function handleSampleText() {
+    if (!sampleText) return;
+    setUserInput(sampleText);
     if (extraAction) extraAction();
   }
 
@@ -54,6 +59,7 @@ const UserActionInput = ({
             size={isMobile ? "small" : "large"}
             variant='soft'
             onClick={handleSampleText}
+            disabled={!sampleText}
             startIcon={<SaveAsOutlined />}
             sx={{
               border: { sm: "none", xs: "2px solid" },

@@ -1,10 +1,11 @@
 "use client";
 import { InsertDriveFile } from "@mui/icons-material";
 import { Box, Card, Divider, Grid2 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
@@ -54,6 +55,7 @@ const ParaphraseContend = () => {
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const [paraphrased] = useParaphrasedMutation();
+  const sampleText = trySamples.paraphrase[language];
   const [showMessage, setShowMessage] = useState({
     show: false,
     Component: null,
@@ -174,13 +176,6 @@ const ParaphraseContend = () => {
     setResult([]);
     setOutputHistory([]);
   };
-
-  function handleSampleText() {
-    setUserInput(
-      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
-    );
-    setUpdateHtml((prev) => !prev);
-  }
 
   const handleSubmit = async (rephrase) => {
     try {
@@ -303,7 +298,7 @@ const ParaphraseContend = () => {
               <UserActionInput
                 setUserInput={setUserInput}
                 isMobile={isMobile}
-                handleSampleText={handleSampleText}
+                sampleText={sampleText}
                 extraAction={() => setUpdateHtml((prev) => !prev)}
               />
             ) : null}

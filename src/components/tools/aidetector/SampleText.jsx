@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const gptModel = [
   {
@@ -33,11 +34,28 @@ const gptModel = [
 ];
 
 function SampleTextForMobile({ setOpen, isMini }) {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    function handleScroll() {
+      const height = window.innerHeight;
+      const scrollHeight = window.scrollY;
+      if (scrollHeight + height - 100 > height) setShow(false);
+      else setShow(true);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  if (!show) return null;
   return (
     <Stack
       sx={{
         position: "fixed",
-        bottom: 0,
+        bottom: 2,
         left: { xs: 0, sm: isMini ? 105 : 290 },
         right: 5,
         zIndex: 100,
@@ -190,7 +208,7 @@ function SampleText({
           open={isDrawer}
           onClose={() => setOpen(false)}
         >
-          <SampleText
+          <SampleTextForLarge
             isDrawer={true}
             setOpen={setOpen}
             handleSampleText={handleSampleText}
