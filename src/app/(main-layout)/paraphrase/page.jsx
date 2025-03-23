@@ -1,5 +1,4 @@
 import { Container } from "@mui/material";
-import React from "react";
 import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
@@ -20,7 +19,7 @@ export async function generateMetadata() {
       url: "https://www.shothik.ai/paraphrase/",
       images: [
         {
-          url: "https://www.shothik.ai/shothik_light_logo.png",
+          url: "https://www.shothik.ai/moscot.png",
           width: "1200",
           height: "630",
           alt: "Shothik AI",

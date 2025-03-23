@@ -1,5 +1,4 @@
 import { Container } from "@mui/material";
-import React from "react";
 import { humanizeFaq } from "../../../_mock/tools/humanizefaq";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
@@ -16,8 +15,8 @@ export async function generateMetadata() {
         "Shothik AI: Humanize AI Text & Bypass Detection - 100% Human Score",
       description:
         "Transform AI text with Shothik AI's Humanize GPT. Get a 100% human score, bypass detection, & create engaging content that sounds human. Try it for free!",
-      image: "https://www.shothik.ai/shothik_light_logo.png",
-      url: "https://www.shothik.ai/shothik_light_logo.png",
+      image: "https://www.shothik.ai/moscot.png",
+      url: "https://www.shothik.ai/moscot.png",
       type: "website",
       imageWidth: "1200",
       imageHeight: "630",
