@@ -1,7 +1,8 @@
 "use client";
 import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
-import FileUpload from "./FileUpload";
+import dynamic from "next/dynamic";
+const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
 
 const UserActionInput = ({
   isMobile,
@@ -23,14 +24,7 @@ const UserActionInput = ({
   }
 
   const handleFileData = (htmlValue) => {
-    const plainText = htmlValue
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<[^>]+>/g, " ");
-    const removeBreakTags = plainText
-      .split("\n")
-      .map((line) => line.trim())
-      .join("\n");
-    setUserInput(removeBreakTags.trim());
+    setUserInput(htmlValue);
     if (extraAction) extraAction();
   };
 

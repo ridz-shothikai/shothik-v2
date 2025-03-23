@@ -45,17 +45,17 @@ const ParaphraseContend = () => {
   const [updateHtml, setUpdateHtml] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [freezeWords, setFreezeWords] = useState([]);
+  const sampleText = trySamples.paraphrase[language];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
   const [socketId, setSocketId] = useState(null);
+  const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
   const isMobile = useResponsive("down", "sm");
   const [result, setResult] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const [paraphrased] = useParaphrasedMutation();
-  const sampleText = trySamples.paraphrase[language];
   const [showMessage, setShowMessage] = useState({
     show: false,
     Component: null,
@@ -272,7 +272,7 @@ const ParaphraseContend = () => {
         <Grid2 container>
           <Grid2
             sx={{
-              height: isMobile ? 350 : 530,
+              height: isMobile ? "calc(100vh - 340px)" : 530,
               position: "relative",
               borderRight: { md: "2px solid" },
               borderRightColor: { md: "divider" },
@@ -320,7 +320,7 @@ const ParaphraseContend = () => {
             <Grid2
               size={{ xs: 12, md: 6 }}
               sx={{
-                height: isMobile ? 350 : 530,
+                height: isMobile ? "calc(100vh - 340px)" : 530,
                 overflow: "hidden",
                 borderTop: { xs: "2px solid", md: "none" },
                 borderTopColor: { xs: "divider", md: undefined },

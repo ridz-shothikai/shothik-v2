@@ -209,6 +209,7 @@ const ParaphraseEditor = ({
           onChange={(e) => handleChange(e.target.value)}
           tagName='div'
           className={style.content_editable}
+          style={{ whiteSpace: "pre-wrap" }}
         />
       </div>
 
