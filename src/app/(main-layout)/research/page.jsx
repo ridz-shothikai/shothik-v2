@@ -1,5 +1,4 @@
 import { Container } from "@mui/material";
-import React from "react";
 import ResearchContend from "../../../components/tools/research/ResearchContend";
 
 export async function generateMetadata() {
@@ -11,9 +10,7 @@ export async function generateMetadata() {
 
 const Research = () => {
   return (
-    <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
-    >
+    <Container>
       <ResearchContend />
     </Container>
   );

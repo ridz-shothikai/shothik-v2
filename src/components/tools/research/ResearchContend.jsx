@@ -1,7 +1,7 @@
 "use client";
 import { Box, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
@@ -110,7 +110,7 @@ const ResearchContend = () => {
               return [...updatedPrev, TextMessage];
             });
           } catch (error) {
-            throw error;
+            console.log(error);
           }
         }
       }
@@ -124,6 +124,7 @@ const ResearchContend = () => {
       setIsLoading(true);
       await fetchWithStreaming(content);
       setIsLoading(false);
+      setUserInput("");
     } catch (error) {
       console.log(error);
       enqueueSnackbar(error.message, { variant: "error" });
@@ -163,31 +164,91 @@ const ResearchContend = () => {
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: "80%", lg: "60%" },
-        mx: "auto",
-        paddingTop: 2,
-        paddingBottom: 2,
         height: "calc(100vh - 70px)",
         overflow: "auto",
       }}
     >
-      {!hasSubmitted ? (
-        <Stack>
-          <Typography
-            component={motion.p}
-            initial={{ x: -30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            variant='h4'
-            sx={{ textAlign: "center", mb: 2, mt: { xs: 10, sm: 15, lg: 20 } }}
-          >
-            What do you want to explore?
-          </Typography>
-          <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-          >
+      <Box
+        sx={{
+          width: { xs: "100%", md: "80%", lg: "60%" },
+          mx: "auto",
+          paddingTop: 2,
+          paddingBottom: 2,
+        }}
+      >
+        {!hasSubmitted ? (
+          <Stack>
+            <Typography
+              component={motion.p}
+              initial={{ x: -30, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              variant='h4'
+              sx={{
+                textAlign: "center",
+                mb: 2,
+                mt: { xs: 10, sm: 15, lg: 20 },
+              }}
+            >
+              What do you want to explore?
+            </Typography>
+            <motion.div
+              initial={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <FormComponent
+                input={userInput}
+                setInput={setUserInput}
+                attachments={attachments}
+                setAttachments={setAttachments}
+                hasSubmitted={hasSubmitted}
+                setHasSubmitted={setHasSubmitted}
+                isLoading={isLoading}
+                handleSubmit={handleSubmit}
+                fileInputRef={fileInputRef}
+                inputRef={inputRef}
+                selectedModel={selectedModel}
+                setSelectedModel={handleModelChange}
+                selectedGroup={selectedGroup}
+                setSelectedGroup={setSelectedGroup}
+              />
+              <SuggestionCards
+                trendingQueries={trendingQueries}
+                handleExampleClick={handleExampleClick}
+              />
+            </motion.div>
+          </Stack>
+        ) : null}
+
+        <Stack gap={1} sx={{ mb: 5 }}>
+          {outputContend.map((message, index) =>
+            message.role === "user" ? (
+              <UserMessage key={index} message={message} />
+            ) : message.role === "assistant" ? (
+              <RenderPart
+                key={index}
+                group={selectedGroup}
+                isLoading={isLoading}
+                data={message}
+              />
+            ) : null
+          )}
+          {suggestedQuestions.length ? (
+            <Suggestion
+              handleSuggestedQuestionClick={handleSuggestedQuestionClick}
+              suggestedQuestions={suggestedQuestions}
+            />
+          ) : null}
+        </Stack>
+
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+          }}
+        >
+          {hasSubmitted && (
             <FormComponent
               input={userInput}
               setInput={setUserInput}
@@ -204,61 +265,10 @@ const ResearchContend = () => {
               selectedGroup={selectedGroup}
               setSelectedGroup={setSelectedGroup}
             />
-            <SuggestionCards
-              trendingQueries={trendingQueries}
-              handleExampleClick={handleExampleClick}
-            />
-          </motion.div>
-        </Stack>
-      ) : null}
-
-      <Stack gap={1} sx={{ mb: 5 }}>
-        {outputContend.map((message, index) =>
-          message.role === "user" ? (
-            <UserMessage key={index} message={message} />
-          ) : message.role === "assistant" ? (
-            <RenderPart
-              key={index}
-              group={selectedGroup}
-              isLoading={isLoading}
-              data={message}
-            />
-          ) : null
-        )}
-        {suggestedQuestions.length ? (
-          <Suggestion
-            handleSuggestedQuestionClick={handleSuggestedQuestionClick}
-            suggestedQuestions={suggestedQuestions}
-          />
-        ) : null}
-      </Stack>
-
-      <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-        }}
-      >
-        {hasSubmitted && (
-          <FormComponent
-            input={userInput}
-            setInput={setUserInput}
-            attachments={attachments}
-            setAttachments={setAttachments}
-            hasSubmitted={hasSubmitted}
-            setHasSubmitted={setHasSubmitted}
-            isLoading={isLoading}
-            handleSubmit={handleSubmit}
-            fileInputRef={fileInputRef}
-            inputRef={inputRef}
-            selectedModel={selectedModel}
-            setSelectedModel={handleModelChange}
-            selectedGroup={selectedGroup}
-            setSelectedGroup={setSelectedGroup}
-          />
-        )}
+          )}
+        </Box>
+        <div ref={bottomRef} />
       </Box>
-      <div ref={bottomRef} />
     </Box>
   );
 };
