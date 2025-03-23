@@ -13,7 +13,7 @@ import { ICON } from "../../../config/config/nav";
 
 // ----------------------------------------------------------------------
 
-export default function NavList({ data, layout }) {
+export default function NavList({ data, layout, onCloseNav }) {
   const pathname = usePathname();
   const isActive = pathname === data.path;
   const { title, path, icon, iconColor } = data;
@@ -22,6 +22,10 @@ export default function NavList({ data, layout }) {
     <ListItemButton
       component={Link}
       href={path}
+      onClick={e => {
+        console.log("Clicked")
+        onCloseNav()
+      }}
       sx={(theme) => {
         const isLight = theme.palette.mode === "light";
         const activeStyle = {

@@ -10,14 +10,16 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-
+import { useRouter } from "next/navigation";
 const MobileFreezeModal = ({
   isFreeze,
   handleClose,
   freezeWords,
   setFreezeWords,
+  userPackage
 }) => {
   const [value, setValue] = useState();
+  const router = useRouter();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -34,6 +36,8 @@ const MobileFreezeModal = ({
     const rest = freezeWords.filter((item) => item !== word);
     setFreezeWords(rest);
   }
+
+  const needToUpgrade = !userPackage || userPackage === "free";
 
   return (
     <Drawer
@@ -81,9 +85,13 @@ const MobileFreezeModal = ({
         <Button
           sx={{ mt: 1, textAlign: "right" }}
           variant='contained'
-          type='submit'
+          type={needToUpgrade?"button":'submit'}
+          onClick={e => {
+            router.push("/pricing?redirect=paraphrase")
+          }
+          }
         >
-          Freeze
+         {needToUpgrade ? "Upgrade":"Freeze"}
         </Button>
       </form>
 

@@ -5,6 +5,8 @@ import CTAImage from "./components/cta/CTAImage";
 import UserActionButton from "./components/hero/UserActionButton";
 
 export default function CTA() {
+
+
   return (
     <Stack spacing={2} alignItems='center'>
       <Typography

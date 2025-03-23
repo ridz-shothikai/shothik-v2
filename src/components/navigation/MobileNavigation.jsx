@@ -56,6 +56,7 @@ const MobileNavigation = () => {
 
   if (!isMobile) return null;
 
+
   const validPath = links.some((tab) => tab.link === pathname)
     ? pathname
     : false;

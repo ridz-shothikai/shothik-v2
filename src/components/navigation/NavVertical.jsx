@@ -16,6 +16,8 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const { user } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
 
+  
+
   return (
     <Box
       component='nav'
@@ -60,7 +62,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
             <Logo />
           </Stack>
 
-          <NavSectionVertical data={navConfig} user={user} />
+          <NavSectionVertical onCloseNav={onCloseNav} data={navConfig} user={user} />
 
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ px: 2 }}>

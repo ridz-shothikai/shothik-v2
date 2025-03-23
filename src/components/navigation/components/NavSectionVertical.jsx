@@ -11,7 +11,7 @@ const StyledSubheader = styled(ListSubheader)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function NavSectionVertical({ data, user }) {
+export default function NavSectionVertical({ data, user, onCloseNav }) {
   return (
     <Stack>
       {data.map((group) => {
@@ -30,6 +30,7 @@ export default function NavSectionVertical({ data, user }) {
                 key={list.title + list.path}
                 data={list}
                 layout='vertical'
+                onCloseNav={onCloseNav}
               />
             ))}
           </List>

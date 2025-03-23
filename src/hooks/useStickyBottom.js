@@ -29,7 +29,6 @@ export default function useStickyBottom(height) {
       if (!originalPosition) return;
 
       const currentScroll = window.scrollY;
-      console.log(currentScroll);
 
       if (currentScroll === 0) {
         setIsSticky(false);

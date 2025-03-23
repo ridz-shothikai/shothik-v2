@@ -268,6 +268,7 @@ const ParaphraseContend = () => {
             setSelectedMode={setSelectedMode}
             freezeWords={freezeWords}
             setFreezeWords={setFreezeWords}
+            userPackage={user?.package}
           />
         )}
 
