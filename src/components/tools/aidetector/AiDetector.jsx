@@ -215,6 +215,7 @@ const AiDetector = () => {
                   handleClearInput={handleClear}
                   handleSubmit={handleSubmit}
                   userPackage={user?.package}
+                  sticky={0}
                 />
               </Box>
             ) : null}

@@ -22,9 +22,9 @@ export default function NavList({ data, layout, onCloseNav }) {
     <ListItemButton
       component={Link}
       href={path}
-      onClick={e => {
-        console.log("Clicked")
-        onCloseNav()
+      onClick={() => {
+        if (onCloseNav) onCloseNav();
+        else return;
       }}
       sx={(theme) => {
         const isLight = theme.palette.mode === "light";
