@@ -6,7 +6,8 @@ import { Button, Stack, Tab, Tabs } from "@mui/material";
 import React, { useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";
 
-const initLanguage = ["English", "Bangla"];
+// You can include "Auto Detect" as a valid tab option if needed
+const initLanguage = ["English", "Bangla"]; // Add "Auto Detect" here if needed
 
 const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   const [languageTabs, setlanguageTabs] = useState(initLanguage);
@@ -29,17 +30,22 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
     setLanguage(value);
   }
 
+  // ✅ Ensure language is valid
+  const selectedTab = languageTabs.includes(language)
+    ? language
+    : languageTabs[0];
+
   return (
     <Stack
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
       sx={{ paddingX: 2 }}
     >
       <Tabs
         onChange={(_, value) => setLanguage(value)}
-        textColor='primary'
-        value={language}
+        textColor="primary"
+        value={selectedTab}
         sx={{
           "& .MuiTabs-indicator": {
             display: "none",
@@ -64,11 +70,11 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
       <Button
         disabled={isLoading}
         onClick={handleLanguage}
-        size='small'
+        size="small"
         endIcon={
           showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
         }
-        variant='text'
+        variant="text"
         sx={{ color: "text.secondary" }}
       >
         All
