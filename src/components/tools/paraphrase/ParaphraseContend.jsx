@@ -1,10 +1,11 @@
 "use client";
 import { InsertDriveFile } from "@mui/icons-material";
 import { Box, Card, Divider, Grid2 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useResponsive from "../../../hooks/useResponsive";
@@ -44,16 +45,17 @@ const ParaphraseContend = () => {
   const [updateHtml, setUpdateHtml] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [freezeWords, setFreezeWords] = useState([]);
+  const sampleText = trySamples.paraphrase[language];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
   const [socketId, setSocketId] = useState(null);
+  const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
   const isMobile = useResponsive("down", "sm");
   const [result, setResult] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const [paraphrased] = useParaphrasedMutation();
   const [showMessage, setShowMessage] = useState({
     show: false,
     Component: null,
@@ -175,13 +177,6 @@ const ParaphraseContend = () => {
     setOutputHistory([]);
   };
 
-  function handleSampleText() {
-    setUserInput(
-      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by."
-    );
-    setUpdateHtml((prev) => !prev);
-  }
-
   const handleSubmit = async (rephrase) => {
     try {
       // track event
@@ -268,6 +263,7 @@ const ParaphraseContend = () => {
             setSelectedMode={setSelectedMode}
             freezeWords={freezeWords}
             setFreezeWords={setFreezeWords}
+            userPackage={user?.package}
           />
         )}
 
@@ -276,7 +272,7 @@ const ParaphraseContend = () => {
         <Grid2 container>
           <Grid2
             sx={{
-              height: isMobile ? 350 : 530,
+              height: isMobile ? "calc(100vh - 340px)" : 530,
               position: "relative",
               borderRight: { md: "2px solid" },
               borderRightColor: { md: "divider" },
@@ -302,7 +298,7 @@ const ParaphraseContend = () => {
               <UserActionInput
                 setUserInput={setUserInput}
                 isMobile={isMobile}
-                handleSampleText={handleSampleText}
+                sampleText={sampleText}
                 extraAction={() => setUpdateHtml((prev) => !prev)}
               />
             ) : null}
@@ -324,7 +320,7 @@ const ParaphraseContend = () => {
             <Grid2
               size={{ xs: 12, md: 6 }}
               sx={{
-                height: isMobile ? 350 : 530,
+                height: isMobile ? "calc(100vh - 340px)" : 530,
                 overflow: "hidden",
                 borderTop: { xs: "2px solid", md: "none" },
                 borderTopColor: { xs: "divider", md: undefined },

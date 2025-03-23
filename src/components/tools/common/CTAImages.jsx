@@ -24,6 +24,7 @@ const CTAImages = ({ lightImage, darkImage, title }) => {
         width={500}
         height={400}
         objectFit='cover'
+        style={{ width:"100%", height:"auto" }}
         sx={{
           width: "100%",
           height: "auto",

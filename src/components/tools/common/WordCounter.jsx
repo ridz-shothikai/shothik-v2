@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import useStickyBottom from "../../../hooks/useStickyBottom";
 import useWordLimit from "../../../hooks/useWordLimit";
@@ -31,10 +31,30 @@ function WordCounter({
   dontDisable = false,
   sticky = 635,
 }) {
-  const { ref, style } = useStickyBottom(sticky);
-
-  return (
-    <Box ref={ref} sx={style}>
+  if (sticky) {
+    const { ref, style } = useStickyBottom(sticky);
+    return (
+      <Box ref={ref} sx={style}>
+        <Contend
+          btnText={btnText}
+          handleClearInput={handleClearInput}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          toolName={toolName}
+          userInput={userInput}
+          userPackage={userPackage}
+          ExtraBtn={ExtraBtn}
+          ExtraCounter={ExtraCounter}
+          btnIcon={btnIcon}
+          dontDisable={dontDisable}
+          sx={sx}
+        >
+          {children}
+        </Contend>
+      </Box>
+    );
+  } else {
+    return (
       <Contend
         btnText={btnText}
         handleClearInput={handleClearInput}
@@ -51,8 +71,8 @@ function WordCounter({
       >
         {children}
       </Contend>
-    </Box>
-  );
+    );
+  }
 }
 
 const Contend = ({

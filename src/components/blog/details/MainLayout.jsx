@@ -16,7 +16,7 @@ import { LikeDislike } from "./LikeDislike";
 import ShareIcons from "./ShareIcons";
 
 export default function MainLayout({ blog }) {
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/blogs/${blog?.slag}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL??"https://shothik.ai"}/blogs/${blog?.slag}`;
   const title = blog?.title || "Check out this blog!";
   const hashtags = ["ShothikAI", "AIContent", "Tech"];
 

@@ -60,7 +60,7 @@ const BlogHeader = ({ searchQuery, setSearchQuery }) => {
             color='white'
             sx={{ mt: 1, opacity: 0.8 }}
           >
-            search this query on {"{questions and answers}"}
+            search this query on {"questions and answers"}
           </Typography>
         </Box>
       </Grid2>

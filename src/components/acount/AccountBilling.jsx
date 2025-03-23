@@ -9,6 +9,8 @@ export default function AccountBilling({ user }) {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
 
+  if(!user) return null;
+
   return (
     <Grid2 container spacing={3}>
       <Grid2 size={{ xs: 12, md: 5, lg: 4 }}>
@@ -38,7 +40,7 @@ export default function AccountBilling({ user }) {
                   fontWeight: 600,
                 }}
               >
-                {user.package.replace("_", " ")}
+                {user?.package.replace("_", " ")}
               </Typography>
               {user?.package !== "unlimited" ? (
                 <Box>

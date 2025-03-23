@@ -49,7 +49,8 @@ export default function MainHeader() {
     return routeTitles[pathname] || "";
   };
 
-  const renderContent = (
+
+  const renderContent =  (
     <>
       {!isDesktop && (
         <>

@@ -1,4 +1,3 @@
-import React from "react";
 import B2bFeatures from "../../components/home/B2BFeatures";
 import CTA from "../../components/home/CTA";
 import FAQ from "../../components/home/FAG";
@@ -46,7 +45,7 @@ export async function generateMetadata() {
         "Paraphrase, humanize, detect & translate AI text with Shothik AI. Get better writing and bypass Turnitin & GPTZero. Perfect for students, academics & SEOs.",
       images: [
         {
-          url: `${siteUrl}/shothik_light_logo.png`,
+          url: `${siteUrl}/moscot.png`,
           width: 1200,
           height: 630,
           alt: "Shothik AI Logo",
@@ -61,7 +60,7 @@ export async function generateMetadata() {
         "Shothik AI: Paraphrasing, Humanizing, AI Detector & Improve Writing",
       description:
         "Transform AI text with Shothik AI! Paraphrase, humanize, detect & translate. Perfect for students, academics, and SEOs. #Paraphrase #HumanizeText",
-      images: [`${siteUrl}/shothik_light_logo.png`],
+      images: [`${siteUrl}/moscot.png`],
     },
   };
 }

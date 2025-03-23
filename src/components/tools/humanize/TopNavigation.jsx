@@ -1,6 +1,5 @@
 import { Lock } from "@mui/icons-material";
 import { Slider, Stack, Tab, Tabs, Tooltip } from "@mui/material";
-import React from "react";
 const models = ["Panda", "Raven"];
 
 const TopNavigation = ({
@@ -57,9 +56,9 @@ const TopNavigation = ({
               if (!/pro_plan|unlimited/.test(userPackage) && tab === "Raven") {
                 setShalowAlert(true);
               } else {
-                setModel(tab);
                 setShalowAlert(false);
               }
+              setModel(tab);
             }}
           />
         ))}

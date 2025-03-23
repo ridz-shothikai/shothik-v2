@@ -2,10 +2,8 @@
 import { UploadFileRounded } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Tooltip } from "@mui/material";
 import mammoth from "mammoth";
-import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
-
-const pdfToText = dynamic(() => import("./pdftotext"), { ssr: false });
+import pdfToText from "./pdftotext";
 
 function FileUpload({ isMobile, setInput }) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,9 +38,9 @@ function FileUpload({ isMobile, setInput }) {
     return "";
   };
 
-  const convertPdfToHtml = async (pdfArrayBuffer) => {
+  const convertPdfToHtml = async (pdfFile) => {
     try {
-      const text = await pdfToText(pdfArrayBuffer);
+      let text = await pdfToText(pdfFile);
       setInput(text);
     } catch (error) {
       console.error("Error converting PDF to HTML:", error);

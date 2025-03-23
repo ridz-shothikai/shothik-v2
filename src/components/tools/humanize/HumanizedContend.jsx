@@ -3,6 +3,7 @@
 import { Card, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -12,6 +13,7 @@ import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
 import LanguageMenu from "../grammar/LanguageMenu";
+import AlertDialogMessage from "./AlertDialogMessage";
 import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
 import Navigations from "./Navigations";
@@ -45,12 +47,7 @@ const HumanizedContend = () => {
   const [scores, setScores] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-
-  function handleSampleText() {
-    setUserInput(
-      "Shark Tank is a popular reality TV show where entrepreneurs pitch their business ideas to a panel of wealthy investors, known as 'sharks,' seeking funding and mentorship. The sharks evaluate the proposals, ask critical questions, and decide whether to invest in exchange for equity or royalties. The show offers entrepreneurs a platform to showcase innovative products and secure funding, while viewers gain insights into entrepreneurship, negotiation, and business strategies. Shark Tank has helped launch many successful businesses and inspired countless individuals to pursue their entrepreneurial dreams. Its mix of innovation, drama, and opportunity makes it a favorite among audiences worldwide."
-    );
-  }
+  const sampleText = trySamples.humanize[language];
 
   function handleClear() {
     setUserInput("");
@@ -171,7 +168,7 @@ const HumanizedContend = () => {
           <UserActionInput
             setUserInput={setUserInput}
             isMobile={isMobile}
-            handleSampleText={handleSampleText}
+            sampleText={sampleText}
           />
         ) : (
           <InputBottom
@@ -230,6 +227,8 @@ const HumanizedContend = () => {
             Humanized Contend
           </Typography>
         )}
+
+        {showShalowAlert ? <AlertDialogMessage /> : null}
       </Card>
     </Stack>
   );

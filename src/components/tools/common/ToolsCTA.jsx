@@ -7,6 +7,7 @@ import CTAImages from "./CTAImages";
 export default function ToolsCTA({ toolType }) {
   const toolConfig = toolsCta[toolType];
 
+
   if (!toolConfig) {
     return null;
   }
@@ -33,6 +34,14 @@ export default function ToolsCTA({ toolType }) {
             title={toolConfig.title}
             lightImage={toolConfig.image.light}
             darkImage={toolConfig.image.dark}
+            sx={{
+              img: {
+                borderRadius: { xs: "8px", md: "0px" },
+                width: { xs: "100%", md: "auto" },
+                height: { xs: "auto", md: "auto" },
+                aspectRatio: { xs: "1 / 1", md: "unset" },
+              },
+            }}
           />
         </Grid2>
       </Grid2>

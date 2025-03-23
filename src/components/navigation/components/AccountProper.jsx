@@ -62,6 +62,9 @@ export default function AccountPopover({ accessToken, user }) {
 
   const popoverRef = useOutsideClick(() => handleClosePopover());
 
+
+ 
+
   return (
     <>
       <Box
@@ -73,7 +76,7 @@ export default function AccountPopover({ accessToken, user }) {
           cursor: "pointer",
         }}
       >
-        {user && user.image ? (
+        {user && user?.image ? (
           <Image
             src={user.image}
             alt={user.name || "User"}
@@ -81,7 +84,31 @@ export default function AccountPopover({ accessToken, user }) {
             width={40}
             height={40}
           />
-        ) : (
+        )
+         :
+         user && accessToken  ? 
+        (
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              bgcolor: "primary.main",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: "bold",
+              fontSize: 14,
+            }}
+          >
+            {user?.name
+              ? `${String(user?.name ?? "").split(" ")[0][0] || ""}${user.name?.split(" ")[1]?.[0] || ""}`
+              : ""}
+          </Box>
+        )
+        :
+         (
           <PersonOutlineSharpIcon
             sx={{
               fontSize: 30,

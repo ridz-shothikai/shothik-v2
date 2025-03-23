@@ -38,7 +38,7 @@ const ModeNavigationForMobile = ({
       </Button>
       <Button
         onClick={() => setShowFreezeModal(true)}
-        disabled={!userPackage || userPackage === "free"}
+        // disabled={!userPackage || userPackage === "free"}
         sx={{ textAlign: "right" }}
         startIcon={<AcUnit />}
         variant='outlined'
@@ -59,6 +59,7 @@ const ModeNavigationForMobile = ({
         isFreeze={showFreezeModal}
         freezeWords={freezeWords}
         setFreezeWords={setFreezeWords}
+        userPackage={userPackage}
       />
     </Stack>
   );

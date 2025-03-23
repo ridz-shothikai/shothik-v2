@@ -42,7 +42,7 @@ function Description() {
         variant='h2'
         sx={{ color: "common.white", mb: 5 }}
       >
-        Get started with
+        Get started with 
         <br />
         Shothik.ai today
       </Typography>
@@ -52,12 +52,14 @@ function Description() {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
+        style={{ display:"flex", justifyContent:"center" }}
       >
         <Stack
           direction={{ xs: "column", md: "row" }}
-          justifyContent={{ xs: "center", md: "flex-start" }}
+          justifyContent={{ xs: "center", md: "center" }}
           flexWrap='wrap'
           gap={2}
+          
         >
           <Button
             color='inherit'
@@ -68,6 +70,8 @@ function Description() {
             sx={{
               color: "grey.800",
               bgcolor: "common.white",
+              width: { xs: 200, md: "auto" },
+              margin:"0 auto"
             }}
           >
             Upgrade to pro
@@ -87,6 +91,7 @@ function Description() {
             }
             sx={{
               color: "common.white",
+              // width: { xs: 100, md: "auto" },
               "&:hover": { borderColor: "currentColor" },
             }}
           >
@@ -118,6 +123,7 @@ function Content() {
         <Image
           height={400}
           width={400}
+          style={{ width: "100%", height: "auto" }} 
           alt='rocket'
           src='/moscot.png'
           sx={{ maxWidth: 460 }}

@@ -11,7 +11,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { aiDetectorSampleText } from "../../../_mock/tools/sampleText";
+import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -125,7 +125,7 @@ const AiDetector = () => {
   }
 
   function handleSampleText(keyName) {
-    const text = aiDetectorSampleText[keyName];
+    const text = trySamples.ai_detector[keyName];
     if (text) {
       setUserInput(text);
       setOpenSampleDrawer(false);
@@ -215,6 +215,7 @@ const AiDetector = () => {
                   handleClearInput={handleClear}
                   handleSubmit={handleSubmit}
                   userPackage={user?.package}
+                  sticky={0}
                 />
               </Box>
             ) : null}
