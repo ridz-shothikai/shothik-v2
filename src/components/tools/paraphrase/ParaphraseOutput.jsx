@@ -285,7 +285,7 @@ const ParaphraseOutput = ({
                 : undefined,
           }}
         >
-          {sentence?.map((segment, i, arr) => (
+          {sentence && sentence?.map((segment, i, arr) => (
             <Typography
               component='span'
               key={i}
@@ -653,7 +653,7 @@ function RephraseSentences(props) {
                   >
                     <ListItemButton>
                       <ListItemText>
-                        {sentence?.map((segment, i, arr) => (
+                        {sentence && sentence?.map((segment, i, arr) => (
                           <Typography
                             component='span'
                             key={i}
