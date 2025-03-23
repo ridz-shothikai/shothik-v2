@@ -13,5 +13,3 @@ To run the Docker container in watch mode for development:
    ```
    This will mount your current directory into the container, allowing changes to your code to be reflected in the running application.
 
-#
-...
