@@ -106,7 +106,7 @@ export default function AuthLoginForm({ loading, setLoading }) {
         />
       </Stack>
 
-      <Stack alignItems='flex-end' sx={{ my: 2 }}>
+      <Stack alignItems='flex-end'>
         <Button
           onClick={() => {
             dispatch(setShowForgotPasswordModal(true));
@@ -121,17 +121,10 @@ export default function AuthLoginForm({ loading, setLoading }) {
 
       <Button
         fullWidth
-        color='inherit'
         size='large'
         type='submit'
         variant='contained'
         loading={loading || isLoading}
-        sx={{
-          height: "44px",
-          background: (theme) =>
-            `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-          color: "white",
-        }}
       >
         Login
       </Button>

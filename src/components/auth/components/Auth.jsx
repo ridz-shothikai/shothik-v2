@@ -1,17 +1,15 @@
 import { Box, Link, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
-import React from "react";
 
 const Auth = ({ title, tag, children }) => {
   return (
     <>
       <Stack
-        spacing={4}
         alignItems='center'
-        gap={4}
+        gap={2}
         sx={{
-          mb: 4,
+          mb: 2,
           position: "relative",
         }}
       >

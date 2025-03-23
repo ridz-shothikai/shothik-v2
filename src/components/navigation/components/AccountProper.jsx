@@ -33,7 +33,7 @@ import Discord from "../../../resource/assets/Discord";
 export default function AccountPopover({ accessToken, user }) {
   const { themeMode } = useSelector((state) => state.settings);
   const [openPopover, setOpenPopover] = useState(null);
-    const enqueueSnackbar = useSnackbar();
+  const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const { push } = useRouter();
 
@@ -62,9 +62,6 @@ export default function AccountPopover({ accessToken, user }) {
 
   const popoverRef = useOutsideClick(() => handleClosePopover());
 
-
- 
-
   return (
     <>
       <Box
@@ -84,10 +81,7 @@ export default function AccountPopover({ accessToken, user }) {
             width={40}
             height={40}
           />
-        )
-         :
-         user && accessToken  ? 
-        (
+        ) : user && accessToken ? (
           <Box
             sx={{
               width: 40,
@@ -103,12 +97,12 @@ export default function AccountPopover({ accessToken, user }) {
             }}
           >
             {user?.name
-              ? `${String(user?.name ?? "").split(" ")[0][0] || ""}${user.name?.split(" ")[1]?.[0] || ""}`
+              ? `${String(user?.name ?? "").split(" ")[0][0] || ""}${
+                  user.name?.split(" ")[1]?.[0] || ""
+                }`
               : ""}
           </Box>
-        )
-        :
-         (
+        ) : (
           <PersonOutlineSharpIcon
             sx={{
               fontSize: 30,
@@ -146,7 +140,7 @@ export default function AccountPopover({ accessToken, user }) {
           },
         }}
       >
-        {accessToken && (
+        {user?.email && (
           <Box
             onClick={() => handleClickItem(PATH_ACCOUNT.settings.root)}
             sx={{
