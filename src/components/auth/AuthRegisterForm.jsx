@@ -179,17 +179,10 @@ export default function AuthRegisterForm({ country, loading }) {
         {/* Submit button */}
         <Button
           fullWidth
-          color='inherit'
           size='large'
           type='submit'
           variant='contained'
           loading={isLoading || loading}
-          sx={{
-            height: "44px",
-            background: (theme) =>
-              `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-            color: "white",
-          }}
         >
           Create account --
         </Button>

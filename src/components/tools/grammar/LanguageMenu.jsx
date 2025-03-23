@@ -3,7 +3,8 @@ import {
   KeyboardArrowUpOutlined,
 } from "@mui/icons-material";
 import { Button, Stack, Tab, Tabs } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
+import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
 
 const initLanguage = ["English", "Bangla"];
@@ -12,6 +13,7 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   const [languageTabs, setlanguageTabs] = useState(initLanguage);
   const [showMenu, setShowMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const isMobile = useResponsive("down", "sm");
 
   function handleLanguage(e) {
     setAnchorEl(e.currentTarget);
@@ -19,10 +21,11 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   }
 
   function handleLanguageMenu(value) {
+    const languageLength = isMobile ? 3 : 5;
     setlanguageTabs((prev) => {
       if (!prev.includes(value)) {
         const newTabs = [...prev, value];
-        return newTabs.length > 7 ? newTabs.slice(1) : newTabs;
+        return newTabs.length > languageLength ? newTabs.slice(1) : newTabs;
       }
       return prev;
     });
@@ -34,7 +37,7 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
       direction='row'
       alignItems='center'
       spacing={{ xs: 2, sm: 4 }}
-      sx={{ paddingX: 2 }}
+      sx={{ paddingX: 2, width: "100%" }}
     >
       <Tabs
         onChange={(_, value) => setLanguage(value)}

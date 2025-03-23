@@ -1,7 +1,7 @@
 "use client";
 import { InsertDriveFile } from "@mui/icons-material";
 import { Box, Card, Divider, Grid2 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
@@ -56,6 +56,7 @@ const ParaphraseContend = () => {
   const [result, setResult] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  const outputRef = useRef(null);
   const [showMessage, setShowMessage] = useState({
     show: false,
     Component: null,
@@ -216,6 +217,13 @@ const ParaphraseContend = () => {
       };
 
       await paraphrased(payload).unwrap();
+
+      if (isMobile && outputRef.current) {
+        outputRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
     } catch (error) {
       const actualError = error?.data?.error;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(actualError)) {
@@ -224,7 +232,9 @@ const ParaphraseContend = () => {
       } else if (actualError === "UNAUTHORIZED") {
         dispatch(setShowLoginModal(true));
       } else {
-        enqueueSnackbar(error?.data?.message, { variant: "error" });
+        enqueueSnackbar(error?.data?.message || error.message, {
+          variant: "error",
+        });
       }
       setProcessing({ success: false, loading: false });
       setIsLoading(false);
@@ -319,6 +329,7 @@ const ParaphraseContend = () => {
           {isMobile && !userInput ? null : (
             <Grid2
               size={{ xs: 12, md: 6 }}
+              ref={outputRef}
               sx={{
                 height: isMobile ? "calc(100vh - 340px)" : 530,
                 overflow: "hidden",
