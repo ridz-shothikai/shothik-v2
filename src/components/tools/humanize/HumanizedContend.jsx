@@ -12,6 +12,7 @@ import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
 import LanguageMenu from "../grammar/LanguageMenu";
+import AlertDialogMessage from "./AlertDialogMessage";
 import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
 import Navigations from "./Navigations";
@@ -230,6 +231,8 @@ const HumanizedContend = () => {
             Humanized Contend
           </Typography>
         )}
+
+        {showShalowAlert ? <AlertDialogMessage /> : null}
       </Card>
     </Stack>
   );
