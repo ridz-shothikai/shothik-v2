@@ -1,3 +1,6 @@
+"use client";
+
+
 import { Container } from "@mui/material";
 import React from "react";
 import { summarizeFaq } from "../../../_mock/tools/summarizefaq";
@@ -6,12 +9,12 @@ import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
 import SummarizeContend from "../../../components/tools/summarize/Summarize";
 
-export async function generateMetadata() {
-  return {
-    title: "Summarize | Shothik AI",
-    description: "This is Summarize page",
-  };
-}
+// export async function generateMetadata() {
+//   return {
+//     title: "Summarize | Shothik AI",
+//     description: "This is Summarize page",
+//   };
+// }
 
 const Summarize = () => {
   return (

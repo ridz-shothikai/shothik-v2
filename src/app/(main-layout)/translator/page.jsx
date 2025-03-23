@@ -1,3 +1,6 @@
+"use client";
+
+
 import { Container } from "@mui/material";
 import React from "react";
 import { transtorFaq } from "../../../_mock/tools/translator";
@@ -6,12 +9,12 @@ import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
 import Translator from "../../../components/tools/tanslator/Translator";
 
-export async function generateMetadata() {
-  return {
-    title: "Translator | Shothik AI",
-    description: "This is Translator page",
-  };
-}
+// export async function generateMetadata() {
+//   return {
+//     title: "Translator | Shothik AI",
+//     description: "This is Translator page",
+//   };
+// }
 
 const Translatorpage = () => {
   return (
