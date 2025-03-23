@@ -1,7 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const accessToken =
-  typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+let accessToken = null;
+if (typeof window !== "undefined") {
+  try {
+    accessToken = localStorage.getItem("accessToken");
+  } catch (error) {
+    console.error("Error accessing localStorage:", error);
+  }
+}
 
 const initialState = {
   accessToken: accessToken ? accessToken : null,
