@@ -70,7 +70,7 @@ const useGeolocation = () => {
     fetchLocation();
   }, []);
 
-  return { location: "USA", error, isLoading };
+  return { location, error, isLoading };
 };
 
 export default useGeolocation;
