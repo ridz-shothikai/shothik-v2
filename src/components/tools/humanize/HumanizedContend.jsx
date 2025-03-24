@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import useResponsive from "../../../hooks/useResponsive";
+import { useEffect } from "react";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
@@ -30,12 +31,20 @@ const LENGTH = {
 const HumanizedContend = () => {
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [showShalowAlert, setShalowAlert] = useState(false);
-  const [outputContend, setOutputContend] = useState([]);
+  const [outputContent, setOutputContent] = useState([]);
   const [humanizeContend] = useHumanizeContendMutation();
   const miniLabel = useResponsive("between", "md", "xl");
   const { user } = useSelector((state) => state.auth);
-  const [language, setLanguage] = useState("English");
+  const [language, setLanguage] = useState(() => {
+    // Get the language from local storage or default to "English"
+    return typeof window !== 'undefined' ? localStorage.getItem('language') || "English" : "English";
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Update local storage when the language changes
+    localStorage.setItem('language', language);
+  }, [language]);
   const [loadingAi, setLoadingAi] = useState(false);
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
@@ -53,10 +62,10 @@ const HumanizedContend = () => {
     setUserInput("");
     setScores([]);
     setShowIndex(0);
-    setOutputContend([]);
+    setOutputContent([]);
   }
 
-  const handleAiDitectors = () => {
+  const handleAiDetectors = () => {
     setLoadingAi(true);
     setTimeout(() => {
       setLoadingAi(false);
@@ -90,7 +99,7 @@ const HumanizedContend = () => {
         };
       }
       const scores = data.output.map((item) => item.score);
-      setOutputContend(data.output);
+      setOutputContent(data.output);
       setScores(scores);
       setUpdate((prev) => !prev);
     } catch (err) {
@@ -184,7 +193,7 @@ const HumanizedContend = () => {
       </Card>
 
       <Navigations
-        hasOutput={outputContend.length}
+        hasOutput={outputContent.length}
         isLoading={isLoading}
         isMobile={isMobile}
         miniLabel={miniLabel}
@@ -192,7 +201,7 @@ const HumanizedContend = () => {
         userInput={userInput}
         wordCount={wordCount}
         wordLimit={wordLimit}
-        handleAiDitectors={handleAiDitectors}
+        handleAiDitectors={handleAiDetectors}
         handleSubmit={handleSubmit}
         loadingAi={loadingAi}
         userPackage={user?.package}
@@ -208,11 +217,11 @@ const HumanizedContend = () => {
         />
       ) : null}
 
-      {outputContend.length ? (
+      {outputContent.length ? (
         <OutputNavigation
           isMobile={isMobile}
-          outputs={outputContend.length}
-          selectedContend={outputContend[showIndex]?.text}
+          outputs={outputContent.length}
+          selectedContend={outputContent[showIndex]?.text}
           setShowIndex={setShowIndex}
           showIndex={showIndex}
         />
@@ -220,8 +229,8 @@ const HumanizedContend = () => {
 
       {/* output  */}
       <Card sx={{ height: 380, overflowY: "auto", padding: 2 }}>
-        {outputContend[showIndex] ? (
-          <Typography>{outputContend[showIndex].text}</Typography>
+        {outputContent[showIndex] ? (
+          <Typography>{outputContent[showIndex].text}</Typography>
         ) : (
           <Typography sx={{ color: "text.disabled" }}>
             Humanized Contend
