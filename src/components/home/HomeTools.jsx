@@ -27,7 +27,7 @@ export default function HomeTools() {
             fontWeight: 600,
           }}
         >
-          Six powerful{" "}
+          Seven powerful{" "}
           <b
             style={{
               background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",

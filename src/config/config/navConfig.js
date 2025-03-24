@@ -128,6 +128,14 @@ const tools = [
     link: "/translator",
     iconColor: "#A07EFB",
   },
+  {
+    icon: ICONS.research,
+    title: "Research",
+    description: "Web and Academic Research",
+    label: null,
+    link: "/research",
+    iconColor: "#B71D18",
+  },
 ];
 
 // export

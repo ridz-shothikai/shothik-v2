@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { setShowLoginModal } from "../../../redux/slice/auth";
@@ -43,6 +44,7 @@ const SummarizeContend = () => {
   const isMobile = useResponsive("down", "sm");
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  const loadingText = useLoadingText(isLoading);
   const sampleText = trySamples.summarize.English;
 
   async function fetchWithStreaming(payload) {
@@ -182,7 +184,7 @@ const SummarizeContend = () => {
               fullWidth
               multiline
               placeholder='Summarized text'
-              value={outputContend}
+              value={loadingText ? loadingText : outputContend}
               disabled
               sx={{
                 flexGrow: 1,

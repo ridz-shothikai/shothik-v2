@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
+import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { setShowLoginModal } from "../../../redux/slice/auth";
@@ -23,6 +24,7 @@ const GrammarContend = () => {
   const [errors, setErrors] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  const loadingText = useLoadingText(isLoading);
   const sampleText = trySamples.grammar[language];
 
   useEffect(() => {
@@ -164,7 +166,7 @@ const GrammarContend = () => {
               fullWidth
               multiline
               placeholder='Corrected output'
-              value={outputContend}
+              value={loadingText ? loadingText : outputContend}
               disabled
               sx={{
                 flexGrow: 1,

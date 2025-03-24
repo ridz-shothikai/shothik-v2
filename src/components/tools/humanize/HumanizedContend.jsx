@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
-import { useEffect } from "react";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
@@ -35,17 +35,10 @@ const HumanizedContend = () => {
   const [humanizeContend] = useHumanizeContendMutation();
   const miniLabel = useResponsive("between", "md", "xl");
   const { user } = useSelector((state) => state.auth);
-  const [language, setLanguage] = useState(() => {
-    // Get the language from local storage or default to "English"
-    return typeof window !== 'undefined' ? localStorage.getItem('language') || "English" : "English";
-  });
+  const [language, setLanguage] = useState("English");
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    // Update local storage when the language changes
-    localStorage.setItem('language', language);
-  }, [language]);
   const [loadingAi, setLoadingAi] = useState(false);
+  const sampleText = trySamples.humanize[language];
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const [showIndex, setShowIndex] = useState(0);
@@ -56,7 +49,7 @@ const HumanizedContend = () => {
   const [scores, setScores] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const sampleText = trySamples.humanize[language];
+  const loadingText = useLoadingText(isLoading);
 
   function handleClear() {
     setUserInput("");
@@ -79,7 +72,7 @@ const HumanizedContend = () => {
 
       setLoadingAi(true);
       setIsLoading(true);
-      // setOutputContend([]);
+      setOutputContent([]);
       setScores([]);
       setShowIndex(0);
       let text = userInput;
@@ -233,7 +226,7 @@ const HumanizedContend = () => {
           <Typography>{outputContent[showIndex].text}</Typography>
         ) : (
           <Typography sx={{ color: "text.disabled" }}>
-            Humanized Contend
+            {loadingText ? loadingText : "Humanized Contend"}
           </Typography>
         )}
 

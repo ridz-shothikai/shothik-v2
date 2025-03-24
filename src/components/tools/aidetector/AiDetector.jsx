@@ -13,6 +13,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
@@ -55,6 +56,7 @@ const AiDetector = () => {
   const params = useSearchParams();
   const share_id = params.get("share_id");
   const dispatch = useDispatch();
+  const loadingText = useLoadingText(isLoading);
   const { data: shareContend, isLoading: isContendLoading } =
     useGetShareAidetectorContendQuery(share_id, {
       skip: !share_id,
@@ -156,7 +158,7 @@ const AiDetector = () => {
                 fullWidth
                 multiline
                 placeholder='Enter your text here...'
-                value={userInput}
+                value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 sx={{
                   flexGrow: 1,

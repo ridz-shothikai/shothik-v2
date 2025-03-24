@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { setShowLoginModal } from "../../../redux/slice/auth";
@@ -21,6 +22,7 @@ const Translator = () => {
   const isMobile = useResponsive("down", "sm");
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  const loadingText = useLoadingText(isLoading);
   const sampleText = trySamples.translator.English;
   const [translateLang, setTranslateLang] = useState({
     fromLang: "Auto Detect",
@@ -189,13 +191,13 @@ const Translator = () => {
             size={{ xs: 12, md: 6 }}
           >
             <TextField
-              name='input'
+              name='output'
               variant='outlined'
               rows={isMobile ? 15 : 19}
               fullWidth
               multiline
               placeholder={"Translated text"}
-              value={outputContend}
+              value={loadingText ? loadingText : outputContend}
               disabled
               sx={{
                 flexGrow: 1,
