@@ -1,3 +1,4 @@
+"use client";
 import { Box, Container } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -19,7 +20,9 @@ export default function Main({ children }) {
   const pathName = usePathname();
 
   useEffect(() => {
-    dispatch(loadSettingsFromLocalStorage());
+    if (typeof window !== "undefined") {
+      dispatch(loadSettingsFromLocalStorage());
+    }
   }, []);
 
   return (
