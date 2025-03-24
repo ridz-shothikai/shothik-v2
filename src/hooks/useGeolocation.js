@@ -70,6 +70,7 @@ const useGeolocation = () => {
     fetchLocation();
   }, []);
 
+  console.log({ location });
   return { location, error, isLoading };
 };
 

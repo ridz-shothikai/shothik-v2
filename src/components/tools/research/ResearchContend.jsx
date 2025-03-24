@@ -110,7 +110,7 @@ const ResearchContend = () => {
               return [...updatedPrev, TextMessage];
             });
           } catch (error) {
-            console.log(error);
+            console.log("error", value);
           }
         }
       }
