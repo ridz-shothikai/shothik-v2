@@ -4,6 +4,7 @@ import {
   ThemeProvider as MUIThemeProvider,
   StyledEngineProvider,
 } from "@mui/material/styles";
+import * as React from "react";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import customShadows from "./customShadows";
@@ -33,12 +34,12 @@ export default function ThemeProvider({ children }) {
   theme.components = componentsOverride(theme);
 
   return (
-    <StyledEngineProvider injectFirst>
-      <MUIThemeProvider theme={theme}>
+    <MUIThemeProvider theme={theme}>
+      <StyledEngineProvider injectFirst>
         <CssBaseline />
         <GlobalStyles />
         {children}
-      </MUIThemeProvider>
-    </StyledEngineProvider>
+      </StyledEngineProvider>
+    </MUIThemeProvider>
   );
 }
