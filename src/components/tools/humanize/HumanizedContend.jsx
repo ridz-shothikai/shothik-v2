@@ -79,7 +79,7 @@ const HumanizedContend = () => {
 
       setLoadingAi(true);
       setIsLoading(true);
-      setOutputContend([]);
+      // setOutputContend([]);
       setScores([]);
       setShowIndex(0);
       let text = userInput;

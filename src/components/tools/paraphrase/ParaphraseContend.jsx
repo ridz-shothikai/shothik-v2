@@ -340,7 +340,7 @@ const ParaphraseContend = () => {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "darkgray", paddingLeft: 15 }}>
+              {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                 {isLoading ? (
                   <ViewInputInOutAsDemo
                     input={userInput}
@@ -349,7 +349,7 @@ const ParaphraseContend = () => {
                 ) : !result.length ? (
                   <p>Paraphrased Text</p>
                 ) : null}
-              </div>
+              </div> */}
 
               {result.length ? (
                 <>
