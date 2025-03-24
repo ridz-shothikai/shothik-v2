@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function LoadingScreen() {
+export default function CheckmarkLoader({ size = 60 }) {
   const [checkmarkVisible, setCheckmarkVisible] = useState(false);
-
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setCheckmarkVisible(true);
@@ -12,22 +12,19 @@ export default function LoadingScreen() {
     return () => clearTimeout(timer);
   }, []);
 
+  const circleSize = size;
+  const svgSize = Math.round(size * 0.6);
+  const strokeWidth = Math.max(2, Math.round(size * 0.05));
+  
   return (
     <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
       display: "flex",
       alignItems: "center",
-      justifyContent: "center",
-      backgroundColor: "#fff",
-      zIndex: 9999
+      justifyContent: "center"
     }}>
       <div style={{
-        width: "80px",
-        height: "80px",
+        width: `${circleSize}px`,
+        height: `${circleSize}px`,
         borderRadius: "50%",
         backgroundColor: "#4caf50",
         display: "flex",
@@ -38,12 +35,12 @@ export default function LoadingScreen() {
       }}>
         {checkmarkVisible && (
           <svg 
-            width="48" 
-            height="48" 
+            width={svgSize} 
+            height={svgSize} 
             viewBox="0 0 24 24" 
             fill="none" 
             stroke="white"
-            strokeWidth="3"
+            strokeWidth={strokeWidth}
             strokeLinecap="round"
             strokeLinejoin="round"
             style={{
