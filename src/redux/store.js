@@ -20,12 +20,15 @@ const store = configureStore({
     [toolsApiSlice.reducerPath]: toolsApiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(
       authApiSlice.middleware,
       blogApiSlice.middleware,
       pricingApiSlice.middleware,
       toolsApiSlice.middleware
     ),
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 export default store;
