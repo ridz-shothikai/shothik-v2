@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Component, useEffect } from 'react';
+import { Component } from "react";
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -10,6 +10,7 @@ class ErrorBoundary extends Component {
 
   static getDerivedStateFromError(error) {
     // Update state so the next render will show the fallback UI.
+    console.log(error);
     return { hasError: true };
   }
 
@@ -31,8 +32,15 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <div  style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <p style={{ fontSize:1 }}>.</p>
+        <div
+          style={{
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <p style={{ fontSize: 1 }}>.</p>
         </div>
       );
     }

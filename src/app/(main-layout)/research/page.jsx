@@ -1,4 +1,5 @@
 import { Container } from "@mui/material";
+import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import ResearchContend from "../../../components/tools/research/ResearchContend";
 
 export async function generateMetadata() {
@@ -11,7 +12,9 @@ export async function generateMetadata() {
 const Research = () => {
   return (
     <Container>
-      <ResearchContend />
+      <ErrorBoundary>
+        <ResearchContend />
+      </ErrorBoundary>
     </Container>
   );
 };

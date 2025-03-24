@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
-import React from "react";
 import { grammarfaq } from "../../../_mock/tools/grammarfaq";
+import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
@@ -18,7 +18,9 @@ const Grammar = () => {
     <Container
       sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
     >
-      <GrammarContend />
+      <ErrorBoundary>
+        <GrammarContend />
+      </ErrorBoundary>
       <ToolsSepecigFaq
         tag='All you need to know about Grammar Checker feature'
         data={grammarfaq}

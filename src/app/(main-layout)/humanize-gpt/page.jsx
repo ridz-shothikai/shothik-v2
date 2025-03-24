@@ -4,7 +4,8 @@ import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
 // import HumanizedContend from "../../../components/tools/humanize/HumanizedContend";
-import HumanizeClient from "./HumanizeClient";
+import ErrorBoundary from "../../../components/common/ErrorBoundary";
+import HumanizedContend from "../../../components/tools/humanize/HumanizedContend";
 
 export async function generateMetadata() {
   return {
@@ -38,7 +39,9 @@ const Humanize = () => {
     <Container
       sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
     >
-      <HumanizeClient />
+      <ErrorBoundary>
+        <HumanizedContend />
+      </ErrorBoundary>
       <ToolsSepecigFaq
         tag='All you need to know about Humanize GPT feature'
         data={humanizeFaq}
