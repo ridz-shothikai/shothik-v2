@@ -10,6 +10,6 @@ To run the Docker container in watch mode for development:
 2. Run the Docker container with volume mounting:
    ```bash
    docker run -p 3000:3000 -v $(pwd):/app shothik-frontend
-   ```
+
    This will mount your current directory into the container, allowing changes to your code to be reflected in the running application.
 
