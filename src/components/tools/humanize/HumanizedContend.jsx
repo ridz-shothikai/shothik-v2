@@ -41,6 +41,7 @@ const HumanizedContend = () => {
   const sampleText = trySamples.humanize[language];
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
+  const loadingText = useLoadingText(isLoading);
   const [showIndex, setShowIndex] = useState(0);
   const isMobile = useResponsive("down", "sm");
   const { wordLimit } = useWordLimit("bypass");
@@ -49,7 +50,6 @@ const HumanizedContend = () => {
   const [scores, setScores] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const loadingText = useLoadingText(isLoading);
 
   function handleClear() {
     setUserInput("");

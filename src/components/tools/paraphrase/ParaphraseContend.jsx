@@ -34,13 +34,13 @@ const SYNONYMS = {
 
 const ParaphraseContend = () => {
   const [selectedSynonyms, setSelectedSynonyms] = useState(SYNONYMS[20]);
-  const { user } = useSelector((state) => state.auth);
   const [outputHistoryIndex, setOutputHistoryIndex] = useState(0);
   const [highlightSentence, setHighlightSentence] = useState(0);
   const [selectedMode, setSelectedMode] = useState("Standard");
   const [outputWordCount, setOutputWordCount] = useState(0);
   const [outputHistory, setOutputHistory] = useState([]);
   const [outputContend, setOutputContend] = useState("");
+  const { user } = useSelector((state) => state.auth);
   const [language, setLanguage] = useState("English");
   const [updateHtml, setUpdateHtml] = useState(false);
   const [processing, setProcessing] = useState(false);
