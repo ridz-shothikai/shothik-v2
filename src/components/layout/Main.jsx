@@ -48,10 +48,13 @@ export default function Main({ children }) {
         disableGutters
         sx={{ minHeight: "calc(100vh - 90px)" }}
       >
-        {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
+        {pathName.startsWith("/account") ||
+        /\/research|\/agent/.test(pathName) ? null : (
+          <MobileNavigation />
+        )}
         {children}
       </Container>
-      {pathName !== "/research" ? <FooterServerComponent /> : null}
+      {!/\/research|\/agent/.test(pathName) ? <FooterServerComponent /> : null}
     </Box>
   );
 }
