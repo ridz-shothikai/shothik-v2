@@ -14,22 +14,14 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-const tasks = [
-  "Visit YC official website",
-  "Search for W25 B2B tag in Companies directory",
-  "Collect enterprise information for W25 B2B companies",
-  "Organize collected data into structured table format",
-  "Verify completeness of enterprise information",
-  "Create final document with compiled company details",
-  "Deliver results to user",
-];
-
-export default function TaskProgress() {
+export default function TaskProgress({ taskProgress }) {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpanded = () => {
     setExpanded((prev) => !prev);
   };
+
+  const taskDone = taskProgress.filter((item) => item?.status === "success");
 
   return (
     <Box
@@ -55,12 +47,24 @@ export default function TaskProgress() {
               Task progress
             </Typography>
             <List dense>
-              {tasks.map((task, index) => (
+              {taskProgress.map((task, index) => (
                 <ListItem key={index}>
                   <ListItemIcon>
-                    <CheckCircleIcon color='success' fontSize='small' />
+                    <CheckCircleIcon
+                      color={
+                        task?.status === "success" ? "success" : "disabled"
+                      }
+                      fontSize='small'
+                    />
                   </ListItemIcon>
-                  <ListItemText primary={task} />
+                  <ListItemText
+                    sx={{
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                    }}
+                    primary={task?.name}
+                  />
                 </ListItem>
               ))}
             </List>
@@ -84,9 +88,20 @@ export default function TaskProgress() {
             alignItems='center'
             justifyContent='space-between'
           >
-            <Typography variant='body2'>Deliver results to user</Typography>
+            <Typography
+              sx={{
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+              }}
+              variant='body2'
+            >
+              {taskProgress[taskProgress.length - 1]?.name}
+            </Typography>
             <Stack direction='row' alignItems='center' gap={1}>
-              <Typography variant='caption'>7/{tasks.length}</Typography>
+              <Typography variant='caption'>
+                {taskDone.length}/{taskProgress.length}
+              </Typography>
               <IconButton onClick={toggleExpanded} color='inherit' size='small'>
                 {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
