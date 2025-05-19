@@ -1,5 +1,17 @@
 "use client";
-import { Box, List, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  List,
+  ListItem,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import {
   ArcElement,
   BarElement,
@@ -13,7 +25,7 @@ import {
   Tooltip,
 } from "chart.js";
 import Marked from "marked-react";
-import { Bar, Pie } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
 ChartJS.register(
   LineElement,
@@ -30,16 +42,33 @@ ChartJS.register(
 const RenderMarkdown = ({ content }) => {
   const renderer = {
     paragraph(children) {
-      return <Typography key={this.elementId}>{children}</Typography>;
-    },
-
-    heading(children) {
       return (
-        <Typography key={this.elementId} variant='h4' sx={{ my: 2 }}>
+        <Typography key={this.elementId} sx={{ my: 1 }}>
           {children}
         </Typography>
       );
     },
+
+    heading(children, level) {
+      const variantMap = {
+        1: "h3",
+        2: "h4",
+        3: "h5",
+        4: "h6",
+        5: "subtitle1",
+        6: "subtitle2",
+      };
+      return (
+        <Typography
+          key={this.elementId}
+          variant={variantMap[level] || "body1"}
+          sx={{ my: 2 }}
+        >
+          {children}
+        </Typography>
+      );
+    },
+
     list(children, ordered) {
       return (
         <List
@@ -56,6 +85,7 @@ const RenderMarkdown = ({ content }) => {
         </List>
       );
     },
+
     listItem(children) {
       return (
         <ListItem
@@ -70,9 +100,15 @@ const RenderMarkdown = ({ content }) => {
         </ListItem>
       );
     },
-    code(children) {
-      const data = JSON.parse(children);
 
+    code(children) {
+      let data;
+      try {
+        data = JSON.parse(children);
+      } catch {}
+
+      console.log("data", data);
+      if (!data) return null;
       return (
         <Box
           key={this.elementId}
@@ -80,16 +116,47 @@ const RenderMarkdown = ({ content }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            my: 2,
           }}
         >
           <div style={{ height: "300px", width: "auto" }}>
             {data?.type === "bar" ? (
-              <Bar data={data.data} options={data.options} />
+              <Pie data={data.data} />
             ) : data?.type === "pie" ? (
-              <Pie data={data.data} options={data.options} />
+              <Pie data={data.data} />
             ) : null}
           </div>
         </Box>
+      );
+    },
+
+    table(children) {
+      return (
+        <TableContainer key={this.elementId} component={Paper} sx={{ my: 2 }}>
+          <Table size='small'>{children}</Table>
+        </TableContainer>
+      );
+    },
+
+    tableHead(children) {
+      return <TableHead key={this.elementId}>{children}</TableHead>;
+    },
+
+    tableBody(children) {
+      return <TableBody key={this.elementId}>{children}</TableBody>;
+    },
+
+    tableRow(children) {
+      return <TableRow key={this.elementId}>{children}</TableRow>;
+    },
+
+    tableCell(children, { header }) {
+      return header ? (
+        <TableCell key={this.elementId} component='th' scope='col'>
+          <strong>{children}</strong>
+        </TableCell>
+      ) : (
+        <TableCell key={this.elementId}>{children}</TableCell>
       );
     },
   };

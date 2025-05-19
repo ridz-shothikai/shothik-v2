@@ -1,5 +1,10 @@
 import Editor from "@monaco-editor/react";
-import { BrowserUpdated, Terminal, UnfoldLess } from "@mui/icons-material";
+import {
+  Psychology,
+  SmartToy,
+  TravelExplore,
+  UnfoldLess,
+} from "@mui/icons-material";
 import {
   Box,
   Card,
@@ -9,10 +14,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { motion } from "motion/react";
-import Image from "next/image";
+import RenderMarkdown from "./RenderMarkdown";
 import TaskProgress from "./TaskProgress";
 
-const ComputerWindow = ({ computerLogs, closeWindow }) => {
+const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
 
@@ -53,10 +58,28 @@ const ComputerWindow = ({ computerLogs, closeWindow }) => {
         position: "relative",
       }}
     >
-      <Stack direction='row' justifyContent='space-between' alignItems='center'>
-        <Typography fontSize={18} fontWeight={700}>
-          Shothik AI Computer
-        </Typography>
+      <Stack
+        mb={0.5}
+        direction='row'
+        justifyContent='space-between'
+        alignItems='center'
+      >
+        <Stack direction='row' alignItems='center' gap={1}>
+          <IconButton
+            disableRipple
+            sx={{
+              backgroundColor: "rgba(0, 167, 111, 0.1)",
+              color: "#00A76F",
+              borderRadius: 1,
+              padding: 0.5,
+            }}
+          >
+            <SmartToy />
+          </IconButton>
+          <Typography fontSize={18} fontWeight={700}>
+            Shothik AI Computer
+          </Typography>
+        </Stack>
         <IconButton onClick={closeWindow}>
           <UnfoldLess
             sx={{ color: "text.secondary", transform: "rotate(45deg)" }}
@@ -64,42 +87,29 @@ const ComputerWindow = ({ computerLogs, closeWindow }) => {
         </IconButton>
       </Stack>
 
-      <Stack direction='row' alignItems='center' gap={1} mb={1}>
-        <IconButton
-          disableRipple
-          sx={{
-            bgcolor: "rgba(73, 149, 87, 0.04)",
-            borderRadius: "5px",
-          }}
-        >
-          {computerLogs.icon === "browser" ? (
-            <BrowserUpdated fontSize='small' />
-          ) : (
-            <Terminal fontSize='small' />
-          )}
-        </IconButton>
-        <Box>
-          <Typography fontSize={14}>
-            Shothik is using {computerLogs.icon}
-          </Typography>
-          <Typography
-            sx={{
-              backgroundColor: dark ? "rgba(4, 64, 57, 0.5)" : "#cbe9dd",
-              paddingX: 1.3,
-              paddingY: 0.2,
-              borderRadius: 2,
-              cursor: "pointer",
-              width: "fit-content",
-              color: dark ? "primary.lighter" : "primary.darker",
-              display: "flex",
-              alignItems: "center",
-              gap: 0.5,
-              fontSize: 12,
-            }}
-          >
-            {computerLogs.message}
-          </Typography>
-        </Box>
+      <Stack
+        sx={{
+          backgroundColor: dark ? "rgba(4, 64, 57, 0.5)" : "#cbe9dd",
+          paddingX: 1.5,
+          paddingY: 0.5,
+          borderRadius: 2,
+          cursor: "pointer",
+          width: "fit-content",
+          color: dark ? "primary.lighter" : "primary.darker",
+        }}
+        direction='row'
+        alignItems='center'
+        gap={0.5}
+        mb={1}
+      >
+        <Typography fontSize={14}>Shothik AI Agent is using</Typography>
+        {computerLogs.agent_name === "browser_agent" ? (
+          <TravelExplore sx={{ fontSize: 16, color: "primary.main" }} />
+        ) : computerLogs.agent_name === "planner_agent" ? (
+          <Psychology sx={{ fontSize: 18, color: "primary.main" }} />
+        ) : (
+          <SmartToy sx={{ color: "#00A76F", fontSize: 16 }} />
+        )}
       </Stack>
 
       <Typography
@@ -112,9 +122,15 @@ const ComputerWindow = ({ computerLogs, closeWindow }) => {
           borderRadius: 1,
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
+          color: "primary.darker",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
         }}
       >
-        {computerLogs.link?.split(".com/")[0]}
+        {computerLogs?.message?.includes("##") && computerLogs?.type === "text"
+          ? "Shothik AI Agent Task is completed"
+          : computerLogs.message}
       </Typography>
       <Box
         sx={{
@@ -124,22 +140,14 @@ const ComputerWindow = ({ computerLogs, closeWindow }) => {
           borderTopRightRadius: 0,
           height: "68%",
           overflow: "hidden",
+          overflowY: "auto",
         }}
       >
-        {computerLogs.link?.startsWith("https://") ? (
-          <Image
-            src={computerLogs.link}
-            alt='screenshort'
-            height={300}
-            width={200}
-            style={{ height: "100%", width: "100%", objectFit: "cover" }}
-            objectFit='cover'
-          />
-        ) : (
+        {computerLogs?.type === "tool" ? (
           <Editor
-            height='400px'
+            height='100%'
             defaultLanguage='markdown'
-            defaultValue={computerLogs.data}
+            value={computerLogs?.data?.result}
             beforeMount={handleEditorWillMount}
             theme={dark ? "vs-dark" : "mint-light-theme"}
             options={{
@@ -150,11 +158,22 @@ const ComputerWindow = ({ computerLogs, closeWindow }) => {
               wordWrap: "on",
             }}
           />
-        )}
+        ) : computerLogs?.type === "result" ||
+          computerLogs?.message?.includes("##") ? (
+          <Box sx={{ paddingX: 2 }}>
+            <RenderMarkdown
+              content={
+                computerLogs?.message?.includes("##")
+                  ? computerLogs?.message
+                  : computerLogs?.data
+              }
+            />
+          </Box>
+        ) : null}
       </Box>
 
       {/* bottom progress */}
-      <TaskProgress />
+      <TaskProgress taskProgress={taskProgress} />
     </Card>
   );
 };

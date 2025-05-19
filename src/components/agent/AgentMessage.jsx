@@ -1,7 +1,10 @@
+import { keyframes } from "@emotion/react";
 import {
+  AutoMode,
   CheckCircle,
   ExpandMore,
-  Terminal,
+  Psychology,
+  SmartToy,
   TravelExplore,
 } from "@mui/icons-material";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
@@ -22,15 +25,33 @@ export default function AgentMessage({ message, handleSideView }) {
 
   const data = message?.content;
   if (!data && !data.length) return null;
+  const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
   return (
     <Box>
       <Stack direction='row' gap={2} alignItems='center'>
         <SmartToyIcon sx={{ color: "#00A76F", fontSize: 30 }} />
         <Typography fontWeight={600}>Shothik AI Agent</Typography>
       </Stack>
-      <Typography mb={2} variant='body1'>
-        {data[0].message}
-      </Typography>
+      {data[0]?.message?.includes("##") ? (
+        <RenderResponse
+          sx={{ marginTop: 1 }}
+          item={data[0]}
+          dark={dark}
+          handleSideView={handleSideView}
+        />
+      ) : (
+        <Typography fontSize={16} mt={1}>
+          {data[0]?.message}
+        </Typography>
+      )}
 
       {data.slice(1, data.length).map((item, index, arr) => (
         <Stack sx={{ position: "relative" }} key={index}>
@@ -90,11 +111,19 @@ export default function AgentMessage({ message, handleSideView }) {
             }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMore />}
+              expandIcon={item?.message?.includes("##") ? null : <ExpandMore />}
               aria-controls={`logs-${index}`}
               id={`logs-${index}`}
             >
-              <Typography>{item.message}</Typography>
+              {item?.message?.includes("##") ? (
+                <RenderResponse
+                  item={item}
+                  dark={dark}
+                  handleSideView={handleSideView}
+                />
+              ) : (
+                <Typography>{item.message}</Typography>
+              )}
             </AccordionSummary>
             <AccordionDetails
               sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}
@@ -116,7 +145,7 @@ export default function AgentMessage({ message, handleSideView }) {
                     } else if (subMessage.type === "tool") {
                       return (
                         <Box
-                          // onClick={() => handleSideView(subMessage)}
+                          onClick={() => handleSideView(subMessage)}
                           sx={{
                             backgroundColor: dark
                               ? "rgba(4, 64, 57, 0.5)"
@@ -137,12 +166,18 @@ export default function AgentMessage({ message, handleSideView }) {
                           <Typography>||</Typography>
                           {subMessage.agent_name === "browser_agent" ? (
                             <TravelExplore
-                              sx={{ fontSize: 14, color: "primary.main" }}
+                              sx={{ fontSize: 16, color: "primary.main" }}
+                            />
+                          ) : subMessage.agent_name === "planner_agent" ? (
+                            <Psychology
+                              sx={{ fontSize: 18, color: "primary.main" }}
                             />
                           ) : (
-                            <Terminal sx={{ fontSize: 14 }} />
+                            <SmartToyIcon
+                              sx={{ color: "#00A76F", fontSize: 16 }}
+                            />
                           )}
-                          {console.log(subMessage)}
+
                           <Typography
                             noWrap
                             sx={{
@@ -154,7 +189,17 @@ export default function AgentMessage({ message, handleSideView }) {
                           >
                             {subMessage.message}
                           </Typography>
-                          <Button>View</Button>
+                          {subMessage?.status === "progress" ? (
+                            <AutoMode
+                              sx={{
+                                animation: `${spin} 2s linear infinite`,
+                                fontSize: 16,
+                                color: "primary.main",
+                              }}
+                            />
+                          ) : (
+                            <Button sx={{ padding: 0 }}>View</Button>
+                          )}
                         </Box>
                       );
                     } else return null;
@@ -164,6 +209,45 @@ export default function AgentMessage({ message, handleSideView }) {
           </Accordion>
         </Stack>
       ))}
+    </Box>
+  );
+}
+
+function RenderResponse({ item, dark, handleSideView, sx }) {
+  if (!item) return null;
+  return (
+    <Box
+      onClick={() =>
+        handleSideView({
+          type: "result",
+          data: item.message,
+          status: item.status,
+          agent_name: item.agent_name,
+          message: "Shothik AI Agent Task is completed",
+        })
+      }
+      sx={{
+        backgroundColor: dark ? "rgba(4, 64, 57, 0.5)" : "#cbe9dd",
+        paddingX: 1.5,
+        paddingY: 0.5,
+        borderRadius: 2,
+        cursor: "pointer",
+        width: "fit-content",
+        color: dark ? "primary.lighter" : "primary.darker",
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5,
+        ...sx,
+      }}
+    >
+      <SmartToy sx={{ color: "#00A76F", fontSize: 16 }} />
+      <Typography fontSize={14} fontWeight={600}>
+        Shothik AI Agent Task is completed
+      </Typography>
+      <Typography>||</Typography>
+      <Typography fontWeight={600} fontSize={14}>
+        View
+      </Typography>
     </Box>
   );
 }
