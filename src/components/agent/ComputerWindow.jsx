@@ -173,7 +173,9 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
       </Box>
 
       {/* bottom progress */}
-      <TaskProgress taskProgress={taskProgress} />
+      {taskProgress.length ? (
+        <TaskProgress taskProgress={taskProgress} />
+      ) : null}
     </Card>
   );
 };
