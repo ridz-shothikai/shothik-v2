@@ -1,7 +1,8 @@
 "use client";
-import { Box, Container, Grid2 } from "@mui/material";
+import { Replay } from "@mui/icons-material";
+import { Box, Container, Grid2, Stack, Typography } from "@mui/material";
 import { AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ChatContainer from "../../../components/agent/ChatContainer";
 import ComputerWindow from "../../../components/agent/ComputerWindow";
@@ -9,16 +10,21 @@ import InputArea from "../../../components/agent/InputArea";
 import useResponsive from "../../../hooks/useResponsive";
 
 export default function AgentPage() {
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [computerLogs, setComputerLogs] = useState(null);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [expanded, setExpanded] = useState(false);
-  const isMobile = useResponsive("down", "md");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { user } = useSelector((state) => state.auth);
   const [taskProgress, setTaskProgress] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [sessionId, setSessionId] = useState(null);
+  const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const isMobile = useResponsive("down", "md");
+  const messagesContainerRef = useRef(null);
+  const autoScrollTimeout = useRef(null);
+  const [error, setError] = useState("");
+  const messageBottomRef = useRef(null);
 
-  async function requestToAgent(message) {
+  async function requestToAgent(user_query) {
     try {
       setLoading(true);
       setError("");
@@ -28,9 +34,17 @@ export default function AgentPage() {
       }
 
       const formData = new FormData();
-      formData.append("query", message);
+      formData.append("query", user_query.message);
       formData.append("user_id", user._id);
-      formData.append("session_id", user._id);
+      if (sessionId) {
+        formData.append("session_id", sessionId);
+      }
+      if (user_query.files) {
+        for (let i = 0; i < user_query.files.length; i++) {
+          formData.append("files", user_query.files[i]);
+        }
+      }
+
       const response = await fetch("http://localhost:5001/agent", {
         method: "POST",
         body: formData,
@@ -50,86 +64,93 @@ export default function AgentPage() {
           if (fixed.includes("Error:")) {
             throw fixed;
           }
+
           try {
             fixed.split("json_data:").forEach((item) => {
-              if (item.trim() !== "") {
-                console.log("newMessage", item);
+              if (item.trim() === "") return;
 
-                const newMessage = JSON.parse(item);
+              console.log("newMessage", item);
 
-                if (newMessage?.type === "tool") {
-                  setTaskProgress((prev) => {
-                    const lastContent = prev[prev.length - 1];
-                    if (lastContent?.status === "progress") {
-                      lastContent.status = "success";
-                    } else {
-                      prev.push({
-                        name: newMessage?.message?.slice(0, 200),
-                        status: "progress",
-                      });
-                    }
-                    return [...prev];
-                  });
-                }
+              const newMessage = JSON.parse(item);
 
-                setChatHistory((history) => {
-                  // Create a copy to avoid direct state mutation
-                  const updatedHistory = [...history];
+              //check inital response;
+              if (newMessage.type === "initial_response") {
+                setSessionId(newMessage.session_id);
+                return;
+              }
 
-                  // Check if history is empty or last message is not from assistant
-                  if (
-                    updatedHistory[updatedHistory.length - 1].role !==
-                    "assistant"
-                  ) {
-                    // Add new assistant message with the new data
-                    updatedHistory.push({
-                      role: "assistant",
-                      content: [newMessage],
-                    });
+              if (newMessage?.type === "tool") {
+                // add task progress;
+                setTaskProgress((prev) => {
+                  const lastContent = prev[prev.length - 1];
+                  if (lastContent?.status === "progress") {
+                    lastContent.status = "success";
                   } else {
-                    // Last message is from assistant
-                    const lastMessage =
-                      updatedHistory[updatedHistory.length - 1];
-                    const lastContent =
-                      lastMessage.content[lastMessage.content.length - 1];
-
-                    // Check if agent_name matches and both are tool type
-                    if (lastContent.agent_name === newMessage.agent_name) {
-                      if (
-                        lastContent.type === "tool" &&
-                        newMessage.type === "tool"
-                      ) {
-                        // Update status and data of existing content
-                        // lastContent.status = newMessage.status;
-                        // lastContent.data = newMessage.data;
-                      } else {
-                        //  Add as new content inside the last content data
-                        if (lastContent.data) {
-                          const lastContentData =
-                            lastContent.data[lastContent.data.length - 1];
-                          if (
-                            lastContentData.status === "progress" &&
-                            lastContentData.agent_name === newMessage.agent_name
-                          ) {
-                            // Update existing in-progress message of the same type
-                            lastContentData.status = newMessage.status;
-                            lastContentData.data = newMessage.data;
-                          } else {
-                            lastContent.data.push(newMessage);
-                          }
-                        } else {
-                          lastContent.data = [newMessage];
-                        }
-                      }
-                    } else {
-                      // Add as new content
-                      lastMessage.content.push(newMessage);
-                    }
+                    prev.push({
+                      name: newMessage?.message?.slice(0, 200),
+                      status: "progress",
+                    });
                   }
-
-                  return updatedHistory;
+                  return [...prev];
                 });
               }
+
+              // add assistant message;
+              setChatHistory((history) => {
+                // Create a copy to avoid direct state mutation
+                const updatedHistory = [...history];
+
+                // Check if history is empty or last message is not from assistant
+                if (
+                  updatedHistory[updatedHistory.length - 1].role !== "assistant"
+                ) {
+                  // Add new assistant message with the new data
+                  updatedHistory.push({
+                    role: "assistant",
+                    content: [newMessage],
+                  });
+                } else {
+                  // Last message is from assistant
+                  const lastMessage = updatedHistory[updatedHistory.length - 1];
+                  const lastContent =
+                    lastMessage.content[lastMessage.content.length - 1];
+
+                  // Check if agent_name matches and both are tool type
+                  if (lastContent.agent_name === newMessage.agent_name) {
+                    if (
+                      lastContent.type === "tool" &&
+                      newMessage.type === "tool"
+                    ) {
+                      // Update status and data of existing content
+                      // lastContent.status = newMessage.status;
+                      // lastContent.data = newMessage.data;
+                    } else {
+                      //  Add as new content inside the last content data
+                      if (lastContent.data) {
+                        const lastContentData =
+                          lastContent.data[lastContent.data.length - 1];
+                        if (
+                          lastContentData.status === "progress" &&
+                          lastContentData.agent_name === newMessage.agent_name
+                        ) {
+                          // Update existing in-progress message of the same type
+                          lastContentData.status = newMessage.status;
+                          lastContentData.data = newMessage.data;
+                        } else {
+                          lastContent.data.push(newMessage);
+                        }
+                      } else {
+                        lastContent.data = [newMessage];
+                      }
+                    }
+                  } else {
+                    // Add as new content
+                    lastMessage.content.push(newMessage);
+                  }
+                }
+
+                return updatedHistory;
+              });
             });
           } catch (error) {
             console.error("Error parsing JSON: ", fixed, "error: ", error);
@@ -193,7 +214,35 @@ export default function AgentPage() {
         handleSideView(lastMessage);
       }
     }
+
+    if (messageBottomRef.current && autoScrollEnabled) {
+      messageBottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [chatHistory]);
+
+  const handleScroll = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const isAtBottom =
+      container.scrollHeight - container.scrollTop <=
+      container.clientHeight + 50;
+
+    if (!isAtBottom) {
+      // User scrolled up → disable auto scroll
+      setAutoScrollEnabled(false);
+
+      // Clear previous timer
+      if (autoScrollTimeout.current) {
+        clearTimeout(autoScrollTimeout.current);
+      }
+
+      // Enable auto scroll after 10 seconds
+      autoScrollTimeout.current = setTimeout(() => {
+        setAutoScrollEnabled(true);
+      }, 10000);
+    }
+  };
 
   return (
     <Box sx={{ marginBottom: 2 }}>
@@ -211,16 +260,39 @@ export default function AgentPage() {
           >
             {/* Chat messages area */}
             <ChatContainer
+              ref={messagesContainerRef}
+              messageBottomRef={messageBottomRef}
+              onScroll={handleScroll}
               handleSideView={handleSideView}
               chatHistory={chatHistory}
             />
 
+            {error && (
+              <Stack
+                direction='row'
+                gap={0.5}
+                alignItems='center'
+                mb={1}
+                justifyContent='center'
+              >
+                <Typography sx={{ color: "error.main" }}>{error}</Typography>
+                <Replay
+                  onClick={() =>
+                    addChatHistory({ message: "proceed", files: null }, "user")
+                  }
+                  sx={{ color: "error.main", cursor: "pointer", fontSize: 18 }}
+                />
+              </Stack>
+            )}
+
             {/* Input area */}
-            <InputArea
-              addChatHistory={addChatHistory}
-              loading={loading}
-              error={error}
-            />
+            {!chatHistory.length ? (
+              <InputArea
+                addChatHistory={addChatHistory}
+                loading={loading}
+                error={error}
+              />
+            ) : null}
           </Grid2>
 
           {/* Window side for showing image or .md file */}
