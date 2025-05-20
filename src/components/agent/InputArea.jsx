@@ -1,17 +1,30 @@
 import { keyframes } from "@emotion/react";
-import { AutoMode, Replay, Send, SmartToy } from "@mui/icons-material";
-import { Box, IconButton, Stack, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { AttachFile, AutoMode, Send, SmartToy } from "@mui/icons-material";
+import { Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
+import { useRef, useState } from "react";
 
-export default function InputArea({ addChatHistory, loading, error }) {
+export default function InputArea({ addChatHistory, loading }) {
+  const [files, setFiles] = useState(null);
   const [value, setValue] = useState("");
+  const filesRef = useRef(null);
 
   const handleAdd = (e) => {
     e.preventDefault();
     if (!value) return;
 
-    addChatHistory(value, "user");
+    addChatHistory({ message: value, files }, "user");
     setValue("");
+    setFiles(null);
+  };
+
+  const handleFileInputClick = () => {
+    if (!filesRef.current) return;
+    filesRef.current.click();
+  };
+
+  const handleInputChange = (e) => {
+    const files = e.target.files;
+    setFiles(files);
   };
 
   const spin = keyframes`
@@ -25,21 +38,6 @@ export default function InputArea({ addChatHistory, loading, error }) {
 
   return (
     <Box>
-      {error && (
-        <Stack
-          direction='row'
-          gap={0.5}
-          alignItems='center'
-          mb={1}
-          justifyContent='center'
-        >
-          <Typography sx={{ color: "error.main" }}>{error}</Typography>
-          <Replay
-            onClick={() => addChatHistory("proceed", "user")}
-            sx={{ color: "error.main", cursor: "pointer", fontSize: 18 }}
-          />
-        </Stack>
-      )}
       <Box
         component='form'
         onSubmit={handleAdd}
@@ -63,11 +61,49 @@ export default function InputArea({ addChatHistory, loading, error }) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
+
+        <input
+          type='file'
+          ref={filesRef}
+          hidden
+          accept='.pdf,.jpg,.jpeg,.png'
+          multiple
+          onChange={handleInputChange}
+        />
+
+        <Tooltip
+          title={
+            filesRef?.current?.files?.length
+              ? `${filesRef.current.files.length} Files selected`
+              : "Attach files"
+          }
+        >
+          <IconButton
+            sx={{
+              position: "relative",
+              "&:hover .filesCount": { display: "none" },
+            }}
+            onClick={handleFileInputClick}
+            type='button'
+          >
+            {files ? (
+              <Typography
+                sx={{ position: "absolute", top: -5, right: 5 }}
+                className='filesCount'
+                fontSize={14}
+              >
+                {Array.from(files).length}
+              </Typography>
+            ) : null}
+            <AttachFile fontSize='small' />
+          </IconButton>
+        </Tooltip>
+
         <IconButton disabled={loading} type='submit' color='primary'>
           {loading ? (
             <AutoMode
               sx={{
-                animation: `${spin} 2s linear infinite`,
+                animation: `${spin} 1s linear infinite`,
                 color: "primary.main",
               }}
             />

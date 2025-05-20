@@ -155,6 +155,7 @@ export default function AgentMessage({ message, handleSideView }) {
                             borderRadius: 2,
                             cursor: "pointer",
                             width: "fit-content",
+                            maxWidth: "100%",
                             color: dark ? "primary.lighter" : "primary.darker",
                             display: "flex",
                             alignItems: "center",
@@ -183,7 +184,7 @@ export default function AgentMessage({ message, handleSideView }) {
                             sx={{
                               overflow: "hidden",
                               textOverflow: "ellipsis",
-                              maxWidth: "400px",
+                              flexGrow: 1,
                             }}
                             fontSize={14}
                           >
