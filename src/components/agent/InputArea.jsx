@@ -3,7 +3,16 @@ import { AttachFile, AutoMode, Send, SmartToy } from "@mui/icons-material";
 import { Box, IconButton, TextField, Tooltip, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 
-export default function InputArea({ addChatHistory, loading }) {
+export const loadingSpin = keyframes`
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  `;
+
+export default function InputArea({ addChatHistory, loading, showTitle }) {
   const [files, setFiles] = useState(null);
   const [value, setValue] = useState("");
   const filesRef = useRef(null);
@@ -27,17 +36,19 @@ export default function InputArea({ addChatHistory, loading }) {
     setFiles(files);
   };
 
-  const spin = keyframes`
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  `;
-
   return (
     <Box>
+      {showTitle && (
+        <Typography
+          fontWeight={600}
+          fontSize={22}
+          mb={2}
+          textAlign='center'
+          sx={{ color: "primary.main" }}
+        >
+          Shothik AI multi Agent solution
+        </Typography>
+      )}
       <Box
         component='form'
         onSubmit={handleAdd}
@@ -59,6 +70,7 @@ export default function InputArea({ addChatHistory, loading }) {
             input: { disableUnderline: true },
           }}
           value={value}
+          sx={{ minWidth: 300 }}
           onChange={(e) => setValue(e.target.value)}
         />
 
@@ -103,7 +115,7 @@ export default function InputArea({ addChatHistory, loading }) {
           {loading ? (
             <AutoMode
               sx={{
-                animation: `${spin} 1s linear infinite`,
+                animation: `${loadingSpin} 1s linear infinite`,
                 color: "primary.main",
               }}
             />

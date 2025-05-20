@@ -1,16 +1,29 @@
 "use client";
-import { Replay } from "@mui/icons-material";
-import { Box, Container, Grid2, Stack, Typography } from "@mui/material";
+import { AutoMode, HistoryEdu, Replay } from "@mui/icons-material";
+import {
+  Box,
+  Container,
+  Grid2,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import ChatContainer from "../../../components/agent/ChatContainer";
 import ComputerWindow from "../../../components/agent/ComputerWindow";
-import InputArea from "../../../components/agent/InputArea";
+import InputArea, { loadingSpin } from "../../../components/agent/InputArea";
+import SessionHistoryModal from "../../../components/agent/SessionHistoryModal";
 import useResponsive from "../../../hooks/useResponsive";
+import {
+  useGetAgentSessionByIdQuery,
+  useGetAgentSessionQuery,
+} from "../../../redux/api/tools/toolsApi";
 
 export default function AgentPage() {
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const [openSessionModal, setOpenSessionModal] = useState(false);
   const [computerLogs, setComputerLogs] = useState(null);
   const [taskProgress, setTaskProgress] = useState([]);
   const { user } = useSelector((state) => state.auth);
@@ -23,6 +36,22 @@ export default function AgentPage() {
   const autoScrollTimeout = useRef(null);
   const [error, setError] = useState("");
   const messageBottomRef = useRef(null);
+  const [sessionHistoryId, setSessionHistoryId] = useState(null);
+  const { data: sessionHitoryData, isLoading } = useGetAgentSessionQuery(
+    {
+      user_id: user?._id,
+    },
+    { skip: !user?._id }
+  );
+  const { data: sessionHistory } = useGetAgentSessionByIdQuery(
+    sessionHistoryId,
+    { skip: !sessionHistoryId }
+  );
+
+  useEffect(() => {
+    if (!sessionHistory) return;
+    setChatHistory(sessionHistory.data.messages);
+  }, [sessionHistory]);
 
   async function requestToAgent(user_query) {
     try {
@@ -244,8 +273,16 @@ export default function AgentPage() {
     }
   };
 
+  const clearChat = () => {
+    setChatHistory([]);
+    setError("");
+    setSessionId(null);
+    setTaskProgress([]);
+    setLoading(false);
+  };
+
   return (
-    <Box sx={{ marginBottom: 2 }}>
+    <Box sx={{ marginBottom: 2, position: "relative" }}>
       <Container maxWidth={expanded ? "xl" : "md"} sx={{ height: "100%" }}>
         <Grid2 container spacing={2} sx={{ position: "relative" }}>
           {/* Right Side or loggin side */}
@@ -253,19 +290,23 @@ export default function AgentPage() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between",
+              justifyContent: chatHistory.length ? "space-between" : "center",
+              alignItems: chatHistory.length ? "normal" : "center",
               height: "calc(100vh - 90px)",
+              position: "relative",
             }}
             size={{ xs: 12, md: expanded ? 6 : 12 }}
           >
             {/* Chat messages area */}
-            <ChatContainer
-              ref={messagesContainerRef}
-              messageBottomRef={messageBottomRef}
-              onScroll={handleScroll}
-              handleSideView={handleSideView}
-              chatHistory={chatHistory}
-            />
+            {chatHistory.length ? (
+              <ChatContainer
+                ref={messagesContainerRef}
+                messageBottomRef={messageBottomRef}
+                onScroll={handleScroll}
+                handleSideView={handleSideView}
+                chatHistory={chatHistory}
+              />
+            ) : null}
 
             {error && (
               <Stack
@@ -291,8 +332,20 @@ export default function AgentPage() {
                 addChatHistory={addChatHistory}
                 loading={loading}
                 error={error}
+                showTitle={!chatHistory.length}
               />
             ) : null}
+            {loading && (
+              <AutoMode
+                sx={{
+                  animation: `${loadingSpin} 1s linear infinite`,
+                  color: "primary.main",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 5,
+                }}
+              />
+            )}
           </Grid2>
 
           {/* Window side for showing image or .md file */}
@@ -322,6 +375,31 @@ export default function AgentPage() {
           </AnimatePresence>
         </Grid2>
       </Container>
+
+      {/* session modal icon  */}
+      <IconButton
+        disabled={isLoading}
+        onClick={() => {
+          setOpenSessionModal((prev) => !prev);
+          setSessionHistoryId(null);
+        }}
+        sx={{
+          position: "absolute",
+          bottom: 5,
+          right: 5,
+        }}
+      >
+        <HistoryEdu sx={{ color: "primary.main", fontSize: 32 }} />
+      </IconButton>
+
+      {/* session history modal  */}
+      <SessionHistoryModal
+        open={openSessionModal}
+        setOpen={setOpenSessionModal}
+        data={sessionHitoryData}
+        clearChat={clearChat}
+        setSessionHistoryId={setSessionHistoryId}
+      />
     </Box>
   );
 }

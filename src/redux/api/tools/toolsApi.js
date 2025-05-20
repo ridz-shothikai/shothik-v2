@@ -106,6 +106,18 @@ export const toolsApiSlice = createApi({
       keepUnusedDataFor: 24 * 60 * 60,
       refetchOnMountOrArgChange: false,
     }),
+    getAgentSession: builder.query({
+      query: (payload) => ({
+        url: "/agent/session",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    getAgentSessionById: builder.query({
+      query: (session_id) => ({
+        url: `/agent/session/${session_id}`,
+      }),
+    }),
   }),
 });
 
@@ -121,4 +133,6 @@ export const {
   useResearchTrendingQuery,
   useGetResearchQuestionMutation,
   useGetResearchMetaDataQuery,
+  useGetAgentSessionQuery,
+  useGetAgentSessionByIdQuery,
 } = toolsApiSlice;
