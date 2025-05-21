@@ -1,10 +1,17 @@
 "use client";
-import { AutoMode, HistoryEdu, Replay } from "@mui/icons-material";
+import {
+  AutoMode,
+  HistoryEdu,
+  LibraryAdd,
+  Replay,
+  WorkHistory,
+} from "@mui/icons-material";
 import {
   Box,
   Container,
   Grid2,
-  IconButton,
+  SpeedDial,
+  SpeedDialAction,
   Stack,
   Typography,
 } from "@mui/material";
@@ -37,7 +44,11 @@ export default function AgentPage() {
   const [error, setError] = useState("");
   const messageBottomRef = useRef(null);
   const [sessionHistoryId, setSessionHistoryId] = useState(null);
-  const { data: sessionHitoryData, isLoading } = useGetAgentSessionQuery(
+  const {
+    data: sessionHitoryData,
+    isLoading,
+    refetch,
+  } = useGetAgentSessionQuery(
     {
       user_id: user?._id,
     },
@@ -186,6 +197,8 @@ export default function AgentPage() {
           }
         }
       }
+
+      refetch();
     } catch (error) {
       console.log("Error in requestToAgent:", error);
       setError(
@@ -279,6 +292,9 @@ export default function AgentPage() {
     setSessionId(null);
     setTaskProgress([]);
     setLoading(false);
+    setComputerLogs(null);
+    setExpanded(false);
+    setOpenSessionModal(false);
   };
 
   return (
@@ -377,27 +393,35 @@ export default function AgentPage() {
       </Container>
 
       {/* session modal icon  */}
-      <IconButton
-        disabled={isLoading}
-        onClick={() => {
-          setOpenSessionModal((prev) => !prev);
-          setSessionHistoryId(null);
-        }}
-        sx={{
-          position: "absolute",
-          bottom: 5,
-          right: 5,
-        }}
+      <SpeedDial
+        ariaLabel='Session Navigation'
+        sx={{ position: "absolute", bottom: 5, right: 5 }}
+        icon={<HistoryEdu />}
       >
-        <HistoryEdu sx={{ color: "primary.main", fontSize: 32 }} />
-      </IconButton>
+        <SpeedDialAction
+          disableInteractive={isLoading}
+          onClick={() => {
+            setOpenSessionModal((prev) => !prev);
+            setSessionHistoryId(null);
+          }}
+          icon={<WorkHistory />}
+          slotProps={{ tooltip: { title: "History" } }}
+          sx={{ boxShadow: "none" }}
+        />
+        <SpeedDialAction
+          onClick={clearChat}
+          disableInteractive={loading}
+          icon={<LibraryAdd />}
+          slotProps={{ tooltip: { title: "New" } }}
+          sx={{ boxShadow: "none" }}
+        />
+      </SpeedDial>
 
       {/* session history modal  */}
       <SessionHistoryModal
         open={openSessionModal}
         setOpen={setOpenSessionModal}
         data={sessionHitoryData}
-        clearChat={clearChat}
         setSessionHistoryId={setSessionHistoryId}
       />
     </Box>
