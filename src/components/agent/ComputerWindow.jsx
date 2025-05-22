@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import { motion } from "motion/react";
 import RenderMarkdown from "./RenderMarkdown";
-import SlidePreview from "./SlidePreview";
 import TaskProgress from "./TaskProgress";
 
 const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
@@ -141,12 +140,9 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
           {computerLogs?.message?.includes("##") &&
           computerLogs?.type === "text"
             ? "Shothik AI Agent Task is completed"
-            : computerLogs?.data?.result?.startsWith("http")
-            ? "Preview"
             : computerLogs.message}
         </Typography>
-        {computerLogs?.type === "tool" &&
-        !computerLogs?.data?.result?.startsWith("http") ? (
+        {computerLogs?.type === "tool" ? (
           <Editor
             height='93.5%'
             defaultLanguage='markdown'
@@ -167,7 +163,7 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
             sx={{
               paddingX: 2,
               height: "93.5%",
-              overflow: "hidden",
+              overflow: "auto",
               backgroundColor: "rgba(73, 149, 87, 0.1)",
             }}
           >
@@ -178,11 +174,6 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
                   : computerLogs?.data
               }
             />
-          </Box>
-        ) : computerLogs?.data?.result?.startsWith("http") ? (
-          <Box sx={{ height: "250px", overflow: "hidden" }}>
-            {console.log(computerLogs?.data?.result)}
-            <SlidePreview src={computerLogs?.data?.result} />
           </Box>
         ) : null}
       </Box>

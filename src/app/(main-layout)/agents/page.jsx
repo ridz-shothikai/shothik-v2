@@ -87,7 +87,8 @@ export default function AgentPage() {
         }
       }
 
-      const response = await fetch("http://localhost:5001/agent", {
+      const url = process.env.NEXT_PUBLIC_AGENT_API + "/agent";
+      const response = await fetch(url, {
         method: "POST",
         body: formData,
       });
@@ -119,11 +120,6 @@ export default function AgentPage() {
               if (newMessage.type === "initial_response") {
                 setSessionId(newMessage.session_id);
                 return;
-              }
-
-              if (newMessage?.message?.includes("?")) {
-                setHasQuestion(true);
-                newMessage.expanded = false;
               }
 
               if (newMessage?.type === "tool") {

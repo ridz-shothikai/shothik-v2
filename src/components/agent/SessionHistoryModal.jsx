@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
 import useResponsive from "../../hooks/useResponsive";
 import DotFlashing from "../../resource/DotFlashing";
 
-const SessionHistoryModal = ({ open, setOpen, data, isLoading }) => {
+const SessionHistoryModal = ({
+  open,
+  setOpen,
+  data,
+  isLoading,
+  setSessionHistoryId,
+}) => {
   const isMobile = useResponsive("down", "sm");
   const router = useRouter();
 
@@ -46,7 +52,10 @@ const SessionHistoryModal = ({ open, setOpen, data, isLoading }) => {
               <Stack
                 flexDirection='row'
                 alignItems='center'
-                onClick={() => router.push(`/agents/${history._id}`)}
+                onClick={() => {
+                  setSessionHistoryId(history._id);
+                  setOpen(false);
+                }}
                 gap={1}
                 key={history._id}
                 sx={{
