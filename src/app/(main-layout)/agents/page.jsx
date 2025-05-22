@@ -430,6 +430,7 @@ export default function AgentPage() {
         setOpen={setOpenSessionModal}
         data={sessionHitoryData}
         setSessionHistoryId={setSessionHistoryId}
+        isLoading={isLoading}
       />
     </Box>
   );
