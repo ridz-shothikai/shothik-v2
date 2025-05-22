@@ -32,6 +32,7 @@ export default function AgentPage() {
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const [openSessionModal, setOpenSessionModal] = useState(false);
   const [computerLogs, setComputerLogs] = useState(null);
+  const [hasQuestion, setHasQuestion] = useState(false);
   const [taskProgress, setTaskProgress] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const [chatHistory, setChatHistory] = useState([]);
@@ -68,6 +69,7 @@ export default function AgentPage() {
     try {
       setLoading(true);
       setError("");
+      setHasQuestion(false);
 
       if (!user?._id) {
         throw new Error("User ID is not available");
@@ -117,6 +119,11 @@ export default function AgentPage() {
               if (newMessage.type === "initial_response") {
                 setSessionId(newMessage.session_id);
                 return;
+              }
+
+              if (newMessage?.message?.includes("?")) {
+                setHasQuestion(true);
+                newMessage.expanded = false;
               }
 
               if (newMessage?.type === "tool") {
@@ -343,7 +350,7 @@ export default function AgentPage() {
             )}
 
             {/* Input area */}
-            {!chatHistory.length ? (
+            {!chatHistory.length || hasQuestion ? (
               <InputArea
                 addChatHistory={addChatHistory}
                 loading={loading}
