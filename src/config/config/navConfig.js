@@ -131,7 +131,7 @@ const tools = [
   {
     icon: ICONS.agents,
     title: "AI Agents",
-    description: "AI Agentic Solutions",
+    description: "Agentic Solutions",
     label: null,
     link: "/agents",
     iconColor: "#f29b18",
