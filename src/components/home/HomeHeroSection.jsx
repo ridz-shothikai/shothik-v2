@@ -8,6 +8,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
+import { useDispatch } from "react-redux";
+import { setShowLoginModal, setShowRegisterModal } from "../../redux/slice/auth";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import BgContainer from "./components/hero/BgContainer";
@@ -197,35 +199,37 @@ export default function HomeHeroSection() {
 
 // Signin Button Renderer
 export function SigninButtonRenderer({ title }) {
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(setShowRegisterModal(false));
+    dispatch(setShowLoginModal(true));
+  };
+
   return (
-    <>
-      <Button
-        onClick={() => {
-          dispatch(setIsSignUpModalOpen(false));
-          dispatch(setIsSignInModalOpen(true));
-        }}
-        variant='contained'
-        size='large'
-        sx={{
-          maxWidth: 202,
-          borderRadius: "0.5rem",
-          textTransform: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "1rem",
-          "&::after": {
-            content: '"›"',
-            color: "#00A76F",
-            flexShrink: 0,
-          },
-        }}
-      >
-        {title}
-        <ArrowForwardIcon
-          style={{ height: "1.25rem", width: "1.25rem", marginLeft: "0.5rem" }}
-        />
-      </Button>
-    </>
+    <Button
+      onClick={handleClick}
+      variant='contained'
+      size='large'
+      sx={{
+        maxWidth: 202,
+        borderRadius: "0.5rem",
+        textTransform: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "1rem",
+        "&::after": {
+          content: '"›"',
+          color: "#00A76F",
+          flexShrink: 0,
+        },
+      }}
+    >
+      {title}
+      <ArrowForwardIcon
+        style={{ height: "1.25rem", width: "1.25rem", marginLeft: "0.5rem" }}
+      />
+    </Button>
   );
 }
