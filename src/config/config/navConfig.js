@@ -57,10 +57,10 @@ const navConfig = [
         iconColor: "#A07EFB",
       },
       {
-        title: "Research",
-        path: PATH_TOOLS.research,
-        icon: ICONS.research,
-        iconColor: "#B71D18",
+        title: "Agent",
+        path: "/agents",
+        icon: icon("smart_toy"),
+        iconColor: "#1976D2",
       },
     ],
   },
@@ -129,12 +129,12 @@ const tools = [
     iconColor: "#A07EFB",
   },
   {
-    icon: ICONS.research,
-    title: "Research",
-    description: "Web and Academic Research",
+    icon: icon("smart_toy"),
+    title: "Agent",
+    description: "AI Agent Platform",
     label: null,
-    link: "/research",
-    iconColor: "#B71D18",
+    link: "/agents",
+    iconColor: "#1976D2",
   },
 ];
 

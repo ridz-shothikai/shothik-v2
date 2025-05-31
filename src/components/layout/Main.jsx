@@ -51,7 +51,7 @@ export default function Main({ children }) {
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {children}
       </Container>
-      {pathName !== "/research" ? <FooterServerComponent /> : null}
+      {pathName !== "/research" && !pathName.startsWith("/agents") ? <FooterServerComponent /> : null}
     </Box>
   );
 }

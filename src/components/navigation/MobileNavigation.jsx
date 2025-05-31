@@ -42,10 +42,10 @@ const links = [
     iconSrc: "/navbar/translator.svg",
   },
   {
-    title: "Research",
-    link: "/research",
-    iconColor: "#B71D18",
-    iconSrc: "/navbar/research.svg",
+    title: "Agent",
+    link: "/agents",
+    iconColor: "#1976D2",
+    iconSrc: "/navbar/smart_toy.svg",
   },
 ];
 
