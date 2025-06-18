@@ -6,7 +6,9 @@ import {
   Stack,
   Tooltip,
   Typography,
+  CircularProgress, // Added for loading state in button
 } from "@mui/material";
+import { Policy } from "@mui/icons-material"; // Added for Plagiarism button icon
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
@@ -30,6 +32,8 @@ function WordCounter({
   sx = {},
   dontDisable = false,
   sticky = 635,
+  onCheckPlagiarism, // New prop
+  isCheckingPlagiarism, // New prop
 }) {
   if (sticky) {
     const { ref, style } = useStickyBottom(sticky);
@@ -48,6 +52,9 @@ function WordCounter({
           btnIcon={btnIcon}
           dontDisable={dontDisable}
           sx={sx}
+          onCheckPlagiarism={onCheckPlagiarism}
+          isCheckingPlagiarism={isCheckingPlagiarism}
+          userInput={userInput} // Pass userInput to Contend for button disabling
         >
           {children}
         </Contend>
@@ -68,6 +75,9 @@ function WordCounter({
         btnIcon={btnIcon}
         dontDisable={dontDisable}
         sx={sx}
+        onCheckPlagiarism={onCheckPlagiarism}
+        isCheckingPlagiarism={isCheckingPlagiarism}
+        userInput={userInput} // Pass userInput to Contend for button disabling
       >
         {children}
       </Contend>
@@ -89,6 +99,9 @@ const Contend = ({
   btnIcon = null,
   sx = {},
   dontDisable = false,
+  onCheckPlagiarism,
+  isCheckingPlagiarism,
+  // userInput is already a prop for Contend, used for wordCount and disabling paraphrase button
 }) => {
   const [wordCount, setWordCount] = useState(0);
   const isMobile = useResponsive("down", "sm");
@@ -190,6 +203,18 @@ const Contend = ({
         >
           {btnText}
         </Button>
+        {onCheckPlagiarism && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onCheckPlagiarism}
+            disabled={isCheckingPlagiarism || !userInput.trim()}
+            startIcon={isCheckingPlagiarism ? <CircularProgress size={16} /> : <Policy />}
+            sx={{ textTransform: 'none', ml: 1, height: { md: 40 }, py: { md: 0 }, px: { md: 2 } }}
+          >
+            Check Plagiarism
+          </Button>
+        )}
         {ExtraBtn}
       </Stack>
       {children}

@@ -1,17 +1,16 @@
-import { AcUnit } from "@mui/icons-material";
-import { Button, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material"; // Removed AcUnit
 import React, { useState } from "react";
-import MobileFreezeModal from "./MobileFreezeModal";
+// import MobileFreezeModal from "./MobileFreezeModal"; // Removed
 import ModeModal from "./ModeModal";
 
 const ModeNavigationForMobile = ({
   selectedMode,
   setSelectedMode,
   userPackage,
-  freezeWords,
-  setFreezeWords,
+  // freezeWords, // Removed
+  // setFreezeWords, // Removed
 }) => {
-  const [showFreezeModal, setShowFreezeModal] = useState(false);
+  // const [showFreezeModal, setShowFreezeModal] = useState(false); // Removed
   const [showMoModeModal, setShowModeModal] = useState(false);
 
   return (
@@ -36,15 +35,7 @@ const ModeNavigationForMobile = ({
       >
         {selectedMode || "Modes"}
       </Button>
-      <Button
-        onClick={() => setShowFreezeModal(true)}
-        // disabled={!userPackage || userPackage === "free"}
-        sx={{ textAlign: "right" }}
-        startIcon={<AcUnit />}
-        variant='outlined'
-      >
-        Freeze Words
-      </Button>
+      {/* Freeze Words Button Removed */}
 
       <ModeModal
         handleClose={() => setShowModeModal(false)}
@@ -54,13 +45,7 @@ const ModeNavigationForMobile = ({
         userPackage={userPackage}
       />
 
-      <MobileFreezeModal
-        handleClose={() => setShowFreezeModal(false)}
-        isFreeze={showFreezeModal}
-        freezeWords={freezeWords}
-        setFreezeWords={setFreezeWords}
-        userPackage={userPackage}
-      />
+      {/* MobileFreezeModal instance removed */}
     </Stack>
   );
 };

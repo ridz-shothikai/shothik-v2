@@ -8,8 +8,11 @@ import {
   KeyboardArrowDown,
   KeyboardArrowUp,
   VerticalAlignBottom,
+  Policy,
+  CompareArrows,
+  EditNote, // Added
 } from "@mui/icons-material";
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Stack, Tooltip, Typography, Button, CircularProgress } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 import useResponsive from "../../../hooks/useResponsive";
@@ -28,6 +31,11 @@ const OutputBotomNavigation = ({
   outputHistory,
   handleClear,
   outputContend,
+  onCheckPlagiarism,
+  isCheckingPlagiarism,
+  showOriginalInOutput,
+  onToggleShowOriginal,
+  onCopyOutputToInput, // New prop
 }) => {
   const enqueueSnackbar = useSnackbar();
   const isMobile = useResponsive("down", "sm");
@@ -221,6 +229,57 @@ const OutputBotomNavigation = ({
             <ContentCopy />
           </IconButton>
         </Tooltip>
+
+        {onCheckPlagiarism && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={onCheckPlagiarism}
+            disabled={isCheckingPlagiarism || !outputContend.trim()}
+            startIcon={isCheckingPlagiarism ? <CircularProgress size={16} /> : <Policy />}
+            sx={{ textTransform: 'none', ml: 1, whiteSpace: 'nowrap' }}
+          >
+            Check Output Plagiarism
+          </Button>
+        )}
+        <Tooltip title={showOriginalInOutput ? "Hide Original Text" : "Show Original Text"} arrow placement="top">
+          <IconButton
+            onClick={onToggleShowOriginal}
+            size="large"
+            sx={{
+              borderRadius: "5px",
+              p: 1,
+              color: showOriginalInOutput ? 'primary.main' : 'inherit',
+              '&:hover': {
+                backgroundColor: "inherit",
+                color: "primary.dark",
+                boxShadow: "none",
+              },
+            }}
+          >
+            <CompareArrows />
+          </IconButton>
+        </Tooltip>
+        {onCopyOutputToInput && (
+          <Tooltip title="Use as Input (Edit Further)" arrow placement="top">
+            <IconButton
+              onClick={onCopyOutputToInput}
+              disabled={!outputContend.trim()}
+              size="large"
+              sx={{
+                borderRadius: "5px",
+                p: 1,
+                '&:hover': {
+                  backgroundColor: "inherit",
+                  color: "primary.main",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              <EditNote />
+            </IconButton>
+          </Tooltip>
+        )}
       </Stack>
     </Stack>
   );

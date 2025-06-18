@@ -20,10 +20,15 @@ import LanguageMenu from "../grammar/LanguageMenu";
 import ModeNavigation from "./ModeNavigation";
 import ModeNavigationForMobile from "./ModeNavigationForMobile";
 import OutputBotomNavigation from "./OutputBotomNavigation";
-import ParaphraseEditor from "./ParaphraseEditor";
+// import ParaphraseEditor from "./ParaphraseEditor"; // Replaced with TipTapEditor
+import TipTapEditor from "../../../resource/editor/TipTapEditor";
 import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
 import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
+import InputPlagiarismDialog from "./InputPlagiarismDialog";
+import OutputPlagiarismReportPanel from "./OutputPlagiarismReportPanel";
+import OriginalTextViewer from './OriginalTextViewer'; // Added
+import { Tabs, Tab, Typography } from "@mui/material";
 
 const SYNONYMS = {
   20: "Basic",
@@ -42,9 +47,9 @@ const ParaphraseContend = () => {
   const [outputContend, setOutputContend] = useState("");
   const { user } = useSelector((state) => state.auth);
   const [language, setLanguage] = useState("English");
-  const [updateHtml, setUpdateHtml] = useState(false);
+  // const [updateHtml, setUpdateHtml] = useState(false); // Temporarily removed for TipTapEditor integration
   const [processing, setProcessing] = useState(false);
-  const [freezeWords, setFreezeWords] = useState([]);
+  const [frozenWordTexts, setFrozenWordTexts] = useState([]);
   const sampleText = trySamples.paraphrase[language];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
@@ -61,6 +66,92 @@ const ParaphraseContend = () => {
     show: false,
     Component: null,
   });
+
+  // Plagiarism Check States
+  const [isCheckingInputPlagiarism, setIsCheckingInputPlagiarism] = useState(false);
+  const [isCheckingOutputPlagiarism, setIsCheckingOutputPlagiarism] = useState(false);
+  const [inputPlagiarismResult, setInputPlagiarismResult] = useState(null);
+  const [outputPlagiarismResult, setOutputPlagiarismResult] = useState(null);
+  const [showInputPlagiarismDialog, setShowInputPlagiarismDialog] = useState(false);
+  const [activeRightPanelTab, setActiveRightPanelTab] = useState('output'); // 'output' or 'plagiarism'
+  const [showOriginalInOutput, setShowOriginalInOutput] = useState(false);
+
+  const triggerPlagiarismCheck = (text, type) => {
+    // This function will be fully implemented in a subsequent step.
+    // For now, it can simulate an API call and set results.
+    console.log(`Triggering plagiarism check for ${type} text:`, text);
+    if (type === 'input') {
+      setTimeout(() => {
+        setInputPlagiarismResult({
+          percentage: Math.floor(Math.random() * 40), // Keep percentages somewhat realistic
+          sources: [
+            { url: 'http://example-input.com/sourceA', matchPercent: Math.floor(Math.random() * 40) + 5, snippet: "Lorem ipsum dolor sit amet..." },
+            { url: 'http://example-input.com/sourceB', matchPercent: Math.floor(Math.random() * 30) + 10, snippet: "Consectetur adipiscing elit..." }
+          ],
+          originalText: text,
+        });
+        setIsCheckingInputPlagiarism(false);
+      }, 2000);
+    } else if (type === 'output') {
+      setTimeout(() => {
+        setOutputPlagiarismResult({
+          percentage: Math.floor(Math.random() * 20), // Paraphrased text might have lower scores
+          sources: [
+            { url: 'http://example-output.com/sourceC', matchPercent: Math.floor(Math.random() * 20) + 1, snippet: "Sed do eiusmod tempor incididunt..." }
+          ],
+          originalText: text,
+        });
+        setIsCheckingOutputPlagiarism(false);
+      }, 2000);
+    }
+  };
+
+  const handleCheckInputPlagiarism = () => {
+    if (!userInput.trim()) { // Ensure userInput is trimmed before checking
+      enqueueSnackbar('Please enter some text to check for plagiarism.', { variant: 'info' });
+      return;
+    }
+    setIsCheckingInputPlagiarism(true);
+    setInputPlagiarismResult(null); // Clear previous results
+    setShowInputPlagiarismDialog(true);
+    triggerPlagiarismCheck(userInput, 'input');
+  };
+
+  const handleCheckOutputPlagiarism = () => {
+    if (!outputContend.trim()) {
+      enqueueSnackbar('There is no output text to check.', { variant: 'info' });
+      return;
+    }
+    setIsCheckingOutputPlagiarism(true);
+    setOutputPlagiarismResult(null);
+    setActiveRightPanelTab('plagiarism'); // Switch to plagiarism tab
+    triggerPlagiarismCheck(outputContend, 'output');
+  };
+
+  const handleToggleShowOriginal = () => {
+    setShowOriginalInOutput(prev => !prev);
+  };
+
+  const handleCopyOutputToInput = () => {
+    if (!outputContend.trim()) {
+      enqueueSnackbar("Nothing to copy to input.", { variant: "info" });
+      return;
+    }
+    setUserInput(outputContend); // Set input editor with the output content
+
+    // Clear the output display
+    setResult([]);
+    setOutputContend("");
+    setOutputHistory([]); // Also clear output history related to the previous output
+    setOutputHistoryIndex(0); // Reset history index
+    setHighlightSentence(0); // Reset sentence highlighter
+
+    // Optionally, ensure the output tab is active and original text view is off
+    setActiveRightPanelTab('output');
+    setShowOriginalInOutput(false);
+
+    enqueueSnackbar("Output content copied to input area for further editing.", { variant: "success" });
+  };
 
   useEffect(() => {
     if (!userInput) return;
@@ -172,7 +263,7 @@ const ParaphraseContend = () => {
   const handleClear = (_, action = "all") => {
     if (action === "all") {
       setUserInput("");
-      setFreezeWords([]);
+      setFrozenWordTexts([]);
     }
     setResult([]);
     setOutputHistory([]);
@@ -208,7 +299,7 @@ const ParaphraseContend = () => {
 
       payload = {
         text: finalText,
-        freeze: freezeWords.length ? freezeWords.join(", ") : "",
+        freeze: frozenWordTexts.join(', '),
         language: language,
         mode: selectedMode ? selectedMode.toLowerCase() : "standard",
         synonym: selectedSynonyms ? selectedSynonyms.toLowerCase() : "basic",
@@ -225,19 +316,34 @@ const ParaphraseContend = () => {
         });
       }
     } catch (error) {
-      const actualError = error?.data?.error;
-      if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(actualError)) {
+      // It's often better to set these loading states false once at the start of handling an error.
+      setIsLoading(false);
+      setProcessing({ success: false, loading: false });
+
+      const errorData = error?.data;
+      const actualErrorCode = errorData?.error;
+      const serverMessage = errorData?.message;
+
+      if (actualErrorCode === "LIMIT_REQUEST" || actualErrorCode === "PACAKGE_EXPIRED") {
         dispatch(setShowAlert(true));
-        dispatch(setAlertMessage(error?.data?.message));
-      } else if (actualError === "UNAUTHORIZED") {
+        dispatch(setAlertMessage(serverMessage || "Word limit exceeded or package expired."));
+      } else if (actualErrorCode === "UNAUTHORIZED") {
         dispatch(setShowLoginModal(true));
+      } else if (actualErrorCode === "TEXT_TOO_SHORT") {
+        enqueueSnackbar(serverMessage || "The input text is too short to paraphrase effectively.", { variant: "warning" });
+      } else if (actualErrorCode === "TEXT_TOO_LONG") {
+        enqueueSnackbar(serverMessage || "The input text is too long. Please reduce its length.", { variant: "warning" });
+      } else if (actualErrorCode === "UNSUPPORTED_LANGUAGE_FOR_MODE") {
+        enqueueSnackbar(serverMessage || "The selected mode does not support this language. Please try another mode or language.", { variant: "warning" });
+      } else if (actualErrorCode === "NO_MEANINGFUL_CONTENT") {
+        enqueueSnackbar(serverMessage || "Could not find meaningful content to paraphrase. Please check your input.", { variant: "warning" });
+      } else if (actualErrorCode === "SERVICE_UNAVAILABLE") {
+        enqueueSnackbar(serverMessage || "The paraphrasing service is temporarily unavailable. Please try again later.", { variant: "error" });
       } else {
-        enqueueSnackbar(error?.data?.message || error.message, {
+        enqueueSnackbar(serverMessage || error.message || "An unexpected error occurred during paraphrasing.", {
           variant: "error",
         });
       }
-      setProcessing({ success: false, loading: false });
-      setIsLoading(false);
     }
   };
 
@@ -271,8 +377,6 @@ const ParaphraseContend = () => {
           <ModeNavigationForMobile
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
-            freezeWords={freezeWords}
-            setFreezeWords={setFreezeWords}
             userPackage={user?.package}
           />
         )}
@@ -284,24 +388,36 @@ const ParaphraseContend = () => {
             sx={{
               height: isMobile ? "calc(100vh - 340px)" : 530,
               position: "relative",
-              borderRight: { md: "2px solid" },
-              borderRightColor: { md: "divider" },
+              // borderRight: { md: "2px solid" }, // Original right border for md
+              // borderRightColor: { md: "divider" }, // Original right border color for md
               padding: 2,
               paddingBottom: 0,
               display: "flex",
               flexDirection: "column",
+
+              // New border logic for focus indication:
+              borderTop: { xs: "2px solid", md: "2px solid" }, // Keep top border consistent for focus effect
+              borderLeft: { xs: "2px solid", md: "2px solid" }, // Keep left border consistent for focus effect
+              borderBottom: { xs: "2px solid", md: "2px solid" }, // Keep bottom border consistent for focus effect
+              borderRight: { xs: "2px solid", md: "2px solid" }, // Ensure right border is part of the focusable area
+              borderColor: 'divider', // Default border color for all sides
+
+              transition: 'border-color 0.2s ease-in-out',
+              '&:focus-within': {
+                borderColor: 'primary.main', // Change color of all active borders on focus
+              }
             }}
             size={{ xs: 12, md: 6 }}
           >
-            <ParaphraseEditor
-              freezeWords={freezeWords}
-              html={userInput}
-              isMobile={isMobile}
-              setFreezeWords={setFreezeWords}
-              setHtml={setUserInput}
-              user={user}
-              updateHtml={updateHtml}
-              wordLimit={wordLimit}
+          <TipTapEditor
+            content={userInput}
+            onChange={setUserInput}
+            embedStyle={true}
+            onFrozenWordsChange={setFrozenWordTexts}
+            wordLimit={wordLimit}
+            userName="Current User Example" // Example static name
+            userColor="#8E44AD" // Example static color (a shade of purple)
+            documentId="paraphraser-main-document" // New documentId prop
             />
 
             {!userInput ? (
@@ -309,7 +425,7 @@ const ParaphraseContend = () => {
                 setUserInput={setUserInput}
                 isMobile={isMobile}
                 sampleText={sampleText}
-                extraAction={() => setUpdateHtml((prev) => !prev)}
+              // extraAction={() => setUpdateHtml((prev) => !prev)} // Temporarily removed for TipTapEditor integration
               />
             ) : null}
             <WordCounter
@@ -324,6 +440,8 @@ const ParaphraseContend = () => {
               sx={{ py: 0 }}
               dontDisable={true}
               sticky={320}
+              onCheckPlagiarism={handleCheckInputPlagiarism} // Added prop
+              isCheckingPlagiarism={isCheckingInputPlagiarism} // Added prop
             />
           </Grid2>
           {isMobile && !userInput ? null : (
@@ -332,7 +450,7 @@ const ParaphraseContend = () => {
               ref={outputRef}
               sx={{
                 height: isMobile ? "calc(100vh - 340px)" : 530,
-                overflow: "hidden",
+                // overflow: "hidden", // Managed by inner content boxes now
                 borderTop: { xs: "2px solid", md: "none" },
                 borderTopColor: { xs: "divider", md: undefined },
                 position: "relative",
@@ -340,58 +458,101 @@ const ParaphraseContend = () => {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "darkgray", paddingLeft: 15 }}>
-                {isLoading ? (
-                  <ViewInputInOutAsDemo
-                    input={userInput}
-                    wordLimit={wordLimit}
-                  />
-                ) : !result.length ? (
-                  <p>Paraphrased Text</p>
-                ) : null}
-              </div>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%', flexShrink: 0 }}>
+                <Tabs value={activeRightPanelTab} onChange={(e, newValue) => setActiveRightPanelTab(newValue)} aria-label="Output panel tabs">
+                  <Tab label="Paraphrased Text" value="output" sx={{textTransform: 'none', fontSize: '0.875rem'}} />
+                  <Tab label="Plagiarism Report" value="plagiarism" disabled={!outputContend && !outputPlagiarismResult} sx={{textTransform: 'none', fontSize: '0.875rem'}} />
+                </Tabs>
+              </Box>
 
-              {result.length ? (
-                <>
-                  <ParaphraseOutput
-                    data={result}
-                    setData={setResult}
-                    synonymLevel={selectedSynonyms}
-                    dataModes={modes}
-                    userPackage={user?.package}
-                    selectedLang={language}
-                    highlightSentence={highlightSentence}
-                    setOutputHistory={setOutputHistory}
-                    input={userInput}
-                    freezeWords={freezeWords}
-                    socketId={socketId}
-                    language={language}
-                    setProcessing={setProcessing}
-                    eventId={eventId}
-                    setEventId={setEventId}
-                  />
-                  <OutputBotomNavigation
-                    handleClear={handleClear}
-                    highlightSentence={highlightSentence}
-                    outputContend={outputContend}
-                    outputHistory={outputHistory}
-                    outputHistoryIndex={outputHistoryIndex}
-                    outputWordCount={outputWordCount}
-                    proccessing={processing}
-                    sentenceCount={result.length}
-                    setHighlightSentence={setHighlightSentence}
-                    setOutputHistoryIndex={setOutputHistoryIndex}
-                  />
-                </>
-              ) : null}
+              {activeRightPanelTab === 'output' && (
+                // This Box now manages the layout for the 'output' tab content
+                <Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', minHeight: 0 /* Crucial for nested flex scroll */}}>
+                  {showOriginalInOutput && userInput && (
+                    <OriginalTextViewer htmlContent={userInput} />
+                  )}
+                  {/* This inner Box will now manage the scroll for ParaphraseOutput and keep OutputBotomNavigation at bottom */}
+                  <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+                    {isLoading && !result.length && ( // Show initial loading/placeholder for output
+                       <div style={{ color: "darkgray", padding: 16, textAlign: 'center' }}> {/* Adjusted padding */}
+                          <ViewInputInOutAsDemo
+                          input={userInput}
+                          wordLimit={wordLimit}
+                        />
+                     </div>
+                  )}
+                  {!isLoading && !result.length && (
+                     <Box sx={{p:2, textAlign:'center', flexGrow:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                       <Typography>Paraphrased output will appear here.</Typography>
+                     </Box>
+                  )}
+                  {result.length > 0 && (
+                    <>
+                      <ParaphraseOutput
+                        data={result}
+                        setData={setResult}
+                        synonymLevel={selectedSynonyms}
+                        dataModes={modes}
+                        userPackage={user?.package}
+                        selectedLang={language}
+                        highlightSentence={highlightSentence}
+                        setOutputHistory={setOutputHistory}
+                        input={userInput}
+                        frozenWordTexts={frozenWordTexts}
+                        socketId={socketId}
+                        language={language}
+                        setProcessing={setProcessing}
+                        eventId={eventId}
+                        setEventId={setEventId}
+                      />
+                      <OutputBotomNavigation
+                        handleClear={handleClear}
+                        highlightSentence={highlightSentence}
+                        outputContend={outputContend}
+                        outputHistory={outputHistory}
+                        outputHistoryIndex={outputHistoryIndex}
+                        outputWordCount={outputWordCount}
+                        proccessing={processing}
+                        sentenceCount={result.length}
+                        setHighlightSentence={setHighlightSentence}
+                        setOutputHistoryIndex={setOutputHistoryIndex}
+                        onCheckPlagiarism={handleCheckOutputPlagiarism}
+                        isCheckingPlagiarism={isCheckingOutputPlagiarism}
+                        showOriginalInOutput={showOriginalInOutput}
+                        onToggleShowOriginal={handleToggleShowOriginal}
+                        onCopyOutputToInput={handleCopyOutputToInput} // Added prop
+                      />
+                    </>
+                  )}
+                </Box>
+              )}
 
-              {user?.package === "free" && showMessage.show ? (
+              {activeRightPanelTab === 'plagiarism' && (
+                <OutputPlagiarismReportPanel
+                  isLoading={isCheckingOutputPlagiarism}
+                  result={outputPlagiarismResult}
+                />
+              )}
+              {/* Fallback for plagiarism tab if no output to check yet */}
+              {activeRightPanelTab === 'plagiarism' && !outputContend && !outputPlagiarismResult && !isCheckingOutputPlagiarism && (
+                 <Box sx={{p:2, textAlign:'center', flexGrow:1, display:'flex', alignItems:'center', justifyContent:'center'}}>
+                   <Typography>Paraphrase text first to check its plagiarism.</Typography>
+                 </Box>
+              )}
+
+              {user?.package === "free" && showMessage.show && activeRightPanelTab === 'output' && ( // Only show update component on output tab
                 <UpdateComponent Component={showMessage.Component} />
               ) : null}
             </Grid2>
           )}
         </Grid2>
       </Card>
+      <InputPlagiarismDialog
+        open={showInputPlagiarismDialog}
+        onClose={() => setShowInputPlagiarismDialog(false)}
+        isLoading={isCheckingInputPlagiarism}
+        result={inputPlagiarismResult}
+      />
     </Box>
   );
 };

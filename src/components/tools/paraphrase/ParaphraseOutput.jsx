@@ -47,7 +47,7 @@ const ParaphraseOutput = ({
   selectedLang,
   highlightSentence,
   setOutputHistory,
-  freezeWords,
+  frozenWordTexts, // Renamed from freezeWords
   socketId,
   language,
   setProcessing,
@@ -206,7 +206,7 @@ const ParaphraseOutput = ({
         synonymLevel: synonymLevel ? synonymLevel.toLowerCase() : "basic",
         model: "sai-nlp-boost",
         language: selectedLang,
-        freezeWord: freezeWords?.length ? freezeWords.join(", ") : "",
+        freezeWord: frozenWordTexts?.length ? frozenWordTexts.join(", ") : "",
       };
       const response = await fetch(url, {
         method: "POST",
