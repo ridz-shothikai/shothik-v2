@@ -32,6 +32,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import TrainingIcon from '@mui/icons-material/ModelTraining';
 import { useAgentContext } from './shared/AgentContextProvider';
+import {useCreatePresentationMutation} from "../../src/redux/api/presentation/presentationApi";
 
 const PRIMARY_GREEN = '#07B37A';
 
@@ -110,6 +111,9 @@ export default function AgentLandingPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
 
+  // ========= REDUX =========
+  const [initiatePresentation, {isLoading: isInitiatingPresentation}] = useCreatePresentationMutation();
+
   // Check if user is visiting for the first time
   useEffect(() => {
     const hasVisited = localStorage.getItem('shothik_has_visited');
@@ -120,7 +124,7 @@ export default function AgentLandingPage() {
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!inputValue.trim()) return;
     
     // Store the initial prompt
@@ -133,7 +137,11 @@ export default function AgentLandingPage() {
     }
     
     setAgentType(agentType);
-    router.push(`/agents/${agentType}`);
+
+    // before moving to next page initiating presentation and getting presentation ID
+    const response = await initiatePresentation(inputValue);
+    // console.log(response.data.data?.presentation_id, "initiate response");
+    router.push(`/agents/${agentType}?id=${response.data.data?.presentation_id}`);
   };
 
   const handleNavItemClick = (itemId) => {
@@ -471,7 +479,7 @@ export default function AgentLandingPage() {
             
             <IconButton 
               onClick={handleSubmit}
-              disabled={!inputValue.trim()}
+              disabled={!inputValue.trim() || isInitiatingPresentation}
               sx={{ 
                 bgcolor: PRIMARY_GREEN,
                 color: 'white',

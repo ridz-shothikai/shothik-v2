@@ -36,6 +36,7 @@ import PreferenceCollectionPanel from './shared/PreferenceCollectionPanel';
 import QualityValidationPanel from './shared/QualityValidationPanel';
 import PlanningProgressIndicator from './shared/PlanningProgressIndicator';
 import InteractiveChatMessage from './shared/InteractiveChatMessage';
+import { useFetchLogsQuery, useFetchSlidesQuery } from '../../src/redux/api/presentation/presentationApi';
 
 const PRIMARY_GREEN = '#07B37A';
 
@@ -48,7 +49,7 @@ const NAVIGATION_ITEMS = [
   { id: 'agents', label: 'All Agents', icon: <GroupIcon /> },
 ];
 
-export default function AgentPage({ specificAgent }) {
+export default function AgentPage({ specificAgent, presentationId }) {
   const router = useRouter();
   const { agentType, setAgentType } = useAgentContext();
   const [chatHistory, setChatHistory] = useState([]);
@@ -70,6 +71,33 @@ export default function AgentPage({ specificAgent }) {
   const [presentationBlueprint, setPresentationBlueprint] = useState(null);
   
   const chatEndRef = useRef(null);
+
+  // ========== REDUX ==========
+  // Fetching logs - only when we have a presentationId
+  const { 
+    data: logsData, 
+    isLoading: logsLoading, 
+    error: logsError 
+  } = useFetchLogsQuery(presentationId, {
+    skip: !presentationId,
+    pollingInterval: 5000, // Poll every 5 seconds
+  });
+
+  const realLogs = logsData?.data?.filter(log => log.agent_name === 'unknown_agent') || [];
+
+  // console.log(logsData, "logs data");
+
+  // Fetch slides - only when we have a presentationId  
+  const { 
+    data: slidesData, 
+    isLoading: slidesLoading, 
+    error: slidesError 
+  } = useFetchSlidesQuery(presentationId, {
+    skip: !presentationId,
+    pollingInterval: 10000, // Poll every 10 seconds
+  });
+
+  // console.log(slidesData, "slides data");
 
   // Use specific agent if provided, otherwise use context
   const currentAgentType = specificAgent || agentType;
@@ -481,7 +509,28 @@ export default function AgentPage({ specificAgent }) {
               )}
 
               {/* Chat Messages */}
-              <Box sx={{ flexGrow: 1, pb: 4 }}>
+              {realLogs.length > 0 && (
+                  <Box sx={{ mt: 2, pb: 10 }}>
+                    {realLogs.map((log, index) => (
+                      <Box key={index} sx={{ 
+                        mb: 2, 
+                        p: 2, 
+                        bgcolor: '#e3f2fd', 
+                        borderRadius: 2,
+                        borderLeft: '4px solid #2196f3'
+                      }}>
+                        <Typography variant="body2" color="text.secondary">
+                          {new Date(log.timestamp).toLocaleTimeString()} - {log.agent_name}
+                        </Typography>
+                        <Typography variant="body1">
+                          {log.parsed_output}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+              )}
+
+              {/* <Box sx={{ flexGrow: 1, pb: 4 }}>
                 {chatHistory.map((message) => (
                   <InteractiveChatMessage
                     key={message.id}
@@ -491,7 +540,7 @@ export default function AgentPage({ specificAgent }) {
                   />
                 ))}
 
-                {/* Show preference collection when needed */}
+                Show preference collection when needed
                 {showPreferenceCollection && (
                   <Box sx={{ mb: 3 }}>
                     <PreferenceCollectionPanel
@@ -500,7 +549,7 @@ export default function AgentPage({ specificAgent }) {
                     />
                   </Box>
                 )}
-              </Box>
+              </Box> */}
 
               <div ref={chatEndRef} />
             </Box>
@@ -588,7 +637,7 @@ export default function AgentPage({ specificAgent }) {
             scrollbarColor: '#c1c1c1 #f1f1f1',
           }}>
             <Box sx={{ p: 3, minHeight: '100%', pb: 6 }}>
-              {previewTab === 'preview' && (
+              {/* {previewTab === 'preview' && (
                 <Box>
                   {currentAgentType === 'presentation' ? (
                     <>
@@ -642,6 +691,123 @@ export default function AgentPage({ specificAgent }) {
                         Agent output will appear here
                       </Typography>
                     </Box>
+                  )}
+                </Box>
+              )} */}
+              {/* previous code 👆 */}
+              {previewTab === 'preview' && (
+                <Box>
+                  {currentAgentType === 'presentation' ? (
+                    <>
+                      <Box sx={{ 
+                        mb: 2, 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                        <Typography variant="h6" color="#333">Your Presentation</Typography>
+                        <Typography color="#666">
+                          {slidesData?.data?.length || 0} slides
+                        </Typography>
+                      </Box>
+                      
+                      {/* Show real slides */}
+                      {slidesLoading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                          <CircularProgress />
+                        </Box>
+                      ) : slidesData?.data?.length > 0 ? (
+                        // <Box sx={{ space: 2 }}>
+                        //   {slidesData.data.map((slide, index) => (
+                        //     <Card key={slide.slide_index} sx={{ mb: 2, height: 300, position: 'relative', overflow: 'hidden' }}>
+                        //       <CardContent sx={{ p: 0, width: '100%', height: '100%', position: 'relative' }}>
+                        //         <iframe
+                        //           srcDoc={slide.body}
+                        //           style={{
+                        //             width: '1280px',
+                        //             height: '720px',
+                        //             transform: 'scale(0.4166)', // computed from container height
+                        //             transformOrigin: 'top left',
+                        //             position: 'absolute',
+                        //             top: 0,
+                        //             left: 0,
+                        //             border: 'none',
+                        //             display: 'block',
+                        //             pointerEvents: 'none', // optional
+                        //           }}
+                        //           title={`Slide ${slide.slide_index + 1}`}
+                        //         />
+                        //       </CardContent>
+                        //     </Card>
+                        //   ))}
+                        // </Box>
+
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '14px'
+                        }}>
+
+                        {slidesData?.data.map((slide, index) => (
+                          <div style={{
+                            flex: 1,
+                            overflow: 'hidden',
+                            position: 'relative'
+                          }}>
+                            <div style={{
+                              height: '100%',
+                              overflow: 'auto',
+                              width: '100%',
+                            }}>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                height: '100%',
+                                justifyContent: 'flex-start',
+                                overflow: 'hidden',
+                                position: 'relative',
+                                width: '100%'
+                              }}>
+                                <div style={{
+                                  height: '300px',
+                                  position: 'relative',
+                                  width: '100%'
+                                }}>
+                                  <iframe
+                                     srcDoc={slide.body}
+                                     style={{
+                                       width: '333.33%',
+                                       height: '333.33%',
+                                       transform: 'scale(0.3)',
+                                       transformOrigin: 'top left',
+                                       position: 'absolute',
+                                       top: 0,
+                                       left: 0,
+                                       border: 'none',
+                                       display: 'block',
+                                       pointerEvents: 'none',
+                                     }}
+                                     title={`Slide ${slide.slide_index + 1}`}
+                                   />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        </div>
+                      ) : (
+                        // existing mock content
+                        <Card sx={{ 
+                          bgcolor: userPreferences ? userPreferences.customColors[0] + '10' : '#f8f9fa', 
+                          // ... rest of existing mock card
+                        }}>
+                          {/* existing mock content */}
+                        </Card>
+                      )}
+                    </>
+                  ) : (
+                    // existing non-presentation content
+                    <></>
                   )}
                 </Box>
               )}
