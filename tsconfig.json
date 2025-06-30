@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/hooks/useStreamingLogs.ts"  ],
   "exclude": [
     "node_modules"
   ]
