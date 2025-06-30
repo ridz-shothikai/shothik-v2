@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Box from '@mui/material/Box';
 import { AgentContextProvider } from '../../../../../components/agents/shared/AgentContextProvider';
 import AgentPage from '../../../../../components/agents/AgentPage';
+import PresentationAgentPage from '../../../../components/presentation/PresentationAgentPage';
 
 export default function SpecificAgentPage() {
   const params = useParams();
@@ -14,8 +15,8 @@ export default function SpecificAgentPage() {
 
   return (
     <AgentContextProvider>
-      <Box sx={{ minHeight: 'calc(100vh - 200px)' }}>
-        <AgentPage specificAgent={agentType} presentationId={id}  />
+      <Box sx={{ minHeight: 'calc(100dvh - 200px)', overflowY: 'hidden' }}>
+        <PresentationAgentPage specificAgent={agentType} presentationId={id}  />
       </Box>
     </AgentContextProvider>
   );
