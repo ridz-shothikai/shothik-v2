@@ -39,14 +39,17 @@ const TypingAnimation = memo(({ text = "Thinking..." }) => (
 
 TypingAnimation.displayName = 'TypingAnimation';
 
-// Individual message component with typing effect
-const StreamingMessage = memo(({ log, isTyping, onTypingComplete }) => {
+// Enhanced message component with improved typing effect
+const StreamingMessage = memo(({ log, isTyping, onTypingComplete, logIndex }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(!isTyping);
   const typingRef = useRef(null);
   const mountedRef = useRef(true);
+  const startTimeRef = useRef(Date.now());
+  const lastFrameRef = useRef(Date.now());
   
   const fullText = log.parsed_output || '';
+  const shouldAnimate = log.shouldAnimate !== false && isTyping;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -57,7 +60,7 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete }) => {
 
   // Reset state when switching between typing and non-typing
   useEffect(() => {
-    if (!isTyping) {
+    if (!shouldAnimate) {
       setDisplayedText(fullText);
       setIsComplete(true);
       return;
@@ -66,77 +69,79 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete }) => {
     // Reset for typing
     setDisplayedText('');
     setIsComplete(false);
-  }, [isTyping, fullText]);
+    startTimeRef.current = Date.now();
+  }, [shouldAnimate, fullText]);
 
   useEffect(() => {
-    if (!isTyping || !fullText.trim()) {
-      if (!fullText.trim() && isTyping) {
+    if (!shouldAnimate || !fullText.trim()) {
+      if (!fullText.trim() && shouldAnimate) {
         setIsComplete(true);
-        onTypingComplete?.();
+        onTypingComplete?.(logIndex);
       }
       return;
     }
 
     let currentIndex = 0;
     
-    // Adaptive typing speed
-    const getTypingSpeed = (textLength) => {
-      const baseSpeed = 50;
-      const minSpeed = 30;
-      const maxSpeed = 80;
+    // Much faster, adaptive typing speed
+    const getTypingSpeed = (textLength: number): number => {
+      const baseSpeed = 15; // Reduced from 50 to 15 (much faster)
+      const minSpeed = 8;   // Reduced from 30 to 8
+      const maxSpeed = 25;  // Reduced from 80 to 25
       
-      if (textLength > 500) return Math.min(maxSpeed, baseSpeed + 15);
-      if (textLength > 200) return baseSpeed + 8;
+      if (textLength > 500) return Math.min(maxSpeed, baseSpeed + 5);
+      if (textLength > 200) return baseSpeed + 3;
       return baseSpeed;
     };
 
     const typingSpeed = getTypingSpeed(fullText.length);
 
+    // Use requestAnimationFrame for smoother, window-focus-independent animation
     const typeText = () => {
       if (!mountedRef.current) return;
       
-      if (currentIndex < fullText.length) {
+      const now = Date.now();
+      const elapsed = now - lastFrameRef.current;
+      
+      if (currentIndex < fullText.length && elapsed >= typingSpeed) {
         const nextChar = fullText[currentIndex];
         setDisplayedText(prev => prev + nextChar);
         currentIndex++;
+        lastFrameRef.current = now;
         
-        // Pause longer for punctuation
-        const isPunctuation = ['.', '!', '?'].includes(nextChar);
-        const isComma = nextChar === ',';
-        const isNewline = nextChar === '\n';
-        
-        let delay = typingSpeed;
-        if (isPunctuation) delay = typingSpeed * 2.5;
-        else if (isComma) delay = typingSpeed * 1.5;
-        else if (isNewline) delay = typingSpeed * 0.5;
-        
-        typingRef.current = setTimeout(typeText, delay);
+        // Continue with next frame
+        typingRef.current = requestAnimationFrame(typeText);
+      } else if (currentIndex < fullText.length) {
+        // Not enough time elapsed, continue
+        typingRef.current = requestAnimationFrame(typeText);
       } else {
+        // Completed typing
         setIsComplete(true);
         setTimeout(() => {
           if (mountedRef.current) {
-            onTypingComplete?.();
+            onTypingComplete?.(logIndex);
           }
-        }, 100);
+        }, 50);
       }
     };
 
-    // Start typing immediately
-    typingRef.current = setTimeout(typeText, 100);
+    // Start typing with requestAnimationFrame
+    lastFrameRef.current = Date.now();
+    typingRef.current = requestAnimationFrame(typeText);
 
     return () => {
       if (typingRef.current) {
-        clearTimeout(typingRef.current);
+        cancelAnimationFrame(typingRef.current);
       }
     };
-  }, [fullText, isTyping, onTypingComplete]);
+  }, [fullText, shouldAnimate, onTypingComplete, logIndex]);
 
   const agentDisplayName = formatAgentName(log.agent_name);
   const timestamp = formatTimestamp(log.timestamp);
 
   return (
     <Box sx={{ mb: 3 }}>
-      {/* Agent Header - Subtle like ChatGPT */}
+      {/* Agent Header */}
       <Box sx={{ 
         display: 'flex', 
         alignItems: 'center', 
@@ -167,7 +172,7 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete }) => {
         </Typography>
       </Box>
       
-      {/* Message Content - Clean like ChatGPT */}
+      {/* Message Content */}
       <Box sx={{ ml: 0 }}>
         <Typography 
           variant="body1" 
@@ -181,7 +186,7 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete }) => {
           }}
         >
           {displayedText}
-          {isTyping && !isComplete && (
+          {shouldAnimate && !isComplete && (
             <Box 
               component="span" 
               sx={{ 
@@ -223,20 +228,28 @@ export default function ChatArea({
     processedLogs,
     currentlyTypingIndex,
     showThinking,
-    handleTypingComplete
+    handleTypingComplete,
+    sessionStatus
   } = useStreamingLogs(realLogs, isLoading);
 
   const scrollContainerRef = useRef(null);
   const autoScrollRef = useRef(true);
+  const lastLogCountRef = useRef(0);
   
-  // Handle auto-scroll with better logic
+  // Enhanced auto-scroll with better performance
   const scrollToBottom = useCallback((behavior = 'smooth') => {
     if (chatEndRef.current && autoScrollRef.current) {
-      setTimeout(() => {
-        chatEndRef.current?.scrollIntoView({ behavior, block: 'end' });
-      }, 50);
+      // Use different strategies based on typing state
+      const scrollBehavior = currentlyTypingIndex >= 0 ? 'auto' : behavior;
+      
+      requestAnimationFrame(() => {
+        chatEndRef.current?.scrollIntoView({ 
+          behavior: scrollBehavior, 
+          block: 'end' 
+        });
+      });
     }
-  }, []);
+  }, [currentlyTypingIndex]);
 
   // Check if user is near bottom
   const checkScrollPosition = useCallback(() => {
@@ -247,34 +260,45 @@ export default function ChatArea({
     }
   }, []);
 
-  // Auto-scroll when content changes
+  // Auto-scroll when new content appears
   useEffect(() => {
-    scrollToBottom();
+    if (processedLogs.length > lastLogCountRef.current || showThinking) {
+      scrollToBottom();
+      lastLogCountRef.current = processedLogs.length;
+    }
   }, [processedLogs.length, showThinking, scrollToBottom]);
 
-  // Auto-scroll during typing
+  // Smooth scrolling during typing
   useEffect(() => {
     if (currentlyTypingIndex >= 0) {
       const interval = setInterval(() => {
         if (autoScrollRef.current) {
           scrollToBottom('auto');
         }
-      }, 500);
+      }, 300); // Increased frequency for smoother scrolling
       
       return () => clearInterval(interval);
     }
   }, [currentlyTypingIndex, scrollToBottom]);
 
-  // Debug logs
+  // Enhanced typing completion handler
+  const handleTypingCompleteWithIndex = useCallback((logIndex: number) => {
+    handleTypingComplete(logIndex);
+  }, [handleTypingComplete]);
+
+  // Debug logs (only in development)
   useEffect(() => {
-    console.log('ChatArea State:', {
-      realLogsLength: realLogs?.length || 0,
-      processedLogsLength: processedLogs.length,
-      currentlyTypingIndex,
-      showThinking,
-      isLoading
-    });
-  }, [realLogs, processedLogs, currentlyTypingIndex, showThinking, isLoading]);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('ChatArea State:', {
+        realLogsLength: realLogs?.length || 0,
+        processedLogsLength: processedLogs.length,
+        currentlyTypingIndex,
+        showThinking,
+        isLoading,
+        sessionStatus
+      });
+    }
+  }, [realLogs, processedLogs, currentlyTypingIndex, showThinking, isLoading, sessionStatus]);
 
   return (
     <Box sx={{ 
@@ -344,15 +368,21 @@ export default function ChatArea({
             <StreamingMessage
               key={log.id}
               log={log}
+              logIndex={index}
               isTyping={index === currentlyTypingIndex}
-              onTypingComplete={index === currentlyTypingIndex ? handleTypingComplete : undefined}
+              onTypingComplete={handleTypingCompleteWithIndex}
             />
           ))}
 
-          {/* Show thinking indicator at the end */}
-          {showThinking && (
+          {/* Show thinking indicator */}
+          {showThinking && sessionStatus !== 'completed' && sessionStatus !== 'failed' && (
             <Box sx={{ mt: 1 }}>
-              <TypingAnimation />
+              <TypingAnimation 
+                text={
+                  sessionStatus === 'failed' ? 'Processing failed...' :
+                  isLoading ? 'Thinking...' : 'Processing...'
+                }
+              />
             </Box>
           )}
 

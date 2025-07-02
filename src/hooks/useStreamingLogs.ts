@@ -1,7 +1,34 @@
 // hooks/useStreamingLogs.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-export const useStreamingLogs = (realLogs, isLoading) => {
+// Storage key for tracking animated logs
+const ANIMATED_LOGS_KEY = 'streamingLogs_animated';
+
+// Get animated logs from storage
+const getAnimatedLogs = (): Set<string> => {
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(ANIMATED_LOGS_KEY) || '[]');
+    return new Set(stored);
+  } catch {
+    return new Set();
+  }
+};
+
+// Save animated logs to storage
+const saveAnimatedLogs = (animatedSet: Set<string>) => {
+  try {
+    sessionStorage.setItem(ANIMATED_LOGS_KEY, JSON.stringify([...animatedSet]));
+  } catch {
+    // Ignore storage errors
+  }
+};
+
+// Generate unique ID for a log
+const generateLogId = (log: any, index: number): string => {
+  return `${log.agent_name}_${log.timestamp}_${index}_${log.parsed_output?.slice(0, 50)}`;
+};
+
+export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
   const [processedLogs, setProcessedLogs] = useState([]);
   const [visibleLogs, setVisibleLogs] = useState([]);
   const [currentlyTypingIndex, setCurrentlyTypingIndex] = useState(-1);
@@ -11,6 +38,8 @@ export const useStreamingLogs = (realLogs, isLoading) => {
   const nextLogIndexRef = useRef(0);
   const isTypingRef = useRef(false);
   const typingTimeoutRef = useRef(null);
+  const animatedLogsRef = useRef<Set<string>>(getAnimatedLogs());
+  const sessionStatusRef = useRef<string>('processing'); // Track session status
 
   // Clear typing timeout
   const clearTypingTimeout = useCallback(() => {
@@ -18,6 +47,27 @@ export const useStreamingLogs = (realLogs, isLoading) => {
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = null;
     }
+  }, []);
+
+  // Check if log should be animated
+  const shouldAnimateLog = useCallback((log: any, index: number): boolean => {
+    const logId = generateLogId(log, index);
+    const hasBeenAnimated = animatedLogsRef.current.has(logId);
+    
+    // Don't animate if session is completed/failed
+    if (sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') {
+      return false;
+    }
+    
+    // Don't animate if already animated
+    return !hasBeenAnimated;
+  }, []);
+
+  // Mark log as animated
+  const markLogAsAnimated = useCallback((log: any, index: number) => {
+    const logId = generateLogId(log, index);
+    animatedLogsRef.current.add(logId);
+    saveAnimatedLogs(animatedLogsRef.current);
   }, []);
 
   // Start typing the next log in queue
@@ -28,29 +78,53 @@ export const useStreamingLogs = (realLogs, isLoading) => {
       
       // Ensure log exists and has content
       if (nextLog && nextLog.parsed_output && nextLog.parsed_output.trim()) {
+        const shouldAnimate = shouldAnimateLog(nextLog, nextIndex);
+        
         // Add the log to visible logs
-        setVisibleLogs(prev => [...prev, nextLog]);
-        setCurrentlyTypingIndex(nextIndex);
-        setShowThinking(false);
-        isTypingRef.current = true;
+        setVisibleLogs(prev => [...prev, { ...nextLog, shouldAnimate }]);
+        
+        if (shouldAnimate) {
+          setCurrentlyTypingIndex(nextIndex);
+          isTypingRef.current = true;
+          // Hide thinking while actively typing
+          setShowThinking(false);
+        } else {
+          // Skip animation, move to next immediately
+          setCurrentlyTypingIndex(-1);
+          isTypingRef.current = false;
+        }
+        
         nextLogIndexRef.current = nextIndex + 1;
+        
+        // If not animating, start next log immediately
+        if (!shouldAnimate) {
+          setTimeout(() => startNextLog(), 50);
+        }
       } else {
         // Skip invalid log and try next
         nextLogIndexRef.current = nextIndex + 1;
-        setTimeout(() => startNextLog(), 100);
+        setTimeout(() => startNextLog(), 50);
       }
     } else {
       // No more logs to process
       setCurrentlyTypingIndex(-1);
       isTypingRef.current = false;
-      if (!isLoading) {
+      
+      // Show thinking if still loading or processing
+      if (isLoading || sessionStatusRef.current === 'processing') {
+        setShowThinking(true);
+      } else {
         setShowThinking(false);
       }
     }
-  }, [isLoading]);
+  }, [shouldAnimateLog, isLoading]);
 
   // Handle typing completion for current log
-  const handleTypingComplete = useCallback(() => {
+  const handleTypingComplete = useCallback((logIndex: number) => {
+    if (logIndex >= 0 && logIndex < allLogsRef.current.length) {
+      markLogAsAnimated(allLogsRef.current[logIndex], logIndex);
+    }
+    
     setCurrentlyTypingIndex(-1);
     isTypingRef.current = false;
     
@@ -58,8 +132,26 @@ export const useStreamingLogs = (realLogs, isLoading) => {
     clearTypingTimeout();
     typingTimeoutRef.current = setTimeout(() => {
       startNextLog();
-    }, 300);
-  }, [startNextLog, clearTypingTimeout]);
+    }, 150); // Reduced delay for faster flow
+  }, [startNextLog, clearTypingTimeout, markLogAsAnimated]);
+
+  // Determine session status from logs
+  const determineSessionStatus = useCallback((logs: any[]): string => {
+    if (!logs || logs.length === 0) return 'processing';
+    
+    // Check if any log has status information
+    const statusLog = logs.find(log => log.status);
+    if (statusLog) {
+      return statusLog.status;
+    }
+    
+    // Fallback: if not loading and we have logs, assume completed
+    if (!isLoading && logs.length > 0) {
+      return 'completed';
+    }
+    
+    return 'processing';
+  }, [isLoading]);
 
   // Process new logs when they arrive
   useEffect(() => {
@@ -68,18 +160,21 @@ export const useStreamingLogs = (realLogs, isLoading) => {
       setProcessedLogs([]);
       setVisibleLogs([]);
       setCurrentlyTypingIndex(-1);
-      setShowThinking(false);
+      setShowThinking(isLoading); // Show thinking if loading
       allLogsRef.current = [];
       nextLogIndexRef.current = 0;
       isTypingRef.current = false;
+      sessionStatusRef.current = 'processing';
       clearTypingTimeout();
       return;
     }
 
+    // Update session status
+    sessionStatusRef.current = determineSessionStatus(realLogs);
+
     // Filter and prepare logs for display
     const validLogs = realLogs
       .filter(log => {
-        // More robust filtering
         return log && 
                log.parsed_output && 
                typeof log.parsed_output === 'string' &&
@@ -101,41 +196,44 @@ export const useStreamingLogs = (realLogs, isLoading) => {
       
       // Start typing if not already typing and we have logs to show
       if (!isTypingRef.current && nextLogIndexRef.current < validLogs.length) {
-        setShowThinking(false);
         startNextLog();
       }
     }
-  }, [realLogs, startNextLog, clearTypingTimeout]);
+  }, [realLogs, startNextLog, clearTypingTimeout, determineSessionStatus, isLoading]);
 
-  // Manage thinking indicator
+  // Manage thinking indicator - FIXED LOGIC
   useEffect(() => {
     const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
     const isCurrentlyTyping = currentlyTypingIndex >= 0;
+    const isProcessingOrFailed = sessionStatusRef.current === 'processing' || sessionStatusRef.current === 'failed';
     
-    if (isLoading) {
-      if (visibleLogs.length === 0) {
-        // Initial loading state
-        setShowThinking(true);
-      } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
-        // Waiting for next message to type
-        setShowThinking(true);
-      } else if (!hasUnprocessedLogs && !isCurrentlyTyping) {
-        // Loading but no pending messages
-        setShowThinking(true);
-      } else {
-        // Currently typing
-        setShowThinking(false);
-      }
+    // Show thinking if:
+    // 1. Currently loading and no logs yet
+    // 2. Still processing/failed and not currently typing
+    // 3. Has unprocessed logs and not currently typing
+    if (isLoading && visibleLogs.length === 0) {
+      setShowThinking(true);
+    } else if (isProcessingOrFailed && !isCurrentlyTyping) {
+      setShowThinking(true);
+    } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
+      setShowThinking(true);
+    } else if (isCurrentlyTyping) {
+      // Never show thinking while typing
+      setShowThinking(false);
     } else {
-      // Not loading
-      if (hasUnprocessedLogs && !isCurrentlyTyping) {
-        // Brief thinking before next message
-        setShowThinking(true);
-      } else {
-        setShowThinking(false);
-      }
+      // Default case - hide thinking if completed and nothing to process
+      setShowThinking(false);
     }
   }, [isLoading, visibleLogs.length, currentlyTypingIndex]);
+
+  // Clear animated logs when session resets
+  useEffect(() => {
+    if (!realLogs || realLogs.length === 0) {
+      // Clear animated logs for new session
+      animatedLogsRef.current.clear();
+      saveAnimatedLogs(animatedLogsRef.current);
+    }
+  }, [realLogs]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -145,15 +243,16 @@ export const useStreamingLogs = (realLogs, isLoading) => {
   }, [clearTypingTimeout]);
 
   return {
-    processedLogs: visibleLogs, // Return only visible logs
+    processedLogs: visibleLogs,
     currentlyTypingIndex,
     showThinking,
-    handleTypingComplete
+    handleTypingComplete,
+    sessionStatus: sessionStatusRef.current
   };
 };
 
-// Agent name formatting utility
-export const formatAgentName = (agentName) => {
+// Agent name formatting utility (unchanged)
+export const formatAgentName = (agentName: string): string => {
   if (!agentName || typeof agentName !== 'string') {
     return 'AI Assistant';
   }
@@ -180,8 +279,8 @@ export const formatAgentName = (agentName) => {
   return formatted;
 };
 
-// Timestamp formatting utility
-export const formatTimestamp = (timestamp) => {
+// Timestamp formatting utility (unchanged)
+export const formatTimestamp = (timestamp: string): string => {
   try {
     if (!timestamp) {
       return 'now';
@@ -189,25 +288,21 @@ export const formatTimestamp = (timestamp) => {
     
     const date = new Date(timestamp);
     const now = new Date();
-    const diff = now - date;
+    const diff = now.getTime() - date.getTime();
     
-    // If invalid date, return current time
     if (isNaN(date.getTime())) {
       return 'now';
     }
     
-    // If less than 1 minute ago, show "just now"
     if (diff < 60000) {
       return 'just now';
     }
     
-    // If less than 1 hour ago, show minutes
     if (diff < 3600000) {
       const minutes = Math.floor(diff / 60000);
       return `${minutes}m ago`;
     }
     
-    // If same day, show time only
     if (date.toDateString() === now.toDateString()) {
       return date.toLocaleTimeString('en-US', { 
         hour12: false, 
@@ -216,7 +311,6 @@ export const formatTimestamp = (timestamp) => {
       });
     }
     
-    // Otherwise show date and time
     return date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric', 

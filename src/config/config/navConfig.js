@@ -14,6 +14,7 @@ const ICONS = {
   translator: icon("translator"),
   research: icon("research"),
   user: icon("user"),
+  agent: icon("ai-brain"),
 };
 
 const navConfig = [
@@ -59,7 +60,7 @@ const navConfig = [
       {
         title: "Agent",
         path: "/agents",
-        icon: icon("smart_toy"),
+        icon: ICONS.agent,
         iconColor: "#1976D2",
       },
     ],
@@ -129,7 +130,7 @@ const tools = [
     iconColor: "#A07EFB",
   },
   {
-    icon: icon("smart_toy"),
+    icon: ICONS.agent,
     title: "Agent",
     description: "AI Agent Platform",
     label: null,
