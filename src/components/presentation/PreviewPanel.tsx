@@ -159,7 +159,7 @@ export default function PreviewPanel({
                 isValidating={isValidating}
                 onApplyAutoFixes={onApplyAutoFixes}
                 onRegenerateWithFeedback={onRegenerateWithFeedback}
-                onViewDetails={console.log('mahedi')}
+                onViewDetails={console.log('')}
               />
             ) : (
               <Typography color="#666">Quality metrics will appear after the validation phase.</Typography>

@@ -225,7 +225,7 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
       <Box sx={{ 
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1.5fr' }, // Left smaller, right bigger
+        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, // Left smaller, right bigger
         gridTemplateRows: '1fr',
         height: 'calc(100vh - 120px)', // Subtract header height
         overflow: 'hidden', // Prevent grid container from scrolling

@@ -39,22 +39,96 @@ const TypingAnimation = memo(({ text = "Thinking..." }) => (
 
 TypingAnimation.displayName = 'TypingAnimation';
 
-// Enhanced message component with improved typing effect
-const StreamingMessage = memo(({ log, isTyping, onTypingComplete, logIndex }) => {
+// Enhanced streaming message component with force completion support
+const StreamingMessage = memo(({ 
+  log, 
+  isTyping, 
+  onTypingComplete, 
+  logIndex,
+  registerAnimationCallback,
+  unregisterAnimationCallback 
+}) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(!isTyping);
-  const typingRef = useRef(null);
+  
+  // Refs for background-safe animation with force completion
+  const animationStateRef = useRef({
+    isRunning: false,
+    startTime: 0,
+    currentWordIndex: 0,
+    words: [],
+    intervalId: null,
+    lastUpdateTime: 0,
+    forceCompleted: false
+  });
+  
   const mountedRef = useRef(true);
-  const startTimeRef = useRef(Date.now());
-  const lastFrameRef = useRef(Date.now());
   
   const fullText = log.parsed_output || '';
   const shouldAnimate = log.shouldAnimate !== false && isTyping;
+
+  // Split text into words for word-by-word animation
+  const prepareWords = useCallback((text: string) => {
+    if (!text) return [];
+    
+    // Split by spaces but preserve spacing information
+    const parts = text.split(/(\s+)/);
+    const words = [];
+    
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].trim()) {
+        // It's a word
+        words.push({ text: parts[i], isSpace: false });
+      } else if (parts[i]) {
+        // It's whitespace
+        words.push({ text: parts[i], isSpace: true });
+      }
+    }
+    
+    return words;
+  }, []);
+
+  // Force completion function
+  const forceComplete = useCallback(() => {
+    const state = animationStateRef.current;
+    
+    if (!state.isRunning || state.forceCompleted) {
+      return;
+    }
+    
+    console.log('Force completing animation for log:', logIndex);
+    
+    state.forceCompleted = true;
+    state.isRunning = false;
+    
+    // Clear any running interval
+    if (state.intervalId) {
+      clearInterval(state.intervalId);
+      state.intervalId = null;
+    }
+    
+    // Immediately show full text
+    if (mountedRef.current) {
+      setDisplayedText(fullText);
+      setIsComplete(true);
+      
+      // Notify completion after a small delay
+      setTimeout(() => {
+        if (mountedRef.current) {
+          unregisterAnimationCallback(logIndex);
+          onTypingComplete?.(logIndex);
+        }
+      }, 50);
+    }
+  }, [fullText, logIndex, onTypingComplete, unregisterAnimationCallback]);
 
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      if (animationStateRef.current.intervalId) {
+        clearInterval(animationStateRef.current.intervalId);
+      }
     };
   }, []);
 
@@ -63,17 +137,41 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete, logIndex }) =>
     if (!shouldAnimate) {
       setDisplayedText(fullText);
       setIsComplete(true);
+      
+      // Clear any running animation
+      if (animationStateRef.current.intervalId) {
+        clearInterval(animationStateRef.current.intervalId);
+        animationStateRef.current.intervalId = null;
+      }
+      animationStateRef.current.isRunning = false;
+      animationStateRef.current.forceCompleted = false;
       return;
     }
     
     // Reset for typing
     setDisplayedText('');
     setIsComplete(false);
-    startTimeRef.current = Date.now();
-  }, [shouldAnimate, fullText]);
+    
+    // Clear any existing animation
+    if (animationStateRef.current.intervalId) {
+      clearInterval(animationStateRef.current.intervalId);
+    }
+    
+    // Prepare animation state
+    animationStateRef.current = {
+      isRunning: false,
+      startTime: Date.now(),
+      currentWordIndex: 0,
+      words: prepareWords(fullText),
+      intervalId: null,
+      lastUpdateTime: Date.now(),
+      forceCompleted: false
+    };
+  }, [shouldAnimate, fullText, prepareWords]);
 
+  // Enhanced animation with force completion support
   useEffect(() => {
-    if (!shouldAnimate || !fullText.trim()) {
+    if (!shouldAnimate || !fullText.trim() || animationStateRef.current.isRunning) {
       if (!fullText.trim() && shouldAnimate) {
         setIsComplete(true);
         onTypingComplete?.(logIndex);
@@ -81,60 +179,110 @@ const StreamingMessage = memo(({ log, isTyping, onTypingComplete, logIndex }) =>
       return;
     }
 
-    let currentIndex = 0;
+    const state = animationStateRef.current;
+    const words = state.words;
     
-    // Much faster, adaptive typing speed
-    const getTypingSpeed = (textLength: number): number => {
-      const baseSpeed = 15; // Reduced from 50 to 15 (much faster)
-      const minSpeed = 8;   // Reduced from 30 to 8
-      const maxSpeed = 25;  // Reduced from 80 to 25
+    if (words.length === 0) {
+      setIsComplete(true);
+      onTypingComplete?.(logIndex);
+      return;
+    }
+
+    state.isRunning = true;
+    state.startTime = Date.now();
+    state.currentWordIndex = 0;
+    state.lastUpdateTime = Date.now();
+    state.forceCompleted = false;
+
+    // Register force completion callback
+    registerAnimationCallback(logIndex, forceComplete);
+
+    // Calculate adaptive timing - faster for better responsiveness
+    const getWordDelay = (wordCount: number): number => {
+      const baseDelay = 60; // Reduced base delay (was 80)
+      const minDelay = 30;  // Reduced minimum delay (was 40)
+      const maxDelay = 120; // Reduced maximum delay (was 150)
       
-      if (textLength > 500) return Math.min(maxSpeed, baseSpeed + 5);
-      if (textLength > 200) return baseSpeed + 3;
-      return baseSpeed;
+      if (wordCount > 100) return minDelay;
+      if (wordCount > 50) return Math.max(minDelay, baseDelay - 15);
+      if (wordCount < 10) return Math.min(maxDelay, baseDelay + 20);
+      
+      return baseDelay;
     };
 
-    const typingSpeed = getTypingSpeed(fullText.length);
+    const wordDelay = getWordDelay(words.length);
 
-    // Use requestAnimationFrame for smoother, window-focus-independent animation
-    const typeText = () => {
-      if (!mountedRef.current) return;
-      
+    // Enhanced animation with force completion checks
+    const animateWords = () => {
+      if (!mountedRef.current || !state.isRunning || state.forceCompleted) {
+        return;
+      }
+
       const now = Date.now();
-      const elapsed = now - lastFrameRef.current;
+      const timeSinceLastUpdate = now - state.lastUpdateTime;
       
-      if (currentIndex < fullText.length && elapsed >= typingSpeed) {
-        const nextChar = fullText[currentIndex];
-        setDisplayedText(prev => prev + nextChar);
-        currentIndex++;
-        lastFrameRef.current = now;
-        
-        // Continue with next frame
-        typingRef.current = requestAnimationFrame(typeText);
-      } else if (currentIndex < fullText.length) {
-        // Not enough time elapsed, continue
-        typingRef.current = requestAnimationFrame(typeText);
-      } else {
-        // Completed typing
-        setIsComplete(true);
-        setTimeout(() => {
-          if (mountedRef.current) {
-            onTypingComplete?.(logIndex);
+      // Check if enough time has passed for next word
+      if (timeSinceLastUpdate >= wordDelay) {
+        if (state.currentWordIndex < words.length && !state.forceCompleted) {
+          // Add next word
+          const currentWords = words.slice(0, state.currentWordIndex + 1);
+          const newText = currentWords.map(w => w.text).join('');
+          
+          setDisplayedText(newText);
+          state.currentWordIndex++;
+          state.lastUpdateTime = now;
+          
+        } else {
+          // Animation complete naturally
+          state.isRunning = false;
+          if (state.intervalId) {
+            clearInterval(state.intervalId);
+            state.intervalId = null;
           }
-        }, 50);
+          
+          setIsComplete(true);
+          
+          // Small delay before notifying completion
+          setTimeout(() => {
+            if (mountedRef.current && !state.forceCompleted) {
+              unregisterAnimationCallback(logIndex);
+              onTypingComplete?.(logIndex);
+            }
+          }, 50);
+        }
       }
     };
 
-    // Start typing with requestAnimationFrame
-    lastFrameRef.current = Date.now();
-    typingRef.current = requestAnimationFrame(typeText);
+    // Start animation with higher frequency for better responsiveness
+    state.intervalId = setInterval(animateWords, 15); // Reduced from 20ms
 
     return () => {
-      if (typingRef.current) {
-        cancelAnimationFrame(typingRef.current);
+      state.isRunning = false;
+      if (state.intervalId) {
+        clearInterval(state.intervalId);
+        state.intervalId = null;
+      }
+      unregisterAnimationCallback(logIndex);
+    };
+  }, [fullText, shouldAnimate, onTypingComplete, logIndex, registerAnimationCallback, unregisterAnimationCallback, forceComplete]);
+
+  // Enhanced visibility change handler with force completion
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const state = animationStateRef.current;
+      
+      // If animation was running and tab becomes visible, force completion
+      if (!document.hidden && state.isRunning && shouldAnimate && !state.forceCompleted) {
+        console.log('Tab became visible, force completing animation for log:', logIndex);
+        forceComplete();
       }
     };
-  }, [fullText, shouldAnimate, onTypingComplete, logIndex]);
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [shouldAnimate, logIndex, forceComplete]);
 
   const agentDisplayName = formatAgentName(log.agent_name);
   const timestamp = formatTimestamp(log.timestamp);
@@ -229,7 +377,11 @@ export default function ChatArea({
     currentlyTypingIndex,
     showThinking,
     handleTypingComplete,
-    sessionStatus
+    sessionStatus,
+    isBackgroundProcessing,
+    registerAnimationCallback,
+    unregisterAnimationCallback,
+    forceCompleteCurrentAnimation
   } = useStreamingLogs(realLogs, isLoading);
 
   const scrollContainerRef = useRef(null);
@@ -268,16 +420,16 @@ export default function ChatArea({
     }
   }, [processedLogs.length, showThinking, scrollToBottom]);
 
-  // Smooth scrolling during typing
+  // Smooth scrolling during typing - using setInterval for background safety
   useEffect(() => {
     if (currentlyTypingIndex >= 0) {
-      const interval = setInterval(() => {
+      const scrollInterval = setInterval(() => {
         if (autoScrollRef.current) {
           scrollToBottom('auto');
         }
-      }, 300); // Increased frequency for smoother scrolling
+      }, 200); // Reduced frequency but background-safe
       
-      return () => clearInterval(interval);
+      return () => clearInterval(scrollInterval);
     }
   }, [currentlyTypingIndex, scrollToBottom]);
 
@@ -295,10 +447,12 @@ export default function ChatArea({
         currentlyTypingIndex,
         showThinking,
         isLoading,
-        sessionStatus
+        sessionStatus,
+        isBackgroundProcessing,
+        documentHidden: document.hidden
       });
     }
-  }, [realLogs, processedLogs, currentlyTypingIndex, showThinking, isLoading, sessionStatus]);
+  }, [realLogs, processedLogs, currentlyTypingIndex, showThinking, isLoading, sessionStatus, isBackgroundProcessing]);
 
   return (
     <Box sx={{ 
@@ -363,7 +517,7 @@ export default function ChatArea({
             />
           ))}
 
-          {/* Display streaming messages */}
+          {/* Display streaming messages with enhanced callbacks */}
           {processedLogs.map((log, index) => (
             <StreamingMessage
               key={log.id}
@@ -371,6 +525,8 @@ export default function ChatArea({
               logIndex={index}
               isTyping={index === currentlyTypingIndex}
               onTypingComplete={handleTypingCompleteWithIndex}
+              registerAnimationCallback={registerAnimationCallback}
+              unregisterAnimationCallback={unregisterAnimationCallback}
             />
           ))}
 
@@ -389,7 +545,7 @@ export default function ChatArea({
           <div ref={chatEndRef} />
         </Box>
       </Box>
-
+      
       {/* Input Area */}
       <Box sx={{ 
         borderTop: '1px solid #e0e0e0',
