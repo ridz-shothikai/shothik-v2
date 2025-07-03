@@ -133,14 +133,32 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 });
   const containerRef = useRef(null);
 
-  // Calculate dynamic scale factor to fill the container completely
-  const calculateScale = (containerWidth, containerHeight) => {
-    // Use the full container dimensions without any padding
-    const scaleX = containerWidth / SLIDE_WIDTH;
-    const scaleY = containerHeight / SLIDE_HEIGHT;
+  // Calculate scale factor to fit the iframe within the container
+  const calculateScale = (containerWidth) => {
+    const viewportWidth = window.innerWidth;
     
-    // Use the smaller scale to ensure it fits within the container
-    return Math.min(scaleX, scaleY);
+    // For mobile devices, use a more aggressive scaling
+    if (viewportWidth < 768) {
+      // Ensure minimum scale for readability on mobile
+      const minScale = 0.25;
+      const calculatedScale = containerWidth / SLIDE_WIDTH;
+      return Math.max(calculatedScale, minScale);
+    }
+    
+    // For larger screens, use the container width
+    return containerWidth / SLIDE_WIDTH;
+  };
+
+  // Calculate the container height based on the scaled iframe
+  const calculateContainerHeight = (scale) => {
+    const scaledHeight = SLIDE_HEIGHT * scale;
+    const viewportHeight = window.innerHeight;
+    
+    // Set reasonable min/max heights
+    const minHeight = 150;
+    const maxHeight = Math.min(600, viewportHeight * 0.6);
+    
+    return Math.min(Math.max(scaledHeight, minHeight), maxHeight);
   };
 
   // Update dimensions when container resizes
@@ -148,11 +166,12 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const scale = calculateScale(rect.width, rect.height);
+        const scale = calculateScale(rect.width);
+        const height = calculateContainerHeight(scale);
         
         setDimensions({
           width: rect.width,
-          height: rect.height,
+          height: height,
           scale: scale
         });
       }
@@ -172,7 +191,7 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
       resizeObserver.observe(containerRef.current);
     }
 
-    // Fallback to window resize for older browsers
+    // Listen to window resize for viewport changes
     window.addEventListener('resize', updateDimensions);
 
     return () => {
@@ -201,27 +220,28 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
           </Tabs>
         </Box>
 
-        <Box sx={{ p: 0 }}> {/* Remove padding from the main container */}
+        <Box sx={{ p: 0 }}>
           {activeTab === 'preview' && (
             <Box 
               ref={containerRef}
               sx={{ 
-                height: '400px', 
+                height: `${dimensions.height}px`,
                 position: 'relative', 
                 width: '100%',
-                bgcolor: '#f0f0f0', // Match the HTML body background
+                bgcolor: '#f0f0f0',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: 0, // Remove border radius to eliminate any spacing
+                borderRadius: 0,
                 overflow: 'hidden',
                 margin: 0,
-                padding: 0, // Remove all padding
+                padding: 0,
+                transition: 'height 0.3s ease-in-out',
               }}
             >
               {dimensions.scale > 0 && (
                 <iframe
-                  srcDoc={htmlContent}
+                  srcDoc={slide.body}
                   style={{
                     width: `${SLIDE_WIDTH}px`,
                     height: `${SLIDE_HEIGHT}px`,
@@ -241,15 +261,29 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
             </Box>
           )}
           {activeTab === 'thinking' && (
-            <Box sx={{ p: 2, minHeight: '400px', maxHeight: '400px', bgcolor: '#f8f9fa', borderRadius: 1, overflowY: 'auto' }}>
+            <Box sx={{ 
+              p: 2, 
+              minHeight: `${dimensions.height}px`,
+              bgcolor: '#f8f9fa', 
+              borderRadius: 1, 
+              overflowY: 'auto' 
+            }}>
               <Typography variant="body2" color="text.secondary">
                 {slide?.thought}
               </Typography>
             </Box>
           )}
           {activeTab === 'code' && (
-            <Box sx={{ minHeight: '400px' }}>
-              <pre style={{ backgroundColor: '#f8f9fa', color: '#333', padding: 16, borderRadius: 8, overflow: 'auto', border: '1px solid #e0e0e0', maxHeight: '400px' }}>
+            <Box sx={{ minHeight: `${dimensions.height}px` }}>
+              <pre style={{ 
+                backgroundColor: '#f8f9fa', 
+                color: '#333', 
+                padding: 16, 
+                borderRadius: 8, 
+                overflow: 'auto', 
+                border: '1px solid #e0e0e0', 
+                maxHeight: `${dimensions.height}px`
+              }}>
                 <code>
                   {`\n${slide.body}`}
                 </code>
