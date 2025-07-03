@@ -32,6 +32,7 @@
     "marked-react": "^3.0.0",
     "motion": "^12.4.10",
     "next": "^15.2.2",
+    "pptxgenjs": "^4.0.1",
     "react": "^19.0.0",
     "react-contenteditable": "^3.3.7",
     "react-dom": "^19.0.0",

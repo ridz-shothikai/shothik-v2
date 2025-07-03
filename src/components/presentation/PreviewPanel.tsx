@@ -9,6 +9,7 @@ import Tab from '@mui/material/Tab';
 import CircularProgress from '@mui/material/CircularProgress';
 import SlidePreview from './SlidePreview';
 import QualityValidationPanel from '../../../components/agents/shared/QualityValidationPanel';
+import { Button } from '@mui/material';
 
 const PRIMARY_GREEN = '#07B37A';
 
@@ -75,7 +76,11 @@ export default function PreviewPanel({
                   justifyContent: 'space-between'
                 }}>
                   <Typography variant="h6" color="#333">Your Presentation</Typography>
-                  <Typography color="#666">{slidesData?.data?.length || 0} slides</Typography>
+                  <Typography color="#666">
+                    <Button>
+                      Export
+                    </Button>
+                  </Typography>
                 </Box>
                 
                 {/* Scrollable Content */}
@@ -99,6 +104,7 @@ export default function PreviewPanel({
                           index={index}
                           activeTab={slideTabs[index] || 'preview'}
                           onTabChange={handleSlideTabChange}
+                          totalSlides={slidesData?.data?.length}
                         />
                       ))}
                     </Box>

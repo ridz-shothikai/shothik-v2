@@ -148,12 +148,10 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       isTypingRef.current = false;
       backgroundProcessingRef.current = false;
       
-      // Show thinking if still loading or processing
-      if (isLoading || sessionStatusRef.current === 'processing') {
-        setShowThinking(true);
-      } else {
-        setShowThinking(false);
-      }
+      // FIXED: Only show thinking if actually still loading/processing
+      // Don't show thinking if we've processed all logs and session is completed
+      const shouldShowThinking = isLoading && sessionStatusRef.current === 'processing';
+      setShowThinking(shouldShowThinking);
     }
   }, [shouldAnimateLog, isLoading]);
 
@@ -328,38 +326,55 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
           isTypingRef.current = false;
           backgroundProcessingRef.current = false;
           currentAnimationRef.current = { logIndex: -1, forceComplete: null };
+          
+          // FIXED: Hide thinking when everything is complete
           setShowThinking(false);
         }, 300);
       }
     }
   }, [realLogs, startNextLog, clearTypingTimeout, determineSessionStatus, isLoading, markLogAsAnimated, forceCompleteCurrentAnimation]);
 
-  // Enhanced thinking indicator logic
+  // FIXED: Enhanced thinking indicator logic
   useEffect(() => {
     const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
     const isCurrentlyTyping = currentlyTypingIndex >= 0;
-    const isProcessingOrFailed = sessionStatusRef.current === 'processing' || sessionStatusRef.current === 'failed';
+    const isSessionComplete = sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed';
     const isBackgroundProcessing = backgroundProcessingRef.current;
     
-    // Show thinking if:
-    // 1. Currently loading and no logs yet
-    // 2. Still processing/failed and not currently typing
-    // 3. Has unprocessed logs and not currently typing
-    // 4. Background processing is active
-    if (isLoading && visibleLogs.length === 0) {
-      setShowThinking(true);
-    } else if (isProcessingOrFailed && !isCurrentlyTyping && !isBackgroundProcessing) {
-      setShowThinking(true);
-    } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
-      setShowThinking(true);
-    } else if (isCurrentlyTyping) {
+    // Show thinking logic:
+    // 1. If currently typing, never show thinking
+    // 2. If session is complete and no unprocessed logs, never show thinking
+    // 3. If loading and no logs yet, show thinking
+    // 4. If has unprocessed logs (but not typing), show thinking
+    // 5. If still loading/processing and not complete, show thinking
+    
+    if (isCurrentlyTyping) {
       // Never show thinking while typing
       setShowThinking(false);
+    } else if (isSessionComplete && !hasUnprocessedLogs && !isBackgroundProcessing) {
+      // Session is complete and everything is processed - hide thinking
+      setShowThinking(false);
+    } else if (isLoading && visibleLogs.length === 0) {
+      // Loading with no logs yet - show thinking
+      setShowThinking(true);
+    } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
+      // Has logs to process but not currently typing - show thinking
+      setShowThinking(true);
+    } else if (isLoading && sessionStatusRef.current === 'processing') {
+      // Still loading and processing - show thinking
+      setShowThinking(true);
     } else {
-      // Default case - hide thinking if completed and nothing to process
+      // Default case - hide thinking
       setShowThinking(false);
     }
-  }, [isLoading, visibleLogs.length, currentlyTypingIndex]);
+  }, [
+    isLoading, 
+    visibleLogs.length, 
+    currentlyTypingIndex, 
+    // Add dependencies to ensure this runs when logs are processed
+    nextLogIndexRef.current,
+    allLogsRef.current.length
+  ]);
 
   // Clear animated logs when session resets
   useEffect(() => {
@@ -398,6 +413,11 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
         if (!hasUnprocessedLogs && !isCurrentlyTyping) {
           backgroundProcessingRef.current = false;
           clearInterval(monitorInterval);
+          
+          // FIXED: Ensure thinking is hidden when background processing completes
+          if (sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') {
+            setShowThinking(false);
+          }
         }
       }, 100);
     }

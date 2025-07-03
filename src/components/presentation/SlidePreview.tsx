@@ -14,122 +14,124 @@ const SLIDE_WIDTH = 1280;
 const SLIDE_HEIGHT = 720;
 const SLIDE_ASPECT_RATIO = SLIDE_WIDTH / SLIDE_HEIGHT;
 
-const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title Slide</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap');
+// For dummy data checking
+// const htmlContent = `
+// <!DOCTYPE html>
+// <html lang="en">
+// <head>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <title>Title Slide</title>
+//     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+//     <link rel="preconnect" href="https://fonts.googleapis.com">
+//     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+//     <style>
+//         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap');
 
-        :root {
-            --primary: #f0f8ff;
-            --secondary: #2F4F4F;
-            --accent: #4682B4;
-            --text: #f0f8ff; /* Derived from primary for good contrast on dark secondary */
-            --background: #E6E6FA;
-            --header-font: 'Montserrat', sans-serif;
-            --body-font: 'Open Sans', sans-serif;
-        }
+//         :root {
+//             --primary: #f0f8ff;
+//             --secondary: #2F4F4F;
+//             --accent: #4682B4;
+//             --text: #f0f8ff; /* Derived from primary for good contrast on dark secondary */
+//             --background: #E6E6FA;
+//             --header-font: 'Montserrat', sans-serif;
+//             --body-font: 'Open Sans', sans-serif;
+//         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #f0f0f0; /* Neutral backdrop for the canvas */
-        }
+//         body {
+//             margin: 0;
+//             padding: 0;
+//             overflow: hidden;
+//             background-color: #f0f0f0; /* Neutral backdrop for the canvas */
+//         }
 
-        .slide-container {
-            width: 1280px;
-            height: 720px;
-            aspect-ratio: 16 / 9;
-            background-color: var(--background);
-        }
+//         .slide-container {
+//             width: 1280px;
+//             height: 720px;
+//             aspect-ratio: 16 / 9;
+//             background-color: var(--background);
+//         }
 
-        .slide {
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            padding: 60px 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.15); /* Shadowed canvas style */
-            position: relative;
-        }
+//         .slide {
+//             width: 100%;
+//             height: 100%;
+//             box-sizing: border-box;
+//             padding: 60px 80px;
+//             display: flex;
+//             flex-direction: column;
+//             justify-content: center;
+//             align-items: center;
+//             text-align: center;
+//             overflow: hidden;
+//             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.15); /* Shadowed canvas style */
+//             position: relative;
+//         }
         
-        .content-wrapper {
-            max-width: 90%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-        }
+//         .content-wrapper {
+//             max-width: 90%;
+//             display: flex;
+//             flex-direction: column;
+//             align-items: center;
+//             gap: 24px;
+//         }
 
-        .headline {
-            font-family: var(--header-font);
-            font-size: 64px;
-            font-weight: 700;
-            color: var(--secondary);
-            margin: 0;
-        }
+//         .headline {
+//             font-family: var(--header-font);
+//             font-size: 64px;
+//             font-weight: 700;
+//             color: var(--secondary);
+//             margin: 0;
+//         }
 
-        .body-content {
-            font-family: var(--body-font);
-            font-size: 28px;
-            color: var(--secondary);
-            opacity: 0.9;
-            line-height: 1.6;
-            margin: 0;
-            max-width: 800px;
-        }
+//         .body-content {
+//             font-family: var(--body-font);
+//             font-size: 28px;
+//             color: var(--secondary);
+//             opacity: 0.9;
+//             line-height: 1.6;
+//             margin: 0;
+//             max-width: 800px;
+//         }
 
-        .icon-bar {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 24px;
-        }
+//         .icon-bar {
+//             display: flex;
+//             gap: 40px;
+//             margin-bottom: 24px;
+//         }
 
-        .icon-bar i {
-            font-size: 36px;
-            color: var(--accent);
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
+//         .icon-bar i {
+//             font-size: 36px;
+//             color: var(--accent);
+//             transition: transform 0.3s ease, color 0.3s ease;
+//         }
         
-        .icon-bar i:hover {
-            transform: scale(1.2);
-            color: var(--secondary);
-        }
+//         .icon-bar i:hover {
+//             transform: scale(1.2);
+//             color: var(--secondary);
+//         }
 
-    </style>
-</head>
-<body>
-    <div class="slide-container">
-        <div class="slide">
-            <div class="content-wrapper">
-                <div class="icon-bar">
-                    <i class="fa-solid fa-book-open" aria-label="Book icon"></i>
-                    <i class="fa-solid fa-feather-pointed" aria-label="Quill icon"></i>
-                    <i class="fa-solid fa-scroll" aria-label="Scroll icon for literature"></i>
-                </div>
-                <h1 class="headline">A Journey Through English Literature</h1>
-                <p class="body-content">An overview of major periods, influential authors, and essential study resources.</p>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-`;
+//     </style>
+// </head>
+// <body>
+//     <div class="slide-container">
+//         <div class="slide">
+//             <div class="content-wrapper">
+//                 <div class="icon-bar">
+//                     <i class="fa-solid fa-book-open" aria-label="Book icon"></i>
+//                     <i class="fa-solid fa-feather-pointed" aria-label="Quill icon"></i>
+//                     <i class="fa-solid fa-scroll" aria-label="Scroll icon for literature"></i>
+//                 </div>
+//                 <h1 class="headline">A Journey Through English Literature</h1>
+//                 <p class="body-content">An overview of major periods, influential authors, and essential study resources.</p>
+//             </div>
+//         </div>
+//     </div>
+// </body>
+// </html>
+// `;
 
-export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
+export default function SlidePreview({ slide, index, activeTab, onTabChange, totalSlides }) {
+
   const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 });
   const containerRef = useRef(null);
 
@@ -204,7 +206,7 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
   return (
     <Card sx={{ boxShadow: 2, borderRadius: 2, overflow: 'hidden' }}>
       <CardContent sx={{ p: '0 !important' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#f5f5f5', px: 2, overflow: 'hidden' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#f5f5f5', px: 2, overflow: 'hidden', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Tabs
             value={activeTab}
             onChange={(e, newValue) => onTabChange(index, newValue)}
@@ -218,6 +220,13 @@ export default function SlidePreview({ slide, index, activeTab, onTabChange }) {
             <Tab label="Thinking" value="thinking" />
             <Tab label="Code" value="code" />
           </Tabs>
+          
+          {
+            totalSlides &&
+            <Typography variant="body2" color="text.secondary">
+              {slide?.slide_index + 1} / {totalSlides}
+            </Typography>
+          }
         </Box>
 
         <Box sx={{ p: 0 }}>
