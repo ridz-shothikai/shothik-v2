@@ -237,7 +237,7 @@ export default function SlidePreviewNavbar({ slidesData }) {
                   minWidth: 0
                 }}
               >
-                Bangladesh Independence Day
+                {slidesData?.title || 'Generating...'}
               </Typography>
 
               {/* Page count chip - hide on mobile */}

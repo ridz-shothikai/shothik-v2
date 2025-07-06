@@ -91,6 +91,8 @@ export default function PreviewPanel({
     }));
   };
 
+  // console.log(slidesData?.status === 'completed', "slide data on preview panel");
+
   return (
     <Box sx={{
       display: 'flex',
@@ -129,34 +131,34 @@ export default function PreviewPanel({
                   alignItems: 'center',
                   justifyContent: 'space-between'
                 }}>
-                  <Typography variant="h6" color="#333">Your Presentation</Typography>
-                  <Typography color="#666">
-                    {/* <Button
-                      aria-controls="export-menu"
-                      aria-haspopup="true"
-                      onClick={handleExportClick}
-                      disabled={isExporting} // Disable button while exporting
-                    >
-                      {isExporting ? <CircularProgress size={24} /> : 'Export'}
-                    </Button>
-                    <Menu
-                      id="export-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleExportClose}
-                    >
-                      
-                      <MenuItem onClick={handleNativePptxExportClick}>
-                          Export as Editable PPTX (Beta)
-                      </MenuItem>
-                      <MenuItem onClick={handleImagePptxExport}>
-                          Export as Image PPTX
-                      </MenuItem>
-                    </Menu> */}
-                      <AppLink href={`/slides?project_id=${presentationId}`} newTab underline='hover' color='primary' >
+                  {/* <Typography variant="h6" color="#333">
+                    {slidesData?.title || 'Generating slides'}
+                  </Typography> */}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 500,
+                      fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
+                      color: '#333',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      minWidth: 0
+                    }}
+                  >
+                    {slidesData?.title || 'Generating...'}
+                  </Typography>
+
+                  {
+                    (slidesData?.status === 'completed' || slidesData?.status === 'failed') && 
+                  <Typography color="#666" sx={{
+                    fontSize: {xs: '0.8rem', sm: '0.9rem', md: '1rem'}
+                  }}>
+                      <AppLink href={`/slides?project_id=${presentationId}`} newTab underline='hover' color='primary'>
                         View & Export
                       </AppLink>
                   </Typography>
+                  }
                 </Box>
 
                 {/* Scrollable Content */}
@@ -180,7 +182,7 @@ export default function PreviewPanel({
                           index={index}
                           activeTab={slideTabs[index] || 'preview'}
                           onTabChange={handleSlideTabChange}
-                          totalSlides={slidesData?.data?.length}
+                          totalSlides={slidesData?.total_slides || slidesData?.data?.length}
                         />
                       ))}
                     </Box>
@@ -193,14 +195,11 @@ export default function PreviewPanel({
                       justifyContent: 'center',
                       border: '1px solid #e0e0e0',
                       boxShadow: 1,
-                      mb: 4
+                      my: 4
                     }}>
                       <CardContent sx={{ textAlign: 'center' }}>
-                        <Typography variant="h4" sx={{ color: PRIMARY_GREEN, mb: 2 }}>
-                          Your Presentation Title
-                        </Typography>
                         <Typography variant="h6" color="#666">
-                          Generated slides will appear here
+                          Generating slides...
                         </Typography>
                       </CardContent>
                     </Card>

@@ -158,7 +158,7 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
         }
         
         // Now safely check for completion messages
-        if (outputText.includes("The presentation is complete") || outputText.includes("I've finished generating")) {
+        if (outputText.includes("The presentation is complete") || outputText.includes("I've finished generating") || outputText.includes("I have now generated all")) {
           PHASES_ORDER.forEach(p => completed.add(p));
           setIsLoading(false);
         }
