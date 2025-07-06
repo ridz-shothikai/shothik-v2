@@ -23,10 +23,14 @@ const saveAnimatedLogs = (animatedSet: Set<string>) => {
   }
 };
 
-// Generate unique ID for a log
+// Generate unique ID for a log - now handles objects safely
 const generateLogId = (log: any, index: number): string => {
-  return `${log.agent_name}_${log.timestamp}_${index}_${log.parsed_output?.slice(0, 50)}`;
+  const contentSlice = typeof log.parsed_output === 'string'
+    ? log.parsed_output.slice(0, 50)
+    : JSON.stringify(log.parsed_output).slice(0, 50);
+  return `${log.agent_name}_${log.timestamp}_${index}_${contentSlice}`;
 };
+
 
 export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
   const [processedLogs, setProcessedLogs] = useState([]);
@@ -42,13 +46,11 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
   const sessionStatusRef = useRef<string>('processing');
   const backgroundProcessingRef = useRef(false);
   
-  // NEW: Track currently animating log and provide force completion callback
   const currentAnimationRef = useRef<{
     logIndex: number;
     forceComplete: (() => void) | null;
   }>({ logIndex: -1, forceComplete: null });
 
-  // Clear typing timeout
   const clearTypingTimeout = useCallback(() => {
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -56,78 +58,72 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     }
   }, []);
 
-  // NEW: Force complete current animation
   const forceCompleteCurrentAnimation = useCallback(() => {
     if (currentAnimationRef.current.logIndex >= 0 && currentAnimationRef.current.forceComplete) {
       console.log('Forcing completion of animation for log:', currentAnimationRef.current.logIndex);
       currentAnimationRef.current.forceComplete();
-      // Reset animation tracking
       currentAnimationRef.current = { logIndex: -1, forceComplete: null };
     }
   }, []);
 
-  // Check if log should be animated
   const shouldAnimateLog = useCallback((log: any, index: number): boolean => {
     const logId = generateLogId(log, index);
     const hasBeenAnimated = animatedLogsRef.current.has(logId);
     
-    // Don't animate if session is completed/failed and not currently processing new logs
+    // Do not animate if it's not a string
+    if (typeof log.parsed_output !== 'string') {
+        return false;
+    }
+    
     if ((sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') 
         && !backgroundProcessingRef.current) {
       return false;
     }
     
-    // Don't animate if already animated
     return !hasBeenAnimated;
   }, []);
 
-  // Mark log as animated
   const markLogAsAnimated = useCallback((log: any, index: number) => {
     const logId = generateLogId(log, index);
     animatedLogsRef.current.add(logId);
     saveAnimatedLogs(animatedLogsRef.current);
   }, []);
 
-  // NEW: Register animation callback for force completion
   const registerAnimationCallback = useCallback((logIndex: number, forceComplete: () => void) => {
     currentAnimationRef.current = { logIndex, forceComplete };
   }, []);
 
-  // NEW: Unregister animation callback when animation completes
   const unregisterAnimationCallback = useCallback((logIndex: number) => {
     if (currentAnimationRef.current.logIndex === logIndex) {
       currentAnimationRef.current = { logIndex: -1, forceComplete: null };
     }
   }, []);
 
-  // Enhanced start next log with force completion
   const startNextLog = useCallback(() => {
     const nextIndex = nextLogIndexRef.current;
     if (nextIndex < allLogsRef.current.length) {
       const nextLog = allLogsRef.current[nextIndex];
       
-      // Ensure log exists and has content
-      if (nextLog && nextLog.parsed_output && nextLog.parsed_output.trim()) {
+      const isValidStringLog = typeof nextLog.parsed_output === 'string' && nextLog.parsed_output.trim();
+      const isObjectLog = typeof nextLog.parsed_output === 'object' && nextLog.parsed_output !== null;
+
+      if (nextLog && (isValidStringLog || isObjectLog)) {
         const shouldAnimate = shouldAnimateLog(nextLog, nextIndex);
         
-        // Add the log to visible logs
         setVisibleLogs(prev => [...prev, { ...nextLog, shouldAnimate }]);
         
         if (shouldAnimate) {
           setCurrentlyTypingIndex(nextIndex);
           isTypingRef.current = true;
           backgroundProcessingRef.current = true;
-          // Hide thinking while actively typing
           setShowThinking(false);
         } else {
-          // Skip animation, move to next immediately
           setCurrentlyTypingIndex(-1);
           isTypingRef.current = false;
         }
         
         nextLogIndexRef.current = nextIndex + 1;
         
-        // If not animating, start next log immediately with background-safe timing
         if (!shouldAnimate) {
           const nextLogTimer = setInterval(() => {
             clearInterval(nextLogTimer);
@@ -135,7 +131,6 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
           }, 30);
         }
       } else {
-        // Skip invalid log and try next
         nextLogIndexRef.current = nextIndex + 1;
         const nextLogTimer = setInterval(() => {
           clearInterval(nextLogTimer);
@@ -143,51 +138,42 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
         }, 30);
       }
     } else {
-      // No more logs to process
       setCurrentlyTypingIndex(-1);
       isTypingRef.current = false;
       backgroundProcessingRef.current = false;
       
-      // FIXED: Only show thinking if actually still loading/processing
-      // Don't show thinking if we've processed all logs and session is completed
       const shouldShowThinking = isLoading && sessionStatusRef.current === 'processing';
       setShowThinking(shouldShowThinking);
     }
   }, [shouldAnimateLog, isLoading]);
 
-  // Enhanced typing completion handler
   const handleTypingComplete = useCallback((logIndex: number) => {
     if (logIndex >= 0 && logIndex < allLogsRef.current.length) {
       markLogAsAnimated(allLogsRef.current[logIndex], logIndex);
     }
     
-    // Unregister animation callback
     unregisterAnimationCallback(logIndex);
     
     setCurrentlyTypingIndex(-1);
     isTypingRef.current = false;
     
-    // Use setInterval for background-safe timing
     clearTypingTimeout();
     const nextLogTimer = setInterval(() => {
       clearInterval(nextLogTimer);
       startNextLog();
-    }, 50); // Faster transition between logs
+    }, 50);
     
     typingTimeoutRef.current = nextLogTimer;
   }, [startNextLog, clearTypingTimeout, markLogAsAnimated, unregisterAnimationCallback]);
 
-  // Determine session status from logs
   const determineSessionStatus = useCallback((logs: any[]): string => {
     if (!logs || logs.length === 0) return 'processing';
     
-    // Check if any log has status information
     const statusLog = logs.find(log => log.status);
     if (statusLog) {
       return statusLog.status;
     }
     
-    // Fallback: if not loading and we have logs, assume completed
     if (!isLoading && logs.length > 0) {
       return 'completed';
     }
@@ -195,29 +181,23 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     return 'processing';
   }, [isLoading]);
 
-  // Enhanced visibility change handler for better background processing
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Tab is hidden - mark that we're in background processing mode
         backgroundProcessingRef.current = true;
       } else {
-        // Tab is visible - force complete current animation and catch up
         forceCompleteCurrentAnimation();
         
-        // Check if we need to catch up on animations
         const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
         const isCurrentlyTyping = currentlyTypingIndex >= 0;
         
         if (hasUnprocessedLogs && !isCurrentlyTyping && !isTypingRef.current) {
-          // Force start next log processing when tab becomes visible
           const catchUpTimer = setInterval(() => {
             clearInterval(catchUpTimer);
             startNextLog();
           }, 50);
         }
         
-        // Reset background processing flag after a delay
         const resetTimer = setInterval(() => {
           clearInterval(resetTimer);
           backgroundProcessingRef.current = false;
@@ -231,10 +211,8 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     };
   }, [currentlyTypingIndex, startNextLog, forceCompleteCurrentAnimation]);
 
-  // ENHANCED: Process new logs with immediate animation completion
   useEffect(() => {
     if (!realLogs || realLogs.length === 0) {
-      // Reset everything
       setProcessedLogs([]);
       setVisibleLogs([]);
       setCurrentlyTypingIndex(-1);
@@ -249,32 +227,33 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       return;
     }
 
-    // Update session status
     const newStatus = determineSessionStatus(realLogs);
     const statusChanged = sessionStatusRef.current !== newStatus;
     sessionStatusRef.current = newStatus;
 
-    // Filter and prepare logs for display
+    // MODIFIED: Filter logic to accept objects and non-empty strings
     const validLogs = realLogs
       .filter(log => {
-        return log && 
-               log.parsed_output && 
-               typeof log.parsed_output === 'string' &&
-               log.parsed_output.trim().length > 0 &&
-               log.agent_name !== 'browser_agent';
+        if (!log || !log.parsed_output) return false;
+        if (typeof log.parsed_output === 'string') {
+          return log.parsed_output.trim().length > 0;
+        }
+        if (typeof log.parsed_output === 'object') {
+          return Object.keys(log.parsed_output).length > 0;
+        }
+        return false;
       })
+      .filter(log => log.agent_name !== 'browser_agent')
       .map((log, index) => ({
         ...log,
         id: `log-${index}-${log.timestamp || Date.now()}`,
         timestamp: log.timestamp || new Date().toISOString()
       }));
 
-    // Check for new logs
     const hasNewLogs = validLogs.length > allLogsRef.current.length;
     const hasStatusChange = statusChanged && (newStatus === 'completed' || newStatus === 'failed');
     
     if (hasNewLogs || hasStatusChange) {
-      // NEW: If new logs arrived and there's a current animation, force complete it
       if (hasNewLogs && isTypingRef.current) {
         console.log('New logs detected, forcing completion of current animation');
         forceCompleteCurrentAnimation();
@@ -283,14 +262,10 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       allLogsRef.current = validLogs;
       setProcessedLogs(validLogs);
       
-      // If we have new logs or processing just completed, ensure animations continue
       if (hasNewLogs) {
-        // Mark that we're processing new content
         backgroundProcessingRef.current = true;
         
-        // Start typing if not already typing and we have logs to show
         if (!isTypingRef.current && nextLogIndexRef.current < validLogs.length) {
-          // Use background-safe timing
           const startTimer = setInterval(() => {
             clearInterval(startTimer);
             startNextLog();
@@ -298,22 +273,20 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
         }
       }
       
-      // If processing completed, ensure all logs are displayed
       if (hasStatusChange && (newStatus === 'completed' || newStatus === 'failed')) {
-        // Force completion of any remaining animations after a delay
         const completeTimer = setInterval(() => {
           clearInterval(completeTimer);
           
-          // Force complete current animation first
           forceCompleteCurrentAnimation();
           
-          // If there are still unprocessed logs, process them quickly
           while (nextLogIndexRef.current < validLogs.length) {
             const logIndex = nextLogIndexRef.current;
             const log = validLogs[logIndex];
             
-            if (log && log.parsed_output && log.parsed_output.trim()) {
-              // Add remaining logs without animation
+            const isValidStringLog = typeof log.parsed_output === 'string' && log.parsed_output.trim();
+            const isObjectLog = typeof log.parsed_output === 'object' && log.parsed_output !== null;
+
+            if (log && (isValidStringLog || isObjectLog)) {
               setVisibleLogs(prev => [...prev, { ...log, shouldAnimate: false }]);
               markLogAsAnimated(log, logIndex);
             }
@@ -321,71 +294,51 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
             nextLogIndexRef.current++;
           }
           
-          // Clean up states
           setCurrentlyTypingIndex(-1);
           isTypingRef.current = false;
           backgroundProcessingRef.current = false;
           currentAnimationRef.current = { logIndex: -1, forceComplete: null };
           
-          // FIXED: Hide thinking when everything is complete
           setShowThinking(false);
         }, 300);
       }
     }
   }, [realLogs, startNextLog, clearTypingTimeout, determineSessionStatus, isLoading, markLogAsAnimated, forceCompleteCurrentAnimation]);
 
-  // FIXED: Enhanced thinking indicator logic
   useEffect(() => {
     const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
     const isCurrentlyTyping = currentlyTypingIndex >= 0;
     const isSessionComplete = sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed';
     const isBackgroundProcessing = backgroundProcessingRef.current;
     
-    // Show thinking logic:
-    // 1. If currently typing, never show thinking
-    // 2. If session is complete and no unprocessed logs, never show thinking
-    // 3. If loading and no logs yet, show thinking
-    // 4. If has unprocessed logs (but not typing), show thinking
-    // 5. If still loading/processing and not complete, show thinking
-    
     if (isCurrentlyTyping) {
-      // Never show thinking while typing
       setShowThinking(false);
     } else if (isSessionComplete && !hasUnprocessedLogs && !isBackgroundProcessing) {
-      // Session is complete and everything is processed - hide thinking
       setShowThinking(false);
     } else if (isLoading && visibleLogs.length === 0) {
-      // Loading with no logs yet - show thinking
       setShowThinking(true);
     } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
-      // Has logs to process but not currently typing - show thinking
       setShowThinking(true);
     } else if (isLoading && sessionStatusRef.current === 'processing') {
-      // Still loading and processing - show thinking
       setShowThinking(true);
     } else {
-      // Default case - hide thinking
       setShowThinking(false);
     }
   }, [
     isLoading, 
     visibleLogs.length, 
     currentlyTypingIndex, 
-    // Add dependencies to ensure this runs when logs are processed
     nextLogIndexRef.current,
     allLogsRef.current.length
   ]);
 
-  // Clear animated logs when session resets
   useEffect(() => {
     if (!realLogs || realLogs.length === 0) {
-      // Clear animated logs for new session
       animatedLogsRef.current.clear();
       saveAnimatedLogs(animatedLogsRef.current);
     }
   }, [realLogs]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       clearTypingTimeout();
@@ -394,27 +347,22 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     };
   }, [clearTypingTimeout]);
 
-  // Enhanced background processing monitor
   useEffect(() => {
     let monitorInterval: NodeJS.Timeout;
     
     if (backgroundProcessingRef.current || document.hidden) {
-      // Monitor background processing every 100ms
       monitorInterval = setInterval(() => {
         const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
         const isCurrentlyTyping = isTypingRef.current;
         
-        // If we have unprocessed logs and nothing is typing, restart processing
         if (hasUnprocessedLogs && !isCurrentlyTyping) {
           startNextLog();
         }
         
-        // Auto-cleanup if nothing to process
         if (!hasUnprocessedLogs && !isCurrentlyTyping) {
           backgroundProcessingRef.current = false;
           clearInterval(monitorInterval);
           
-          // FIXED: Ensure thinking is hidden when background processing completes
           if (sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') {
             setShowThinking(false);
           }
@@ -436,7 +384,6 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     handleTypingComplete,
     sessionStatus: sessionStatusRef.current,
     isBackgroundProcessing: backgroundProcessingRef.current,
-    // NEW: Expose animation control functions
     registerAnimationCallback,
     unregisterAnimationCallback,
     forceCompleteCurrentAnimation

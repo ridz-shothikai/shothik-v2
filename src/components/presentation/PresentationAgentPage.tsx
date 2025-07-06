@@ -1,3 +1,5 @@
+"use client";
+
 // AgentPage.jsx - Main component
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -52,11 +54,7 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
     pollingInterval: shouldPollLogs ? 5000 : 0,
   });
 
-  useEffect(() => {
-    if (logsData?.status === 'completed' || logsData?.status === 'failed') {
-      setShouldPollLogs(false);
-    }
-  }, [logsData?.status]);
+  // console.log(logsData, "logs data");
   
   // Filter logs for chat display
   const realLogs = logsData?.data?.filter(
@@ -104,7 +102,7 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
       const completed = new Set();
       let newBlueprint = null;
 
-      logsData.data.forEach(log => {
+      logsData?.data?.forEach(log => {
         // Phase 1: Planning & Analysis
         if (['presentation_spec_extractor_agent', 'vibe_estimator_agent', 'planning_agent'].includes(log.agent_name)) {
           completed.add('planning');
@@ -126,9 +124,16 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
         }
 
         // Extract blueprint details from the planning_agent log
-        if (log.agent_name === 'planning_agent' && log.parsed_output) {
+        if (log?.agent_name === 'planning_agent' && log.parsed_output) {
             try {
-                const parsed = JSON.parse(log.parsed_output);
+                let parsed;
+                if (typeof log.parsed_output === 'string') {
+                  parsed = JSON.parse(log.parsed_output);
+                } else {
+                  // If it's already an object, use it directly
+                  parsed = log.parsed_output;
+                }
+                // const parsed = JSON.parse(log.parsed_output);
                 newBlueprint = {
                     slideCount: parsed.slides.length,
                     duration: 'N/A',
@@ -141,10 +146,24 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
       });
 
       // Check for the final completion message from the logs
-      const lastLog = logsData.data[logsData.data.length - 1];
-      if (lastLog?.parsed_output.includes("The presentation is complete")) {
+      const lastLog = logsData?.data[logsData?.data?.length - 1];
+      if (lastLog?.parsed_output) {
+        // Convert parsed_output to string if it's an object
+        let outputText = '';
+        if (typeof lastLog.parsed_output === 'string') {
+          outputText = lastLog.parsed_output;
+        } else if (typeof lastLog.parsed_output === 'object') {
+          // If it's an object, convert to string for searching
+          outputText = JSON.stringify(lastLog.parsed_output);
+        }
+        
+        // Now safely check for completion messages
+        if (outputText.includes("The presentation is complete") || outputText.includes("I've finished generating")) {
           PHASES_ORDER.forEach(p => completed.add(p));
           setIsLoading(false);
+        }
+        // console.log(lastLog, "last logs");
+        // console.log(outputText, "Output text");
       }
 
       setCompletedPhases(Array.from(completed));
@@ -157,6 +176,12 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
       }
     }
   }, [logsData]);
+  
+  useEffect(() => {
+    if (logsData?.status === 'completed' || logsData?.status === 'failed') {
+      setShouldPollLogs(false);
+    }
+  }, [logsData?.status]);
 
   // Process initial prompt from sessionStorage
   useEffect(() => {
