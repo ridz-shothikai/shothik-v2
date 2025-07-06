@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFetchSlidesQuery } from '../../../redux/api/presentation/presentationApi';
 import { usePresentation } from '../../../components/slide/context/SlideContext';
+import SlidePreviewNavbar from '../../../components/slide/SlidePreviewNavbar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -43,7 +44,7 @@ const PresentationMode = ({ slides, open, onClose }) => {
       // Calculate scale to fit both width and height, maintaining aspect ratio
       const scaleX = availableWidth / SLIDE_WIDTH;
       const scaleY = availableHeight / SLIDE_HEIGHT;
-      const newScale = Math.min(scaleX, scaleY, 1.2); // Don't scale above 1
+      const newScale = Math.min(scaleX, scaleY, 1.2); // Don't scale above 1.2
       
       setScale(newScale);
     }
@@ -212,222 +213,149 @@ const PresentationMode = ({ slides, open, onClose }) => {
 
 
 // --- SlideCard Component ---
-  const SlideCard = ({ slide, index, totalSlides }) => {
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 });
-    const containerRef = useRef(null);
+const SlideCard = ({ slide, index, totalSlides }) => {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 });
+  const containerRef = useRef(null);
 
-    const updateDimensions = useCallback(() => {
-      if (containerRef.current) {
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const containerWidth = containerRect.width;
-        
-        // Calculate scale based on available width
-        const scale = containerWidth / SLIDE_WIDTH;
-        const height = SLIDE_HEIGHT * scale;
-        
-        setDimensions({ 
-          width: containerWidth, 
-          height, 
-          scale 
-        });
-      }
-    }, []);
-
-    useEffect(() => {
-      // Initial calculation
-      updateDimensions();
+  const updateDimensions = useCallback(() => {
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const containerWidth = containerRect.width;
       
-      // Set up ResizeObserver
-      const resizeObserver = new ResizeObserver((entries) => {
-        // Use requestAnimationFrame to avoid performance issues
-        requestAnimationFrame(() => {
-          updateDimensions();
-        });
+      // Calculate scale based on available width
+      const scale = containerWidth / SLIDE_WIDTH;
+      const height = SLIDE_HEIGHT * scale;
+      
+      setDimensions({ 
+        width: containerWidth, 
+        height, 
+        scale 
       });
+    }
+  }, []);
 
-      if (containerRef.current) {
-        resizeObserver.observe(containerRef.current);
-      }
-
-      // Also listen to window resize as a fallback
-      const handleWindowResize = () => {
-        requestAnimationFrame(() => {
-          updateDimensions();
-        });
-      };
-
-      window.addEventListener('resize', handleWindowResize);
-      
-      // Delay initial calculation to ensure DOM is ready
-      const timeoutId = setTimeout(updateDimensions, 100);
-
-      return () => {
-        resizeObserver.disconnect();
-        window.removeEventListener('resize', handleWindowResize);
-        clearTimeout(timeoutId);
-      };
-    }, [updateDimensions]);
-
-  //   const calculateScale = (containerWidth) => {
-  //     const viewportWidth = window.innerWidth;
-
-  //     // For mobile devices, use a more aggressive scaling
-  //     if(viewportWidth < 768) {
-  //       // Ensure minimum scale for readability on mobile
-  //       const minScale = 0.25;
-  //       const calculateScale = containerWidth / SLIDE_WIDTH;
-  //       return Math.max(calculateScale, minScale);
-  //     }
-
-  //     // For larger screens, use the container width
-  //     return containerWidth / SLIDE_WIDTH;
-  //   }
-
-  //   const calculateContainerHeight = (scale) => {
-  //     const scaledHeight = SLIDE_HEIGHT * scale;
-  //     const viewportHeight = window.innerHeight;
-
-  //     // Set reasonable min/max heights
-  //     const minHeight = 150;
-  //     const maxHeight = Math.min(600, viewportHeight * 0.6);
+  useEffect(() => {
+    // Initial calculation
+    updateDimensions();
     
-  //     return Math.min(Math.max(scaledHeight, minHeight), maxHeight);
-  //   }
+    // Set up ResizeObserver
+    const resizeObserver = new ResizeObserver((entries) => {
+      // Use requestAnimationFrame to avoid performance issues
+      requestAnimationFrame(() => {
+        updateDimensions();
+      });
+    });
 
-  // useEffect(() => {
-  //   const updateDimensions = () => {
-  //     if (containerRef.current) {
-  //       const rect = containerRef.current.getBoundingClientRect();
-  //       const scale = calculateScale(rect.width);
-  //       const height = calculateContainerHeight(scale);
-        
-  //       setDimensions({
-  //         width: rect.width,
-  //         height: height,
-  //         scale: scale
-  //       });
-  //     }
-  //   };
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
-  //   // Use timeout to ensure container is fully rendered
-  //   const timeoutId = setTimeout(updateDimensions, 100);
+    // Also listen to window resize as a fallback
+    const handleWindowResize = () => {
+      requestAnimationFrame(() => {
+        updateDimensions();
+      });
+    };
 
-  //   // Create ResizeObserver for more accurate resize detection
-  //   const resizeObserver = new ResizeObserver(() => {
-  //     // Debounce resize events
-  //     clearTimeout(timeoutId);
-  //     setTimeout(updateDimensions, 50);
-  //   });
+    window.addEventListener('resize', handleWindowResize);
     
-  //   if (containerRef.current) {
-  //     resizeObserver.observe(containerRef.current);
-  //   }
+    // Delay initial calculation to ensure DOM is ready
+    const timeoutId = setTimeout(updateDimensions, 100);
 
-  //   // Listen to window resize for viewport changes
-  //   window.addEventListener('resize', updateDimensions);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', handleWindowResize);
+      clearTimeout(timeoutId);
+    };
+  }, [updateDimensions]);
 
-  //   return () => {
-  //     clearTimeout(timeoutId);
-  //     resizeObserver.disconnect();
-  //     window.removeEventListener('resize', updateDimensions);
-  //   };
-  // }, []);
-
-    return (
-      <Grid item xs={12}>
-        <Card sx={{ 
-          boxShadow: 3, 
-          borderRadius: 2, 
-          overflow: 'hidden', 
-          width: '100%',
-          minHeight: 'auto',
-          my: 3,
-        }}>
-          <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-            <Box sx={{ 
-              p: { xs: 1.5, sm: 2 }, 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              backgroundColor: '#f9f9f9', 
-              borderBottom: '1px solid #eee' 
-            }}>
-              <Typography 
-                variant="h6" 
-                component="h3" 
-                sx={{ 
-                  fontWeight: '600',
-                  fontSize: { xs: '1rem', sm: '1.25rem' }
+  return (
+    <Grid item xs={12}>
+      <Card sx={{ 
+        boxShadow: 3, 
+        borderRadius: 2, 
+        overflow: 'hidden', 
+        width: '100%',
+        minHeight: 'auto',
+        my: 3,
+      }}>
+        <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+          <Box sx={{ 
+            p: { xs: 1.5, sm: 2 }, 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            backgroundColor: '#f9f9f9', 
+            borderBottom: '1px solid #eee' 
+          }}>
+            <Typography 
+              variant="h6" 
+              component="h3" 
+              sx={{ 
+                fontWeight: '600',
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}
+            >
+              Slide {index + 1}
+            </Typography>
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            >
+              {index + 1} / {totalSlides}
+            </Typography>
+          </Box>
+          
+          <Box
+            ref={containerRef}
+            sx={{
+              position: 'relative',
+              width: '100%',
+              height: dimensions.height > 0 ? `${dimensions.height}px` : 'auto',
+              bgcolor: '#f0f0f0',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              overflow: 'hidden',
+              transition: 'height 0.2s ease-in-out',
+            }}
+          >
+            {dimensions.scale > 0 && slide?.body ? (
+              <iframe
+                srcDoc={slide.body}
+                style={{
+                  width: `${SLIDE_WIDTH}px`,
+                  height: `${SLIDE_HEIGHT}px`,
+                  transform: `scale(${dimensions.scale})`,
+                  transformOrigin: 'center center',
+                  transition: 'transform 0.2s ease-in-out',
+                  flexShrink: 0,
+                  border: 'none',
+                  display: 'block',
+                  pointerEvents: 'none',
+                  backgroundColor: 'white',
                 }}
-              >
-                Slide {index + 1}
-              </Typography>
-              <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
-              >
-                {index + 1} / {totalSlides}
-              </Typography>
-            </Box>
-            
-            <Box
-              ref={containerRef}
-              sx={{
-                position: 'relative',
-                width: '100%',
-                // minHeight: dimensions.height > 0 ? `${dimensions.height}px` : '200px',
-                height: dimensions.height > 0 ? `${dimensions.height}px` : 'auto',
-                bgcolor: '#f0f0f0',
+                title={`Slide ${index + 1}`}
+              />
+            ) : (
+              <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                overflow: 'hidden',
-                transition: 'height 0.2s ease-in-out',
-              }}
-            >
-              {dimensions.scale > 0 && slide?.body ? (
-                // <Box
-                //   sx={{
-                //   }}
-                // >
-                  <iframe
-                    srcDoc={slide.body}
-                    style={{
-                      width: `${SLIDE_WIDTH}px`,
-                      height: `${SLIDE_HEIGHT}px`,
-                      transform: `scale(${dimensions.scale})`,
-                      transformOrigin: 'center center',
-                      transition: 'transform 0.2s ease-in-out',
-                      flexShrink: 0,
-                      // width: '100%',
-                      // height: '100%',
-                      border: 'none',
-                      display: 'block',
-                      pointerEvents: 'none',
-                      backgroundColor: 'white',
-                    }}
-                    title={`Slide ${index + 1}`}
-                  />
-                // </Box>
-              ) : (
-                <Box sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  height: '200px',
-                  color: '#666'
-                }}>
-                  <Typography variant="body2">Loading slide...</Typography>
-                </Box>
-              )}
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-    );
-  };
+                width: '100%',
+                height: '200px',
+                color: '#666'
+              }}>
+                <Typography variant="body2">Loading slide...</Typography>
+              </Box>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+};
 
 
 // --- Main Page Component ---
@@ -449,19 +377,42 @@ export default function SlidesPreviewPage() {
   }, [slidesData?.status]);
 
   if (slidesLoading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}><CircularProgress /><Typography>Loading slides...</Typography></Box>;
+    return (
+      <>
+        <SlidePreviewNavbar slidesData={null} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}>
+          <CircularProgress />
+          <Typography>Loading slides...</Typography>
+        </Box>
+      </>
+    );
   }
 
   if (slidesError) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}><Typography color="error">Error loading slides</Typography></Box>;
+    return (
+      <>
+        <SlidePreviewNavbar slidesData={null} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}>
+          <Typography color="error">Error loading slides</Typography>
+        </Box>
+      </>
+    );
   }
 
   if (!slidesData?.data || slidesData.data.length === 0) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}><Typography>No slides available</Typography></Box>;
+    return (
+      <>
+        <SlidePreviewNavbar slidesData={null} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', flexDirection: 'column', gap: 2 }}>
+          <Typography>No slides available</Typography>
+        </Box>
+      </>
+    );
   }
 
   return (
     <>
+      <SlidePreviewNavbar slidesData={slidesData} />
       <PresentationMode
         slides={slidesData?.data || []}
         open={isPresentationOpen && slidesData?.data?.length > 0}
@@ -476,20 +427,18 @@ export default function SlidesPreviewPage() {
         py: 4,
         px: 2
       }}>
-        <Box sx={{ width: '100%', maxWidth: '60vw', mb: 3 }}>
+        <Box sx={{ width: '100%', maxWidth: {xs: '90vw', sm:'60vw'}, mb: 3}}>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', mb: 2 }}>
             Slides Preview
           </Typography>
-          {/* <Grid container spacing={4} direction="column"> */}
-            {slidesData.data.map((slide, index) => (
-              <SlideCard
-                key={slide.slide_index || index}
-                slide={slide}
-                index={index}
-                totalSlides={slidesData.data.length}
-              />
-            ))}
-          {/* </Grid> */}
+          {slidesData.data.map((slide, index) => (
+            <SlideCard
+              key={slide.slide_index || index}
+              slide={slide}
+              index={index}
+              totalSlides={slidesData.data.length}
+            />
+          ))}
         </Box>
       </Box>
     </>

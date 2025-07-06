@@ -17,6 +17,8 @@ import {Chart, registerables} from "chart.js";
 import { handleAdvancedPptxExport } from '../../libs/presentationExporter';
 import { handleNativePptxExport } from '../../libs/nativePresentationExporter';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import AppLink from '../common/AppLink';
 // Do not import PptxGenJS statically at the top
 // import PptxGenJS from 'pptxgenjs';
 
@@ -42,7 +44,7 @@ export default function PreviewPanel({
   const [isExporting, setIsExporting] = useState(false);
   const [previewTab, setPreviewTab] = useState('preview');
   const [slideTabs, setSlideTabs] = useState({});
-  const router = useRouter();
+  // const router = useRouter();
   // for export options
   // const [anchorEl, setAnchorEl] = useState(null);
   // const open = Boolean(anchorEl);
@@ -77,9 +79,9 @@ export default function PreviewPanel({
   //   setIsExporting(false);
   // };
 
-  const handleViewAndExportClick = (id: string) => {
-    router.push(`/slides?project_id=${presentationId}`);
-  }
+  // const handleViewAndExportClick = (id: string) => {
+  //   router.push();
+  // }
 
 
   const handleSlideTabChange = (slideIndex, newValue) => {
@@ -151,11 +153,9 @@ export default function PreviewPanel({
                           Export as Image PPTX
                       </MenuItem>
                     </Menu> */}
-                    <Button
-                      onClick={handleViewAndExportClick}
-                    >
-                      View & Export
-                    </Button>
+                      <AppLink href={`/slides?project_id=${presentationId}`} newTab underline='hover' color='primary' >
+                        View & Export
+                      </AppLink>
                   </Typography>
                 </Box>
 
