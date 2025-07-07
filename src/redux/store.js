@@ -8,6 +8,7 @@ import auth from "./slice/auth";
 import inputOutput from "./slice/inputOutput";
 import settings from "./slice/settings";
 import tools from "./slice/tools";
+import presentationSlice from './slice/presentationSlice';
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     inputOutput,
     settings,
     tools,
+    presentation: presentationSlice,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,

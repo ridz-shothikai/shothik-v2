@@ -1,31 +1,20 @@
 "use client";
 
-// components/PreviewPanel.jsx
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import CircularProgress from '@mui/material/CircularProgress';
-import SlidePreview from './SlidePreview';
-import QualityValidationPanel from '../../../components/agents/shared/QualityValidationPanel';
-import { Button, Menu, MenuItem } from '@mui/material';
-import html2canvas from 'html2canvas';
-import {Chart, registerables} from "chart.js";
-import { handleAdvancedPptxExport } from '../../libs/presentationExporter';
-import { handleNativePptxExport } from '../../libs/nativePresentationExporter';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import AppLink from '../common/AppLink';
-// Do not import PptxGenJS statically at the top
-// import PptxGenJS from 'pptxgenjs';
+// components/PreviewPanel.tsx
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from "@mui/material/CircularProgress";
+import SlidePreview from "./SlidePreview";
+import { Chart, registerables } from "chart.js";
+import AppLink from "../common/AppLink";
 
 // Register Chart.js components
 Chart.register(...registerables);
 
-const PRIMARY_GREEN = '#07B37A';
+const PRIMARY_GREEN = "#07B37A";
 
 export default function PreviewPanel({
   currentAgentType,
@@ -39,165 +28,164 @@ export default function PreviewPanel({
   validationResult,
   isValidating,
   onApplyAutoFixes,
-  onRegenerateWithFeedback
+  onRegenerateWithFeedback,
+  title,
 }) {
-  const [isExporting, setIsExporting] = useState(false);
-  const [previewTab, setPreviewTab] = useState('preview');
+  const [previewTab, setPreviewTab] = useState("preview");
   const [slideTabs, setSlideTabs] = useState({});
-  // const router = useRouter();
-  // for export options
-  // const [anchorEl, setAnchorEl] = useState(null);
-  // const open = Boolean(anchorEl);
-
-  // const handleExportClick = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleExportClose = () => {
-  //   setAnchorEl(null);
-  // };
-
-  // const handleImagePptxExport = async () => {
-  //   handleExportClose();
-  //   if (!slidesData?.data || slidesData.data.length === 0) return;
-    
-  //   setIsExporting(true);
-  //   await handleAdvancedPptxExport(slidesData.data, { fileName: 'presentation-images.pptx' });
-  //   setIsExporting(false);
-  // };
-
-  // const handleNativePptxExportClick = async () => {
-  //   handleExportClose();
-  //   if (!slidesData?.data || slidesData.data.length === 0) return;
-    
-  //   setIsExporting(true);
-  //   const result = await handleNativePptxExport(slidesData.data, { fileName: 'presentation-editable.pptx' });
-  //   if (!result.success) {
-  //     console.error("Native Export Failed:", result.error);
-  //     // You can show an error to the user here
-  //   }
-  //   setIsExporting(false);
-  // };
-
-  // const handleViewAndExportClick = (id: string) => {
-  //   router.push();
-  // }
-
 
   const handleSlideTabChange = (slideIndex, newValue) => {
-    setSlideTabs(prev => ({
+    setSlideTabs((prev) => ({
       ...prev,
       [slideIndex]: newValue,
     }));
   };
 
-  // console.log(slidesData?.status === 'completed', "slide data on preview panel");
+  console.log(slidesData, "slidesData in PreviewPanel");
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      bgcolor: 'white',
-      height: '100%',
-      maxHeight: '100%',
-      overflow: 'hidden',
-    }}>
-      <Box sx={{
-        flex: 1,
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        minHeight: 0,
-        '&::-webkit-scrollbar': { width: '8px' },
-        '&::-webkit-scrollbar-track': { background: '#f1f1f1', borderRadius: '4px' },
-        '&::-webkit-scrollbar-thumb': { background: '#c1c1c1', borderRadius: '4px', '&:hover': { background: '#a8a8a8' } },
-        scrollbarWidth: 'thin',
-        scrollbarColor: '#c1c1c1 #f1f1f1',
-      }}>
-        {previewTab === 'preview' && (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        bgcolor: "white",
+        height: "100%",
+        maxHeight: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+          minHeight: 0,
+          "&::-webkit-scrollbar": { width: "8px" },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1",
+            borderRadius: "4px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#c1c1c1",
+            borderRadius: "4px",
+            "&:hover": { background: "#a8a8a8" },
+          },
+          scrollbarWidth: "thin",
+          scrollbarColor: "#c1c1c1 #f1f1f1",
+        }}
+      >
+        {previewTab === "preview" && (
           <Box>
-            {currentAgentType === 'presentation' ? (
+            {currentAgentType === "presentation" ? (
               <>
                 {/* Sticky Header */}
-                <Box sx={{
-                  position: 'sticky',
-                  top: 0,
-                  bgcolor: 'white',
-                  zIndex: 10,
-                  borderBottom: '1px solid #e0e0e0',
-                  px: 3,
-                  pt: 3,
-                  pb: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
-                  {/* <Typography variant="h6" color="#333">
-                    {slidesData?.title || 'Generating slides'}
-                  </Typography> */}
+                <Box
+                  sx={{
+                    position: "sticky",
+                    top: 0,
+                    bgcolor: "white",
+                    zIndex: 10,
+                    borderBottom: "1px solid #e0e0e0",
+                    px: 3,
+                    pt: 3,
+                    pb: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <Typography
                     variant="h6"
                     sx={{
                       fontWeight: 500,
-                      fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' },
-                      color: '#333',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      minWidth: 0
+                      fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                      color: "#333",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      minWidth: 0,
                     }}
                   >
-                    {slidesData?.title || 'Generating...'}
+                    {title || slidesData?.title || "Generating..."}
                   </Typography>
 
-                  {
-                    (slidesData?.status === 'completed' || slidesData?.status === 'failed') && 
-                  <Typography color="#666" sx={{
-                    fontSize: {xs: '0.8rem', sm: '0.9rem', md: '1rem'}
-                  }}>
-                      <AppLink href={`/slides?project_id=${presentationId}`} newTab underline='hover' color='primary'>
+                  {slidesData?.status === "completed" && (
+                    <Typography
+                      color="#666"
+                      sx={{
+                        fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                      }}
+                    >
+                      <AppLink
+                        href={`/slides?project_id=${presentationId}`}
+                        newTab
+                        underline="hover"
+                        color="primary"
+                      >
                         View & Export
                       </AppLink>
-                  </Typography>
-                  }
+                    </Typography>
+                  )}
                 </Box>
 
                 {/* Scrollable Content */}
                 <Box sx={{ p: 3, pt: 0 }}>
-                  {slidesLoading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                  {slidesData?.data?.length === 0 ? (
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", p: 4 }}
+                    >
                       <CircularProgress />
                     </Box>
                   ) : slidesData?.data?.length > 0 ? (
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
                         gap: 2,
-                        pt: 2
-                    }}>
+                        pt: 2,
+                      }}
+                    >
                       {slidesData?.data.map((slide, index) => (
                         <SlidePreview
                           key={slide.slide_index}
                           slide={slide}
                           index={index}
-                          activeTab={slideTabs[index] || 'preview'}
+                          activeTab={slideTabs[index] || "preview"}
                           onTabChange={handleSlideTabChange}
-                          totalSlides={slidesData?.total_slides || slidesData?.data?.length}
+                          totalSlides={
+                            slidesData?.total_slides || slidesData?.data?.length
+                          }
                         />
                       ))}
+
+                      {/* loading indicator */}
+                      {slidesLoading && (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            p: 4,
+                          }}
+                        >
+                          <CircularProgress />
+                        </Box>
+                      )}
                     </Box>
                   ) : (
-                    <Card sx={{
-                      bgcolor: '#f8f9fa',
-                      height: 400,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: 1,
-                      my: 4
-                    }}>
-                      <CardContent sx={{ textAlign: 'center' }}>
+                    <Card
+                      sx={{
+                        bgcolor: "#f8f9fa",
+                        height: 400,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid #e0e0e0",
+                        boxShadow: 1,
+                        my: 4,
+                      }}
+                    >
+                      <CardContent sx={{ textAlign: "center" }}>
                         <Typography variant="h6" color="#666">
                           Generating slides...
                         </Typography>
@@ -207,8 +195,10 @@ export default function PreviewPanel({
                 </Box>
               </>
             ) : (
-              <Box sx={{ textAlign: 'center', mt: 8, p: 3 }}>
-                <Typography color="#666">Agent output will appear here</Typography>
+              <Box sx={{ textAlign: "center", mt: 8, p: 3 }}>
+                <Typography color="#666">
+                  Agent output will appear here
+                </Typography>
               </Box>
             )}
           </Box>

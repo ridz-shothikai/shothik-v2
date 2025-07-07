@@ -94,52 +94,167 @@ KeywordResearchLog.displayName = 'KeywordResearchLog';
 
 
 // Component for Presentation Plan logs
-const PlanningLog = memo(({ plan }) => (
-  <Card variant="outlined" sx={{ mt: 1, borderColor: '#e0e0e0', borderRadius: 2 }}>
-    <CardContent>
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-        Presentation Plan
-      </Typography>
-      {plan.global_theme && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <PaletteIcon color="action" /> Global Theme
+// Utility to check if a value is a non-empty object
+const isNonEmptyObject = (value: any): boolean =>
+  value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length > 0;
+
+// Utility to check if a value is a string
+const isString = (value: any): boolean => typeof value === 'string';
+
+// Utility to check if a value is a non-empty array
+const isNonEmptyArray = (value: any): boolean =>
+  Array.isArray(value) && value.length > 0;
+
+// Component for Presentation Plan logs
+const PlanningLog = memo(({ plan }) => {
+  if (!isNonEmptyObject(plan)) {
+    return (
+      <Card
+        variant="outlined"
+        sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
+      >
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+            Presentation Plan
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            {Object.entries(plan.global_theme).map(([key, value]) => (
-              <Box key={key} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {key.includes('_color') && (
-                  <Box sx={{ width: 16, height: 16, borderRadius: '4px', bgcolor: value as string, border: '1px solid #ccc' }} />
-                )}
-                <Typography variant="caption">{`${key.replace(/_/g, ' ')}: `}</Typography>
-                <Typography variant="caption" sx={{ fontWeight: 'bold' }}>{value as string}</Typography>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      )}
-      {plan.slides && (
-        <Box>
-          <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-            <SlideshowIcon color="action" /> Planned Slides
+          <Typography variant="body2" color="error">
+           Empty presentation plan data.
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {plan.slides.map((slide, i) => (
-              <Card key={i} variant="outlined" sx={{ borderColor: '#eee' }}>
-                <CardContent>
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>{slide.slide_data?.headline || 'Untitled Slide'}</Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{slide.slide_data?.body_content?.toString().substring(0, 100)}...</Typography>
-                  <Chip label={slide.slide_type} size="small" />
-                </CardContent>
-              </Card>
-            ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Check if global_theme has the expected direct properties (e.g., primary_color, header_font)
+  const hasDirectThemeProperties =
+    isNonEmptyObject(plan.global_theme) &&
+    Object.keys(plan.global_theme).some((key) =>
+      [
+        "primary_color",
+        "secondary_color",
+        "background_color",
+        "text_color",
+        "accent_color",
+        "header_font",
+        "body_font",
+      ].includes(key)
+    );
+
+  return (
+    <Card
+      variant="outlined"
+      sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
+    >
+      <CardContent>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+          Presentation Plan
+        </Typography>
+        {hasDirectThemeProperties && (
+          <Box sx={{ mb: 2 }}>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <PaletteIcon color="action" /> Global Theme
+            </Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              {Object.entries(plan.global_theme).map(([key, value]) => {
+                // Convert value to string safely
+                const displayValue =
+                  typeof value === "string"
+                    ? value
+                    : typeof value === "object"
+                    ? JSON.stringify(value)
+                    : String(value);
+
+                return (
+                  <Box
+                    key={key}
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    {key.includes("color") &&
+                      typeof value === "string" &&
+                      value.startsWith("#") && (
+                        <Box
+                          sx={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: "4px",
+                            bgcolor: value,
+                            border: "1px solid #ccc",
+                          }}
+                        />
+                      )}
+                    <Typography variant="caption">{`${key.replace(
+                      /_/g,
+                      " "
+                    )}: `}</Typography>
+                    <Typography variant="caption" sx={{ fontWeight: "bold" }}>
+                      {displayValue}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
-      )}
-    </CardContent>
-  </Card>
-));
-PlanningLog.displayName = 'PlanningLog';
+        )}
+        {isNonEmptyArray(plan.slides) && (
+          <Box>
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}
+            >
+              <SlideshowIcon color="action" /> Planned Slides
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {plan.slides.map((slide, i) => (
+                <Card key={i} variant="outlined" sx={{ borderColor: "#eee" }}>
+                  <CardContent>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                      {isNonEmptyObject(slide.slide_data) &&
+                      isString(slide.slide_data.headline)
+                        ? slide.slide_data.headline
+                        : "Untitled Slide"}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1 }}
+                    >
+                      {isNonEmptyObject(slide.slide_data) &&
+                      isString(slide.slide_data.body_content)
+                        ? `${slide.slide_data.body_content.substring(
+                            0,
+                            100
+                          )}...`
+                        : "No content available"}
+                    </Typography>
+                    <Chip
+                      label={
+                        isString(slide.slide_type)
+                          ? slide.slide_type
+                          : "Unknown"
+                      }
+                      size="small"
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </Box>
+        )}
+        {!hasDirectThemeProperties && !plan.slides && (
+          <Typography variant="body2" color="text.secondary">
+            No valid theme or slides data available.
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+});
+PlanningLog.displayName = "PlanningLog";
 
 
 // Component for rendering HTML content in a sandboxed iframe
@@ -311,42 +426,42 @@ const StreamingMessage = memo(({
     };
   }, [fullText, shouldAnimate, onTypingComplete, logIndex, registerAnimationCallback, unregisterAnimationCallback, forceComplete, prepareWords]);
 
-const renderContent = () => {
-  const output = log.parsed_output;
-  if (typeof output === 'object' && output !== null) {
-    switch (log.agent_name) {
-      case 'keyword_research_agent':
-        return <KeywordResearchLog queries={output.search_queries || []} />;
-      case 'planning_agent':
-        return <PlanningLog plan={output} />;
-      default:
-        return <JsonLog data={output} />;
+  const renderContent = () => {
+    const output = log.parsed_output;
+    if (typeof output === 'object' && output !== null) {
+      switch (log.agent_name) {
+        case 'keyword_research_agent':
+          return <KeywordResearchLog queries={output.search_queries || []} />;
+        case 'planning_agent':
+          return <PlanningLog plan={output} />;
+        default:
+          return <JsonLog data={output} />;
+      }
     }
-  }
 
-  if (isHtmlContent) {
-    return <HtmlContentLog htmlString={fullText} />;
-  }
-
-  // NEW: Handle tool outputs in string content
-  if (typeof output === 'string' && output.includes('```tool_outputs')) {
-    const toolOutputs = parseToolOutputs(output);
-    const statusText = output.replace(/```tool_outputs\n.*?\n```\n?/s, '').trim();
-    
-    if (toolOutputs) {
-      return <ToolOutputsLog toolOutputs={toolOutputs} statusText={statusText} />;
+    if (isHtmlContent) {
+      return <HtmlContentLog htmlString={fullText} />;
     }
-  }
 
-  return (
-    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.6, color: '#374151', fontSize: '0.95rem' }}>
-      {displayedText}
-      {shouldAnimate && !isComplete && (
-        <Box component="span" sx={{ display: 'inline-block', width: '2px', height: '20px', bgcolor: PRIMARY_GREEN, ml: 0.5, animation: 'blink 1s infinite', '@keyframes blink': { '0%, 50%': { opacity: 1 }, '51%, 100%': { opacity: 0 }}}}/>
-      )}
-    </Typography>
-  );
-};
+    // NEW: Handle tool outputs in string content
+    if (typeof output === 'string' && output.includes('```tool_outputs')) {
+      const toolOutputs = parseToolOutputs(output);
+      const statusText = output.replace(/```tool_outputs\n.*?\n```\n?/s, '').trim();
+      
+      if (toolOutputs) {
+        return <ToolOutputsLog toolOutputs={toolOutputs} statusText={statusText} />;
+      }
+    }
+
+    return (
+      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.6, color: '#374151', fontSize: '0.95rem' }}>
+        {displayedText}
+        {shouldAnimate && !isComplete && (
+          <Box component="span" sx={{ display: 'inline-block', width: '2px', height: '20px', bgcolor: PRIMARY_GREEN, ml: 0.5, animation: 'blink 1s infinite', '@keyframes blink': { '0%, 50%': { opacity: 1 }, '51%, 100%': { opacity: 0 }}}}/>
+        )}
+      </Typography>
+    );
+  };
 
   return (
     <Box sx={{ mb: 3 }}>

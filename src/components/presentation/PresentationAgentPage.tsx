@@ -1,199 +1,303 @@
 "use client";
 
-// AgentPage.jsx - Main component
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
-import AgentHeader from './AgentHeader';
-import ChatArea from './ChatArea';
-import PreviewPanel from './PreviewPanel';
-import { useFetchLogsQuery, useFetchSlidesQuery } from '../../redux/api/presentation/presentationApi';
-import { useAgentContext } from '../../../components/agents/shared/AgentContextProvider';
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Box from "@mui/material/Box";
+import AgentHeader from "./AgentHeader";
+import ChatArea from "./ChatArea";
+import PreviewPanel from "./PreviewPanel";
+import { useSelector, useDispatch } from "react-redux";
+import { setPresentationState, selectPresentation } from "../../redux/slice/presentationSlice";
+import io from "socket.io-client";
+import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
+import { Button, Typography } from "@mui/material";
 
-const PRIMARY_GREEN = '#07B37A';
+const PRIMARY_GREEN = "#07B37A";
+const PHASES_ORDER = ["planning", "preferences", "content", "design", "validation"];
 
-// Defines the order of phases for progress tracking.
-const PHASES_ORDER = ['planning', 'preferences', 'content', 'design', 'validation'];
-
-// Helper function to determine the most recent phase based on the order.
 const getLatestPhase = (completedPhasesSet) => {
-  return PHASES_ORDER.slice().reverse().find(phase => completedPhasesSet.has(phase)) || null;
+  return PHASES_ORDER.slice()
+    .reverse()
+    .find((phase) => completedPhasesSet.has(phase)) || null;
 };
 
-export default function PresentationAgentPage({ specificAgent, presentationId }) {
+export default function PresentationAgentPage({ specificAgent }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const dispatch = useDispatch();
   const { agentType, setAgentType } = useAgentContext();
+  
+  // Extract presentation ID from URL params
+  const urlPresentationId = searchParams.get('id') || searchParams.get('presentation_id');
+  
+  // Track current presentation ID separately from URL
+  const [currentPresentationId, setCurrentPresentationId] = useState(urlPresentationId);
   const [chatHistory, setChatHistory] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(1);
-  const [totalSlides, setTotalSlides] = useState(5);
-  const [selectedNavItem, setSelectedNavItem] = useState('chat');
-  
-  // State for the presentation generation progress
-  const [currentPhase, setCurrentPhase] = useState('planning');
-  const [completedPhases, setCompletedPhases] = useState([]);
-  const [userPreferences, setUserPreferences] = useState(null);
-  const [qualityMetrics, setQualityMetrics] = useState(null);
-  const [validationResult, setValidationResult] = useState(null);
-  const [isValidating, setIsValidating] = useState(false);
-  const [presentationBlueprint, setPresentationBlueprint] = useState(null);
-  const [shouldPollLogs, setShouldPollLogs] = useState(true);
-  const [shouldPollSlides, setShouldPollSlides] = useState(true);
-  
+  const [selectedNavItem, setSelectedNavItem] = useState("chat");
+  const [socket, setSocket] = useState(null);
+  const [dataFetched, setDataFetched] = useState(false);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
   const chatEndRef = useRef(null);
+  const pollingIntervalRef = useRef(null);
 
-  // ========== REDUX ==========
-  // Fetching logs - only when we have a presentationId
-  const { 
-    data: logsData, 
-    isLoading: logsLoading, 
-    error: logsError 
-  } = useFetchLogsQuery(presentationId, {
-    skip: !presentationId,
-    pollingInterval: shouldPollLogs ? 5000 : 0,
-  });
+  // Fixed: Use safe selector with default values
+  const presentationState = useSelector(selectPresentation);
+  const {
+    logs = [],
+    slides = [],
+    currentPhase = "planning",
+    completedPhases = [],
+    presentationBlueprint = null,
+    status = "idle",
+  } = presentationState || {};
 
-  // console.log(logsData, "logs data");
-  
-  // Filter logs for chat display
-  const realLogs = logsData?.data?.filter(
-    log =>
-      log.agent_name !== 'browser_agent' &&
-      log.agent_name !== 'slide_generator_agent' &&
-      log.parsed_output
-  ) || [];
+  // console.log(presentationState, "Presentation state");
 
-  // Fetch slides - only when we have a presentationId  
-  const { 
-    data: slidesData, 
-    isLoading: slidesLoading, 
-    error: slidesError 
-  } = useFetchSlidesQuery(presentationId, {
-    skip: !presentationId,
-    pollingInterval: shouldPollSlides ? 10000 : 0,
-  });
-
+  // Initialize socket connection ONCE
   useEffect(() => {
-    if (slidesData?.status === 'completed' || slidesData?.status === 'failed') {
-      setShouldPollSlides(false);
-    }
-  }, [slidesData?.status]);
+    console.log("[PresentationAgentPage] Initializing socket connection");
 
-  const currentAgentType = specificAgent || agentType;
+    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000", {
+      auth: { token: localStorage.getItem("jwt") },
+      forceNew: true,
+      autoConnect: true,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
+
+    socketInstance.on("connect", () => {
+      console.log("[SOCKET] Connected:", socketInstance.id);
+      setIsSocketConnected(true);
+    });
+
+    socketInstance.on("disconnect", () => {
+      console.log("[SOCKET] Disconnected");
+      setIsSocketConnected(false);
+    });
+
+    socketInstance.on("presentationUpdate", ({ presentationId: pid, logs, slides, status }) => {
+      // Only process updates for the current presentation
+      if (pid === currentPresentationId) {
+        console.log("[SOCKET] Updating presentation state for:", pid);
+        dispatch(setPresentationState({ logs, slides, status }));
+        if (status === "completed" || status === "failed") {
+          setIsLoading(false);
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+        }
+      } else {
+        console.log("[SOCKET] Ignoring update for different presentation:", pid);
+      }
+    });
+
+    socketInstance.on("joinedPresentation", (data) => {
+      console.log("[SOCKET] Successfully joined presentation:", data);
+    });
+
+    socketInstance.on("connect_error", (error) => {
+      console.error("[SOCKET] Connection error:", error);
+      setIsSocketConnected(false);
+    });
+
+    setSocket(socketInstance);
+
+    return () => {
+      console.log("[SOCKET] Cleaning up socket connection");
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      socketInstance.disconnect();
+    };
+  }, []); // Only run once on mount
+
+  // Handle presentation ID changes and reset state
+  useEffect(() => {
+    if (urlPresentationId && urlPresentationId !== currentPresentationId) {
+      console.log("[PresentationAgentPage] New presentation ID detected:", urlPresentationId);
+      
+      // Reset all state
+      dispatch(setPresentationState({ 
+        logs: [], 
+        slides: [], 
+        status: "planning",
+        currentPhase: "planning",
+        completedPhases: [],
+        presentationBlueprint: null,
+        title: "Generating...",
+        totalSlides: 0,
+      }));
+      setChatHistory([]);
+      setDataFetched(false);
+      setIsLoading(true);
+
+      // Leave previous room if socket is connected
+      if (socket && isSocketConnected && currentPresentationId) {
+        console.log("[SOCKET] Leaving previous presentation room:", currentPresentationId);
+        socket.emit("leavePresentation", currentPresentationId);
+      }
+
+      // Update current presentation ID
+      setCurrentPresentationId(urlPresentationId);
+
+      // Join new room
+      if (socket && isSocketConnected) {
+        console.log("[SOCKET] Joining new presentation room:", urlPresentationId);
+        socket.emit("joinPresentation", urlPresentationId);
+      }
+    }
+  }, [urlPresentationId, currentPresentationId, socket, isSocketConnected, dispatch]);
 
   useEffect(() => {
     if (specificAgent && specificAgent !== agentType) {
+      // console.log(
+      //   "[PresentationAgentPage] Setting agentType to:",
+      //   specificAgent
+      // );
       setAgentType(specificAgent);
     }
   }, [specificAgent, agentType, setAgentType]);
+  
+  const currentAgentType = specificAgent || agentType;
 
   useEffect(() => {
-    if (currentAgentType === 'presentation') {
-      setSelectedNavItem('slides');
+    if (currentAgentType === "presentation") {
+      setSelectedNavItem("slides");
     } else {
-      setSelectedNavItem('chat');
+      setSelectedNavItem("chat");
     }
   }, [currentAgentType]);
-    
-  // Process real-time logs
-  useEffect(() => {
-    if (logsData?.data?.length > 0) {
-      const completed = new Set();
-      let newBlueprint = null;
 
-      logsData?.data?.forEach(log => {
-        // Phase 1: Planning & Analysis
-        if (['presentation_spec_extractor_agent', 'vibe_estimator_agent', 'planning_agent'].includes(log.agent_name)) {
-          completed.add('planning');
-        }
-        
-        // Phase 3: Content Generation
-        if (['keyword_research_agent', 'search_query', 'content_synthesizer_agent'].includes(log.agent_name)) {
-          completed.add('planning');
-          completed.add('preferences');
-          completed.add('content');
-        }
-        
-        // Phase 4: Design & Media
-        if (log.agent_name === 'slide_generator_agent') {
-            completed.add('planning');
-            completed.add('preferences');
-            completed.add('content');
-            completed.add('design');
-        }
-
-        // Extract blueprint details from the planning_agent log
-        if (log?.agent_name === 'planning_agent' && log.parsed_output) {
-            try {
-                let parsed;
-                if (typeof log.parsed_output === 'string') {
-                  parsed = JSON.parse(log.parsed_output);
-                } else {
-                  // If it's already an object, use it directly
-                  parsed = log.parsed_output;
-                }
-                // const parsed = JSON.parse(log.parsed_output);
-                newBlueprint = {
-                    slideCount: parsed.slides.length,
-                    duration: 'N/A',
-                    structure: `Generated a ${parsed.slides.length}-slide plan.`,
-                };
-            } catch (e) {
-                console.error("Could not parse blueprint from planning_agent log", e);
-            }
-        }
-      });
-
-      // Check for the final completion message from the logs
-      const lastLog = logsData?.data[logsData?.data?.length - 1];
-      if (lastLog?.parsed_output) {
-        // Convert parsed_output to string if it's an object
-        let outputText = '';
-        if (typeof lastLog.parsed_output === 'string') {
-          outputText = lastLog.parsed_output;
-        } else if (typeof lastLog.parsed_output === 'object') {
-          // If it's an object, convert to string for searching
-          outputText = JSON.stringify(lastLog.parsed_output);
-        }
-        
-        // Now safely check for completion messages
-        if (outputText.includes("The presentation is complete") || outputText.includes("I've finished generating") || outputText.includes("I have now generated all")) {
-          PHASES_ORDER.forEach(p => completed.add(p));
-          setIsLoading(false);
-        }
-        // console.log(lastLog, "last logs");
-        // console.log(outputText, "Output text");
-      }
-
-      setCompletedPhases(Array.from(completed));
-      const latestPhase = getLatestPhase(completed);
-      
-      setCurrentPhase(latestPhase === 'validation' ? 'completed' : latestPhase);
-
-      if (newBlueprint) {
-        setPresentationBlueprint(newBlueprint);
-      }
-    }
-  }, [logsData]);
-  
-  useEffect(() => {
-    if (logsData?.status === 'completed' || logsData?.status === 'failed') {
-      setShouldPollLogs(false);
-    }
-  }, [logsData?.status]);
-
-  // Process initial prompt from sessionStorage
+  // Load initial prompt from session storage
   useEffect(() => {
     const initialPrompt = sessionStorage.getItem('initialPrompt');
-    if (initialPrompt && specificAgent) {
+    if (initialPrompt && chatHistory.length === 0) {
+      const initialMessage = {
+        id: Date.now(),
+        sender: "user",
+        content: initialPrompt,
+        timestamp: new Date(),
+      };
+      setChatHistory([initialMessage]);
+      setIsLoading(true);
       sessionStorage.removeItem('initialPrompt');
-      setInputValue(initialPrompt);
-      setTimeout(() => {
-        handleSend(initialPrompt);
-      }, 500);
     }
-  }, [specificAgent]);
+  }, [chatHistory.length]);
+
+  // Fetch initial presentation data
+  useEffect(() => {
+    if (currentPresentationId && !dataFetched) {
+      console.log("[PresentationAgentPage] Fetching initial data for:", currentPresentationId);
+      fetchPresentationData();
+    }
+  }, [currentPresentationId, dataFetched]);
+
+  // Setup polling for presentation data
+  useEffect(() => {
+    if (!currentPresentationId || !isLoading) {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      return;
+    }
+
+    pollingIntervalRef.current = setInterval(() => {
+      console.log("[PresentationAgentPage] Polling for updates:", currentPresentationId);
+      fetchPresentationData();
+    }, 3000);
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [currentPresentationId, isLoading]);
+
+  const fetchPresentationData = async () => {
+    if (!currentPresentationId) return;
+
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URI || '';
+      const token = localStorage.getItem("jwt");
+      
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-Presentation-ID': currentPresentationId,
+        'Cache-Control': 'no-cache',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+
+      // Fetch logs and slides concurrently
+      const [logsResponse, slidesResponse] = await Promise.all([
+        fetch(`${baseUrl}/presentation/logs/${currentPresentationId}?t=${Date.now()}`, { 
+          headers,
+          cache: 'no-cache'
+        }),
+        fetch(`${baseUrl}/presentation/slides/${currentPresentationId}?t=${Date.now()}`, { 
+          headers,
+          cache: 'no-cache'
+        })
+      ]);
+
+      if (logsResponse.ok) {
+        const logsData = await logsResponse.json();
+        if (slidesResponse.ok) {
+          const slidesData = await slidesResponse.json();
+          
+          // Only update if still on the same presentation
+          if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
+            dispatch(setPresentationState({
+              logs: logsData.data || [],
+              slides: slidesData.data || [],
+              status: logsData.status || slidesData.status || "processing",
+              title: slidesData.title || "Generating...",
+              totalSlides: slidesData.total_slides || 0,
+              currentPhase: logsData.status || "planning",
+              completedPhases: logsData.completedPhases || []
+            }));
+
+            if (logsData.status === "completed" || slidesData.status === "completed") {
+              setIsLoading(false);
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+            }
+          }
+        } else {
+          if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
+            dispatch(setPresentationState({
+              logs: logsData.data || [],
+              status: logsData.status || "processing",
+              currentPhase: logsData.status || "planning",
+              title: logsData.title || "Generating...",
+              totalSlides: logsData.total_slides || 0,
+            }));
+          }
+        }
+      } else if (slidesResponse.ok) {
+        const slidesData = await slidesResponse.json();
+        if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
+          dispatch(setPresentationState({
+            slides: slidesData.data || [],
+            status: slidesData.status || "processing",
+            title: slidesData.title || "Generating...",
+            totalSlides: slidesData.total_slides || 0
+          }));
+        }
+      }
+      
+      setDataFetched(true);
+    } catch (error) {
+      console.error("[PresentationAgentPage] Error fetching presentation data:", error);
+      setDataFetched(true);
+    }
+  };
 
   const handleSend = async (promptText) => {
     const prompt = promptText || inputValue;
@@ -201,22 +305,83 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
 
     const newMessage = {
       id: Date.now(),
-      sender: 'user',
+      sender: "user",
       content: prompt,
       timestamp: new Date(),
     };
 
-    setChatHistory(prev => [...prev, newMessage]);
-    setInputValue('');
+    setChatHistory([newMessage]); // Reset chat history
+    setInputValue("");
     setIsLoading(true);
+    setDataFetched(false);
+
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URI || '';
+      const token = localStorage.getItem("jwt");
+      
+      const response = await fetch(`${baseUrl}/presentation/init`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Cache-Control': 'no-cache',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ message: prompt }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const newPresentationId = responseData.presentationId || responseData.data?.presentationId;
+        
+        if (newPresentationId) {
+          // Reset all state for new presentation
+          dispatch(setPresentationState({ 
+            logs: [], 
+            slides: [], 
+            status: "planning",
+            currentPhase: "planning",
+            completedPhases: [],
+            presentationBlueprint: null,
+            title: "Generating...",
+            totalSlides: 0
+          }));
+          
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+          
+          // Leave previous room
+          if (socket && isSocketConnected && currentPresentationId) {
+            console.log("[SOCKET] Leaving previous presentation room:", currentPresentationId);
+            socket.emit("leavePresentation", currentPresentationId);
+          }
+          
+          // Update presentation ID and join new room
+          setCurrentPresentationId(newPresentationId);
+          if (socket && isSocketConnected) {
+            console.log("[SOCKET] Joining new presentation room:", newPresentationId);
+            socket.emit("joinPresentation", newPresentationId);
+          }
+          
+          router.push(`/agents/presentation?id=${newPresentationId}`, { scroll: false });
+        }
+      } else {
+        console.error("[PresentationAgentPage] Failed to initiate presentation:", response.status);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("[PresentationAgentPage] Failed to initiate presentation:", error);
+      setIsLoading(false);
+    }
   };
 
   const handleNavItemClick = (itemId) => {
     setSelectedNavItem(itemId);
-    if (itemId === 'slides') {
-      router.push('/agents/presentation');
-    } else if (itemId === 'chat') {
-      router.push('/agents/super');
+    if (itemId === "slides") {
+      router.push("/agents/presentation" + (currentPresentationId ? `?id=${currentPresentationId}` : ""));
+    } else if (itemId === "chat") {
+      router.push("/agents/super" + (currentPresentationId ? `?id=${currentPresentationId}` : ""));
     }
   };
 
@@ -228,48 +393,75 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
     console.log("Regenerating with feedback...");
   };
 
+  if (!currentPresentationId) {
+    return (
+      <Box
+        sx={{
+          height: "100dvh",
+          bgcolor: "white",
+          color: "#333",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography variant="h6" color="error">
+          No presentation ID found. Please start a new presentation.
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => router.push("/agents")}
+          sx={{ mt: 2, bgcolor: PRIMARY_GREEN }}
+        >
+          Go Back to Agents
+        </Button>
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ 
-      height: '100dvh',
-      bgcolor: 'white',
-      color: '#333',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden', // Prevent overall page scroll
-    //   paddingTop: '100px',
-    //   paddingBottom: '20px',
-    //   paddingX: '20px',
-    //   boxSizing: 'border-box',
-    }}>
-      <AgentHeader 
+    <Box
+      sx={{
+        height: "100dvh",
+        bgcolor: "white",
+        color: "#333",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      <AgentHeader
         currentAgentType={currentAgentType}
-        onBackClick={() => router.push('/agents')}
+        onBackClick={() => router.push("/agents")}
       />
 
-      {/* Main Grid Layout */}
-      <Box sx={{ 
-        flex: 1,
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, // Left smaller, right bigger
-        gridTemplateRows: '1fr',
-        height: 'calc(100vh - 120px)', // Subtract header height
-        overflow: 'hidden', // Prevent grid container from scrolling
-      }}>
-        {/* Left Side - Chat Area with Input */}
-        <Box sx={{ 
-          height: '100%',
-          overflow: 'hidden', // Let ChatArea handle its own scrolling
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+          gridTemplateRows: "1fr",
+          height: "calc(100vh - 120px)",
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            height: "100%",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <ChatArea
             currentAgentType={currentAgentType}
             chatHistory={chatHistory}
-            realLogs={realLogs}
+            realLogs={logs}
             isLoading={isLoading}
             currentPhase={currentPhase}
             completedPhases={completedPhases}
-            logsData={logsData}
+            logsData={{ data: logs, status: currentPhase }}
             chatEndRef={chatEndRef}
             inputValue={inputValue}
             setInputValue={setInputValue}
@@ -277,26 +469,33 @@ export default function PresentationAgentPage({ specificAgent, presentationId })
           />
         </Box>
 
-        {/* Right Side - Preview Panel */}
-        <Box sx={{ 
-          height: '100%',
-          overflow: 'hidden', // Let PreviewPanel handle its own scrolling
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+        <Box
+          sx={{
+            height: "100%",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <PreviewPanel
-            currentAgentType={currentAgentType}
-            slidesData={slidesData}
-            slidesLoading={slidesLoading}
-            presentationId={presentationId}
+            // currentAgentType={currentAgentType}
+            currentAgentType="presentation"
+            slidesData={{
+              data: slides,
+              status: status,
+              title: presentationState.title || "Generating...",
+            }}
+            slidesLoading={isLoading}
+            presentationId={currentPresentationId}
             currentPhase={currentPhase}
             completedPhases={completedPhases}
             presentationBlueprint={presentationBlueprint}
-            qualityMetrics={qualityMetrics}
-            validationResult={validationResult}
-            isValidating={isValidating}
+            qualityMetrics={null}
+            validationResult={null}
+            isValidating={false}
             onApplyAutoFixes={handleApplyAutoFixes}
             onRegenerateWithFeedback={handleRegenerateWithFeedback}
+            title={presentationState.title || "Generating..."}
           />
         </Box>
       </Box>

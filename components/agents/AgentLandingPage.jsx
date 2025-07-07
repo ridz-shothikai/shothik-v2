@@ -33,6 +33,8 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import TrainingIcon from '@mui/icons-material/ModelTraining';
 import { useAgentContext } from './shared/AgentContextProvider';
 import {useCreatePresentationMutation} from "../../src/redux/api/presentation/presentationApi";
+import { setPresentationState } from "../../src/redux/slice/presentationSlice";
+import { useDispatch } from 'react-redux';
 
 const PRIMARY_GREEN = '#07B37A';
 
@@ -110,6 +112,8 @@ export default function AgentLandingPage() {
   const [selectedNavItem, setSelectedNavItem] = useState('chat');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch();
 
   // ========= REDUX =========
   const [initiatePresentation, {isLoading: isInitiatingPresentation}] = useCreatePresentationMutation();
@@ -125,23 +129,69 @@ export default function AgentLandingPage() {
   }, []);
 
   const handleSubmit = async () => {
-    if (!inputValue.trim()) return;
-    
-    // Store the initial prompt
-    sessionStorage.setItem('initialPrompt', inputValue);
-    
-    // Determine agent type based on selected nav item
-    let agentType = 'super';
-    if (selectedNavItem === 'slides') {
-      agentType = 'presentation';
-    }
-    
-    setAgentType(agentType);
+    if (!inputValue.trim() || isSubmitting) return;
 
-    // before moving to next page initiating presentation and getting presentation ID
-    const response = await initiatePresentation(inputValue);
-    // console.log(response.data.data?.presentation_id, "initiate response");
-    router.push(`/agents/${agentType}?id=${response.data.data?.presentation_id}`);
+    setIsSubmitting(true);
+
+    try {
+      // Store the initial prompt
+      sessionStorage.setItem("initialPrompt", inputValue);
+
+      // Determine agent type based on selected nav item
+      let agentType = "super";
+      if (selectedNavItem === "slides") {
+        agentType = "presentation";
+      }
+
+      setAgentType(agentType);
+
+      // Clear Redux state before initiating a new presentation
+      dispatch(
+        setPresentationState({
+          logs: [],
+          slides: [],
+          status: "planning",
+          currentPhase: "planning",
+          completedPhases: [],
+          presentationBlueprint: null,
+          title: "Generating...",
+          totalSlides: 0,
+        })
+      );
+
+      // Initiate presentation and get presentation ID
+      console.log(
+        "[AgentLandingPage] Initiating presentation with message:",
+        inputValue
+      );
+      const response = await initiatePresentation(inputValue);
+
+      const presentationId =
+        response?.data?.data?.presentationId ||
+        response?.data?.data?.presentation_id ||
+        response?.data?.presentationId ||
+        response?.data?.presentation_id;
+
+      console.log(
+        "[AgentLandingPage] Presentation initiated with ID:",
+        presentationId
+      );
+
+      if (presentationId) {
+        // Navigate to the appropriate agent page with the presentation ID
+        router.push(`/agents/${agentType}?id=${presentationId}`);
+      } else {
+        console.error(
+          "[AgentLandingPage] No presentation ID received from API"
+        );
+        alert("Failed to create presentation. Please try again.");
+      }
+    } catch (error) {
+      console.error("[AgentLandingPage] Error initiating presentation:", error);
+      alert("Failed to create presentation. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleNavItemClick = (itemId) => {
