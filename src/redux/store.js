@@ -4,6 +4,7 @@ import { blogApiSlice } from "./api/blog/blogApiSlice";
 import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { toolsApiSlice } from "./api/tools/toolsApi";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
+import {shareApiSlice} from './api/share/shareApi';
 import auth from "./slice/auth";
 import inputOutput from "./slice/inputOutput";
 import settings from "./slice/settings";
@@ -17,6 +18,7 @@ const store = configureStore({
     settings,
     tools,
     presentation: presentationSlice,
+    [shareApiSlice.reducerPath]: shareApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,
@@ -32,6 +34,7 @@ const store = configureStore({
       pricingApiSlice.middleware,
       toolsApiSlice.middleware,
       presentationApiSlice.middleware,
+      shareApiSlice.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

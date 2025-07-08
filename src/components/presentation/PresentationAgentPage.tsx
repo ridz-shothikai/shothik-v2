@@ -7,18 +7,29 @@ import AgentHeader from "./AgentHeader";
 import ChatArea from "./ChatArea";
 import PreviewPanel from "./PreviewPanel";
 import { useSelector, useDispatch } from "react-redux";
-import { setPresentationState, selectPresentation } from "../../redux/slice/presentationSlice";
+import {
+  setPresentationState,
+  selectPresentation,
+} from "../../redux/slice/presentationSlice";
 import io from "socket.io-client";
 import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
 import { Button, Typography } from "@mui/material";
 
 const PRIMARY_GREEN = "#07B37A";
-const PHASES_ORDER = ["planning", "preferences", "content", "design", "validation"];
+const PHASES_ORDER = [
+  "planning",
+  "preferences",
+  "content",
+  "design",
+  "validation",
+];
 
 const getLatestPhase = (completedPhasesSet) => {
-  return PHASES_ORDER.slice()
-    .reverse()
-    .find((phase) => completedPhasesSet.has(phase)) || null;
+  return (
+    PHASES_ORDER.slice()
+      .reverse()
+      .find((phase) => completedPhasesSet.has(phase)) || null
+  );
 };
 
 export default function PresentationAgentPage({ specificAgent }) {
@@ -26,12 +37,12 @@ export default function PresentationAgentPage({ specificAgent }) {
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { agentType, setAgentType } = useAgentContext();
-  
-  // Extract presentation ID from URL params
-  const urlPresentationId = searchParams.get('id') || searchParams.get('presentation_id');
-  
-  // Track current presentation ID separately from URL
-  const [currentPresentationId, setCurrentPresentationId] = useState(urlPresentationId);
+
+  const urlPresentationId =
+    searchParams.get("id") || searchParams.get("presentation_id");
+
+  const [currentPresentationId, setCurrentPresentationId] =
+    useState(urlPresentationId);
   const [chatHistory, setChatHistory] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +53,6 @@ export default function PresentationAgentPage({ specificAgent }) {
   const chatEndRef = useRef(null);
   const pollingIntervalRef = useRef(null);
 
-  // Fixed: Use safe selector with default values
   const presentationState = useSelector(selectPresentation);
   const {
     logs = [],
@@ -53,20 +63,21 @@ export default function PresentationAgentPage({ specificAgent }) {
     status = "idle",
   } = presentationState || {};
 
-  // console.log(presentationState, "Presentation state");
-
-  // Initialize socket connection ONCE
   useEffect(() => {
     console.log("[PresentationAgentPage] Initializing socket connection");
 
-    const socketInstance = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000", {
-      auth: { token: localStorage.getItem("jwt") },
-      forceNew: true,
-      autoConnect: true,
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-    });
+    const token = localStorage.getItem("accessToken");
+    const socketInstance = io(
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000",
+      {
+        auth: { token },
+        forceNew: true,
+        autoConnect: true,
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
+      }
+    );
 
     socketInstance.on("connect", () => {
       console.log("[SOCKET] Connected:", socketInstance.id);
@@ -78,22 +89,40 @@ export default function PresentationAgentPage({ specificAgent }) {
       setIsSocketConnected(false);
     });
 
-    socketInstance.on("presentationUpdate", ({ presentationId: pid, logs, slides, status }) => {
-      // Only process updates for the current presentation
-      if (pid === currentPresentationId) {
-        console.log("[SOCKET] Updating presentation state for:", pid);
-        dispatch(setPresentationState({ logs, slides, status }));
-        if (status === "completed" || status === "failed") {
-          setIsLoading(false);
-          if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current);
-            pollingIntervalRef.current = null;
-          }
-        }
-      } else {
-        console.log("[SOCKET] Ignoring update for different presentation:", pid);
+    socketInstance.on("error", (error) => {
+      console.error("[SOCKET] Error:", error.message);
+      if (
+        error.message === "Authentication failed" ||
+        error.message === "Unauthorized presentation access"
+      ) {
+        router.push("/agents");
       }
     });
+
+    socketInstance.on(
+      "presentationUpdate",
+      ({ presentationId, logs, slides, status }) => {
+        if (presentationId === currentPresentationId) {
+          console.log(
+            "[SOCKET] Updating presentation state for:",
+            presentationId
+          );
+          dispatch(setPresentationState({ logs, slides, status }));
+          if (status === "completed" || status === "failed") {
+            setIsLoading(false);
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+              pollingIntervalRef.current = null;
+            }
+          }
+        } else {
+          console.log(
+            "[SOCKET] Ignoring update for different presentation:",
+            presentationId
+          );
+        }
+      }
+    );
 
     socketInstance.on("joinedPresentation", (data) => {
       console.log("[SOCKET] Successfully joined presentation:", data);
@@ -113,55 +142,63 @@ export default function PresentationAgentPage({ specificAgent }) {
       }
       socketInstance.disconnect();
     };
-  }, []); // Only run once on mount
+  }, []);
 
-  // Handle presentation ID changes and reset state
   useEffect(() => {
     if (urlPresentationId && urlPresentationId !== currentPresentationId) {
-      console.log("[PresentationAgentPage] New presentation ID detected:", urlPresentationId);
-      
-      // Reset all state
-      dispatch(setPresentationState({ 
-        logs: [], 
-        slides: [], 
-        status: "planning",
-        currentPhase: "planning",
-        completedPhases: [],
-        presentationBlueprint: null,
-        title: "Generating...",
-        totalSlides: 0,
-      }));
+      console.log(
+        "[PresentationAgentPage] New presentation ID detected:",
+        urlPresentationId
+      );
+
+      dispatch(
+        setPresentationState({
+          logs: [],
+          slides: [],
+          status: "planning",
+          currentPhase: "planning",
+          completedPhases: [],
+          presentationBlueprint: null,
+          title: "Generating...",
+          totalSlides: 0,
+        })
+      );
       setChatHistory([]);
       setDataFetched(false);
       setIsLoading(true);
 
-      // Leave previous room if socket is connected
       if (socket && isSocketConnected && currentPresentationId) {
-        console.log("[SOCKET] Leaving previous presentation room:", currentPresentationId);
+        console.log(
+          "[SOCKET] Leaving previous presentation room:",
+          currentPresentationId
+        );
         socket.emit("leavePresentation", currentPresentationId);
       }
 
-      // Update current presentation ID
       setCurrentPresentationId(urlPresentationId);
 
-      // Join new room
       if (socket && isSocketConnected) {
-        console.log("[SOCKET] Joining new presentation room:", urlPresentationId);
+        console.log(
+          "[SOCKET] Joining new presentation room:",
+          urlPresentationId
+        );
         socket.emit("joinPresentation", urlPresentationId);
       }
     }
-  }, [urlPresentationId, currentPresentationId, socket, isSocketConnected, dispatch]);
+  }, [
+    urlPresentationId,
+    currentPresentationId,
+    socket,
+    isSocketConnected,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (specificAgent && specificAgent !== agentType) {
-      // console.log(
-      //   "[PresentationAgentPage] Setting agentType to:",
-      //   specificAgent
-      // );
       setAgentType(specificAgent);
     }
   }, [specificAgent, agentType, setAgentType]);
-  
+
   const currentAgentType = specificAgent || agentType;
 
   useEffect(() => {
@@ -172,9 +209,8 @@ export default function PresentationAgentPage({ specificAgent }) {
     }
   }, [currentAgentType]);
 
-  // Load initial prompt from session storage
   useEffect(() => {
-    const initialPrompt = sessionStorage.getItem('initialPrompt');
+    const initialPrompt = sessionStorage.getItem("initialPrompt");
     if (initialPrompt && chatHistory.length === 0) {
       const initialMessage = {
         id: Date.now(),
@@ -184,19 +220,20 @@ export default function PresentationAgentPage({ specificAgent }) {
       };
       setChatHistory([initialMessage]);
       setIsLoading(true);
-      sessionStorage.removeItem('initialPrompt');
+      sessionStorage.removeItem("initialPrompt");
     }
   }, [chatHistory.length]);
 
-  // Fetch initial presentation data
   useEffect(() => {
     if (currentPresentationId && !dataFetched) {
-      console.log("[PresentationAgentPage] Fetching initial data for:", currentPresentationId);
+      console.log(
+        "[PresentationAgentPage] Fetching initial data for:",
+        currentPresentationId
+      );
       fetchPresentationData();
     }
   }, [currentPresentationId, dataFetched]);
 
-  // Setup polling for presentation data
   useEffect(() => {
     if (!currentPresentationId || !isLoading) {
       if (pollingIntervalRef.current) {
@@ -207,7 +244,10 @@ export default function PresentationAgentPage({ specificAgent }) {
     }
 
     pollingIntervalRef.current = setInterval(() => {
-      console.log("[PresentationAgentPage] Polling for updates:", currentPresentationId);
+      console.log(
+        "[PresentationAgentPage] Polling for updates:",
+        currentPresentationId
+      );
       fetchPresentationData();
     }, 3000);
 
@@ -222,46 +262,58 @@ export default function PresentationAgentPage({ specificAgent }) {
     if (!currentPresentationId) return;
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || '';
-      const token = localStorage.getItem("jwt");
-      
+      const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
+      const token = localStorage.getItem("accessToken");
+
       const headers = {
-        'Content-Type': 'application/json',
-        'X-Presentation-ID': currentPresentationId,
-        'Cache-Control': 'no-cache',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        "Content-Type": "application/json",
+        "X-Presentation-ID": currentPresentationId,
+        "Cache-Control": "no-cache",
+        Authorization: `Bearer ${token}`,
       };
 
-      // Fetch logs and slides concurrently
       const [logsResponse, slidesResponse] = await Promise.all([
-        fetch(`${baseUrl}/presentation/logs/${currentPresentationId}?t=${Date.now()}`, { 
-          headers,
-          cache: 'no-cache'
-        }),
-        fetch(`${baseUrl}/presentation/slides/${currentPresentationId}?t=${Date.now()}`, { 
-          headers,
-          cache: 'no-cache'
-        })
+        fetch(
+          `${baseUrl}/presentation/logs/${currentPresentationId}?t=${Date.now()}`,
+          {
+            headers,
+            cache: "no-cache",
+          }
+        ),
+        fetch(
+          `${baseUrl}/presentation/slides/${currentPresentationId}?t=${Date.now()}`,
+          {
+            headers,
+            cache: "no-cache",
+          }
+        ),
       ]);
 
       if (logsResponse.ok) {
         const logsData = await logsResponse.json();
         if (slidesResponse.ok) {
           const slidesData = await slidesResponse.json();
-          
-          // Only update if still on the same presentation
-          if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
-            dispatch(setPresentationState({
-              logs: logsData.data || [],
-              slides: slidesData.data || [],
-              status: logsData.status || slidesData.status || "processing",
-              title: slidesData.title || "Generating...",
-              totalSlides: slidesData.total_slides || 0,
-              currentPhase: logsData.status || "planning",
-              completedPhases: logsData.completedPhases || []
-            }));
 
-            if (logsData.status === "completed" || slidesData.status === "completed") {
+          if (
+            currentPresentationId ===
+            (searchParams.get("id") || searchParams.get("presentation_id"))
+          ) {
+            dispatch(
+              setPresentationState({
+                logs: logsData.data || [],
+                slides: slidesData.data || [],
+                status: logsData.status || slidesData.status || "processing",
+                title: slidesData.title || "Generating...",
+                totalSlides: slidesData.total_slides || 0,
+                currentPhase: logsData.status || "planning",
+                completedPhases: logsData.completedPhases || [],
+              })
+            );
+
+            if (
+              logsData.status === "completed" ||
+              slidesData.status === "completed"
+            ) {
               setIsLoading(false);
               if (pollingIntervalRef.current) {
                 clearInterval(pollingIntervalRef.current);
@@ -270,32 +322,48 @@ export default function PresentationAgentPage({ specificAgent }) {
             }
           }
         } else {
-          if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
-            dispatch(setPresentationState({
-              logs: logsData.data || [],
-              status: logsData.status || "processing",
-              currentPhase: logsData.status || "planning",
-              title: logsData.title || "Generating...",
-              totalSlides: logsData.total_slides || 0,
-            }));
+          if (
+            currentPresentationId ===
+            (searchParams.get("id") || searchParams.get("presentation_id"))
+          ) {
+            dispatch(
+              setPresentationState({
+                logs: logsData.data || [],
+                status: logsData.status || "processing",
+                currentPhase: logsData.status || "planning",
+                title: logsData.title || "Generating...",
+                totalSlides: logsData.total_slides || 0,
+              })
+            );
           }
         }
       } else if (slidesResponse.ok) {
         const slidesData = await slidesResponse.json();
-        if (currentPresentationId === (searchParams.get('id') || searchParams.get('presentation_id'))) {
-          dispatch(setPresentationState({
-            slides: slidesData.data || [],
-            status: slidesData.status || "processing",
-            title: slidesData.title || "Generating...",
-            totalSlides: slidesData.total_slides || 0
-          }));
+        if (
+          currentPresentationId ===
+          (searchParams.get("id") || searchParams.get("presentation_id"))
+        ) {
+          dispatch(
+            setPresentationState({
+              slides: slidesData.data || [],
+              status: slidesData.status || "processing",
+              title: slidesData.title || "Generating...",
+              totalSlides: slidesData.total_slides || 0,
+            })
+          );
         }
+      } else {
+        throw new Error("Failed to fetch presentation data");
       }
-      
+
       setDataFetched(true);
     } catch (error) {
-      console.error("[PresentationAgentPage] Error fetching presentation data:", error);
+      console.error(
+        "[PresentationAgentPage] Error fetching presentation data:",
+        error
+      );
       setDataFetched(true);
+      router.push("/agents");
     }
   };
 
@@ -310,68 +378,82 @@ export default function PresentationAgentPage({ specificAgent }) {
       timestamp: new Date(),
     };
 
-    setChatHistory([newMessage]); // Reset chat history
+    setChatHistory([newMessage]);
     setInputValue("");
     setIsLoading(true);
     setDataFetched(false);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || '';
-      const token = localStorage.getItem("jwt");
-      
+      const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
+      const token = localStorage.getItem("accessToken");
+
       const response = await fetch(`${baseUrl}/presentation/init`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Cache-Control': 'no-cache',
-          ...(token && { Authorization: `Bearer ${token}` }),
+          "Cache-Control": "no-cache",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: prompt }),
       });
 
       if (response.ok) {
         const responseData = await response.json();
-        const newPresentationId = responseData.presentationId || responseData.data?.presentationId;
-        
+        const newPresentationId =
+          responseData.presentationId || responseData.data?.presentationId;
+
         if (newPresentationId) {
-          // Reset all state for new presentation
-          dispatch(setPresentationState({ 
-            logs: [], 
-            slides: [], 
-            status: "planning",
-            currentPhase: "planning",
-            completedPhases: [],
-            presentationBlueprint: null,
-            title: "Generating...",
-            totalSlides: 0
-          }));
-          
+          dispatch(
+            setPresentationState({
+              logs: [],
+              slides: [],
+              status: "planning",
+              currentPhase: "planning",
+              completedPhases: [],
+              presentationBlueprint: null,
+              title: "Generating...",
+              totalSlides: 0,
+            })
+          );
+
           if (pollingIntervalRef.current) {
             clearInterval(pollingIntervalRef.current);
             pollingIntervalRef.current = null;
           }
-          
-          // Leave previous room
+
           if (socket && isSocketConnected && currentPresentationId) {
-            console.log("[SOCKET] Leaving previous presentation room:", currentPresentationId);
+            console.log(
+              "[SOCKET] Leaving previous presentation room:",
+              currentPresentationId
+            );
             socket.emit("leavePresentation", currentPresentationId);
           }
-          
-          // Update presentation ID and join new room
+
           setCurrentPresentationId(newPresentationId);
           if (socket && isSocketConnected) {
-            console.log("[SOCKET] Joining new presentation room:", newPresentationId);
+            console.log(
+              "[SOCKET] Joining new presentation room:",
+              newPresentationId
+            );
             socket.emit("joinPresentation", newPresentationId);
           }
-          
-          router.push(`/agents/presentation?id=${newPresentationId}`, { scroll: false });
+
+          router.push(`/agents/presentation?id=${newPresentationId}`, {
+            scroll: false,
+          });
         }
       } else {
-        console.error("[PresentationAgentPage] Failed to initiate presentation:", response.status);
+        console.error(
+          "[PresentationAgentPage] Failed to initiate presentation:",
+          response.status
+        );
         setIsLoading(false);
       }
     } catch (error) {
-      console.error("[PresentationAgentPage] Failed to initiate presentation:", error);
+      console.error(
+        "[PresentationAgentPage] Failed to initiate presentation:",
+        error
+      );
       setIsLoading(false);
     }
   };
@@ -379,9 +461,15 @@ export default function PresentationAgentPage({ specificAgent }) {
   const handleNavItemClick = (itemId) => {
     setSelectedNavItem(itemId);
     if (itemId === "slides") {
-      router.push("/agents/presentation" + (currentPresentationId ? `?id=${currentPresentationId}` : ""));
+      router.push(
+        "/agents/presentation" +
+          (currentPresentationId ? `?id=${currentPresentationId}` : "")
+      );
     } else if (itemId === "chat") {
-      router.push("/agents/super" + (currentPresentationId ? `?id=${currentPresentationId}` : ""));
+      router.push(
+        "/agents/super" +
+          (currentPresentationId ? `?id=${currentPresentationId}` : "")
+      );
     }
   };
 
@@ -478,7 +566,6 @@ export default function PresentationAgentPage({ specificAgent }) {
           }}
         >
           <PreviewPanel
-            // currentAgentType={currentAgentType}
             currentAgentType="presentation"
             slidesData={{
               data: slides,

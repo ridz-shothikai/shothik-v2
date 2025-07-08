@@ -22,7 +22,7 @@ const SLIDE_HEIGHT = 720;
 
 // --- PresentationMode Component ---
 // This component displays the slides in a full-screen modal.
-const PresentationMode = ({ slides, open, onClose }) => {
+export const PresentationMode = ({ slides, open, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scale, setScale] = useState(1);
   const containerRef = useRef(null);
@@ -213,7 +213,7 @@ const PresentationMode = ({ slides, open, onClose }) => {
 
 
 // --- SlideCard Component ---
-const SlideCard = ({ slide, index, totalSlides }) => {
+export const SlideCard = ({ slide, index, totalSlides }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 });
   const containerRef = useRef(null);
 

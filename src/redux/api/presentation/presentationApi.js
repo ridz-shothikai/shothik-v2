@@ -15,7 +15,7 @@ export const presentationApiSlice = createApi({
       query: (message) => ({
         url: '/presentation/init',
         method: 'POST',
-        body: { message },
+        body: message,
       }),
       invalidatesTags: ['presentation'],
     }),
