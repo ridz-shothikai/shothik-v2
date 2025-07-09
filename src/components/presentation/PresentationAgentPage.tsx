@@ -312,7 +312,9 @@ export default function PresentationAgentPage({ specificAgent }) {
 
             if (
               logsData.status === "completed" ||
-              slidesData.status === "completed"
+              slidesData.status === "completed" ||
+              logsData.status === "failed" ||
+              slidesData.status === "failed"
             ) {
               setIsLoading(false);
               if (pollingIntervalRef.current) {
@@ -335,6 +337,17 @@ export default function PresentationAgentPage({ specificAgent }) {
                 totalSlides: logsData.total_slides || 0,
               })
             );
+            // HANDLE BOTH 'completed & failed' CHECK
+            if (
+              logsData.status === "completed" ||
+              logsData.status === "failed"
+            ) {
+              setIsLoading(false);
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+            }
           }
         }
       } else if (slidesResponse.ok) {
@@ -351,6 +364,17 @@ export default function PresentationAgentPage({ specificAgent }) {
               totalSlides: slidesData.total_slides || 0,
             })
           );
+          // HANDLE BOTH 'completed & failed' CHECK
+          if (
+            slidesData.status === "completed" ||
+            slidesData.status === "failed"
+          ) {
+            setIsLoading(false);
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+              pollingIntervalRef.current = null;
+            }
+          }
         }
       } else {
         throw new Error("Failed to fetch presentation data");

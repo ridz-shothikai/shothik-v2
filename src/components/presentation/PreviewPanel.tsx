@@ -41,7 +41,7 @@ export default function PreviewPanel({
     }));
   };
 
-  console.log(slidesData, "slidesData in PreviewPanel");
+  // console.log(slidesData, "slidesData in PreviewPanel");
 
   return (
     <Box
@@ -109,23 +109,29 @@ export default function PreviewPanel({
                     {title || slidesData?.title || "Generating..."}
                   </Typography>
 
-                  {slidesData?.status === "completed" && (
-                    <Typography
-                      color="#666"
-                      sx={{
-                        fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
-                      }}
-                    >
-                      <AppLink
-                        href={`/slides?project_id=${presentationId}`}
-                        newTab
-                        underline="hover"
-                        color="primary"
-                      >
-                        View & Export
-                      </AppLink>
-                    </Typography>
-                  )}
+                  {slidesData?.status === "completed" ||
+                    slidesData?.status ===
+                      "saved" && (
+                        <Typography
+                          color="#666"
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.9rem",
+                              md: "1rem",
+                            },
+                          }}
+                        >
+                          <AppLink
+                            href={`/slides?project_id=${presentationId}`}
+                            newTab
+                            underline="hover"
+                            color="primary"
+                          >
+                            View & Export
+                          </AppLink>
+                        </Typography>
+                      )}
                 </Box>
 
                 {/* Scrollable Content */}
