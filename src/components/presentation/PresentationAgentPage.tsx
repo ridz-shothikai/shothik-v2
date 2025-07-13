@@ -234,7 +234,21 @@ export default function PresentationAgentPage({ specificAgent }) {
     }
   }, [currentPresentationId, dataFetched]);
 
+  
   useEffect(() => {
+    // If the presentation is finished, ensure polling is stopped and loading is false.
+    if (status === "saved" || status === "failed") { // 'svaed' is when presentation is saved on shothik DB. 'failed' is when the presentation failed to generate.
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+      if (isLoading) {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // If there's no ID or we are not in a loading state, stop polling.
     if (!currentPresentationId || !isLoading) {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
@@ -242,6 +256,9 @@ export default function PresentationAgentPage({ specificAgent }) {
       }
       return;
     }
+
+    // Prevent starting a new poller if one is already running
+    if (pollingIntervalRef.current) return;
 
     pollingIntervalRef.current = setInterval(() => {
       console.log(
@@ -254,9 +271,11 @@ export default function PresentationAgentPage({ specificAgent }) {
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
       }
     };
-  }, [currentPresentationId, isLoading]);
+  }, [currentPresentationId, isLoading, status]); //these dependencies shouldn't be changed frequently
+  
 
   const fetchPresentationData = async () => {
     if (!currentPresentationId) return;
@@ -289,85 +308,38 @@ export default function PresentationAgentPage({ specificAgent }) {
         ),
       ]);
 
-      if (logsResponse.ok) {
-        const logsData = await logsResponse.json();
-        if (slidesResponse.ok) {
-          const slidesData = await slidesResponse.json();
+      if (logsResponse.ok || slidesResponse.ok) {
+        const logsData = logsResponse.ok ? await logsResponse.json() : null;
+        const slidesData = slidesResponse.ok
+          ? await slidesResponse.json()
+          : null;
+
+        const currentUrlId =
+          searchParams.get("id") || searchParams.get("presentation_id");
+        if (currentPresentationId === currentUrlId) {
+          const combinedState = {
+            logs: logsData?.data || presentationState.logs || [],
+            slides: slidesData?.data || presentationState.slides || [],
+            status:
+              logsData?.status ||
+              slidesData?.status ||
+              presentationState.status,
+            title:
+              slidesData?.title || logsData?.title || presentationState.title,
+            totalSlides:
+              slidesData?.total_slides ||
+              logsData?.total_slides ||
+              presentationState.totalSlides,
+            currentPhase: logsData?.status || presentationState.currentPhase,
+            completedPhases:
+              logsData?.completedPhases || presentationState.completedPhases,
+          };
+
+          dispatch(setPresentationState(combinedState));
 
           if (
-            currentPresentationId ===
-            (searchParams.get("id") || searchParams.get("presentation_id"))
-          ) {
-            dispatch(
-              setPresentationState({
-                logs: logsData.data || [],
-                slides: slidesData.data || [],
-                status: logsData.status || slidesData.status || "processing",
-                title: slidesData.title || "Generating...",
-                totalSlides: slidesData.total_slides || 0,
-                currentPhase: logsData.status || "planning",
-                completedPhases: logsData.completedPhases || [],
-              })
-            );
-
-            if (
-              logsData.status === "completed" ||
-              slidesData.status === "completed" ||
-              logsData.status === "failed" ||
-              slidesData.status === "failed"
-            ) {
-              setIsLoading(false);
-              if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-                pollingIntervalRef.current = null;
-              }
-            }
-          }
-        } else {
-          if (
-            currentPresentationId ===
-            (searchParams.get("id") || searchParams.get("presentation_id"))
-          ) {
-            dispatch(
-              setPresentationState({
-                logs: logsData.data || [],
-                status: logsData.status || "processing",
-                currentPhase: logsData.status || "planning",
-                title: logsData.title || "Generating...",
-                totalSlides: logsData.total_slides || 0,
-              })
-            );
-            // HANDLE BOTH 'completed & failed' CHECK
-            if (
-              logsData.status === "completed" ||
-              logsData.status === "failed"
-            ) {
-              setIsLoading(false);
-              if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-                pollingIntervalRef.current = null;
-              }
-            }
-          }
-        }
-      } else if (slidesResponse.ok) {
-        const slidesData = await slidesResponse.json();
-        if (
-          currentPresentationId ===
-          (searchParams.get("id") || searchParams.get("presentation_id"))
-        ) {
-          dispatch(
-            setPresentationState({
-              slides: slidesData.data || [],
-              status: slidesData.status || "processing",
-              title: slidesData.title || "Generating...",
-              totalSlides: slidesData.total_slides || 0,
-            })
-          );
-          // HANDLE BOTH 'completed & failed' CHECK
-          if (
-            slidesData.status === "completed" ||
-            slidesData.status === "failed"
+            combinedState.status === "completed" ||
+            combinedState.status === "failed"
           ) {
             setIsLoading(false);
             if (pollingIntervalRef.current) {
@@ -387,7 +359,8 @@ export default function PresentationAgentPage({ specificAgent }) {
         error
       );
       setDataFetched(true);
-      router.push("/agents");
+      // Consider not redirecting immediately on a transient fetch error
+      // router.push("/agents");
     }
   };
 
