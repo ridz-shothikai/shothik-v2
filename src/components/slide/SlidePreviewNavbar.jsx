@@ -870,7 +870,8 @@ export default function SlidePreviewNavbar({
               </Paper>
             )}
 
-            {shareLink && (
+            {/* Additional setting is not required now 👇 */}
+            {/* {shareLink && (
               <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
                 <Button
                   onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
@@ -945,7 +946,7 @@ export default function SlidePreviewNavbar({
                   </Box>
                 </Collapse>
               </Paper>
-            )}
+            )} */}
 
             {shareLink && shareSettingsState.trackViews && (
               <Paper
