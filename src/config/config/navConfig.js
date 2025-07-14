@@ -12,7 +12,7 @@ const ICONS = {
   summarize: icon("summarize"),
   grammar: icon("grammar"),
   translator: icon("translator"),
-  research: icon("research"),
+  agents: icon("agents"),
   user: icon("user"),
 };
 
@@ -56,12 +56,12 @@ const navConfig = [
         icon: ICONS.translator,
         iconColor: "#A07EFB",
       },
-      {
-        title: "Research",
-        path: PATH_TOOLS.research,
-        icon: ICONS.research,
-        iconColor: "#B71D18",
-      },
+      // {
+      //   title: "AI Agents",
+      //   path: PATH_TOOLS.agents,
+      //   icon: ICONS.agents,
+      //   iconColor: "#f29b18",
+      // },
     ],
   },
   // ----------------------------------------------------------------------
@@ -128,14 +128,14 @@ const tools = [
     link: "/translator",
     iconColor: "#A07EFB",
   },
-  {
-    icon: ICONS.research,
-    title: "Research",
-    description: "Web and Academic Research",
-    label: null,
-    link: "/research",
-    iconColor: "#B71D18",
-  },
+  // {
+  //   icon: ICONS.agents,
+  //   title: "AI Agents",
+  //   description: "Agentic Solutions",
+  //   label: null,
+  //   link: "/agents",
+  //   iconColor: "#f29b18",
+  // },
 ];
 
 // export
