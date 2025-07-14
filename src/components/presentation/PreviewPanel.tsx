@@ -109,29 +109,30 @@ export default function PreviewPanel({
                     {title || slidesData?.title || "Generating..."}
                   </Typography>
 
-                  {slidesData?.status === "completed" ||
-                    slidesData?.status ===
-                      "saved" && (
-                        <Typography
-                          color="#666"
-                          sx={{
-                            fontSize: {
-                              xs: "0.8rem",
-                              sm: "0.9rem",
-                              md: "1rem",
-                            },
-                          }}
+                  {(slidesData?.status === "completed" ||
+                    slidesData?.status === "saved") && (
+                      <Typography
+                        color="#666"
+                        sx={{
+                          fontSize: {
+                            xs: "0.8rem",
+                            sm: "0.9rem",
+                            md: "1rem",
+                          },
+                        }}
+                      >
+                        <AppLink
+                          href={`/slides?project_id=${presentationId}`}
+                          newTab
+                          underline="hover"
+                          color="primary"
+                          fontSize='14px'
+                          whiteSpace="nowrap"
                         >
-                          <AppLink
-                            href={`/slides?project_id=${presentationId}`}
-                            newTab
-                            underline="hover"
-                            color="primary"
-                          >
-                            View & Export
-                          </AppLink>
-                        </Typography>
-                      )}
+                          View & Export
+                        </AppLink>
+                      </Typography>
+                    )}
                 </Box>
 
                 {/* Scrollable Content */}

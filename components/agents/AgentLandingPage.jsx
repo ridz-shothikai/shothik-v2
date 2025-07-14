@@ -44,6 +44,7 @@ import { setPresentationState } from "../../src/redux/slice/presentationSlice";
 import { useDispatch } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
 import { setShowLoginModal } from "../../src/redux/slice/auth";
+import {createPresentationServer} from '../../src/services/createPresentationServer';
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -132,9 +133,10 @@ export default function AgentLandingPage() {
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
-  const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
-    useCreatePresentationMutation();
+  // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
+  //   useCreatePresentationMutation();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -187,16 +189,39 @@ export default function AgentLandingPage() {
         return;
       }
 
-      const response = await initiatePresentation({
-        message: inputValue,
-        token,
-      });
+      // const response = await initiatePresentation({
+      //   message: inputValue,
+      //   token,
+      // }).unwrap(); // redux api has some fussy behaiviour
 
-      const presentationId =
-        response?.data?.data?.presentationId ||
-        response?.data?.data?.presentation_id ||
-        response?.data?.presentationId ||
-        response?.data?.presentation_id;
+      setIsInitiatingPresentation(true);
+
+      const response = await createPresentationServer({
+          message: inputValue,
+          token,
+        }); // action service
+
+      // console.log(response, "response");
+
+      // return;
+
+      // const presentationId =
+      //   response?.data?.data?.presentationId ||
+      //   response?.data?.data?.presentation_id ||
+      //   response?.data?.presentationId ||
+      //   response?.data?.presentation_id;
+
+      // const chatSessionId = response?.data?.data?.chatSessionId || response?.data?.chatSessionId;
+      // for redux 👆
+
+      // for action service👇
+      if(!response?.success) {
+        console.log("Failed to create presentation");
+        return;
+      }
+      setIsInitiatingPresentation(false);
+      const presentationId = response?.presentationId;
+      const chatSessionId = response?.chatSessionId;
 
       console.log(
         "[AgentLandingPage] Presentation initiated with ID:",
@@ -209,11 +234,11 @@ export default function AgentLandingPage() {
         console.error(
           "[AgentLandingPage] No presentation ID received from API"
         );
-        alert("Failed to create presentation. Please try again.");
+        // alert("Failed to create presentation. Please try again.");
       }
     } catch (error) {
       console.error("[AgentLandingPage] Error initiating presentation:", error);
-      alert("Failed to create presentation. Please try again.");
+      // alert("Failed to create presentation. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

@@ -13,7 +13,7 @@ import {
 } from "../../redux/slice/presentationSlice";
 import io from "socket.io-client";
 import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
-import { Button, Typography } from "@mui/material";
+import { Button, Dialog, DialogContent, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
 
 const PRIMARY_GREEN = "#07B37A";
 const PHASES_ORDER = [
@@ -37,6 +37,8 @@ export default function PresentationAgentPage({ specificAgent }) {
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { agentType, setAgentType } = useAgentContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const urlPresentationId =
     searchParams.get("id") || searchParams.get("presentation_id");
@@ -52,6 +54,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const chatEndRef = useRef(null);
   const pollingIntervalRef = useRef(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const presentationState = useSelector(selectPresentation);
   const {
@@ -338,7 +341,7 @@ export default function PresentationAgentPage({ specificAgent }) {
           dispatch(setPresentationState(combinedState));
 
           if (
-            combinedState.status === "completed" ||
+            combinedState.status === "saved" ||
             combinedState.status === "failed"
           ) {
             setIsLoading(false);
@@ -381,71 +384,71 @@ export default function PresentationAgentPage({ specificAgent }) {
     setDataFetched(false);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
-      const token = localStorage.getItem("accessToken");
+      // const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
+      // const token = localStorage.getItem("accessToken");
 
-      const response = await fetch(`${baseUrl}/presentation/init`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ message: prompt }),
-      });
+      // const response = await fetch(`${baseUrl}/presentation/init`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Cache-Control": "no-cache",
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify({ message: prompt }),
+      // });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        const newPresentationId =
-          responseData.presentationId || responseData.data?.presentationId;
+      // if (response.ok) {
+      //   const responseData = await response.json();
+      //   const newPresentationId =
+      //     responseData.presentationId || responseData.data?.presentationId;
 
-        if (newPresentationId) {
-          dispatch(
-            setPresentationState({
-              logs: [],
-              slides: [],
-              status: "planning",
-              currentPhase: "planning",
-              completedPhases: [],
-              presentationBlueprint: null,
-              title: "Generating...",
-              totalSlides: 0,
-            })
-          );
+      //   if (newPresentationId) {
+      //     dispatch(
+      //       setPresentationState({
+      //         logs: [],
+      //         slides: [],
+      //         status: "planning",
+      //         currentPhase: "planning",
+      //         completedPhases: [],
+      //         presentationBlueprint: null,
+      //         title: "Generating...",
+      //         totalSlides: 0,
+      //       })
+      //     );
 
-          if (pollingIntervalRef.current) {
-            clearInterval(pollingIntervalRef.current);
-            pollingIntervalRef.current = null;
-          }
+      //     if (pollingIntervalRef.current) {
+      //       clearInterval(pollingIntervalRef.current);
+      //       pollingIntervalRef.current = null;
+      //     }
 
-          if (socket && isSocketConnected && currentPresentationId) {
-            console.log(
-              "[SOCKET] Leaving previous presentation room:",
-              currentPresentationId
-            );
-            socket.emit("leavePresentation", currentPresentationId);
-          }
+      //     if (socket && isSocketConnected && currentPresentationId) {
+      //       console.log(
+      //         "[SOCKET] Leaving previous presentation room:",
+      //         currentPresentationId
+      //       );
+      //       socket.emit("leavePresentation", currentPresentationId);
+      //     }
 
-          setCurrentPresentationId(newPresentationId);
-          if (socket && isSocketConnected) {
-            console.log(
-              "[SOCKET] Joining new presentation room:",
-              newPresentationId
-            );
-            socket.emit("joinPresentation", newPresentationId);
-          }
+      //     setCurrentPresentationId(newPresentationId);
+      //     if (socket && isSocketConnected) {
+      //       console.log(
+      //         "[SOCKET] Joining new presentation room:",
+      //         newPresentationId
+      //       );
+      //       socket.emit("joinPresentation", newPresentationId);
+      //     }
 
-          router.push(`/agents/presentation?id=${newPresentationId}`, {
-            scroll: false,
-          });
-        }
-      } else {
-        console.error(
-          "[PresentationAgentPage] Failed to initiate presentation:",
-          response.status
-        );
-        setIsLoading(false);
-      }
+      //     router.push(`/agents/presentation?id=${newPresentationId}`, {
+      //       scroll: false,
+      //     });
+      //   }
+      // } else {
+      //   console.error(
+      //     "[PresentationAgentPage] Failed to initiate presentation:",
+      //     response.status
+      //   );
+      //   setIsLoading(false);
+      // }
     } catch (error) {
       console.error(
         "[PresentationAgentPage] Failed to initiate presentation:",
@@ -478,6 +481,9 @@ export default function PresentationAgentPage({ specificAgent }) {
     console.log("Regenerating with feedback...");
   };
 
+  const handlePreviewOpen = () => setPreviewOpen(true);
+  const handlePreviewClose = () => setPreviewOpen(false);
+
   if (!currentPresentationId) {
     return (
       <Box
@@ -508,7 +514,11 @@ export default function PresentationAgentPage({ specificAgent }) {
   return (
     <Box
       sx={{
-        height: "100dvh",
+        height: {
+          xs: "90dvh", // height for mobile screens (extra-small)
+          lg: "80dvh", // height for desktop screens (large)
+          xl: "85dvh", // height for extra-large screens
+        },
         bgcolor: "white",
         color: "#333",
         display: "flex",
@@ -516,73 +526,225 @@ export default function PresentationAgentPage({ specificAgent }) {
         overflow: "hidden",
       }}
     >
-      <AgentHeader
-        currentAgentType={currentAgentType}
-        onBackClick={() => router.push("/agents")}
-      />
+      <Box sx={{ flexShrink: 0 }}>
+        <AgentHeader
+          currentAgentType={currentAgentType}
+          onBackClick={() => router.push("/agents")}
+        />
+      </Box>
 
       <Box
         sx={{
           flex: 1,
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-          gridTemplateRows: "1fr",
-          height: "calc(100vh - 120px)",
+          display: "flex",
+          flexDirection: "column",
           overflow: "hidden",
+          minHeight: 0,
         }}
       >
-        <Box
-          sx={{
-            height: "100%",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <ChatArea
-            currentAgentType={currentAgentType}
-            chatHistory={chatHistory}
-            realLogs={logs}
-            isLoading={isLoading}
-            currentPhase={currentPhase}
-            completedPhases={completedPhases}
-            logsData={{ data: logs, status: currentPhase }}
-            chatEndRef={chatEndRef}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            onSend={handleSend}
-          />
-        </Box>
-
-        <Box
-          sx={{
-            height: "100%",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <PreviewPanel
-            currentAgentType="presentation"
-            slidesData={{
-              data: slides,
-              status: status,
-              title: presentationState.title || "Generating...",
+        {isMobile ? (
+          // Mobile Layout
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                p: 2,
+                border: "1px solid #e0e0e0",
+                cursor: "pointer",
+                bgcolor: "#fafafa",
+              }}
+              onClick={handlePreviewOpen}
+            >
+              <CustomSlideshowIcon
+                sx={{ color: PRIMARY_GREEN, fontSize: 30 }}
+              />
+              <Typography variant="h6" sx={{
+                ml: 0.5
+              }}>Preview Slides</Typography>
+              {slides.length > 0 && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    fontSize: {
+                      xs: "0.75rem",
+                      sm: "0.875rem",
+                      md: "1rem",
+                      lg: "1.1rem",
+                      xl: "1.2rem",
+                    },
+                    mt: '3px',
+                  }}
+                >
+                  {slides.length} slide{slides.length > 1 ? "s" : ""} available
+                </Typography>
+              )}
+            </Box>
+            <Box
+              sx={{
+                flex: 1,
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <ChatArea
+                currentAgentType={currentAgentType}
+                chatHistory={chatHistory}
+                realLogs={logs}
+                isLoading={isLoading}
+                currentPhase={currentPhase}
+                completedPhases={completedPhases}
+                logsData={{ data: logs, status: currentPhase }}
+                chatEndRef={chatEndRef}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onSend={handleSend}
+              />
+            </Box>
+            <Dialog
+              open={previewOpen}
+              onClose={handlePreviewClose}
+              maxWidth="md"
+              fullWidth
+              PaperProps={{
+                sx: { height: "80vh", maxHeight: "80vh", position: "relative" },
+              }}
+            >
+              {/* custom closing button on top of the dialog */}
+              {/* <IconButton
+                aria-label="close"
+                onClick={handlePreviewClose}
+                sx={{
+                  position: "absolute",
+                  right: 4,
+                  top: 4,
+                  color: '#000000',
+                  padding: 1,
+                  zIndex: 12
+                }}
+              >
+                <CustomCloseIcon sx={{ fontSize: 24 }} />
+              </IconButton> */}
+              {/* <DialogContent sx={{ px: 0, pb: 0, pt: 2, overflow: "hidden" }}> */}
+              <DialogContent sx={{ p:0, overflow: "hidden" }}>
+                <PreviewPanel
+                  currentAgentType="presentation"
+                  slidesData={{
+                    data: slides,
+                    status: status,
+                    title: presentationState.title || "Generating...",
+                  }}
+                  slidesLoading={isLoading}
+                  presentationId={currentPresentationId}
+                  currentPhase={currentPhase}
+                  completedPhases={completedPhases}
+                  presentationBlueprint={presentationBlueprint}
+                  qualityMetrics={null}
+                  validationResult={null}
+                  isValidating={false}
+                  onApplyAutoFixes={handleApplyAutoFixes}
+                  onRegenerateWithFeedback={handleRegenerateWithFeedback}
+                  title={presentationState.title || "Generating..."}
+                />
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          // Desktop Layout
+          <Box
+            sx={{
+              flex: 1,
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gridTemplateRows: "1fr",
+              overflow: "hidden",
+              minHeight: 0,
             }}
-            slidesLoading={isLoading}
-            presentationId={currentPresentationId}
-            currentPhase={currentPhase}
-            completedPhases={completedPhases}
-            presentationBlueprint={presentationBlueprint}
-            qualityMetrics={null}
-            validationResult={null}
-            isValidating={false}
-            onApplyAutoFixes={handleApplyAutoFixes}
-            onRegenerateWithFeedback={handleRegenerateWithFeedback}
-            title={presentationState.title || "Generating..."}
-          />
-        </Box>
+          >
+            <Box
+              sx={{
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0,
+              }}
+            >
+              <ChatArea
+                currentAgentType={currentAgentType}
+                chatHistory={chatHistory}
+                realLogs={logs}
+                isLoading={isLoading}
+                currentPhase={currentPhase}
+                completedPhases={completedPhases}
+                logsData={{ data: logs, status: currentPhase }}
+                chatEndRef={chatEndRef}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onSend={handleSend}
+              />
+            </Box>
+            <Box
+              sx={{
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0,
+              }}
+            >
+              <PreviewPanel
+                currentAgentType="presentation"
+                slidesData={{
+                  data: slides,
+                  status: status,
+                  title: presentationState.title || "Generating...",
+                }}
+                slidesLoading={isLoading}
+                presentationId={currentPresentationId}
+                currentPhase={currentPhase}
+                completedPhases={completedPhases}
+                presentationBlueprint={presentationBlueprint}
+                qualityMetrics={null}
+                validationResult={null}
+                isValidating={false}
+                onApplyAutoFixes={handleApplyAutoFixes}
+                onRegenerateWithFeedback={handleRegenerateWithFeedback}
+                title={presentationState.title || "Generating..."}
+              />
+            </Box>
+          </Box>
+        )}
       </Box>
     </Box>
   );
-}
+};
+
+const CustomSlideshowIcon = ({ sx, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    {...props}
+    style={{ ...sx }}
+  >
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" />
+  </svg>
+);
+
+const CustomCloseIcon = ({ sx, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    {...props}
+    style={{ ...sx }}
+  >
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+    <path d="M0 0h24v24H0z" fill="none" />
+  </svg>
+);
