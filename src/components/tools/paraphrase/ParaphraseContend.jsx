@@ -1,6 +1,15 @@
 "use client";
 import { InsertDriveFile } from "@mui/icons-material";
-import { Box, Card, Divider, Grid2 } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  Grid2,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -8,6 +17,7 @@ import { modes } from "../../../_mock/tools/paraphrase";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
+import useDebounce from "../../../hooks/useDebounce";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
@@ -20,10 +30,11 @@ import LanguageMenu from "../grammar/LanguageMenu";
 import ModeNavigation from "./ModeNavigation";
 import ModeNavigationForMobile from "./ModeNavigationForMobile";
 import OutputBotomNavigation from "./OutputBotomNavigation";
-import ParaphraseEditor from "./ParaphraseEditor";
 import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
+import UserInputBox from "./UserInputBox";
 import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
+import { protectedPhrases, protectedSingleWords } from "./extentions";
 
 const SYNONYMS = {
   20: "Basic",
@@ -33,7 +44,10 @@ const SYNONYMS = {
 };
 
 const ParaphraseContend = () => {
+  const [frozenWords, setFrozenWords] = useState(new Set(protectedSingleWords));
+  const [frozenPhrases, setFrozenPhrases] = useState(new Set(protectedPhrases));
   const [selectedSynonyms, setSelectedSynonyms] = useState(SYNONYMS[20]);
+  const [showLanguageDetect, setShowLanguageDetect] = useState(false);
   const [outputHistoryIndex, setOutputHistoryIndex] = useState(0);
   const [highlightSentence, setHighlightSentence] = useState(0);
   const [selectedMode, setSelectedMode] = useState("Standard");
@@ -41,11 +55,13 @@ const ParaphraseContend = () => {
   const [outputHistory, setOutputHistory] = useState([]);
   const [outputContend, setOutputContend] = useState("");
   const { user } = useSelector((state) => state.auth);
-  const [language, setLanguage] = useState("English");
-  const [updateHtml, setUpdateHtml] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const [language, setLanguage] = useState("");
+  const [processing, setProcessing] = useState({
+    loading: false,
+    success: false,
+  });
   const [freezeWords, setFreezeWords] = useState([]);
-  const sampleText = trySamples.paraphrase[language];
+  const sampleText = trySamples.paraphrase[language || "English"];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
@@ -61,11 +77,22 @@ const ParaphraseContend = () => {
     show: false,
     Component: null,
   });
+  const userInputValue = useDebounce(userInput, 800);
 
   useEffect(() => {
     if (!userInput) return;
-    const language = detectLanguage(userInput);
-    setLanguage(language);
+    let timer;
+    const detectLang = detectLanguage(userInput);
+    if (detectLang !== language) {
+      setLanguage(detectLang);
+      setShowLanguageDetect(true);
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        setShowLanguageDetect(false);
+      }, 3000);
+    }
   }, [userInput]);
 
   useEffect(() => {
@@ -178,12 +205,12 @@ const ParaphraseContend = () => {
     setOutputHistory([]);
   };
 
-  const handleSubmit = async (rephrase) => {
+  const handleSubmit = async (value) => {
     try {
       // track event
-      trackEvent("click", "paraphrase", "paraphrase_click", 1);
-
-      const lastOutput = outputContend;
+      if (!value) {
+        trackEvent("click", "paraphrase", "paraphrase_click", 1);
+      }
       let payload;
 
       setIsLoading(true);
@@ -191,9 +218,8 @@ const ParaphraseContend = () => {
       setOutputHistoryIndex(0);
       setProcessing({ success: false, loading: true });
 
-      const textToParaphrase = rephrase ? lastOutput : userInput;
-      const extractedSentences = textToParaphrase.replace(/<[^>]+>/g, "");
-      const textAsWrodsArray = extractedSentences
+      const textToParaphrase = value ? value : userInput;
+      const textAsWrodsArray = textToParaphrase
         .trim()
         .split(/\s+/)
         .filter((word) => word.length > 0);
@@ -208,7 +234,11 @@ const ParaphraseContend = () => {
 
       payload = {
         text: finalText,
-        freeze: freezeWords.length ? freezeWords.join(", ") : "",
+        freeze: frozenWords.size
+          ? Array.from(frozenWords).join(", ")
+          : "" + frozenPhrases.size
+          ? Array.from(frozenPhrases).join(", ")
+          : "",
         language: language,
         mode: selectedMode ? selectedMode.toLowerCase() : "standard",
         synonym: selectedSynonyms ? selectedSynonyms.toLowerCase() : "basic",
@@ -240,6 +270,12 @@ const ParaphraseContend = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userInputValue && !processing.loading) {
+      handleSubmit(userInputValue);
+    }
+  }, [userInputValue]);
 
   return (
     <Box>
@@ -293,15 +329,25 @@ const ParaphraseContend = () => {
             }}
             size={{ xs: 12, md: 6 }}
           >
-            <ParaphraseEditor
+            {/* <ParaphraseEditor 
               freezeWords={freezeWords}
               html={userInput}
               isMobile={isMobile}
               setFreezeWords={setFreezeWords}
               setHtml={setUserInput}
-              user={user}
               updateHtml={updateHtml}
               wordLimit={wordLimit}
+            /> */}
+
+            <UserInputBox
+              wordLimit={wordLimit}
+              setUserInput={setUserInput}
+              userInput={userInput}
+              frozenPhrases={frozenPhrases}
+              frozenWords={frozenWords}
+              setFrozenPhrases={setFrozenPhrases}
+              setFrozenWords={setFrozenWords}
+              user={user}
             />
 
             {!userInput ? (
@@ -309,7 +355,6 @@ const ParaphraseContend = () => {
                 setUserInput={setUserInput}
                 isMobile={isMobile}
                 sampleText={sampleText}
-                extraAction={() => setUpdateHtml((prev) => !prev)}
               />
             ) : null}
             <WordCounter
@@ -325,6 +370,24 @@ const ParaphraseContend = () => {
               dontDisable={true}
               sticky={320}
             />
+
+            {showLanguageDetect && (
+              <Stack
+                direction='row'
+                alignItems='center'
+                component={Paper}
+                gap={2}
+                sx={{
+                  position: "absolute",
+                  bottom: 80,
+                  left: 20,
+                  padding: 1,
+                }}
+              >
+                <Typography>Detected Language: </Typography>
+                <Button variant='outlined'>{language}</Button>
+              </Stack>
+            )}
           </Grid2>
           {isMobile && !userInput ? null : (
             <Grid2
