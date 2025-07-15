@@ -9,32 +9,26 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 const MobileFreezeModal = ({
   isFreeze,
   handleClose,
-  freezeWords,
-  setFreezeWords,
-  userPackage
+  userPackage,
+  initialFrozenWords,
+  frozenWords,
 }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
   const router = useRouter();
 
   function handleSubmit(e) {
     e.preventDefault();
-    setFreezeWords((prev) => {
-      if (!prev.includes(value)) {
-        return [...prev, value];
-      }
-      return prev;
-    });
+    frozenWords.toggle(value);
     setValue("");
   }
 
   function handleDelete(word) {
-    const rest = freezeWords.filter((item) => item !== word);
-    setFreezeWords(rest);
+    frozenWords.remove(word);
   }
 
   const needToUpgrade = !userPackage || userPackage === "free";
@@ -85,17 +79,16 @@ const MobileFreezeModal = ({
         <Button
           sx={{ mt: 1, textAlign: "right" }}
           variant='contained'
-          type={needToUpgrade?"button":'submit'}
-          onClick={e => {
-            router.push("/pricing?redirect=paraphrase")
-          }
-          }
+          type={needToUpgrade ? "button" : "submit"}
+          onClick={(e) => {
+            router.push("/pricing?redirect=paraphrase");
+          }}
         >
-         {needToUpgrade ? "Upgrade":"Freeze"}
+          {needToUpgrade ? "Upgrade" : "Freeze"}
         </Button>
       </form>
 
-      {freezeWords.length > 0 && (
+      {frozenWords.size > 0 && (
         <Stack
           direction='row'
           sx={{ px: 2, width: "100%" }}
@@ -107,15 +100,15 @@ const MobileFreezeModal = ({
             label='Clear All'
             color='error'
             variant='filled'
-            onClick={() => setFreezeWords([])}
-            onDelete={() => setFreezeWords([])}
+            onClick={() => frozenWords.reset(initialFrozenWords)}
+            onDelete={() => frozenWords.reset(initialFrozenWords)}
             sx={{
               "& .MuiChip-deleteIcon": { color: "white" },
               fontWeight: 700,
             }}
           />
 
-          {freezeWords.map((item, index) => (
+          {frozenWords.values.map((item, index) => (
             <Chip
               key={index}
               label={item}
