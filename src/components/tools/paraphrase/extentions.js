@@ -165,6 +165,66 @@ export const FrozenWords = Extension.create({
   },
 });
 
+export const DuplicateSentences = Extension.create({
+  name: "duplicateSentences",
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey("duplicateSentences"),
+
+        props: {
+          decorations: (state) => {
+            const { doc } = state;
+            const decorations = [];
+            const sentenceMap = new Map();
+
+            // First pass: collect all sentences
+            doc.descendants((node, pos) => {
+              if (!node.isText) return;
+
+              const text = node.text;
+              const regex = /[^.!?]+[.!?]+/g;
+              let match;
+
+              while ((match = regex.exec(text)) !== null) {
+                const sentence = match[0].trim().toLowerCase();
+
+                if (!sentence) continue;
+
+                const start = pos + match.index;
+                const end = start + match[0].length;
+
+                if (!sentenceMap.has(sentence)) {
+                  sentenceMap.set(sentence, []);
+                }
+
+                sentenceMap.get(sentence).push({ from: start, to: end });
+              }
+            });
+
+            // Second pass: decorate duplicate sentences
+            for (const [, ranges] of sentenceMap.entries()) {
+              if (ranges.length > 1) {
+                for (const { from, to } of ranges) {
+                  console.log({ from, to });
+                  decorations.push(
+                    Decoration.inline(from, to, {
+                      class: "duplicate-sentence",
+                    })
+                  );
+                }
+              }
+            }
+
+            return DecorationSet.create(doc, decorations);
+          },
+        },
+      }),
+    ];
+  },
+});
+
 export const protectedSingleWords = [
   "affidavit",
   "alibi",
