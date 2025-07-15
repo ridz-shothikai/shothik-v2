@@ -4,7 +4,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
 import "./editor.css";
-import { DuplicateSentences, FrozenWords, WordLimit } from "./extentions";
+import { CombinedHighlighting } from "./extentions";
 
 function UserInputBox({
   wordLimit = 300,
@@ -25,9 +25,11 @@ function UserInputBox({
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder: "Enter your text here..." }),
-      WordLimit.configure({ limit: wordLimit }),
-      FrozenWords.configure({ frozenWords, frozenPhrases }),
-      DuplicateSentences,
+      CombinedHighlighting.configure({
+        limit: wordLimit,
+        frozenWords,
+        frozenPhrases,
+      }),
     ],
     content: "",
     onSelectionUpdate: ({ editor }) => {
@@ -75,15 +77,22 @@ function UserInputBox({
   }, [userInput, editor]);
 
   useEffect(() => {
-    if (editor) {
-      const ext = editor.extensionManager.extensions.find(
-        (e) => e.name === "frozenWords"
-      );
-      if (ext) {
-        ext.options.frozenWords = frozenWords;
-        ext.options.frozenPhrases = frozenPhrases;
-        editor.view.dispatch(editor.state.tr); // re-render
-      }
+    if (!editor) return;
+
+    const plugin = editor.extensionManager.extensions.find(
+      (ext) => ext.name === "combinedHighlighting"
+    );
+
+    if (!plugin) return;
+
+    const hasChanged =
+      plugin.options.frozenWords !== frozenWords ||
+      plugin.options.frozenPhrases !== frozenPhrases;
+
+    if (hasChanged) {
+      plugin.options.frozenWords = frozenWords;
+      plugin.options.frozenPhrases = frozenPhrases;
+      editor.view.dispatch(editor.state.tr); // Force re-render
     }
   }, [frozenWords, frozenPhrases, editor]);
 

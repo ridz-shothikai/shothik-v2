@@ -2,63 +2,111 @@ import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
-export const WordLimit = Extension.create({
-  name: "wordLimit",
+function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
+  const decorations = [];
+  const sentenceMap = new Map();
+  const decoratedPositions = new Set();
+  let wordCount = 0;
+
+  doc.descendants((node, pos) => {
+    if (!node.isText) return;
+    const text = node.text;
+    const lowerText = text.toLowerCase();
+
+    // === 1. Word Limit ===
+    const wordRegex = /\b\w+\b/g;
+    let match;
+    while ((match = wordRegex.exec(text)) !== null) {
+      wordCount++;
+      if (wordCount > limit) {
+        const from = pos + match.index;
+        const to = from + match[0].length;
+        decorations.push(
+          Decoration.inline(from, to, { class: "word-limit-exceeded" })
+        );
+      }
+    }
+
+    // === 2. Frozen Phrases ===
+    const sortedPhrases = Array.from(frozenPhrases || []).sort(
+      (a, b) => b.length - a.length
+    );
+    for (const phrase of sortedPhrases) {
+      const phraseLower = phrase.toLowerCase().trim();
+      const escaped = phraseLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escaped, "gi");
+      let match;
+      while ((match = regex.exec(lowerText)) !== null) {
+        const from = pos + match.index;
+        const to = from + match[0].length;
+        if (!isOverlapping(from, to, decoratedPositions)) {
+          markDecorated(from, to, decoratedPositions);
+          decorations.push(
+            Decoration.inline(from, to, { class: "frozen-word" })
+          );
+        }
+      }
+    }
+
+    // === 3. Frozen Words ===
+    wordRegex.lastIndex = 0; // reset regex
+    while ((match = wordRegex.exec(lowerText)) !== null) {
+      const word = match[0];
+      if (frozenWords?.has(word)) {
+        const from = pos + match.index;
+        const to = from + word.length;
+        if (!isOverlapping(from, to, decoratedPositions)) {
+          markDecorated(from, to, decoratedPositions);
+          decorations.push(
+            Decoration.inline(from, to, { class: "frozen-word" })
+          );
+        }
+      }
+    }
+
+    // === 4. Duplicate Sentences (collect for now) ===
+    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    while ((match = sentenceRegex.exec(text)) !== null) {
+      const sentence = match[0].trim().toLowerCase();
+      if (!sentence) continue;
+      const from = pos + match.index;
+      const to = from + match[0].length;
+      if (!sentenceMap.has(sentence)) sentenceMap.set(sentence, []);
+      sentenceMap.get(sentence).push({ from, to });
+    }
+  });
+
+  // === 5. Apply duplicate sentence highlights ===
+  for (const [, ranges] of sentenceMap.entries()) {
+    if (ranges.length > 1) {
+      for (const { from, to } of ranges) {
+        decorations.push(
+          Decoration.inline(from, to, { class: "duplicate-sentence" })
+        );
+      }
+    }
+  }
+
+  return DecorationSet.create(doc, decorations);
+}
+
+function isOverlapping(from, to, set) {
+  for (let i = from; i < to; i++) {
+    if (set.has(i)) return true;
+  }
+  return false;
+}
+
+function markDecorated(from, to, set) {
+  for (let i = from; i < to; i++) set.add(i);
+}
+
+export const CombinedHighlighting = Extension.create({
+  name: "combinedHighlighting",
 
   addOptions() {
     return {
       limit: 100,
-    };
-  },
-
-  addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: new PluginKey("wordLimit"),
-
-        props: {
-          decorations: (state) => {
-            const { doc } = state;
-            const decorations = [];
-            const limit = this.options.limit;
-            let wordCount = 0;
-
-            doc.descendants((node, pos) => {
-              if (!node.isText) return;
-
-              const nodeText = node.text;
-              const regex = /\b\w+\b/g;
-              let match;
-
-              while ((match = regex.exec(nodeText)) !== null) {
-                wordCount++;
-
-                if (wordCount > limit) {
-                  const from = pos + match.index;
-                  const to = from + match[0].length;
-
-                  decorations.push(
-                    Decoration.inline(from, to, {
-                      class: "word-limit-exceeded",
-                    })
-                  );
-                }
-              }
-            });
-
-            return DecorationSet.create(doc, decorations);
-          },
-        },
-      }),
-    ];
-  },
-});
-
-export const FrozenWords = Extension.create({
-  name: "frozenWords",
-
-  addOptions() {
-    return {
       frozenWords: new Set(),
       frozenPhrases: new Set(),
     };
@@ -67,157 +115,11 @@ export const FrozenWords = Extension.create({
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: new PluginKey("frozenWords"),
+        key: new PluginKey("combinedHighlighting"),
 
         props: {
           decorations: (state) => {
-            const { doc } = state;
-            const decorations = [];
-            const frozenWords = this.options.frozenWords;
-            const frozenPhrases = this.options.frozenPhrases;
-            const decoratedPositions = new Set();
-
-            doc.descendants((node, pos) => {
-              if (!node.isText) return;
-
-              const originalText = node.text;
-              const lowerText = originalText.toLowerCase();
-
-              // === 1. Handle Frozen Phrases ===
-              const sortedPhrases = Array.from(frozenPhrases).sort(
-                (a, b) => b.length - a.length
-              );
-
-              for (const phrase of sortedPhrases) {
-                const phraseLower = phrase.toLowerCase().trim();
-                const escapedPhrase = phraseLower.replace(
-                  /[.*+?^${}()|[\]\\]/g,
-                  "\\$&"
-                );
-                const phraseRegex = new RegExp(`${escapedPhrase}`, "gi");
-
-                let match;
-                while ((match = phraseRegex.exec(lowerText)) !== null) {
-                  const from = pos + match.index;
-                  const to = from + match[0].length;
-
-                  let isDecorated = false;
-                  for (let i = from; i < to; i++) {
-                    if (decoratedPositions.has(i)) {
-                      isDecorated = true;
-                      break;
-                    }
-                  }
-
-                  if (!isDecorated) {
-                    for (let i = from; i < to; i++) {
-                      decoratedPositions.add(i);
-                    }
-
-                    decorations.push(
-                      Decoration.inline(from, to, {
-                        class: "frozen-word",
-                      })
-                    );
-                  }
-                }
-              }
-
-              // === 2. Handle Frozen Single Words ===
-              const wordRegex = /\b\w+\b/g;
-              let match;
-
-              while ((match = wordRegex.exec(lowerText)) !== null) {
-                const word = match[0];
-
-                if (frozenWords.has(word)) {
-                  const from = pos + match.index;
-                  const to = from + word.length;
-
-                  let isDecorated = false;
-                  for (let i = from; i < to; i++) {
-                    if (decoratedPositions.has(i)) {
-                      isDecorated = true;
-                      break;
-                    }
-                  }
-
-                  if (!isDecorated) {
-                    for (let i = from; i < to; i++) {
-                      decoratedPositions.add(i);
-                    }
-
-                    decorations.push(
-                      Decoration.inline(from, to, {
-                        class: "frozen-word",
-                      })
-                    );
-                  }
-                }
-              }
-            });
-
-            return DecorationSet.create(doc, decorations);
-          },
-        },
-      }),
-    ];
-  },
-});
-
-export const DuplicateSentences = Extension.create({
-  name: "duplicateSentences",
-
-  addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: new PluginKey("duplicateSentences"),
-
-        props: {
-          decorations: (state) => {
-            const { doc } = state;
-            const decorations = [];
-            const sentenceMap = new Map();
-
-            // First pass: collect all sentences
-            doc.descendants((node, pos) => {
-              if (!node.isText) return;
-
-              const text = node.text;
-              const regex = /[^.!?]+[.!?]+/g;
-              let match;
-
-              while ((match = regex.exec(text)) !== null) {
-                const sentence = match[0].trim().toLowerCase();
-
-                if (!sentence) continue;
-
-                const start = pos + match.index;
-                const end = start + match[0].length;
-
-                if (!sentenceMap.has(sentence)) {
-                  sentenceMap.set(sentence, []);
-                }
-
-                sentenceMap.get(sentence).push({ from: start, to: end });
-              }
-            });
-
-            // Second pass: decorate duplicate sentences
-            for (const [, ranges] of sentenceMap.entries()) {
-              if (ranges.length > 1) {
-                for (const { from, to } of ranges) {
-                  console.log({ from, to });
-                  decorations.push(
-                    Decoration.inline(from, to, {
-                      class: "duplicate-sentence",
-                    })
-                  );
-                }
-              }
-            }
-
-            return DecorationSet.create(doc, decorations);
+            return processDecorations(state.doc, this.options);
           },
         },
       }),
