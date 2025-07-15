@@ -206,7 +206,7 @@ const ParaphraseOutput = ({
         synonymLevel: synonymLevel ? synonymLevel.toLowerCase() : "basic",
         model: "sai-nlp-boost",
         language: selectedLang,
-        freezeWord: freezeWords?.length ? freezeWords.join(", ") : "",
+        freezeWord: freezeWords,
       };
       const response = await fetch(url, {
         method: "POST",
@@ -285,41 +285,42 @@ const ParaphraseOutput = ({
                 : undefined,
           }}
         >
-          {sentence && sentence?.map((segment, i, arr) => (
-            <Typography
-              component='span'
-              key={i}
-              sx={{
-                color: /NP/.test(segment.type)
-                  ? adJectiveVerbAdverbColor
-                  : /VP/.test(segment.type)
-                  ? nounColor
-                  : /PP|CP|AdvP|AdjP/.test(segment.type)
-                  ? phraseColor
-                  : /freeze/.test(segment.type)
-                  ? freezeColor
-                  : undefined,
-                cursor: "pointer",
-                transition: "all 0.1s ease-in-out",
-                "&:hover": {
-                  color: !segment.child?.length ? hoverColor : undefined,
-                },
-              }}
-              onClick={(event) =>
-                handleWordClick(event, segment.synonyms, index, i)
-              }
-            >
-              {arr.length - 1 === i ||
-              segment.word === "," ||
-              segment.word === ";" ||
-              segment?.word?.endsWith("'")
-                ? ""
-                : " "}
-              {segment.word?.length > 1
-                ? segment.word?.replace(/[.।]$/, "")
-                : segment.word}
-            </Typography>
-          ))}
+          {sentence &&
+            sentence?.map((segment, i, arr) => (
+              <Typography
+                component='span'
+                key={i}
+                sx={{
+                  color: /NP/.test(segment.type)
+                    ? adJectiveVerbAdverbColor
+                    : /VP/.test(segment.type)
+                    ? nounColor
+                    : /PP|CP|AdvP|AdjP/.test(segment.type)
+                    ? phraseColor
+                    : /freeze/.test(segment.type)
+                    ? freezeColor
+                    : undefined,
+                  cursor: "pointer",
+                  transition: "all 0.1s ease-in-out",
+                  "&:hover": {
+                    color: !segment.child?.length ? hoverColor : undefined,
+                  },
+                }}
+                onClick={(event) =>
+                  handleWordClick(event, segment.synonyms, index, i)
+                }
+              >
+                {arr.length - 1 === i ||
+                segment.word === "," ||
+                segment.word === ";" ||
+                segment?.word?.endsWith("'")
+                  ? ""
+                  : " "}
+                {segment.word?.length > 1
+                  ? segment.word?.replace(/[.।]$/, "")
+                  : segment.word}
+              </Typography>
+            ))}
         </Typography>
       ))}
 
@@ -653,39 +654,40 @@ function RephraseSentences(props) {
                   >
                     <ListItemButton>
                       <ListItemText>
-                        {sentence && sentence?.map((segment, i, arr) => (
-                          <Typography
-                            component='span'
-                            key={i}
-                            sx={{
-                              color: /NP/.test(segment.type)
-                                ? adJectiveVerbAdverbColor
-                                : /VP/.test(segment.type)
-                                ? nounColor
-                                : /PP|CP|AdvP|AdjP/.test(segment.type)
-                                ? phraseColor
-                                : /freeze/.test(segment.type)
-                                ? freezeColor
-                                : undefined,
-                              cursor: "pointer",
-                              transition: "all 0.1s ease-in-out",
-                              "&:hover": {
-                                color: hoverColor,
-                              },
-                            }}
-                          >
-                            {arr.length - 1 === i ||
-                            segment.word === "," ||
-                            segment?.word?.endsWith("'")
-                              ? ""
-                              : " "}
-                            {segment.word?.length > 1
-                              ? segment.word
-                                  ?.replace(/[{}]/g, "")
-                                  .replace(/[.।]+$/, "")
-                              : segment.word}
-                          </Typography>
-                        ))}
+                        {sentence &&
+                          sentence?.map((segment, i, arr) => (
+                            <Typography
+                              component='span'
+                              key={i}
+                              sx={{
+                                color: /NP/.test(segment.type)
+                                  ? adJectiveVerbAdverbColor
+                                  : /VP/.test(segment.type)
+                                  ? nounColor
+                                  : /PP|CP|AdvP|AdjP/.test(segment.type)
+                                  ? phraseColor
+                                  : /freeze/.test(segment.type)
+                                  ? freezeColor
+                                  : undefined,
+                                cursor: "pointer",
+                                transition: "all 0.1s ease-in-out",
+                                "&:hover": {
+                                  color: hoverColor,
+                                },
+                              }}
+                            >
+                              {arr.length - 1 === i ||
+                              segment.word === "," ||
+                              segment?.word?.endsWith("'")
+                                ? ""
+                                : " "}
+                              {segment.word?.length > 1
+                                ? segment.word
+                                    ?.replace(/[{}]/g, "")
+                                    .replace(/[.।]+$/, "")
+                                : segment.word}
+                            </Typography>
+                          ))}
                       </ListItemText>
                     </ListItemButton>
                   </ListItem>

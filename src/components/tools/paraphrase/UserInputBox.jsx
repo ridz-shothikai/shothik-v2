@@ -11,9 +11,7 @@ function UserInputBox({
   setUserInput,
   userInput = "",
   frozenWords,
-  setFrozenWords,
   frozenPhrases,
-  setFrozenPhrases,
   user,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -27,8 +25,8 @@ function UserInputBox({
       Placeholder.configure({ placeholder: "Enter your text here..." }),
       CombinedHighlighting.configure({
         limit: wordLimit,
-        frozenWords,
-        frozenPhrases,
+        frozenWords: frozenWords.set,
+        frozenPhrases: frozenPhrases.set,
       }),
     ],
     content: "",
@@ -85,33 +83,21 @@ function UserInputBox({
 
     if (!plugin) return;
 
-    const hasChanged =
-      plugin.options.frozenWords !== frozenWords ||
-      plugin.options.frozenPhrases !== frozenPhrases;
+    // Overwrite the frozenWords and frozenPhrases directly
+    plugin.options.frozenWords = frozenWords.set;
+    plugin.options.frozenPhrases = frozenPhrases.set;
 
-    if (hasChanged) {
-      plugin.options.frozenWords = frozenWords;
-      plugin.options.frozenPhrases = frozenPhrases;
-      editor.view.dispatch(editor.state.tr); // Force re-render
-    }
-  }, [frozenWords, frozenPhrases, editor]);
+    editor.view.dispatch(editor.state.tr); // ✅ trigger re-render
+  }, [frozenWords.set, frozenPhrases.set, editor]);
 
   const handleToggleFreeze = () => {
     const key = selectedWord.toLowerCase().trim();
     const isPhrase = key.includes(" ");
 
     if (isPhrase) {
-      setFrozenPhrases((prev) =>
-        prev.has(key)
-          ? new Set([...prev].filter((w) => w !== key))
-          : new Set([...prev, key])
-      );
+      frozenPhrases.toggle(key);
     } else {
-      setFrozenWords((prev) =>
-        prev.has(key)
-          ? new Set([...prev].filter((w) => w !== key))
-          : new Set([...prev, key])
-      );
+      frozenWords.toggle(key);
     }
 
     clearSelection();
