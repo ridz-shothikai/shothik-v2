@@ -271,11 +271,11 @@ const ParaphraseContend = () => {
     }
   };
 
-  useEffect(() => {
-    if (userInputValue && !processing.loading) {
-      handleSubmit(userInputValue);
-    }
-  }, [userInputValue]);
+  // useEffect(() => {
+  //   if (userInputValue && !processing.loading) {
+  //     handleSubmit(userInputValue);
+  //   }
+  // }, [userInputValue]);
 
   return (
     <Box>

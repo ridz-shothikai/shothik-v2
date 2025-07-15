@@ -90,10 +90,8 @@
   text-decoration: none;
 }
 
-.protected-phrase {
+/* editor.css */
+.duplicate-sentence {
   background-color: #fff3e0;
   color: #ff9800;
-  border-radius: 3px;
-  padding: 1px 2px;
-  text-decoration: none;
 }

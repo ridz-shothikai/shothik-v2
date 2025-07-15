@@ -4,7 +4,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
 import "./editor.css";
-import { FrozenWords, WordLimit } from "./extentions";
+import { DuplicateSentences, FrozenWords, WordLimit } from "./extentions";
 
 function UserInputBox({
   wordLimit = 300,
@@ -27,6 +27,7 @@ function UserInputBox({
       Placeholder.configure({ placeholder: "Enter your text here..." }),
       WordLimit.configure({ limit: wordLimit }),
       FrozenWords.configure({ frozenWords, frozenPhrases }),
+      DuplicateSentences,
     ],
     content: "",
     onSelectionUpdate: ({ editor }) => {
