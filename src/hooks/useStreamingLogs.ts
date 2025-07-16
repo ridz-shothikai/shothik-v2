@@ -32,20 +32,25 @@ const generateLogId = (log: any, index: number): string => {
 };
 
 
-export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
+export const useStreamingLogs = (
+  realLogs: any[],
+  isLoading: boolean,
+  status: string,
+  presentationId: string,
+) => {
   const [processedLogs, setProcessedLogs] = useState([]);
   const [visibleLogs, setVisibleLogs] = useState([]);
   const [currentlyTypingIndex, setCurrentlyTypingIndex] = useState(-1);
   const [showThinking, setShowThinking] = useState(false);
-  
+
   const allLogsRef = useRef([]);
   const nextLogIndexRef = useRef(0);
   const isTypingRef = useRef(false);
   const typingTimeoutRef = useRef(null);
   const animatedLogsRef = useRef<Set<string>>(getAnimatedLogs());
-  const sessionStatusRef = useRef<string>('processing');
+  const sessionStatusRef = useRef<string>("processing");
   const backgroundProcessingRef = useRef(false);
-  
+
   const currentAnimationRef = useRef<{
     logIndex: number;
     forceComplete: (() => void) | null;
@@ -59,8 +64,14 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
   }, []);
 
   const forceCompleteCurrentAnimation = useCallback(() => {
-    if (currentAnimationRef.current.logIndex >= 0 && currentAnimationRef.current.forceComplete) {
-      console.log('Forcing completion of animation for log:', currentAnimationRef.current.logIndex);
+    if (
+      currentAnimationRef.current.logIndex >= 0 &&
+      currentAnimationRef.current.forceComplete
+    ) {
+      console.log(
+        "Forcing completion of animation for log:",
+        currentAnimationRef.current.logIndex
+      );
       currentAnimationRef.current.forceComplete();
       currentAnimationRef.current = { logIndex: -1, forceComplete: null };
     }
@@ -69,17 +80,20 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
   const shouldAnimateLog = useCallback((log: any, index: number): boolean => {
     const logId = generateLogId(log, index);
     const hasBeenAnimated = animatedLogsRef.current.has(logId);
-    
+
     // Do not animate if it's not a string
-    if (typeof log.parsed_output !== 'string') {
-        return false;
-    }
-    
-    if ((sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') 
-        && !backgroundProcessingRef.current) {
+    if (typeof log.parsed_output !== "string") {
       return false;
     }
-    
+
+    if (
+      (sessionStatusRef.current === "completed" ||
+        sessionStatusRef.current === "failed") &&
+      !backgroundProcessingRef.current
+    ) {
+      return false;
+    }
+
     return !hasBeenAnimated;
   }, []);
 
@@ -89,9 +103,12 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     saveAnimatedLogs(animatedLogsRef.current);
   }, []);
 
-  const registerAnimationCallback = useCallback((logIndex: number, forceComplete: () => void) => {
-    currentAnimationRef.current = { logIndex, forceComplete };
-  }, []);
+  const registerAnimationCallback = useCallback(
+    (logIndex: number, forceComplete: () => void) => {
+      currentAnimationRef.current = { logIndex, forceComplete };
+    },
+    []
+  );
 
   const unregisterAnimationCallback = useCallback((logIndex: number) => {
     if (currentAnimationRef.current.logIndex === logIndex) {
@@ -103,15 +120,19 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     const nextIndex = nextLogIndexRef.current;
     if (nextIndex < allLogsRef.current.length) {
       const nextLog = allLogsRef.current[nextIndex];
-      
-      const isValidStringLog = typeof nextLog.parsed_output === 'string' && nextLog.parsed_output.trim();
-      const isObjectLog = typeof nextLog.parsed_output === 'object' && nextLog.parsed_output !== null;
+
+      const isValidStringLog =
+        typeof nextLog.parsed_output === "string" &&
+        nextLog.parsed_output.trim();
+      const isObjectLog =
+        typeof nextLog.parsed_output === "object" &&
+        nextLog.parsed_output !== null;
 
       if (nextLog && (isValidStringLog || isObjectLog)) {
         const shouldAnimate = shouldAnimateLog(nextLog, nextIndex);
-        
-        setVisibleLogs(prev => [...prev, { ...nextLog, shouldAnimate }]);
-        
+
+        setVisibleLogs((prev) => [...prev, { ...nextLog, shouldAnimate }]);
+
         if (shouldAnimate) {
           setCurrentlyTypingIndex(nextIndex);
           isTypingRef.current = true;
@@ -121,9 +142,9 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
           setCurrentlyTypingIndex(-1);
           isTypingRef.current = false;
         }
-        
+
         nextLogIndexRef.current = nextIndex + 1;
-        
+
         if (!shouldAnimate) {
           const nextLogTimer = setInterval(() => {
             clearInterval(nextLogTimer);
@@ -141,45 +162,57 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       setCurrentlyTypingIndex(-1);
       isTypingRef.current = false;
       backgroundProcessingRef.current = false;
-      
-      const shouldShowThinking = isLoading && sessionStatusRef.current === 'processing';
+
+      const shouldShowThinking =
+        isLoading && sessionStatusRef.current === "processing";
       setShowThinking(shouldShowThinking);
     }
   }, [shouldAnimateLog, isLoading]);
 
-  const handleTypingComplete = useCallback((logIndex: number) => {
-    if (logIndex >= 0 && logIndex < allLogsRef.current.length) {
-      markLogAsAnimated(allLogsRef.current[logIndex], logIndex);
-    }
-    
-    unregisterAnimationCallback(logIndex);
-    
-    setCurrentlyTypingIndex(-1);
-    isTypingRef.current = false;
-    
-    clearTypingTimeout();
-    const nextLogTimer = setInterval(() => {
-      clearInterval(nextLogTimer);
-      startNextLog();
-    }, 50);
-    
-    typingTimeoutRef.current = nextLogTimer;
-  }, [startNextLog, clearTypingTimeout, markLogAsAnimated, unregisterAnimationCallback]);
+  const handleTypingComplete = useCallback(
+    (logIndex: number) => {
+      if (logIndex >= 0 && logIndex < allLogsRef.current.length) {
+        markLogAsAnimated(allLogsRef.current[logIndex], logIndex);
+      }
 
-  const determineSessionStatus = useCallback((logs: any[]): string => {
-    if (!logs || logs.length === 0) return 'processing';
-    
-    const statusLog = logs.find(log => log.status);
-    if (statusLog) {
-      return statusLog.status;
-    }
-    
-    if (!isLoading && logs.length > 0) {
-      return 'completed';
-    }
-    
-    return 'processing';
-  }, [isLoading]);
+      unregisterAnimationCallback(logIndex);
+
+      setCurrentlyTypingIndex(-1);
+      isTypingRef.current = false;
+
+      clearTypingTimeout();
+      const nextLogTimer = setInterval(() => {
+        clearInterval(nextLogTimer);
+        startNextLog();
+      }, 50);
+
+      typingTimeoutRef.current = nextLogTimer;
+    },
+    [
+      startNextLog,
+      clearTypingTimeout,
+      markLogAsAnimated,
+      unregisterAnimationCallback,
+    ]
+  );
+
+  const determineSessionStatus = useCallback(
+    (logs: any[]): string => {
+      if (!logs || logs.length === 0) return "processing";
+
+      const statusLog = logs.find((log) => log.status);
+      if (statusLog) {
+        return statusLog.status;
+      }
+
+      if (!isLoading && logs.length > 0) {
+        return "completed";
+      }
+
+      return "processing";
+    },
+    [isLoading]
+  );
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -187,17 +220,18 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
         backgroundProcessingRef.current = true;
       } else {
         forceCompleteCurrentAnimation();
-        
-        const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
+
+        const hasUnprocessedLogs =
+          nextLogIndexRef.current < allLogsRef.current.length;
         const isCurrentlyTyping = currentlyTypingIndex >= 0;
-        
+
         if (hasUnprocessedLogs && !isCurrentlyTyping && !isTypingRef.current) {
           const catchUpTimer = setInterval(() => {
             clearInterval(catchUpTimer);
             startNextLog();
           }, 50);
         }
-        
+
         const resetTimer = setInterval(() => {
           clearInterval(resetTimer);
           backgroundProcessingRef.current = false;
@@ -205,9 +239,9 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       }
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [currentlyTypingIndex, startNextLog, forceCompleteCurrentAnimation]);
 
@@ -221,7 +255,7 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
       nextLogIndexRef.current = 0;
       isTypingRef.current = false;
       backgroundProcessingRef.current = false;
-      sessionStatusRef.current = 'processing';
+      sessionStatusRef.current = "processing";
       currentAnimationRef.current = { logIndex: -1, forceComplete: null };
       clearTypingTimeout();
       return;
@@ -233,111 +267,146 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
 
     // MODIFIED: Filter logic to accept objects and non-empty strings
     const validLogs = realLogs
-      .filter(log => {
+      .filter((log) => {
         if (!log || !log.parsed_output) return false;
-        if (typeof log.parsed_output === 'string') {
+        if (typeof log.parsed_output === "string") {
           return log.parsed_output.trim().length > 0;
         }
-        if (typeof log.parsed_output === 'object') {
+        if (typeof log.parsed_output === "object") {
           return Object.keys(log.parsed_output).length > 0;
         }
         return false;
       })
-      .filter(log => log.agent_name !== 'browser_agent')
+      .filter((log) => log.agent_name !== "browser_agent")
       .map((log, index) => ({
         ...log,
         id: `log-${index}-${log.timestamp || Date.now()}`,
-        timestamp: log.timestamp || new Date().toISOString()
+        timestamp: log.timestamp || new Date().toISOString(),
       }));
 
     const hasNewLogs = validLogs.length > allLogsRef.current.length;
-    const hasStatusChange = statusChanged && (newStatus === 'completed' || newStatus === 'failed');
-    
+    const hasStatusChange =
+      statusChanged && (newStatus === "completed" || newStatus === "failed");
+
     if (hasNewLogs || hasStatusChange) {
       if (hasNewLogs && isTypingRef.current) {
-        console.log('New logs detected, forcing completion of current animation');
+        console.log(
+          "New logs detected, forcing completion of current animation"
+        );
         forceCompleteCurrentAnimation();
       }
-      
+
       allLogsRef.current = validLogs;
       setProcessedLogs(validLogs);
-      
+
       if (hasNewLogs) {
         backgroundProcessingRef.current = true;
-        
-        if (!isTypingRef.current && nextLogIndexRef.current < validLogs.length) {
+
+        if (
+          !isTypingRef.current &&
+          nextLogIndexRef.current < validLogs.length
+        ) {
           const startTimer = setInterval(() => {
             clearInterval(startTimer);
             startNextLog();
           }, 50);
         }
       }
-      
-      if (hasStatusChange && (newStatus === 'completed' || newStatus === 'failed')) {
+
+      if (
+        hasStatusChange &&
+        (newStatus === "completed" || newStatus === "failed")
+      ) {
         const completeTimer = setInterval(() => {
           clearInterval(completeTimer);
-          
+
           forceCompleteCurrentAnimation();
-          
+
           while (nextLogIndexRef.current < validLogs.length) {
             const logIndex = nextLogIndexRef.current;
             const log = validLogs[logIndex];
-            
-            const isValidStringLog = typeof log.parsed_output === 'string' && log.parsed_output.trim();
-            const isObjectLog = typeof log.parsed_output === 'object' && log.parsed_output !== null;
+
+            const isValidStringLog =
+              typeof log.parsed_output === "string" && log.parsed_output.trim();
+            const isObjectLog =
+              typeof log.parsed_output === "object" &&
+              log.parsed_output !== null;
 
             if (log && (isValidStringLog || isObjectLog)) {
-              setVisibleLogs(prev => [...prev, { ...log, shouldAnimate: false }]);
+              setVisibleLogs((prev) => [
+                ...prev,
+                { ...log, shouldAnimate: false },
+              ]);
               markLogAsAnimated(log, logIndex);
             }
-            
+
             nextLogIndexRef.current++;
           }
-          
+
           setCurrentlyTypingIndex(-1);
           isTypingRef.current = false;
           backgroundProcessingRef.current = false;
           currentAnimationRef.current = { logIndex: -1, forceComplete: null };
-          
+
           setShowThinking(false);
         }, 300);
       }
     }
-  }, [realLogs, startNextLog, clearTypingTimeout, determineSessionStatus, isLoading, markLogAsAnimated, forceCompleteCurrentAnimation]);
+  }, [
+    realLogs,
+    startNextLog,
+    clearTypingTimeout,
+    determineSessionStatus,
+    isLoading,
+    markLogAsAnimated,
+    forceCompleteCurrentAnimation,
+  ]);
 
   useEffect(() => {
-    const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
+    const hasUnprocessedLogs =
+      nextLogIndexRef.current < allLogsRef.current.length;
     const isCurrentlyTyping = currentlyTypingIndex >= 0;
-    const isSessionComplete = sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed';
+    const isSessionComplete =
+      sessionStatusRef.current === "completed" ||
+      sessionStatusRef.current === "failed";
     const isBackgroundProcessing = backgroundProcessingRef.current;
-    
+
     if (isCurrentlyTyping) {
       setShowThinking(false);
-    } else if (isSessionComplete && !hasUnprocessedLogs && !isBackgroundProcessing) {
+    } else if (
+      isSessionComplete &&
+      !hasUnprocessedLogs &&
+      !isBackgroundProcessing
+    ) {
       setShowThinking(false);
     } else if (isLoading && visibleLogs.length === 0) {
       setShowThinking(true);
     } else if (hasUnprocessedLogs && !isCurrentlyTyping) {
       setShowThinking(true);
-    } else if (isLoading && sessionStatusRef.current === 'processing') {
+    } else if (isLoading && sessionStatusRef.current === "processing") {
       setShowThinking(true);
     } else {
       setShowThinking(false);
     }
   }, [
-    isLoading, 
-    visibleLogs.length, 
-    currentlyTypingIndex, 
+    isLoading,
+    visibleLogs.length,
+    currentlyTypingIndex,
     nextLogIndexRef.current,
-    allLogsRef.current.length
+    allLogsRef.current.length,
   ]);
 
   useEffect(() => {
-    if (!realLogs || realLogs.length === 0) {
-      animatedLogsRef.current.clear();
-      saveAnimatedLogs(animatedLogsRef.current);
+    // if (!realLogs || realLogs.length === 0) {
+    //   animatedLogsRef.current.clear();
+    //   saveAnimatedLogs(animatedLogsRef.current);
+    // }
+
+    if(status === 'completed' || status === 'failed') {
+        animatedLogsRef.current.clear();
+        saveAnimatedLogs(animatedLogsRef.current);
     }
-  }, [realLogs]);
+  }, [status]);
 
   useEffect(() => {
     return () => {
@@ -349,27 +418,31 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
 
   useEffect(() => {
     let monitorInterval: NodeJS.Timeout;
-    
+
     if (backgroundProcessingRef.current || document.hidden) {
       monitorInterval = setInterval(() => {
-        const hasUnprocessedLogs = nextLogIndexRef.current < allLogsRef.current.length;
+        const hasUnprocessedLogs =
+          nextLogIndexRef.current < allLogsRef.current.length;
         const isCurrentlyTyping = isTypingRef.current;
-        
+
         if (hasUnprocessedLogs && !isCurrentlyTyping) {
           startNextLog();
         }
-        
+
         if (!hasUnprocessedLogs && !isCurrentlyTyping) {
           backgroundProcessingRef.current = false;
           clearInterval(monitorInterval);
-          
-          if (sessionStatusRef.current === 'completed' || sessionStatusRef.current === 'failed') {
+
+          if (
+            sessionStatusRef.current === "completed" ||
+            sessionStatusRef.current === "failed"
+          ) {
             setShowThinking(false);
           }
         }
       }, 100);
     }
-    
+
     return () => {
       if (monitorInterval) {
         clearInterval(monitorInterval);
@@ -386,7 +459,7 @@ export const useStreamingLogs = (realLogs: any[], isLoading: boolean) => {
     isBackgroundProcessing: backgroundProcessingRef.current,
     registerAnimationCallback,
     unregisterAnimationCallback,
-    forceCompleteCurrentAnimation
+    forceCompleteCurrentAnimation,
   };
 };
 
@@ -422,43 +495,46 @@ export const formatAgentName = (agentName: string): string => {
 export const formatTimestamp = (timestamp: string): string => {
   try {
     if (!timestamp) {
-      return 'now';
+      return "now";
     }
-    
+
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
+
     if (isNaN(date.getTime())) {
-      return 'now';
+      return "now";
     }
-    
+
     if (diff < 60000) {
-      return 'just now';
+      return "just now";
     }
-    
+
     if (diff < 3600000) {
       const minutes = Math.floor(diff / 60000);
       return `${minutes}m ago`;
     }
-    
+
+    // Get the user's local time zone
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString('en-US', { 
-        hour12: false, 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      return date.toLocaleTimeString([], {
+        timeZone: userTimeZone,
+        hour: "2-digit",
+        minute: "2-digit",
       });
     }
-    
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric', 
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
+
+    return date.toLocaleString([], {
+      timeZone: userTimeZone,
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch (error) {
-    console.warn('Error formatting timestamp:', error);
-    return 'now';
+    console.warn("Error formatting timestamp:", error);
+    return "now";
   }
 };

@@ -1,10 +1,11 @@
 "use client";
 
 // components/ChatArea.tsx
-import React, { useEffect, useRef, memo, useCallback, useState } from "react";
+import React, { useEffect, useRef, memo, useCallback, useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
 import PaletteIcon from "@mui/icons-material/Palette";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
@@ -26,6 +27,7 @@ import {
 } from "../../hooks/useStreamingLogs";
 
 const PRIMARY_GREEN = "#07B37A";
+const USER_MESSAGE_COLOR = "#1976d2";
 
 // UTILS function
 // Parse tool outputs from markdown code blocks
@@ -352,6 +354,75 @@ const JsonLog = memo(({ data }) => (
 ));
 JsonLog.displayName = "JsonLog";
 
+// --- NEW: User Message Component ---
+const UserMessage = memo(({ message, timestamp }) => (
+  <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
+    <Box sx={{ maxWidth: "80%" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 1,
+          justifyContent: "flex-end",
+          opacity: 0.7,
+        }}
+      >
+        <Typography
+          variant="caption"
+          color="text.disabled"
+          sx={{ fontSize: "0.7rem" }}
+        >
+          {formatTimestamp(timestamp)}
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ fontWeight: 500, fontSize: "0.75rem" }}
+        >
+          You
+        </Typography>
+        <Box
+          sx={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            bgcolor: USER_MESSAGE_COLOR,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <PersonIcon sx={{ fontSize: 12, color: "white" }} />
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          bgcolor: USER_MESSAGE_COLOR,
+          color: "white",
+          borderRadius: "18px 18px 4px 18px",
+          px: 2,
+          py: 1.5,
+          maxWidth: "100%",
+          wordBreak: "break-word",
+        }}
+      >
+        <Typography
+          variant="body1"
+          sx={{
+            lineHeight: 1.5,
+            fontSize: "0.95rem",
+          }}
+        >
+          {message}
+        </Typography>
+      </Box>
+    </Box>
+  </Box>
+));
+UserMessage.displayName = "UserMessage";
+
 // --- Main Components ---
 
 const TypingAnimation = memo(({ text = "Thinking..." }) => (
@@ -386,6 +457,680 @@ const TypingAnimation = memo(({ text = "Thinking..." }) => (
 ));
 TypingAnimation.displayName = "TypingAnimation";
 
+// Component for Slide Data Fetcher Tool logs
+const SlideDataFetcherLog = memo(({ data }) => {
+  const { original_plan, global_theme } = data;
+
+  return (
+    <Box sx={{ mt: 2, mb: 1 }}>
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: "12px",
+          border: "1px solid #e8eaed",
+          bgcolor: "white",
+          overflow: "hidden",
+          transition: "all 0.2s ease-in-out",
+          "&:hover": {
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            borderColor: "#dadce0",
+          },
+        }}
+      >
+        {/* Header */}
+        <Box
+          sx={{
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
+            p: { xs: 2, sm: 2.5 },
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background:
+                'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: "8px",
+                bgcolor: "rgba(255,255,255,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <SlideshowIcon sx={{ fontSize: 16, color: "white" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: { xs: "1rem", sm: "1.1rem" },
+                  lineHeight: 1.3,
+                }}
+              >
+                Slide Data Fetcher
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  opacity: 0.9,
+                  fontSize: "0.85rem",
+                  fontWeight: 400,
+                }}
+              >
+                Preparing slide content and theme
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          {/* Global Theme Section */}
+          {global_theme && (
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  mb: 2,
+                  color: "#1f2937",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "4px",
+                    bgcolor: "#f3f4f6",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <PaletteIcon sx={{ fontSize: 12, color: "#6b7280" }} />
+                </Box>
+                Theme Configuration
+              </Typography>
+
+              {/* Extract color properties from global_theme */}
+              {(() => {
+                const colorKeys = [
+                  "primary_color",
+                  "secondary_color",
+                  "background_color",
+                  "text_color",
+                  "highlight_color",
+                ];
+                const colors = {};
+                colorKeys.forEach((key) => {
+                  if (global_theme[key]) {
+                    colors[key] = global_theme[key];
+                  }
+                });
+
+                return (
+                  Object.keys(colors).length > 0 && (
+                    <Box sx={{ mb: 2.5 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 500, mb: 1.5, color: "#374151" }}
+                      >
+                        Color Palette
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "repeat(auto-fit, minmax(140px, 1fr))",
+                            sm: "repeat(auto-fit, minmax(160px, 1fr))",
+                          },
+                          gap: 1.5,
+                        }}
+                      >
+                        {Object.entries(colors).map(([key, value]) => (
+                          <Box
+                            key={key}
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                              p: 1.5,
+                              borderRadius: "8px",
+                              bgcolor: "#f9fafb",
+                              border: "1px solid #e5e7eb",
+                              transition: "all 0.2s ease",
+                              "&:hover": {
+                                bgcolor: "#f3f4f6",
+                                transform: "translateY(-1px)",
+                              },
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: "6px",
+                                bgcolor: value,
+                                border: "2px solid white",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                flexShrink: 0,
+                              }}
+                            />
+                            <Box sx={{ minWidth: 0 }}>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "#6b7280",
+                                  fontSize: "0.75rem",
+                                  fontWeight: 500,
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                {key.replace(/_/g, " ")}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  display: "block",
+                                  color: "#374151",
+                                  fontSize: "0.8rem",
+                                  fontWeight: 600,
+                                  fontFamily: "monospace",
+                                }}
+                              >
+                                {value}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                  )
+                );
+              })()}
+
+              {/* Extract font properties from global_theme */}
+              {(() => {
+                const fontKeys = ["header_font", "body_font"];
+                const fonts = {};
+                fontKeys.forEach((key) => {
+                  if (global_theme[key]) {
+                    fonts[key] = global_theme[key];
+                  }
+                });
+
+                return (
+                  Object.keys(fonts).length > 0 && (
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 500, mb: 1.5, color: "#374151" }}
+                      >
+                        Typography
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns: {
+                            xs: "1fr",
+                            sm: "repeat(auto-fit, minmax(200px, 1fr))",
+                          },
+                          gap: 1.5,
+                        }}
+                      >
+                        {Object.entries(fonts).map(([key, value]) => (
+                          <Box
+                            key={key}
+                            sx={{
+                              p: 1.5,
+                              borderRadius: "8px",
+                              bgcolor: "#f9fafb",
+                              border: "1px solid #e5e7eb",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: "#6b7280",
+                                fontSize: "0.75rem",
+                                fontWeight: 500,
+                                textTransform: "capitalize",
+                              }}
+                            >
+                              {key.replace(/_/g, " ")}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontFamily: value,
+                                fontSize: "0.9rem",
+                                color: "#374151",
+                                fontWeight: 500,
+                                mt: 0.5,
+                              }}
+                            >
+                              {value}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                  )
+                );
+              })()}
+            </Box>
+          )}
+
+          {/* Slide Plan Section */}
+          {original_plan && (
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  mb: 2,
+                  color: "#1f2937",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "4px",
+                    bgcolor: "#eff6ff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <SlideshowIcon sx={{ fontSize: 12, color: "#3b82f6" }} />
+                </Box>
+                Slide Blueprint
+              </Typography>
+
+              <Card
+                elevation={0}
+                sx={{
+                  borderRadius: "12px",
+                  border: "1px solid #e0e7ff",
+                  bgcolor: "linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%)",
+                  overflow: "hidden",
+                }}
+              >
+                <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      justifyContent: "space-between",
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      gap: 1.5,
+                      mb: 2,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 600,
+                        fontSize: { xs: "1rem", sm: "1.1rem" },
+                        color: "#1e40af",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {original_plan.slide_data?.headline || "Untitled Slide"}
+                    </Typography>
+                    <Chip
+                      label={original_plan.slide_type}
+                      size="small"
+                      sx={{
+                        bgcolor: "#3b82f6",
+                        color: "white",
+                        fontWeight: 500,
+                        height: 28,
+                        "& .MuiChip-label": { px: 1.5 },
+                      }}
+                    />
+                  </Box>
+
+                  {/* Visual Suggestion */}
+                  {original_plan.visual_suggestion && (
+                    <Box
+                      sx={{
+                        mb: 2.5,
+                        p: 2,
+                        borderRadius: "10px",
+                        bgcolor: "rgba(59, 130, 246, 0.08)",
+                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          mb: 0.5,
+                          color: "#1e40af",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        📊 {original_plan.visual_suggestion.chart_type}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#475569",
+                          lineHeight: 1.5,
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        {original_plan.visual_suggestion.highlight}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Data Points */}
+                  {original_plan.slide_data?.body_content &&
+                    Array.isArray(original_plan.slide_data.body_content) && (
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
+                            mb: 1.5,
+                            color: "#374151",
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          Data Points
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                          }}
+                        >
+                          {original_plan.slide_data.body_content.map(
+                            (item, index) => (
+                              <Chip
+                                key={index}
+                                label={
+                                  typeof item === "object"
+                                    ? `${item.label}: ${item.value}`
+                                    : item
+                                }
+                                size="small"
+                                variant="outlined"
+                                sx={{
+                                  borderColor: "#cbd5e1",
+                                  color: "#475569",
+                                  bgcolor: "white",
+                                  "&:hover": {
+                                    bgcolor: "#f8fafc",
+                                    borderColor: "#94a3b8",
+                                  },
+                                }}
+                              />
+                            )
+                          )}
+                        </Box>
+                      </Box>
+                    )}
+                </CardContent>
+              </Card>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+    </Box>
+  );
+});
+SlideDataFetcherLog.displayName = "SlideDataFetcherLog";
+
+// Modern Responsive PlanModifierLog Component
+const PlanModifierLog = memo(({ data }) => {
+  return (
+    <Box sx={{ mt: 2, mb: 1 }}>
+      <Card
+        elevation={0}
+        sx={{
+          borderRadius: '12px',
+          border: '1px solid #e8eaed',
+          bgcolor: 'white',
+          overflow: 'hidden',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            borderColor: '#dadce0',
+          },
+        }}
+      >
+        {/* Header */}
+        <Box
+          sx={{
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            color: 'white',
+            p: { xs: 2, sm: 2.5 },
+            position: 'relative',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'url("data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M20 20c0-8.837-7.163-16-16-16S-12 11.163-12 20s7.163 16 16 16 16-7.163 16-16zm0 0c0 8.837 7.163 16 16 16s16-7.163 16-16-7.163-16-16-16-16 7.163-16 16z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
+            },
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, position: 'relative', zIndex: 1 }}>
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '8px',
+                bgcolor: 'rgba(255,255,255,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <PaletteIcon sx={{ fontSize: 16, color: 'white' }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  lineHeight: 1.3,
+                }}
+              >
+                Plan Modifier
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  opacity: 0.9,
+                  fontSize: '0.85rem',
+                  fontWeight: 400,
+                }}
+              >
+                Customizing slide content
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: '12px',
+              border: '1px solid #fed7aa',
+              bgcolor: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+              overflow: 'hidden',
+            }}
+          >
+            <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  justifyContent: 'space-between',
+                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  gap: 1.5,
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                    color: '#92400e',
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {data.slide_data?.headline || "Modified Slide"}
+                </Typography>
+                <Chip
+                  label={data.slide_type}
+                  size="small"
+                  sx={{
+                    bgcolor: '#f59e0b',
+                    color: 'white',
+                    fontWeight: 500,
+                    height: 28,
+                    '& .MuiChip-label': { px: 1.5 },
+                  }}
+                />
+              </Box>
+              
+              {/* Visual Suggestion */}
+              {data.visual_suggestion && (
+                <Box
+                  sx={{
+                    mb: 2.5,
+                    p: 2,
+                    borderRadius: '10px',
+                    bgcolor: 'rgba(245, 158, 11, 0.08)',
+                    border: '1px solid rgba(245, 158, 11, 0.2)',
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 0.5,
+                      color: '#92400e',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    📈 {data.visual_suggestion.chart_type}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#78716c',
+                      lineHeight: 1.5,
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    {data.visual_suggestion.highlight}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Modified Data Points */}
+              {data.slide_data?.body_content && Array.isArray(data.slide_data.body_content) && (
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 1.5,
+                      color: '#374151',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    Modified Content
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {data.slide_data.body_content.map((item, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          p: 1.5,
+                          borderRadius: '8px',
+                          bgcolor: 'rgba(255,255,255,0.7)',
+                          border: '1px solid rgba(245, 158, 11, 0.2)',
+                          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                          fontSize: '0.8rem',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: 'rgba(255,255,255,0.9)',
+                            transform: 'translateY(-1px)',
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontFamily: 'inherit',
+                            fontSize: 'inherit',
+                            color: '#374151',
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                          }}
+                        >
+                          {typeof item === 'string' ? item : JSON.stringify(item, null, 2)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+});
+
+PlanModifierLog.displayName = "PlanModifierLog";
+
 const StreamingMessage = memo(
   ({
     log,
@@ -394,7 +1139,8 @@ const StreamingMessage = memo(
     logIndex,
     registerAnimationCallback,
     unregisterAnimationCallback,
-    sessionStatus, // <<< ADD THIS PROP
+    sessionStatus,
+    processedLogs,
   }) => {
     const [displayedText, setDisplayedText] = useState("");
     const [isComplete, setIsComplete] = useState(!isTyping);
@@ -413,18 +1159,20 @@ const StreamingMessage = memo(
     const isToolOutputContent =
       isStringContent && fullText.includes("```tool_outputs");
 
-    // --- START OF MODIFICATION ---
     // Don't animate if the session is finished. This prevents re-animation on page revisit.
     const isSessionActive =
-      sessionStatus !== "completed" && sessionStatus !== "failed" && sessionStatus !== "saved";
+      sessionStatus !== "completed" &&
+      sessionStatus !== "failed" &&
+      sessionStatus !== "saved";
     const shouldAnimate =
       isStringContent &&
       !isHtmlContent &&
       !isToolOutputContent &&
       log.shouldAnimate !== false &&
       isTyping &&
-      isSessionActive;
-    // --- END OF MODIFICATION ---
+      isSessionActive &&
+      sessionStatus === "processing" &&
+      logIndex >= processedLogs.length - 2;
 
     const prepareWords = useCallback((text: string) => {
       if (!text) return [];
@@ -554,6 +1302,13 @@ const StreamingMessage = memo(
     ]);
 
     const renderContent = () => {
+      if (log.agent_name === "unknown_agent" && isStringContent) {
+        const shouldSkip =
+          fullText.includes("```tool_outputs"); // TODO: Have to add json formatter here
+
+        if (shouldSkip) return null;
+      };
+
       const output = log.parsed_output;
       if (typeof output === "object" && output !== null) {
         switch (log.agent_name) {
@@ -561,6 +1316,10 @@ const StreamingMessage = memo(
             return <KeywordResearchLog queries={output.search_queries || []} />;
           case "planning_agent":
             return <PlanningLog plan={output} />;
+          case "slide_data_fetcher_tool":
+            return <SlideDataFetcherLog data={output} />;
+          case "plan_modifier_agent":
+            return <PlanModifierLog data={output} />;
           default:
             return <JsonLog data={output} />;
         }
@@ -570,7 +1329,7 @@ const StreamingMessage = memo(
         return <HtmlContentLog htmlString={fullText} />;
       }
 
-      // NEW: Handle tool outputs in string content
+      // Handle tool outputs in string content
       if (typeof output === "string" && output.includes("```tool_outputs")) {
         const toolOutputs = parseToolOutputs(output);
         const statusText = output
@@ -667,7 +1426,26 @@ const StreamingMessage = memo(
 );
 StreamingMessage.displayName = "StreamingMessage";
 
-// The rest of the ChatArea component remains largely the same...
+const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
+  const merged = [...realLogs];
+
+  optimisticMessages.forEach((optMsg) => {
+    const exists = realLogs.some(
+      (real) =>
+        real.role === "user" && real.message?.trim() === optMsg.message?.trim()
+    );
+
+    if (!exists) {
+      merged.push(optMsg);
+    }
+  });
+
+  return merged.sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
+};
+
+
 export default function ChatArea({
   currentAgentType,
   chatHistory,
@@ -680,6 +1458,9 @@ export default function ChatArea({
   inputValue,
   setInputValue,
   onSend,
+  status,
+  presentationId,
+  optimisticMessages = [],
 }) {
   const {
     processedLogs,
@@ -690,7 +1471,7 @@ export default function ChatArea({
     isBackgroundProcessing,
     registerAnimationCallback,
     unregisterAnimationCallback,
-  } = useStreamingLogs(realLogs, isLoading);
+  } = useStreamingLogs(realLogs, isLoading, status, presentationId);
 
   const scrollContainerRef = useRef(null);
   const autoScrollRef = useRef(true);
@@ -725,6 +1506,46 @@ export default function ChatArea({
       return () => clearInterval(scrollInterval);
     }
   }, [currentlyTypingIndex, scrollToBottom]);
+
+  // Separate user messages from agent messages
+  const userMessages = realLogs.filter((log) => log.role === "user");
+  const agentMessages = realLogs.filter((log) => log.role === "agent");
+
+  // const deduplicatedOptimisticMessages = optimisticMessages.filter(
+  //   (optimisticMsg) =>
+  //     !realLogs.some(
+  //       (realLog) =>
+  //         realLog.role === "user" &&
+  //         realLog.message.trim() === optimisticMsg.message.trim() &&
+  //         Math.abs(
+  //           new Date(realLog.timestamp).getTime() -
+  //             new Date(optimisticMsg.timestamp).getTime()
+  //         ) < 30000
+  //     )
+  // );
+
+  // In ChatArea.tsx
+  const deduplicatedOptimisticMessages = useMemo(() => {
+    return optimisticMessages.filter(
+      (optMsg) =>
+        !realLogs.some(
+          (log) =>
+            log.message === optMsg.message &&
+            Math.abs(new Date(log.timestamp) - new Date(optMsg.timestamp)) <
+              5000
+        )
+    );
+  }, [realLogs, optimisticMessages]);
+
+  // Create a combined and sorted array of all messages
+  const allMessages = useMemo(() => {
+    return mergeMessagesWithDeduplication(
+      realLogs,
+      deduplicatedOptimisticMessages
+    );
+  }, [realLogs, deduplicatedOptimisticMessages]);
+
+  // console.log(chatHistory, "chatHistory");
 
   return (
     <Box
@@ -767,7 +1588,7 @@ export default function ChatArea({
           }}
         >
           {chatHistory.length === 0 &&
-            processedLogs.length === 0 &&
+            allMessages.length === 0 &&
             !showThinking && (
               <Box
                 sx={{
@@ -791,6 +1612,7 @@ export default function ChatArea({
               </Box>
             )}
 
+          {/* Render old chat history (if any) */}
           {chatHistory.map((message) => (
             <InteractiveChatMessage
               key={message.id}
@@ -801,18 +1623,40 @@ export default function ChatArea({
             />
           ))}
 
-          {processedLogs.map((log, index) => (
-            <StreamingMessage
-              key={log.id}
-              log={log}
-              logIndex={index}
-              isTyping={index === currentlyTypingIndex}
-              onTypingComplete={handleTypingComplete}
-              registerAnimationCallback={registerAnimationCallback}
-              unregisterAnimationCallback={unregisterAnimationCallback}
-              sessionStatus={sessionStatus} // <<< PASS THE PROP
-            />
-          ))}
+          {/* Render new messages based on role */}
+          {allMessages.map((log, index) => {
+            if (log.role === "user") {
+              return (
+                <UserMessage
+                  key={`user-${log.id || log.timestamp || index}`}
+                  message={log.message}
+                  timestamp={log.timestamp}
+                />
+              );
+            } else if (log.role === "agent") {
+              // Find the index in processedLogs (agent messages only)
+              const agentIndex = processedLogs.findIndex(
+                (processedLog) => processedLog.timestamp === log.timestamp
+              );
+
+              if (agentIndex >= 0) {
+                return (
+                  <StreamingMessage
+                    key={processedLogs[agentIndex].id}
+                    log={processedLogs[agentIndex]}
+                    logIndex={agentIndex}
+                    isTyping={agentIndex === currentlyTypingIndex}
+                    onTypingComplete={handleTypingComplete}
+                    registerAnimationCallback={registerAnimationCallback}
+                    unregisterAnimationCallback={unregisterAnimationCallback}
+                    sessionStatus={sessionStatus}
+                    processedLogs={processedLogs}
+                  />
+                );
+              }
+            }
+            return null;
+          })}
 
           {showThinking &&
             sessionStatus !== "completed" &&

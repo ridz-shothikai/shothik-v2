@@ -41,7 +41,7 @@ export default function PreviewPanel({
     }));
   };
 
-  // console.log(slidesData, "slidesData in PreviewPanel");
+  console.log(slidesData, "slidesData in PreviewPanel");
 
   return (
     <Box
@@ -106,38 +106,39 @@ export default function PreviewPanel({
                       minWidth: 0,
                     }}
                   >
-                    {title || slidesData?.title || "Generating..."}
+                    {slidesData?.status !== 'failed' ? (title || slidesData?.title || "Generating...") : 'Presentation generation failed'}
                   </Typography>
 
                   {(slidesData?.status === "completed" ||
                     slidesData?.status === "saved") && (
-                      <Typography
-                        color="#666"
-                        sx={{
-                          fontSize: {
-                            xs: "0.8rem",
-                            sm: "0.9rem",
-                            md: "1rem",
-                          },
-                        }}
+                    <Typography
+                      color="#666"
+                      sx={{
+                        fontSize: {
+                          xs: "0.8rem",
+                          sm: "0.9rem",
+                          md: "1rem",
+                        },
+                      }}
+                    >
+                      <AppLink
+                        href={`/slides?project_id=${presentationId}`}
+                        newTab
+                        underline="hover"
+                        color="primary"
+                        fontSize="14px"
+                        whiteSpace="nowrap"
                       >
-                        <AppLink
-                          href={`/slides?project_id=${presentationId}`}
-                          newTab
-                          underline="hover"
-                          color="primary"
-                          fontSize='14px'
-                          whiteSpace="nowrap"
-                        >
-                          View & Export
-                        </AppLink>
-                      </Typography>
-                    )}
+                        View & Export
+                      </AppLink>
+                    </Typography>
+                  )}
                 </Box>
 
                 {/* Scrollable Content */}
                 <Box sx={{ p: 3, pt: 0 }}>
-                  {slidesData?.data?.length === 0 ? (
+                  {slidesData?.data?.length === 0 &&
+                  slidesData.status !== "failed" ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", p: 4 }}
                     >
@@ -161,7 +162,7 @@ export default function PreviewPanel({
                           activeTab={slideTabs[index] || "preview"}
                           onTabChange={handleSlideTabChange}
                           totalSlides={
-                            slidesData?.total_slides || slidesData?.data?.length
+                            slidesData?.totalSlide || slidesData?.data?.length
                           }
                         />
                       ))}
@@ -180,7 +181,8 @@ export default function PreviewPanel({
                       )}
                     </Box>
                   ) : (
-                    <Card
+                    <>
+                    {/* <Card
                       sx={{
                         bgcolor: "#f8f9fa",
                         height: 400,
@@ -197,7 +199,9 @@ export default function PreviewPanel({
                           Generating slides...
                         </Typography>
                       </CardContent>
-                    </Card>
+                    </Card> */}
+                    
+                    </>
                   )}
                 </Box>
               </>
