@@ -19,7 +19,7 @@ import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useDebounce from "../../../hooks/useDebounce";
 import useResponsive from "../../../hooks/useResponsive";
-import useSetState from "../../../hooks/useSetstate";
+import useSetState from "../../../hooks/useSetState";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
 import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
