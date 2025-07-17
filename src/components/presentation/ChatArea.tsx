@@ -25,6 +25,7 @@ import {
   formatAgentName,
   formatTimestamp,
 } from "../../hooks/useStreamingLogs";
+import { useStaticLogs } from "../../hooks/useStaticLogs";
 
 const PRIMARY_GREEN = "#07B37A";
 const USER_MESSAGE_COLOR = "#1976d2";
@@ -1426,7 +1427,29 @@ const StreamingMessage = memo(
 );
 StreamingMessage.displayName = "StreamingMessage";
 
+// const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
+//   const merged = [...realLogs];
+
+//   optimisticMessages.forEach((optMsg) => {
+//     const exists = realLogs.some(
+//       (real) =>
+//         real.role === "user" && real.message?.trim() === optMsg.message?.trim()
+//     );
+
+//     if (!exists) {
+//       merged.push(optMsg);
+//     }
+//   });
+
+//   return merged.sort(
+//     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+//   );
+// };
+
 const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
+  // Preserve agent logs from realLogs
+  const agentLogs = realLogs.filter((log) => log.role === "agent");
+
   const merged = [...realLogs];
 
   optimisticMessages.forEach((optMsg) => {
@@ -1439,6 +1462,8 @@ const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
       merged.push(optMsg);
     }
   });
+
+  // console.log(merged, "merged logs");
 
   return merged.sort(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
@@ -1471,7 +1496,18 @@ export default function ChatArea({
     isBackgroundProcessing,
     registerAnimationCallback,
     unregisterAnimationCallback,
-  } = useStreamingLogs(realLogs, isLoading, status, presentationId);
+  } = useStreamingLogs(realLogs, isLoading, status, presentationId); // typing animation logs
+
+  // const {
+  //   processedLogs,
+  //   currentlyTypingIndex,
+  //   showThinking,
+  //   handleTypingComplete,
+  //   sessionStatus,
+  //   isBackgroundProcessing,
+  //   registerAnimationCallback,
+  //   unregisterAnimationCallback,
+  // } = useStaticLogs(realLogs, isLoading, status); // static logs, no animation
 
   const scrollContainerRef = useRef(null);
   const autoScrollRef = useRef(true);

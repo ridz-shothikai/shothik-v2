@@ -45,6 +45,7 @@ import { useDispatch } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
 import { setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
+import {handleSlideCreation} from "./super-agent/agentPageUtils"
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -124,6 +125,14 @@ const ONBOARDING_STEPS = [
   },
 ];
 
+async function handleSheetGenerationRequest(inputValue) {
+  try {
+    
+  } catch (error) {
+    console.log("[handleSheetGenerationRequest] error:", error);
+  }
+}
+
 export default function AgentLandingPage() {
   const router = useRouter();
   const { setAgentType } = useAgentContext();
@@ -148,93 +157,35 @@ export default function AgentLandingPage() {
   }, []);
 
   const handleSubmit = async () => {
+    
     if (!inputValue.trim() || isSubmitting) return;
-
+    
     setIsSubmitting(true);
-
+    
     try {
-      sessionStorage.setItem("initialPrompt", inputValue);
-      let agentType = "super";
-      if (selectedNavItem === "slides") {
-        agentType = "presentation";
-      }
-
-      setAgentType(agentType);
-
-      dispatch(
-        setPresentationState({
-          logs: [],
-          slides: [],
-          status: "planning",
-          currentPhase: "planning",
-          completedPhases: [],
-          presentationBlueprint: null,
-          title: "Generating...",
-          totalSlides: 0,
-        })
-      );
-
-      console.log(
-        "[AgentLandingPage] Initiating presentation with message:",
-        inputValue
-      );
-      const token = localStorage.getItem("accessToken");
-
-      if (!token) {
-        console.error(
-          "[AgentLandingPage] No accessToken token found in localStorage"
-        );
-        setLoginDialogOpen(true);
-        setIsSubmitting(false);
-        return;
-      }
-
-      // const response = await initiatePresentation({
-      //   message: inputValue,
-      //   token,
-      // }).unwrap(); // redux api has some fussy behaiviour
-
-      setIsInitiatingPresentation(true);
-
-      const response = await createPresentationServer({
-          message: inputValue,
-          token,
-        }); // action service
-
-      // console.log(response, "response");
-
-      // return;
-
-      // const presentationId =
-      //   response?.data?.data?.presentationId ||
-      //   response?.data?.data?.presentation_id ||
-      //   response?.data?.presentationId ||
-      //   response?.data?.presentation_id;
-
-      // const chatSessionId = response?.data?.data?.chatSessionId || response?.data?.chatSessionId;
-      // for redux 👆
-
-      // for action service👇
-      if(!response?.success) {
-        console.log("Failed to create presentation");
-        return;
-      }
-      setIsInitiatingPresentation(false);
-      const presentationId = response?.presentationId;
-      const chatSessionId = response?.chatSessionId;
-
-      console.log(
-        "[AgentLandingPage] Presentation initiated with ID:",
-        presentationId
-      );
-
-      if (presentationId) {
-        router.push(`/agents/${agentType}?id=${presentationId}`);
-      } else {
-        console.error(
-          "[AgentLandingPage] No presentation ID received from API"
-        );
-        // alert("Failed to create presentation. Please try again.");
+      switch (selectedNavItem) {
+        case "slides":
+          return handleSlideCreation(
+            inputValue,
+            setAgentType,
+            dispatch,
+            setLoginDialogOpen,
+            setIsSubmitting,
+            setIsInitiatingPresentation,
+            router
+          );
+        case "sheets":
+          return handleSheetGenerationRequest(
+            inputValue,
+          );
+        case "download":
+          return console.log("download route");
+        case "chat":
+          return console.log("chat route");
+        case "call":
+          return console.log("call route");
+        default:
+          return console.log("all agents route");
       }
     } catch (error) {
       console.error("[AgentLandingPage] Error initiating presentation:", error);

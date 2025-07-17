@@ -142,19 +142,19 @@ export default function PresentationAgentPage({ specificAgent }) {
             "[SOCKET] Updating presentation state for:",
             presentationId
           );
-          dispatch(
-            setPresentationState((prev) => ({
-              logs: [
-                ...prev.logs,
-                ...logs.filter(
-                  (newLog) =>
-                    !prev.logs.some((existing) => existing.id === newLog.id)
-                ),
-              ],
-              slides,
-              status,
-            }))
-          );
+          // dispatch(
+          //   setPresentationState((prev) => ({
+          //     logs: [
+          //       ...prev.logs,
+          //       ...logs.filter(
+          //         (newLog) =>
+          //           !prev.logs.some((existing) => existing.id === newLog.id)
+          //       ),
+          //     ],
+          //     slides,
+          //     status,
+          //   }))
+          // );
           if (status === "completed" || status === "failed") {
             setIsLoading(false);
             if (pollingIntervalRef.current) {
