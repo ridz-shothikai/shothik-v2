@@ -23,4 +23,12 @@ const sheetSlice = createSlice({
 
 export const {setSheetState} = sheetSlice.actions;
 
+export const selectSheet = (state) => {
+  if (!state || !state.sheet) {
+    console.warn("Presentation state not found in Redux store, returning initial state");
+    return initialState;
+  }
+  return state.sheet;
+};
+
 export default sheetSlice.reducer;

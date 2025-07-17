@@ -1,18 +1,12 @@
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  CircularProgress,
-  Alert,
-  TextField,
-  Paper,
-} from "@mui/material";
-import {DataGrid} from "react-data-grid";
-import "react-data-grid/lib/styles.css";
-import AppLink from "../common/AppLink";
+"use client";
 
-// Demo data that mimics what AI might return
+import { Box, Button, Typography } from "@mui/material";
+import AppLink from "../../../components/common/AppLink";
+import { useSearchParams } from "next/navigation";
+import { DataGrid } from "react-data-grid";
+import "react-data-grid/lib/styles.css";
+import { useMemo, useState } from "react";
+
 const demoData = {
   columns: [
     { key: "id", name: "ID", width: 80 },
@@ -117,7 +111,6 @@ const demoData = {
   ],
 };
 
-// Alternative demo data structure to show flexibility
 const alternativeDemoData = {
   columns: [
     { key: "userId", name: "User ID", width: 100 },
@@ -171,92 +164,75 @@ const alternativeDemoData = {
   ],
 };
 
-export default function SheetDataArea({ sheetId }) {
-  const [gridData, setGridData] = useState(alternativeDemoData);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [userQuery, setUserQuery] = useState("");
-  const [selectedRows, setSelectedRows] = useState(new Set());
+export default function SheetPreviewPage() {
+  const [gridData, setGridData] = useState(demoData);
 
-  // Simulate AI data fetching
-  const fetchAIData = async (query) => {
-    setLoading(true);
-    setError(null);
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
-    try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Simulate different responses based on query
-      if (query.toLowerCase().includes("user")) {
-        setGridData(alternativeDemoData);
-      } else {
-        setGridData(alternativeDemoData);
-      }
-    } catch (err) {
-      setError("Failed to fetch data from AI agent");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Function to handle AI data updates (this would be called when real AI data arrives)
-  const updateGridWithAIData = (aiResponse) => {
-    try {
-      // Validate AI response structure
-      if (!aiResponse || !aiResponse.columns || !aiResponse.rows) {
-        throw new Error("Invalid AI response format");
-      }
-
-      // Ensure columns have required properties
-      const validatedColumns = aiResponse.columns.map((col) => ({
-        key: col.key,
-        name: col.name || col.key,
-        width: col.width || 150,
-        resizable: col.resizable !== false,
-        ...col,
-      }));
-
-      setGridData({
-        columns: validatedColumns,
-        rows: aiResponse.rows,
-      });
-
-      setError(null);
-    } catch (err) {
-      setError("Failed to process AI data: " + err.message);
-    }
-  };
-
-  // Memoize grid props for performance
   const gridProps = useMemo(
     () => ({
       columns: gridData.columns,
       rows: gridData.rows,
-      selectedRows,
-      onSelectedRowsChange: setSelectedRows,
+      //  selectedRows,
+      //  onSelectedRowsChange: setSelectedRows,
       enableVirtualization: true,
       rowHeight: 35,
       headerRowHeight: 40,
       className: "rdg-light",
     }),
-    [gridData, selectedRows]
+    [gridData]
   );
 
-  const handleQuerySubmit = () => {
-    if (userQuery.trim()) {
-      fetchAIData(userQuery);
+  const handleCSVExport = (data) => {
+    if (!data || !data.rows || data.rows.length === 0) {
+      console.log("No data to export.");
+      return;
     }
-  };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      handleQuerySubmit();
-    }
-  };
+    // Helper function to escape CSV fields
+    const escapeCSV = (value) => {
+      if (value == null) {
+        return "";
+      }
+      const stringValue = String(value);
+      // If the value contains a comma, a double quote, or a newline, wrap it in double quotes
+      if (
+        stringValue.includes(",") ||
+        stringValue.includes('"') ||
+        stringValue.includes("\n")
+      ) {
+        // Escape any double quotes inside the string by doubling them
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    };
 
-  const handleViewAndExport = () => {
-    console.log("Handle view & export");
+    // 1. Create CSV Header
+    const headers = data.columns.map((col) => escapeCSV(col.name)).join(",");
+
+    // 2. Create CSV Rows
+    const csvRows = data.rows.map((row) => {
+      // Map columns to ensure order is correct and get the corresponding row value
+      return data.columns.map((col) => escapeCSV(row[col.key])).join(",");
+    });
+
+    // 3. Combine header and rows with a newline character
+    const csvString = [headers, ...csvRows].join("\n");
+
+    // 4. Create a Blob and trigger download
+    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "exported_data.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the object URL
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -269,13 +245,6 @@ export default function SheetDataArea({ sheetId }) {
         p: 1,
       }}
     >
-      {/* Error Display */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
       {/* Grid Info */}
       <Box
         sx={{
@@ -287,31 +256,16 @@ export default function SheetDataArea({ sheetId }) {
         }}
       >
         <Typography variant="body2" color="text.secondary">
-          Showing {gridData.rows.length} records
-          {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
+          {/* Showing {gridData.rows.length} records
+          {selectedRows.size > 0 && ` (${selectedRows.size} selected)`} */}
+          showing {gridData.rows.length} rows
         </Typography>
-        <AppLink
-          href={`/sheets?project_id=${sheetId}`}
-          newTab
-          underline="hover"
-          color="primary"
-          fontSize="14px"
-          whiteSpace="nowrap"
-        >
-          View & Export
-        </AppLink>
+        <Button onClick={() => handleCSVExport(gridData)}>Export to CSV</Button>
       </Box>
 
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
         <DataGrid {...gridProps} style={{ height: "100%" }} />
-      </Box>
-
-      {/* Footer Info */}
-      <Box sx={{ mt: 1, pt: 1, borderTop: 1, borderColor: "divider" }}>
-        <Typography variant="caption" color="text.secondary">
-          Data Grid powered by AI integration
-        </Typography>
       </Box>
     </Box>
   );

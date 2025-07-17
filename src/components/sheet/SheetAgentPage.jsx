@@ -47,7 +47,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
           flex: 1,
           display: "flex",
           flexDirection: {
-            xs: "column", // Stack vertically on mobile
+            xs: "column-reverse", // Stack vertically on mobile
             md: "row", // Side by side on tablet and desktop
           },
           overflow: "hidden",
@@ -101,7 +101,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
             overflow: "hidden",
           }}
         >
-          <SheetDataArea isLoading={isLoading} />
+          <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
         </Box>
       </Box>
     </Box>
