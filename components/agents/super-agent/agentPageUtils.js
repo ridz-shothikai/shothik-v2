@@ -1,8 +1,10 @@
 // ====== For Slide creation handler ======
 
 import { setPresentationState } from "../../../src/redux/slice/presentationSlice";
+import { setSheetState } from "../../../src/redux/slice/sheetSlice";
 import { createPresentationServer } from "../../../src/services/createPresentationServer";
 
+// ====== For SLIDE generation handler ======
 async function handleSlideCreation(
   inputValue,
   setAgentType,
@@ -72,13 +74,62 @@ async function handleSlideCreation(
   }
 };
 
-// ====== For Sheet generation handler ======
+// ====== For SHEET generation handler ======
+async function handleSheetGenerationRequest(
+  inputValue,
+  setAgentType,
+  dispatch,
+  setLoginDialogOpen,
+  setIsSubmitting,
+  setIsInitiatingSheet,
+  router
+) {
+  try {
+    console.log(inputValue, "input value");
+    sessionStorage.setItem("initialPrompt", inputValue);
+
+    setAgentType("sheet");
+
+    dispatch(
+      setSheetState({
+        logs: [],
+        sheet: [],
+        status: "idle",
+        title: "Generating...",
+      })
+    );
+
+    console.log(
+      "[agentPageUtils] Initiating presentation with message:",
+      inputValue
+    );
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      console.error("[AgentPageUtils] No access token found");
+
+      setLoginDialogOpen(true);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setIsInitiatingSheet(true);
+
+    // TODO: we will call api here of SHEET
+
+    // TODO: Routing will depend on SHEET backend [RIAN VAI]
+
+    router.push(`/agents/sheets/?id=${"dummy-for-now"}`);
+  } catch (error) {
+    console.log("[handleSheetGenerationRequest] error:", error);
+  }
+}
+
 // ====== For Download generation handler ======
 // ====== For AI Chat generation handler ======
 // ====== For Calls generation handler ======
 // ====== For ALl Agents generation handler ======
 
 
-export {
-    handleSlideCreation,
-}
+export { handleSlideCreation, handleSheetGenerationRequest };

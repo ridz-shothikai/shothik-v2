@@ -45,7 +45,8 @@ import { useDispatch } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
 import { setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
-import {handleSlideCreation} from "./super-agent/agentPageUtils"
+import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
+import { setSheetState } from "../../src/redux/slice/sheetSlice";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -125,14 +126,6 @@ const ONBOARDING_STEPS = [
   },
 ];
 
-async function handleSheetGenerationRequest(inputValue) {
-  try {
-    
-  } catch (error) {
-    console.log("[handleSheetGenerationRequest] error:", error);
-  }
-}
-
 export default function AgentLandingPage() {
   const router = useRouter();
   const { setAgentType } = useAgentContext();
@@ -146,6 +139,7 @@ export default function AgentLandingPage() {
   //   useCreatePresentationMutation();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
+  const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -177,6 +171,12 @@ export default function AgentLandingPage() {
         case "sheets":
           return handleSheetGenerationRequest(
             inputValue,
+            setAgentType,
+            dispatch,
+            setLoginDialogOpen,
+            setIsSubmitting,
+            setIsInitiatingSheet,
+            router
           );
         case "download":
           return console.log("download route");
@@ -584,7 +584,11 @@ export default function AgentLandingPage() {
 
             <IconButton
               onClick={handleSubmit}
-              disabled={!inputValue.trim() || isInitiatingPresentation}
+              disabled={
+                !inputValue.trim() ||
+                isInitiatingPresentation ||
+                isInitiatingSheet
+              }
               sx={{
                 bgcolor: PRIMARY_GREEN,
                 color: "white",
@@ -704,7 +708,10 @@ export default function AgentLandingPage() {
         )}
       </Container>
 
-      <LoginDialog loginDialogOpen={loginDialogOpen} setLoginDialogOpen={setLoginDialogOpen} />
+      <LoginDialog
+        loginDialogOpen={loginDialogOpen}
+        setLoginDialogOpen={setLoginDialogOpen}
+      />
     </Box>
   );
 };

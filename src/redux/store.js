@@ -10,6 +10,7 @@ import inputOutput from "./slice/inputOutput";
 import settings from "./slice/settings";
 import tools from "./slice/tools";
 import presentationSlice from './slice/presentationSlice';
+import sheetSlice from './slice/sheetSlice';
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     settings,
     tools,
     presentation: presentationSlice,
+    sheet: sheetSlice,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
