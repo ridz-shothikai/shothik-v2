@@ -96,7 +96,7 @@
   color: #ff9800;
 }
 
-.sentence-highlight {
+.sentence-span.active-sentence {
   background-color: #f6ffe0;
   transition: background-color 0.2s ease;
 }

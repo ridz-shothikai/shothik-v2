@@ -34,7 +34,6 @@ import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
-import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
 import { protectedPhrases, protectedSingleWords } from "./extentions";
 
 const SYNONYMS = {
@@ -387,7 +386,7 @@ const ParaphraseContend = () => {
                 flexDirection: "column",
               }}
             >
-              <div style={{ color: "darkgray", paddingLeft: 15 }}>
+              {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                 {isLoading ? (
                   <ViewInputInOutAsDemo
                     input={userInput}
@@ -396,11 +395,34 @@ const ParaphraseContend = () => {
                 ) : !result.length ? (
                   <p>Paraphrased Text</p>
                 ) : null}
-              </div>
+              </div> */}
+              <ParaphraseOutput
+                data={result}
+                setData={setResult}
+                synonymLevel={selectedSynonyms}
+                dataModes={modes}
+                userPackage={user?.package}
+                selectedLang={language}
+                highlightSentence={highlightSentence}
+                setOutputHistory={setOutputHistory}
+                input={userInput}
+                freezeWords={
+                  frozenWords.size > 0
+                    ? frozenWords.values.join(", ")
+                    : frozenPhrases.size > 0
+                    ? frozenPhrases.values.join(", ")
+                    : ""
+                }
+                socketId={socketId}
+                language={language}
+                setProcessing={setProcessing}
+                eventId={eventId}
+                setEventId={setEventId}
+              />
 
               {result.length ? (
                 <>
-                  <ParaphraseOutput
+                  {/* <ParaphraseOutput
                     data={result}
                     setData={setResult}
                     synonymLevel={selectedSynonyms}
@@ -422,7 +444,7 @@ const ParaphraseContend = () => {
                     setProcessing={setProcessing}
                     eventId={eventId}
                     setEventId={setEventId}
-                  />
+                  /> */}
                   <OutputBotomNavigation
                     handleClear={handleClear}
                     highlightSentence={highlightSentence}
