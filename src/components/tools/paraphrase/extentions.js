@@ -141,27 +141,33 @@ const getColorStyle = (type, dark = false) => {
 };
 
 // output editor
-export const wordSentenceDecorator = (data) => {
+export const wordSentenceDecorator = (data, activeSentenceIndexes = []) => {
   return new Plugin({
     key: new PluginKey("wordSentenceDecorator"),
     props: {
       decorations(state) {
         const decorations = [];
-        const text = state.doc.textBetween(0, state.doc.content.size, " ");
         let pos = 1; // starting inside paragraph node
+
         data.forEach((sentence, sIndex) => {
-          const sentenceStart = pos;
           sentence.forEach((wordObj, wIndex) => {
             const word = wordObj.word;
             const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
 
+            // Add the space *before* the word
+            pos += space.length;
+
             const from = pos;
-            const to = pos + word.length;
+            const to = from + word.length;
 
             decorations.push(
               Decoration.inline(from, to, {
                 nodeName: "span",
-                class: "word-span",
+                class: `word-span ${
+                  activeSentenceIndexes.includes(sIndex)
+                    ? "active-sentence"
+                    : ""
+                }`,
                 "data-word": word,
                 "data-type": wordObj.type,
                 "data-sentence-index": sIndex,
@@ -170,17 +176,8 @@ export const wordSentenceDecorator = (data) => {
               })
             );
 
-            pos = to + space.length;
+            pos = to;
           });
-
-          const sentenceEnd = pos;
-          decorations.push(
-            Decoration.inline(sentenceStart, sentenceEnd, {
-              nodeName: "span",
-              class: "sentence-span",
-              "data-sentence-index": sIndex,
-            })
-          );
         });
 
         return DecorationSet.create(state.doc, decorations);

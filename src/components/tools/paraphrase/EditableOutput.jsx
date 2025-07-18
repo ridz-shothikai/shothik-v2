@@ -10,7 +10,7 @@ const generateTextOnly = (data) => {
     sentence.forEach((wordObj, wIndex) => {
       const space =
         /^[.,;]$/.test(wordObj.word) || wordObj.word.endsWith("'") ? "" : " ";
-      text += wordObj.word + space;
+      text += space + wordObj.word;
     });
   });
 
@@ -31,7 +31,7 @@ const EditableOutput = ({
   setSentence,
   setAnchorEl,
 }) => {
-  const [activeSentenceIndexes, setActiveSentenceIndexes] = useState([]);
+  const [activeSentenceIndexes, setActiveSentenceIndexes] = useState([1]);
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -47,7 +47,8 @@ const EditableOutput = ({
 
     // Remove previous decorator and reapply
     editor.view.setProps({
-      decorations: wordSentenceDecorator(data).props.decorations,
+      decorations: wordSentenceDecorator(data, activeSentenceIndexes).props
+        .decorations,
     });
   }, [editor, data]);
 
