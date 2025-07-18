@@ -1,4 +1,4 @@
-import { Extension, Node } from "@tiptap/core";
+import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
@@ -140,41 +140,54 @@ const getColorStyle = (type, dark = false) => {
   return "inherit";
 };
 
-export const WordNode = Node.create({
-  name: "wordNode",
-  inline: true,
-  group: "inline",
-  atom: true,
-  selectable: false,
+// output editor
+export const wordSentenceDecorator = (data) => {
+  return new Plugin({
+    key: new PluginKey("wordSentenceDecorator"),
+    props: {
+      decorations(state) {
+        const decorations = [];
+        const text = state.doc.textBetween(0, state.doc.content.size, " ");
+        let pos = 1; // starting inside paragraph node
+        data.forEach((sentence, sIndex) => {
+          const sentenceStart = pos;
+          sentence.forEach((wordObj, wIndex) => {
+            const word = wordObj.word;
+            const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
 
-  addAttributes() {
-    return {
-      word: { default: "" },
-      type: { default: "none" },
-      sentenceIndex: { default: -1 },
-      wordIndex: { default: -1 },
-    };
-  },
+            const from = pos;
+            const to = pos + word.length;
 
-  parseHTML() {
-    return [{ tag: "word-token" }];
-  },
+            decorations.push(
+              Decoration.inline(from, to, {
+                nodeName: "span",
+                class: "word-span",
+                "data-word": word,
+                "data-type": wordObj.type,
+                "data-sentence-index": sIndex,
+                "data-word-index": wIndex,
+                style: `color:${getColorStyle(wordObj.type)}; cursor:pointer;`,
+              })
+            );
 
-  renderHTML({ HTMLAttributes }) {
-    const { word, type } = HTMLAttributes;
-    const color = getColorStyle(type);
-    const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
+            pos = to + space.length;
+          });
 
-    return [
-      "word-token",
-      {
-        ...HTMLAttributes,
-        style: `color:${color};cursor:pointer;${HTMLAttributes.style || ""}`,
+          const sentenceEnd = pos;
+          decorations.push(
+            Decoration.inline(sentenceStart, sentenceEnd, {
+              nodeName: "span",
+              class: "sentence-span",
+              "data-sentence-index": sIndex,
+            })
+          );
+        });
+
+        return DecorationSet.create(state.doc, decorations);
       },
-      `${space}${word}`,
-    ];
-  },
-});
+    },
+  });
+};
 
 export const protectedSingleWords = [
   "affidavit",
