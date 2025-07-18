@@ -85,8 +85,8 @@ async function handleSheetGenerationRequest(
   router
 ) {
   try {
-    console.log(inputValue, "input value");
-    sessionStorage.setItem("initialPrompt", inputValue);
+    // console.log(inputValue, "input value");
+    sessionStorage.setItem("initialSheetPrompt", inputValue);
 
     setAgentType("sheet");
 

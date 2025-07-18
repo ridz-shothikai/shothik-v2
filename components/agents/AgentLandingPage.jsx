@@ -51,17 +51,17 @@ import { setSheetState } from "../../src/redux/slice/sheetSlice";
 const PRIMARY_GREEN = "#07B37A";
 
 const NAVIGATION_ITEMS = [
-  { id: "slides", label: "AI Slides", icon: <SlideshowIcon />, isNew: true },
-  { id: "sheets", label: "AI Sheets", icon: <TableChartIcon />, isNew: true },
-  {
-    id: "download",
-    label: "Download For Me",
-    icon: <DownloadIcon />,
-    isNew: true,
-  },
-  { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
-  { id: "call", label: "Call For Me", icon: <PhoneIcon /> },
-  { id: "agents", label: "All Agents", icon: <GroupIcon /> },
+  { id: "slides", label: "AI Slides", icon: <SlideshowIcon />, isNew: true, isComingSoon: false, isDisabled: false },
+  { id: "sheets", label: "AI Sheets", icon: <TableChartIcon />, isNew: true, isComingSoon: false, isDisabled: false },
+  // {
+  //   id: "download",
+  //   label: "Download For Me",
+  //   icon: <DownloadIcon />,
+  //   isNew: true,
+  // },
+  // { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
+  { id: "call", label: "Call For Me", icon: <PhoneIcon />, isComingSoon: true, isDisabled: true },
+  { id: "agents", label: "All Agents", icon: <GroupIcon />, isComingSoon: true, isDisabled: true },
 ];
 
 const QUICK_START_TEMPLATES = [
@@ -360,6 +360,7 @@ export default function AgentLandingPage() {
               variant={selectedNavItem === item.id ? "contained" : "outlined"}
               startIcon={item.icon}
               onClick={() => handleNavItemClick(item.id)}
+              disabled={item.isDisabled}
               sx={{
                 borderRadius: 3,
                 px: 3,
@@ -384,6 +385,24 @@ export default function AgentLandingPage() {
               {item.isNew && (
                 <Chip
                   label="New"
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    bgcolor: "#ff4444",
+                    color: "white",
+                    fontSize: "0.7rem",
+                    height: 18,
+                    "& .MuiChip-label": {
+                      px: 1,
+                    },
+                  }}
+                />
+              )}
+              {item.isComingSoon && (
+                <Chip
+                  label="Coming soon"
                   size="small"
                   sx={{
                     position: "absolute",

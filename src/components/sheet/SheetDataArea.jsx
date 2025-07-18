@@ -1,263 +1,320 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
-  Button,
   Typography,
   CircularProgress,
   Alert,
-  TextField,
   Paper,
+  Chip,
+  IconButton,
+  Tooltip,
+  LinearProgress,
 } from "@mui/material";
-import {DataGrid} from "react-data-grid";
+import { 
+  Refresh, 
+  Download, 
+  Visibility, 
+  Error,
+  CheckCircle,
+  Info 
+} from "@mui/icons-material";
+import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
+import { useSelector } from "react-redux";
+import { selectSheet } from "../../redux/slice/sheetSlice";
 import AppLink from "../common/AppLink";
 
-// Demo data that mimics what AI might return
-const demoData = {
-  columns: [
-    { key: "id", name: "ID", width: 80 },
-    { key: "name", name: "Product Name", width: 200, resizable: true },
-    { key: "category", name: "Category", width: 150, resizable: true },
-    { key: "price", name: "Price", width: 100, resizable: true },
-    { key: "stock", name: "Stock", width: 100, resizable: true },
-    { key: "status", name: "Status", width: 120, resizable: true },
-    { key: "lastUpdated", name: "Last Updated", width: 180, resizable: true },
-  ],
-  rows: [
-    {
-      id: 1,
-      name: "Laptop Pro",
-      category: "Electronics",
-      price: "$1,299",
-      stock: 45,
-      status: "Active",
-      lastUpdated: "2024-01-15",
-    },
-    {
-      id: 2,
-      name: "Wireless Mouse",
-      category: "Electronics",
-      price: "$29",
-      stock: 120,
-      status: "Active",
-      lastUpdated: "2024-01-14",
-    },
-    {
-      id: 3,
-      name: "Office Chair",
-      category: "Furniture",
-      price: "$199",
-      stock: 30,
-      status: "Low Stock",
-      lastUpdated: "2024-01-13",
-    },
-    {
-      id: 4,
-      name: "Desk Lamp",
-      category: "Furniture",
-      price: "$49",
-      stock: 0,
-      status: "Out of Stock",
-      lastUpdated: "2024-01-12",
-    },
-    {
-      id: 5,
-      name: "Coffee Maker",
-      category: "Appliances",
-      price: "$89",
-      stock: 25,
-      status: "Active",
-      lastUpdated: "2024-01-11",
-    },
-    {
-      id: 6,
-      name: "Bluetooth Speaker",
-      category: "Electronics",
-      price: "$79",
-      stock: 60,
-      status: "Active",
-      lastUpdated: "2024-01-10",
-    },
-    {
-      id: 7,
-      name: "Standing Desk",
-      category: "Furniture",
-      price: "$399",
-      stock: 15,
-      status: "Low Stock",
-      lastUpdated: "2024-01-09",
-    },
-    {
-      id: 8,
-      name: "Tablet",
-      category: "Electronics",
-      price: "$329",
-      stock: 80,
-      status: "Active",
-      lastUpdated: "2024-01-08",
-    },
-    {
-      id: 9,
-      name: "Microwave",
-      category: "Appliances",
-      price: "$159",
-      stock: 40,
-      status: "Active",
-      lastUpdated: "2024-01-07",
-    },
-    {
-      id: 10,
-      name: "Bookshelf",
-      category: "Furniture",
-      price: "$129",
-      stock: 20,
-      status: "Active",
-      lastUpdated: "2024-01-06",
-    },
-  ],
+// Status indicator component
+const StatusChip = ({ status, title }) => {
+  const getStatusProps = () => {
+    switch (status) {
+      case 'connecting':
+        return { color: 'info', icon: <Info />, label: 'Connecting' };
+      case 'connected':
+        return { color: 'info', icon: <Info />, label: 'Connected' };
+      case 'generating':
+        return { color: 'warning', icon: <CircularProgress size={16} />, label: 'Generating' };
+      case 'completed':
+        return { color: 'success', icon: <CheckCircle />, label: 'Complete' };
+      case 'error':
+        return { color: 'error', icon: <Error />, label: 'Error' };
+      case 'cancelled':
+        return { color: 'default', icon: <Error />, label: 'Cancelled' };
+      default:
+        return { color: 'default', icon: <Info />, label: 'Ready' };
+    }
+  };
+
+  const statusProps = getStatusProps();
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Chip
+        {...statusProps}
+        size="small"
+        variant="outlined"
+        sx={{ fontWeight: 500 }}
+      />
+      {title && (
+        <Typography variant="body2" color="text.secondary">
+          {title}
+        </Typography>
+      )}
+    </Box>
+  );
 };
 
-// Alternative demo data structure to show flexibility
-const alternativeDemoData = {
-  columns: [
-    { key: "userId", name: "User ID", width: 100 },
-    { key: "username", name: "Username", width: 150, resizable: true },
-    { key: "email", name: "Email", width: 250, resizable: true },
-    { key: "role", name: "Role", width: 120, resizable: true },
-    { key: "joinDate", name: "Join Date", width: 150, resizable: true },
-    { key: "lastLogin", name: "Last Login", width: 180, resizable: true },
-  ],
-  rows: [
-    {
-      userId: 1,
-      username: "john_doe",
-      email: "john@example.com",
-      role: "Admin",
-      joinDate: "2023-01-15",
-      lastLogin: "2024-01-16 09:30",
-    },
-    {
-      userId: 2,
-      username: "jane_smith",
-      email: "jane@example.com",
-      role: "User",
-      joinDate: "2023-02-20",
-      lastLogin: "2024-01-15 14:22",
-    },
-    {
-      userId: 3,
-      username: "bob_wilson",
-      email: "bob@example.com",
-      role: "Manager",
-      joinDate: "2023-03-10",
-      lastLogin: "2024-01-14 11:45",
-    },
-    {
-      userId: 4,
-      username: "alice_brown",
-      email: "alice@example.com",
-      role: "User",
-      joinDate: "2023-04-05",
-      lastLogin: "2024-01-13 16:18",
-    },
-    {
-      userId: 5,
-      username: "charlie_davis",
-      email: "charlie@example.com",
-      role: "User",
-      joinDate: "2023-05-12",
-      lastLogin: "2024-01-12 08:55",
-    },
-  ],
+// Data processing utilities
+const processSheetData = (sheetData) => {
+  if (!sheetData || !Array.isArray(sheetData)) {
+    return { columns: [], rows: [] };
+  }
+
+  // If sheet is empty, return empty structure
+  if (sheetData.length === 0) {
+    return { columns: [], rows: [] };
+  }
+
+  // Extract headers from first row (assuming first row contains headers)
+  const headers = Object.keys(sheetData[0] || {});
+  
+  // Create columns configuration
+  const columns = headers.map((header, index) => ({
+    key: header,
+    name: header.charAt(0).toUpperCase() + header.slice(1), // Capitalize first letter
+    width: Math.max(150, Math.min(250, header.length * 12)), // Dynamic width
+    resizable: true,
+    sortable: true,
+    // Add custom rendering for specific data types
+    renderCell: (params) => {
+      const value = params.row[header];
+      
+      // Handle different data types
+      if (value === null || value === undefined) {
+        return <span style={{ color: '#999', fontStyle: 'italic' }}>—</span>;
+      }
+      
+      if (typeof value === 'number') {
+        return <span style={{ fontFamily: 'monospace' }}>{value.toLocaleString()}</span>;
+      }
+      
+      if (typeof value === 'boolean') {
+        return (
+          <Chip 
+            label={value ? 'Yes' : 'No'} 
+            color={value ? 'success' : 'default'}
+            size="small"
+            variant="outlined"
+          />
+        );
+      }
+      
+      // Handle dates
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+        try {
+          const date = new Date(value);
+          return date.toLocaleDateString();
+        } catch (e) {
+          return value;
+        }
+      }
+      
+      return String(value);
+    }
+  }));
+
+  // Process rows with proper IDs
+  const rows = sheetData.map((row, index) => ({
+    id: row.id || `row-${index}`,
+    ...row
+  }));
+
+  return { columns, rows };
+};
+
+// Logs display component
+const LogsDisplay = ({ logs }) => {
+  if (!logs || logs.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="subtitle2" gutterBottom>
+        Generation Logs
+      </Typography>
+      <Paper 
+        variant="outlined" 
+        sx={{ 
+          p: 2, 
+          maxHeight: 200, 
+          overflowY: 'auto',
+          bgcolor: 'grey.50',
+          fontFamily: 'monospace',
+          fontSize: '0.75rem'
+        }}
+      >
+        {logs.map((log, index) => (
+          <Box key={index} sx={{ mb: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {typeof log === 'string' ? log : JSON.stringify(log, null, 2)}
+            </Typography>
+          </Box>
+        ))}
+      </Paper>
+    </Box>
+  );
 };
 
 export default function SheetDataArea({ sheetId }) {
-  const [gridData, setGridData] = useState(alternativeDemoData);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [userQuery, setUserQuery] = useState("");
+  const sheetState = useSelector(selectSheet);
   const [selectedRows, setSelectedRows] = useState(new Set());
+  const [showLogs, setShowLogs] = useState(false);
 
-  // Simulate AI data fetching
-  const fetchAIData = async (query) => {
-    setLoading(true);
-    setError(null);
+  // Process sheet data for DataGrid
+  const { columns, rows } = useMemo(() => {
+    return processSheetData(sheetState.sheet);
+  }, [sheetState.sheet]);
 
-    try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Simulate different responses based on query
-      if (query.toLowerCase().includes("user")) {
-        setGridData(alternativeDemoData);
-      } else {
-        setGridData(alternativeDemoData);
-      }
-    } catch (err) {
-      setError("Failed to fetch data from AI agent");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Function to handle AI data updates (this would be called when real AI data arrives)
-  const updateGridWithAIData = (aiResponse) => {
-    try {
-      // Validate AI response structure
-      if (!aiResponse || !aiResponse.columns || !aiResponse.rows) {
-        throw new Error("Invalid AI response format");
-      }
-
-      // Ensure columns have required properties
-      const validatedColumns = aiResponse.columns.map((col) => ({
-        key: col.key,
-        name: col.name || col.key,
-        width: col.width || 150,
-        resizable: col.resizable !== false,
-        ...col,
-      }));
-
-      setGridData({
-        columns: validatedColumns,
-        rows: aiResponse.rows,
-      });
-
-      setError(null);
-    } catch (err) {
-      setError("Failed to process AI data: " + err.message);
-    }
-  };
+  // Check if we have data
+  const hasData = rows.length > 0 && columns.length > 0;
 
   // Memoize grid props for performance
-  const gridProps = useMemo(
-    () => ({
-      columns: gridData.columns,
-      rows: gridData.rows,
-      selectedRows,
-      onSelectedRowsChange: setSelectedRows,
-      enableVirtualization: true,
-      rowHeight: 35,
-      headerRowHeight: 40,
-      className: "rdg-light",
-    }),
-    [gridData, selectedRows]
-  );
+  const gridProps = useMemo(() => ({
+    columns,
+    rows,
+    selectedRows,
+    onSelectedRowsChange: setSelectedRows,
+    enableVirtualization: true,
+    rowHeight: 40,
+    headerRowHeight: 45,
+    className: "rdg-light",
+    style: { 
+      height: "100%",
+      border: "1px solid #e0e0e0",
+      borderRadius: "4px"
+    },
+    // Add sorting
+    sortColumns: [],
+    onSortColumnsChange: (sortColumns) => {
+      // Handle sorting if needed
+      console.log('Sort columns:', sortColumns);
+    },
+    // Add row selection
+    rowKeyGetter: (row) => row.id,
+  }), [columns, rows, selectedRows]);
 
-  const handleQuerySubmit = () => {
-    if (userQuery.trim()) {
-      fetchAIData(userQuery);
-    }
+  // Handle refresh
+  const handleRefresh = () => {
+    // Could trigger a refresh of the sheet data
+    console.log('Refresh sheet data');
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") {
-      handleQuerySubmit();
-    }
+  // Handle export
+  const handleExport = () => {
+    if (!hasData) return;
+    
+    // Convert data to CSV
+    const csvHeaders = columns.map(col => col.name).join(',');
+    const csvRows = rows.map(row => 
+      columns.map(col => {
+        const value = row[col.key];
+        // Escape commas and quotes
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      }).join(',')
+    );
+    
+    const csvContent = [csvHeaders, ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sheet-data-${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
-  const handleViewAndExport = () => {
-    console.log("Handle view & export");
-  };
+  // Render loading state
+  if (sheetState.status === 'connecting' || sheetState.status === 'generating') {
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          p: 3,
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <CircularProgress size={48} sx={{ mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          {sheetState.title || 'Generating Sheet...'}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Please wait while we process your request
+        </Typography>
+        <LinearProgress sx={{ width: '100%', maxWidth: 300 }} />
+      </Box>
+    );
+  }
+
+  // Render error state
+  if (sheetState.status === 'error') {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert 
+          severity="error" 
+          sx={{ mb: 2 }}
+          action={
+            <IconButton size="small" onClick={handleRefresh}>
+              <Refresh />
+            </IconButton>
+          }
+        >
+          Failed to generate sheet data. Please try again.
+        </Alert>
+        
+        {sheetState.logs && sheetState.logs.length > 0 && (
+          <LogsDisplay logs={sheetState.logs} />
+        )}
+      </Box>
+    );
+  }
+
+  // Render empty state
+  if (!hasData && sheetState.status !== 'generating') {
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          p: 3,
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          No Data Available
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Start a conversation to generate sheet data
+        </Typography>
+        {sheetState.logs && sheetState.logs.length > 0 && (
+          <LogsDisplay logs={sheetState.logs} />
+        )}
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -269,48 +326,88 @@ export default function SheetDataArea({ sheetId }) {
         p: 1,
       }}
     >
-      {/* Error Display */}
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {/* Grid Info */}
+      {/* Header */}
       <Box
         sx={{
-          mb: 1,
+          mb: 2,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          pr: 1,
+          flexWrap: "wrap",
+          gap: 1,
         }}
       >
-        <Typography variant="body2" color="text.secondary">
-          Showing {gridData.rows.length} records
-          {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
-        </Typography>
-        <AppLink
-          href={`/sheets?project_id=${sheetId}`}
-          newTab
-          underline="hover"
-          color="primary"
-          fontSize="14px"
-          whiteSpace="nowrap"
-        >
-          View & Export
-        </AppLink>
+        <Box>
+          <StatusChip status={sheetState.status} title={sheetState.title} />
+        </Box>
+        
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <Typography variant="body2" color="text.secondary">
+            {rows.length} rows, {columns.length} columns
+            {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
+          </Typography>
+          
+          <Tooltip title="Export as CSV">
+            <IconButton 
+              size="small" 
+              onClick={handleExport}
+              disabled={!hasData}
+            >
+              <Download />
+            </IconButton>
+          </Tooltip>
+          
+          <Tooltip title="Refresh">
+            <IconButton size="small" onClick={handleRefresh}>
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+          
+          {sheetId && (
+            <AppLink
+              href={`/sheets?project_id=${sheetId}`}
+              newTab
+              underline="hover"
+              color="primary"
+              fontSize="14px"
+              whiteSpace="nowrap"
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Visibility fontSize="small" />
+                View Full
+              </Box>
+            </AppLink>
+          )}
+        </Box>
       </Box>
 
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
-        <DataGrid {...gridProps} style={{ height: "100%" }} />
+        <DataGrid {...gridProps} />
       </Box>
 
-      {/* Footer Info */}
+      {/* Logs section (collapsible) */}
+      {sheetState.logs && sheetState.logs.length > 0 && (
+        <Box sx={{ mt: 1 }}>
+          <Typography
+            variant="caption"
+            color="primary"
+            sx={{ 
+              cursor: 'pointer',
+              '&:hover': { textDecoration: 'underline' }
+            }}
+            onClick={() => setShowLogs(!showLogs)}
+          >
+            {showLogs ? 'Hide' : 'Show'} Generation Logs ({sheetState.logs.length})
+          </Typography>
+          {showLogs && <LogsDisplay logs={sheetState.logs} />}
+        </Box>
+      )}
+
+      {/* Footer */}
       <Box sx={{ mt: 1, pt: 1, borderTop: 1, borderColor: "divider" }}>
         <Typography variant="caption" color="text.secondary">
-          Data Grid powered by AI integration
+          Sheet data updated in real-time • Last update: {new Date().toLocaleTimeString()}
         </Typography>
       </Box>
     </Box>

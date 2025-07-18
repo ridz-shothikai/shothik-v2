@@ -17,7 +17,7 @@ export default function SpecificAgentPage() {
   // Function to render the appropriate component based on agentType
   const renderComponent = () => {
     switch (agentType) {
-      case "slides":
+      case "presentation":
         return (
           <PresentationAgentPage
             specificAgent={agentType}
