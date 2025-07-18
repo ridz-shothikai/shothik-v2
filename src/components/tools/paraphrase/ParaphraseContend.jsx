@@ -145,16 +145,6 @@ const ParaphraseContend = () => {
           .trim()
           .split(/\s+/)
           .map((word) => ({ word, type: "none", synonyms: [] }));
-
-        // Add punctuation if it’s a full sentence
-        if (sentence) {
-          words.push({
-            word: separator.trim(),
-            type: "punctuation",
-            synonyms: [],
-          });
-        }
-
         return words;
       });
 

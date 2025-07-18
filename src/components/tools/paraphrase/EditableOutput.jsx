@@ -1,25 +1,25 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect } from "react";
-import { WordNode } from "./extentions";
+import { useEffect, useState } from "react";
+import { wordSentenceDecorator } from "./extentions";
 
-const generateTiptapJSON = (data) => {
+const generateTextOnly = (data) => {
+  let text = "";
+
+  data.forEach((sentence, sIndex) => {
+    sentence.forEach((wordObj, wIndex) => {
+      const space =
+        /^[.,;]$/.test(wordObj.word) || wordObj.word.endsWith("'") ? "" : " ";
+      text += wordObj.word + space;
+    });
+  });
+
   return {
     type: "doc",
     content: [
       {
         type: "paragraph",
-        content: data.flatMap((sentence, sIndex) =>
-          sentence.map((wordObj, wIndex) => ({
-            type: "wordNode",
-            attrs: {
-              word: wordObj.word,
-              type: wordObj.type,
-              sentenceIndex: sIndex,
-              wordIndex: wIndex,
-            },
-          }))
-        ),
+        content: [{ type: "text", text }],
       },
     ],
   };
@@ -31,8 +31,10 @@ const EditableOutput = ({
   setSentence,
   setAnchorEl,
 }) => {
+  const [activeSentenceIndexes, setActiveSentenceIndexes] = useState([]);
+
   const editor = useEditor({
-    extensions: [StarterKit, WordNode],
+    extensions: [StarterKit],
     content: "",
     editable: true,
     immediatelyRender: false,
@@ -40,20 +42,25 @@ const EditableOutput = ({
 
   useEffect(() => {
     if (!editor || !data?.length) return;
-    const json = generateTiptapJSON(data);
-    editor.commands.setContent(json, false);
-  }, [data, editor]);
+
+    editor.commands.setContent(generateTextOnly(data));
+
+    // Remove previous decorator and reapply
+    editor.view.setProps({
+      decorations: wordSentenceDecorator(data).props.decorations,
+    });
+  }, [editor, data]);
 
   useEffect(() => {
     if (!editor) return;
     const dom = editor.view.dom;
+
     const handleClick = (e) => {
-      const el = e.target.closest("word-token");
+      const el = e.target.closest(".word-span");
       if (!el) return;
 
-      const sentenceIndex = Number(el.getAttribute("sentenceIndex"));
-      const wordIndex = Number(el.getAttribute("wordIndex"));
-
+      const sentenceIndex = Number(el.getAttribute("data-sentence-index"));
+      const wordIndex = Number(el.getAttribute("data-word-index"));
       const wordObj = data?.[sentenceIndex]?.[wordIndex];
       if (!wordObj) return;
 
