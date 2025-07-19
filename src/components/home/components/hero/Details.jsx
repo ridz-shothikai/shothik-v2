@@ -2,19 +2,32 @@ import { Box, Grid2, Rating, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import React from "react";
 import UserActionButton from "./UserActionButton";
+import SocialProofBanner from "./SocialProofBanner";
 
 const Details = () => {
   return (
     <Grid2 size={{ xs: 12, md: 6 }}>
+      {/* Social Proof Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <SocialProofBanner />
+      </motion.div>
+
+      {/* Main Headline */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
       >
         <Typography
           variant='h2'
           sx={{
             fontWeight: 700,
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem', lg: '3.5rem' },
+            lineHeight: 1.2,
             letterSpacing: "-2%",
             color: "#00A76F",
             background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
@@ -23,12 +36,15 @@ const Details = () => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          Human Quality{" "}
+          Join <span style={{ background: "linear-gradient(135deg, #00A76F 20%, #2E6259 100%)", 
+            backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>75M+</span> Writers Who
         </Typography>
         <Typography
           variant='h2'
           sx={{
             fontWeight: 700,
+            fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' },
+            lineHeight: 1.2,
             letterSpacing: "-2%",
             color: "#00A76F",
             background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
@@ -37,28 +53,39 @@ const Details = () => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          Writing Agent
+          Save <span style={{ background: "linear-gradient(135deg, #00A76F 20%, #2E6259 100%)", 
+            backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>15 Hours</span> Monthly
         </Typography>
       </motion.div>
 
+      {/* Subheadline */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <Typography variant='body1' color='text.secondary' sx={{ my: 2 }}>
-          Paraphrasing, grammar correction, humanized AI writing, translation,
-          summarization, or deep research across the web, academic sources, and
-          YouTube—Shothik AI ensures natural, accurate, and impactful writing in
-          every task.
+        <Typography 
+          variant='h6' 
+          color='text.secondary' 
+          sx={{ 
+            my: 3,
+            fontSize: { xs: '1rem', md: '1.25rem' },
+            lineHeight: 1.6,
+            maxWidth: '600px',
+          }}
+        >
+          Perfect for students and professionals who need high-quality
+          writing assistance in Bangla and English. Powered by advanced AI
+          that understands context and maintains your unique voice.
         </Typography>
       </motion.div>
 
+      {/* Rating Section */}
       <Box
         component={motion.div}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
         sx={{
           display: "flex",
           alignItems: "start",
@@ -70,16 +97,16 @@ const Details = () => {
             lg: "row",
             xl: "row",
           },
-          marginBottom: "16px",
+          marginBottom: "24px",
         }}
       >
-        <Rating value={5} readOnly color='#00A76F' />
+        <Rating value={5} readOnly sx={{ color: '#00A76F' }} />
         <Typography sx={{ color: "text.secondary" }}>
-          Rated&nbsp;4.9/5&nbsp;| Based on&nbsp;{" "}
-          <span style={{ color: "#00A76F", fontWeight: 600 }}>400,000+</span>{" "}
-          &nbsp;happy clients
+          Rated&nbsp;4.9/5&nbsp;| Join our growing community
         </Typography>
       </Box>
+      
+      {/* CTA Section */}
       <UserActionButton />
     </Grid2>
   );
