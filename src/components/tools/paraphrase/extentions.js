@@ -1,4 +1,4 @@
-import { Extension, Node } from "@tiptap/core";
+import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
@@ -140,41 +140,60 @@ const getColorStyle = (type, dark = false) => {
   return "inherit";
 };
 
-export const WordNode = Node.create({
-  name: "wordNode",
-  inline: true,
-  group: "inline",
-  atom: true,
-  selectable: false,
+// output editor
+export const wordSentenceDecorator = (data, activeSentenceIndexes = []) => {
+  return new Plugin({
+    key: new PluginKey("wordSentenceDecorator"),
+    props: {
+      decorations(state) {
+        const decorations = [];
+        let pos = 1; // starting inside paragraph node
 
-  addAttributes() {
-    return {
-      word: { default: "" },
-      type: { default: "none" },
-      sentenceIndex: { default: -1 },
-      wordIndex: { default: -1 },
-    };
-  },
+        data.forEach((sentence, sIndex) => {
+          const sentenceStart = pos;
+          sentence.forEach((wordObj, wIndex) => {
+            const word = wordObj.word;
+            const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
 
-  parseHTML() {
-    return [{ tag: "word-token" }];
-  },
+            // Add the space *before* the word
+            pos += space.length;
 
-  renderHTML({ HTMLAttributes }) {
-    const { word, type } = HTMLAttributes;
-    const color = getColorStyle(type);
-    const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
+            const from = pos;
+            const to = from + word.length;
 
-    return [
-      "word-token",
-      {
-        ...HTMLAttributes,
-        style: `color:${color};cursor:pointer;${HTMLAttributes.style || ""}`,
+            decorations.push(
+              Decoration.inline(from, to, {
+                nodeName: "span",
+                class: `word-span ${
+                  activeSentenceIndexes.includes(sIndex)
+                    ? "active-sentence"
+                    : ""
+                }`,
+                "data-word": word,
+                "data-type": wordObj.type,
+                "data-sentence-index": sIndex,
+                "data-word-index": wIndex,
+                style: `color:${getColorStyle(wordObj.type)}; cursor:pointer;`,
+              })
+            );
+
+            pos = to;
+          });
+          const sentenceEnd = pos;
+          decorations.push(
+            Decoration.inline(sentenceStart, sentenceEnd, {
+              nodeName: "span",
+              class: "sentence-span",
+              "data-sentence-index": sIndex,
+            })
+          );
+        });
+
+        return DecorationSet.create(state.doc, decorations);
       },
-      `${space}${word}`,
-    ];
-  },
-});
+    },
+  });
+};
 
 export const protectedSingleWords = [
   "affidavit",
@@ -393,4 +412,552 @@ export const protectedPhrases = [
   "tailwind css",
   "material ui",
   "react native",
+];
+
+export const data = [
+  [
+    {
+      word: "This",
+      type: "NP",
+      synonyms: [
+        "That",
+        "It",
+        "These",
+        "Those",
+        "Such",
+        "Here",
+        "There",
+        "Thing",
+        "Item",
+        "One",
+      ],
+    },
+    {
+      word: "is",
+      type: "VP",
+      synonyms: [
+        "be",
+        "exists",
+        "appears",
+        "remains",
+        "seems",
+        "acts",
+        "becomes",
+        "stays",
+        "lies",
+        "occurs",
+      ],
+    },
+    {
+      word: "a",
+      type: "NP",
+      synonyms: [
+        "one",
+        "an",
+        "any",
+        "each",
+        "some",
+        "the",
+        "this",
+        "that",
+        "certain",
+        "particular",
+      ],
+    },
+    {
+      word: "sentence",
+      type: "NP",
+      synonyms: [
+        "statement",
+        "phrase",
+        "clause",
+        "expression",
+        "utterance",
+        "remark",
+        "comment",
+        "declaration",
+        "assertion",
+        "note",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "Another",
+      type: "NP",
+      synonyms: [
+        "Additional",
+        "Extra",
+        "Second",
+        "New",
+        "Different",
+        "Spare",
+        "Alternative",
+        "Further",
+        "More",
+        "Fresh",
+      ],
+    },
+    {
+      word: "line",
+      type: "NP",
+      synonyms: [
+        "row",
+        "string",
+        "text",
+        "phrase",
+        "sentence",
+        "series",
+        "stream",
+        "sequence",
+        "stroke",
+        "boundary",
+      ],
+    },
+    {
+      word: "here",
+      type: "AdvP",
+      synonyms: [
+        "there",
+        "nearby",
+        "around",
+        "in this place",
+        "at this location",
+        "on site",
+        "locally",
+        "right here",
+        "present",
+        "this side",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "The",
+      type: "NP",
+      synonyms: [
+        "A",
+        "An",
+        "This",
+        "That",
+        "Each",
+        "Every",
+        "One",
+        "Some",
+        "Any",
+        "Certain",
+      ],
+    },
+    {
+      word: "quick",
+      type: "AdjP",
+      synonyms: [
+        "fast",
+        "swift",
+        "rapid",
+        "speedy",
+        "brisk",
+        "nimble",
+        "hasty",
+        "prompt",
+        "agile",
+        "fleet",
+      ],
+    },
+    {
+      word: "brown",
+      type: "AdjP",
+      synonyms: [
+        "tan",
+        "beige",
+        "khaki",
+        "umber",
+        "bronze",
+        "chestnut",
+        "sepia",
+        "russet",
+        "tawny",
+        "brunette",
+      ],
+    },
+    {
+      word: "fox",
+      type: "NP",
+      synonyms: [
+        "vixen",
+        "canid",
+        "predator",
+        "animal",
+        "creature",
+        "beast",
+        "sly-boots",
+        "trickster",
+        "varmint",
+        "reynard",
+      ],
+    },
+    {
+      word: "jumps",
+      type: "VP",
+      synonyms: [
+        "leaps",
+        "bounds",
+        "springs",
+        "hops",
+        "vaults",
+        "skips",
+        "bounces",
+        "pounces",
+        "clears",
+        "hurdles",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "JavaScript",
+      type: "NP",
+      synonyms: [
+        "JS",
+        "ECMAScript",
+        "TypeScript",
+        "Node.js",
+        "React",
+        "Angular",
+        "Vue",
+        "jQuery",
+        "script",
+        "code",
+      ],
+    },
+    {
+      word: "is",
+      type: "VP",
+      synonyms: [
+        "be",
+        "exists",
+        "appears",
+        "remains",
+        "seems",
+        "acts",
+        "becomes",
+        "stays",
+        "proves",
+        "stands",
+      ],
+    },
+    {
+      word: "very",
+      type: "AdvP",
+      synonyms: [
+        "extremely",
+        "highly",
+        "greatly",
+        "immensely",
+        "truly",
+        "exceedingly",
+        "remarkably",
+        "intensely",
+        "acutely",
+        "awfully",
+      ],
+    },
+    {
+      word: "popular",
+      type: "AdjP",
+      synonyms: [
+        "widespread",
+        "common",
+        "famous",
+        "well-liked",
+        "fashionable",
+        "trendy",
+        "prevalent",
+        "in-demand",
+        "celebrated",
+        "favored",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "Good",
+      type: "AdjP",
+      synonyms: [
+        "Excellent",
+        "Fine",
+        "Quality",
+        "Superior",
+        "Great",
+        "Beneficial",
+        "Valuable",
+        "Positive",
+        "Helpful",
+        "Effective",
+      ],
+    },
+    {
+      word: "data",
+      type: "NP",
+      synonyms: [
+        "information",
+        "facts",
+        "figures",
+        "statistics",
+        "details",
+        "input",
+        "evidence",
+        "records",
+        "intelligence",
+        "material",
+      ],
+    },
+    {
+      word: "requires",
+      type: "VP",
+      synonyms: [
+        "needs",
+        "demands",
+        "necessitates",
+        "entails",
+        "involves",
+        "calls for",
+        "warrants",
+        "commands",
+        "obliges",
+        "compels",
+      ],
+    },
+    {
+      word: "careful",
+      type: "AdjP",
+      synonyms: [
+        "meticulous",
+        "thorough",
+        "cautious",
+        "prudent",
+        "diligent",
+        "attentive",
+        "scrupulous",
+        "conscientious",
+        "thoughtful",
+        "precise",
+      ],
+    },
+    {
+      word: "thought",
+      type: "NP",
+      synonyms: [
+        "consideration",
+        "reflection",
+        "contemplation",
+        "deliberation",
+        "reasoning",
+        "analysis",
+        "idea",
+        "concept",
+        "meditation",
+        "planning",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "Can",
+      type: "VP",
+      synonyms: [
+        "Could",
+        "May",
+        "Might",
+        "Will",
+        "Would",
+        "Shall",
+        "Should",
+        "Able to",
+        "Permitted to",
+        "Capable of",
+      ],
+    },
+    {
+      word: "you",
+      type: "NP",
+      synonyms: [
+        "yourself",
+        "one",
+        "the user",
+        "the reader",
+        "the recipient",
+        "thee",
+        "thou",
+        "y'all",
+        "ye",
+        "viewer",
+      ],
+    },
+    {
+      word: "generate",
+      type: "VP",
+      synonyms: [
+        "create",
+        "produce",
+        "make",
+        "form",
+        "originate",
+        "devise",
+        "formulate",
+        "develop",
+        "construct",
+        "build",
+      ],
+    },
+    {
+      word: "some",
+      type: "NP",
+      synonyms: [
+        "a few",
+        "several",
+        "any",
+        "certain",
+        "various",
+        "multiple",
+        "a bit of",
+        "a little",
+        "a quantity of",
+        "part of",
+      ],
+    },
+    {
+      word: "code",
+      type: "NP",
+      synonyms: [
+        "script",
+        "program",
+        "instructions",
+        "source",
+        "text",
+        "syntax",
+        "commands",
+        "algorithm",
+        "logic",
+        "markup",
+      ],
+    },
+    {
+      word: "?",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
+  [
+    {
+      word: "She",
+      type: "NP",
+      synonyms: [
+        "Her",
+        "Herself",
+        "This woman",
+        "That lady",
+        "The female",
+        "One",
+        "The individual",
+        "The person",
+        "Girl",
+        "Gal",
+      ],
+    },
+    {
+      word: "writes",
+      type: "VP",
+      synonyms: [
+        "composes",
+        "authors",
+        "drafts",
+        "pens",
+        "scribes",
+        "creates",
+        "records",
+        "documents",
+        "inscribes",
+        "types",
+      ],
+    },
+    {
+      word: "with",
+      type: "PP",
+      synonyms: [
+        "using",
+        "by",
+        "through",
+        "via",
+        "possessing",
+        "having",
+        "employing",
+        "alongside",
+        "in",
+        "by means of",
+      ],
+    },
+    {
+      word: "great",
+      type: "AdjP",
+      synonyms: [
+        "immense",
+        "tremendous",
+        "considerable",
+        "significant",
+        "profound",
+        "superb",
+        "excellent",
+        "remarkable",
+        "outstanding",
+        "exceptional",
+      ],
+    },
+    {
+      word: "clarity",
+      type: "NP",
+      synonyms: [
+        "clearness",
+        "lucidity",
+        "precision",
+        "simplicity",
+        "coherence",
+        "perspicuity",
+        "transparency",
+        "intelligibility",
+        "explicitness",
+        "legibility",
+      ],
+    },
+    {
+      word: ".",
+      type: "dot",
+      synonyms: [],
+    },
+  ],
 ];
