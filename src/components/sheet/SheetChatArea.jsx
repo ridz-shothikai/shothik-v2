@@ -230,7 +230,7 @@ export default function SheetChatArea({ currentAgentType, isLoading }) {
 
   // Handle initial prompt processing
   const handleInitialPrompt = async (prompt) => {
-    return;
+    // return;
     try {
       // Create a new chat first
       const newChat = await createChat(`Sheet Generation - ${Date.now()}`, userEmail);
