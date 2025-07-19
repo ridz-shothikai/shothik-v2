@@ -1,5 +1,7 @@
 "use client";
+// import 'driver.js/dist/driver.min.css'
 import { InsertDriveFile } from "@mui/icons-material";
+import Onboarding from './Onboarding';
 import {
   Box,
   Button,
@@ -35,6 +37,8 @@ import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
+import VerticalMenu from "./VerticalMenu";
+
 import { protectedPhrases, protectedSingleWords } from "./extentions";
 
 const SYNONYMS = {
@@ -59,7 +63,7 @@ const ParaphraseContend = () => {
   const { user } = useSelector((state) => state.auth);
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
-  const [language, setLanguage] = useState("");
+  const [language, setLanguage] = useState("English");
   const [freezeWords, setFreezeWords] = useState([]);
   const sampleText = trySamples.paraphrase[language || "English"];
   const [isLoading, setIsLoading] = useState(false);
@@ -285,176 +289,206 @@ const ParaphraseContend = () => {
 
   return (
     <Box>
+      {/* <Onboarding/> */}
       <LanguageMenu
         isLoading={isLoading}
         setLanguage={setLanguage}
         language={language}
       />
-      <Card
-        sx={{
-          mt: 1,
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: "12px",
-          overflow: "visible",
-        }}
-      >
-        {!isMobile ? (
-          <ModeNavigation
-            selectedMode={selectedMode}
-            setSelectedMode={setSelectedMode}
-            userPackage={user?.package}
-            selectedSynonyms={selectedSynonyms}
-            setSelectedSynonyms={setSelectedSynonyms}
-            SYNONYMS={SYNONYMS}
-            setShowMessage={setShowMessage}
-          />
-        ) : (
-          <ModeNavigationForMobile
-            selectedMode={selectedMode}
-            setSelectedMode={setSelectedMode}
-            initialFrozenWords={initialFrozenWords}
-            frozenWords={frozenWords}
-            userPackage={user?.package}
-          />
-        )}
-
-        <Divider sx={{ borderBottom: "2px solid", borderColor: "divider" }} />
-
-        <Grid2 container>
-          <Grid2
-            sx={{
-              height: isMobile ? "calc(100vh - 340px)" : 530,
-              position: "relative",
-              borderRight: { md: "2px solid" },
-              borderRightColor: { md: "divider" },
-              padding: 2,
-              paddingBottom: 0,
-              display: "flex",
-              flexDirection: "column",
-            }}
-            size={{ xs: 12, md: 6 }}
-          >
-            <UserInputBox
-              wordLimit={wordLimit}
-              setUserInput={setUserInput}
-              userInput={userInput}
-              frozenPhrases={frozenPhrases}
-              frozenWords={frozenWords}
-              user={user}
-            />
-
-            {!userInput ? (
-              <UserActionInput
-                setUserInput={setUserInput}
-                isMobile={isMobile}
-                sampleText={sampleText}
-              />
-            ) : null}
-            <WordCounter
-              btnText={outputContend ? "Rephrase" : "Paraphrase"}
-              handleClearInput={handleClear}
-              handleSubmit={handleSubmit}
-              isLoading={isLoading}
-              userInput={userInput}
+      <Box sx={{
+        display: 'flex',
+        gap: 2,
+        overflow: 'hidden',
+      }}>
+        <Card
+          sx={{
+            flex: '1 1 0%',
+            minWidth: 0, 
+            mt: 1,
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: "12px",
+            overflow: "visible",
+          }}
+        >
+          {!isMobile ? (
+            <ModeNavigation
+              selectedMode={selectedMode}
+              setSelectedMode={setSelectedMode}
               userPackage={user?.package}
-              toolName='paraphrase'
-              btnIcon={isMobile ? null : <InsertDriveFile />}
-              sx={{ py: 0 }}
-              dontDisable={true}
-              sticky={320}
+              selectedSynonyms={selectedSynonyms}
+              setSelectedSynonyms={setSelectedSynonyms}
+              SYNONYMS={SYNONYMS}
+              setShowMessage={setShowMessage}
             />
-
-            {showLanguageDetect && (
-              <Stack
-                direction='row'
-                alignItems='center'
-                component={Paper}
-                gap={2}
-                sx={{
-                  position: "absolute",
-                  bottom: 80,
-                  left: 20,
-                  padding: 1,
-                }}
-              >
-                <Typography>Detected Language: </Typography>
-                <Button variant='outlined'>{language}</Button>
-              </Stack>
+          ) : (
+              <ModeNavigationForMobile
+                selectedMode={selectedMode}
+                setSelectedMode={setSelectedMode}
+                initialFrozenWords={initialFrozenWords}
+                frozenWords={frozenWords}
+                userPackage={user?.package}
+              />
             )}
-          </Grid2>
-          {isMobile && !userInput ? null : (
+
+          <Divider sx={{ borderBottom: "2px solid", borderColor: "divider" }} />
+
+          <Grid2 container>
             <Grid2
-              size={{ xs: 12, md: 6 }}
-              ref={outputRef}
               sx={{
                 height: isMobile ? "calc(100vh - 340px)" : 530,
-                overflow: "hidden",
-                borderTop: { xs: "2px solid", md: "none" },
-                borderTopColor: { xs: "divider", md: undefined },
                 position: "relative",
+                borderRight: { md: "2px solid" },
+                borderRightColor: { md: "divider" },
+                padding: 2,
+                paddingBottom: 0,
                 display: "flex",
                 flexDirection: "column",
               }}
+              size={{ xs: 12, md: 6 }}
             >
-              <div style={{ color: "darkgray", paddingLeft: 15 }}>
-                {isLoading ? (
-                  <ViewInputInOutAsDemo
-                    input={userInput}
-                    wordLimit={wordLimit}
-                  />
-                ) : !result.length ? (
-                  <p>Paraphrased Text</p>
-                ) : null}
-              </div>
+              <UserInputBox
+                wordLimit={wordLimit}
+                setUserInput={setUserInput}
+                userInput={userInput}
+                frozenPhrases={frozenPhrases}
+                frozenWords={frozenWords}
+                user={user}
+              />
 
-              {result.length ? (
-                <>
-                  <ParaphraseOutput
-                    data={result}
-                    setData={setResult}
-                    synonymLevel={selectedSynonyms}
-                    dataModes={modes}
-                    userPackage={user?.package}
-                    selectedLang={language}
-                    highlightSentence={highlightSentence}
-                    setOutputHistory={setOutputHistory}
-                    input={userInput}
-                    freezeWords={
-                      frozenWords.size > 0
-                        ? frozenWords.values.join(", ")
-                        : frozenPhrases.size > 0
-                        ? frozenPhrases.values.join(", ")
-                        : ""
-                    }
-                    socketId={socketId}
-                    language={language}
-                    setProcessing={setProcessing}
-                    eventId={eventId}
-                    setEventId={setEventId}
-                  />
-                  <OutputBotomNavigation
-                    handleClear={handleClear}
-                    highlightSentence={highlightSentence}
-                    outputContend={outputContend}
-                    outputHistory={outputHistory}
-                    outputHistoryIndex={outputHistoryIndex}
-                    outputWordCount={outputWordCount}
-                    proccessing={processing}
-                    sentenceCount={result.length}
-                    setHighlightSentence={setHighlightSentence}
-                    setOutputHistoryIndex={setOutputHistoryIndex}
-                  />
-                </>
+              {!userInput ? (
+                <UserActionInput
+                  setUserInput={setUserInput}
+                  isMobile={isMobile}
+                  sampleText={sampleText}
+                />
               ) : null}
+              <WordCounter
+                btnText={outputContend ? "Rephrase" : "Paraphrase"}
+                handleClearInput={handleClear}
+                handleSubmit={handleSubmit}
+                isLoading={isLoading}
+                userInput={userInput}
+                userPackage={user?.package}
+                toolName='paraphrase'
+                btnIcon={isMobile ? null : <InsertDriveFile />}
+                sx={{ py: 0 }}
+                dontDisable={true}
+                sticky={320}
+              />
 
-              {user?.package === "free" && showMessage.show ? (
-                <UpdateComponent Component={showMessage.Component} />
-              ) : null}
+              {showLanguageDetect && (
+                <Stack
+                  direction='row'
+                  alignItems='center'
+                  component={Paper}
+                  gap={2}
+                  sx={{
+                    position: "absolute",
+                    bottom: 80,
+                    left: 20,
+                    padding: 1,
+                  }}
+                >
+                  <Typography>Detected Language: </Typography>
+                  <Button variant='outlined'>{language}</Button>
+                </Stack>
+              )}
             </Grid2>
-          )}
-        </Grid2>
-      </Card>
+            {isMobile && !userInput ? null : (
+              <Grid2
+                size={{ xs: 12, md: 6 }}
+                ref={outputRef}
+                sx={{
+                  height: isMobile ? "calc(100vh - 340px)" : 530,
+                  overflow: "hidden",
+                  borderTop: { xs: "2px solid", md: "none" },
+                  borderTopColor: { xs: "divider", md: undefined },
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div style={{ color: "darkgray", paddingLeft: 15 }}>
+                  {isLoading ? (
+                    <ViewInputInOutAsDemo
+                      input={userInput}
+                      wordLimit={wordLimit}
+                    />
+                  ) : !result.length ? (
+                      <p>Paraphrased Text</p>
+                    ) : null}
+                </div>
+
+                {result.length ? (
+                  <>
+                    <ParaphraseOutput
+                      data={result}
+                      setData={setResult}
+                      synonymLevel={selectedSynonyms}
+                      dataModes={modes}
+                      userPackage={user?.package}
+                      selectedLang={language}
+                      highlightSentence={highlightSentence}
+                      setOutputHistory={setOutputHistory}
+                      input={userInput}
+                      freezeWords={
+                        frozenWords.size > 0
+                          ? frozenWords.values.join(", ")
+                          : frozenPhrases.size > 0
+                            ? frozenPhrases.values.join(", ")
+                            : ""
+                      }
+                      socketId={socketId}
+                      language={language}
+                      setProcessing={setProcessing}
+                      eventId={eventId}
+                      setEventId={setEventId}
+                    />
+                    <OutputBotomNavigation
+                      handleClear={handleClear}
+                      highlightSentence={highlightSentence}
+                      outputContend={outputContend}
+                      outputHistory={outputHistory}
+                      outputHistoryIndex={outputHistoryIndex}
+                      outputWordCount={outputWordCount}
+                      proccessing={processing}
+                      sentenceCount={result.length}
+                      setHighlightSentence={setHighlightSentence}
+                      setOutputHistoryIndex={setOutputHistoryIndex}
+                    />
+                  </>
+                ) : null}
+
+                {user?.package === "free" && showMessage.show ? (
+                  <UpdateComponent Component={showMessage.Component} />
+                ) : null}
+              </Grid2>
+            )}
+          </Grid2>
+        </Card>
+        <Box
+          sx={{
+            flex: '0 0 auto',             // don’t grow or shrink
+          }}
+        >
+          <VerticalMenu
+            selectedMode={selectedMode}
+            outputText={result}
+            setOutputText={setResult}
+            setSelectedMode={setSelectedMode}
+            freezeWords={
+              frozenWords.size > 0
+                ? frozenWords.values.join(", ")
+                : frozenPhrases.size > 0
+                  ? frozenPhrases.values.join(", ")
+                  : ""
+            }
+            text={userInput}
+            selectedLang={language}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 };
