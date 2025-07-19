@@ -2,8 +2,9 @@ import { Extension } from "@tiptap/core";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, Node, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Plugin } from "prosemirror-state";
+import { Plugin, TextSelection } from "prosemirror-state";
 import { useEffect } from "react";
+import { data } from "./extentions";
 
 const getColorStyle = (type, dark = false) => {
   const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
@@ -145,14 +146,76 @@ const generateFormatedText = (data) => {
   };
 };
 
-const EditableOutput = ({
-  data,
-  setSynonymsOptions,
-  setSentence,
-  setAnchorEl,
-}) => {
+const EnterHandler = Extension.create({
+  name: "enterHandler",
+
+  addKeyboardShortcuts() {
+    return {
+      Enter: ({ editor }) => {
+        const { state, view } = editor;
+        const { tr, selection, doc, schema } = state;
+        const { from } = selection;
+
+        // === Step 1: Count current sentenceNode to generate index ===
+        let maxIndex = 0;
+        doc.descendants((node) => {
+          if (node.type.name === "sentenceNode") {
+            const index = parseInt(node.attrs["data-sentence-index"]);
+            if (!isNaN(index) && index > maxIndex) {
+              maxIndex = index;
+            }
+          }
+        });
+
+        const nextSentenceIndex = maxIndex + 1;
+
+        // === Step 2: Create new sentenceNode with one wordNode ===
+        const wordNode = schema.nodes.wordNode.create(
+          {
+            "data-sentence-index": nextSentenceIndex,
+            "data-word-index": 1,
+            "data-type": "",
+            class: "word-span",
+            style: "color:inherit;cursor:pointer",
+          },
+          schema.text(" ") // <-- Use non-breaking space to avoid RangeError
+        );
+
+        const sentenceNode = schema.nodes.sentenceNode.create(
+          {
+            "data-sentence-index": nextSentenceIndex,
+            class: "sentence-span",
+          },
+          [wordNode]
+        );
+
+        const paragraphNode = schema.nodes.paragraph.create({}, [sentenceNode]);
+
+        const newTr = tr.insert(from, paragraphNode);
+
+        // === Step 3: Move cursor into the new wordNode ===
+        const resolvedPos = newTr.doc.resolve(from + 3); // Rough offset
+        const newSelection = TextSelection.near(resolvedPos);
+
+        view.dispatch(newTr.setSelection(newSelection).scrollIntoView());
+
+        return true;
+      },
+    };
+  },
+});
+
+const EditableOutput = ({ setSynonymsOptions, setSentence, setAnchorEl }) => {
   const editor = useEditor({
-    extensions: [StarterKit, SentenceNode, WordNode, CursorWatcher],
+    extensions: [
+      StarterKit.configure({
+        enter: false,
+      }),
+      SentenceNode,
+      WordNode,
+      CursorWatcher,
+      EnterHandler,
+    ],
     content: "",
     editable: true,
     immediatelyRender: false,
