@@ -1,7 +1,6 @@
 "use client";
 // import 'driver.js/dist/driver.min.css'
 import { InsertDriveFile } from "@mui/icons-material";
-import Onboarding from './Onboarding';
 import {
   Box,
   Button,
@@ -36,7 +35,6 @@ import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
-import ViewInputInOutAsDemo from "./ViewInputInOutputAsDemo";
 import VerticalMenu from "./VerticalMenu";
 
 import { protectedPhrases, protectedSingleWords } from "./extentions";
@@ -64,7 +62,6 @@ const ParaphraseContend = () => {
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
   const [language, setLanguage] = useState("English");
-  const [freezeWords, setFreezeWords] = useState([]);
   const sampleText = trySamples.paraphrase[language || "English"];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
@@ -330,15 +327,17 @@ const ParaphraseContend = () => {
         setLanguage={setLanguage}
         language={language}
       />
-      <Box sx={{
-        display: 'flex',
-        gap: 2,
-        overflow: 'hidden',
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          overflow: "hidden",
+        }}
+      >
         <Card
           sx={{
-            flex: '1 1 0%',
-            minWidth: 0, 
+            flex: "1 1 0%",
+            minWidth: 0,
             mt: 1,
             border: "1px solid",
             borderColor: "divider",
@@ -357,14 +356,14 @@ const ParaphraseContend = () => {
               setShowMessage={setShowMessage}
             />
           ) : (
-              <ModeNavigationForMobile
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                initialFrozenWords={initialFrozenWords}
-                frozenWords={frozenWords}
-                userPackage={user?.package}
-              />
-            )}
+            <ModeNavigationForMobile
+              selectedMode={selectedMode}
+              setSelectedMode={setSelectedMode}
+              initialFrozenWords={initialFrozenWords}
+              frozenWords={frozenWords}
+              userPackage={user?.package}
+            />
+          )}
 
           <Divider sx={{ borderBottom: "2px solid", borderColor: "divider" }} />
 
@@ -444,20 +443,44 @@ const ParaphraseContend = () => {
                   flexDirection: "column",
                 }}
               >
-                <div style={{ color: "darkgray", paddingLeft: 15 }}>
+                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                   {isLoading ? (
                     <ViewInputInOutAsDemo
                       input={userInput}
                       wordLimit={wordLimit}
                     />
                   ) : !result.length ? (
-                      <p>Paraphrased Text</p>
-                    ) : null}
-                </div>
+                    <p>Paraphrased Text</p>
+                  ) : null}
+                </div> */}
+
+                <ParaphraseOutput
+                  data={result}
+                  setData={setResult}
+                  synonymLevel={selectedSynonyms}
+                  dataModes={modes}
+                  userPackage={user?.package}
+                  selectedLang={language}
+                  highlightSentence={highlightSentence}
+                  setOutputHistory={setOutputHistory}
+                  input={userInput}
+                  freezeWords={
+                    frozenWords.size > 0
+                      ? frozenWords.values.join(", ")
+                      : frozenPhrases.size > 0
+                      ? frozenPhrases.values.join(", ")
+                      : ""
+                  }
+                  socketId={socketId}
+                  language={language}
+                  setProcessing={setProcessing}
+                  eventId={eventId}
+                  setEventId={setEventId}
+                />
 
                 {result.length ? (
                   <>
-                    <ParaphraseOutput
+                    {/* <ParaphraseOutput
                       data={result}
                       setData={setResult}
                       synonymLevel={selectedSynonyms}
@@ -472,15 +495,15 @@ const ParaphraseContend = () => {
                         frozenWords.size > 0
                           ? frozenWords.values.join(", ")
                           : frozenPhrases.size > 0
-                            ? frozenPhrases.values.join(", ")
-                            : ""
+                          ? frozenPhrases.values.join(", ")
+                          : ""
                       }
                       socketId={socketId}
                       language={language}
                       setProcessing={setProcessing}
                       eventId={eventId}
                       setEventId={setEventId}
-                    />
+                    /> */}
                     <OutputBotomNavigation
                       handleClear={handleClear}
                       highlightSentence={highlightSentence}
@@ -505,7 +528,7 @@ const ParaphraseContend = () => {
         </Card>
         <Box
           sx={{
-            flex: '0 0 auto',             // don’t grow or shrink
+            flex: "0 0 auto", // don’t grow or shrink
           }}
         >
           <VerticalMenu
@@ -517,8 +540,8 @@ const ParaphraseContend = () => {
               frozenWords.size > 0
                 ? frozenWords.values.join(", ")
                 : frozenPhrases.size > 0
-                  ? frozenPhrases.values.join(", ")
-                  : ""
+                ? frozenPhrases.values.join(", ")
+                : ""
             }
             plainOutput={extractPlainText(result)}
             text={userInput}
