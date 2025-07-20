@@ -41,7 +41,7 @@ import {
 import { useAgentContext } from "./shared/AgentContextProvider";
 import { useCreatePresentationMutation } from "../../src/redux/api/presentation/presentationApi";
 import { setPresentationState } from "../../src/redux/slice/presentationSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
 import { setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
@@ -141,6 +141,8 @@ export default function AgentLandingPage() {
   const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
 
+  const user = useSelector((state) => state.auth.user);
+
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
     if (!hasVisited) {
@@ -155,6 +157,9 @@ export default function AgentLandingPage() {
     if (!inputValue.trim() || isSubmitting) return;
     
     setIsSubmitting(true);
+
+    // for sheet
+    const email = user?.email;
     
     try {
       switch (selectedNavItem) {
@@ -176,7 +181,8 @@ export default function AgentLandingPage() {
             setLoginDialogOpen,
             setIsSubmitting,
             setIsInitiatingSheet,
-            router
+            router,
+            email
           );
         case "download":
           return console.log("download route");

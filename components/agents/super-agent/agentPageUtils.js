@@ -1,5 +1,6 @@
 // ====== For Slide creation handler ======
 
+import { authenticateToSheetService } from "../../../src/libs/sheetUtils";
 import { setPresentationState } from "../../../src/redux/slice/presentationSlice";
 import { setSheetState } from "../../../src/redux/slice/sheetSlice";
 import { createPresentationServer } from "../../../src/services/createPresentationServer";
@@ -82,7 +83,8 @@ async function handleSheetGenerationRequest(
   setLoginDialogOpen,
   setIsSubmitting,
   setIsInitiatingSheet,
-  router
+  router,
+  email
 ) {
   try {
     // console.log(inputValue, "input value");
@@ -116,11 +118,41 @@ async function handleSheetGenerationRequest(
 
     setIsInitiatingSheet(true);
 
-    // TODO: we will call api here of SHEET
+    // Check if we have a sheet stored token
+    const storedSheetToken = localStorage.getItem("sheetai-token");
 
-    // TODO: Routing will depend on SHEET backend [RIAN VAI]
+    if(!storedSheetToken) {
+      // TODO: Authentication needs to be handled on the login and register page
+      await authenticateToSheetService(email);
+    }
 
-    router.push(`/agents/sheets/?id=${"dummy-for-now"}`);
+    // After authenticate we will have a sheet token on the local storage
+
+    const response = await fetch(
+      "https://sheetai.pixigenai.com/api/chat/create_chat",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("sheetai-token")}`,
+        },
+        body: JSON.stringify({
+          name: `${inputValue} - ${new Date().toLocaleString()}`,
+        }),
+      }
+    );
+
+    if(!response.ok) {
+      // TODO: Here we need to show user a toast message that we failed
+      console.log("Failed to create chat");
+      return;
+    }
+
+    const result = await response.json();
+
+    const chatId = result.chat_id || result.id || result._id;
+
+    router.push(`/agents/sheets/?id=${chatId}`);
   } catch (error) {
     console.log("[handleSheetGenerationRequest] error:", error);
   }

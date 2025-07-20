@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -10,45 +10,60 @@ import {
   Tooltip,
   LinearProgress,
 } from "@mui/material";
-import { 
-  Refresh, 
-  Download, 
-  Visibility, 
+import {
+  Refresh,
+  Download,
   Error,
   CheckCircle,
-  Info 
+  Info,
+  PlayArrow,
 } from "@mui/icons-material";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useSelector } from "react-redux";
 import { selectSheet } from "../../redux/slice/sheetSlice";
-import AppLink from "../common/AppLink";
 
 // Status indicator component
-const StatusChip = ({ status, title }) => {
+const StatusChip = ({ status, title, rowCount = 0 }) => {
   const getStatusProps = () => {
     switch (status) {
-      case 'connecting':
-        return { color: 'info', icon: <Info />, label: 'Connecting' };
-      case 'connected':
-        return { color: 'info', icon: <Info />, label: 'Connected' };
-      case 'generating':
-        return { color: 'warning', icon: <CircularProgress size={16} />, label: 'Generating' };
-      case 'completed':
-        return { color: 'success', icon: <CheckCircle />, label: 'Complete' };
-      case 'error':
-        return { color: 'error', icon: <Error />, label: 'Error' };
-      case 'cancelled':
-        return { color: 'default', icon: <Error />, label: 'Cancelled' };
+      case "generating":
+        return {
+          color: "warning",
+          icon: <CircularProgress size={16} />,
+          label: "Generating",
+        };
+      case "completed":
+        return {
+          color: "success",
+          icon: <CheckCircle />,
+          label: `Complete (${rowCount} rows)`,
+        };
+      case "error":
+        return {
+          color: "error",
+          icon: <Error />,
+          label: "Error",
+        };
+      case "cancelled":
+        return {
+          color: "default",
+          icon: <Error />,
+          label: "Cancelled",
+        };
       default:
-        return { color: 'default', icon: <Info />, label: 'Ready' };
+        return {
+          color: "default",
+          icon: <PlayArrow />,
+          label: "Ready",
+        };
     }
   };
 
   const statusProps = getStatusProps();
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       <Chip
         {...statusProps}
         size="small"
@@ -56,7 +71,16 @@ const StatusChip = ({ status, title }) => {
         sx={{ fontWeight: 500 }}
       />
       {title && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            maxWidth: 300,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
           {title}
         </Typography>
       )}
@@ -70,106 +94,113 @@ const processSheetData = (sheetData) => {
     return { columns: [], rows: [] };
   }
 
-  // If sheet is empty, return empty structure
   if (sheetData.length === 0) {
     return { columns: [], rows: [] };
   }
 
-  // Extract headers from first row (assuming first row contains headers)
-  const headers = Object.keys(sheetData[0] || {});
-  
+  // Get all possible keys from the data
+  const allKeys = new Set();
+  sheetData.forEach((row) => {
+    Object.keys(row).forEach((key) => {
+      if (key !== "id") {
+        // Exclude the id field from display
+        allKeys.add(key);
+      }
+    });
+  });
+
+  const headers = Array.from(allKeys);
+
   // Create columns configuration
-  const columns = headers.map((header, index) => ({
+  const columns = headers.map((header) => ({
     key: header,
-    name: header.charAt(0).toUpperCase() + header.slice(1), // Capitalize first letter
-    width: Math.max(150, Math.min(250, header.length * 12)), // Dynamic width
+    name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
+    width: Math.max(250, Math.min(350, header.length * 15)), // Changed minimum width to 300px
     resizable: true,
     sortable: true,
-    // Add custom rendering for specific data types
     renderCell: (params) => {
       const value = params.row[header];
-      
+
       // Handle different data types
-      if (value === null || value === undefined) {
-        return <span style={{ color: '#999', fontStyle: 'italic' }}>—</span>;
-      }
-      
-      if (typeof value === 'number') {
-        return <span style={{ fontFamily: 'monospace' }}>{value.toLocaleString()}</span>;
-      }
-      
-      if (typeof value === 'boolean') {
+      if (value === null || value === undefined || value === "") {
         return (
-          <Chip 
-            label={value ? 'Yes' : 'No'} 
-            color={value ? 'success' : 'default'}
-            size="small"
-            variant="outlined"
-          />
+          <Tooltip title="Empty value" arrow>
+            <span style={{ color: "#999", fontStyle: "italic" }}>—</span>
+          </Tooltip>
         );
       }
-      
+
+      if (typeof value === "number") {
+        return (
+          <Tooltip title={`Number: ${value.toLocaleString()}`} arrow>
+            <span style={{ fontFamily: "monospace" }}>
+              {value.toLocaleString()}
+            </span>
+          </Tooltip>
+        );
+      }
+
+      if (typeof value === "boolean") {
+        return (
+          <Tooltip title={`Boolean: ${value}`} arrow>
+            <Chip
+              label={value ? "Yes" : "No"}
+              color={value ? "success" : "default"}
+              size="small"
+              variant="outlined"
+            />
+          </Tooltip>
+        );
+      }
+
       // Handle dates
-      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
         try {
           const date = new Date(value);
-          return date.toLocaleDateString();
+          if (!isNaN(date.getTime())) {
+            return (
+              <Tooltip title={`Date: ${value}`} arrow>
+                <span>{date.toLocaleDateString()}</span>
+              </Tooltip>
+            );
+          }
         } catch (e) {
-          return value;
+          // Fall through to string handling
         }
       }
-      
-      return String(value);
-    }
+
+      // Handle all text values with tooltip
+      const stringValue = String(value);
+      return (
+        <Tooltip title={stringValue} arrow>
+          <span
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              display: "block",
+              width: "100%",
+            }}
+          >
+            {stringValue}
+          </span>
+        </Tooltip>
+      );
+    },
   }));
 
   // Process rows with proper IDs
   const rows = sheetData.map((row, index) => ({
-    id: row.id || `row-${index}`,
-    ...row
+    id: row.id !== undefined ? row.id : `row-${index}`,
+    ...row,
   }));
 
   return { columns, rows };
 };
 
-// Logs display component
-const LogsDisplay = ({ logs }) => {
-  if (!logs || logs.length === 0) {
-    return null;
-  }
-
-  return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="subtitle2" gutterBottom>
-        Generation Logs
-      </Typography>
-      <Paper 
-        variant="outlined" 
-        sx={{ 
-          p: 2, 
-          maxHeight: 200, 
-          overflowY: 'auto',
-          bgcolor: 'grey.50',
-          fontFamily: 'monospace',
-          fontSize: '0.75rem'
-        }}
-      >
-        {logs.map((log, index) => (
-          <Box key={index} sx={{ mb: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              {typeof log === 'string' ? log : JSON.stringify(log, null, 2)}
-            </Typography>
-          </Box>
-        ))}
-      </Paper>
-    </Box>
-  );
-};
-
-export default function SheetDataArea({ sheetId }) {
+export default function SheetDataArea() {
   const sheetState = useSelector(selectSheet);
   const [selectedRows, setSelectedRows] = useState(new Set());
-  const [showLogs, setShowLogs] = useState(false);
 
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
@@ -179,69 +210,90 @@ export default function SheetDataArea({ sheetId }) {
   // Check if we have data
   const hasData = rows.length > 0 && columns.length > 0;
 
-  // Memoize grid props for performance
-  const gridProps = useMemo(() => ({
-    columns,
-    rows,
-    selectedRows,
-    onSelectedRowsChange: setSelectedRows,
-    enableVirtualization: true,
-    rowHeight: 40,
-    headerRowHeight: 45,
-    className: "rdg-light",
-    style: { 
-      height: "100%",
-      border: "1px solid #e0e0e0",
-      borderRadius: "4px"
-    },
-    // Add sorting
-    sortColumns: [],
-    onSortColumnsChange: (sortColumns) => {
-      // Handle sorting if needed
-      console.log('Sort columns:', sortColumns);
-    },
-    // Add row selection
-    rowKeyGetter: (row) => row.id,
-  }), [columns, rows, selectedRows]);
-
-  // Handle refresh
-  const handleRefresh = () => {
-    // Could trigger a refresh of the sheet data
-    console.log('Refresh sheet data');
-  };
-
-  // Handle export
+  // Handle export to CSV
   const handleExport = () => {
     if (!hasData) return;
-    
-    // Convert data to CSV
-    const csvHeaders = columns.map(col => col.name).join(',');
-    const csvRows = rows.map(row => 
-      columns.map(col => {
-        const value = row[col.key];
-        // Escape commas and quotes
-        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-          return `"${value.replace(/"/g, '""')}"`;
-        }
-        return value;
-      }).join(',')
-    );
-    
-    const csvContent = [csvHeaders, ...csvRows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sheet-data-${Date.now()}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+
+    try {
+      // Create CSV headers
+      const csvHeaders = columns.map((col) => `"${col.name}"`).join(",");
+
+      // Create CSV rows
+      const csvRows = rows.map((row) =>
+        columns
+          .map((col) => {
+            const value = row[col.key];
+            if (value === null || value === undefined) return '""';
+
+            // Handle different data types
+            if (typeof value === "string") {
+              // Escape quotes and wrap in quotes
+              return `"${value.replace(/"/g, '""')}"`;
+            }
+
+            if (typeof value === "number" || typeof value === "boolean") {
+              return `"${value}"`;
+            }
+
+            return `"${String(value)}"`;
+          })
+          .join(",")
+      );
+
+      const csvContent = [csvHeaders, ...csvRows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `sheet-data-${
+        new Date().toISOString().split("T")[0]
+      }.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Export failed:", error);
+    }
   };
 
-  // Render loading state
-  if (sheetState.status === 'connecting' || sheetState.status === 'generating') {
+  // Handle refresh - could trigger a re-generation
+  const handleRefresh = () => {
+    console.log("Refresh sheet data");
+    // This could dispatch an action to refresh the data
+  };
+
+  // Grid configuration
+  const gridProps = useMemo(
+    () => ({
+      columns,
+      rows,
+      selectedRows,
+      onSelectedRowsChange: setSelectedRows,
+      enableVirtualization: rows.length > 100,
+      rowHeight: 40,
+      headerRowHeight: 45,
+      className: "rdg-light",
+      style: {
+        height: "100%",
+        border: "1px solid #e0e0e0",
+        borderRadius: "4px",
+        fontSize: "14px",
+      },
+      rowKeyGetter: (row) => row.id,
+      // Add default sorting
+      defaultSortColumns: [],
+      onSortColumnsChange: (sortColumns) => {
+        // Handle sorting if needed
+        console.log("Sort columns changed:", sortColumns);
+      },
+    }),
+    [columns, rows, selectedRows]
+  );
+
+  // Render generating state
+  if (sheetState.status === "generating") {
     return (
       <Box
         sx={{
@@ -256,41 +308,46 @@ export default function SheetDataArea({ sheetId }) {
       >
         <CircularProgress size={48} sx={{ mb: 2 }} />
         <Typography variant="h6" gutterBottom>
-          {sheetState.title || 'Generating Sheet...'}
+          Generating Your Sheet
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Please wait while we process your request
+          Please wait while we process your request...
         </Typography>
-        <LinearProgress sx={{ width: '100%', maxWidth: 300 }} />
+        <LinearProgress sx={{ width: "100%", maxWidth: 400 }} />
       </Box>
     );
   }
 
   // Render error state
-  if (sheetState.status === 'error') {
+  if (sheetState.status === "error") {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert 
-          severity="error" 
-          sx={{ mb: 2 }}
-          action={
-            <IconButton size="small" onClick={handleRefresh}>
-              <Refresh />
-            </IconButton>
-          }
-        >
-          Failed to generate sheet data. Please try again.
-        </Alert>
-        
-        {sheetState.logs && sheetState.logs.length > 0 && (
-          <LogsDisplay logs={sheetState.logs} />
-        )}
+      <Box
+        sx={{
+          p: 3,
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Paper sx={{ p: 4, textAlign: "center", maxWidth: 400 }}>
+          <Error sx={{ fontSize: 48, color: "error.main", mb: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            Generation Failed
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Something went wrong while generating your sheet. Please try again.
+          </Typography>
+          <IconButton onClick={handleRefresh} color="primary">
+            <Refresh />
+          </IconButton>
+        </Paper>
       </Box>
     );
   }
 
-  // Render empty state
-  if (!hasData && sheetState.status !== 'generating') {
+  // Render empty/ready state
+  if (!hasData) {
     return (
       <Box
         sx={{
@@ -303,19 +360,18 @@ export default function SheetDataArea({ sheetId }) {
           textAlign: "center",
         }}
       >
+        <PlayArrow sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
         <Typography variant="h6" color="text.secondary" gutterBottom>
-          No Data Available
+          Ready to Generate
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Start a conversation to generate sheet data
+        <Typography variant="body2" color="text.secondary">
+          Use the chat area to describe your spreadsheet and generate data
         </Typography>
-        {sheetState.logs && sheetState.logs.length > 0 && (
-          <LogsDisplay logs={sheetState.logs} />
-        )}
       </Box>
     );
   }
 
+  // Render data view
   return (
     <Box
       sx={{
@@ -323,7 +379,7 @@ export default function SheetDataArea({ sheetId }) {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
-        p: 1,
+        p: 2,
       }}
     >
       {/* Header */}
@@ -337,47 +393,29 @@ export default function SheetDataArea({ sheetId }) {
           gap: 1,
         }}
       >
-        <Box>
-          <StatusChip status={sheetState.status} title={sheetState.title} />
-        </Box>
-        
+        <StatusChip
+          status={sheetState.status}
+          title={sheetState.title}
+          rowCount={rows.length}
+        />
+
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Typography variant="body2" color="text.secondary">
-            {rows.length} rows, {columns.length} columns
+            {rows.length} rows × {columns.length} columns
             {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
           </Typography>
-          
+
           <Tooltip title="Export as CSV">
-            <IconButton 
-              size="small" 
-              onClick={handleExport}
-              disabled={!hasData}
-            >
+            <IconButton size="small" onClick={handleExport} disabled={!hasData}>
               <Download />
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="Refresh">
             <IconButton size="small" onClick={handleRefresh}>
               <Refresh />
             </IconButton>
           </Tooltip>
-          
-          {sheetId && (
-            <AppLink
-              href={`/sheets?project_id=${sheetId}`}
-              newTab
-              underline="hover"
-              color="primary"
-              fontSize="14px"
-              whiteSpace="nowrap"
-            >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <Visibility fontSize="small" />
-                View Full
-              </Box>
-            </AppLink>
-          )}
         </Box>
       </Box>
 
@@ -386,28 +424,10 @@ export default function SheetDataArea({ sheetId }) {
         <DataGrid {...gridProps} />
       </Box>
 
-      {/* Logs section (collapsible) */}
-      {sheetState.logs && sheetState.logs.length > 0 && (
-        <Box sx={{ mt: 1 }}>
-          <Typography
-            variant="caption"
-            color="primary"
-            sx={{ 
-              cursor: 'pointer',
-              '&:hover': { textDecoration: 'underline' }
-            }}
-            onClick={() => setShowLogs(!showLogs)}
-          >
-            {showLogs ? 'Hide' : 'Show'} Generation Logs ({sheetState.logs.length})
-          </Typography>
-          {showLogs && <LogsDisplay logs={sheetState.logs} />}
-        </Box>
-      )}
-
       {/* Footer */}
-      <Box sx={{ mt: 1, pt: 1, borderTop: 1, borderColor: "divider" }}>
+      <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: "divider" }}>
         <Typography variant="caption" color="text.secondary">
-          Sheet data updated in real-time • Last update: {new Date().toLocaleTimeString()}
+          Last updated: {new Date().toLocaleTimeString()}
         </Typography>
       </Box>
     </Box>

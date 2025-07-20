@@ -1,14 +1,26 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Box, Typography, Paper, IconButton, Tooltip, Alert } from "@mui/material";
-import { Send, Stop, Refresh } from "@mui/icons-material";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  Typography,
+  Paper,
+  IconButton,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+import { Send, Stop } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import InputArea from "../presentation/InputArea";
-import { useSheetAiChat } from "../../hooks/useSheetAiChat";
-import { useSheetAiStream } from "../../hooks/useSheetAiStream";
+import {
+  setSheetData,
+  setSheetStatus,
+  setSheetTitle,
+} from "../../redux/slice/sheetSlice";
 import { selectSheet } from "../../redux/slice/sheetSlice";
+import { authenticateToSheetService } from "../../libs/sheetUtils";
+import { useSearchParams } from "next/navigation";
 
-// Message component for chat display
-const MessageBubble = ({ message, isUser, timestamp }) => (
+// Simple message bubble component
+const MessageBubble = ({ message, isUser, timestamp, type = "info" }) => (
   <Box
     sx={{
       display: "flex",
@@ -21,8 +33,20 @@ const MessageBubble = ({ message, isUser, timestamp }) => (
       sx={{
         p: 2,
         maxWidth: "80%",
-        bgcolor: isUser ? "primary.main" : "grey.100",
-        color: isUser ? "white" : "text.primary",
+        bgcolor: isUser
+          ? "primary.main"
+          : type === "error"
+          ? "error.light"
+          : type === "success"
+          ? "success.light"
+          : "grey.100",
+        color: isUser
+          ? "white"
+          : type === "error"
+          ? "error.contrastText"
+          : type === "success"
+          ? "success.contrastText"
+          : "text.primary",
         borderRadius: 2,
         borderBottomRightRadius: isUser ? 0 : 2,
         borderBottomLeftRadius: isUser ? 2 : 0,
@@ -48,374 +72,523 @@ const MessageBubble = ({ message, isUser, timestamp }) => (
   </Box>
 );
 
-// Status indicator component
-const StatusIndicator = ({ status, connectionState, isStreaming }) => {
-  const getStatusColor = () => {
-    if (isStreaming) return "info.main";
-    if (status === "error") return "error.main";
-    if (status === "completed") return "success.main";
-    return "text.secondary";
-  };
+// Status indicator
+const StatusIndicator = ({ isLoading, error, sheetStatus }) => {
+  if (error) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            bgcolor: "error.main",
+          }}
+        />
+        <Typography variant="caption" color="error">
+          Error occurred
+        </Typography>
+      </Box>
+    );
+  }
 
-  const getStatusText = () => {
-    if (isStreaming) return `Streaming (${connectionState})`;
-    if (status === "error") return "Error occurred";
-    if (status === "completed") return "Generation complete";
-    return "Ready";
-  };
+  if (isLoading || sheetStatus === "generating") {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <CircularProgress size={8} />
+        <Typography variant="caption" color="primary">
+          Generating sheet...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (sheetStatus === "completed") {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            bgcolor: "success.main",
+          }}
+        />
+        <Typography variant="caption" color="success.main">
+          Sheet generated successfully
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (sheetStatus === "cancelled") {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            bgcolor: "warning.main",
+          }}
+        />
+        <Typography variant="caption" color="warning.main">
+          Generation cancelled
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       <Box
         sx={{
           width: 8,
           height: 8,
           borderRadius: "50%",
-          bgcolor: getStatusColor(),
+          bgcolor: "success.main",
         }}
       />
       <Typography variant="caption" color="text.secondary">
-        {getStatusText()}
+        Ready
       </Typography>
     </Box>
   );
 };
 
-export default function SheetChatArea({ currentAgentType, isLoading }) {
+export default function SheetChatArea({ currentAgentType }) {
   const dispatch = useDispatch();
   const sheetState = useSelector(selectSheet);
-  
-  // Custom hooks
-  const { 
-    chats, 
-    loading: chatLoading, 
-    error: chatError, 
-    createChat, 
-    getMyChats 
-  } = useSheetAiChat();
-  
-  const {
-    isStreaming,
-    connectionState,
-    error: streamError,
-    streamingStats,
-    startStreaming,
-    stopStreaming,
-    clearError,
-    canStartStreaming,
-    canStopStreaming
-  } = useSheetAiStream();
+  const user = useSelector((state) => state.auth.user);
+  const searchParams = useSearchParams();
+  const currentChatId = searchParams.get("id");
 
   // Local state
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
-  const [currentChatId, setCurrentChatId] = useState(null);
-  const [userEmail, setUserEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [authError, setAuthError] = useState(null);
-  const [isProcessingInitialPrompt, setIsProcessingInitialPrompt] = useState(false);
+  const [sheetAiToken, setSheetAiToken] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  const user = useSelector((state) => state.auth.user);
   // Refs
   const messagesEndRef = useRef(null);
-  const chatContainerRef = useRef(null);
+  const abortControllerRef = useRef(null);
   const initialPromptProcessedRef = useRef(false);
+  const initializationAttemptedRef = useRef(false);
 
-  // Initialize user email and check authentication
+  // Initialize component
   useEffect(() => {
-    const initializeUser = async () => {
+    const initializeComponent = async () => {
+      if (initializationAttemptedRef.current) return;
+      initializationAttemptedRef.current = true;
+
       try {
-        // Get user email from localStorage or user context
-        const email = user.email;
-        setUserEmail(email);
-        
-        // Check if user is authenticated with Sheet AI
-        const sheetToken = localStorage.getItem('sheet-token');
-        if (!sheetToken) {
-          await handleSheetAiAuth(email);
+        const token = localStorage.getItem("sheetai-token");
+        if (!token) {
+          throw new Error(
+            "No authentication token found. Please log in again."
+          );
         }
-        
+
+        setSheetAiToken(token);
+
+        // Load chat history if we have a chat ID
+        if (currentChatId) {
+          await loadChatHistory(currentChatId, token);
+        }
+
         setIsInitialized(true);
+        dispatch(setSheetStatus("idle"));
       } catch (error) {
-        console.error('Failed to initialize user:', error);
-        setAuthError('Failed to initialize authentication');
+        console.error("Initialization error:", error);
+        setError(error.message);
+        setIsInitialized(false);
       }
     };
 
-    initializeUser();
-  }, []);
+    initializeComponent();
+  }, [dispatch, currentChatId]);
 
-  // Handle Sheet AI authentication (register/login)
-  const handleSheetAiAuth = async (email) => {
-    try {
-      // First try to register (in case user doesn't exist)
-      const registerResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/sheet/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          name: email.split('@')[0], // Use email prefix as name
-          email 
-        })
-      });
-
-      if (registerResponse.ok) {
-        console.log('User registered successfully');
-      }
-
-      // Then login to get the sheet token
-      const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/sheet/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email })
-      });
-
-      if (!loginResponse.ok) {
-        throw new Error('Failed to login to Sheet AI');
-      }
-
-      const loginResult = await loginResponse.json();
-      if (loginResult.success && loginResult.data.access_token) {
-        localStorage.setItem('sheet-token', loginResult.data.access_token);
-        console.log('Sheet AI authentication successful');
-      }
-    } catch (error) {
-      console.error('Sheet AI authentication error:', error);
-      setAuthError('Failed to authenticate with Sheet AI service');
-    }
-  };
-
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-scroll to bottom
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  // Handle initial prompt from session storage - FIXED VERSION
+  // Handle initial load from session storage
   useEffect(() => {
     const processInitialPrompt = async () => {
-      // Prevent multiple processing
-      if (initialPromptProcessedRef.current || isProcessingInitialPrompt) {
+      if (
+        !isInitialized ||
+        isLoading ||
+        initialPromptProcessedRef.current ||
+        !sheetAiToken
+      ) {
         return;
       }
 
       const initialPrompt = sessionStorage.getItem("initialSheetPrompt");
-      
-      if (initialPrompt && isInitialized && !currentChatId && canStartStreaming) {
-        console.log('Processing initial prompt:', initialPrompt);
-        
+
+      if (initialPrompt && initialPrompt.trim()) {
+        console.log("Processing initial prompt:", initialPrompt);
         initialPromptProcessedRef.current = true;
-        setIsProcessingInitialPrompt(true);
-        
+
         try {
-          await handleInitialPrompt(initialPrompt);
+          await handleMessage(initialPrompt);
         } catch (error) {
-          console.error('Failed to process initial prompt:', error);
-          initialPromptProcessedRef.current = false; // Reset on error
+          console.error("Failed to process initial prompt:", error);
+          initialPromptProcessedRef.current = false;
+          setError("Failed to process initial request. Please try again.");
         } finally {
-          setIsProcessingInitialPrompt(false);
+          // Always remove the initial prompt from session storage
           sessionStorage.removeItem("initialSheetPrompt");
         }
       }
     };
 
     processInitialPrompt();
-  }, [isInitialized, currentChatId, canStartStreaming]);
+  }, [isInitialized, sheetAiToken]);
 
-  // Handle initial prompt processing
-  const handleInitialPrompt = async (prompt) => {
-    // return;
+  // Load chat history from API
+  const loadChatHistory = async (chatId, token) => {
+    if (!chatId || isLoadingHistory) return;
+
+    setIsLoadingHistory(true);
     try {
-      // Create a new chat first
-      const newChat = await createChat(`Sheet Generation - ${Date.now()}`, userEmail);
-      if (!newChat.localChatId) {
-        throw new Error('Failed to create chat');
-      }
-      
-      setCurrentChatId(newChat.localChatId);
-      
-      // Add user message to UI
-      const userMessage = {
-        id: `user-${Date.now()}`,
-        message: prompt,
-        isUser: true,
-        timestamp: new Date().toISOString(),
-      };
-      
-      setMessages([userMessage]);
-
-      console.log('Created new chat:', newChat.localChatId);
-      
-      // Start streaming with the new chat ID
-      await handleStartStreaming(newChat.localChatId, prompt);
-    } catch (error) {
-      console.error('Failed to handle initial prompt:', error);
-      setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
-        message: 'Failed to process initial prompt. Please try again.',
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        isError: true
-      }]);
-    }
-  };
-
-  // Handle new message submission - SIMPLIFIED VERSION
-  const handleNewMessage = async () => {
-    if (!inputValue.trim() || !canStartStreaming || !isInitialized || isProcessingInitialPrompt) {
-      return;
-    }
-
-    try {
-      let chatId = currentChatId;
-      
-      // Create new chat if none exists
-      if (!chatId) {
-        const newChat = await createChat(`Chat - ${Date.now()}`, userEmail);
-        if (!newChat.localChatId) {
-          throw new Error('Failed to create chat');
+      const response = await fetch(
+        `https://sheetai.pixigenai.com/api/conversation/get_chat_conversations/${chatId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-        chatId = newChat.localChatId;
-        setCurrentChatId(chatId);
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to load chat history: ${response.status}`);
       }
 
-      // Add user message to UI
-      const userMessage = {
-        id: `user-${Date.now()}`,
-        message: inputValue,
-        isUser: true,
-        timestamp: new Date().toISOString(),
-      };
-      
-      setMessages(prev => [...prev, userMessage]);
-      
-      // Clear input immediately
-      const currentInput = inputValue;
-      setInputValue("");
-      
-      // Start streaming
-      await handleStartStreaming(chatId, currentInput);
-      
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
-        message: 'Failed to send message. Please try again.',
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        isError: true
-      }]);
-    }
-  };
+      const historyData = await response.json();
 
-  // Handle streaming start - PREVENT DUPLICATE CALLS
-  const handleStartStreaming = useCallback(async (chatId, prompt) => {
-    // Prevent multiple simultaneous streaming attempts
-    if (isStreaming || !canStartStreaming) {
-      console.warn('Streaming already in progress or not available');
-      return;
-    }
+      // Convert API response to messages format
+      const convertedMessages = [];
 
-    try {
-      console.log('Starting streaming for chat:', chatId, 'with prompt:', prompt);
-      
-      await startStreaming(chatId, prompt, userEmail);
-      
-      // Add system message about generation starting
-      setMessages(prev => [...prev, {
-        id: `system-${Date.now()}`,
-        message: 'Starting sheet generation...',
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        isSystem: true
-      }]);
-      
-    } catch (error) {
-      console.error('Failed to start streaming:', error);
-      setMessages(prev => [...prev, {
-        id: `error-${Date.now()}`,
-        message: 'Failed to start generation. Please try again.',
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        isError: true
-      }]);
-    }
-  }, [isStreaming, canStartStreaming, startStreaming, userEmail]);
+      historyData.forEach((item) => {
+        // Add user message
+        convertedMessages.push({
+          id: `user-${item._id}`,
+          message: item.prompt,
+          isUser: true,
+          timestamp: item.createdAt,
+        });
 
-  // Handle streaming stop
-  const handleStopStreaming = async () => {
-    try {
-      await stopStreaming();
-      
-      setMessages(prev => [...prev, {
-        id: `system-${Date.now()}`,
-        message: 'Generation cancelled by user.',
-        isUser: false,
-        timestamp: new Date().toISOString(),
-        isSystem: true
-      }]);
-      
-    } catch (error) {
-      console.error('Failed to stop streaming:', error);
-    }
-  };
+        // Add AI response if exists
+        if (item.response) {
+          let responseMessage = "";
 
-  // Handle retry
-  const handleRetry = () => {
-    clearError();
-    if (messages.length > 0) {
-      const lastUserMessage = messages.filter(m => m.isUser).pop();
-      if (lastUserMessage && currentChatId) {
-        handleStartStreaming(currentChatId, lastUserMessage.message);
-      }
-    }
-  };
+          if (item.response.rows && item.response.columns) {
+            // If response contains sheet data
+            responseMessage = `✅ Sheet generated successfully with ${item.response.rows.length} rows and ${item.response.columns.length} columns!`;
 
-  // Update messages when sheet state changes
-  useEffect(() => {
-    if (sheetState.status === 'completed' && sheetState.title) {
-      setMessages(prev => {
-        const hasCompletionMessage = prev.some(m => m.isCompletion);
-        if (!hasCompletionMessage) {
-          return [...prev, {
-            id: `completion-${Date.now()}`,
-            message: `✅ ${sheetState.title}\n\nSheet generation completed successfully!`,
+            // Update Redux store with the latest sheet data
+            dispatch(setSheetData(item.response.rows));
+            dispatch(setSheetTitle(item.prompt.substring(0, 50) + "..."));
+            dispatch(setSheetStatus("completed"));
+          } else {
+            responseMessage = "Sheet generated successfully!";
+          }
+
+          convertedMessages.push({
+            id: `ai-${item._id}`,
+            message: responseMessage,
             isUser: false,
-            timestamp: new Date().toISOString(),
-            isCompletion: true
-          }];
+            timestamp: item.updatedAt,
+            type: "success",
+          });
         }
-        return prev;
       });
+
+      setChatHistory(convertedMessages);
+      setMessages(convertedMessages);
+    } catch (error) {
+      console.error("Failed to load chat history:", error);
+      // Don't show error for history loading failure, just log it
+    } finally {
+      setIsLoadingHistory(false);
     }
-  }, [sheetState.status, sheetState.title]);
+  };
+
+  // Handle message submission
+  const handleMessage = async (messageText = inputValue) => {
+    if (!messageText.trim() || isLoading || !sheetAiToken) {
+      return;
+    }
+
+    setError(null);
+    setIsLoading(true);
+
+    const userMessage = {
+      id: `user-${Date.now()}`,
+      message: messageText,
+      isUser: true,
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
+    dispatch(setSheetStatus("generating"));
+    dispatch(setSheetData(null));
+
+    try {
+      // Pass the currentChatId to the generation function
+      await handleSheetGeneration(messageText, currentChatId);
+    } catch (error) {
+      console.error("Failed to process message:", error);
+      const errorMessage =
+        error.message || "Failed to generate sheet. Please try again.";
+      setError(errorMessage);
+      dispatch(setSheetStatus("error"));
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          message: errorMessage,
+          isUser: false,
+          timestamp: new Date().toISOString(),
+          type: "error",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle sheet generation using streaming
+  const handleSheetGeneration = async (prompt, chatId) => {
+    try {
+      // Create abort controller for this request
+      abortControllerRef.current = new AbortController();
+
+      const response = await fetch(
+        "https://sheetai.pixigenai.com/api/conversation/create_conversation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sheetAiToken}`,
+            Accept: "text/event-stream",
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            chat: chatId,
+          }),
+          signal: abortControllerRef.current.signal,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error (${response.status}): ${errorText}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let hasReceivedData = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) break;
+
+        hasReceivedData = true;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+
+        // Keep the last incomplete line in buffer
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          try {
+            const data = JSON.parse(line);
+
+            // Add streaming message to UI
+            if (data.data?.message || data.message || data.step) {
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: `stream-${Date.now()}-${Math.random()}`,
+                  message:
+                    data.data?.message || data.message || `Step: ${data.step}`,
+                  isUser: false,
+                  timestamp: data.timestamp || new Date().toISOString(),
+                  type: data.step === "error" ? "error" : "info",
+                },
+              ]);
+            }
+
+            // Handle completion
+            if (data.step === "completed" && data.data?.response) {
+              const responseData = data.data.response;
+
+              // Update Redux store with sheet data
+              if (responseData.columns && responseData.rows) {
+                dispatch(setSheetData(responseData.rows));
+                dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
+                dispatch(setSheetStatus("completed"));
+
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: `success-${Date.now()}`,
+                    message: `✅ Sheet generated successfully with ${responseData.rows.length} rows and ${responseData.columns.length} columns!`,
+                    isUser: false,
+                    timestamp: new Date().toISOString(),
+                    type: "success",
+                  },
+                ]);
+              } else {
+                // Handle case where we have completion but no proper data structure
+                dispatch(setSheetStatus("error"));
+                throw new Error("Invalid response format from server");
+              }
+            }
+
+            // Handle different response formats that might come from the API
+            if (data.type === "final" && data.sheet_data) {
+              dispatch(setSheetData(data.sheet_data));
+              dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
+              dispatch(setSheetStatus("completed"));
+
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: `success-${Date.now()}`,
+                  message: `✅ Sheet generated successfully!`,
+                  isUser: false,
+                  timestamp: new Date().toISOString(),
+                  type: "success",
+                },
+              ]);
+            }
+
+            // Handle error steps
+            if (data.step === "error") {
+              dispatch(setSheetStatus("error"));
+              throw new Error(
+                data.data?.message || data.message || "Generation failed"
+              );
+            }
+          } catch (parseError) {
+            console.warn("Failed to parse streaming data:", line, parseError);
+            // Don't throw here, continue processing other lines
+          }
+        }
+      }
+
+      // If we didn't receive any data, that's an error
+      if (!hasReceivedData) {
+        throw new Error("No data received from server");
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.log("Streaming aborted by user");
+        return;
+      }
+      throw error;
+    } finally {
+      abortControllerRef.current = null;
+    }
+  };
+
+  // Stop streaming
+  const handleStopStreaming = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsLoading(false);
+      dispatch(setSheetStatus("cancelled"));
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `cancelled-${Date.now()}`,
+          message: "Generation cancelled by user.",
+          isUser: false,
+          timestamp: new Date().toISOString(),
+          type: "info",
+        },
+      ]);
+    }
+  };
+
+  // Clear error
+  const clearError = () => {
+    setError(null);
+    dispatch(setSheetStatus("idle"));
+  };
+
+  // Get user chats (you can use this for showing chat history)
+  const getUserChats = async () => {
+    try {
+      if (!sheetAiToken) return [];
+
+      const response = await fetch(
+        "https://sheetai.pixigenai.com/api/chat/get_my_chats",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${sheetAiToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user chats");
+      }
+
+      const chats = await response.json();
+      return chats;
+    } catch (error) {
+      console.error("Failed to get user chats:", error);
+      return [];
+    }
+  };
 
   // Render authentication error
-  if (authError) {
+  if (!isInitialized && error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {authError}
+        <Alert severity="error">
+          {error}
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="caption">
+              Make sure you have access to Sheet AI service and are properly
+              logged in.
+            </Typography>
+          </Box>
         </Alert>
-        <Typography variant="body2" color="text.secondary">
-          Please refresh the page to try again.
-        </Typography>
       </Box>
     );
   }
 
-  // Render loading state
+  // Render loading state during initialization
   if (!isInitialized) {
     return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
+      <Box sx={{ p: 3, textAlign: "center" }}>
+        <CircularProgress size={24} sx={{ mb: 2 }} />
         <Typography variant="body2" color="text.secondary">
-          Initializing Sheet AI...
+          {isLoadingHistory
+            ? "Loading chat history..."
+            : "Initializing Sheet AI..."}
         </Typography>
       </Box>
     );
@@ -427,90 +600,74 @@ export default function SheetChatArea({ currentAgentType, isLoading }) {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        maxHeight: "100%",
         borderRight: "1px solid #e0e0e0",
         bgcolor: "#fafafa",
         overflow: "hidden",
       }}
     >
-      {/* Header with status */}
+      {/* Header */}
       <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0", bgcolor: "white" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Sheet Generator
           </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            {(streamError || chatError) && (
-              <Tooltip title="Retry last operation">
-                <IconButton size="small" onClick={handleRetry}>
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-            )}
-            {canStopStreaming && (
-              <Tooltip title="Stop generation">
-                <IconButton size="small" onClick={handleStopStreaming} color="error">
-                  <Stop />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Box>
+          {(isLoading || sheetState.status === "generating") && (
+            <IconButton
+              size="small"
+              onClick={handleStopStreaming}
+              color="error"
+            >
+              <Stop />
+            </IconButton>
+          )}
         </Box>
-        <StatusIndicator 
-          status={sheetState.status} 
-          connectionState={connectionState}
-          isStreaming={isStreaming}
+        <StatusIndicator
+          isLoading={isLoading}
+          error={error}
+          sheetStatus={sheetState.status}
         />
       </Box>
 
-      {/* Error displays */}
-      {(streamError || chatError) && (
+      {/* Error Alert */}
+      {error && (
         <Box sx={{ p: 2 }}>
           <Alert severity="error" onClose={clearError}>
-            {streamError?.message || chatError?.message || 'An error occurred'}
+            {error}
           </Alert>
         </Box>
       )}
 
-      {/* Streaming stats (debug info) */}
-      {isStreaming && streamingStats.startTime && (
-        <Box sx={{ p: 1, bgcolor: "info.light", color: "info.contrastText" }}>
-          <Typography variant="caption">
-            Streaming: {Math.floor(streamingStats.duration / 1000)}s | 
-            Messages: {streamingStats.messagesReceived} | 
-            Bytes: {(streamingStats.bytesReceived / 1024).toFixed(1)}KB
-          </Typography>
-        </Box>
-      )}
-
-      {/* Messages area */}
+      {/* Messages Area */}
       <Box
-        ref={chatContainerRef}
         sx={{
           flex: 1,
           overflowY: "auto",
-          overflowX: "hidden",
           minHeight: 0,
           scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": { background: "transparent" },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
-            borderRadius: "3px",
-            "&:hover": { background: "#a8a8a8" },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 transparent",
         }}
       >
-        <Box sx={{ p: 3, minHeight: "100%", display: "flex", flexDirection: "column" }}>
-          {messages.length === 0 ? (
+        <Box sx={{ p: 3 }}>
+          {messages.length === 0 && !isLoadingHistory ? (
             <Box sx={{ textAlign: "center", mt: 4 }}>
               <Typography variant="h6" color="text.secondary" gutterBottom>
                 Welcome to Sheet Generator
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Start by describing what kind of spreadsheet you'd like to create.
+                Describe what kind of spreadsheet you'd like to create.
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 1, display: "block" }}
+              >
+                Example: "Create a budget tracker for personal expenses" or
+                "Generate a student grade sheet"
               </Typography>
             </Box>
           ) : (
@@ -520,6 +677,7 @@ export default function SheetChatArea({ currentAgentType, isLoading }) {
                 message={message.message}
                 isUser={message.isUser}
                 timestamp={message.timestamp}
+                type={message.type}
               />
             ))
           )}
@@ -527,31 +685,34 @@ export default function SheetChatArea({ currentAgentType, isLoading }) {
         </Box>
       </Box>
 
-      {/* Input area */}
+      {/* Input Area */}
       <Box
         sx={{
           borderTop: "1px solid #e0e0e0",
           bgcolor: "white",
           flexShrink: 0,
-          maxHeight: "300px",
-          overflow: "hidden",
         }}
       >
         <InputArea
           currentAgentType={currentAgentType}
           inputValue={inputValue}
           setInputValue={setInputValue}
-          onSend={handleNewMessage}
-          isLoading={isStreaming || chatLoading || isProcessingInitialPrompt}
-          disabled={!canStartStreaming || !isInitialized || isProcessingInitialPrompt}
+          onSend={handleMessage}
+          isLoading={isLoading || sheetState.status === "generating"}
+          disabled={
+            !isInitialized ||
+            isLoading ||
+            !sheetAiToken ||
+            sheetState.status === "generating"
+          }
           placeholder={
-            !isInitialized 
-              ? "Initializing..." 
-              : isProcessingInitialPrompt
-                ? "Processing initial prompt..."
-              : isStreaming 
-                ? "Generation in progress..." 
-                : "Describe the spreadsheet you want to create..."
+            !isInitialized
+              ? "Initializing..."
+              : !sheetAiToken
+              ? "Authentication required..."
+              : isLoading || sheetState.status === "generating"
+              ? "Generating sheet..."
+              : "Describe the spreadsheet you want to create..."
           }
         />
       </Box>
