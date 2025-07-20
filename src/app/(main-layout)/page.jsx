@@ -71,7 +71,7 @@ const Home = () => {
       <HomeHeroSection />
       <HomeTools />
       <HomeFeatures />
-      <B2bFeatures />
+      {/* <B2bFeatures /> */}
       <WhyShothik />
       <Testimonials />
       <CTA />

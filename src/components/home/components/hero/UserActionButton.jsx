@@ -54,11 +54,11 @@ const UserActionButton = () => {
             // Handle sign up action
           }}
         >
-          Try Shothik Free - No Card Required
+          Try Shothik Free 
         </Button>
 
         {/* Secondary CTA */}
-        <Button
+        {/* <Button
           variant="outlined"
           size="large"
           startIcon={<PlayCircleOutline />}
@@ -83,11 +83,12 @@ const UserActionButton = () => {
           }}
         >
           Watch Demo (1:32)
-        </Button>
+        </Button> */}
+
       </Stack>
 
       {/* Trust Indicators */}
-      <Stack 
+      {/* <Stack 
         direction="row" 
         spacing={3} 
         sx={{ 
@@ -125,7 +126,7 @@ const UserActionButton = () => {
             </Typography>
           </Box>
         ))}
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

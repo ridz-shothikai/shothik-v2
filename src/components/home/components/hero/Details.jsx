@@ -6,15 +6,13 @@ import SocialProofBanner from "./SocialProofBanner";
 
 const Details = () => {
   return (
-    <Grid2 size={{ xs: 12, md: 6 }}>
+    <Grid2 size={{ xs: 12, md: 6 }}
+    sx={{
+      px: { xs: 2, md: 0 }, // padding left/right: 16px on mobile, 0 on md+
+    }}
+    >
       {/* Social Proof Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <SocialProofBanner />
-      </motion.div>
+
 
       {/* Main Headline */}
       <motion.div
@@ -36,10 +34,9 @@ const Details = () => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          Join <span style={{ background: "linear-gradient(135deg, #00A76F 20%, #2E6259 100%)", 
-            backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>75M+</span> Writers Who
+          For The Billions Rising.
         </Typography>
-        <Typography
+        {/* <Typography
           variant='h2'
           sx={{
             fontWeight: 700,
@@ -53,9 +50,8 @@ const Details = () => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          Save <span style={{ background: "linear-gradient(135deg, #00A76F 20%, #2E6259 100%)", 
-            backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>15 Hours</span> Monthly
-        </Typography>
+          Your AI-Powered Writing Assistant
+        </Typography> */}
       </motion.div>
 
       {/* Subheadline */}
@@ -74,12 +70,13 @@ const Details = () => {
             maxWidth: '600px',
           }}
         >
-          Perfect for students and professionals who need high-quality
-          writing assistance in Bangla and English. Powered by advanced AI
-          that understands context and maintains your unique voice.
+          Shothik grows with you—from your first essay to your first business. Write better. Work smarter. Launch faster
         </Typography>
       </motion.div>
 
+      <br />
+
+           
       {/* Rating Section */}
       <Box
         component={motion.div}
@@ -104,7 +101,17 @@ const Details = () => {
         <Typography sx={{ color: "text.secondary" }}>
           Rated&nbsp;4.9/5&nbsp;| Join our growing community
         </Typography>
+        
       </Box>
+
+       <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <SocialProofBanner />
+      </motion.div>
+
       
       {/* CTA Section */}
       <UserActionButton />

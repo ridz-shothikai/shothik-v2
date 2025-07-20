@@ -1,3 +1,4 @@
+"use client";
 import { SmartToy, Speed, VolumeUp, Timer, Shield, TrendingUp } from "@mui/icons-material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Grid2 } from "@mui/material";
@@ -22,9 +23,9 @@ export default function HomeHeroSection() {
       <BgContainer image='url(/home/bg.png)' enablePattern={true}>
         <Grid2
           sx={{
-            pt: { xs: 3, md: 6, lg: 8 },
-            pb: { xs: 4, sm: 6, md: 8, lg: 10 },
-            px: { xs: 2, sm: 4, md: 6, lg: 8, xl: 10 },
+            // pt: { xs: 3, md: 6, lg: 8 },
+            // pb: { xs: 4, sm: 6, md: 8, lg: 10 },
+            // px: { xs: 2, sm: 4, md: 6, lg: 8, xl: 10 },
             maxWidth: '1400px',
             mx: 'auto',
             minHeight: { xs: 'auto', md: '600px', lg: '700px' },
@@ -52,7 +53,7 @@ export default function HomeHeroSection() {
               }}
             >
               {/* Background decorative elements */}
-              <Box
+              {/* <Box
                 component={motion.div}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -71,8 +72,8 @@ export default function HomeHeroSection() {
                   width={140}
                   height={140}
                 />
-              </Box>
-              <motion.div
+              </Box> */}
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -92,7 +93,7 @@ export default function HomeHeroSection() {
                     height={140}
                   />
                 </div>
-              </motion.div>
+              </motion.div> */}
 
               {/* Founder Video */}
               <VideoImage
@@ -101,12 +102,12 @@ export default function HomeHeroSection() {
                 videoUrl='/videos/founder-intro.mp4' // Add your video URL
                 videoPoster='/home/hero/founder-thumbnail.jpg' // Add thumbnail
                 videoDuration='1:32'
-                width={350}
-                height={300}
+                width={500}
+                height={450}
               />
 
               {/* Updated Feature Cards - Better positioned */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -123,8 +124,8 @@ export default function HomeHeroSection() {
                     position: "absolute",
                     bottom: { xs: -100, md: -60 },
                     left: { xs: 10, md: -100, lg: -120 },
-                    bgcolor: "rgba(33, 33, 33, 0.95)",
-                    color: "white",
+                    bgcolor: "background.paper",
+                    color: "text.primary",
                     p: 2,
                     borderRadius: 2,
                     height: { xs: "auto", md: "140px", lg: "160px" },
@@ -166,10 +167,10 @@ export default function HomeHeroSection() {
                     </ListItem>
                   </List>
                 </Paper>
-              </motion.div>
+              </motion.div> */}
 
               {/* Achievement Badge - Now properly positioned */}
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
@@ -200,7 +201,7 @@ export default function HomeHeroSection() {
                 >
                   <Box
                     sx={{
-                      background: 'linear-gradient(135deg, #00A76F 0%, #2E6259 100%)',
+                      background: (theme) => theme.palette.mode === 'dark' ? 'linear-gradient(135deg, #00A76F 0%, #2E6259 100%)' : 'linear-gradient(135deg, #00A76F 0%, #2E6259 100%)',
                       color: 'white',
                       p: 2,
                       textAlign: 'center',
@@ -214,7 +215,7 @@ export default function HomeHeroSection() {
                     </Typography>
                   </Box>
                 </Paper>
-              </motion.div>
+              </motion.div> */}
             </Box>
           </Grid2>
         </Grid2>

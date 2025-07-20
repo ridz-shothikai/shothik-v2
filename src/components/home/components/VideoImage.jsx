@@ -33,8 +33,8 @@ const VideoImage = ({
       transition={{ duration: 0.6, delay: 0.2 }}
       sx={{
         borderRadius: "20px",
-        height: { xs: "300px", sm: "380px", lg: "480px" },
-        width: { xs: "100%", sm: "300px", lg: "400px" },
+        height: { xs: "300px", sm: "300px", lg: "400px" },
+        width: { xs: "100%", sm: "500px", lg: "600px" },
         overflow: "hidden",
         position: "relative",
         zIndex: 0,
@@ -56,7 +56,7 @@ const VideoImage = ({
               objectFit: "cover",
               backgroundColor: "transparent",
             }}
-            alt='Founder video thumbnail'
+            alt=''
             unoptimized
             width={width}
             height={height}

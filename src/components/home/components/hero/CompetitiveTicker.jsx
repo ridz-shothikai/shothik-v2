@@ -21,13 +21,17 @@ const CompetitiveTicker = () => {
   }, [theme]);
   
   const advantages = [
-    "20% Cheaper than Grammarly",
+    "20% Cheaper than Other Tools",
     "AI Detection Bypass",
     "30+ Languages",
     "Bangla Grammar Checker",
-    "Used by 8M Students Monthly",
+    "Used by Students Worldwide",
     "GDPR & SOC 2 Compliant",
-    "15% Faster Processing"
+    "15% Faster Processing",
+    "Built for Teams",
+    "AI-Powered Writing Assistant",
+    "SEO Optimized Content",
+    "Plagiarism Checker",
   ];
 
   const tickerContent = advantages.join(" • ");
