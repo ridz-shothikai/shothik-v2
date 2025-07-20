@@ -29,6 +29,7 @@ export default function Onboarding() {
     })
   }
 
+
   const steps = [
     {
       element: "#sample-paste-section",
@@ -45,9 +46,14 @@ export default function Onboarding() {
         side: "top",
       },
       onNext: () => {
-        clickElByID("mode_more")
-        setTimeout(() => clickAndNext("language_all_button"), 300)
+        clickElByID("mode_more");
+        setTimeout(() => clickAndNext("language_all_button"), 300);
       },
+      onPrevious: ()=>{
+        clickElByID("mode_more")
+        setTimeout(()=>highlightStep(stepIndex.current - 1),300);
+      }
+
     },
     {
       element: "#language_menu",
@@ -56,6 +62,10 @@ export default function Onboarding() {
         side: "bottom",
       },
       onNext: () => clickAndNext("language_x_button"),
+      onPrevious: ()=>{
+        clickElByID("language_x_button")
+        setTimeout(()=>highlightStep(stepIndex.current - 1),300);
+      }
     },
     {
       element: "#paraphrase_settings",
@@ -64,6 +74,10 @@ export default function Onboarding() {
         side: "bottom",
       },
       onNext: () => clickElByID("paraphrase_settings_button", true),
+      onPrevious: ()=>{
+        clickElByID("language_all_button")
+        setTimeout(()=>highlightStep(stepIndex.current - 1),300);
+      }
     },
     {
       element: "#settings_tab",
@@ -73,9 +87,8 @@ export default function Onboarding() {
       },
       onNext: () => clickElByID("settings_sidebar_x_button", true),
       onPrevious: () => {
-        // Close settings tab first, then go to previous step
-        clickElByID("settings_sidebar_x_button")
-        setTimeout(() => highlightStep(stepIndex.current - 1), 300)
+        clickElByID("settings_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
       },
     },
     {
@@ -86,9 +99,9 @@ export default function Onboarding() {
       },
       onNext: () => clickAndNext("paraphrase_feedback_button"),
       onPrevious: () => {
-        clickElByID("paraphrase_settings_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
-      }
+        clickElByID("paraphrase_settings_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
+      },
     },
     {
       element: "#feedback_tab",
@@ -97,19 +110,77 @@ export default function Onboarding() {
         side: "top",
       },
       onPrevious: () => {
-        // Close feedback tab first, then go to previous step
-        clickElByID("settings_sidebar_x_button")
-        setTimeout(() => highlightStep(stepIndex.current - 1), 300)
+        clickElByID("settings_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
       },
-      // no onNext — this is the last step
+      // when Next is clicked here, close settings and move to the new shortcuts step
+      onNext: () => clickAndNext("settings_sidebar_x_button"),
     },
-  ]
-
+    {
+      element: "#paraphrase_shortcuts",
+      popover: {
+        description: "Click the Keyboard icon on the right to open Hotkeys panel",
+        side: "right",
+      },
+      onPrevious: () => {
+        clickElByID("paraphrase_feedback");
+        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
+      },
+      onNext: () => clickAndNext("paraphrase_shortcuts_button"),
+    },
+    {
+      element: "#shortcuts_tab",
+      popover: {
+        description: "Learn Keyboard shortcuts of shothik.ai",
+        side: "top",
+      },
+      onPrevious: () => {
+        clickElByID("settings_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
+      },
+      onNext: ()=>{
+        clickAndNext("settings_sidebar_x_button")
+      }
+      // last step: shows "Done" instead of Next
+    },
+    {
+      element: "#paraphrase_history",
+      popover: {
+        description: "Click the History icon on the right to open Previous history."
+      },
+      onPrevious:()=>{
+        clickElByID("plagiarism_sidebar_x_button")
+        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      },
+      onNext: ()=>{
+        clickAndNext("plagiarism_sidebar_x_button");
+      }
+    },
+    {
+      element: "#history_tab",
+      popover: {
+        description: "You can see previous history panel on the right, Click entries to revisit and reuse previous outputs."
+      },
+      onPrevious:()=>{
+        clickElByID("plagiarism_sidebar_x_button")
+        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      },
+      // onNext: ()=>{
+      //   clickAndNext("plagiarism_sidebar_x_button");
+      // }
+    },
+  ];
+  const reset = () =>{
+    clickElByID("settings_sidebar_x_button");
+    clickElByID("language_x_button")
+  }
   useEffect(() => {
+    reset();
     driverRef.current = driver({
       popoverClass: "driverjs-theme",
       stagePadding: 4,
-      smoothScroll: true,
+      smoothScroll: false,
+      animation: false,
       allowClose: false,
     })
     highlightStep(0)   // start the tour
@@ -140,7 +211,7 @@ export default function Onboarding() {
     await waitForElementReady(element)
     
     const btns = isLast
-      ? ["previous", "close"]
+      ? ["previous"]
       : ["previous", "next"]
     
     driverRef.current.highlight({

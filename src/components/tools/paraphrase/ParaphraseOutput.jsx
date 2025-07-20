@@ -25,6 +25,7 @@ const ParaphraseOutput = ({
   setProcessing,
   eventId,
   setEventId,
+  setHighlightSentence
 }) => {
   const [paraphraseForTagging] = useParaphraseForTaggingMutation();
   const [reportForSentence] = useReportForSentenceMutation();
@@ -246,6 +247,8 @@ const ParaphraseOutput = ({
         setSynonymsOptions={setSynonymsOptions}
         setSentence={setSentence}
         setAnchorEl={setAnchorEl}
+        highlightSentence={highlightSentence}
+        setHighlightSentence={setHighlightSentence}
       />
 
       <Synonyms

@@ -150,6 +150,8 @@ const EditableOutput = ({
   setSynonymsOptions,
   setSentence,
   setAnchorEl,
+  highlightSentence,
+  setHighlightSentence,
 }) => {
   const editor = useEditor({
     extensions: [StarterKit, SentenceNode, WordNode, CursorWatcher],
@@ -183,8 +185,10 @@ const EditableOutput = ({
         wordIndex,
         showRephraseNav: true,
       });
+      setHighlightSentence(sentenceIndex - 1);
 
       const sentence = data[sentenceIndex - 1].map((w) => w.word).join(" ");
+
       setSentence(sentence);
     };
 

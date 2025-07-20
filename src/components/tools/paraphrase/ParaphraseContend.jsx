@@ -276,6 +276,51 @@ const ParaphraseContend = () => {
       handleSubmit(userInputValue);
     }
   }, [userInputValue]);
+  function extractPlainText(array) {
+    // Check if input is an array
+    if (!Array.isArray(array)) {
+      console.error('Input must be an array');
+      return null;
+    }
+
+    // Initialize result string
+    let plainText = '';
+
+    // Iterate through each sentence array
+    for (const sentence of array) {
+      // Check if sentence is an array
+      if (!Array.isArray(sentence)) {
+        console.error('Each sentence must be an array');
+        return null;
+      }
+
+      // Process each word object in the sentence
+      for (const wordObj of sentence) {
+        // Validate word object structure
+        if (!wordObj || typeof wordObj !== 'object') {
+          console.error('Invalid word object in sentence');
+          return null;
+        }
+
+        // Check if word property exists and is a string
+        if (typeof wordObj.word !== 'string') {
+          console.error('Word property must be a string');
+          return null;
+        }
+
+        // Add word to result, trim to handle extra spaces
+        plainText += wordObj.word.trim();
+
+        // Add space after word unless it's punctuation
+        if (wordObj.type !== 'none' && wordObj.word !== ',') {
+          plainText += ' ';
+        }
+      }
+    }
+
+    // Return the final string, trimmed
+    return plainText.trim();
+  }
 
   return (
     <Box>
@@ -420,6 +465,7 @@ const ParaphraseContend = () => {
                       userPackage={user?.package}
                       selectedLang={language}
                       highlightSentence={highlightSentence}
+                      setHighlightSentence={setHighlightSentence}
                       setOutputHistory={setOutputHistory}
                       input={userInput}
                       freezeWords={
@@ -474,8 +520,11 @@ const ParaphraseContend = () => {
                   ? frozenPhrases.values.join(", ")
                   : ""
             }
+            plainOutput={extractPlainText(result)}
             text={userInput}
             selectedLang={language}
+            highlightSentence={highlightSentence}
+            setHighlightSentence={setHighlightSentence}
           />
         </Box>
       </Box>

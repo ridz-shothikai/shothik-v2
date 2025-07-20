@@ -8,7 +8,7 @@ import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
 
 // You can include "Auto Detect" as a valid tab option if needed
-const initLanguage = ["English", "Bangla"]; // Add "Auto Detect" here if needed
+const initLanguage = ["English (US)", "English (UK)", "English (CA)", "English(AU)", "Bangla"]; // Add "Auto Detect" here if needed
 
 const LanguageMenu = ({ setLanguage, isLoading, language }) => {
   const [languageTabs, setlanguageTabs] = useState(initLanguage);
