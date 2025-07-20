@@ -1,34 +1,151 @@
 
 "use client"
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material/styles'
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
-import { CheckCircleOutline,  Gavel, SentimentSatisfiedAlt, Compare, History, Settings, Keyboard } from "@mui/icons-material";
+import {
+  Gavel,
+  SentimentSatisfiedAlt,
+  Compare,
+  History,
+  Settings,
+  Keyboard,
+  Diamond
+} from "@mui/icons-material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import PlagiarismSidebar from './PlagiarismSidebar';
 import SettingsSidebar from './settings/SettingsSidebar';
 
 const ICON_SIZE = "2rem";
 
-const VerticalMenu = ({selectedMode, setSelectedMode, outputText, setOutputText, freezeWords, text, selectedLang}) => {
+const VerticalMenu = ({
+  selectedMode,
+  setSelectedMode,
+  outputText,
+  setOutputText,
+  freezeWords,
+  text,
+  selectedLang,
+  highlightSentence,
+  setHighlightSentence,
+  plainOutput,
+}) => {
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const disableActions = !plainOutput || !plainOutput.trim();
+
+
+
+
+
+const ICON_SIZE = '1.5rem'
+
+
+const ActionButton = ({
+  id,
+  title,
+  icon: Icon,
+  onClick,
+  disabled,
+  crown = false,
+  black = true
+}) => {
+  const theme = useTheme()
+  const words = title.split(' ')
+
+  return (
+    <Box
+      onClick={!disabled ? onClick : undefined}
+      sx={{
+        width: '5rem',
+        height: '5rem',
+        borderRadius: '50%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'background-color 0.2s',
+        '&:hover': {
+          bgcolor: disabled ? 'transparent' : theme.palette.action.hover,
+        },
+        userSelect: 'none',
+      }}
+    >
+      {/* icon + optional crown */}
+      <Box sx={{ position: 'relative', mb: 0.5 }}>
+        <IconButton
+          id={id}
+          size="large"
+          onClick={e => {
+            e.stopPropagation()
+            if (!disabled) onClick()
+          }}
+          disabled={disabled}
+          sx={{
+            p: 0,
+            color: black ? theme.palette.grey[900] : 'inherit',
+          }}
+        >
+          <Icon sx={{ fontSize: ICON_SIZE }} />
+        </IconButton>
+        {crown && (
+          <Box
+            component="img"
+            src="/premium_crown.svg"
+            alt="premium crown"
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: 16,
+              height: 16,
+              transform: 'translate(50%, 50%)',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+      </Box>
+
+      {/* split title into separate lines */}
+      <Typography
+        variant="caption"
+        align="center"
+        sx={{
+          fontSize: 12,
+          color: black ? theme.palette.grey[900] : 'inherit',
+          whiteSpace: 'pre-line',
+          lineHeight: 1.2,
+        }}
+      >
+        {words.map((w, i) => (
+          <React.Fragment key={i}>
+            {w}
+            {i < words.length - 1 && '\n'}
+          </React.Fragment>
+        ))}
+      </Typography>
+    </Box>
+  )
+}
 
   return (
     <>
       <Box
         sx={{
-          // position: "absolute",
           maxHeight: "90vh",
-          marginTop: '10px',
+          mt: 1,
           width: 'fit-content',
           display: "flex",
           flexDirection: "column",
           zIndex: 10,
         }}
-      >{showSidebar  == 'plagiarism' || showSidebar == 'history' || showSidebar == 'tone' || showSidebar == 'compare' ? 
+      >
+        {['plagiarism','history','tone','compare'].includes(showSidebar) ? (
           <PlagiarismSidebar
             active={showSidebar}
             setActive={setShowSidebar}
-            open={showSidebar}
+            open={!!showSidebar}
             onClose={() => setShowSidebar(false)}
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
@@ -37,110 +154,105 @@ const VerticalMenu = ({selectedMode, setSelectedMode, outputText, setOutputText,
             text={text}
             freezeWords={freezeWords}
             selectedLang={selectedLang}
+            sentence={
+              outputText &&
+              highlightSentence >= 0 &&
+              outputText[highlightSentence]
+                ? outputText[highlightSentence].map(w => w.word).join(" ")
+                : ""
+            }
+            highlightSentence={highlightSentence}
+            plainOutput={plainOutput}
           />
-          : showSidebar == 'settings' || showSidebar == 'feedback' || showSidebar == 'shortcuts' ? <SettingsSidebar tab={showSidebar} setTab={setShowSidebar} open={showSidebar == 'settings' || showSidebar == 'feedback' || showSidebar == 'shortcuts'} onClose={()=>{
-            setShowSidebar(false);
-          }}/> : <>
+        ) : ['settings','feedback','shortcuts'].includes(showSidebar) ? (
+          <SettingsSidebar
+            tab={showSidebar}
+            setTab={setShowSidebar}
+            open
+            onClose={() => setShowSidebar(false)}
+          />
+        ) : (
+          <>
+            {/* Center icons */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0, alignItems: "center" }}>
+              <ActionButton
+                id="paraphrase_plagiarism"
+                title="Check Plagiarism"
+                icon={Gavel}
+                onClick={() => setShowSidebar('plagiarism')}
+                disabled={disableActions}
+                crown={true}
+              />
+              <ActionButton
+                id="paraphrase_history"
+                title="History"
+                icon={History}
+                onClick={() => setShowSidebar('history')}
+                disabled={false}
+                crown={true}
+              />
+              <ActionButton
+                id="paraphrase_compare"
+                title="Compare Modes"
+                icon={Compare}
+                onClick={() => setShowSidebar('compare')}
+                disabled={disableActions}
+                crown={true}
+              />
+              <ActionButton
+                id="paraphrase_tone"
+                title="Tone"
+                icon={SentimentSatisfiedAlt}
+                onClick={() => setShowSidebar('tone')}
+                disabled={disableActions}
+                crown={true}
+              />
+            </Box>
 
-        {/* Center icons */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "center" }}>
-          {/* Check Plagiarism */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <Tooltip title="Check Plagiarism">
-              <IconButton size="large" onClick={() => setShowSidebar('plagiarism')}>
-                <Gavel sx={{ fontSize: ICON_SIZE }} />
-              </IconButton>
-            </Tooltip>
-            <Typography variant="caption" align="center" component="div">
-              Check<br />Plagiarism
-            </Typography>
-          </Box>
+            {/* Spacer */}
+            {/* <Box sx={{ flexGrow: 1 }} /> */}
 
-          {/* History */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <Tooltip title="History">
-              <IconButton size="large" onClick={() => setShowSidebar('history')}>
-                <History sx={{ fontSize: ICON_SIZE }} />
-              </IconButton>
-            </Tooltip>
-            <Typography variant="caption">History</Typography>
-          </Box>
-                {/* Compare */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <Tooltip title="Compare">
-              <IconButton size="large" onClick={() => setShowSidebar('compare')}>
-                <Compare sx={{ fontSize: ICON_SIZE }} />
-              </IconButton>
-            </Tooltip>
-            <Typography variant="caption">Compare</Typography>
-          </Box>
-       {/* Tone */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <Tooltip title="Compare">
-              <IconButton size="large" onClick={() => setShowSidebar('tone')}>
-                <SentimentSatisfiedAlt sx={{ fontSize: ICON_SIZE }} />
-              </IconButton>
-            </Tooltip>
-            <Typography variant="caption">Tone</Typography>
-          </Box>
-        </Box>
-                   {/* Bottom spacer */}
-        <Box sx={{ flexGrow: 1 }} />
-
-        {/* Bottom icons */}
-
+            {/* Bottom icons */}
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 2,
-                marginTop: "75px",
+                gap: 0,
+                mt: 2,
                 alignItems: "center",
-                color: "black",            // ① set a base color for captions
               }}
             >
-              {/* Settings */}
-              <Box id="paraphrase_settings" sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Tooltip title="Settings">
-                  <IconButton id="paraphrase_settings_button" size="large" sx={{ color: "black" }} onClick={() => setShowSidebar('settings')}>  {/* ② icons inherit or override to black */}
-                    <Settings sx={{ fontSize: ICON_SIZE }} />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="caption" color="inherit">  {/* ③ inherit the black from parent */}
-                  Settings
-                </Typography>
-              </Box>
-
-              {/* Feedback */}
-              <Box id="paraphrase_feedback"  sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Tooltip title="Feedback">
-                  <IconButton id="paraphrase_feedback_button" size="large" sx={{ color: "black" }} onClick={() => setShowSidebar('feedback')}>
-                    <FeedbackIcon sx={{ fontSize: ICON_SIZE }} />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="caption" color="inherit">
-                  Feedback
-                </Typography>
-              </Box>
-
-              {/* Hotkeys */}
-              <Box id="paraphrase_shortcuts" sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Tooltip title="Hotkeys">
-                  <IconButton id="paraphrase_shortcuts_button" size="large" sx={{ color: "black" }} onClick={() => setShowSidebar('shortcuts')}>
-                    <Keyboard sx={{ fontSize: ICON_SIZE }} />
-                  </IconButton>
-                </Tooltip>
-                <Typography variant="caption" color="inherit">
-                  Hotkeys
-                </Typography>
-              </Box>
+              <ActionButton
+                id="paraphrase_settings"
+                title="Settings"
+                icon={Settings}
+                onClick={() => setShowSidebar('settings')}
+                disabled={false}
+                black={true}
+              />
+              <ActionButton
+                id="paraphrase_feedback"
+                title="Feedback"
+                icon={FeedbackIcon}
+                onClick={() => setShowSidebar('feedback')}
+                disabled={false}
+                black={true}
+              />
+              <ActionButton
+                id="paraphrase_shortcuts"
+                title="Hotkeys"
+                icon={Keyboard}
+                onClick={() => setShowSidebar('shortcuts')}
+                disabled={false}
+                black={true}
+              />
             </Box>
-        </>}
+          </>
+        )}
       </Box>
-
-      {/* Sidebar toggled internally */}
     </>
   );
 };
 
 export default VerticalMenu;
+

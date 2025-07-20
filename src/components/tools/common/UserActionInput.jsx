@@ -96,7 +96,7 @@ const UserActionInput = ({
             {!isMobile ? "Paste Text" : "Paste"}
           </Button>
         </Stack>
-        <Box>
+        <Box id="upload_button">
           <FileUpload isMobile={isMobile} setInput={handleFileData} />
           <Typography
             component='p'

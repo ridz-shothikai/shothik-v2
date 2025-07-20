@@ -27,19 +27,14 @@ const ModeNavigation = ({
   setShowMessage,
 }) => {
   const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));      // <600px
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));        // <600px
   const isSm = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600–900px
-  const isMd = useMediaQuery(theme.breakpoints.between("md", "lg")); // 900–1200px
 
   // determine how many tabs to show before collapsing
-  let visibleCount;
-  if (isXs) visibleCount = 2;
-  else if (isSm) visibleCount = 4;
-  else if (isMd) visibleCount = 6;
-  else visibleCount = modes.length; // lg and up, show all
+  const visibleCount = isXs ? 2 : isSm ? 4 : 6;
 
   const initialModes = modes.slice(0, visibleCount);
-  const extraModes = modes.slice(visibleCount);
+  const extraModes   = modes.slice(visibleCount);
 
   // handle the “extra” selected mode
   const [extraMode, setExtraMode] = React.useState(() =>
@@ -82,14 +77,29 @@ const ModeNavigation = ({
       spacing={2}
     >
       {/* Modes */}
-      <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: { xs: 0.5, sm: 1, md: 2, lg: 3 },
+          overflowX: { xs: "auto", sm: "auto", md: "hidden" },
+          overflowY: "hidden",
+          whiteSpace: "nowrap",
+          // optional: show a thin scrollbar on WebKit
+          "&::-webkit-scrollbar": { height: 4 },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: 2,
+            backgroundColor: "rgba(0,0,0,0.2)",
+          },
+        }}
+      >
         <Tabs
           value={selectedMode}
           onChange={(_, v) => changeMode(v)}
           variant="standard"
           sx={{
             flexWrap: "nowrap",
-            overflow: "hidden",
+            overflowX: "auto",      // allow horizontal scroll inside Tabs
             "& .MuiTabs-flexContainer": {
               gap: {
                 xs: 0.5,
@@ -123,10 +133,10 @@ const ModeNavigation = ({
           ))}
         </Tabs>
 
-        {/* Always keep the More button visible; initialModes shrink at breakpoints */}
+        {/* “More” button with matching gap */}
         <Box
           id="mode_more_section"
-          sx={{ position: "relative", ml: 1, flexShrink: 0 }}
+          sx={{ flexShrink: 0 }}
         >
           <Button
             id="mode_more"
@@ -144,7 +154,6 @@ const ModeNavigation = ({
             open={open}
             onClose={handleMoreClose}
             MenuListProps={{ "aria-labelledby": "mode_more" }}
-            container={document.getElementById("mode_more_section")}
           >
             {extraModes.map((mode) => (
               <MenuItem
@@ -166,7 +175,9 @@ const ModeNavigation = ({
         <Slider
           aria-label="Synonyms"
           getAriaValueText={(v) => SYNONYMS[v]}
-          value={Object.keys(SYNONYMS).find((k) => SYNONYMS[k] === selectedSynonyms)}
+          value={Object.keys(SYNONYMS).find(
+            (k) => SYNONYMS[k] === selectedSynonyms
+          )}
           marks
           step={20}
           min={20}

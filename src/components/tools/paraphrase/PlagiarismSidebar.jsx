@@ -23,7 +23,24 @@ const tabs = [
   { id: "compare",    icon: <Compare />, component: CompareTab },
 ];
 
-const PlagiarismSidebar = ({ open, onClose, active, setActive, score, results, selectedMode, setSelectedMode, outputText, setOutputText, text, freezeWords, selectedLang }) => {
+const PlagiarismSidebar = ({
+  open,
+  onClose,
+  active,
+  setActive,
+  score,
+  results,
+  selectedMode,
+  setSelectedMode,
+  outputText,
+  setOutputText,
+  text,
+  freezeWords,
+  selectedLang,
+  sentence,
+  highlightSentence,
+  plainOutput,
+}) => {
   if (!open) return null;
 
   const ActiveTab = tabs.find((t) => t.id === active)?.component;
@@ -40,7 +57,7 @@ const PlagiarismSidebar = ({ open, onClose, active, setActive, score, results, s
         overflowY: "auto",
       }}
     >
-      {/* top nav */}
+      {/* top nav with bottom border */}
       <Box
         sx={{
           display: "flex",
@@ -49,6 +66,8 @@ const PlagiarismSidebar = ({ open, onClose, active, setActive, score, results, s
           px: 2,
           pt: 2,
           pb: 1,
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Box sx={{ display: "flex", flex: 1, justifyContent: "space-around" }}>
@@ -88,7 +107,7 @@ const PlagiarismSidebar = ({ open, onClose, active, setActive, score, results, s
           ))}
         </Box>
 
-        <IconButton size="small" onClick={onClose}>
+        <IconButton size="small" id="plagiarism_sidebar_x_button" onClick={onClose}>
           <Close fontSize="small" />
         </IconButton>
       </Box>
@@ -105,6 +124,9 @@ const PlagiarismSidebar = ({ open, onClose, active, setActive, score, results, s
           text={text}
           freezeWords={freezeWords}
           selectedLang={selectedLang}
+          sentence={sentence}
+          highlightSentence={highlightSentence}
+          plainOutput={plainOutput}
         />
       )}
     </Box>

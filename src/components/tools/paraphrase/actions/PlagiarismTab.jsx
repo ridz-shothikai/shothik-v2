@@ -90,7 +90,7 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
     const eid = `${socketId}-${Date.now()}`;
     eventIdRef.current = eid;
 
-    fetch(`${API_BASE}/check-plagiarism-async`, {
+    fetch(`${API_BASE}/plagiarism`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
   }, [text, socketId]);
 
   return (
-    <Box sx={{ px: 2, py: 1 }}>
+    <Box id="plagiarism_tab" sx={{ px: 2, py: 1 }}>
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         Plagiarism Checker
       </Typography>

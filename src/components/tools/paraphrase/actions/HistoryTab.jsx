@@ -73,7 +73,7 @@ const HistoryTab = () => {
   };
 
   return (
-    <Box sx={{ px: 2, py: 1 }}>
+    <Box id="history_tab" sx={{ px: 2, py: 1 }}>
       {/* Header */}
       <Box
         sx={{

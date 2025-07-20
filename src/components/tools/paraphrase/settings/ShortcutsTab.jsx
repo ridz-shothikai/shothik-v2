@@ -11,7 +11,7 @@ const ShortcutsTab = () => {
   ];
 
   return (
-    <Box sx={{ px: 2, py: 1 }}>
+    <Box id="shortcuts_tab" sx={{ px: 2, py: 1 }}>
       {/* Title */}
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         Keyboard Shortcuts
