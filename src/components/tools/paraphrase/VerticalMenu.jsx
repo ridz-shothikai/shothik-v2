@@ -29,6 +29,7 @@ const VerticalMenu = ({
   highlightSentence,
   setHighlightSentence,
   plainOutput,
+  selectedSynonymLevel,
 }) => {
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -161,6 +162,7 @@ const ActionButton = ({
                 ? outputText[highlightSentence].map(w => w.word).join(" ")
                 : ""
             }
+            selectedSynonymLevel={selectedSynonymLevel}
             highlightSentence={highlightSentence}
             plainOutput={plainOutput}
           />

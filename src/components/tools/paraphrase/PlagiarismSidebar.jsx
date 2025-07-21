@@ -40,6 +40,7 @@ const PlagiarismSidebar = ({
   sentence,
   highlightSentence,
   plainOutput,
+  selectedSynonymLevel,
 }) => {
   if (!open) return null;
 
@@ -127,6 +128,7 @@ const PlagiarismSidebar = ({
           sentence={sentence}
           highlightSentence={highlightSentence}
           plainOutput={plainOutput}
+          selectedSynonymLevel={selectedSynonymLevel}
         />
       )}
     </Box>

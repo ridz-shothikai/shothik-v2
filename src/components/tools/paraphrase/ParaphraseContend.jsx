@@ -548,6 +548,7 @@ const ParaphraseContend = () => {
             selectedLang={language}
             highlightSentence={highlightSentence}
             setHighlightSentence={setHighlightSentence}
+            selectedSynonymLevel={selectedSynonyms}
           />
         </Box>
       </Box>
