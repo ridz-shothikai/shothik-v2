@@ -8,6 +8,7 @@ import useResponsive from "../../hooks/useResponsive";
 import { loadSettingsFromLocalStorage } from "../../redux/slice/settings";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 import MobileNavigation from "../navigation/MobileNavigation";
+import VerticalMenu from "../auth/../../components/tools/paraphrase/VerticalMenu.jsx"
 // ----------------------------------------------------------------------
 
 const SPACING = 8;
@@ -49,7 +50,17 @@ export default function Main({ children }) {
         sx={{ minHeight: "calc(100vh - 90px)" }}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
-        {children}
+        {pathName.startsWith("/paraphrase") ? <Box
+          sx={{
+            display: "flex",
+            position: "relative",
+            justifyContent: "space-evenly"
+          }}
+        >
+
+          <Box sx={{display:"flex", flexDirection:"column"}}>{children}</Box>
+          <VerticalMenu/>
+        </Box> : children}
       </Container>
       {pathName !== "/research" && !pathName.startsWith("/agents") ? <FooterServerComponent /> : null}
     </Box>
