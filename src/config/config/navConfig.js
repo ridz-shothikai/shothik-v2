@@ -12,7 +12,7 @@ const ICONS = {
   summarize: icon("summarize"),
   grammar: icon("grammar"),
   translator: icon("translator"),
-  research: icon("research"),
+  agents: icon("agents"),
   user: icon("user"),
   agent: icon("ai-brain"),
 };

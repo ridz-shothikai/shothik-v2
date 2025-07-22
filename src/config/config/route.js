@@ -60,7 +60,7 @@ export const PATH_TOOLS = {
   summarize: "/summarize",
   grammar: "/grammar-check",
   translator: "/translator",
-  research: "/research",
+  agents: "/agents",
   bangla_grammar: "/bangla-grammar-check",
   get: (name) => `/${name.toLowerCase().replaceAll(" ", "-")}`,
 };

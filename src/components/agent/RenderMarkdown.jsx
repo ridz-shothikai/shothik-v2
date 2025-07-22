@@ -26,6 +26,7 @@ import {
 } from "chart.js";
 import Marked from "marked-react";
 import { Pie } from "react-chartjs-2";
+import SlidePreview from "./SlidePreview";
 
 ChartJS.register(
   LineElement,
@@ -102,32 +103,43 @@ const RenderMarkdown = ({ content }) => {
     },
 
     code(children) {
-      let data;
+      let data = undefined;
       try {
         data = JSON.parse(children);
-      } catch {}
-
-      console.log("data", data);
+      } catch {
+        console.log("error: ");
+      }
       if (!data) return null;
-      return (
-        <Box
-          key={this.elementId}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            my: 2,
-          }}
-        >
-          <div style={{ height: "300px", width: "auto" }}>
-            {data?.type === "bar" ? (
-              <Pie data={data.data} />
-            ) : data?.type === "pie" ? (
-              <Pie data={data.data} />
-            ) : null}
-          </div>
-        </Box>
-      );
+      if (data.type) {
+        return (
+          <Box
+            key={this.elementId}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              my: 2,
+            }}
+          >
+            <div style={{ height: "300px", width: "auto" }}>
+              {data.type === "bar" ? (
+                <Pie data={data.data} />
+              ) : data.type === "pie" ? (
+                <Pie data={data.data} />
+              ) : null}
+            </div>
+          </Box>
+        );
+      } else {
+        return data?.map((item, index) => (
+          <Box
+            key={index}
+            sx={{ height: "250px", overflow: "hidden", marginY: 2 }}
+          >
+            <SlidePreview src={item} />
+          </Box>
+        ));
+      }
     },
 
     table(children) {

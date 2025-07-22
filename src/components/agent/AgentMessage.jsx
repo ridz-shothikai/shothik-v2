@@ -18,6 +18,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import RenderMarkdown from "./RenderMarkdown";
 
 export default function AgentMessage({ message, handleSideView }) {
   const theme = useTheme();
@@ -69,145 +70,160 @@ export default function AgentMessage({ message, handleSideView }) {
               zIndex: 1,
             }}
           />
-          <Accordion
-            defaultExpanded
-            disableGutters
-            sx={{
-              border: "none",
-              boxShadow: "none",
-              margin: 0,
-              marginLeft: 3,
-              "&::before": {
-                display: "none",
-              },
-              "&.Mui-expanded": {
-                backgroundColor: "transparent",
-                boxShadow: "none",
-                minHeight: "auto",
-                marginLeft: 3,
-              },
-              "& .Mui-expanded": {
-                backgroundColor: "transparent",
-                boxShadow: "none",
-                minHeight: "auto",
-                margin: 0,
-              },
-              "& .MuiAccordionSummary-root": {
-                padding: 0,
-              },
-              "& .MuiAccordionDetails-root": {
-                boxShadow: "none",
-                border: "none",
-                paddingY: 0,
-                paddingX: 1,
-              },
-              "& .MuiAccordionSummary-content": {
-                marginY: 0,
-              },
-              "& .MuiButtonBase-root": {
-                minHeight: "auto",
-                marginY: 1,
-              },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={item?.message?.includes("##") ? null : <ExpandMore />}
-              aria-controls={`logs-${index}`}
-              id={`logs-${index}`}
-            >
-              {item?.message?.includes("##") ? (
-                <RenderResponse
-                  item={item}
-                  dark={dark}
-                  handleSideView={handleSideView}
-                />
-              ) : (
-                <Typography>{item.message}</Typography>
-              )}
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}
-            >
-              {item.data && item.data.length
-                ? item.data.map((subMessage, index) => {
-                    if (subMessage.type === "text") {
-                      return (
-                        <Typography
-                          sx={{
-                            color: dark ? "primary.lighter" : "primary.darker",
-                            fontSize: 14,
-                          }}
-                          key={index}
-                        >
-                          {subMessage.message}
-                        </Typography>
-                      );
-                    } else if (subMessage.type === "tool") {
-                      return (
-                        <Box
-                          onClick={() => handleSideView(subMessage)}
-                          sx={{
-                            backgroundColor: dark
-                              ? "rgba(4, 64, 57, 0.5)"
-                              : "#cbe9dd",
-                            paddingX: 1.5,
-                            paddingY: 0.5,
-                            borderRadius: 2,
-                            cursor: "pointer",
-                            width: "fit-content",
-                            maxWidth: "100%",
-                            color: dark ? "primary.lighter" : "primary.darker",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                          }}
-                          key={index}
-                        >
-                          <Typography fontWeight={600}>Tool</Typography>
-                          <Typography>||</Typography>
-                          {subMessage.agent_name === "browser_agent" ? (
-                            <TravelExplore
-                              sx={{ fontSize: 16, color: "primary.main" }}
-                            />
-                          ) : subMessage.agent_name === "planner_agent" ? (
-                            <Psychology
-                              sx={{ fontSize: 18, color: "primary.main" }}
-                            />
-                          ) : (
-                            <SmartToyIcon
-                              sx={{ color: "#00A76F", fontSize: 16 }}
-                            />
-                          )}
 
+          {item?.message?.includes("**") ||
+          item?.message?.includes("``json") ? (
+            <Box sx={{ marginLeft: 3 }}>
+              {console.log(item)}
+              <RenderMarkdown content={item.message} />
+            </Box>
+          ) : (
+            <Accordion
+              defaultExpanded
+              disableGutters
+              sx={{
+                border: "none",
+                boxShadow: "none",
+                margin: 0,
+                marginLeft: 3,
+                "&::before": {
+                  display: "none",
+                },
+                "&.Mui-expanded": {
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                  minHeight: "auto",
+                  marginLeft: 3,
+                },
+                "& .Mui-expanded": {
+                  backgroundColor: "transparent",
+                  boxShadow: "none",
+                  minHeight: "auto",
+                  margin: 0,
+                },
+                "& .MuiAccordionSummary-root": {
+                  padding: 0,
+                },
+                "& .MuiAccordionDetails-root": {
+                  boxShadow: "none",
+                  border: "none",
+                  paddingY: 0,
+                  paddingX: 1,
+                },
+                "& .MuiAccordionSummary-content": {
+                  marginY: 0,
+                },
+                "& .MuiButtonBase-root": {
+                  minHeight: "auto",
+                  marginY: 1,
+                },
+              }}
+            >
+              <AccordionSummary
+                expandIcon={
+                  item?.message?.includes("##") ? null : <ExpandMore />
+                }
+                aria-controls={`logs-${index}`}
+                id={`logs-${index}`}
+              >
+                {item?.message?.includes("##") ? (
+                  <RenderResponse
+                    item={item}
+                    dark={dark}
+                    handleSideView={handleSideView}
+                  />
+                ) : (
+                  <Typography>{item.message}</Typography>
+                )}
+              </AccordionSummary>
+              <AccordionDetails
+                sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}
+              >
+                {item.data && item.data.length
+                  ? item.data.map((subMessage, index) => {
+                      if (subMessage.type === "text") {
+                        return (
                           <Typography
-                            noWrap
                             sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              flexGrow: 1,
+                              color: dark
+                                ? "primary.lighter"
+                                : "primary.darker",
+                              fontSize: 14,
                             }}
-                            fontSize={14}
+                            key={index}
                           >
                             {subMessage.message}
                           </Typography>
-                          {subMessage?.status === "progress" ? (
-                            <AutoMode
+                        );
+                      } else if (subMessage.type === "tool") {
+                        return (
+                          <Box
+                            onClick={() => handleSideView(subMessage)}
+                            sx={{
+                              backgroundColor: dark
+                                ? "rgba(4, 64, 57, 0.5)"
+                                : "#cbe9dd",
+                              paddingX: 1.5,
+                              paddingY: 0.5,
+                              borderRadius: 2,
+                              cursor: "pointer",
+                              width: "fit-content",
+                              maxWidth: "100%",
+                              color: dark
+                                ? "primary.lighter"
+                                : "primary.darker",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                            }}
+                            key={index}
+                          >
+                            <Typography fontWeight={600}>Tool</Typography>
+                            <Typography>||</Typography>
+                            {subMessage.agent_name === "browser_agent" ? (
+                              <TravelExplore
+                                sx={{ fontSize: 16, color: "primary.main" }}
+                              />
+                            ) : subMessage.agent_name === "planner_agent" ? (
+                              <Psychology
+                                sx={{ fontSize: 18, color: "primary.main" }}
+                              />
+                            ) : (
+                              <SmartToyIcon
+                                sx={{ color: "#00A76F", fontSize: 16 }}
+                              />
+                            )}
+
+                            <Typography
+                              noWrap
                               sx={{
-                                animation: `${spin} 2s linear infinite`,
-                                fontSize: 16,
-                                color: "primary.main",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                flexGrow: 1,
                               }}
-                            />
-                          ) : (
-                            <Button sx={{ padding: 0 }}>View</Button>
-                          )}
-                        </Box>
-                      );
-                    } else return null;
-                  })
-                : null}
-            </AccordionDetails>
-          </Accordion>
+                              fontSize={14}
+                            >
+                              {subMessage.message}
+                            </Typography>
+                            {subMessage?.status === "progress" ? (
+                              <AutoMode
+                                sx={{
+                                  animation: `${spin} 2s linear infinite`,
+                                  fontSize: 16,
+                                  color: "primary.main",
+                                }}
+                              />
+                            ) : (
+                              <Button sx={{ padding: 0 }}>View</Button>
+                            )}
+                          </Box>
+                        );
+                      } else return null;
+                    })
+                  : null}
+              </AccordionDetails>
+            </Accordion>
+          )}
         </Stack>
       ))}
     </Box>

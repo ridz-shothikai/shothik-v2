@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { motion } from "motion/react";
 import RenderMarkdown from "./RenderMarkdown";
+import SlidePreview from "./SlidePreview";
 import TaskProgress from "./TaskProgress";
 
 const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
@@ -112,40 +113,42 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
         )}
       </Stack>
 
-      <Typography
-        sx={{
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          padding: 0.5,
-          textAlign: "center",
-          backgroundColor: "rgba(73, 149, 87, 0.1)",
-          borderRadius: 1,
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-          color: "primary.darker",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {computerLogs?.message?.includes("##") && computerLogs?.type === "text"
-          ? "Shothik AI Agent Task is completed"
-          : computerLogs.message}
-      </Typography>
       <Box
         sx={{
-          backgroundColor: "rgba(73, 149, 87, 0.1)",
           borderRadius: 1,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-          height: "68%",
+          height: "500px",
           overflow: "hidden",
           overflowY: "auto",
+          position: "relative",
         }}
       >
-        {computerLogs?.type === "tool" ? (
+        <Typography
+          sx={{
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            padding: 0.5,
+            textAlign: "center",
+            backgroundColor: "#cbe9dd",
+            color: "primary.darker",
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+          }}
+        >
+          {computerLogs?.message?.includes("##") &&
+          computerLogs?.type === "text"
+            ? "Shothik AI Agent Task is completed"
+            : computerLogs?.data?.result?.startsWith("http")
+            ? "Preview"
+            : computerLogs.message}
+        </Typography>
+        {computerLogs?.type === "tool" &&
+        !computerLogs?.data?.result?.startsWith("http") ? (
           <Editor
-            height='100%'
+            height='93.5%'
             defaultLanguage='markdown'
             value={computerLogs?.data?.result}
             beforeMount={handleEditorWillMount}
@@ -160,7 +163,14 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
           />
         ) : computerLogs?.type === "result" ||
           computerLogs?.message?.includes("##") ? (
-          <Box sx={{ paddingX: 2 }}>
+          <Box
+            sx={{
+              paddingX: 2,
+              height: "93.5%",
+              overflow: "hidden",
+              backgroundColor: "rgba(73, 149, 87, 0.1)",
+            }}
+          >
             <RenderMarkdown
               content={
                 computerLogs?.message?.includes("##")
@@ -168,6 +178,11 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
                   : computerLogs?.data
               }
             />
+          </Box>
+        ) : computerLogs?.data?.result?.startsWith("http") ? (
+          <Box sx={{ height: "250px", overflow: "hidden" }}>
+            {console.log(computerLogs?.data?.result)}
+            <SlidePreview src={computerLogs?.data?.result} />
           </Box>
         ) : null}
       </Box>
