@@ -30,6 +30,7 @@ function UserInputBox({
       }),
     ],
     content: "",
+    immediatelyRender: false,
     onSelectionUpdate: ({ editor }) => {
       const { from, to } = editor.state.selection;
       const selectedText = editor.state.doc.textBetween(from, to, " ").trim();
