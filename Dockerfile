@@ -39,7 +39,17 @@ RUN npm install --production
 # Copy the built application from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
+# Remove this line - we're installing fresh node_modules in runner
+# COPY --from=builder /app/node_modules ./node_modules
+
+# Set environment variables in runner stage as well (for server-side)
+ARG NEXT_PUBLIC_SOCKET
+ARG NEXT_PUBLIC_API_URI
+ARG NEXT_PUBLIC_DOMAIN_URI
+
+ENV NEXT_PUBLIC_SOCKET=$NEXT_PUBLIC_SOCKET
+ENV NEXT_PUBLIC_API_URI=$NEXT_PUBLIC_API_URI
+ENV NEXT_PUBLIC_DOMAIN_URI=$NEXT_PUBLIC_DOMAIN_URI
 
 # Expose port 3000
 EXPOSE 3000
