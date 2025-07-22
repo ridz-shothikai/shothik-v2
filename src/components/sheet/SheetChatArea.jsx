@@ -334,14 +334,14 @@ export default function SheetChatArea({ currentAgentType }) {
 
   // Effect to control polling based on data completeness
   useEffect(() => {
-    if (chatData?.isIncomplete && !isLoadingHistory) {
+    if (chatData?.shouldSetGenerating && !isLoadingHistory) {
       setShouldPoll(true);
     } else {
       setShouldPoll(false);
     }
-  }, [chatData?.isIncomplete, isLoadingHistory]);
+  }, [chatData?.shouldSetGenerating, isLoadingHistory]);
   // RTK Query hook with conditional polling ENDS
-  
+
   // Initialization and other useEffect hooks remain unchanged
   useEffect(() => {
     const initializeComponent = async () => {
@@ -404,17 +404,24 @@ export default function SheetChatArea({ currentAgentType }) {
   useEffect(() => {
     if (!chatData || !chatData.conversations) return;
 
-    const { conversations, isIncomplete } = chatData;
+    const {
+      conversations,
+      shouldSetGenerating,
+      recommendedStatus,
+      lastConversation,
+    } = chatData;
+
     const convertedMessages = [];
 
-    // Update Redux state based on completion status
-    if (isIncomplete) {
-      dispatch(setSheetStatus("generating"));
-      // Add reconnection message if not already added
+    // Set Redux status based on API analysis
+    dispatch(setSheetStatus(recommendedStatus));
+
+    // Add reconnection message if needed
+    if (shouldSetGenerating) {
       const hasReconnectMessage = messages.some((msg) =>
         msg.id.includes("reconnecting")
       );
-      // IF we need reconnection message !!
+      // Uncomment if you want reconnection message
       // if (!hasReconnectMessage) {
       //   convertedMessages.push({
       //     id: `reconnecting-${Date.now()}`,
@@ -440,12 +447,12 @@ export default function SheetChatArea({ currentAgentType }) {
           sheetData: item.response?.rows || null,
           status: item.response?.rows
             ? "completed"
-            : isIncomplete && item === conversations[conversations.length - 1]
+            : shouldSetGenerating && item._id === lastConversation.id
             ? "generating"
             : "error",
           message: item.response?.rows
             ? "Sheet generated successfully"
-            : isIncomplete && item === conversations[conversations.length - 1]
+            : shouldSetGenerating && item._id === lastConversation.id
             ? "Resuming generation..."
             : "No data generated",
           metadata: item.response?.metadata,
@@ -484,10 +491,10 @@ export default function SheetChatArea({ currentAgentType }) {
         });
       }
 
-      if (item.response?.rows) {
+      // Set sheet data and title for completed conversations
+      if (item.response?.rows && recommendedStatus === "completed") {
         dispatch(setSheetData(item.response.rows));
         dispatch(setSheetTitle(item.prompt.substring(0, 50) + "..."));
-        dispatch(setSheetStatus("completed"));
       }
     });
 

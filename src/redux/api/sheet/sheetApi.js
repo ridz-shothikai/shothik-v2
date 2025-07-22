@@ -19,17 +19,35 @@ export const sheetApiSlice = createApi({
     getChatHistory: builder.query({
       query: (chatId) => `/conversation/get_chat_conversations/${chatId}`,
       providesTags: ["ChatHistory"],
-      // Transform the response to include completion status
+      // Transform the response to include completion status and proper state detection
       transformResponse: (response) => {
+        if (!response || response.length === 0) {
+          return {
+            conversations: [],
+            isIncomplete: false,
+            lastConversationId: null,
+            shouldSetGenerating: false,
+            recommendedStatus: "idle",
+          };
+        }
+
         const lastConversation = response[response.length - 1];
         let isIncomplete = false;
+        let shouldSetGenerating = false;
+        let recommendedStatus = "idle";
 
-        if (lastConversation?.events) {
-          const events = lastConversation.events;
-          const hasResponse = lastConversation.response?.rows;
+        if (lastConversation) {
+          const hasResponse = Boolean(lastConversation.response?.rows);
+          const events = lastConversation.events || [];
+
+          // Check for completion indicators
           const isCompleted = events.some(
-            (event) => event.step === "completed"
+            (event) =>
+              event.step === "completed" ||
+              event.message?.toLowerCase().includes("completed successfully")
           );
+
+          // Check for failure indicators
           const isFailed = events.some(
             (event) =>
               event.step === "failed" ||
@@ -38,13 +56,50 @@ export const sheetApiSlice = createApi({
               event.message?.toLowerCase().includes("error")
           );
 
-          isIncomplete = !isCompleted && !isFailed && !hasResponse;
+          // Check for cancellation indicators
+          const isCancelled = events.some(
+            (event) =>
+              event.step === "cancelled" ||
+              event.message?.toLowerCase().includes("cancelled")
+          );
+
+          // Determine if generation is incomplete/in-progress
+          if (!isCompleted && !isFailed && !isCancelled) {
+            // If we have events but no completion markers, it's likely in progress
+            if (events.length > 0 && !hasResponse) {
+              isIncomplete = true;
+              shouldSetGenerating = true;
+              recommendedStatus = "generating";
+            }
+            // If no events and no response, it might be a new/pending conversation
+            else if (events.length === 0 && !hasResponse) {
+              isIncomplete = true;
+              shouldSetGenerating = true;
+              recommendedStatus = "generating";
+            }
+          } else if (isCompleted && hasResponse) {
+            recommendedStatus = "completed";
+          } else if (isFailed) {
+            recommendedStatus = "error";
+          } else if (isCancelled) {
+            recommendedStatus = "cancelled";
+          }
         }
 
         return {
           conversations: response,
           isIncomplete,
+          shouldSetGenerating,
+          recommendedStatus,
           lastConversationId: lastConversation?._id,
+          lastConversation: {
+            id: lastConversation?._id,
+            hasResponse: Boolean(lastConversation?.response?.rows),
+            eventsCount: lastConversation?.events?.length || 0,
+            isCompleted:
+              lastConversation?.events?.some((e) => e.step === "completed") ||
+              false,
+          },
         };
       },
     }),
