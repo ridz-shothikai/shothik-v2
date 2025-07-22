@@ -25,7 +25,7 @@ import {
   Tooltip,
 } from "chart.js";
 import Marked from "marked-react";
-import { Pie } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import SlidePreview from "./SlidePreview";
 
 ChartJS.register(
@@ -121,13 +121,15 @@ const RenderMarkdown = ({ content }) => {
               my: 2,
             }}
           >
-            <div style={{ height: "300px", width: "auto" }}>
-              {data.type === "bar" ? (
+            {data.type === "bar" ? (
+              <div style={{ height: "200px", width: "400px" }}>
+                <Bar data={data.data} />
+              </div>
+            ) : data.type === "pie" ? (
+              <div style={{ height: "300px", width: "300px" }}>
                 <Pie data={data.data} />
-              ) : data.type === "pie" ? (
-                <Pie data={data.data} />
-              ) : null}
-            </div>
+              </div>
+            ) : null}
           </Box>
         );
       } else {
