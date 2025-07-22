@@ -25,6 +25,7 @@ const navConfig = [
         title: "Paraphrase",
         path: PATH_TOOLS.paraphrase,
         icon: ICONS.paraphrase,
+        id:"paraphrase_nav_item",
         iconColor: "#FF595E",
       },
       {

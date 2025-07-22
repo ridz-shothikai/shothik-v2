@@ -2,7 +2,7 @@ import {
   ExpandMoreOutlined,
   KeyboardArrowUpOutlined,
 } from "@mui/icons-material";
-import { Button, Stack, Tab, Tabs } from "@mui/material";
+import { Button, Stack, Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
@@ -69,26 +69,33 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
           />
         ))}
       </Tabs>
+      <Box id="language-menu-wrapper">
+        <Button id="language_x_button" sx={{zIndex: -999, opacity: 0, position: "absolute", }} onClick={()=>{
+          setShowMenu(false)
+        }}>x</Button>
+        <Button
+          disabled={isLoading}
+          onClick={handleLanguage}
+          size="small"
+          id="language_all_button"
+          endIcon={
+            showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
+          }
+          variant="text"
+          sx={{ color: "text.secondary" }}
+        >
+          All
+        </Button>
 
-      <Button
-        disabled={isLoading}
-        onClick={handleLanguage}
-        size="small"
-        endIcon={
-          showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
-        }
-        variant="text"
-        sx={{ color: "text.secondary" }}
-      >
-        All
-      </Button>
+        <LanguageMenus
+          selectedLanguage={language}
+          anchorEl={anchorEl}
+          handleClose={() => setShowMenu(false)}
+          handleLanguageMenu={handleLanguageMenu}
+          open={showMenu}
+        />
 
-      <LanguageMenus
-        anchorEl={anchorEl}
-        handleClose={() => setShowMenu(false)}
-        handleLanguageMenu={handleLanguageMenu}
-        open={showMenu}
-      />
+      </Box>
     </Stack>
   );
 };

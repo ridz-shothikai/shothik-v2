@@ -47,44 +47,55 @@ const UserActionInput = ({
         columnGap={2}
         sx={{ width: "80%", mx: "auto" }}
       >
-        {!disableTrySample ? (
+        <Stack
+          direction='row'
+          id="sample-paste-section"
+          alignItems='start'
+          justifyContent='center'
+          flexWrap='wrap'
+          rowGap={1.5}
+          columnGap={2}
+          sx={{ width: "80%", mx: "auto" }}
+        >
+          {!disableTrySample ? (
+            <Button
+              color='warning'
+              size={isMobile ? "small" : "large"}
+              variant='soft'
+              onClick={handleSampleText}
+              disabled={!sampleText}
+              startIcon={<SaveAsOutlined />}
+              sx={{
+                border: { sm: "none", xs: "2px solid" },
+                borderColor: "primary.warning",
+                borderRadius: "5px",
+                "&:hover": {
+                  borderColor: "primary.dark",
+                },
+              }}
+            >
+              {!isMobile ? "Try Sample Text" : "Try Sample"}
+            </Button>
+          ) : null}
+
           <Button
-            color='warning'
             size={isMobile ? "small" : "large"}
             variant='soft'
-            onClick={handleSampleText}
-            disabled={!sampleText}
-            startIcon={<SaveAsOutlined />}
+            color='secondary'
+            onClick={handlePaste}
             sx={{
               border: { sm: "none", xs: "2px solid" },
-              borderColor: "primary.warning",
+              borderColor: "primary.secondary",
               borderRadius: "5px",
               "&:hover": {
                 borderColor: "primary.dark",
               },
             }}
+            startIcon={<ContentPaste />}
           >
-            {!isMobile ? "Try Sample Text" : "Try Sample"}
+            {!isMobile ? "Paste Text" : "Paste"}
           </Button>
-        ) : null}
-
-        <Button
-          size={isMobile ? "small" : "large"}
-          variant='soft'
-          color='secondary'
-          onClick={handlePaste}
-          sx={{
-            border: { sm: "none", xs: "2px solid" },
-            borderColor: "primary.secondary",
-            borderRadius: "5px",
-            "&:hover": {
-              borderColor: "primary.dark",
-            },
-          }}
-          startIcon={<ContentPaste />}
-        >
-          {!isMobile ? "Paste Text" : "Paste"}
-        </Button>
+        </Stack>
         <Box>
           <FileUpload isMobile={isMobile} setInput={handleFileData} />
           <Typography

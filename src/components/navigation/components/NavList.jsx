@@ -22,6 +22,7 @@ export default function NavList({ data, layout, onCloseNav }) {
     <ListItemButton
       component={Link}
       href={path}
+      id={data?.id}
       onClick={() => {
         if (onCloseNav) onCloseNav();
         else return;
