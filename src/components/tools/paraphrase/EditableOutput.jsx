@@ -205,7 +205,8 @@ const EnterHandler = Extension.create({
   },
 });
 
-const EditableOutput = ({ setSynonymsOptions, setSentence, setAnchorEl }) => {
+const EditableOutput = ({ setSynonymsOptions, setSentence, setAnchorEl,   highlightSentence,  setHighlightSentence,
+}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
