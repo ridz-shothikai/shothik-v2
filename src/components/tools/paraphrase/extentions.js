@@ -1,4 +1,4 @@
-import { Extension } from "@tiptap/core";
+import { Extension, Node } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
@@ -123,6 +123,55 @@ export const CombinedHighlighting = Extension.create({
           },
         },
       }),
+    ];
+  },
+});
+
+const getColorStyle = (type, dark = false) => {
+  const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
+  const nounColor = dark ? "#b6bdbd" : "#530a78";
+  const phraseColor = dark ? "#b6bdbd" : "#051780";
+  const freezeColor = "#006ACC";
+
+  if (/NP/.test(type)) return adJectiveVerbAdverbColor;
+  if (/VP/.test(type)) return nounColor;
+  if (/PP|CP|AdvP|AdjP/.test(type)) return phraseColor;
+  if (/freeze/.test(type)) return freezeColor;
+  return "inherit";
+};
+
+export const WordNode = Node.create({
+  name: "wordNode",
+  inline: true,
+  group: "inline",
+  atom: true,
+  selectable: false,
+
+  addAttributes() {
+    return {
+      word: { default: "" },
+      type: { default: "none" },
+      sentenceIndex: { default: -1 },
+      wordIndex: { default: -1 },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: "word-token" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    const { word, type } = HTMLAttributes;
+    const color = getColorStyle(type);
+    const space = /^[.,;]$/.test(word) || word.endsWith("'") ? "" : " ";
+
+    return [
+      "word-token",
+      {
+        ...HTMLAttributes,
+        style: `color:${color};cursor:pointer;${HTMLAttributes.style || ""}`,
+      },
+      `${space}${word}`,
     ];
   },
 });

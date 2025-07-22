@@ -1,6 +1,5 @@
 import { Container } from "@mui/material";
 import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
-import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
@@ -45,9 +44,7 @@ const Paraphrase = () => {
     <Container
       sx={{ display: "flex", flexDirection: "column", gap: { md: 12, xs: 10 } }}
     >
-      <ErrorBoundary>
-        <ParaphraseContend />
-      </ErrorBoundary>
+      <ParaphraseContend />
       <ToolsSepecigFaq
         tag='All you need to know about Paraphrase feature'
         data={paraphraseFaq}
