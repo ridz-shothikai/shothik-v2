@@ -1,4 +1,4 @@
-# Use the official Node.js 18 image as the base image
+# Use the official Node.js 18 image as the base image for building
 FROM node:18-alpine AS builder
 
 # Set the working directory
@@ -14,10 +14,10 @@ RUN npm install
 COPY . .
 
 # Build the Next.js application
-# RUN npm run build
+RUN npm run build
 
-# Use the official Node.js 18 image as the base image for development
-FROM node:18-alpine
+# Use the official Node.js 18 image as the base image for running the application
+FROM node:18-alpine AS runner
 
 # Set the working directory
 WORKDIR /app
@@ -25,14 +25,16 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install only production dependencies
+RUN npm install --production
 
-# Copy the source code
-COPY . .
+# Copy the built application from the builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
 
 # Expose port 3000
 EXPOSE 3000
 
-# Start the Next.js application in development mode
-CMD ["npm", "run", "dev"]
+# Start the Next.js application in production mode
+CMD ["npm", "start"]
