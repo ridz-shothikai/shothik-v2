@@ -4,7 +4,6 @@ import { EditorContent, Node, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Plugin } from "prosemirror-state";
 import { useEffect } from "react";
-import { data } from "./extentions";
 
 const getColorStyle = (type, dark = false) => {
   const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
@@ -86,7 +85,7 @@ const SentenceNode = Node.create({
 
   group: "inline",
   inline: true,
-  content: "wordNode+",
+  content: "wordNode*",
 
   addAttributes() {
     return {
@@ -146,7 +145,12 @@ const generateFormatedText = (data) => {
   };
 };
 
-const EditableOutput = ({ setSynonymsOptions, setSentence, setAnchorEl }) => {
+const EditableOutput = ({
+  data,
+  setSynonymsOptions,
+  setSentence,
+  setAnchorEl,
+}) => {
   const editor = useEditor({
     extensions: [StarterKit, SentenceNode, WordNode, CursorWatcher],
     content: "",
