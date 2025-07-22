@@ -44,13 +44,13 @@ export default function MainHeader() {
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",
       "/research": "Research",
+      "/agent": "Shothik AI Agent",
     };
 
     return routeTitles[pathname] || "";
   };
 
-
-  const renderContent =  (
+  const renderContent = (
     <>
       {!isDesktop && (
         <>
