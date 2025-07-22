@@ -1,11 +1,23 @@
-import { Task } from "@mui/icons-material";
+import { Description, Task } from "@mui/icons-material";
 import { Box, Drawer, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import useResponsive from "../../hooks/useResponsive";
+import DotFlashing from "../../resource/DotFlashing";
 
-const SessionHistoryModal = ({ open, setOpen, data, setSessionHistoryId }) => {
+const SessionHistoryModal = ({ open, setOpen, data, isLoading }) => {
+  const isMobile = useResponsive("down", "sm");
+  const router = useRouter();
+
   const histories = data?.data;
   return (
     <Drawer anchor='right' open={open} onClose={() => setOpen(false)}>
-      <Box sx={{ width: "400px", overflowY: "auto" }}>
+      <Box
+        sx={{
+          width: isMobile ? "300px" : "400px",
+          overflowY: "auto",
+          position: "relative",
+        }}
+      >
         <Stack
           justifyContent='center'
           alignItems='center'
@@ -13,6 +25,10 @@ const SessionHistoryModal = ({ open, setOpen, data, setSessionHistoryId }) => {
             borderBottom: "1px solid",
             borderColor: "divider",
             padding: 1.5,
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            backgroundColor: "Background",
           }}
         >
           <Typography fontSize={18} fontWeight={600}>
@@ -21,15 +37,16 @@ const SessionHistoryModal = ({ open, setOpen, data, setSessionHistoryId }) => {
         </Stack>
 
         <Stack paddingX={1.5}>
-          {histories &&
+          {isLoading ? (
+            <Box>
+              <DotFlashing />
+            </Box>
+          ) : histories && histories.length ? (
             histories.map((history) => (
               <Stack
                 flexDirection='row'
                 alignItems='center'
-                onClick={() => {
-                  setSessionHistoryId(history._id);
-                  setOpen(false);
-                }}
+                onClick={() => router.push(`/agents/${history._id}`)}
                 gap={1}
                 key={history._id}
                 sx={{
@@ -54,7 +71,21 @@ const SessionHistoryModal = ({ open, setOpen, data, setSessionHistoryId }) => {
                   {history.messages[0].content.message}
                 </Typography>
               </Stack>
-            ))}
+            ))
+          ) : (
+            <Stack
+              flexDirection='row'
+              alignItems='center'
+              justifyContent='center'
+              gap={1}
+              sx={{ height: "calc(100vh - 100px)" }}
+            >
+              <Description sx={{ color: "text.secondary" }} />
+              <Typography sx={{ color: "text.secondary" }}>
+                No history found
+              </Typography>
+            </Stack>
+          )}
         </Stack>
       </Box>
     </Drawer>
