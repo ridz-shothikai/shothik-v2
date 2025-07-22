@@ -164,7 +164,7 @@ export default function AgentLandingPage() {
     try {
       switch (selectedNavItem) {
         case "slides":
-          return handleSlideCreation(
+          return await handleSlideCreation(
             inputValue,
             setAgentType,
             dispatch,
@@ -174,7 +174,7 @@ export default function AgentLandingPage() {
             router
           );
         case "sheets":
-          return handleSheetGenerationRequest(
+          return await handleSheetGenerationRequest(
             inputValue,
             setAgentType,
             dispatch,

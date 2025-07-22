@@ -33,7 +33,7 @@ const USER_MESSAGE_COLOR = "#1976d2";
 
 // UTILS function
 // Parse tool outputs from markdown code blocks
-const parseToolOutputs = (text: string) => {
+const parseToolOutputs = (text) => {
   const toolOutputsMatch = text.match(/```tool_outputs\n(.*?)\n```/s);
   if (!toolOutputsMatch) return null;
 
@@ -83,7 +83,7 @@ const ToolOutputsLog = memo(({ toolOutputs, statusText }) => (
                       width: 16,
                       height: 16,
                       borderRadius: "4px",
-                      bgcolor: value as string,
+                      bgcolor: value,
                       border: "1px solid #ccc",
                     }}
                   />
@@ -93,7 +93,7 @@ const ToolOutputsLog = memo(({ toolOutputs, statusText }) => (
                   " "
                 )}: `}</Typography>
                 <Typography variant="caption" sx={{ fontWeight: "bold" }}>
-                  {value as string}
+                  {value}
                 </Typography>
               </Box>
             ))}
@@ -144,17 +144,17 @@ KeywordResearchLog.displayName = "KeywordResearchLog";
 
 // Component for Presentation Plan logs
 // Utility to check if a value is a non-empty object
-const isNonEmptyObject = (value: any): boolean =>
+const isNonEmptyObject = (value) =>
   value &&
   typeof value === "object" &&
   !Array.isArray(value) &&
   Object.keys(value).length > 0;
 
 // Utility to check if a value is a string
-const isString = (value: any): boolean => typeof value === "string";
+const isString = (value) => typeof value === "string";
 
 // Utility to check if a value is a non-empty array
-const isNonEmptyArray = (value: any): boolean =>
+const isNonEmptyArray = (value) =>
   Array.isArray(value) && value.length > 0;
 
 // Component for Presentation Plan logs
@@ -1146,7 +1146,7 @@ const StreamingMessage = memo(
       sessionStatus === "processing" &&
       logIndex >= processedLogs.length - 2;
 
-    const prepareWords = useCallback((text: string) => {
+    const prepareWords = useCallback((text) => {
       if (!text) return [];
       const parts = text.split(/(\s+)/);
       const words = [];
@@ -1619,7 +1619,7 @@ export default function ChatArea({
               </Box>
             )}
 
-          {/* Render old chat history (if any) */}
+          {/* Render old chat history (i) */}
           {chatHistory.map((message) => (
             <InteractiveChatMessage
               key={message.id}

@@ -518,7 +518,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   };
 
   // Add this function to handle snackbar close
-  const handleSnackbarClose = (event, reason) => {
+  const handleSnackbarClose = (reason) => {
     if (reason === "clickaway") {
       return;
     }

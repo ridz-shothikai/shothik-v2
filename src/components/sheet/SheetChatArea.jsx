@@ -414,15 +414,16 @@ export default function SheetChatArea({ currentAgentType }) {
       const hasReconnectMessage = messages.some((msg) =>
         msg.id.includes("reconnecting")
       );
-      if (!hasReconnectMessage) {
-        convertedMessages.push({
-          id: `reconnecting-${Date.now()}`,
-          message: "Reconnecting to generation in progress...",
-          isUser: false,
-          timestamp: new Date().toISOString(),
-          type: "info",
-        });
-      }
+      // IF we need reconnection message !!
+      // if (!hasReconnectMessage) {
+      //   convertedMessages.push({
+      //     id: `reconnecting-${Date.now()}`,
+      //     message: "Reconnecting to generation in progress...",
+      //     isUser: false,
+      //     timestamp: new Date().toISOString(),
+      //     type: "info",
+      //   });
+      // }
     }
 
     // Create save points structure

@@ -145,6 +145,7 @@ async function handleSheetGenerationRequest(
     if(!response.ok) {
       // TODO: Here we need to show user a toast message that we failed
       console.log("Failed to create chat");
+      setIsSubmitting(false);
       return;
     }
 
@@ -155,6 +156,7 @@ async function handleSheetGenerationRequest(
     router.push(`/agents/sheets/?id=${chatId}`);
   } catch (error) {
     console.log("[handleSheetGenerationRequest] error:", error);
+    setIsSubmitting(false);
   }
 }
 
