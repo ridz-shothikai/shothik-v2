@@ -11,6 +11,7 @@ import settings from "./slice/settings";
 import tools from "./slice/tools";
 import presentationSlice from './slice/presentationSlice';
 import sheetSlice from './slice/sheetSlice';
+import {sheetApiSlice} from "./api/sheet/sheetApi";
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,
     [toolsApiSlice.reducerPath]: toolsApiSlice.reducer,
     [presentationApiSlice.reducerPath]: presentationApiSlice.reducer,
+    [sheetApiSlice.reducerPath]: sheetApiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -37,6 +39,7 @@ const store = configureStore({
       toolsApiSlice.middleware,
       presentationApiSlice.middleware,
       shareApiSlice.middleware,
+      sheetApiSlice.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

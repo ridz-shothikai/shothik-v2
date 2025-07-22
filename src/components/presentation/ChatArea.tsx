@@ -26,6 +26,7 @@ import {
   formatTimestamp,
 } from "../../hooks/useStreamingLogs";
 import { useStaticLogs } from "../../hooks/useStaticLogs";
+import TypingAnimation from "../common/TypingAnimation";
 
 const PRIMARY_GREEN = "#07B37A";
 const USER_MESSAGE_COLOR = "#1976d2";
@@ -426,37 +427,7 @@ UserMessage.displayName = "UserMessage";
 
 // --- Main Components ---
 
-const TypingAnimation = memo(({ text = "Thinking..." }) => (
-  <Box sx={{ display: "flex", alignItems: "center", gap: 1, py: 2, px: 1 }}>
-    <Box sx={{ display: "flex", gap: 0.5 }}>
-      {[0, 1, 2].map((i) => (
-        <Box
-          key={i}
-          sx={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            bgcolor: PRIMARY_GREEN,
-            animation: "typing 1s infinite",
-            animationDelay: `${i * 0.2}s`,
-            "@keyframes typing": {
-              "0%, 60%, 100%": { opacity: 0.3, transform: "scale(0.8)" },
-              "30%": { opacity: 1, transform: "scale(1)" },
-            },
-          }}
-        />
-      ))}
-    </Box>
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      sx={{ fontStyle: "italic" }}
-    >
-      {text}
-    </Typography>
-  </Box>
-));
-TypingAnimation.displayName = "TypingAnimation";
+
 
 // Component for Slide Data Fetcher Tool logs
 const SlideDataFetcherLog = memo(({ data }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -9,6 +9,7 @@ import {
   IconButton,
   Tooltip,
   LinearProgress,
+  Button,
 } from "@mui/material";
 import {
   Refresh,
@@ -20,8 +21,9 @@ import {
 } from "@mui/icons-material";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
-import { useSelector } from "react-redux";
-import { selectSheet } from "../../redux/slice/sheetSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectActiveSavePoint, selectSheet, selectSheetStatus, setSheetStatus, switchToGeneration, switchToSavePoint } from "../../redux/slice/sheetSlice";
+import SavePointsDropdown from "./SavePointsDropDown";
 
 // Status indicator component
 const StatusChip = ({ status, title, rowCount = 0 }) => {
@@ -199,12 +201,21 @@ const processSheetData = (sheetData) => {
 };
 
 export default function SheetDataArea() {
-  const sheetState = useSelector(selectSheet);
   const [selectedRows, setSelectedRows] = useState(new Set());
+
+  // REDUX 
+  const sheetState = useSelector(selectSheet);
+  const sheetStatus = useSelector(selectSheetStatus);
+  const currentSavePoint = useSelector(selectActiveSavePoint);
+
+  console.log(currentSavePoint, "currentSavePoint");
+
+  const dispatch = useDispatch();
 
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
     return processSheetData(sheetState.sheet);
+  // }, [sheetState.sheet]);
   }, [sheetState.sheet]);
 
   // Check if we have data
@@ -261,8 +272,32 @@ export default function SheetDataArea() {
   // Handle refresh - could trigger a re-generation
   const handleRefresh = () => {
     console.log("Refresh sheet data");
-    // This could dispatch an action to refresh the data
+
+    if (!currentSavePoint) return;
+
+    const activeGen = currentSavePoint.generations.find(
+      (g) => g.id === currentSavePoint.activeGenerationId
+    );
+
+    console.log(activeGen, "activeGen");
+
+    if (sheetStatus === "error") {
+      if (activeGen) {
+        dispatch(
+          switchToGeneration({
+            savePointId: currentSavePoint.id,
+            generationId: currentSavePoint.activeGenerationId,
+          })
+        );
+      } else {
+        // No generation found, just mark it as idle to allow retry
+        dispatch(setSheetStatus("idle"));
+      }
+    } else {
+      dispatch(switchToSavePoint({ savePointId: currentSavePoint.id }));
+    }
   };
+  
 
   // Grid configuration
   const gridProps = useMemo(
@@ -293,7 +328,7 @@ export default function SheetDataArea() {
   );
 
   // Render generating state
-  if (sheetState.status === "generating") {
+  if (sheetStatus === "generating") {
     return (
       <Box
         sx={{
@@ -319,7 +354,7 @@ export default function SheetDataArea() {
   }
 
   // Render error state
-  if (sheetState.status === "error") {
+  if (sheetStatus === "error") {
     return (
       <Box
         sx={{
@@ -390,32 +425,105 @@ export default function SheetDataArea() {
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: 1,
+          gap: 2, // Increased gap for better spacing
         }}
       >
-        <StatusChip
-          status={sheetState.status}
-          title={sheetState.title}
-          rowCount={rows.length}
-        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+          {/* <StatusChip
+            status={sheetStatus}
+            title={sheetState.title}
+            rowCount={rows.length}
+          /> */}
+          {/* Add SavePoints Dropdown here */}
+          <SavePointsDropdown
+            savePoints={sheetState.savePoints || []}
+            activeSavePointId={sheetState.activeSavePointId}
+            onSavePointChange={(savePoint) => {
+              dispatch(switchToSavePoint({ savePointId: savePoint.id }));
+            }}
+            currentSheetData={sheetState.sheet}
+          />
+        </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <Typography variant="body2" color="text.secondary">
+          {/* <Typography variant="body2" color="text.secondary">
             {rows.length} rows × {columns.length} columns
             {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
-          </Typography>
+          </Typography> */}
 
-          <Tooltip title="Export as CSV">
+          {/* <Tooltip title="Export as CSV">
             <IconButton size="small" onClick={handleExport} disabled={!hasData}>
               <Download />
             </IconButton>
+          </Tooltip> */}
+
+          {/* 1st option */}
+          {/* <Tooltip title="Export data as CSV file">
+            <Button
+              variant="contained"
+              startIcon={<Download />}
+              onClick={handleExport}
+              disabled={!hasData}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                boxShadow: 2,
+                "&:hover": {
+                  boxShadow: 4,
+                  transform: "translateY(-1px)",
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Export CSV
+            </Button>
+          </Tooltip> */}
+
+          {/* 2nd option */}
+          <Tooltip title="Export data as CSV file">
+            <Button
+              variant="outlined"
+              startIcon={<Download />}
+              onClick={handleExport}
+              disabled={!hasData}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: { xs: 1, sm: 2 },
+                py: 1,
+                borderWidth: 2,
+                minWidth: { xs: 44, sm: "auto" },
+                "& .MuiButton-startIcon": {
+                  marginRight: { xs: -0.5, sm: 1 },
+                },
+                "& .MuiButton-text": {
+                  display: { xs: "none", sm: "inline" },
+                },
+                "&:hover": {
+                  borderWidth: 2,
+                  transform: "translateY(-1px)",
+                  boxShadow: 2,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" } }}
+              >
+                Export CSV
+              </Box>
+            </Button>
           </Tooltip>
 
-          <Tooltip title="Refresh">
+          {/* Instead of refresh we can  */}
+          {/* <Tooltip title="Refresh">
             <IconButton size="small" onClick={handleRefresh}>
               <Refresh />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </Box>
 

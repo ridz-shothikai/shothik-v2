@@ -1,31 +1,42 @@
 "use client";
 
-import { Box } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import SheetChatArea from "./SheetChatArea";
 import SheetDataArea from "./SheetDataArea";
 import { useEffect, useState } from "react";
 
 export default function SheetAgentPage({ specificAgent, sheetId }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [optimisticMessage, setOptimisticMessages] = useState([]);
+  const [optimisticMessages, setOptimisticMessages] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const initialPrompt = sessionStorage.getItem("initialPrompt");
-    // if (initialPrompt && chatHistory.length === 0) {
-    //   const optimisticMessage = {
-    //     id: `temp-${Date.now()}`,
-    //     role: "user",
-    //     message: initialPrompt,
-    //     timestamp: new Date().toISOString(),
-    //     isOptimistic: true,
-    //   };
-    // Add to local state immediately
-    setOptimisticMessages((prev) => [...prev, optimisticMessage]);
-    //   setIsLoading(true);
-    sessionStorage.removeItem("initialPrompt");
-    // }
-    //   }, [chatHistory.length]);
+    if (initialPrompt) {
+      const optimisticMessage = {
+        id: `temp-${Date.now()}`,
+        role: "user",
+        message: initialPrompt,
+        timestamp: new Date().toISOString(),
+        isOptimistic: true,
+      };
+      setOptimisticMessages((prev) => [...prev, optimisticMessage]);
+      setIsLoading(true);
+      sessionStorage.removeItem("initialPrompt");
+    }
   }, []);
+
+  const handlePreviewOpen = () => setPreviewOpen(true);
+  const handlePreviewClose = () => setPreviewOpen(false);
 
   return (
     <Box
@@ -46,64 +57,116 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
         sx={{
           flex: 1,
           display: "flex",
-          flexDirection: {
-            xs: "column-reverse", // Stack vertically on mobile
-            md: "row", // Side by side on tablet and desktop
-          },
+          flexDirection: "column",
           overflow: "hidden",
           minHeight: 0,
-          gap: 1, // Add small gap between components
         }}
       >
-        {/* Chat Area - Left side on desktop, top on mobile */}
-        <Box
-          sx={{
-            flex: {
-              xs: 1, // Full width on mobile
-              md: "0 0 40%", // 40% width on tablet and desktop
-            },
-            minHeight: {
-              xs: "50%", // At least 50% height on mobile
-              md: "100%", // Full height on tablet and desktop
-            },
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-            borderRight: {
-              xs: "none",
-              md: "1px solid #e0e0e0", // Add border separator on desktop
-            },
-            borderBottom: {
-              xs: "1px solid #e0e0e0", // Add border separator on mobile
-              md: "none",
-            },
-          }}
-        >
-          <SheetChatArea
-            currentAgentType={specificAgent}
-            isLoading={isLoading}
-          />
-        </Box>
-
-        {/* Sheet Data Area - Right side on desktop, bottom on mobile */}
-        <Box
-          sx={{
-            flex: {
-              xs: 1, // Full width on mobile
-              md: "0 0 60%", // 60% width on tablet and desktop
-            },
-            minHeight: {
-              xs: "50%", // At least 50% height on mobile
-              md: "100%", // Full height on tablet and desktop
-            },
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
-        </Box>
+        {isMobile ? (
+          // Mobile Layout
+          <>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                p: 2,
+                border: "1px solid #e0e0e0",
+                cursor: "pointer",
+                bgcolor: "#fafafa",
+              }}
+              onClick={handlePreviewOpen}
+            >
+              <CustomTableChartIcon sx={{ color: "#07B37A", fontSize: 30 }} />
+              <Typography
+                variant="h6"
+                sx={{
+                  ml: 0.5,
+                }}
+              >
+                Preview Sheet Data
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                flex: 1,
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <SheetChatArea
+                currentAgentType={specificAgent}
+                isLoading={isLoading}
+              />
+            </Box>
+            <Dialog
+              open={previewOpen}
+              onClose={handlePreviewClose}
+              maxWidth="md"
+              fullWidth
+              PaperProps={{
+                sx: { height: "80vh", maxHeight: "80vh", position: "relative" },
+              }}
+            >
+              <DialogContent sx={{ p: 0, overflow: "hidden" }}>
+                <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          // Desktop Layout
+          <Box
+            sx={{
+              flex: 1,
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+              gridTemplateRows: "1fr",
+              overflow: "hidden",
+              minHeight: 0,
+            }}
+          >
+            <Box
+              sx={{
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0,
+                borderRight: "1px solid #e0e0e0",
+              }}
+            >
+              <SheetChatArea
+                currentAgentType={specificAgent}
+                isLoading={isLoading}
+              />
+            </Box>
+            <Box
+              sx={{
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0,
+              }}
+            >
+              <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
+            </Box>
+          </Box>
+        )}
       </Box>
     </Box>
   );
 }
+
+const CustomTableChartIcon = ({ sx, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    {...props}
+    style={{ ...sx }}
+  >
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm9 0h-5v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v2h4v-2zm0-4h-4v2h4V9zm0-4h-4v2h4V5z" />
+  </svg>
+);

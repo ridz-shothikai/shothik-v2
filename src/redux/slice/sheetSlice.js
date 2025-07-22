@@ -35,9 +35,9 @@ const sheetSlice = createSlice({
 
     setSheetStatus(state, action) {
       state.status = action.payload;
-      if (action.payload === "generating") {
-        state.sheet = null;
-      }
+      // if (action.payload === "generating") {
+      //   state.sheet = null;
+      // }
     },
 
     setSheetTitle(state, action) {
@@ -48,7 +48,7 @@ const sheetSlice = createSlice({
     initializeChatHistory(state, action) {
       const { chatId, chatHistory } = action.payload;
       state.currentChatId = chatId;
-      
+
       // Convert chat history to save points
       const savePoints = [];
       let currentSavePoint = null;
@@ -59,7 +59,7 @@ const sheetSlice = createSlice({
           if (currentSavePoint) {
             savePoints.push(currentSavePoint);
           }
-          
+
           currentSavePoint = {
             id: `savepoint-${message.id}`,
             title: message.message.substring(0, 50) + "...",
@@ -78,9 +78,9 @@ const sheetSlice = createSlice({
             status: message.type === "error" ? "error" : "completed",
             message: message.message,
           };
-          
+
           currentSavePoint.generations.push(generation);
-          
+
           // Set first generation as active
           if (!currentSavePoint.activeGenerationId) {
             currentSavePoint.activeGenerationId = generation.id;
@@ -94,15 +94,15 @@ const sheetSlice = createSlice({
       }
 
       state.savePoints = savePoints;
-      
+
       // Set the last save point as active if it exists
       if (savePoints.length > 0) {
         const lastSavePoint = savePoints[savePoints.length - 1];
         state.activeSavePointId = lastSavePoint.id;
-        
+
         // Set sheet data from active generation
         const activeGeneration = lastSavePoint.generations.find(
-          gen => gen.id === lastSavePoint.activeGenerationId
+          (gen) => gen.id === lastSavePoint.activeGenerationId
         );
         if (activeGeneration && activeGeneration.sheetData) {
           state.sheet = activeGeneration.sheetData;
@@ -112,66 +112,90 @@ const sheetSlice = createSlice({
       }
     },
 
-    addNewSavePoint(state, action) {
-      const { prompt, timestamp } = action.payload;
-      const savePoint = {
-        id: `savepoint-${Date.now()}`,
-        title: prompt.substring(0, 50) + "...",
-        prompt,
-        timestamp: timestamp || new Date().toISOString(),
-        generations: [],
-        activeGenerationId: null,
-      };
-      
-      state.savePoints.push(savePoint);
-      state.activeSavePointId = savePoint.id;
+    // Add this action to safely append a new savepoint
+    addSavePoint(state, action) {
+      const newSavePoint = action.payload;
+
+      // Check if savepoint already exists (prevent duplicates)
+      const existingIndex = state.savePoints.findIndex(
+        (sp) => sp.id === newSavePoint.id
+      );
+
+      if (existingIndex === -1) {
+        // Add new savepoint if it doesn't exist
+        state.savePoints.push(newSavePoint);
+        state.activeSavePointId = newSavePoint.id;
+
+        // Update sheet data if the new savepoint has generations
+        if (newSavePoint.generations.length > 0) {
+          const activeGeneration = newSavePoint.generations.find(
+            (gen) => gen.id === newSavePoint.activeGenerationId
+          );
+          if (activeGeneration && activeGeneration.sheetData) {
+            state.sheet = activeGeneration.sheetData;
+            state.status = activeGeneration.status;
+            state.title = newSavePoint.title;
+          }
+        }
+      } else {
+        // Update existing savepoint
+        state.savePoints[existingIndex] = newSavePoint;
+      }
     },
 
+    // Add generation to existing savepoint
     addGenerationToSavePoint(state, action) {
-      const { savePointId, sheetData, status = "completed", message } = action.payload;
-      
-      const savePoint = state.savePoints.find(sp => sp.id === savePointId);
-      if (!savePoint) return;
+      const { savePointId, generation } = action.payload;
 
-      const generation = {
-        id: `gen-${Date.now()}-${Math.random()}`,
-        title: `Generation ${savePoint.generations.length + 1}`,
-        timestamp: new Date().toISOString(),
-        sheetData,
-        status,
-        message,
-      };
+      const savePointIndex = state.savePoints.findIndex(
+        (sp) => sp.id === savePointId
+      );
+      if (savePointIndex !== -1) {
+        const savePoint = state.savePoints[savePointIndex];
 
-      savePoint.generations.push(generation);
-      
-      // Set as active generation
-      savePoint.activeGenerationId = generation.id;
-      
-      // Update current sheet data if this is the active save point
-      if (state.activeSavePointId === savePointId) {
-        state.sheet = sheetData;
-        state.status = status;
+        // Check if generation already exists
+        const existingGenIndex = savePoint.generations.findIndex(
+          (gen) => gen.id === generation.id
+        );
+
+        if (existingGenIndex === -1) {
+          savePoint.generations.push(generation);
+        } else {
+          savePoint.generations[existingGenIndex] = generation;
+        }
+
+        // Set as active generation
+        savePoint.activeGenerationId = generation.id;
+
+        // Update sheet data if this is the active savepoint
+        if (state.activeSavePointId === savePointId) {
+          if (generation.sheetData) {
+            state.sheet = generation.sheetData;
+            state.status = generation.status;
+            state.title = savePoint.title;
+          }
+        }
       }
     },
 
     switchToSavePoint(state, action) {
       const { savePointId } = action.payload;
       state.activeSavePointId = savePointId;
-      
-      const savePoint = state.savePoints.find(sp => sp.id === savePointId);
+
+      const savePoint = state.savePoints.find((sp) => sp.id === savePointId);
       if (savePoint) {
         state.title = savePoint.title;
-        
+
         // Load data from active generation
         const activeGeneration = savePoint.generations.find(
-          gen => gen.id === savePoint.activeGenerationId
+          (gen) => gen.id === savePoint.activeGenerationId
         );
-        
+
         if (activeGeneration) {
           state.sheet = activeGeneration.sheetData;
           state.status = activeGeneration.status;
         } else {
-          state.sheet = null;
+          // state.sheet = null;
           state.status = "idle";
         }
       }
@@ -179,16 +203,18 @@ const sheetSlice = createSlice({
 
     switchToGeneration(state, action) {
       const { savePointId, generationId } = action.payload;
-      
-      const savePoint = state.savePoints.find(sp => sp.id === savePointId);
+
+      const savePoint = state.savePoints.find((sp) => sp.id === savePointId);
       if (!savePoint) return;
-      
-      const generation = savePoint.generations.find(gen => gen.id === generationId);
+
+      const generation = savePoint.generations.find(
+        (gen) => gen.id === generationId
+      );
       if (!generation) return;
-      
+
       // Update active generation
       savePoint.activeGenerationId = generationId;
-      
+
       // Update current data if this is the active save point
       if (state.activeSavePointId === savePointId) {
         state.sheet = generation.sheetData;
@@ -198,11 +224,11 @@ const sheetSlice = createSlice({
 
     generateMoreForSavePoint(state, action) {
       const { savePointId } = action.payload;
-      
+
       // Set generating status for the active save point
       if (state.activeSavePointId === savePointId) {
         state.status = "generating";
-        state.sheet = null;
+        // state.sheet = null;
       }
     },
 
@@ -222,6 +248,36 @@ const sheetSlice = createSlice({
     resetSheetState(state) {
       return { ...initialState };
     },
+
+    loadConversationData(state, action) {
+      const { conversationData } = action.payload;
+      state.sheet = conversationData.rows;
+      state.status = "completed";
+      state.title = conversationData.title || "Loaded Conversation";
+    },
+
+    initializeSavePoints(state, action) {
+      const { savePoints, activeSavePointId } = action.payload;
+      state.savePoints = savePoints;
+      state.activeSavePointId = activeSavePointId;
+
+      // Set current sheet data from active save point
+      if (activeSavePointId && savePoints.length > 0) {
+        const activeSavePoint = savePoints.find(
+          (sp) => sp.id === activeSavePointId
+        );
+        if (activeSavePoint) {
+          const activeGeneration = activeSavePoint.generations.find(
+            (gen) => gen.id === activeSavePoint.activeGenerationId
+          );
+          if (activeGeneration && activeGeneration.sheetData) {
+            state.sheet = activeGeneration.sheetData;
+            state.status = activeGeneration.status;
+            state.title = activeSavePoint.title;
+          }
+        }
+      }
+    },
   },
 });
 
@@ -240,6 +296,7 @@ export const {
   addSheetLog,
   clearSheetLogs,
   resetSheetState,
+  initializeSavePoints,
 } = sheetSlice.actions;
 
 // Selectors
