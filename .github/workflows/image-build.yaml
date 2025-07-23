@@ -41,8 +41,8 @@ jobs:
           docker build --no-cache \
           --tag ghcr.io/ridz-shothikai/shothik-v2:${{ env.SHORT_SHA }} \
           --build-arg GITHUB_PAT=${{ secrets.ACCESS_TOKEN }} \
-          --build-arg NEXT_PUBLIC_SOCKET=http://apiv2.shothik.ai \
-          --build-arg NEXT_PUBLIC_API_URI=http://apiv2.shothik.ai/api \
-          --build-arg NEXT_PUBLIC_DOMAIN_URI=http://api.shothik.ai \
+          --build-arg NEXT_PUBLIC_SOCKET=https://apiv2.shothik.ai \
+          --build-arg NEXT_PUBLIC_API_URI=https://apiv2.shothik.ai/api \
+          --build-arg NEXT_PUBLIC_DOMAIN_URI=https://api.shothik.ai \
           .
           docker push ghcr.io/ridz-shothikai/shothik-v2:${{ env.SHORT_SHA }}
