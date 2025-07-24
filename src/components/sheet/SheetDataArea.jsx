@@ -10,6 +10,10 @@ import {
   Tooltip,
   LinearProgress,
   Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   Refresh,
@@ -18,12 +22,23 @@ import {
   CheckCircle,
   Info,
   PlayArrow,
+  ArrowDropDown,
+  TableChart,
+  Description,
 } from "@mui/icons-material";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
-import { selectActiveSavePoint, selectSheet, selectSheetStatus, setSheetStatus, switchToGeneration, switchToSavePoint } from "../../redux/slice/sheetSlice";
+import {
+  selectActiveSavePoint,
+  selectSheet,
+  selectSheetStatus,
+  setSheetStatus,
+  switchToGeneration,
+  switchToSavePoint,
+} from "../../redux/slice/sheetSlice";
 import SavePointsDropdown from "./SavePointsDropDown";
+import * as XLSX from "xlsx"; // Import SheetJS
 
 // Status indicator component
 const StatusChip = ({ status, title, rowCount = 0 }) => {
@@ -117,7 +132,7 @@ const processSheetData = (sheetData) => {
   const columns = headers.map((header) => ({
     key: header,
     name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
-    width: Math.max(250, Math.min(350, header.length * 15)), // Changed minimum width to 300px
+    width: Math.max(250, Math.min(350, header.length * 15)),
     resizable: true,
     sortable: true,
     renderCell: (params) => {
@@ -202,8 +217,9 @@ const processSheetData = (sheetData) => {
 
 export default function SheetDataArea() {
   const [selectedRows, setSelectedRows] = useState(new Set());
+  const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
 
-  // REDUX 
+  // REDUX
   const sheetState = useSelector(selectSheet);
   const sheetStatus = useSelector(selectSheetStatus);
   const currentSavePoint = useSelector(selectActiveSavePoint);
@@ -215,57 +231,138 @@ export default function SheetDataArea() {
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
     return processSheetData(sheetState.sheet);
-  // }, [sheetState.sheet]);
   }, [sheetState.sheet]);
 
   // Check if we have data
   const hasData = rows.length > 0 && columns.length > 0;
 
-  // Handle export to CSV
-  const handleExport = () => {
-    if (!hasData) return;
+  // Prepare data for export (common function)
+  const prepareExportData = () => {
+    if (!hasData) return null;
+
+    // Create headers
+    const headers = columns.map((col) => col.name);
+
+    // Create data rows
+    const dataRows = rows.map((row) =>
+      columns.map((col) => {
+        const value = row[col.key];
+
+        // Handle null/undefined values
+        if (value === null || value === undefined) return "";
+
+        // Handle different data types
+        if (typeof value === "number" || typeof value === "boolean") {
+          return value;
+        }
+
+        return String(value);
+      })
+    );
+
+    return { headers, dataRows };
+  };
+
+  // Handle CSV export
+  const handleCSVExport = () => {
+    const exportData = prepareExportData();
+    if (!exportData) return;
 
     try {
+      const { headers, dataRows } = exportData;
+
       // Create CSV headers
-      const csvHeaders = columns.map((col) => `"${col.name}"`).join(",");
+      const csvHeaders = headers.map((header) => `"${header}"`).join(",");
 
       // Create CSV rows
-      const csvRows = rows.map((row) =>
-        columns
-          .map((col) => {
-            const value = row[col.key];
-            if (value === null || value === undefined) return '""';
-
-            // Handle different data types
+      const csvRows = dataRows.map((row) =>
+        row
+          .map((value) => {
             if (typeof value === "string") {
               // Escape quotes and wrap in quotes
               return `"${value.replace(/"/g, '""')}"`;
             }
-
-            if (typeof value === "number" || typeof value === "boolean") {
-              return `"${value}"`;
-            }
-
-            return `"${String(value)}"`;
+            return `"${value}"`;
           })
           .join(",")
       );
 
       const csvContent = [csvHeaders, ...csvRows].join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `sheet-data-${
-        new Date().toISOString().split("T")[0]
-      }.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      downloadFile(blob, "csv");
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error("CSV export failed:", error);
+    }
+  };
+
+  // Handle XLS export
+  const handleXLSExport = () => {
+    const exportData = prepareExportData();
+    if (!exportData) return;
+
+    try {
+      const { headers, dataRows } = exportData;
+
+      // Create worksheet data with headers
+      const wsData = [headers, ...dataRows];
+
+      // Create worksheet
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+      // Set column widths based on content
+      const colWidths = headers.map((header, index) => {
+        const maxLength = Math.max(
+          header.length,
+          ...dataRows.map((row) => String(row[index] || "").length)
+        );
+        return { wch: Math.min(Math.max(maxLength + 2, 10), 50) };
+      });
+      ws["!cols"] = colWidths;
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet Data");
+
+      // Generate Excel file and download
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      downloadFile(blob, "xlsx");
+    } catch (error) {
+      console.error("XLS export failed:", error);
+    }
+  };
+
+  // Common download function
+  const downloadFile = (blob, extension) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sheet-data-${
+      new Date().toISOString().split("T")[0]
+    }.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Handle export menu
+  const handleExportMenuOpen = (event) => {
+    setExportMenuAnchor(event.currentTarget);
+  };
+
+  const handleExportMenuClose = () => {
+    setExportMenuAnchor(null);
+  };
+
+  const handleExportOption = (type) => {
+    handleExportMenuClose();
+    if (type === "csv") {
+      handleCSVExport();
+    } else if (type === "xlsx") {
+      handleXLSExport();
     }
   };
 
@@ -297,7 +394,6 @@ export default function SheetDataArea() {
       dispatch(switchToSavePoint({ savePointId: currentSavePoint.id }));
     }
   };
-  
 
   // Grid configuration
   const gridProps = useMemo(
@@ -317,10 +413,8 @@ export default function SheetDataArea() {
         fontSize: "14px",
       },
       rowKeyGetter: (row) => row.id,
-      // Add default sorting
       defaultSortColumns: [],
       onSortColumnsChange: (sortColumns) => {
-        // Handle sorting if needed
         console.log("Sort columns changed:", sortColumns);
       },
     }),
@@ -400,16 +494,10 @@ export default function SheetDataArea() {
           justifyContent: "space-between",
           alignItems: "center",
           flexWrap: "wrap",
-          gap: 2, // Increased gap for better spacing
+          gap: 2,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
-          {/* <StatusChip
-            status={sheetStatus}
-            title={sheetState.title}
-            rowCount={rows.length}
-          /> */}
-          {/* Add SavePoints Dropdown here */}
           <SavePointsDropdown
             savePoints={sheetState.savePoints || []}
             activeSavePointId={sheetState.activeSavePointId}
@@ -421,47 +509,13 @@ export default function SheetDataArea() {
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          {/* <Typography variant="body2" color="text.secondary">
-            {rows.length} rows × {columns.length} columns
-            {selectedRows.size > 0 && ` (${selectedRows.size} selected)`}
-          </Typography> */}
-
-          {/* <Tooltip title="Export as CSV">
-            <IconButton size="small" onClick={handleExport} disabled={!hasData}>
-              <Download />
-            </IconButton>
-          </Tooltip> */}
-
-          {/* 1st option */}
-          {/* <Tooltip title="Export data as CSV file">
-            <Button
-              variant="contained"
-              startIcon={<Download />}
-              onClick={handleExport}
-              disabled={!hasData}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                boxShadow: 2,
-                "&:hover": {
-                  boxShadow: 4,
-                  transform: "translateY(-1px)",
-                },
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              Export CSV
-            </Button>
-          </Tooltip> */}
-
-          {/* 2nd option */}
-          <Tooltip title="Export data as CSV file">
+          {/* Export Button with Dropdown */}
+          <Tooltip title="Export data">
             <Button
               variant="outlined"
               startIcon={<Download />}
-              onClick={handleExport}
+              endIcon={<ArrowDropDown />}
+              onClick={handleExportMenuOpen}
               disabled={!hasData}
               sx={{
                 textTransform: "none",
@@ -472,9 +526,6 @@ export default function SheetDataArea() {
                 minWidth: { xs: 44, sm: "auto" },
                 "& .MuiButton-startIcon": {
                   marginRight: { xs: -0.5, sm: 1 },
-                },
-                "& .MuiButton-text": {
-                  display: { xs: "none", sm: "inline" },
                 },
                 "&:hover": {
                   borderWidth: 2,
@@ -488,17 +539,56 @@ export default function SheetDataArea() {
                 component="span"
                 sx={{ display: { xs: "none", sm: "inline" } }}
               >
-                Export CSV
+                Export
               </Box>
             </Button>
           </Tooltip>
 
-          {/* Instead of refresh we can  */}
-          {/* <Tooltip title="Refresh">
-            <IconButton size="small" onClick={handleRefresh}>
-              <Refresh />
-            </IconButton>
-          </Tooltip> */}
+          {/* Export Menu */}
+          <Menu
+            anchorEl={exportMenuAnchor}
+            open={Boolean(exportMenuAnchor)}
+            onClose={handleExportMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem onClick={() => handleExportOption("csv")}>
+              <ListItemIcon>
+                <Description fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>
+                Export as CSV
+                <Typography
+                  variant="caption"
+                  display="block"
+                  color="text.secondary"
+                >
+                  Normal CSV format
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => handleExportOption("xlsx")}>
+              <ListItemIcon>
+                <TableChart fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>
+                Export as Excel
+                <Typography
+                  variant="caption"
+                  display="block"
+                  color="text.secondary"
+                >
+                  Microsoft Excel format
+                </Typography>
+              </ListItemText>
+            </MenuItem>
+          </Menu>
         </Box>
       </Box>
 
@@ -506,11 +596,12 @@ export default function SheetDataArea() {
       <Box sx={{ flex: 1, minHeight: 0 }}>
         {!hasData ? (
           <Typography variant="body2" color="text.secondary">
-             No data found. Use the chat area to describe your spreadsheet and generate data
+            No data found. Use the chat area to describe your spreadsheet and
+            generate data
           </Typography>
-        ) : 
-        <DataGrid {...gridProps} />
-        }
+        ) : (
+          <DataGrid {...gridProps} />
+        )}
       </Box>
 
       {/* Footer */}

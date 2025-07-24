@@ -640,6 +640,20 @@ export default function SheetChatArea({ currentAgentType }) {
               const responseData = data?.data?.data; // Note the nested structure
               console.log(responseData, "data from SSE");
 
+              const stepMessage = getStepMessage(data.step, data.data);
+              if (stepMessage) {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: `step-${data.step}-${Date.now()}`,
+                    message: stepMessage,
+                    isUser: false,
+                    timestamp: data.timestamp,
+                    type: "info",
+                  },
+                ]);
+              }
+
               if (
                 responseData?.response?.columns &&
                 responseData?.response?.rows

@@ -64,6 +64,7 @@
     "socket.io-client": "^4.8.1",
     "stream-browserify": "^3.0.0",
     "webpack": "^5.99.9",
+    "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
   "devDependencies": {

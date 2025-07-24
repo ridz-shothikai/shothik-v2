@@ -13,65 +13,76 @@ async function handleSlideCreation(
   setLoginDialogOpen,
   setIsSubmitting,
   setIsInitiatingPresentation,
-  router
+  router,
+  showToast
 ) {
-  sessionStorage.setItem("initialPrompt", inputValue);
-
-  setAgentType("presentation");
-
-  dispatch(
-    setPresentationState({
-      logs: [],
-      slides: [],
-      status: "planning",
-      currentPhase: "planning",
-      completedPhases: [],
-      presentationBlueprint: null,
-      title: "Generating...",
-      totalSlides: 0,
-    })
-  );
-
-  console.log(
-    "[AgentLandingPage] Initiating presentation with message:",
-    inputValue
-  );
-  const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    console.error(
-      "[AgentLandingPage] No accessToken token found in localStorage"
+  try {
+    sessionStorage.setItem("initialPrompt", inputValue);
+  
+    setAgentType("presentation");
+  
+    dispatch(
+      setPresentationState({
+        logs: [],
+        slides: [],
+        status: "planning",
+        currentPhase: "planning",
+        completedPhases: [],
+        presentationBlueprint: null,
+        title: "Generating...",
+        totalSlides: 0,
+      })
     );
-    setLoginDialogOpen(true);
+  
+    console.log(
+      "[AgentLandingPage] Initiating presentation with message:",
+      inputValue
+    );
+    const token = localStorage.getItem("accessToken");
+  
+    if (!token) {
+      // console.error(
+      //   "[AgentLandingPage] No accessToken token found in localStorage"
+      // );
+      setLoginDialogOpen(true);
+      setIsSubmitting(false);
+      return;
+    }
+  
+    setIsInitiatingPresentation(true);
+  
+    const response = await createPresentationServer({
+      message: inputValue,
+      token,
+    });
+  
+    // for action service👇
+    if (!response?.success) {
+      console.log("Failed to create presentation");
+      showToast("Failed to create presentation. Please try again.");
+      setIsSubmitting(false);
+      setIsInitiatingPresentation(false);
+      return;
+    }
+    const presentationId = response?.presentationId;
+  
+    console.log(
+      "[AgentLandingPage] Presentation initiated with ID:",
+      presentationId
+    );
+  
+    if (presentationId) {
+      router.push(`/agents/presentation?id=${presentationId}`);
+    } else {
+      // console.error("[AgentLandingPage] No presentation ID received from API");
+      showToast("Failed to create presentation. Please try again.");
+      setIsSubmitting(false);
+      setIsInitiatingPresentation(false);
+    }
+  } catch (error) {
+    showToast("Failed to initiate presentation. Please try again.");
     setIsSubmitting(false);
-    return;
-  }
-
-  setIsInitiatingPresentation(true);
-
-  const response = await createPresentationServer({
-    message: inputValue,
-    token,
-  });
-
-  // for action service👇
-  if (!response?.success) {
-    console.log("Failed to create presentation");
-    return;
-  }
-  setIsInitiatingPresentation(false);
-  const presentationId = response?.presentationId;
-
-  console.log(
-    "[AgentLandingPage] Presentation initiated with ID:",
-    presentationId
-  );
-
-  if (presentationId) {
-    router.push(`/agents/presentation?id=${presentationId}`);
-  } else {
-    console.error("[AgentLandingPage] No presentation ID received from API");
-    // alert("Failed to create presentation. Please try again.");
+    setIsInitiatingPresentation(false);
   }
 };
 
@@ -84,7 +95,8 @@ async function handleSheetGenerationRequest(
   setIsSubmitting,
   setIsInitiatingSheet,
   router,
-  email
+  email,
+  showToast
 ) {
   try {
     // console.log(inputValue, "input value");
@@ -109,10 +121,11 @@ async function handleSheetGenerationRequest(
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
-      console.error("[AgentPageUtils] No access token found");
-
+      // console.error("[AgentPageUtils] No access token found");
+      showToast("You need to be logged in to create a report sheet.");
       setLoginDialogOpen(true);
       setIsSubmitting(false);
+      setIsInitiatingSheet(false);
       return;
     }
 
@@ -121,31 +134,39 @@ async function handleSheetGenerationRequest(
     // Check if we have a sheet stored token
     const storedSheetToken = localStorage.getItem("sheetai-token");
 
-    if(!storedSheetToken) {
+    if (!storedSheetToken) {
       // TODO: Authentication needs to be handled on the login and register page
       await authenticateToSheetService(email);
     }
 
     // After authenticate we will have a sheet token on the local storage
-
-    const response = await fetch(
-      "https://sheetai.pixigenai.com/api/chat/create_chat",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("sheetai-token")}`,
-        },
-        body: JSON.stringify({
-          name: `${inputValue} - ${new Date().toLocaleString()}`,
-        }),
+    let response;
+    try {
+      response = await fetch(
+        "https://sheetai.pixigenai.com/api/chat/create_chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("sheetai-token")}`,
+          },
+          body: JSON.stringify({
+            name: `${inputValue} - ${new Date().toLocaleString()}`,
+          }),
+        }
+      );
+      if (!response.ok) {
+        // TODO: Here we need to show user a toast message that we failed
+        // console.log("Failed to create chat");
+        showToast("Failed to create spreadsheet. Please try again.");
+        setIsSubmitting(false);
+        setIsInitiatingSheet(false);
+        return;
       }
-    );
-
-    if(!response.ok) {
-      // TODO: Here we need to show user a toast message that we failed
+    } catch (error) {
       console.log("Failed to create chat");
       setIsSubmitting(false);
+      setIsInitiatingSheet(false);
       return;
     }
 
@@ -153,10 +174,14 @@ async function handleSheetGenerationRequest(
 
     const chatId = result.chat_id || result.id || result._id;
 
+    new Promise((resolve) => setTimeout(resolve, 500));
+
     router.push(`/agents/sheets/?id=${chatId}`);
   } catch (error) {
     console.log("[handleSheetGenerationRequest] error:", error);
     setIsSubmitting(false);
+    showToast("An error occurred while creating the spreadsheet.");
+    setIsInitiatingSheet(false);
   }
 }
 

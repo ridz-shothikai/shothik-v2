@@ -413,7 +413,8 @@ export default function PresentationAgentPage({ specificAgent }) {
           }
         }
       } else {
-        throw new Error("Failed to fetch presentation data");
+        // throw new Error("Failed to fetch presentation data");
+        console.log("Failed to fetch presentation data");
       }
 
       setDataFetched(true);

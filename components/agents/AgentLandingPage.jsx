@@ -38,6 +38,8 @@ import {
   DialogActions,
   DialogContentText,
 } from "@mui/material";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
 import { useCreatePresentationMutation } from "../../src/redux/api/presentation/presentationApi";
 import { setPresentationState } from "../../src/redux/slice/presentationSlice";
@@ -47,12 +49,27 @@ import { setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
 import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
 import { setSheetState } from "../../src/redux/slice/sheetSlice";
+import { Snackbar, Alert } from "@mui/material";
 
 const PRIMARY_GREEN = "#07B37A";
 
 const NAVIGATION_ITEMS = [
-  { id: "slides", label: "AI Slides", icon: <SlideshowIcon />, isNew: true, isComingSoon: false, isDisabled: false },
-  { id: "sheets", label: "AI Sheets", icon: <TableChartIcon />, isNew: true, isComingSoon: false, isDisabled: false },
+  {
+    id: "slides",
+    label: "AI Slides",
+    icon: <SlideshowIcon />,
+    isNew: true,
+    isComingSoon: false,
+    isDisabled: false,
+  },
+  {
+    id: "sheets",
+    label: "AI Sheets",
+    icon: <TableChartIcon />,
+    isNew: true,
+    isComingSoon: false,
+    isDisabled: false,
+  },
   // {
   //   id: "download",
   //   label: "Download For Me",
@@ -60,8 +77,20 @@ const NAVIGATION_ITEMS = [
   //   isNew: true,
   // },
   // { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
-  { id: "call", label: "Call For Me", icon: <PhoneIcon />, isComingSoon: true, isDisabled: true },
-  { id: "agents", label: "All Agents", icon: <GroupIcon />, isComingSoon: true, isDisabled: true },
+  {
+    id: "call",
+    label: "Deep research",
+    icon: <ManageSearchIcon />,
+    isComingSoon: true,
+    isDisabled: true,
+  },
+  {
+    id: "agents",
+    label: "Browse for me",
+    icon: <AutoModeIcon />,
+    isComingSoon: true,
+    isDisabled: true,
+  },
 ];
 
 const QUICK_START_TEMPLATES = [
@@ -130,7 +159,7 @@ export default function AgentLandingPage() {
   const router = useRouter();
   const { setAgentType } = useAgentContext();
   const [inputValue, setInputValue] = useState("");
-  const [selectedNavItem, setSelectedNavItem] = useState("chat");
+  const [selectedNavItem, setSelectedNavItem] = useState("slides");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,6 +169,11 @@ export default function AgentLandingPage() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
 
   const user = useSelector((state) => state.auth.user);
 
@@ -171,7 +205,8 @@ export default function AgentLandingPage() {
             setLoginDialogOpen,
             setIsSubmitting,
             setIsInitiatingPresentation,
-            router
+            router,
+            showToast
           );
         case "sheets":
           return await handleSheetGenerationRequest(
@@ -182,7 +217,8 @@ export default function AgentLandingPage() {
             setIsSubmitting,
             setIsInitiatingSheet,
             router,
-            email
+            email,
+            showToast
           );
         case "download":
           return console.log("download route");
@@ -206,7 +242,7 @@ export default function AgentLandingPage() {
     if (itemId === "slides") {
       setInputValue("Create a presentation about ");
     } else if (itemId === "sheets") {
-      setInputValue("Create a spreadsheet for ");
+      setInputValue("Create a list for ");
     } else if (itemId === "download") {
       setInputValue("Download information about ");
     } else {
@@ -221,6 +257,11 @@ export default function AgentLandingPage() {
 
   const handleCloseOnboarding = () => {
     setShowOnboarding(false);
+  };
+
+  // to show toast
+  const showToast = (message, severity = 'error') => {
+    setToast({ open: true, message, severity });
   };
 
   return (
@@ -346,7 +387,7 @@ export default function AgentLandingPage() {
               }}
             />
             <Typography variant="body2" sx={{ color: "#666" }}>
-              7-Agent AI system ready to create presentations
+              4-Agent AI system ready to create presentations
             </Typography>
           </Box>
         </Box>
@@ -737,6 +778,22 @@ export default function AgentLandingPage() {
         loginDialogOpen={loginDialogOpen}
         setLoginDialogOpen={setLoginDialogOpen}
       />
+
+      {/* snackbar for toast messages */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

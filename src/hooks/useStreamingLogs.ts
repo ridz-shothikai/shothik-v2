@@ -277,7 +277,11 @@ export const useStreamingLogs = (
         }
         return false;
       })
-      .filter((log) => log.agent_name !== "browser_agent")
+      .filter(
+        (log) =>
+          log.agent_name !== "browser_agent" && 
+          log.agent_name !== "vibe_estimator_agent"
+      )
       .map((log, index) => ({
         ...log,
         id: `log-${index}-${log.timestamp || Date.now()}`,
