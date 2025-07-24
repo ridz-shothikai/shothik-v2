@@ -10,8 +10,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import PresentationMode from "../../../components/presentation/PresentationMode";
-import SlideCard from '../../../components/presentation/SlideCard';
+import {PresentationMode} from "../../../components/presentation/PresentationMode";
+import {SlideCard} from "../../../components/presentation/SlideCard";
 
 // --- Main Page Component ---
 export default function SlidesPreviewPage() {

@@ -192,86 +192,6 @@ const MessageBubble = ({
   </Box>
 );
 
-// StatusIndicator (unchanged, but included for completeness)
-const StatusIndicator = ({ isLoading, error, sheetStatus }) => {
-  if (error) {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            bgcolor: "error.main",
-          }}
-        />
-        <Typography variant="caption" color="error">
-          Error occurred
-        </Typography>
-      </Box>
-    );
-  }
-  if (isLoading || sheetStatus === "generating") {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <CircularProgress size={8} />
-        <Typography variant="caption" color="primary">
-          Generating sheet...
-        </Typography>
-      </Box>
-    );
-  }
-  if (sheetStatus === "completed") {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            bgcolor: "success.main",
-          }}
-        />
-        <Typography variant="caption" color="success.main">
-          Sheet generated successfully
-        </Typography>
-      </Box>
-    );
-  }
-  if (sheetStatus === "cancelled") {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Box
-          sx={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            bgcolor: "warning.main",
-          }}
-        />
-        <Typography variant="caption" color="warning.main">
-          Generation cancelled
-        </Typography>
-      </Box>
-    );
-  }
-  return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <Box
-        sx={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          bgcolor: "success.main",
-        }}
-      />
-      <Typography variant="caption" color="text.secondary">
-        Ready
-      </Typography>
-    </Box>
-  );
-};
-
 const getStepMessage = (step, data) => {
   // First check if the data object has a custom message
   if (data?.message) {
@@ -805,30 +725,6 @@ export default function SheetChatArea({ currentAgentType }) {
     dispatch(setSheetStatus("idle"));
   };
 
-  // Use it to show user specific chats
-  const getUserChats = async () => {
-    try {
-      if (!sheetAiToken) return [];
-      const response = await fetch(
-        "https://sheetai.pixigenai.com/api/chat/get_my_chats",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${sheetAiToken}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch user chats");
-      }
-      const chats = await response.json();
-      return chats;
-    } catch (error) {
-      console.error("Failed to get user chats:", error);
-      return [];
-    }
-  };
-
   if (!isInitialized && error) {
     return (
       <Box sx={{ p: 3 }}>
@@ -868,34 +764,6 @@ export default function SheetChatArea({ currentAgentType }) {
         overflow: "hidden",
       }}
     >
-      {/* Sheet header if needed */}
-      {/* <Box sx={{ p: 2, borderBottom: "1px solid #e0e0e0", bgcolor: "white" }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Sheet Generator
-          </Typography>
-          {(isLoading || sheetState.status === "generating") && (
-            <IconButton
-              size="small"
-              onClick={handleStopStreaming}
-              color="error"
-            >
-              <Stop />
-            </IconButton>
-          )}
-        </Box>
-        <StatusIndicator
-          isLoading={isLoading}
-          error={error}
-          sheetStatus={sheetState.status}
-        />
-      </Box> */}
       {error && (
         <Box sx={{ p: 2 }}>
           <Alert severity="error" onClose={clearError}>

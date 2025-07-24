@@ -381,31 +381,6 @@ export default function SheetDataArea() {
     );
   }
 
-  // Render empty/ready state
-  if (!hasData) {
-    return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          p: 3,
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        <PlayArrow sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-        <Typography variant="h6" color="text.secondary" gutterBottom>
-          Ready to Generate
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Use the chat area to describe your spreadsheet and generate data
-        </Typography>
-      </Box>
-    );
-  }
-
   // Render data view
   return (
     <Box
@@ -529,7 +504,13 @@ export default function SheetDataArea() {
 
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
+        {!hasData ? (
+          <Typography variant="body2" color="text.secondary">
+             No data found. Use the chat area to describe your spreadsheet and generate data
+          </Typography>
+        ) : 
         <DataGrid {...gridProps} />
+        }
       </Box>
 
       {/* Footer */}

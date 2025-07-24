@@ -2,12 +2,12 @@ import { PresentationProvider } from "../../../components/slide/context/SlideCon
 
 export default function SlidePreviewLayout({ children }) {
   return (
-    <html lang="en">
+    <>
       <PresentationProvider>
-        <body style={{ margin: 0, padding: 0 }}>
+        <div style={{ margin: 0, padding: 0 }}>
           {children}
-        </body>
+        </div>
       </PresentationProvider>
-    </html>
+    </>
   )
 }

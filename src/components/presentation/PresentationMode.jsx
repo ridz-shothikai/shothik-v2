@@ -1,4 +1,5 @@
 import { Box, IconButton, Modal, Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 
