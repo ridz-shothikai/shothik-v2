@@ -21,5 +21,8 @@ export const detectLanguage = (input) => {
   const mostFrequentLanguage = [...langFrequency.entries()].reduce((a, b) =>
     a[1] > b[1] ? a : b
   )[0];
-  return mostFrequentLanguage;
+  // if it only detected generic English script, force US variant
+  return mostFrequentLanguage === "English"
+    ? "English (US)"
+    : mostFrequentLanguage;
 };

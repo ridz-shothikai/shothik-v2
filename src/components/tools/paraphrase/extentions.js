@@ -1,6 +1,9 @@
+
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
+
+
 
 function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
   const decorations = [];
@@ -8,12 +11,10 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
   const decoratedPositions = new Set();
   let wordCount = 0;
 
+  // === 1. Word Limit Highlighting ===
   doc.descendants((node, pos) => {
     if (!node.isText) return;
     const text = node.text;
-    const lowerText = text.toLowerCase();
-
-    // === 1. Word Limit ===
     const wordRegex = /\b\w+\b/g;
     let match;
     while ((match = wordRegex.exec(text)) !== null) {
@@ -26,30 +27,55 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
         );
       }
     }
+  });
 
-    // === 2. Frozen Phrases ===
-    const sortedPhrases = Array.from(frozenPhrases || []).sort(
-      (a, b) => b.length - a.length
-    );
-    for (const phrase of sortedPhrases) {
-      const phraseLower = phrase.toLowerCase().trim();
-      const escaped = phraseLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(escaped, "gi");
-      let match;
-      while ((match = regex.exec(lowerText)) !== null) {
-        const from = pos + match.index;
-        const to = from + match[0].length;
-        if (!isOverlapping(from, to, decoratedPositions)) {
-          markDecorated(from, to, decoratedPositions);
-          decorations.push(
-            Decoration.inline(from, to, { class: "frozen-word" })
-          );
-        }
+  // === 2. Build a full-text map for phrase scanning across nodes ===
+  const fullTextMap = [];
+  doc.descendants((node, pos) => {
+    if (!node.isText) return;
+    const text = node.text || "";
+    for (let i = 0; i < text.length; i++) {
+      fullTextMap.push({ char: text[i], from: pos + i });
+    }
+  });
+
+  // const fullText = fullTextMap.map(c => c.char).join("").toLowerCase();
+
+  const fullText = fullTextMap.map(c => c.char).join("");
+
+  // === 3. Highlight Frozen Phrases (spanning-safe and prioritized) ===
+  const sortedPhrases = Array.from(frozenPhrases || []).sort((a, b) => b.length - a.length);
+  for (const phrase of sortedPhrases) {
+
+    const phraseEscaped = phrase.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(phraseEscaped, "gi");
+
+    let match;
+    while ((match = regex.exec(fullText)) !== null) {
+      const startIndex = match.index;
+      const endIndex = startIndex + match[0].length;
+
+      const from = fullTextMap[startIndex]?.from;
+      const to = fullTextMap[endIndex - 1]?.from + 1;
+
+      if (from != null && to != null && !isOverlapping(from, to, decoratedPositions)) {
+        markDecorated(from, to, decoratedPositions);
+        decorations.push(
+          Decoration.inline(from, to, {
+            class: "frozen-word",
+            "data-frozen-phrase": "true",
+          })
+        );
       }
     }
+  }
 
-    // === 3. Frozen Words ===
-    wordRegex.lastIndex = 0; // reset regex
+  // === 4. Highlight Frozen Words (only if not overlapping) ===
+  doc.descendants((node, pos) => {
+    if (!node.isText) return;
+    const lowerText = node.text.toLowerCase();
+    const wordRegex = /\b\w+\b/g;
+    let match;
     while ((match = wordRegex.exec(lowerText)) !== null) {
       const word = match[0];
       if (frozenWords?.has(word)) {
@@ -63,9 +89,14 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
         }
       }
     }
+  });
 
-    // === 4. Duplicate Sentences (collect for now) ===
+  // === 5. Track duplicate sentences ===
+  doc.descendants((node, pos) => {
+    if (!node.isText) return;
+    const text = node.text;
     const sentenceRegex = /[^.!?]+[.!?]+/g;
+    let match;
     while ((match = sentenceRegex.exec(text)) !== null) {
       const sentence = match[0].trim().toLowerCase();
       if (!sentence) continue;
@@ -76,7 +107,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
     }
   });
 
-  // === 5. Apply duplicate sentence highlights ===
+  // === 6. Highlight duplicate sentences ===
   for (const [, ranges] of sentenceMap.entries()) {
     if (ranges.length > 1) {
       for (const { from, to } of ranges) {
@@ -89,7 +120,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
 
   return DecorationSet.create(doc, decorations);
 }
-
+// ✅ Helpers (define only once per file)
 function isOverlapping(from, to, set) {
   for (let i = from; i < to; i++) {
     if (set.has(i)) return true;
@@ -98,8 +129,22 @@ function isOverlapping(from, to, set) {
 }
 
 function markDecorated(from, to, set) {
-  for (let i = from; i < to; i++) set.add(i);
+  for (let i = from; i < to; i++) {
+    set.add(i);
+  }
 }
+// function isOverlapping(from, to, set) {
+//   for (let i = from; i < to; i++) {
+//     if (set.has(i)) return true;
+//   }
+//   return false;
+// }
+//
+// function markDecorated(from, to, set) {
+//   for (let i = from; i < to; i++) set.add(i);
+// }
+//
+const combinedHighlightingKey = new PluginKey("combinedHighlighting");
 
 export const CombinedHighlighting = Extension.create({
   name: "combinedHighlighting",
@@ -115,7 +160,7 @@ export const CombinedHighlighting = Extension.create({
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: new PluginKey("combinedHighlighting"),
+        key: combinedHighlightingKey,
 
         props: {
           decorations: (state) => {

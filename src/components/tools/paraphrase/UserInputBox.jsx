@@ -1,3 +1,4 @@
+'use client'
 import { Box, Button, Popover } from "@mui/material";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -17,6 +18,7 @@ function UserInputBox({
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const [selectedWord, setSelectedWord] = useState("");
+  const [editorKey, setEditorKey] = useState(0); // Force editor recreation
   const isInternalUpdate = useRef(false);
 
   const editor = useEditor({
@@ -29,7 +31,7 @@ function UserInputBox({
         frozenPhrases: frozenPhrases.set,
       }),
     ],
-    content: "",
+    content: userInput,
     immediatelyRender: false,
     onSelectionUpdate: ({ editor }) => {
       const { from, to } = editor.state.selection;
@@ -57,7 +59,7 @@ function UserInputBox({
       isInternalUpdate.current = true;
       setUserInput(editor.getText());
     },
-  });
+  }, [editorKey]); // Recreate editor when key changes
 
   const clearSelection = () => {
     setAnchorEl(null);
@@ -72,27 +74,17 @@ function UserInputBox({
     if (editor && !isInternalUpdate.current && userInput !== editor.getHTML()) {
       editor.commands.setContent(userInput);
     }
-    isInternalUpdate.current = false; // reset flag
+    isInternalUpdate.current = false;
   }, [userInput, editor]);
 
+  // Force editor recreation when frozen words/phrases change
   useEffect(() => {
-    if (!editor) return;
+    setEditorKey(prev => prev + 1);
+  }, [frozenWords.set, frozenPhrases.set]);
 
-    const plugin = editor.extensionManager.extensions.find(
-      (ext) => ext.name === "combinedHighlighting"
-    );
-
-    if (!plugin) return;
-
-    // Overwrite the frozenWords and frozenPhrases directly
-    plugin.options.frozenWords = frozenWords.set;
-    plugin.options.frozenPhrases = frozenPhrases.set;
-
-    editor.view.dispatch(editor.state.tr); // ✅ trigger re-render
-  }, [frozenWords.set, frozenPhrases.set, editor]);
-
+  const normalize = (text) => text.toLowerCase().trim();
   const handleToggleFreeze = () => {
-    const key = selectedWord.toLowerCase().trim();
+    const key = normalize(selectedWord);
     const isPhrase = key.includes(" ");
 
     if (isPhrase) {
@@ -100,15 +92,27 @@ function UserInputBox({
     } else {
       frozenWords.toggle(key);
     }
-
     clearSelection();
   };
 
-  const isFrozen = () => {
-    const key = selectedWord.toLowerCase().trim();
-    return key.includes(" ") ? frozenPhrases.has(key) : frozenWords.has(key);
-  };
+  // const normalize = (text) => text.toLowerCase().trim().replace(/^"+|"+$/g, '');
+  // const isFrozen = () => {
+  //   console.log(frozenPhrases, selectedWord)
+  //   const key = normalize(selectedWord);
+  //   return key.includes(" ")
+  //     ? frozenPhrases.has(key)
+  //     : frozenWords.has(key);
+  // };
 
+const isFrozen = () => {
+  const raw = selectedWord.trim().toLowerCase();
+  const unquoted = raw.replace(/^"+|"+$/g, "");
+
+  console.log(frozenPhrases.has(selectedWord), selectedWord)
+  // Check both quoted and unquoted keys
+  return frozenPhrases.has(raw) || frozenPhrases.has(`"${unquoted}"`) || frozenPhrases.has(unquoted)
+    || frozenWords.has(raw) || frozenWords.has(unquoted);
+};
   if (!editor) return null;
 
   const paidUser =
@@ -117,7 +121,11 @@ function UserInputBox({
     user?.package === "unlimited";
 
   const getButtonText = () =>
-    !paidUser ? "Please upgrade to Freeze" : isFrozen() ? "Unfreeze" : "Freeze";
+    !paidUser
+      ? "Please upgrade to Freeze"
+      : isFrozen()
+      ? "Unfreeze"
+      : "Freeze";
 
   return (
     <Box
@@ -134,13 +142,13 @@ function UserInputBox({
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={clearSelection}
-        anchorReference='anchorPosition'
+        anchorReference="anchorPosition"
         anchorPosition={popoverPosition}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
       >
         <Button
-          variant='contained'
-          size='small'
+          variant="contained"
+          size="small"
           disabled={!paidUser}
           onClick={handleToggleFreeze}
         >

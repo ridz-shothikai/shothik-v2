@@ -1,3 +1,6 @@
+
+"use client";
+
 import {
   ExpandMoreOutlined,
   KeyboardArrowUpOutlined,
@@ -7,82 +10,94 @@ import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
 
-// You can include "Auto Detect" as a valid tab option if needed
-const initLanguage = ["English (US)", "English (UK)", "English (CA)", "English(AU)", "Bangla"]; // Add "Auto Detect" here if needed
+const initLanguage = [
+  "English (US)",
+  "English (UK)",
+  "English (CA)",
+  "English (AU)",
+  "Bangla",
+];
 
 const LanguageMenu = ({ setLanguage, isLoading, language }) => {
-  const [languageTabs, setlanguageTabs] = useState(initLanguage);
+  const [languageTabs, setLanguageTabs] = useState(initLanguage);
   const [showMenu, setShowMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMobile = useResponsive("down", "sm");
+  const maxTabs = isMobile ? 3 : 5;
 
-  function handleLanguage(e) {
+  const handleLanguage = (e) => {
     setAnchorEl(e.currentTarget);
     setShowMenu(true);
-  }
+  };
 
-  function handleLanguageMenu(value) {
-    const languageLength = isMobile ? 3 : 5;
-    setlanguageTabs((prev) => {
-      if (!prev.includes(value)) {
-        const newTabs = [...prev, value];
-        return newTabs.length > languageLength ? newTabs.slice(1) : newTabs;
-      }
-      return prev;
+  const handleLanguageMenu = (value) => {
+    setLanguageTabs((prev) => {
+      const filtered = prev.filter((l) => l !== value);
+      return [value, ...filtered].slice(0, maxTabs);
     });
     setLanguage(value);
-  }
+    setShowMenu(false);
+  };
 
-  // ✅ Ensure language is valid
-  const selectedTab = languageTabs.includes(language)
-    ? language
-    : languageTabs[0];
+  // Always ensure the selected language appears in the tabs
+  const displayTabs = languageTabs.includes(language)
+    ? languageTabs
+    : [language, ...languageTabs].slice(0, maxTabs);
 
   return (
     <Stack
       direction="row"
       alignItems="center"
       spacing={{ xs: 2, sm: 4 }}
-      sx={{ paddingX: 2, width: "100%" }}
+      sx={{ px: 2, width: "100%" }}
     >
-      <Tabs
-        onChange={(_, value) => setLanguage(value)}
-        textColor="primary"
-        value={selectedTab}
-        sx={{
-          "& .MuiTabs-indicator": {
-            display: "none",
-          },
-        }}
-      >
-        {languageTabs.map((tab) => (
-          <Tab
-            key={tab}
-            value={tab}
-            label={tab}
-            disabled={isLoading}
-            sx={{
-              "&.MuiTab-root:hover": {
-                color: "text.primary",
-              },
-            }}
-          />
-        ))}
-      </Tabs>
-      <Box id="language-menu-wrapper">
-        <Button id="language_x_button" sx={{zIndex: -999, opacity: 0, position: "absolute", }} onClick={()=>{
-          setShowMenu(false)
-        }}>x</Button>
+      {/* Only the tabs scroll horizontally */}
+      <Box sx={{ overflowX: "auto", whiteSpace: "nowrap", maxWidth: "100%" }}>
+        <Tabs
+          value={language}
+          onChange={(_, v) => setLanguage(v)}
+          variant="standard"
+          textColor="primary"
+          sx={{
+            minHeight: 48,
+            "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
+            "& .MuiTabs-indicator": { display: "none" },
+          }}
+        >
+          {displayTabs.map((tab) => (
+            <Tab
+              key={tab}
+              value={tab}
+              label={tab}
+              disabled={isLoading}
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "common.white",
+                  borderRadius: "8px 8px 0 0",
+                  borderBottom: "2px solid",
+                  borderColor: "grey.300",
+                  marginBottom: "-2px",
+                  px: 2, // horizontal padding for selected tab
+                },
+                "&.MuiTab-root": { display: "inline-flex" },
+                "&.MuiTab-root:hover": { color: "text.primary" },
+              }}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      {/* “All” button pinned immediately after the last tab */}
+      <Box sx={{ flexShrink: 0, ml: 2 }}>
         <Button
           disabled={isLoading}
           onClick={handleLanguage}
           size="small"
-          id="language_all_button"
+          variant="text"
+          sx={{ color: "text.secondary" }}
           endIcon={
             showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
           }
-          variant="text"
-          sx={{ color: "text.secondary" }}
         >
           All
         </Button>
@@ -90,14 +105,14 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
         <LanguageMenus
           selectedLanguage={language}
           anchorEl={anchorEl}
+          open={showMenu}
           handleClose={() => setShowMenu(false)}
           handleLanguageMenu={handleLanguageMenu}
-          open={showMenu}
         />
-
       </Box>
     </Stack>
   );
 };
 
 export default LanguageMenu;
+
