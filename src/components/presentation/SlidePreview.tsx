@@ -26,6 +26,7 @@ export default function SlidePreview({
   activeTab,
   onTabChange,
   totalSlides,
+  theme
 }) {
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -166,7 +167,8 @@ export default function SlidePreview({
           sx={{
             borderBottom: 1,
             borderColor: "divider",
-            bgcolor: "#f5f5f5",
+            // bgcolor: "#f5f5f5",
+            bgcolor: theme.palette.background.paper,
             px: 2,
             overflow: "hidden",
             display: "flex",
@@ -273,7 +275,7 @@ export default function SlidePreview({
             </Box>
           )}
           {activeTab === "thinking" && (
-              <EnhancedThinkingTab slide={slide} dimensions={dimensions} />
+            <EnhancedThinkingTab slide={slide} dimensions={dimensions} />
           )}
           {activeTab === "code" && (
             <Box

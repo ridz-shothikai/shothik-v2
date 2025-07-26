@@ -569,8 +569,10 @@ export default function PresentationAgentPage({ specificAgent }) {
       <Box
         sx={{
           height: "100dvh",
-          bgcolor: "white",
-          color: "#333",
+          // bgcolor: "white",
+          // color: "#333",
+          bgcolor: theme.palette.background.default,
+          color: theme.palette.text.primary,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -599,8 +601,10 @@ export default function PresentationAgentPage({ specificAgent }) {
           lg: "80dvh", // height for desktop screens (large)
           xl: "85dvh", // height for extra-large screens
         },
-        bgcolor: "white",
-        color: "#333",
+        // bgcolor: "white",
+        // color: "#333",
+        bgcolor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -633,7 +637,11 @@ export default function PresentationAgentPage({ specificAgent }) {
                 p: 2,
                 border: "1px solid #e0e0e0",
                 cursor: "pointer",
-                bgcolor: "#fafafa",
+                // bgcolor: "#fafafa",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.grey[900]
+                    : "#fafafa",
               }}
               onClick={handlePreviewOpen}
             >
@@ -820,7 +828,7 @@ export default function PresentationAgentPage({ specificAgent }) {
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbar.severity}
-          sx={{ width: "100%" }}
+          sx={{ width: "100%", bgcolor: theme.palette.background.paper }}
         >
           {snackbar.message}
         </Alert>

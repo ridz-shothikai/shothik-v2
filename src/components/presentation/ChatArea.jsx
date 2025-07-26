@@ -17,6 +17,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from "@mui/material";
 import InteractiveChatMessage from "../../../components/agents/shared/InteractiveChatMessage";
 import InputArea from "./InputArea";
@@ -430,7 +431,7 @@ UserMessage.displayName = "UserMessage";
 
 
 // Component for Slide Data Fetcher Tool logs
-const SlideDataFetcherLog = memo(({ data }) => {
+const SlideDataFetcherLog = memo(({ data, theme }) => {
   const { original_plan, global_theme } = data;
 
   return (
@@ -440,19 +441,23 @@ const SlideDataFetcherLog = memo(({ data }) => {
         sx={{
           borderRadius: "12px",
           border: "1px solid #e8eaed",
-          bgcolor: "white",
+          // bgcolor: "white",
+          bgcolor: theme.palette.background.paper,
           overflow: "hidden",
           transition: "all 0.2s ease-in-out",
           "&:hover": {
             boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            borderColor: "#dadce0",
+            borderColor: theme.palette.mode === "dark" ? "#444" : "#dadce0",
           },
         }}
       >
         {/* Header */}
         <Box
           sx={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            background:
+              theme.palette.mode === "dark"
+                ? "#161C24"
+                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             color: "white",
             p: { xs: 2, sm: 2.5 },
             position: "relative",
@@ -527,7 +532,7 @@ const SlideDataFetcherLog = memo(({ data }) => {
                   fontWeight: 600,
                   fontSize: "1rem",
                   mb: 2,
-                  color: "#1f2937",
+                  color: theme.palette.mode === "dark" ? "white" : "#1f2937",
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
@@ -538,7 +543,7 @@ const SlideDataFetcherLog = memo(({ data }) => {
                     width: 20,
                     height: 20,
                     borderRadius: "4px",
-                    bgcolor: "#f3f4f6",
+                    bgcolor: theme.palette.mode === "dark" ? "#374151" : "#f3f4f6",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -570,7 +575,12 @@ const SlideDataFetcherLog = memo(({ data }) => {
                     <Box sx={{ mb: 2.5 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: 500, mb: 1.5, color: "#374151" }}
+                        sx={{
+                          fontWeight: 500,
+                          mb: 1.5,
+                          color:
+                            theme.palette.mode === "dark" ? "white" : "#374151",
+                        }}
                       >
                         Color Palette
                       </Typography>
@@ -593,11 +603,17 @@ const SlideDataFetcherLog = memo(({ data }) => {
                               gap: 1,
                               p: 1.5,
                               borderRadius: "8px",
-                              bgcolor: "#f9fafb",
+                              bgcolor:
+                                theme.palette.mode === "dark"
+                                  ? "#374151"
+                                  : "#f9fafb",
                               border: "1px solid #e5e7eb",
                               transition: "all 0.2s ease",
                               "&:hover": {
-                                bgcolor: "#f3f4f6",
+                                bgcolor:
+                                  theme.palette.mode === "dark"
+                                    ? "#4b5563"
+                                    : "#f3f4f6",
                                 transform: "translateY(-1px)",
                               },
                             }}
@@ -617,7 +633,10 @@ const SlideDataFetcherLog = memo(({ data }) => {
                               <Typography
                                 variant="caption"
                                 sx={{
-                                  color: "#6b7280",
+                                  color:
+                                    theme.palette.mode === "dark"
+                                      ? "#9ca3af"
+                                      : "#6b7280",
                                   fontSize: "0.75rem",
                                   fontWeight: 500,
                                   textTransform: "capitalize",
@@ -629,7 +648,10 @@ const SlideDataFetcherLog = memo(({ data }) => {
                                 variant="caption"
                                 sx={{
                                   display: "block",
-                                  color: "#374151",
+                                  color:
+                                    theme.palette.mode === "dark"
+                                      ? "#9ca3af"
+                                      : "#374151",
                                   fontSize: "0.8rem",
                                   fontWeight: 600,
                                   fontFamily: "monospace",
@@ -661,7 +683,12 @@ const SlideDataFetcherLog = memo(({ data }) => {
                     <Box>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: 500, mb: 1.5, color: "#374151" }}
+                        sx={{
+                          fontWeight: 500,
+                          mb: 1.5,
+                          color:
+                            theme.palette.mode === "dark" ? "white" : "#374151",
+                        }}
                       >
                         Typography
                       </Typography>
@@ -727,7 +754,7 @@ const SlideDataFetcherLog = memo(({ data }) => {
                   fontWeight: 600,
                   fontSize: "1rem",
                   mb: 2,
-                  color: "#1f2937",
+                  color: theme.palette.mode === "dark" ? "white" : "#374151",
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
@@ -774,7 +801,7 @@ const SlideDataFetcherLog = memo(({ data }) => {
                       sx={{
                         fontWeight: 600,
                         fontSize: { xs: "1rem", sm: "1.1rem" },
-                        color: "#1e40af",
+                        color:theme.palette.mode === "dark" ? "white" : "#374151",
                         lineHeight: 1.3,
                       }}
                     >
@@ -1113,6 +1140,7 @@ const StreamingMessage = memo(
     unregisterAnimationCallback,
     sessionStatus,
     processedLogs,
+    theme,
   }) => {
     const [displayedText, setDisplayedText] = useState("");
     const [isComplete, setIsComplete] = useState(!isTyping);
@@ -1289,7 +1317,7 @@ const StreamingMessage = memo(
           case "planning_agent":
             return <PlanningLog plan={output} />;
           case "slide_data_fetcher_tool":
-            return <SlideDataFetcherLog data={output} />;
+            return <SlideDataFetcherLog data={output} theme={theme} />;
           case "plan_modifier_agent":
             return <PlanModifierLog data={output} />;
           default:
@@ -1322,7 +1350,7 @@ const StreamingMessage = memo(
             whiteSpace: "pre-wrap",
             wordBreak: "break-word",
             lineHeight: 1.6,
-            color: "#374151",
+            color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#374151",
             fontSize: "0.95rem",
           }}
         >
@@ -1378,7 +1406,7 @@ const StreamingMessage = memo(
           </Box>
           <Typography
             variant="caption"
-            color="text.secondary"
+            color={theme.palette.text.primary}
             sx={{ fontWeight: 500, fontSize: "0.75rem" }}
           >
             {formatAgentName(log.agent_name)}
@@ -1458,6 +1486,8 @@ export default function ChatArea({
   presentationId,
   optimisticMessages = [],
 }) {
+  const theme = useTheme();
+
   const {
     processedLogs,
     currentlyTypingIndex,
@@ -1467,18 +1497,7 @@ export default function ChatArea({
     isBackgroundProcessing,
     registerAnimationCallback,
     unregisterAnimationCallback,
-  } = useStreamingLogs(realLogs, isLoading, status, presentationId); // typing animation logs
-
-  // const {
-  //   processedLogs,
-  //   currentlyTypingIndex,
-  //   showThinking,
-  //   handleTypingComplete,
-  //   sessionStatus,
-  //   isBackgroundProcessing,
-  //   registerAnimationCallback,
-  //   unregisterAnimationCallback,
-  // } = useStaticLogs(realLogs, isLoading, status); // static logs, no animation
+  } = useStreamingLogs(realLogs, isLoading, status, presentationId);
 
   const scrollContainerRef = useRef(null);
   const autoScrollRef = useRef(true);
@@ -1514,24 +1533,6 @@ export default function ChatArea({
     }
   }, [currentlyTypingIndex, scrollToBottom]);
 
-  // Separate user messages from agent messages
-  const userMessages = realLogs.filter((log) => log.role === "user");
-  const agentMessages = realLogs.filter((log) => log.role === "agent");
-
-  // const deduplicatedOptimisticMessages = optimisticMessages.filter(
-  //   (optimisticMsg) =>
-  //     !realLogs.some(
-  //       (realLog) =>
-  //         realLog.role === "user" &&
-  //         realLog.message.trim() === optimisticMsg.message.trim() &&
-  //         Math.abs(
-  //           new Date(realLog.timestamp).getTime() -
-  //             new Date(optimisticMsg.timestamp).getTime()
-  //         ) < 30000
-  //     )
-  // );
-
-  // In ChatArea.tsx
   const deduplicatedOptimisticMessages = useMemo(() => {
     return optimisticMessages.filter(
       (optMsg) =>
@@ -1544,15 +1545,12 @@ export default function ChatArea({
     );
   }, [realLogs, optimisticMessages]);
 
-  // Create a combined and sorted array of all messages
   const allMessages = useMemo(() => {
     return mergeMessagesWithDeduplication(
       realLogs,
       deduplicatedOptimisticMessages
     );
   }, [realLogs, deduplicatedOptimisticMessages]);
-
-  // console.log(chatHistory, "chatHistory");
 
   return (
     <Box
@@ -1561,8 +1559,8 @@ export default function ChatArea({
         flexDirection: "column",
         height: "100%",
         maxHeight: "100%",
-        borderRight: "1px solid #e0e0e0",
-        bgcolor: "#fafafa",
+        borderRight: `1px solid ${theme.palette.divider}`,
+        bgcolor: theme.palette.background.default,
         overflow: "hidden",
       }}
     >
@@ -1576,14 +1574,21 @@ export default function ChatArea({
           minHeight: 0,
           scrollBehavior: "smooth",
           "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": { background: "transparent" },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
           "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
+            background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
             borderRadius: "3px",
-            "&:hover": { background: "#a8a8a8" },
+            "&:hover": {
+              background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
+            },
           },
           scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 transparent",
+          scrollbarColor:
+            theme.palette.mode === "dark"
+              ? "#555 transparent"
+              : "#c1c1c1 transparent",
         }}
       >
         <Box
@@ -1607,19 +1612,24 @@ export default function ChatArea({
                   minHeight: "300px",
                 }}
               >
-                <SmartToyIcon sx={{ fontSize: 48, color: "#ddd", mb: 2 }} />
-                <Typography variant="h6" color="#999" sx={{ mb: 1 }}>
+                <SmartToyIcon
+                  sx={{
+                    fontSize: 48,
+                    color: theme.palette.text.disabled,
+                    mb: 2,
+                  }}
+                />
+                <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
                   {currentAgentType === "presentation"
                     ? "Presentation Agent"
                     : "Super Agent"}
                 </Typography>
-                <Typography variant="body2" color="#666">
+                <Typography variant="body2" color="textSecondary">
                   Start a conversation to see AI responses stream in real-time
                 </Typography>
               </Box>
             )}
 
-          {/* Render old chat history (i) */}
           {chatHistory.map((message) => (
             <InteractiveChatMessage
               key={message.id}
@@ -1630,7 +1640,6 @@ export default function ChatArea({
             />
           ))}
 
-          {/* Render new messages based on role */}
           {allMessages.map((log, index) => {
             if (log.role === "user") {
               return (
@@ -1641,7 +1650,6 @@ export default function ChatArea({
                 />
               );
             } else if (log.role === "agent") {
-              // Find the index in processedLogs (agent messages only)
               const agentIndex = processedLogs.findIndex(
                 (processedLog) => processedLog.timestamp === log.timestamp
               );
@@ -1658,6 +1666,7 @@ export default function ChatArea({
                     unregisterAnimationCallback={unregisterAnimationCallback}
                     sessionStatus={sessionStatus}
                     processedLogs={processedLogs}
+                    theme={theme}
                   />
                 );
               }
@@ -1688,8 +1697,8 @@ export default function ChatArea({
 
       <Box
         sx={{
-          borderTop: "1px solid #e0e0e0",
-          bgcolor: "white",
+          borderTop: `1px solid ${theme.palette.divider}`,
+          bgcolor: theme.palette.background.paper,
           flexShrink: 0,
           maxHeight: "300px",
           overflow: "hidden",

@@ -35,6 +35,7 @@ const MessageBubble = ({
   timestamp,
   type = "info",
   metadata,
+  theme,
 }) => (
   <Box
     sx={{
@@ -59,14 +60,14 @@ const MessageBubble = ({
           >
             <Typography
               variant="caption"
-              color="text.disabled"
+              color={theme.palette.text.secondary}
               sx={{ fontSize: "0.7rem" }}
             >
               {new Date(timestamp).toLocaleTimeString()}
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
+              color={theme.palette.text.secondary}
               sx={{ fontWeight: 500, fontSize: "0.75rem" }}
             >
               You
@@ -103,11 +104,11 @@ const MessageBubble = ({
                 lineHeight: 1.5,
                 fontSize: "0.95rem",
               }}
-          >
-            {message}
-          </Typography>
-        </Box>
-      </>
+            >
+              {message}
+            </Typography>
+          </Box>
+        </>
       ) : (
         // AI message styling (updated to match ChatArea)
         <Box>
@@ -155,8 +156,11 @@ const MessageBubble = ({
           <Paper
             elevation={1}
             sx={{
-              boxShadow: 'none',
-              bgcolor: "#FAFAFA"
+              boxShadow: "none",
+              bgcolor:
+                // theme.palette.mode === "dark"
+                   theme.palette.background.default
+                  // : "#FAFAFA",
               // p: 2,
               // bgcolor:
               //   type === "error"
@@ -180,6 +184,7 @@ const MessageBubble = ({
                 wordBreak: "break-word",
                 lineHeight: 1.6,
                 fontSize: "0.95rem",
+                color: theme.palette.mode === "dark" ? "white" : "text.primary",
               }}
             >
               {message}
@@ -215,7 +220,7 @@ const getStepMessage = (step, data) => {
 };
 
 // Main SheetChatArea component
-export default function SheetChatArea({ currentAgentType }) {
+export default function SheetChatArea({ currentAgentType, theme }) {
   const dispatch = useDispatch();
   const sheetState = useSelector(selectSheet);
   // console.log(sheetState, "sheet state");
@@ -745,7 +750,7 @@ export default function SheetChatArea({ currentAgentType }) {
         <Alert severity="error">
           {error}
           <Box sx={{ mt: 1 }}>
-            <Typography variant="caption">
+            <Typography variant="caption" color="text.secondary">
               Make sure you are logged in.
             </Typography>
           </Box>
@@ -774,7 +779,7 @@ export default function SheetChatArea({ currentAgentType }) {
         flexDirection: "column",
         height: "100%",
         borderRight: "1px solid #e0e0e0",
-        bgcolor: "#fafafa",
+        bgcolor: theme.palette.background.default,
         overflow: "hidden",
       }}
     >
@@ -830,6 +835,7 @@ export default function SheetChatArea({ currentAgentType }) {
                   timestamp={message.timestamp}
                   type={message.type}
                   metadata={message.metadata}
+                  theme={theme}
                 />
               ))}
               {(isLoading ||

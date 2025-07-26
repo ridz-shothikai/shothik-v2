@@ -1,16 +1,20 @@
-import { alpha, Box, Grid2, Typography } from "@mui/material";
+"use client";
+
+import { alpha, Box, Grid2, Typography, useTheme } from "@mui/material";
 import * as motion from "motion/react-client";
 import BgContainer from "./components/hero/BgContainer";
 import UserActionButton from "./components/hero/UserActionButton";
 import VideoImage from "./components/VideoImage";
 
 export default function HomeFeatures() {
+  const theme = useTheme();
   return (
     <BgContainer
       sx={{
         py: 8,
         px: { xs: 2, sm: 4, md: 6 },
-        backgroundColor: "#FFFFFF",
+        // backgroundColor: "#FFFFFF",
+        backgroundColor: theme.palette.background.default,
       }}
       // image='url(/home/bg.png)'
     >

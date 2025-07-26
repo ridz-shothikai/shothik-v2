@@ -5,8 +5,8 @@ import {
   Select,
   MenuItem,
   Typography,
-  useTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { History, CheckCircle, Error, Schedule } from "@mui/icons-material";
 
@@ -17,6 +17,8 @@ const SavePointsDropdown = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isDarkMode = theme.palette.mode === "dark";
+
   const [selectedValue, setSelectedValue] = useState(
     activeSavePointId || "current"
   );
@@ -60,7 +62,12 @@ const SavePointsDropdown = ({
         "& .MuiOutlinedInput-root": {
           height: 36,
           paddingRight: "8px !important",
-          backgroundColor: "#fff",
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          borderColor: theme.palette.divider,
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: theme.palette.divider,
         },
         "& .MuiSelect-select": {
           display: "flex",
@@ -96,7 +103,11 @@ const SavePointsDropdown = ({
               <Typography
                 variant="body2"
                 noWrap
-                sx={{ fontWeight: 500, flexShrink: 1 }}
+                sx={{
+                  fontWeight: 500,
+                  flexShrink: 1,
+                  color: theme.palette.text.primary,
+                }}
               >
                 {getDisplayText(value)}
               </Typography>
@@ -105,7 +116,9 @@ const SavePointsDropdown = ({
         }}
       >
         <MenuItem value="current">
-          <Typography variant="body2">Current Data</Typography>
+          <Typography variant="body2" color="text.primary">
+            Current Data
+          </Typography>
         </MenuItem>
 
         {savePoints.map((sp) => {
@@ -122,6 +135,7 @@ const SavePointsDropdown = ({
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
+                    color: theme.palette.text.primary,
                   }}
                 >
                   {sp.title}

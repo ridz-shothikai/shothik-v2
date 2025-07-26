@@ -1,12 +1,14 @@
 "use client";
 
-// components/PreviewPanel.tsx
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CircularProgress,
+  useTheme,
+} from "@mui/material";
 import SlidePreview from "./SlidePreview";
 import { Chart, registerables } from "chart.js";
 import AppLink from "../common/AppLink";
@@ -31,6 +33,9 @@ export default function PreviewPanel({
   onRegenerateWithFeedback,
   title,
 }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [previewTab, setPreviewTab] = useState("preview");
   const [slideTabs, setSlideTabs] = useState({});
 
@@ -41,14 +46,13 @@ export default function PreviewPanel({
     }));
   };
 
-  console.log(slidesData, "slidesData in PreviewPanel");
-
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        bgcolor: "white",
+        bgcolor: isDark ? "background.default" : "white",
+        color: isDark ? "text.primary" : "inherit",
         height: "100%",
         maxHeight: "100%",
         overflow: "hidden",
@@ -62,16 +66,18 @@ export default function PreviewPanel({
           minHeight: 0,
           "&::-webkit-scrollbar": { width: "8px" },
           "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1",
+            background: isDark ? "#2b2b2b" : "#f1f1f1",
             borderRadius: "4px",
           },
           "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
+            background: isDark ? "#555" : "#c1c1c1",
             borderRadius: "4px",
-            "&:hover": { background: "#a8a8a8" },
+            "&:hover": {
+              background: isDark ? "#666" : "#a8a8a8",
+            },
           },
           scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 #f1f1f1",
+          scrollbarColor: isDark ? "#555 #2b2b2b" : "#c1c1c1 #f1f1f1",
         }}
       >
         {previewTab === "preview" && (
@@ -83,9 +89,9 @@ export default function PreviewPanel({
                   sx={{
                     position: "sticky",
                     top: 0,
-                    bgcolor: "white",
+                    bgcolor: isDark ? "background.paper" : "white",
                     zIndex: 10,
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: `1px solid ${isDark ? "#444" : "#e0e0e0"}`,
                     px: 3,
                     pt: 3,
                     pb: 2,
@@ -99,26 +105,28 @@ export default function PreviewPanel({
                     sx={{
                       fontWeight: 500,
                       fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                      color: "#333",
+                      color: isDark ? "text.primary" : "#333",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                       minWidth: 0,
                     }}
                   >
-                    {slidesData?.status !== 'failed' ? (title || slidesData?.title || "Generating...") : 'Presentation generation failed'}
+                    {slidesData?.status !== "failed"
+                      ? title || slidesData?.title || "Generating..."
+                      : "Presentation generation failed"}
                   </Typography>
 
                   {(slidesData?.status === "completed" ||
                     slidesData?.status === "saved") && (
                     <Typography
-                      color="#666"
                       sx={{
                         fontSize: {
                           xs: "0.8rem",
                           sm: "0.9rem",
                           md: "1rem",
                         },
+                        color: isDark ? "text.secondary" : "#666",
                       }}
                     >
                       <AppLink
@@ -164,10 +172,10 @@ export default function PreviewPanel({
                           totalSlides={
                             slidesData?.totalSlide || slidesData?.data?.length
                           }
+                          theme={theme}
                         />
                       ))}
 
-                      {/* loading indicator */}
                       {slidesLoading && (
                         <Box
                           sx={{
@@ -181,33 +189,17 @@ export default function PreviewPanel({
                       )}
                     </Box>
                   ) : (
-                    <>
-                    {/* <Card
-                      sx={{
-                        bgcolor: "#f8f9fa",
-                        height: 400,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "1px solid #e0e0e0",
-                        boxShadow: 1,
-                        my: 4,
-                      }}
-                    >
-                      <CardContent sx={{ textAlign: "center" }}>
-                        <Typography variant="h6" color="#666">
-                          Generating slides...
-                        </Typography>
-                      </CardContent>
-                    </Card> */}
-                    
-                    </>
+                    <Box sx={{ textAlign: "center", mt: 8, p: 3 }}>
+                      <Typography color={isDark ? "text.secondary" : "#666"}>
+                        No slides generated
+                      </Typography>
+                    </Box>
                   )}
                 </Box>
               </>
             ) : (
               <Box sx={{ textAlign: "center", mt: 8, p: 3 }}>
-                <Typography color="#666">
+                <Typography color={isDark ? "text.secondary" : "#666"}>
                   Agent output will appear here
                 </Typography>
               </Box>

@@ -14,6 +14,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from "@mui/material";
 import {
   Refresh,
@@ -219,12 +220,14 @@ export default function SheetDataArea() {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
 
+  const theme = useTheme();
+
   // REDUX
   const sheetState = useSelector(selectSheet);
   const sheetStatus = useSelector(selectSheetStatus);
   const currentSavePoint = useSelector(selectActiveSavePoint);
 
-  console.log(currentSavePoint, "currentSavePoint");
+  // console.log(currentSavePoint, "currentSavePoint");
 
   const dispatch = useDispatch();
 
@@ -405,12 +408,21 @@ export default function SheetDataArea() {
       enableVirtualization: rows.length > 100,
       rowHeight: 40,
       headerRowHeight: 45,
-      className: "rdg-light",
+      className: theme.palette.mode === "dark" ? "rdg-dark" : "rdg-light",
+      // style: {
+      //   height: "100%",
+      //   border: "1px solid #e0e0e0",
+      //   borderRadius: "4px",
+      //   fontSize: "14px",
+      // },
       style: {
         height: "100%",
-        border: "1px solid #e0e0e0",
+        border: "1px solid",
+        borderColor: theme.palette.divider,
         borderRadius: "4px",
         fontSize: "14px",
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
       },
       rowKeyGetter: (row) => row.id,
       defaultSortColumns: [],
@@ -418,7 +430,7 @@ export default function SheetDataArea() {
         console.log("Sort columns changed:", sortColumns);
       },
     }),
-    [columns, rows, selectedRows]
+    [columns, rows, selectedRows, theme.palette.mode]
   );
 
   // Render generating state
@@ -505,6 +517,7 @@ export default function SheetDataArea() {
               dispatch(switchToSavePoint({ savePointId: savePoint.id }));
             }}
             currentSheetData={sheetState.sheet}
+            theme={theme}
           />
         </Box>
 

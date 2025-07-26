@@ -80,8 +80,8 @@ export default function MainLayout({ children }) {
 
   return (
     <ProgressProvider
-      height='3px'
-      color='#00AB55'
+      height="3px"
+      color="#00AB55"
       options={{ showSpinner: false }}
       shallowRouting
     >
@@ -89,7 +89,7 @@ export default function MainLayout({ children }) {
         <MainHeader />
         <Box
           sx={{
-            bgcolor: isDarkMode ? "#161C24" : "background.neutral",
+            bgcolor: isDarkMode ? "#212121" : "background.neutral",
             display: { sm: "flex" },
             minHeight: { sm: 1 },
             overflow: "hidden",

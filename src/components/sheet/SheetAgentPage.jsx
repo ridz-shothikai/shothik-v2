@@ -42,12 +42,12 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
     <Box
       sx={{
         height: {
-          xs: "90dvh", // height for mobile screens (extra-small)
-          lg: "80dvh", // height for desktop screens (large)
-          xl: "85dvh", // height for extra-large screens
+          xs: "90dvh",
+          lg: "80dvh",
+          xl: "85dvh",
         },
-        bgcolor: "white",
-        color: "#333",
+        bgcolor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -63,7 +63,6 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
         }}
       >
         {isMobile ? (
-          // Mobile Layout
           <>
             <Box
               sx={{
@@ -71,19 +70,16 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
                 alignItems: "center",
                 gap: "8px",
                 p: 2,
-                border: "1px solid #e0e0e0",
+                border: `1px solid ${theme.palette.divider}`,
                 cursor: "pointer",
-                bgcolor: "#fafafa",
+                bgcolor: theme.palette.action.hover,
               }}
               onClick={handlePreviewOpen}
             >
-              <CustomTableChartIcon sx={{ color: "#07B37A", fontSize: 30 }} />
-              <Typography
-                variant="h6"
-                sx={{
-                  ml: 0.5,
-                }}
-              >
+              <CustomTableChartIcon
+                sx={{ color: theme.palette.primary.main, fontSize: 30 }}
+              />
+              <Typography variant="h6" sx={{ ml: 0.5 }}>
                 Preview Sheet Data
               </Typography>
             </Box>
@@ -98,6 +94,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
               <SheetChatArea
                 currentAgentType={specificAgent}
                 isLoading={isLoading}
+                theme={theme}
               />
             </Box>
             <Dialog
@@ -106,16 +103,24 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
               maxWidth="md"
               fullWidth
               PaperProps={{
-                sx: { height: "80vh", maxHeight: "80vh", position: "relative" },
+                sx: {
+                  height: "80vh",
+                  maxHeight: "80vh",
+                  position: "relative",
+                  bgcolor: theme.palette.background.default,
+                },
               }}
             >
               <DialogContent sx={{ p: 0, overflow: "hidden" }}>
-                <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
+                <SheetDataArea
+                  isLoading={isLoading}
+                  sheetId={sheetId}
+                  theme={theme}
+                />
               </DialogContent>
             </Dialog>
           </>
         ) : (
-          // Desktop Layout
           <Box
             sx={{
               flex: 1,
@@ -132,12 +137,13 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
                 display: "flex",
                 flexDirection: "column",
                 minHeight: 0,
-                borderRight: "1px solid #e0e0e0",
+                borderRight: `1px solid ${theme.palette.divider}`,
               }}
             >
               <SheetChatArea
                 currentAgentType={specificAgent}
                 isLoading={isLoading}
+                theme={theme}
               />
             </Box>
             <Box
@@ -148,7 +154,11 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
                 minHeight: 0,
               }}
             >
-              <SheetDataArea isLoading={isLoading} sheetId={sheetId} />
+              <SheetDataArea
+                isLoading={isLoading}
+                sheetId={sheetId}
+                theme={theme}
+              />
             </Box>
           </Box>
         )}
