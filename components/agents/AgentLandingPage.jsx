@@ -23,7 +23,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import ChatIcon from "@mui/icons-material/Chat";
 import PhoneIcon from "@mui/icons-material/Phone";
 import GroupIcon from "@mui/icons-material/Group";
-import CloseIcon from "@mui/icons-material/Close";
+// import CloseIcon from "@mui/icons-material/Close";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import PaletteIcon from "@mui/icons-material/Palette";
 import FactCheckIcon from "@mui/icons-material/FactCheck";
@@ -39,6 +39,8 @@ import {
   DialogContentText,
   useTheme,
   ListItemIcon,
+  Stack,
+  CircularProgress,
 } from "@mui/material";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
@@ -58,10 +60,17 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import {
+  Close as CloseIcon,
+  ChatBubbleOutline as ChatBubbleOutlineIcon,
+  AccessTime as AccessTimeIcon,
+} from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import useResponsive from "../../src/hooks/useResponsive";
 import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
 import Link from "next/link";
+import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
+import { format } from "date-fns";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -178,8 +187,10 @@ export default function AgentLandingPage() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
+  const { data: myChats, isLoading, error } = useGetMyChatsQuery();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
+  // console.log(myChats, "myChats");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
@@ -300,6 +311,7 @@ export default function AgentLandingPage() {
         position: "relative",
       }}
     >
+      {/* ============== FOR AGENTS USAGE HISTORY STARTS ================ */}
       {/* Menu Button (Top Left) */}
       <IconButton
         onClick={toggleDrawer(true)}
@@ -321,46 +333,201 @@ export default function AgentLandingPage() {
         ModalProps={{
           keepMounted: true,
         }}
-        // hideBackdrop
         sx={{
           zIndex: 1102,
           "& .MuiDrawer-paper": {
             position: "absolute",
             left: isMobile ? 0 : isNavbarExpanded ? 273 : 100,
-            width: 280,
+            width: { xs: "100vw", sm: 320, md: 360 },
+            maxWidth: { xs: "100vw", sm: "calc(100vw - 320px)" },
             bgcolor: isDarkMode ? "#1e272e" : "#fff",
             color: isDarkMode ? "#eee" : "#333",
+            overflow: "hidden",
           },
         }}
       >
-        <Box sx={{ position: "relative", width: 280, height: "100%" }}>
-          {/* Close Button */}
-          <IconButton
-            onClick={toggleDrawer(false)}
+        <Box
+          sx={{
+            width: "100%",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          {/* Header */}
+          <Box
             sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              color: isDarkMode ? "#eee" : "#333",
-              zIndex: 1300,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              p: 2,
+              borderBottom: 1,
+              borderColor: "divider",
+              flexShrink: 0,
             }}
           >
-            <CloseIcon />
-          </IconButton>
+            <Typography
+              variant="h6"
+              component="h2"
+              sx={{
+                fontWeight: 600,
+                fontSize: { xs: "1.1rem", sm: "1.25rem" },
+              }}
+            >
+              My Chats
+            </Typography>
 
-          {/* Drawer Content */}
-          <List sx={{ mt: 6, mx: 4, display: "flex", flexDirection: "column", gap: {xs: 1, md: 2} }}>
-            {/* push content down from close icon */}
-            <Link href={"/"} style={{ textDecoration: "none", color: "inherit", }}>
-              Agents
-            </Link>
-            <Link href={"/"} style={{ textDecoration: "none", color: "inherit",}}>
-              Agents
-            </Link>
-            
-          </List>
+            <IconButton
+              onClick={toggleDrawer(false)}
+              size="small"
+              sx={{
+                color: isDarkMode ? "#eee" : "#333",
+              }}
+              aria-label="Close sidebar"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Content */}
+          <Box
+            sx={{
+              flex: 1,
+              overflow: "auto",
+              p: { xs: 1, sm: 2 },
+            }}
+          >
+            {isLoading && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 100,
+                }}
+              >
+                <CircularProgress size={24} />
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ ml: 2 }}
+                >
+                  Loading chats...
+                </Typography>
+              </Box>
+            )}
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                Failed to load chats
+              </Alert>
+            )}
+
+            {!isLoading && myChats?.length === 0 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: 200,
+                  textAlign: "center",
+                }}
+              >
+                <ChatBubbleOutlineIcon
+                  sx={{
+                    fontSize: 48,
+                    color: "text.disabled",
+                    mb: 2,
+                  }}
+                />
+                <Typography variant="body1" color="text.secondary">
+                  No chats yet
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.disabled"
+                  sx={{ mt: 0.5 }}
+                >
+                  Start a new conversation to see it here
+                </Typography>
+              </Box>
+            )}
+
+            {myChats && myChats.length > 0 && (
+              <Stack spacing={1}>
+                {myChats.map((chat) => (
+                  <Card
+                    key={chat._id || chat.id}
+                    elevation={0}
+                    onClick={() => router.push(`/agents/sheets?id=${chat._id}`)}
+                    sx={{
+                      cursor: "pointer",
+                      transition: "all 0.2s ease-in-out",
+                      border: 1,
+                      borderColor: "divider",
+                      "&:hover": {
+                        bgcolor: "action.hover",
+                        borderColor: "primary.main",
+                        elevation: 1,
+                      },
+                      "&:active": {
+                        transform: "scale(0.98)",
+                      },
+                    }}
+                  >
+                    <CardContent
+                      sx={{
+                        p: { xs: 1.5, sm: 2 },
+                        "&:last-child": {
+                          pb: { xs: 1.5, sm: 2 },
+                        },
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        component="h3"
+                        sx={{
+                          fontWeight: 600,
+                          mb: 0.5,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          fontSize: { xs: "0.9rem", sm: "1rem" },
+                          lineHeight: 1.3,
+                        }}
+                        title={chat.name}
+                      >
+                        {chat.name}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          fontSize: { xs: "0.75rem", sm: "0.8rem" },
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                        }}
+                      >
+                        <AccessTimeIcon sx={{ fontSize: 14 }} />
+                        {format(
+                          new Date(chat.createdAt),
+                          "dd/MM/yyyy, hh:mm a"
+                        )}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Stack>
+            )}
+          </Box>
         </Box>
       </Drawer>
+
+      {/* ============== FOR AGENTS USAGE HISTORY ENDS ================ */}
 
       <Modal
         open={showOnboarding}

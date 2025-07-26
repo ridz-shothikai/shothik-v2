@@ -14,7 +14,7 @@ export const sheetApiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["ChatHistory"],
+  tagTypes: ["ChatHistory", "MyChats"],
   endpoints: (builder) => ({
     getChatHistory: builder.query({
       query: (chatId) => `/conversation/get_chat_conversations/${chatId}`,
@@ -103,7 +103,11 @@ export const sheetApiSlice = createApi({
         };
       },
     }),
+    getMyChats: builder.query({
+      query: () => "/chat/get_my_chats",
+      providesTags: ["MyChats"],
+    }),
   }),
 });
 
-export const { useGetChatHistoryQuery } = sheetApiSlice;
+export const { useGetChatHistoryQuery, useGetMyChatsQuery } = sheetApiSlice;
