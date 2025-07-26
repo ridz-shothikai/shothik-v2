@@ -1,6 +1,6 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
@@ -33,6 +33,9 @@ export default function MainLayout({ children }) {
   const dispatch = useDispatch();
   const { isLoading } = useGetUserQuery();
   useGetUserLimitQuery();
+
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
 
   const [login] = useLoginMutation();
   const { user } = useSelector((state) => state.auth);
@@ -86,14 +89,14 @@ export default function MainLayout({ children }) {
         <MainHeader />
         <Box
           sx={{
-            bgcolor: "background.neutral",
+            bgcolor: isDarkMode ? "#161C24" : "background.neutral",
             display: { sm: "flex" },
             minHeight: { sm: 1 },
             overflow: "hidden",
           }}
         >
           {!isMobile && isNavMini ? (
-            <NavMini />
+            <NavMini isDarkMode={isDarkMode} />
           ) : (
             <NavVertical
               openNav={open}

@@ -606,12 +606,12 @@ export default function PresentationAgentPage({ specificAgent }) {
         overflow: "hidden",
       }}
     >
-      <Box sx={{ flexShrink: 0 }}>
+      {/* <Box sx={{ flexShrink: 0 }}>
         <AgentHeader
           currentAgentType={currentAgentType}
           onBackClick={() => router.push("/agents")}
         />
-      </Box>
+      </Box> */}
 
       <Box
         sx={{

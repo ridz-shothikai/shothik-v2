@@ -37,6 +37,7 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
+  useTheme,
 } from "@mui/material";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
@@ -175,6 +176,9 @@ export default function AgentLandingPage() {
     severity: "error",
   });
 
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
@@ -268,8 +272,8 @@ export default function AgentLandingPage() {
     <Box
       sx={{
         minHeight: "calc(100vh - 100px)",
-        bgcolor: "white",
-        color: "#333",
+        bgcolor: isDarkMode ? "#161C24" : "white",
+        color: isDarkMode ? "#eee" : "#333",
         display: "flex",
         flexDirection: "column",
       }}
@@ -473,7 +477,11 @@ export default function AgentLandingPage() {
           <Box sx={{ mb: 4 }}>
             <Typography
               variant="h6"
-              sx={{ textAlign: "center", mb: 2, color: "#333" }}
+              sx={{
+                textAlign: "center",
+                mb: 2,
+                color: isDarkMode ? "#fff" : "#333",
+              }}
             >
               Quick Start Templates
             </Typography>
@@ -546,7 +554,7 @@ export default function AgentLandingPage() {
           sx={{
             maxWidth: 800,
             mx: "auto",
-            bgcolor: "#f8f9fa",
+            bgcolor: isDarkMode ? "#161C24" : "#f8f9fa",
             borderRadius: 4,
             p: 3,
             border: "1px solid #e0e0e0",
@@ -591,7 +599,7 @@ export default function AgentLandingPage() {
                     color: "#333",
                   },
                   "& textarea": {
-                    color: "#333",
+                    color: isDarkMode ? "#fff" : "#333",
                   },
                 },
                 "& .MuiOutlinedInput-input::placeholder": {
@@ -680,7 +688,7 @@ export default function AgentLandingPage() {
             textAlign: "center",
           }}
         >
-          <Typography variant="body2" sx={{ color: "#666", mb: 2 }}>
+          <Typography variant="body2" sx={{ color: isDarkMode ? "#fff" : "#666", mb: 2 }}>
             {selectedNavItem === "slides"
               ? "Popular presentation topics:"
               : "Try these popular requests:"}
@@ -726,7 +734,7 @@ export default function AgentLandingPage() {
 
         {selectedNavItem === "slides" && (
           <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography variant="h6" sx={{ color: "#333", mb: 3 }}>
+            <Typography variant="h6" sx={{ color: isDarkMode ? "#fff" : "#333", mb: 3 }}>
               Powered by 7 AI Agents
             </Typography>
             <Grid container spacing={3} sx={{ maxWidth: 800, mx: "auto" }}>
