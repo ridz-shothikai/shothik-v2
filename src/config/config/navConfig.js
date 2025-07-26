@@ -15,6 +15,7 @@ const ICONS = {
   agents: icon("agents"),
   user: icon("user"),
   agent: icon("ai-brain"),
+  marketing_automation: icon("marketing-automation"),
 };
 
 const navConfig = [
@@ -62,6 +63,12 @@ const navConfig = [
         title: "Agent",
         path: "/agents",
         icon: ICONS.agent,
+        iconColor: "#1976D2",
+      },
+      {
+        title: "Marketing Automation",
+        path: "/",
+        icon: ICONS.marketing_automation,
         iconColor: "#1976D2",
       },
     ],
@@ -136,6 +143,14 @@ const tools = [
     description: "AI Agent Platform",
     label: null,
     link: "/agents",
+    iconColor: "#1976D2",
+  },
+  {
+    icon: ICONS.marketing_automation,
+    title: "Marketing Automation",
+    description: "Marketing automation tools",
+    label: null,
+    link: "/",
     iconColor: "#1976D2",
   },
 ];

@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { alpha, Box, Grid2, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import BgContainer from "./components/hero/BgContainer";
 import UserActionButton from "./components/hero/UserActionButton";
@@ -7,8 +7,12 @@ import VideoImage from "./components/VideoImage";
 export default function HomeFeatures() {
   return (
     <BgContainer
-      sx={{ py: 8, px: { xs: 2, sm: 4, md: 6 } }}
-      image='url(/home/bg.png)'
+      sx={{
+        py: 8,
+        px: { xs: 2, sm: 4, md: 6 },
+        backgroundColor: "#FFFFFF",
+      }}
+      // image='url(/home/bg.png)'
     >
       <Box
         component={motion.div}
@@ -17,8 +21,8 @@ export default function HomeFeatures() {
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
         fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        fontWeight='bold'
-        textAlign='center'
+        fontWeight="bold"
+        textAlign="center"
         marginBottom={{ xs: 8, sm: 6 }}
         sx={{
           lineHeight: 1.2,
@@ -37,8 +41,8 @@ export default function HomeFeatures() {
           }}
         >
           <Typography
-            component='span'
-            variant='inherit'
+            component="span"
+            variant="inherit"
             style={{ color: "#00A76F" }}
             sx={{
               background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
@@ -49,14 +53,14 @@ export default function HomeFeatures() {
           >
             Shothik AI
           </Typography>
-          <Typography component='span' variant='inherit' color='text.primary'>
+          <Typography component="span" variant="inherit" color="text.primary">
             Apart
           </Typography>
         </Box>
       </Box>
 
       {/* Bypass GPT Section */}
-      <Grid2 container justifyContent='space-between' alignItems='center'>
+      <Grid2 container justifyContent="space-between" alignItems="center">
         <Grid2
           component={motion.div}
           initial={{ x: -100, opacity: 0 }}
@@ -82,8 +86,8 @@ export default function HomeFeatures() {
               }}
             >
               <Typography
-                variant='h3'
-                fontWeight='bold'
+                variant="h3"
+                fontWeight="bold"
                 sx={{
                   fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
                   lineHeight: 1.2,
@@ -91,10 +95,10 @@ export default function HomeFeatures() {
               >
                 Unleash AI Potential with <br />
                 <Typography
-                  component='span'
-                  variant='inherit'
-                  fontWeight='bold'
-                  color='#00A76F'
+                  component="span"
+                  variant="inherit"
+                  fontWeight="bold"
+                  color="#00A76F"
                 >
                   Humanize GPT
                 </Typography>
@@ -104,8 +108,8 @@ export default function HomeFeatures() {
 
           <Box>
             <Typography
-              variant='body1'
-              color='text.secondary'
+              variant="body1"
+              color="text.secondary"
               sx={{ marginY: 2 }}
             >
               Working closely in partnership with the AI detector, you can
@@ -127,17 +131,17 @@ export default function HomeFeatures() {
           sx={{ pl: { md: 10 } }}
         >
           <VideoImage
-            lightImage='/home/bypass-light.webp'
-            darkImage='/home/bypass-dark.webp'
+            lightImage="/home/bypass-light.webp"
+            darkImage="/home/bypass-dark.webp"
             width={450}
             height={450}
-            object='fill'
+            object="fill"
           />
         </Grid2>
       </Grid2>
 
       {/* AI Detector Section */}
-      <Grid2 container justifyContent='space-between' alignItems='center'>
+      <Grid2 container justifyContent="space-between" alignItems="center">
         {/* Video Grid */}
         <Grid2
           size={{ xs: 12, sm: 6, md: 6 }}
@@ -151,8 +155,8 @@ export default function HomeFeatures() {
           viewport={{ once: true }}
         >
           <VideoImage
-            lightImage='/home/ai-detector-light.webp'
-            darkImage='/home/ai-detector-dark.webp'
+            lightImage="/home/ai-detector-light.webp"
+            darkImage="/home/ai-detector-dark.webp"
             width={400}
             height={400}
           />
@@ -188,8 +192,8 @@ export default function HomeFeatures() {
               }}
             >
               <Typography
-                variant='h3'
-                fontWeight='bold'
+                variant="h3"
+                fontWeight="bold"
                 sx={{
                   fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
                   lineHeight: 1.2,
@@ -197,10 +201,10 @@ export default function HomeFeatures() {
               >
                 Harness the Power of <br /> Advanced{" "}
                 <Typography
-                  component='span'
-                  variant='inherit'
-                  fontWeight='bold'
-                  color='#00A76F'
+                  component="span"
+                  variant="inherit"
+                  fontWeight="bold"
+                  color="#00A76F"
                 >
                   AI Detector
                 </Typography>
@@ -209,8 +213,8 @@ export default function HomeFeatures() {
           </Box>
           <Box>
             <Typography
-              variant='body1'
-              color='text.secondary'
+              variant="body1"
+              color="text.secondary"
               sx={{ marginY: 2 }}
             >
               Direct communications with AI-driven queries. The Humanize GPT
@@ -227,9 +231,9 @@ export default function HomeFeatures() {
       {/* Translator Section */}
       <Grid2
         container
-        justifyContent='space-between'
+        justifyContent="space-between"
         spacing={4}
-        alignItems='center'
+        alignItems="center"
       >
         <Grid2
           component={motion.div}
@@ -257,8 +261,8 @@ export default function HomeFeatures() {
               }}
             >
               <Typography
-                variant='h3'
-                fontWeight='bold'
+                variant="h3"
+                fontWeight="bold"
                 sx={{
                   fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
                   lineHeight: 1.2,
@@ -266,10 +270,10 @@ export default function HomeFeatures() {
               >
                 Break Language Barriers <br /> with{" "}
                 <Typography
-                  component='span'
-                  variant='inherit'
-                  fontWeight='bold'
-                  color='#00A76F'
+                  component="span"
+                  variant="inherit"
+                  fontWeight="bold"
+                  color="#00A76F"
                 >
                   {" "}
                   Translator
@@ -280,8 +284,8 @@ export default function HomeFeatures() {
 
           <Box>
             <Typography
-              variant='body1'
-              color='text.secondary'
+              variant="body1"
+              color="text.secondary"
               sx={{ marginY: 2 }}
             >
               Working closely in partnership with the AI detector, you can
@@ -301,8 +305,8 @@ export default function HomeFeatures() {
           sx={{ pl: { md: 10 } }}
         >
           <VideoImage
-            lightImage='/home/translator-light.webp'
-            darkImage='/home/translator-dark.webp'
+            lightImage="/home/translator-light.webp"
+            darkImage="/home/translator-dark.webp"
             width={400}
             height={400}
           />

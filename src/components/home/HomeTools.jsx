@@ -1,4 +1,4 @@
-import { Box, Card, Grid2, Typography } from "@mui/material";
+import { alpha, Box, Card, Grid2, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import Link from "next/link";
 import { tools } from "../../config/config/navConfig";
@@ -8,8 +8,12 @@ import UserActionButton from "./components/hero/UserActionButton";
 export default function HomeTools() {
   return (
     <BgContainer
-      sx={{ py: 8, px: { xs: 2, sm: 4, md: 6 } }}
-      image='url(/home/bg.png)'
+      sx={{
+        py: 8,
+        px: { xs: 2, sm: 4, md: 6 },
+        backgroundColor: alpha("#00A76F", 0.08),
+      }}
+      // image='url(/home/bg.png)'
     >
       <Box>
         <Typography
@@ -18,8 +22,8 @@ export default function HomeTools() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          variant='h2'
-          align='center'
+          variant="h2"
+          align="center"
           sx={{
             fontSize: { xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" },
             lineHeight: 1.2,
@@ -112,7 +116,7 @@ export default function HomeTools() {
                   )}
                   <Box sx={{ minWidth: 0, flex: 1 }}>
                     <Typography
-                      variant='h6'
+                      variant="h6"
                       sx={{
                         fontSize: { xs: 18, sm: 20, md: 20, lg: 22, xl: 22 },
                         fontWeight: 500,
@@ -133,7 +137,7 @@ export default function HomeTools() {
                       {tool.title}
                     </Typography>
                     <Typography
-                      variant='body2'
+                      variant="body2"
                       sx={{
                         color: "text.secondary",
                         fontSize: 14,
