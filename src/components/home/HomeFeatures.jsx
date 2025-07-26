@@ -15,6 +15,7 @@ export default function HomeFeatures() {
         px: { xs: 2, sm: 4, md: 6 },
         // backgroundColor: "#FFFFFF",
         backgroundColor: theme.palette.background.default,
+        mb: 3,
       }}
       // image='url(/home/bg.png)'
     >

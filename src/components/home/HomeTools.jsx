@@ -12,6 +12,7 @@ export default function HomeTools() {
         py: 8,
         px: { xs: 2, sm: 4, md: 6 },
         backgroundColor: alpha("#00A76F", 0.08),
+        mb: 3,
       }}
       // image='url(/home/bg.png)'
     >
