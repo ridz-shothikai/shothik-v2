@@ -60,7 +60,7 @@ export default function Main({ children }) {
         >
 
           <Box sx={{display:"flex", flexDirection:"column"}}>{children}</Box>
-          <VerticalMenu/>
+          {/* <VerticalMenu/> */}
         </Box> : children}
       </Container>
       {pathName !== "/research" && !pathName.startsWith("/agents") ? <FooterServerComponent /> : null}
