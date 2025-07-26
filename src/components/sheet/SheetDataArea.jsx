@@ -608,10 +608,11 @@ export default function SheetDataArea() {
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
         {!hasData ? (
-          <Typography variant="body2" color="text.secondary">
-            No data found. Use the chat area to describe your spreadsheet and
-            generate data
-          </Typography>
+          // <Typography variant="body2" color="text.secondary">
+          //   No data found. Use the chat area to describe your spreadsheet and
+          //   generate data
+          // </Typography>
+          null
         ) : (
           <DataGrid {...gridProps} />
         )}

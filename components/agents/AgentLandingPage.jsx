@@ -187,6 +187,7 @@ export default function AgentLandingPage() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
+  const accessToken = useSelector((state) => state.auth.accessToken);
   const { data: myChats, isLoading, error } = useGetMyChatsQuery();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
@@ -313,17 +314,19 @@ export default function AgentLandingPage() {
     >
       {/* ============== FOR AGENTS USAGE HISTORY STARTS ================ */}
       {/* Menu Button (Top Left) */}
-      <IconButton
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: "absolute",
-          top: 3,
-          left: 10,
-          color: isDarkMode ? "#eee" : "#333",
-        }}
-      >
-        <MenuIcon />
-      </IconButton>
+      {/* {accessToken && (
+        <IconButton
+          onClick={toggleDrawer(true)}
+          sx={{
+            position: "absolute",
+            top: 3,
+            left: 10,
+            color: isDarkMode ? "#eee" : "#333",
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      )} */}
 
       {/* Sidebar Drawer */}
       <Drawer
@@ -419,9 +422,9 @@ export default function AgentLandingPage() {
             )}
 
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                Failed to load chats
-              </Alert>
+              <Typography variant="body1" color="text.secondary">
+                No chats found
+              </Typography>
             )}
 
             {!isLoading && myChats?.length === 0 && (

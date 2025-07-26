@@ -423,7 +423,15 @@ export default function SheetChatArea({ currentAgentType, theme }) {
       }
     });
 
-    setMessages(convertedMessages);
+    // setMessages(convertedMessages);
+
+    setMessages((prevMessages) => {
+      const userMessageIds = new Set(convertedMessages.map((m) => m.id));
+      const preservedMessages = prevMessages.filter(
+        (m) => !userMessageIds.has(m.id)
+      );
+      return [...preservedMessages, ...convertedMessages];
+    });
   }, [chatData, dispatch]);
 
   // Handle completion detection
