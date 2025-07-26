@@ -31,6 +31,7 @@ export default function Main({ children }) {
       component='main'
       sx={{
         flexGrow: 1,
+        position: "relative",
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
           px: 2,

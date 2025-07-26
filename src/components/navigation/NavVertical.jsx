@@ -20,7 +20,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
 
   return (
     <Box
-      component='nav'
+      component="nav"
       sx={{
         bgcolor: "background.paper",
         flexShrink: { sm: 0 },
@@ -39,10 +39,10 @@ export default function NavVertical({ openNav, onCloseNav }) {
         slotProps={{
           paper: {
             sx: {
-              zIndex: isDesktop ? 500 : 0,
+              zIndex: isDesktop ? 1103 : 0,
               width: NAV.W_DASHBOARD,
               ...(isDesktop && {
-                bgcolor: "transparent",
+                bgcolor: "background.paper",
                 borderRightStyle: "dashed",
               }),
             },
@@ -62,7 +62,11 @@ export default function NavVertical({ openNav, onCloseNav }) {
             <Logo />
           </Stack>
 
-          <NavSectionVertical onCloseNav={onCloseNav} data={navConfig} user={user} />
+          <NavSectionVertical
+            onCloseNav={onCloseNav}
+            data={navConfig}
+            user={user}
+          />
 
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ px: 2 }}>

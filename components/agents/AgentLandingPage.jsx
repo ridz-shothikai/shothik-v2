@@ -38,6 +38,7 @@ import {
   DialogActions,
   DialogContentText,
   useTheme,
+  ListItemIcon,
 } from "@mui/material";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
@@ -51,6 +52,16 @@ import {createPresentationServer} from '../../src/services/createPresentationSer
 import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
 import { setSheetState } from "../../src/redux/slice/sheetSlice";
 import { Snackbar, Alert } from "@mui/material";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import useResponsive from "../../src/hooks/useResponsive";
+import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
+import Link from "next/link";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -165,6 +176,8 @@ export default function AgentLandingPage() {
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
+  const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
+  const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -176,8 +189,16 @@ export default function AgentLandingPage() {
     severity: "error",
   });
 
+  // const [sidebarOpen, setSidebarOpen] = useState(false);
+  // console.log(isNavbarExpanded, "isNavbarExpanded");
+
+  const toggleDrawer = (open) => () => {
+    dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
+  };
+
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
+  const isMobile = useResponsive("down", "sm");
 
   const user = useSelector((state) => state.auth.user);
 
@@ -276,8 +297,71 @@ export default function AgentLandingPage() {
         color: isDarkMode ? "#eee" : "#333",
         display: "flex",
         flexDirection: "column",
+        position: "relative",
       }}
     >
+      {/* Menu Button (Top Left) */}
+      <IconButton
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "absolute",
+          top: 3,
+          left: 10,
+          color: isDarkMode ? "#eee" : "#333",
+        }}
+      >
+        <MenuIcon />
+      </IconButton>
+
+      {/* Sidebar Drawer */}
+      <Drawer
+        anchor="left"
+        open={sidebarOpen}
+        onClose={toggleDrawer(false)}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        // hideBackdrop
+        sx={{
+          zIndex: 1102,
+          "& .MuiDrawer-paper": {
+            position: "absolute",
+            left: isMobile ? 0 : isNavbarExpanded ? 273 : 100,
+            width: 280,
+            bgcolor: isDarkMode ? "#1e272e" : "#fff",
+            color: isDarkMode ? "#eee" : "#333",
+          },
+        }}
+      >
+        <Box sx={{ position: "relative", width: 280, height: "100%" }}>
+          {/* Close Button */}
+          <IconButton
+            onClick={toggleDrawer(false)}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              color: isDarkMode ? "#eee" : "#333",
+              zIndex: 1300,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+
+          {/* Drawer Content */}
+          <List sx={{ mt: 6, mx: 4, display: "flex", flexDirection: "column", gap: {xs: 1, md: 2} }}>
+            {/* push content down from close icon */}
+            <Link href={"/"} style={{ textDecoration: "none", color: "inherit", }}>
+              Agents
+            </Link>
+            <Link href={"/"} style={{ textDecoration: "none", color: "inherit",}}>
+              Agents
+            </Link>
+            
+          </List>
+        </Box>
+      </Drawer>
+
       <Modal
         open={showOnboarding}
         onClose={handleCloseOnboarding}
@@ -688,7 +772,10 @@ export default function AgentLandingPage() {
             textAlign: "center",
           }}
         >
-          <Typography variant="body2" sx={{ color: isDarkMode ? "#fff" : "#666", mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: isDarkMode ? "#fff" : "#666", mb: 2 }}
+          >
             {selectedNavItem === "slides"
               ? "Popular presentation topics:"
               : "Try these popular requests:"}
@@ -734,7 +821,10 @@ export default function AgentLandingPage() {
 
         {selectedNavItem === "slides" && (
           <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography variant="h6" sx={{ color: isDarkMode ? "#fff" : "#333", mb: 3 }}>
+            <Typography
+              variant="h6"
+              sx={{ color: isDarkMode ? "#fff" : "#333", mb: 3 }}
+            >
               Powered by 7 AI Agents
             </Typography>
             <Grid container spacing={3} sx={{ maxWidth: 800, mx: "auto" }}>
