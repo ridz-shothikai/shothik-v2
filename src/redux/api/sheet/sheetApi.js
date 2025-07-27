@@ -52,6 +52,7 @@ export const sheetApiSlice = createApi({
             (event) =>
               event.step === "failed" ||
               event.step === "error" ||
+              event.step === "validation_error" ||
               event.message?.toLowerCase().includes("failed") ||
               event.message?.toLowerCase().includes("error")
           );

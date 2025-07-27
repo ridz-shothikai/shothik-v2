@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import InputArea from "../presentation/InputArea";
 import {
+  setActiveSheetIdForPolling,
   setSheetData,
   setSheetStatus,
   setSheetTitle,
@@ -214,6 +215,7 @@ const getStepMessage = (step, data) => {
     database_update: "Updating conversation with response...",
     followup_analysis: "Analyzing follow-up intent...",
     followup_decision: "Determining response strategy...",
+    validation_error: data?.error?.message || "Your requested prompt is not contextual enough. Please try again with more details.",
   };
 
   return stepMessages[step] || `Processing step: ${step}...`;
@@ -257,14 +259,46 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     refetchOnMountOrArgChange: true,
   });
 
+  console.log(
+    sheetState.activeChatIdForPolling,
+    "activeChatIdForPolling",
+    currentChatId
+  );
+
   // Effect to control polling based on data completeness
   useEffect(() => {
-    if (chatData?.shouldSetGenerating && !isLoadingHistory) {
+    if (
+      chatData?.shouldSetGenerating &&
+      !isLoadingHistory &&
+      currentChatId &&
+      sheetState.activeChatIdForPolling === currentChatId
+    ) {
       setShouldPoll(true);
     } else {
       setShouldPoll(false);
+      if (
+        sheetState.activeChatIdForPolling !== currentChatId &&
+        sheetState.status === "generating"
+      ) {
+        dispatch(setSheetStatus("idle"));
+      }
     }
-  }, [chatData?.shouldSetGenerating, isLoadingHistory]);
+  }, [
+    chatData?.shouldSetGenerating,
+    isLoadingHistory,
+    currentChatId,
+    sheetState.activeChatIdForPolling,
+  ]);
+
+  // Cleanup effect when component unmounts or chat changes:
+  useEffect(() => {
+    return () => {
+      // Cleanup: if this was the active chat for polling, clear it
+      if (sheetState.activeChatIdForPolling === currentChatId) {
+        dispatch(setActiveSheetIdForPolling(null));
+      }
+    };
+  }, [currentChatId, dispatch]);
   // RTK Query hook with conditional polling ENDS
 
   // Initialization and other useEffect hooks remain unchanged
@@ -552,6 +586,8 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     console.log("generating");
     setError(null);
     setIsLoading(true);
+    sessionStorage.setItem("activeChatId", currentChatId);
+    dispatch(setActiveSheetIdForPolling(currentChatId));
     const userMessage = {
       id: `user-${Date.now()}`,
       message: messageText,
@@ -703,6 +739,8 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                   payload: newSavePoint,
                 });
               }
+            } else if (data.step === "validation_error") {
+              dispatch(setSheetStatus("completed"));
             }
 
             // Handle final response object (the one without "step" property)

@@ -174,7 +174,10 @@ async function handleSheetGenerationRequest(
 
     const chatId = result.chat_id || result.id || result._id;
 
-    new Promise((resolve) => setTimeout(resolve, 500));
+    // Save active chat ID for connection polling
+    sessionStorage.setItem("activeChatId", chatId);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     router.push(`/agents/sheets/?id=${chatId}`);
   } catch (error) {

@@ -1,5 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+let activeChatId = null;
+if (typeof window !== "undefined") {
+  try {
+    activeChatId = sessionStorage.getItem("activeChatId");
+    // Clear stale session data on page load
+    if (
+      activeChatId &&
+      !window.location.search.includes(`id=${activeChatId}`)
+    ) {
+      sessionStorage.removeItem("activeChatId");
+      activeChatId = null;
+    }
+  } catch (error) {
+    console.error("Error accessing sessionStorage:", error);
+  }
+}
+
 const initialState = {
   logs: [],
   sheet: null, // Current active sheet data
@@ -9,6 +26,7 @@ const initialState = {
   savePoints: [], // Array of save points with chat history
   activeSavePointId: null, // Currently selected save point
   currentChatId: null, // Current chat ID
+  activeChatIdForPolling: activeChatId || null,
 };
 
 const sheetSlice = createSlice({
@@ -42,6 +60,10 @@ const sheetSlice = createSlice({
 
     setSheetTitle(state, action) {
       state.title = action.payload;
+    },
+
+    setActiveSheetIdForPolling(state, action) {
+      state.activeChatIdForPolling = action.payload;
     },
 
     // New save point actions
@@ -287,6 +309,7 @@ export const {
   setSheetData,
   setSheetStatus,
   setSheetTitle,
+  setActiveSheetIdForPolling,
   initializeChatHistory,
   addNewSavePoint,
   addGenerationToSavePoint,
