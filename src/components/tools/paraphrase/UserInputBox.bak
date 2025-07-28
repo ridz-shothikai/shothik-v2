@@ -5,7 +5,7 @@ import { defaultMarkdownParser, defaultMarkdownSerializer, MarkdownSerializer } 
 const nodes = {
   ...defaultMarkdownSerializer.nodes,
 
-  // Tiptap's hardBreak node → CommonMark line break
+  // Tiptap’s hardBreak node → CommonMark line break
   hardBreak: defaultMarkdownSerializer.nodes.hard_break,
 
   // Lists
@@ -54,10 +54,7 @@ const customMarkdownSerializer = new MarkdownSerializer(nodes, marks)
 import { Box, Button, Popover } from "@mui/material";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
-import Document from "@tiptap/extension-document";
-import Text from "@tiptap/extension-text";
-import Paragraph from "@tiptap/extension-paragraph";
-import HardBreak from "@tiptap/extension-hard-break";
+import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
 import "./editor.css";
 import { CombinedHighlighting } from "./extentions";
@@ -75,26 +72,12 @@ function UserInputBox({
   const [selectedWord, setSelectedWord] = useState("");
   const [editorKey, setEditorKey] = useState(0); // Force editor recreation
   const isInternalUpdate = useRef(false);
-
+  const [initialDoc,setInitialDoc]= useState(userInput
+    ? defaultMarkdownParser.parse(userInput).toJSON()
+    : undefined)
   const editor = useEditor({
     extensions: [
-      Document.extend({
-        content: 'textblock'
-      }),
-      Paragraph.extend({
-        name: 'textblock',
-        content: 'inline*',
-        parseHTML() {
-          return [{ tag: 'div' }]
-        },
-        renderHTML() {
-          return ['div', { style: 'white-space: pre-wrap;  line-height: 1.5; margin: 0; padding: 0;' }, 0]
-        }
-      }),
-      Text,
-      HardBreak.configure({
-        keepMarks: false,
-      }),
+      StarterKit,
       Placeholder.configure({ placeholder: "Enter your text here..." }),
       CombinedHighlighting.configure({
         limit: wordLimit,
@@ -103,21 +86,8 @@ function UserInputBox({
       }),
     ],
     content: userInput,
+    // content: initialDoc,
     immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        style: 'white-space: pre-wrap; font-family: monospace; line-height: 1.5;'
-      },
-      handleKeyDown: (view, event) => {
-        if (event.key === 'Enter') {
-          // Always insert a hard break (line break) instead of creating new paragraphs
-          const { tr } = view.state;
-          view.dispatch(tr.replaceSelectionWith(view.state.schema.nodes.hardBreak.create()));
-          return true;
-        }
-        return false;
-      }
-    },
     onSelectionUpdate: ({ editor }) => {
       const { from, to } = editor.state.selection;
       const selectedText = editor.state.doc.textBetween(from, to, " ").trim();
@@ -142,17 +112,9 @@ function UserInputBox({
     },
     onUpdate: ({ editor }) => {
       isInternalUpdate.current = true;
-      // Get the raw text content, preserving line breaks
-      const htmlContent = editor.getHTML();
-      // Convert <br> tags back to newlines for plain text
-      const textContent = htmlContent
-        .replace(/<div[^>]*>/g, '')
-        .replace(/<\/div>/g, '')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<[^>]*>/g, ''); // Remove any other HTML tags
-      
-      console.log('📥 raw text content:', JSON.stringify(textContent));
-      setUserInput(textContent);
+      const md = customMarkdownSerializer.serialize(editor.state.doc);
+      console.log('📥 serialized Markdown:', JSON.stringify(md));
+      setUserInput(md);
     },
   }, [editorKey]); // Recreate editor when key changes
 
@@ -165,24 +127,32 @@ function UserInputBox({
     return () => editor?.destroy();
   }, [editor]);
 
-  useEffect(() => {
-    if (!editor || isInternalUpdate.current) {
-      // clear the flag so that onUpdate can fire next time
-      isInternalUpdate.current = false
-      return
-    }
 
-    // Convert newlines to HTML breaks and set as content
-    const htmlContent = userInput.replace(/\n/g, '<br>');
-    const currentHtml = editor.getHTML().replace(/<div[^>]*>/g, '').replace(/<\/div>/g, '');
-    
-    if (currentHtml !== `<div style="white-space: pre-wrap; font-family: monospace; line-height: 1.5; margin: 0; padding: 0;">${htmlContent}</div>`) {
-      editor.commands.setContent(`<div style="white-space: pre-wrap; font-family: monospace; line-height: 1.5; margin: 0; padding: 0;">${htmlContent}</div>`);
-    }
-
-    // we're done syncing, clear the flag again
+useEffect(() => {
+  if (!editor || isInternalUpdate.current) {
+    // clear the flag so that onUpdate can fire next time
     isInternalUpdate.current = false
-  }, [userInput, editor])
+    return
+  }
+
+  // parse the Markdown into a ProseMirror node
+  const doc = defaultMarkdownParser.parse(userInput)
+
+  // update the editor with that JSON
+  editor.commands.setContent(doc.toJSON())
+
+  // we’re done syncing, clear the flag again
+  isInternalUpdate.current = false
+}, [userInput, editor])
+  // useEffect(() => {
+  //   if (editor && !isInternalUpdate.current && userInput !== JSON.stringify(customMarkdownSerializer.serialize(editor.state.doc))) {
+  //     // editor.commands.setContent(userInput);
+  //     setInitialDoc(userInput
+  //       ? defaultMarkdownParser.parse(userInput).toJSON()
+  //       : undefined)
+  //   }
+  //   isInternalUpdate.current = false;
+  // }, [userInput, editor]);
 
   // Force editor recreation when frozen words/phrases change
   useEffect(() => {
@@ -202,15 +172,23 @@ function UserInputBox({
     clearSelection();
   };
 
-  const isFrozen = () => {
-    const raw = selectedWord.trim().toLowerCase();
-    const unquoted = raw.replace(/^"+|"+$/g, "");
+  // const normalize = (text) => text.toLowerCase().trim().replace(/^"+|"+$/g, '');
+  // const isFrozen = () => {
+  //   console.log(frozenPhrases, selectedWord)
+  //   const key = normalize(selectedWord);
+  //   return key.includes(" ")
+  //     ? frozenPhrases.has(key)
+  //     : frozenWords.has(key);
+  // };
 
-    // Check both quoted and unquoted keys
-    return frozenPhrases.has(raw) || frozenPhrases.has(`"${unquoted}"`) || frozenPhrases.has(unquoted)
-      || frozenWords.has(raw) || frozenWords.has(unquoted);
-  };
+const isFrozen = () => {
+  const raw = selectedWord.trim().toLowerCase();
+  const unquoted = raw.replace(/^"+|"+$/g, "");
 
+  // Check both quoted and unquoted keys
+  return frozenPhrases.has(raw) || frozenPhrases.has(`"${unquoted}"`) || frozenPhrases.has(unquoted)
+    || frozenWords.has(raw) || frozenWords.has(unquoted);
+};
   if (!editor) return null;
 
   const paidUser =

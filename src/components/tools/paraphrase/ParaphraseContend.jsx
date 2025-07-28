@@ -64,7 +64,7 @@ const ParaphraseContend = () => {
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
   const [language, setLanguage] = useState("English (US)");
-  const sampleText = trySamples.paraphrase[language || "English"];
+  const sampleText = trySamples.paraphrase[language && language.startsWith("English") ? "English" : language ?  language : "English"];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
@@ -115,7 +115,7 @@ const ParaphraseContend = () => {
   }, [outputHistoryIndex]);
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET, {
+    const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
       transports: ["websocket"],
       auth: {token:accessToken},
       reconnection: true,
@@ -134,64 +134,113 @@ const ParaphraseContend = () => {
     });
 
     let accumulatedText = "";
-    socket.on("paraphrase-plain", (data) => {
-      if (data === ":end:") {
-        accumulatedText = "";
-        setIsLoading(false);
-        return;
-      }
 
-      accumulatedText += data.replace(/[{}]/g, "");
+socket.on("paraphrase-plain", (data) => {
+  console.log("paraphrase-plain:", data);
+  if (data === ":end:") {
+    accumulatedText = "";
+    setIsLoading(false);
+    return;
+  }
 
-      const separator = language === "Bangla" ? "। " : ". ";
-      const sentences = accumulatedText.split(separator).map((sentence) => {
-        const words = sentence
-          .trim()
-          .split(/\s+/)
-          .map((word) => ({ word, type: "none", synonyms: [] }));
-        return words;
-      });
+  // 1) Accumulate raw Markdown
+  accumulatedText += data.replace(/[{}]/g, "");
 
-      setResult(sentences);
-      setOutputContend(accumulatedText.replace(/[()]/g, ""));
-      setOutputWordCount(accumulatedText.split(/\s+/).filter(Boolean).length);
-    });
+  // 2) Update raw output & word count
+  setOutputContend(accumulatedText);
+  setOutputWordCount(
+    accumulatedText
+      .split(/\s+/)
+      .filter((w) => w.length > 0)
+      .length
+  );
 
-    socket.on("paraphrase-tagging", (data) => {
-      try {
-        const sentence = JSON.parse(data);
-        if (sentence.eventId === eventId) {
-          setResult((prev) => {
-            const updated = [...prev];
-            updated[sentence.index] = sentence.data;
-            return updated;
-          });
-        }
-      } catch (error) {
-        console.error("Error parsing paraphrase-tagging data:", error);
-      }
-    });
+  // 3) Build result preserving blank lines
+  const lines = accumulatedText.split("\n");
+  const separator = language === "Bangla" ? "। " : ". ";
+  const newResult = [];
 
-    socket.on("paraphrase-synonyms", (data) => {
-      if (data === ":end:") {
-        console.log("Synonyms processing completed.");
-        setProcessing({ success: true, loading: false });
-        return;
-      }
+  lines.forEach((line) => {
+    if (line.trim() === "") {
+      // blank line → push a single “newline” word
+      newResult.push([{ word: "\n\n", type: "newline", synonyms: [] }]);
+    } else {
+      // non-blank → split on your sentence separator
+      line
+        .split(separator)
+        .filter(Boolean)
+        .forEach((sentence) => {
+          const words = sentence
+            .trim()
+            .split(/\s+/)
+            .map((word) => ({ word, type: "none", synonyms: [] }));
+          newResult.push(words);
+        });
+    }
+  });
 
-      try {
-        const sentence = JSON.parse(data);
-        if (sentence.eventId === eventId) {
-          setResult((prev) => {
-            const updated = [...prev];
-            updated[sentence.index] = sentence.data;
-            return updated;
-          });
-        }
-      } catch (error) {
-        console.error("Error parsing paraphrase-synonyms data:", error);
-      }
-    });
+  setResult(newResult);
+      console.log(newResult)
+});    // socket.on("paraphrase-plain", (data) => {
+    //   console.log('paraphrase-plain: ', data)
+    //   if (data === ":end:") {
+    //     accumulatedText = "";
+    //     setIsLoading(false);
+    //     return;
+    //   }
+    //
+    //   accumulatedText += data.replace(/[{}]/g, "");
+    //
+    //   const separator = language === "Bangla" ? "। " : ". ";
+    //   const sentences = accumulatedText.split(separator).map((sentence) => {
+    //     const words = sentence
+    //       .trim()
+    //       .split(/\s+/)
+    //       .map((word) => ({ word, type: "none", synonyms: [] }));
+    //     return words;
+    //   });
+    //
+    //   setResult(sentences);
+    //   setOutputContend(accumulatedText.replace(/[()]/g, ""));
+    //   setOutputWordCount(accumulatedText.split(/\s+/).filter(Boolean).length);
+    // });
+
+    // socket.on("paraphrase-tagging", (data) => {
+    //   console.log('paraphrase-tagging: ', data)
+    //   try {
+    //     const sentence = JSON.parse(data);
+    //     if (sentence.eventId === eventId) {
+    //       setResult((prev) => {
+    //         const updated = [...prev];
+    //         updated[sentence.index] = sentence.data;
+    //         return updated;
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error("Error parsing paraphrase-tagging data:", error);
+    //   }
+    // });
+    //
+    // socket.on("paraphrase-synonyms", (data) => {
+    //   if (data === ":end:") {
+    //     console.log("Synonyms processing completed.");
+    //     setProcessing({ success: true, loading: false });
+    //     return;
+    //   }
+    //
+    //   try {
+    //     const sentence = JSON.parse(data);
+    //     if (sentence.eventId === eventId) {
+    //       setResult((prev) => {
+    //         const updated = [...prev];
+    //         updated[sentence.index] = sentence.data;
+    //         return updated;
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error("Error parsing paraphrase-synonyms data:", error);
+    //   }
+    // });
   }, [language, eventId]);
 
   const handleClear = (_, action = "all") => {
@@ -203,7 +252,6 @@ const ParaphraseContend = () => {
     setResult([]);
     setOutputHistory([]);
   };
-
 
 useEffect(() => {
   const textAsWordsArray = userInput
@@ -238,20 +286,24 @@ useEffect(() => {
       setOutputHistoryIndex(0);
       setProcessing({ success: false, loading: true });
 
-      const textToParaphrase = value ? value : userInput;
-      const textAsWrodsArray = textToParaphrase
-        .trim()
-        .split(/\s+/)
-        .filter((word) => word.length > 0);
-      const finalText = textAsWrodsArray.slice(0, wordLimit).join(" ");
-      if (finalText > wordLimit) {
-        throw { error: "LIMIT_REQUEST", message: "Worads limit execed" };
-      }
-     
-      // generate uniqe 10 number randomly;
-      const randomNumber = Math.floor(Math.random() * 10000000000);
-      setEventId(`${socketId}-${randomNumber}`);
+      // use the full raw Markdown string for payload
+      const textToParaphrase = value || userInput;
 
+      // but enforce word-limit on a plain-text version
+      // strip common markdown tokens for counting
+      const plainTextForCount = textToParaphrase
+      .replace(/(```[\s\S]*?```)|(`[^`]*`)/g, '$1') // keep code blocks, but...
+      .replace(/[#*_>\-\[\]\(\)~`]/g, '')            // remove markdown markers
+      .trim();
+      const wordCount = plainTextForCount
+        .split(/\s+/)
+        .filter((w) => w.length > 0).length;
+      if (wordCount > wordLimit) {
+        throw { error: "LIMIT_REQUEST", message: "Words limit exceeded" };
+      }    
+      // now build your payload using the untouched Markdown
+      const randomNumber = Math.floor(Math.random() * 1e10);
+      setEventId(`${socketId}-${randomNumber}`);
       const freeze = [
         ...(frozenWords?.values || []),
         ...(frozenPhrases?.values || [])
@@ -259,7 +311,7 @@ useEffect(() => {
       .filter(Boolean)
       .join(", ");
       payload = {
-        text: finalText,
+        text: textToParaphrase,
         freeze,
         language: language,
         mode: selectedMode ? selectedMode.toLowerCase() : "standard",
@@ -343,10 +395,15 @@ useEffect(() => {
     // Return the final string, trimmed
     return plainText.trim();
   }
+  const paidUser =
+    user?.package === "pro_plan" ||
+    user?.package === "value_plan" ||
+    user?.package === "unlimited";
+
 
   return (
-    <Box sx={{display: 'flex',}}>
-      <Box sx={{ flex: "0 0 auto", marginRight: '1rem' }}>
+    <Box sx={{display: 'flex', width: '100%'}}>
+      <Box sx={{ flex: '0 0 auto', width: 'min-content', mr: 2 }}>
         <FreezeWordsDialog
           recommendedWords={["streets","filled","people","parade","music"]}
           frozenWords={Array.from(frozenWords.set)}
@@ -362,7 +419,14 @@ useEffect(() => {
         />
       </Box>
 
-      <Box>
+    <Box
+      sx={{
+        flex: '1 1 auto',
+        minWidth: 0,           // <— allows this column to shrink
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
         {/* <Onboarding/> */}
         <LanguageMenu
           isLoading={isLoading}
@@ -380,6 +444,7 @@ useEffect(() => {
             sx={{
               flex: "1 1 0%",
               minWidth: 0,
+              width: '100%', 
               mt: 1,
               border: "1px solid",
               borderColor: "divider",
@@ -437,6 +502,21 @@ useEffect(() => {
                     setUserInput={setUserInput}
                     isMobile={isMobile}
                     sampleText={sampleText}
+                    paraphrase={true}
+                    paidUser={paidUser}
+
+                    selectedMode={selectedMode}
+                    selectedSynonymLevel={selectedSynonyms}
+                    selectedLang={language}
+                    freezeWords={
+                      [
+                        ...(frozenWords?.values || []),
+                        ...(frozenPhrases?.values || [])
+                      ]
+                      .filter(Boolean)
+                      .join(", ")            
+                    }
+
                   />
                 ) : null}
                 <WordCounter
@@ -571,9 +651,7 @@ useEffect(() => {
             </Grid2>
           </Card>
           <Box
-            sx={{
-              flex: "0 0 auto", // don’t grow or shrink
-            }}
+            sx={{ flex: '0 0 auto' }}
           >
             <VerticalMenu
               selectedMode={selectedMode}

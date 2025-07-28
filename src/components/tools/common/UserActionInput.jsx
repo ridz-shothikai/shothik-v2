@@ -3,6 +3,7 @@ import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
+const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), { ssr: false });
 
 const UserActionInput = ({
   isMobile,
@@ -10,6 +11,12 @@ const UserActionInput = ({
   extraAction,
   disableTrySample = false,
   sampleText,
+  paraphrase=false,
+  paidUser=false,
+  selectedLang='English (US)',
+  selectedSynonymLevel='Basic',
+  selectedMode='Standard',
+  freezeWords=[]
 }) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
@@ -96,19 +103,29 @@ const UserActionInput = ({
             {!isMobile ? "Paste Text" : "Paste"}
           </Button>
         </Stack>
-        <Box id="upload_button">
-          <FileUpload isMobile={isMobile} setInput={handleFileData} />
-          <Typography
-            component='p'
-            variant='caption'
-            sx={{
-              color: "text.secondary",
-              textAlign: "center",
-            }}
-          >
-            {isMobile ? "" : "Supported file"} formats: pdf,docx.
-          </Typography>
-        </Box>
+        {paraphrase ? 
+          <MultipleFileUpload
+            isMobile={isMobile}
+            setInput={()=>{}} paidUser={paidUser}
+            freezeWords={freezeWords}
+            selectedMode={selectedMode}
+            selectedSynonymLevel={selectedSynonymLevel}
+            selectedLang={selectedLang}
+          />
+          :
+          <Box id="upload_button">
+            <FileUpload isMobile={isMobile} setInput={handleFileData} />
+            <Typography
+              component='p'
+              variant='caption'
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              {isMobile ? "" : "Supported file"} formats: pdf,docx.
+            </Typography>
+          </Box>}
       </Stack>
     </Box>
   );

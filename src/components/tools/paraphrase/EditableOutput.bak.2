@@ -1,3 +1,4 @@
+
 // src/components/tools/paraphrase/EditableOutput.jsx
 "use client"
 
@@ -60,7 +61,6 @@ const WordNode = Node.create({
   group: "inline",
   inline: true,
   content: "text*",
-  priority: 50, // Lower priority than default nodes
   addAttributes() {
     return {
       "data-sentence-index": { default: null },
@@ -82,8 +82,7 @@ const SentenceNode = Node.create({
   name: "sentenceNode",
   group: "inline",
   inline: true,
-  content: "wordNode* text*", // Allow both wordNode and regular text
-  priority: 50, // Lower priority than default nodes
+  content: "wordNode*",
   addAttributes() {
     return {
       "data-sentence-index": { default: null },
@@ -146,64 +145,7 @@ const EnterHandler = Extension.create({
   },
 })
 
-// ─── 5. Enhanced Markdown parsing helper ───────────────────────────────────
-function parseMarkdownText(text) {
-  const marks = []
-  let processedText = text
-
-  // Parse bold **text**
-  if (/^\*\*(.+)\*\*$/.test(processedText)) {
-    marks.push({ type: "bold" })
-    processedText = processedText.replace(/^\*\*(.+)\*\*$/, "$1")
-  }
-  // Parse italic *text* (only if not already bold)
-  else if (/^\*(.+)\*$/.test(processedText)) {
-    marks.push({ type: "italic" })
-    processedText = processedText.replace(/^\*(.+)\*$/, "$1")
-  }
-  // Parse strikethrough ~~text~~
-  else if (/^~~(.+)~~$/.test(processedText)) {
-    marks.push({ type: "strike" })
-    processedText = processedText.replace(/^~~(.+)~~$/, "$1")
-  }
-  // Parse code `text`
-  else if (/^`(.+)`$/.test(processedText)) {
-    marks.push({ type: "code" })
-    processedText = processedText.replace(/^`(.+)`$/, "$1")
-  }
-
-  return { text: processedText, marks }
-}
-
-// ─── 6. Helper to detect and process heading sentences ────────────────────
-function processHeadingSentence(sentence, sIdx) {
-  // Check if sentence starts with heading markers
-  const firstWord = sentence[0]?.word || ""
-  const headingMatch = firstWord.match(/^(#{1,6})$/)
-  
-  if (headingMatch && sentence.length > 1) {
-    const level = headingMatch[1].length
-    const headingText = sentence.slice(1).map(w => w.word).join(" ").trim()
-    
-    return {
-      type: "heading",
-      attrs: { level },
-      content: [{
-        type: "text",
-        text: headingText
-      }]
-    }
-  }
-  
-  return null
-}
-
-// ─── 7. Helper to process newline sentences ───────────────────────────────
-function isNewlineSentence(sentence) {
-  return sentence.length === 1 && /^\n+$/.test(sentence[0].word)
-}
-
-// ─── 8. formatContent: JSON ⇄ ProseMirror document ─────────────────────────
+// ─── 5. formatContent: JSON ⇄ ProseMirror document ─────────────────────────
 function formatContent(data) {
   // empty
   if (!data) {
@@ -212,99 +154,60 @@ function formatContent(data) {
 
   // Markdown string?
   if (typeof data === "string") {
-    try {
-      const parsed = defaultMarkdownParser.parse(data)
-      if (parsed) {
-        const jsonDoc = parsed.toJSON()
-        console.log("Parsed markdown JSON:", JSON.stringify(jsonDoc, null, 2))
-        return jsonDoc
-      }
-    } catch (error) {
-      console.warn("Failed to parse markdown, falling back to plain text:", error)
-    }
-    // Fallback: treat as plain text in a paragraph
-    return {
-      type: "doc",
-      content: [{
-        type: "paragraph",
-        content: [{
-          type: "text",
-          text: data
-        }]
-      }]
-    }
+    return defaultMarkdownParser.parse(data).toJSON()
   }
 
   // assume `data` is Array< Array<WordObj> >
   const sentences = Array.isArray(data[0]) ? data : [data]
-  const docContent = []
 
-  for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
-    const sentence = sentences[sIdx]
-    
-    // Skip newline-only sentences
-    if (isNewlineSentence(sentence)) {
-      continue
-    }
-    
-    // Check if this sentence is a heading
-    const headingNode = processHeadingSentence(sentence, sIdx)
-    if (headingNode) {
-      docContent.push(headingNode)
-      continue
-    }
-    
-    // Process as regular sentence with word nodes
-    const sentenceNode = {
-      type: "sentenceNode",
-      attrs: {
-        "data-sentence-index": sIdx + 1,
-        class: "sentence-span",
-      },
-      content: sentence.map((wObj, wIdx) => {
-        const raw = wObj.word
-        
-        // Enhanced markdown parsing for individual words
-        const { text: processedText, marks } = parseMarkdownText(raw)
-        
-        // spacing logic
-        const prefix =
-          (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " "
+  const sentenceNodes = sentences.map((sent, sIdx) => ({
+    type: "sentenceNode",
+    attrs: {
+      "data-sentence-index": sIdx + 1,
+      class:                 "sentence-span",
+    },
+    content: sent.map((wObj, wIdx) => {
+      const raw = wObj.word
+      // detect *italic* markers
+      const m = raw.match(/^\*(.+)\*$/)
+      const txt = m ? m[1] : raw
+      const marks = m ? [{ type: "italic", attrs: {} }] : []
+      // spacing logic
+      const prefix =
+        (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " "
 
-        return {
-          type: "wordNode",
-          attrs: {
-            "data-sentence-index": sIdx + 1,
-            "data-word-index": wIdx + 1,
-            "data-type": wObj.type,
-            class: "word-span",
-            style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
+      return {
+        type: "wordNode",
+        attrs: {
+          "data-sentence-index": sIdx + 1,
+          "data-word-index":     wIdx + 1,
+          "data-type":           wObj.type,
+          class:                 "word-span",
+          style:                 `color:${getColorStyle(wObj.type)};cursor:pointer`,
+        },
+        content: [
+          {
+            type: "text",
+            text: prefix + txt,
+            ...(marks.length ? { marks } : {}),
           },
-          content: [
-            {
-              type: "text",
-              text: prefix + processedText,
-              ...(marks.length ? { marks } : {}),
-            },
-          ],
-        }
-      }),
-    }
-
-    // Wrap sentence in paragraph
-    docContent.push({
-      type: "paragraph",
-      content: [sentenceNode],
-    })
-  }
+        ],
+      }
+    }),
+  }))
 
   return {
     type: "doc",
-    content: docContent,
+    content: [
+      {
+        type: "paragraph",
+        content: sentenceNodes,
+      },
+    ],
   }
 }
 
-// ─── 9. EditableOutput component ───────────────────────────────────────────
+// ─── 6. EditableOutput component ───────────────────────────────────────────
 export default function EditableOutput({
   data,
   setSynonymsOptions,
@@ -315,21 +218,7 @@ export default function EditableOutput({
 }) {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ 
-        enter: false,
-        // Enable all text formatting features
-        bold: true,
-        italic: true,
-        strike: true,
-        code: true,
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-          HTMLAttributes: {
-            class: 'heading-node',
-          },
-        }
-      }),
-      // Add custom nodes AFTER StarterKit to avoid conflicts
+      StarterKit.configure({ enter: false }),
       SentenceNode,
       WordNode,
       CursorWatcher,
@@ -374,3 +263,4 @@ export default function EditableOutput({
   if (!editor) return null
   return <EditorContent editor={editor} />
 }
+
