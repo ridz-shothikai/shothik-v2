@@ -352,8 +352,11 @@ export default function InteractiveAgentDemo() {
     <Box
       component="section"
       sx={{
-        py: { xs: 12, lg: 15 },
-        background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
+        pt: { xs: 12, lg: 15 },
+        // background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
+        // background:
+          // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
+        bgcolor: "#FBFCFD",
         minHeight: "100vh",
       }}
     >

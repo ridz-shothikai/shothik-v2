@@ -9,6 +9,8 @@ import WhyShothik from "../../components/home/WhyShothik";
 import AgenticHeroSection from "../../components/home/new-components/AgenticHeroSection";
 import AgnetShowCase from "../../components/home/new-components/AgentShowCase";
 import InteractiveAgentDemo from "../../components/home/new-components/InteractiveAgentDemo";
+import FounderVideoSection from "../../components/home/new-components/FounderVideoSection";
+import ClaritySection from "../../components/home/new-components/ClaritySection";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -75,6 +77,8 @@ const Home = () => {
       <AgenticHeroSection/>
       <AgnetShowCase/>
       <InteractiveAgentDemo/>
+      <FounderVideoSection/>
+      <ClaritySection/>
       {/* <HomeTools /> */}
       {/* <HomeFeatures /> */}
       {/* <B2bFeatures /> */}
