@@ -11,6 +11,8 @@ import AgnetShowCase from "../../components/home/new-components/AgentShowCase";
 import InteractiveAgentDemo from "../../components/home/new-components/InteractiveAgentDemo";
 import FounderVideoSection from "../../components/home/new-components/FounderVideoSection";
 import ClaritySection from "../../components/home/new-components/ClaritySection";
+import FeaturesSection from "../../components/home/new-components/FeaturesSection";
+import JobsTestimonialsSection from "../../components/home/new-components/JobsTestimonialsSection";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -74,11 +76,13 @@ const Home = () => {
   return (
     <>
       <HomeHeroSection />
-      <AgenticHeroSection/>
-      <AgnetShowCase/>
-      <InteractiveAgentDemo/>
-      <FounderVideoSection/>
-      <ClaritySection/>
+      <AgenticHeroSection />
+      <AgnetShowCase />
+      <InteractiveAgentDemo />
+      <FounderVideoSection />
+      <ClaritySection />
+      <FeaturesSection />
+      <JobsTestimonialsSection/>
       {/* <HomeTools /> */}
       {/* <HomeFeatures /> */}
       {/* <B2bFeatures /> */}
