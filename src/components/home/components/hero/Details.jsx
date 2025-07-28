@@ -1,9 +1,13 @@
-import { Box, Grid2, Rating, Typography } from "@mui/material";
+"use client";
+
+import { Box, Grid2, Rating, Typography, useTheme } from "@mui/material";
 import * as motion from "motion/react-client";
 import React from "react";
 import UserActionButton from "./UserActionButton";
 
 const Details = () => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   return (
     <Grid2
       size={{ xs: 12, md: 6 }}
@@ -24,7 +28,7 @@ const Details = () => {
             fontWeight: 700,
             letterSpacing: "-2%",
             lineHeight: 1,
-            color: "#111827 ",
+            color: isDarkMode ? "" : "#111827",
             fontSize: { xs: "2.5em", sm: "3.25em", md:"2.75em", lg: "3.75em", xl: "4.25em" },
             // background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
             // backgroundClip: "text",

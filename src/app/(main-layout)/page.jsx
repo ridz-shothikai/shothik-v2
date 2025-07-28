@@ -13,6 +13,7 @@ import FounderVideoSection from "../../components/home/new-components/FounderVid
 import ClaritySection from "../../components/home/new-components/ClaritySection";
 import FeaturesSection from "../../components/home/new-components/FeaturesSection";
 import JobsTestimonialsSection from "../../components/home/new-components/JobsTestimonialsSection";
+import CtaSection from "../../components/home/new-components/CtaSection";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -83,6 +84,7 @@ const Home = () => {
       <ClaritySection />
       <FeaturesSection />
       <JobsTestimonialsSection/>
+      <CtaSection/>
       {/* <HomeTools /> */}
       {/* <HomeFeatures /> */}
       {/* <B2bFeatures /> */}

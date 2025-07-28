@@ -257,6 +257,7 @@ export default function AgentShowcase() {
   const [slideDirection, setSlideDirection] = useState("left");
 
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
@@ -310,7 +311,7 @@ export default function AgentShowcase() {
   }, []);
 
   return (
-    <Box sx={{ pb: { xs: 8, md: 12 }, bgcolor: "white", overflow: "hidden" }}>
+    <Box sx={{ pb: { xs: 8, md: 12 }, bgcolor: isDarkMode ? "" : "white", overflow: "hidden" }}>
       <Container maxWidth="xl" sx={{ px: { xs: 2, md: 4 } }}>
         {/* Carousel Navigation */}
         <Box
@@ -615,7 +616,7 @@ export default function AgentShowcase() {
                               flexShrink: 0,
                             }}
                           />
-                          <Typography variant="body2">{capability}</Typography>
+                          <Typography variant="body2" sx={{color: isDarkMode ? "#FFF" : "text.secondary"}} >{capability}</Typography>
                         </Box>
                       </Grid>
                     ))}
@@ -630,7 +631,7 @@ export default function AgentShowcase() {
                     sx={{
                       color: "white",
                       fontSize: "1.1rem",
-                      py: 3,
+                      py: 2,
                       textTransform: "none",
                     }}
                     endIcon={<ArrowForward />}
@@ -648,7 +649,7 @@ export default function AgentShowcase() {
           <Box sx={{ textAlign: "center", mt: 10 }}>
             <Typography
               variant="h4"
-              sx={{ fontWeight: "bold", mb: 2, color: "#0f172a" }}
+              sx={{ fontWeight: "bold", mb: 2, color: isDarkMode? "#FFF" : "#0f172a" }}
             >
               Ready to Command the Future?
             </Typography>

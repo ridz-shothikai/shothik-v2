@@ -11,6 +11,8 @@ import {
   ChevronRight,
   Zap,
   Bot,
+  Sheet,
+  BrainCog,
 } from "lucide-react";
 import {
   Box,
@@ -182,33 +184,36 @@ const agentDemos = [
       "Researching topic, designing slides, writing content...",
   },
   {
-    id: "call",
-    name: "Call For Me",
-    icon: <Phone size={24} />,
+    id: "sheet",
+    name: "AI Sheet Agent",
+    icon: <Sheet size={24} />,
     color: "blue",
-    placeholder: "Call and ask for...",
+    placeholder: "Ask me to research and organize findings in a smart sheet...",
     examples: [
-      "Call 10 gyms in my area and get membership pricing",
-      "Book a table for 6 at Italian restaurants tomorrow 7pm",
-      "Call my insurance company and check claim status #ABC123",
+      "Compare pricing of 10 nearby gyms in a sheet",
+      "List top 5 Italian restaurants open tomorrow at 7PM with ratings",
+      "Summarize insurance claim #ABC123 and add contact notes",
     ],
-    description: "Makes real phone calls and handles conversations for you",
-    processingMessage: "Dialing numbers, speaking with humans, taking notes...",
+    description:
+      "Performs real-world research and structures the data in smart sheets",
+    processingMessage:
+      "Researching deeply, organizing data, formatting your sheet...",
   },
   {
-    id: "hire",
-    name: "Hire For Me",
-    icon: <Users size={24} />,
+    id: "deep-research",
+    name: "Deep Research Agent",
+    icon: <BrainCog size={24} />,
     color: "purple",
-    placeholder: "Hire someone to...",
+    placeholder: "Research deeply about...",
     examples: [
-      "Find and hire a logo designer, budget $500, need it in 5 days",
-      "Hire a content writer for my blog, 10 articles per month",
-      "Get a web developer to build my landing page, React preferred",
+      "Find all recent studies on intermittent fasting and longevity",
+      "Compare pricing, pros, and cons of top 5 project management tools",
+      "Investigate the latest laws on crypto trading in the US and Europe",
     ],
-    description: "Finds, vets, and hires freelancers for your projects",
+    description:
+      "Performs thorough research, analyzes findings, and delivers structured insights",
     processingMessage:
-      "Screening candidates, conducting interviews, negotiating rates...",
+      "Reading sources, verifying facts, organizing your research brief...",
   },
 ];
 
@@ -238,6 +243,7 @@ const mockAnalytics = {
 
 export default function InteractiveAgentDemo() {
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -355,8 +361,8 @@ export default function InteractiveAgentDemo() {
         pt: { xs: 12, lg: 15 },
         // background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
         // background:
-          // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
-        bgcolor: "#FBFCFD",
+        // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
+        bgcolor: isDarkMode ? "" : "#FBFCFD",
         minHeight: "100vh",
       }}
     >
@@ -379,7 +385,7 @@ export default function InteractiveAgentDemo() {
                   xl: "3.75rem",
                 },
                 fontWeight: 300,
-                color: "#0f172a",
+                color: isDarkMode ? "" : "#0f172a",
                 mb: { xs: 2, lg: 3 },
                 px: 2,
               }}
@@ -393,7 +399,7 @@ export default function InteractiveAgentDemo() {
               variant="h6"
               sx={{
                 fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                color: "#64748b",
+                color: isDarkMode ? "" : "#64748b",
                 maxWidth: "768px",
                 mx: "auto",
                 px: 2,
@@ -416,7 +422,7 @@ export default function InteractiveAgentDemo() {
                 sx={{
                   fontSize: { xs: "1.25rem", sm: "1.5rem" },
                   fontWeight: 600,
-                  color: "#0f172a",
+                  color: isDarkMode ? "" : "#0f172a",
                   mb: { xs: 2, lg: 3 },
                 }}
               >
@@ -459,6 +465,10 @@ export default function InteractiveAgentDemo() {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
+                            color: isDarkMode ? "#000" : "inherit",
+                            "& svg": {
+                              color: isDarkMode ? "#000" : "inherit",
+                            },
                           }}
                         >
                           {agent.icon}
@@ -499,7 +509,7 @@ export default function InteractiveAgentDemo() {
                   sx={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
-                    color: "#64748b",
+                    color: isDarkMode? "inherit" : "#64748b",
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
                     mb: 2,
@@ -535,7 +545,7 @@ export default function InteractiveAgentDemo() {
                             onClick={() => useExample(example)}
                           >
                             <Typography
-                              sx={{ fontSize: "inherit", textAlign: "left" }}
+                              sx={{ fontSize: "inherit", textAlign: "left", color: isDarkMode ? "#000" : "inherit" }}
                             >
                               "{example}"
                             </Typography>
@@ -579,6 +589,10 @@ export default function InteractiveAgentDemo() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+                        color: "inherit",
+                        "& svg": {
+                          color: "inherit",
+                        },
                       }}
                     >
                       {selectedAgent.icon}
@@ -625,7 +639,7 @@ export default function InteractiveAgentDemo() {
                         sx={{
                           fontSize: { xs: "0.75rem", sm: "0.875rem" },
                           fontWeight: 500,
-                          color: "#374151",
+                          color: isDarkMode?  "inherit" : "#374151",
                           mb: 1,
                           display: "block",
                         }}

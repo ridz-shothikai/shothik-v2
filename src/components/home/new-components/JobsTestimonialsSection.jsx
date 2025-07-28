@@ -85,7 +85,7 @@ const universities = [
 
 const StyledSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(12, 0),
-  background: "linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)",
+  // background: "linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)",
   minHeight: "100vh",
 }));
 
@@ -144,11 +144,16 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 export default function JobsTestimonialsSection() {
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
   return (
-    <StyledSection>
+    <StyledSection
+      sx={{
+        bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
+      }}
+    >
       <Container maxWidth="xl">
         {/* Jobs-style Header */}
         <Box textAlign="center" mb={10}>
@@ -163,7 +168,7 @@ export default function JobsTestimonialsSection() {
               sx={{
                 fontSize: { xs: "2.5rem", lg: "3rem" },
                 fontWeight: 300,
-                color: "#0F172A",
+                color: isDarkMode ? "inherit" : "#0F172A",
                 mb: 3,
               }}
             >
@@ -174,7 +179,7 @@ export default function JobsTestimonialsSection() {
               sx={{
                 fontSize: { xs: "2rem", lg: "2.5rem" },
                 fontWeight: 300,
-                color: "#64748B",
+                color: isDarkMode ? "inherit" : "#64748B",
                 mb: 4,
               }}
             >
@@ -184,7 +189,7 @@ export default function JobsTestimonialsSection() {
               variant="h6"
               sx={{
                 fontSize: "1.25rem",
-                color: "#64748B",
+                color: isDarkMode ? "inherit" : "#64748B",
                 maxWidth: "48rem",
                 mx: "auto",
                 lineHeight: 1.6,
@@ -226,7 +231,7 @@ export default function JobsTestimonialsSection() {
                           variant="h6"
                           sx={{
                             fontWeight: 600,
-                            color: "#0F172A",
+                            color: isDarkMode ? "inherit" : "#0F172A",
                             fontSize: "1.125rem",
                           }}
                         >
@@ -279,7 +284,7 @@ export default function JobsTestimonialsSection() {
                     <Typography
                       variant="body1"
                       sx={{
-                        color: "#374151",
+                        color: isDarkMode ? "inherit" : "#374151",
                         lineHeight: 1.6,
                         mb: 3,
                         fontStyle: "italic",
@@ -343,7 +348,7 @@ export default function JobsTestimonialsSection() {
               sx={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
-                color: "#64748B",
+                color: isDarkMode ? "inherit" : "#64748B",
                 letterSpacing: "0.05em",
                 mb: 3,
                 display: "block",
@@ -398,7 +403,7 @@ export default function JobsTestimonialsSection() {
               sx={{
                 fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" },
                 fontWeight: 300,
-                color: "#64748B",
+                color: isDarkMode ? "inherit" : "#64748B",
                 mb: 4,
               }}
             >

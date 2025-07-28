@@ -90,6 +90,7 @@ const itemVariants = {
 
 export default function FeaturesSection() {
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -98,7 +99,7 @@ export default function FeaturesSection() {
       component="section"
       sx={{
         py: { xs: 8, sm: 12, xl: 15 },
-        backgroundColor: "#f8fafc", // gray-50
+        backgroundColor: isDarkMode ? "inherit" : "#f8fafc", // gray-50
       }}
     >
       <Container maxWidth="lg">
@@ -124,7 +125,7 @@ export default function FeaturesSection() {
                 sx={{
                   fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
                   fontWeight: 800,
-                  color: "#111827", // gray-900
+                  color: isDarkMode ? "white" : "#111827", // gray-900
                   mb: 4,
                   lineHeight: 1.2,
                 }}

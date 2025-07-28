@@ -112,6 +112,7 @@ const GuaranteeIconContainer = styled(Box)({
 
 export default function ClaritySection() {
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -214,7 +215,10 @@ export default function ClaritySection() {
   return (
     <Box
       component="section"
-      sx={{ py: { xs: 8, sm: 12, xl: 15 }, backgroundColor: "#ffffff" }}
+      sx={{
+        py: { xs: 8, sm: 12, xl: 15 },
+        backgroundColor: isDarkMode ? "inherit" : "#ffffff",
+      }}
     >
       <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, lg: 4 } }}>
         {/* Header */}
@@ -247,7 +251,7 @@ export default function ClaritySection() {
               sx={{
                 fontSize: { xs: "2rem", sm: "2.5rem", lg: "3rem" },
                 fontWeight: 700,
-                color: "#111827", // gray-900
+                color: isDarkMode ? "inherit" : "#111827", // gray-900
                 mb: 3,
                 lineHeight: 1.2,
               }}
@@ -261,7 +265,7 @@ export default function ClaritySection() {
                 sx={{
                   display: "block",
                   fontSize: { xs: "1.5rem", sm: "1.875rem", lg: "2.25rem" },
-                  color: "#374151", // gray-700
+                  color: isDarkMode ? "inherit" : "#374151", // gray-700
                   fontWeight: 600,
                   mt: 1,
                 }}
@@ -274,7 +278,7 @@ export default function ClaritySection() {
               variant="h6"
               sx={{
                 fontSize: "1.25rem",
-                color: "#4b5563", // gray-600
+                color: isDarkMode ? "inherit" : "#4b5563", // gray-600
                 lineHeight: 1.6,
                 fontWeight: 400,
               }}
@@ -300,7 +304,15 @@ export default function ClaritySection() {
                 <StepCard
                   elevation={0}
                   onClick={() => handleStepClick(step.id)}
-                  sx={{ position: "relative" }}
+                  sx={{
+                    position: "relative",
+                    "&:hover": {
+                      borderColor: isDarkMode ? "inherit" : "#a7f3d0", // emerald-200
+                      backgroundColor: isDarkMode
+                        ? "#FFF"
+                        : "rgba(16, 185, 129, 0.05)", // emerald-50/50
+                    },
+                  }}
                 >
                   {/* Step number and icon */}
                   <Box

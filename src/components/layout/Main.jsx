@@ -1,5 +1,5 @@
 "use client";
-import { Box, Container } from "@mui/material";
+import { Box, Container, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,9 @@ export default function Main({ children }) {
   const dispatch = useDispatch();
   const pathName = usePathname();
 
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       dispatch(loadSettingsFromLocalStorage());
@@ -32,7 +35,8 @@ export default function Main({ children }) {
       sx={{
         flexGrow: 1,
         position: "relative",
-        backgroundColor: pathName === "/" ? "#FFF" : "#F4F6F8",
+        backgroundColor:
+          pathName === "/" ? `${isDarkMode ? "#161C24" : "#FFF"}` : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
           px: 2,

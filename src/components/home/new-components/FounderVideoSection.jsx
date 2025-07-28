@@ -29,6 +29,7 @@ import {
 export default function FounderVideoSection() {
   const [isPlaying, setIsPlaying] = useState(false);
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -68,7 +69,7 @@ export default function FounderVideoSection() {
         py: { xs: 12, sm: 15, md: 18, lg: 24 },
         // background:
         //   "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
-        bgcolor: "#FBFCFD",
+        bgcolor: isDarkMode ? "inherit" : "#FBFCFD",
         minHeight: "auto",
       }}
     >
@@ -199,7 +200,7 @@ export default function FounderVideoSection() {
                           sx={{
                             width: { xs: 48, sm: 64 },
                             height: { xs: 48, sm: 64 },
-                            bgcolor: "#10b981",
+                            bgcolor: isDarkMode ? "inherit" : "#10b981",
                             borderRadius: "50%",
                             display: "flex",
                             alignItems: "center",
@@ -223,7 +224,7 @@ export default function FounderVideoSection() {
                         <Typography
                           variant="body2"
                           sx={{
-                            color: "#d1d5db",
+                            color: isDarkMode ? "inheit" : "#d1d5db",
                             mb: 2,
                             fontSize: { xs: "0.875rem", sm: "1rem" },
                           }}
@@ -234,7 +235,7 @@ export default function FounderVideoSection() {
                         <Button
                           onClick={handleVideoPlay}
                           sx={{
-                            color: "#10b981",
+                            color: isDarkMode ? "inherit" : "#10b981",
                             textDecoration: "underline",
                             "&:hover": {
                               color: "#059669",
@@ -332,13 +333,13 @@ export default function FounderVideoSection() {
                   onClick={() => handleVideoStats("views_clicked")}
                   startIcon={<People sx={{ fontSize: 16 }} />}
                   sx={{
-                    color: "#6b7280",
+                    color: isDarkMode ? "inherit" : "#6b7280",
                     textTransform: "none",
                     p: 0,
                     minWidth: "auto",
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
                     "&:hover": {
-                      color: "#10b981",
+                      color: isDarkMode ? "inherit" : "#10b981",
                       bgcolor: "transparent",
                     },
                   }}
@@ -349,7 +350,7 @@ export default function FounderVideoSection() {
                   onClick={() => handleVideoStats("rating_clicked")}
                   startIcon={<Star sx={{ fontSize: 16, color: "#eab308" }} />}
                   sx={{
-                    color: "#6b7280",
+                    color: isDarkMode ? "inherit" : "#6b7280",
                     textTransform: "none",
                     p: 0,
                     minWidth: "auto",
@@ -371,7 +372,7 @@ export default function FounderVideoSection() {
                     <EmojiEvents sx={{ fontSize: 16, color: "#10b981" }} />
                   }
                   sx={{
-                    color: "#6b7280",
+                    color: isDarkMode ? "inherit" : "#6b7280",
                     textTransform: "none",
                     p: 0,
                     minWidth: "auto",
@@ -434,7 +435,7 @@ export default function FounderVideoSection() {
                         lg: "3.75rem",
                       },
                       fontWeight: 700,
-                      color: "#111827",
+                      color: isDarkMode ? "inherit" : "#111827",
                       lineHeight: 1.1,
                       mb: { xs: 2, sm: 4 },
                     }}
@@ -442,7 +443,10 @@ export default function FounderVideoSection() {
                     "Every Student Deserves{" "}
                     <Box
                       component="span"
-                      sx={{ display: "block", color: "#10b981" }}
+                      sx={{
+                        display: "block",
+                        color: "#10b981",
+                      }}
                     >
                       AI That Understands
                     </Box>
@@ -453,7 +457,7 @@ export default function FounderVideoSection() {
                     variant="h6"
                     sx={{
                       fontSize: { xs: "1rem", sm: "1.125rem", md: "1.25rem" },
-                      color: "#6b7280",
+                      color: isDarkMode ? "inherit" : "#6b7280",
                       lineHeight: 1.6,
                       fontWeight: 400,
                     }}
@@ -470,21 +474,21 @@ export default function FounderVideoSection() {
                   {[
                     {
                       color: "#10b981",
-                      bgColor: "#ecfdf5",
+                      bgColor: isDarkMode ? "#FFF" : "#ecfdf5",
                       title: "Built by Academics, for Academics",
                       description:
                         "Our team includes PhD researchers from medical, legal, and engineering backgrounds.",
                     },
                     {
                       color: "#2563eb",
-                      bgColor: "#eff6ff",
+                      bgColor: isDarkMode ? "#FFF" : "#eff6ff",
                       title: "Trusted by Top Universities",
                       description:
                         "Students at Harvard, MIT, Stanford already use Shothik AI for their research papers.",
                     },
                     {
                       color: "#7c3aed",
-                      bgColor: "#f3e8ff",
+                      bgColor: isDarkMode ? "#FFF" : "#f3e8ff",
                       title: "Continuous Innovation",
                       description:
                         "We ship new domain-specific features every week based on student feedback.",
@@ -525,7 +529,7 @@ export default function FounderVideoSection() {
                           variant="h6"
                           sx={{
                             fontWeight: 600,
-                            color: "#111827",
+                            color: isDarkMode ? "inherit" : "#111827",
                             fontSize: { xs: "1rem", sm: "1.125rem" },
                             mb: 0.5,
                           }}
@@ -589,6 +593,7 @@ export default function FounderVideoSection() {
                             bgcolor: "#10b981",
                             fontWeight: 700,
                             fontSize: { xs: "0.875rem", sm: "1rem" },
+                            color: "#FFF",
                           }}
                         >
                           AR
@@ -664,7 +669,7 @@ export default function FounderVideoSection() {
                     onClick={handleStoryClick}
                     sx={{
                       border: "2px solid #d1d5db",
-                      color: "#374151",
+                      color: isDarkMode ? "inherit" : "#374151",
                       px: { xs: 4, sm: 8 },
                       py: { xs: 2, sm: 3 },
                       fontSize: { xs: "1rem", sm: "1.125rem" },
@@ -693,7 +698,7 @@ export default function FounderVideoSection() {
                   <Button
                     onClick={() => handleVideoStats("reviews_clicked")}
                     sx={{
-                      color: "#6b7280",
+                      color: isDarkMode ? "inherit" : "#6b7280",
                       textTransform: "none",
                       p: 0,
                       minWidth: "auto",
@@ -717,7 +722,7 @@ export default function FounderVideoSection() {
                   <Button
                     onClick={() => handleVideoStats("media_clicked")}
                     sx={{
-                      color: "#6b7280",
+                      color: isDarkMode ? "inherit" : "#6b7280",
                       textTransform: "none",
                       p: 0,
                       minWidth: "auto",

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Typography, Chip, Container } from "@mui/material";
+import { Box, Typography, Chip, Container, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 
@@ -25,11 +25,13 @@ const StyledChip = styled(Chip)(({ theme }) => ({
 }));
 
 const AgenticHeroSection = () => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   return (
     <Container maxWidth="xl">
       <Box
         sx={{
-          // minHeight: "60vh",
+          minHeight: "50vh",
           display: "flex",
           flexDirection: "column",
           alignItems: {xs: "flex-start", sm: "center"},
@@ -63,7 +65,7 @@ const AgenticHeroSection = () => {
               },
               fontWeight: 700,
               lineHeight: 1.1,
-              color: "#374151", // Gray-700
+              color: isDarkMode ? "" : "#374151", // Gray-700
               mb: 0,
               letterSpacing: "-0.02em",
             }}
