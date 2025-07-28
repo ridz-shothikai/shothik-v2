@@ -314,7 +314,7 @@ export default function AgentLandingPage() {
     >
       {/* ============== FOR AGENTS USAGE HISTORY STARTS ================ */}
       {/* Menu Button (Top Left) */}
-      {accessToken && (
+      {/* {accessToken && (
         <IconButton
           onClick={toggleDrawer(true)}
           sx={{
@@ -326,7 +326,7 @@ export default function AgentLandingPage() {
         >
           <MenuIcon />
         </IconButton>
-      )}
+      )} */}
 
       {/* Sidebar Drawer */}
       <Drawer

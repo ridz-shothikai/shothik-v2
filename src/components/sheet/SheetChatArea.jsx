@@ -264,10 +264,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
   // Effect to control polling based on data completeness
   useEffect(() => {
     if (
-      chatData?.shouldSetGenerating &&
-      !isLoadingHistory &&
-      currentChatId &&
-      sheetState.activeChatIdForPolling === currentChatId
+      currentChatId && chatData?.isIncomplete
     ) {
       setShouldPoll(true);
     } else {
