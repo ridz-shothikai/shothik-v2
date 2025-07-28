@@ -125,7 +125,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     });
 
     socketInstance.on("error", (error) => {
-      console.error("[SOCKET] Error:", error.message);
+      console.log("[SOCKET] Error:", error.message);
       if (
         error.message === "Authentication failed" ||
         error.message === "Unauthorized presentation access"

@@ -28,10 +28,11 @@ export default function Main({ children }) {
 
   return (
     <Box
-      component='main'
+      component="main"
       sx={{
         flexGrow: 1,
         position: "relative",
+        backgroundColor: pathName === "/" ? "#FFF" : "#F4F6F8",
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
           px: 2,
@@ -45,25 +46,32 @@ export default function Main({ children }) {
       }}
     >
       <Container
-        maxWidth='xl'
-        overflow='hidden'
+        maxWidth="xl"
+        overflow="hidden"
         disableGutters
         sx={{ minHeight: "calc(100vh - 90px)" }}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
-        {pathName.startsWith("/paraphrase") ? <Box
-          sx={{
-            display: "flex",
-            position: "relative",
-            justifyContent: "space-evenly"
-          }}
-        >
-
-          <Box sx={{display:"flex", flexDirection:"column"}}>{children}</Box>
-          {/* <VerticalMenu/> */}
-        </Box> : children}
+        {pathName.startsWith("/paraphrase") ? (
+          <Box
+            sx={{
+              display: "flex",
+              position: "relative",
+              justifyContent: "space-evenly",
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
+              {children}
+            </Box>
+            {/* <VerticalMenu/> */}
+          </Box>
+        ) : (
+          children
+        )}
       </Container>
-      {pathName !== "/research" && !pathName.startsWith("/agents") ? <FooterServerComponent /> : null}
+      {pathName !== "/research" && !pathName.startsWith("/agents") ? (
+        <FooterServerComponent />
+      ) : null}
     </Box>
   );
 }

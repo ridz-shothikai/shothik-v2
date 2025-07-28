@@ -33,6 +33,7 @@ const UserActionButton = () => {
           justifyContent: "center",
           px: 3,
           py: 1.3,
+          bgcolor: "#059669"
         }}
         onClick={() => {
           if (user?.email) {

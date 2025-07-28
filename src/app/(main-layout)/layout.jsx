@@ -81,7 +81,7 @@ export default function MainLayout({ children }) {
   return (
     <ProgressProvider
       height="3px"
-      color="#00AB55"
+      color={"#00AB55"}
       options={{ showSpinner: false }}
       shallowRouting
     >

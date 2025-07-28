@@ -69,13 +69,13 @@ const Home = () => {
   return (
     <>
       <HomeHeroSection />
-      <HomeTools />
-      <HomeFeatures />
+      {/* <HomeTools /> */}
+      {/* <HomeFeatures /> */}
       {/* <B2bFeatures /> */}
-      <WhyShothik />
-      <Testimonials />
-      <CTA />
-      <FAQ />
+      {/* <WhyShothik /> */}
+      {/* <Testimonials /> */}
+      {/* <CTA /> */}
+      {/* <FAQ /> */}
 
       <div hidden>
         <h1>Shothik AI: Humanize, Paraphrase, Detect & Translate AI Text</h1>

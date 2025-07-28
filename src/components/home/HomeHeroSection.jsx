@@ -18,10 +18,12 @@ import VideoImage from "./components/VideoImage";
 
 export default function HomeHeroSection() {
   return (
-    <BgContainer sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}>
+    <BgContainer 
+    // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
+    >
       <Grid2
         sx={{
-          pt: 4,
+          pt: 6,
           pb: { xs: 2, sm: 2, md: 8, lg: 10, xl: 10 },
           px: { xs: 2, sm: 4, md: 6 },
         }}

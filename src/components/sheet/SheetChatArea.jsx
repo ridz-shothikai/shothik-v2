@@ -259,11 +259,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     refetchOnMountOrArgChange: true,
   });
 
-  console.log(
-    sheetState.activeChatIdForPolling,
-    "activeChatIdForPolling",
-    currentChatId
-  );
+  console.log(chatData, "chatData");
 
   // Effect to control polling based on data completeness
   useEffect(() => {
