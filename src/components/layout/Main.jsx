@@ -46,7 +46,7 @@ export default function Main({ children }) {
       }}
     >
       <Container
-        maxWidth="xl"
+        maxWidth="100%"
         overflow="hidden"
         disableGutters
         sx={{ minHeight: "calc(100vh - 90px)" }}
