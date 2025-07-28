@@ -44,7 +44,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
         height: {
           xs: "90dvh",
           lg: "80dvh",
-          xl: "85dvh",
+          xl: "90dvh",
         },
         bgcolor: theme.palette.background.default,
         color: theme.palette.text.primary,

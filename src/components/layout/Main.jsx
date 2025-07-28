@@ -23,6 +23,8 @@ export default function Main({ children }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
+  const containerWidth = pathName === "/" ? "100%" : "xl"
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       dispatch(loadSettingsFromLocalStorage());
@@ -50,7 +52,7 @@ export default function Main({ children }) {
       }}
     >
       <Container
-        maxWidth="100%"
+        maxWidth={containerWidth}
         overflow="hidden"
         disableGutters
         sx={{ minHeight: "calc(100vh - 90px)" }}

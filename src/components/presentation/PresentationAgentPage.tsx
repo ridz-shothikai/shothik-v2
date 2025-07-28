@@ -599,7 +599,7 @@ export default function PresentationAgentPage({ specificAgent }) {
         height: {
           xs: "90dvh", // height for mobile screens (extra-small)
           lg: "80dvh", // height for desktop screens (large)
-          xl: "85dvh", // height for extra-large screens
+          xl: "90dvh", // height for extra-large screens
         },
         // bgcolor: "white",
         // color: "#333",
