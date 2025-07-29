@@ -71,6 +71,7 @@ import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
 import Link from "next/link";
 import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
 import { format } from "date-fns";
+import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -203,16 +204,23 @@ export default function AgentLandingPage() {
 
   // const [sidebarOpen, setSidebarOpen] = useState(false);
   // console.log(isNavbarExpanded, "isNavbarExpanded");
-
+  
   const toggleDrawer = (open) => () => {
     dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
   };
-
+  
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useResponsive("down", "sm");
-
+  
   const user = useSelector((state) => state.auth.user);
+  
+  /**
+   * When we come to the agents page if user is not registered to our services, make them register it. 
+   */
+  const {sheetAIToken} = useSheetAiToken(user?.email);
+
+  console.log(sheetAIToken, "sheet ai token");
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
