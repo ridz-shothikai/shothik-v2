@@ -3,18 +3,19 @@ FROM node:18-slim AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-
-# Install with optional dependencies (e.g. sharp)
-RUN npm install --include=optional
-
-# Install native deps required for sharp
+# Install system dependencies for Sharp and other native modules
 RUN apt-get update && apt-get install -y \
   build-essential \
   python3 \
   pkg-config \
   libvips-dev \
+  libcfitsio-dev \
   && rm -rf /var/lib/apt/lists/*
+
+COPY package*.json ./
+
+# Clean install with platform-specific Sharp
+RUN npm ci --include=optional && npm rebuild sharp
 
 COPY . .
 
@@ -35,8 +36,15 @@ FROM node:18-slim AS runner
 
 WORKDIR /app
 
+# Install only runtime dependencies for Sharp
+RUN apt-get update && apt-get install -y \
+  libvips42 \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
-RUN npm install --production --include=optional
+
+# Install production dependencies and rebuild Sharp for runtime
+RUN npm ci --only=production --include=optional && npm rebuild sharp
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
