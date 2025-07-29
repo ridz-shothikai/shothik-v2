@@ -1,18 +1,21 @@
-# Use Debian-based Node.js 18 image (not Alpine!)
+# ---------- Builder ----------
 FROM node:18-slim AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
 
+# Install with optional dependencies (e.g. sharp)
+RUN npm install --include=optional
+
+# Install native deps required for sharp
 RUN apt-get update && apt-get install -y \
   build-essential \
   python3 \
   pkg-config \
   libvips-dev \
   && rm -rf /var/lib/apt/lists/*
-  
+
 COPY . .
 
 ARG NEXT_PUBLIC_SOCKET
@@ -27,14 +30,13 @@ ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
 RUN npm run build
 
-# Runner stage
+# ---------- Runner ----------
 FROM node:18-slim AS runner
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
-RUN npm install --include=optional
+RUN npm install --production --include=optional
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
@@ -50,4 +52,5 @@ ENV NEXT_PUBLIC_DOMAIN_URI=$NEXT_PUBLIC_DOMAIN_URI
 ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
 EXPOSE 3000
+
 CMD ["npm", "start"]
