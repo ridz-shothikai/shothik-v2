@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: false,
   productionBrowserSourceMaps: true,
+  devIndicators: false,
 
   webpack: (config, { isServer }) => {
     // Stub Node.js modules that are not available in the browser
