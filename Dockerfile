@@ -1,4 +1,3 @@
-# ---------- Builder ----------
 FROM node:18-slim AS builder
 
 WORKDIR /app
@@ -14,8 +13,10 @@ RUN apt-get update && apt-get install -y \
 
 COPY package*.json ./
 
-# Clean install with platform-specific Sharp
-RUN npm ci --include=optional && npm rebuild sharp
+# Remove any existing Sharp installation and do a clean install
+RUN npm ci --include=optional
+RUN npm uninstall sharp
+RUN npm install --platform=linux --arch=x64 sharp
 
 COPY . .
 
@@ -43,8 +44,10 @@ RUN apt-get update && apt-get install -y \
 
 COPY package*.json ./
 
-# Install production dependencies and rebuild Sharp for runtime
-RUN npm ci --only=production --include=optional && npm rebuild sharp
+# Install production dependencies and ensure Sharp works
+RUN npm ci --only=production --include=optional
+RUN npm uninstall sharp  
+RUN npm install --platform=linux --arch=x64 sharp
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
