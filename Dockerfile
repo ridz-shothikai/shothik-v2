@@ -6,6 +6,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  python3 \
+  pkg-config \
+  libvips-dev \
+  && rm -rf /var/lib/apt/lists/*
+  
 COPY . .
 
 ARG NEXT_PUBLIC_SOCKET
@@ -27,6 +34,7 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install --production
+RUN npm install --include=optional
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
