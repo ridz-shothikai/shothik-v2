@@ -11,7 +11,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import Onboarding from "./Onboarding"
 import FreezeWordsDialog from "./FreezeWordsDialog";
+import FileHistorySidebar from "./FileHistorySidebar";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -135,75 +137,137 @@ const ParaphraseContend = () => {
 
     let accumulatedText = "";
 
-socket.on("paraphrase-plain", (data) => {
-  console.log("paraphrase-plain:", data);
-  if (data === ":end:") {
-    accumulatedText = "";
-    setIsLoading(false);
-    return;
-  }
 
-  // 1) Accumulate raw Markdown
-  accumulatedText += data.replace(/[{}]/g, "");
+    // ─── 1) Helper to map the backend index into your result array ───────────────
+    function mapBackendIndexToResultIndex(backendIndex, result) {
+      let nonBlankCount = 0;
+      for (let i = 0; i < result.length; i++) {
+        const node = result[i];
+        const isBlank = node.length === 1 && node[0].type === "newline";
+        if (!isBlank) {
+          if (nonBlankCount === backendIndex) return i;
+          nonBlankCount++;
+        }
+      }
+      return -1;
+    }
 
-  // 2) Update raw output & word count
-  setOutputContend(accumulatedText);
-  setOutputWordCount(
-    accumulatedText
-      .split(/\s+/)
-      .filter((w) => w.length > 0)
-      .length
-  );
+    // ─── 2) Plain handler: clear `result` on first chunk of each run ────────────
+    socket.on("paraphrase-plain", (data) => {
+      console.log("paraphrase-plain:", data);
+      if (data === ":end:") {
+        accumulatedText = "";
+        setIsLoading(false);
+        return;
+      }
 
-  // 3) Build result preserving blank lines
-  const lines = accumulatedText.split("\n");
+      // if this is the very first chunk of a brand-new run, wipe out old result:
+      if (accumulatedText === "") {
+        setResult([]);
+      }
+
+      // accumulate raw Markdown
+      accumulatedText += data.replace(/[{}]/g, "");
+
+      // update word count, etc…
+      setOutputContend(accumulatedText);
+      setOutputWordCount(
+        accumulatedText
+        .split(/\s+/)
+        .filter(w => w.length > 0)
+        .length
+      );
+
+  // rebuild `result` with blank lines preserved
+  const lines    = accumulatedText.split("\n");
   const separator = language === "Bangla" ? "। " : ". ";
   const newResult = [];
 
-  lines.forEach((line) => {
+  lines.forEach(line => {
     if (line.trim() === "") {
-      // blank line → push a single “newline” word
-      newResult.push([{ word: "\n\n", type: "newline", synonyms: [] }]);
+      newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
     } else {
-      // non-blank → split on your sentence separator
       line
         .split(separator)
         .filter(Boolean)
-        .forEach((sentence) => {
+        .forEach(sentence => {
           const words = sentence
             .trim()
             .split(/\s+/)
-            .map((word) => ({ word, type: "none", synonyms: [] }));
+            .map(w => ({ word: w, type: "none", synonyms: [] }));
           newResult.push(words);
         });
     }
   });
 
   setResult(newResult);
-      console.log(newResult)
-});    // socket.on("paraphrase-plain", (data) => {
-    //   console.log('paraphrase-plain: ', data)
-    //   if (data === ":end:") {
-    //     accumulatedText = "";
-    //     setIsLoading(false);
-    //     return;
-    //   }
-    //
-    //   accumulatedText += data.replace(/[{}]/g, "");
-    //
-    //   const separator = language === "Bangla" ? "। " : ". ";
-    //   const sentences = accumulatedText.split(separator).map((sentence) => {
-    //     const words = sentence
-    //       .trim()
-    //       .split(/\s+/)
-    //       .map((word) => ({ word, type: "none", synonyms: [] }));
-    //     return words;
-    //   });
-    //
-    //   setResult(sentences);
-    //   setOutputContend(accumulatedText.replace(/[()]/g, ""));
-    //   setOutputWordCount(accumulatedText.split(/\s+/).filter(Boolean).length);
-    // });
+  console.log("new plain result:", newResult);
+});
+
+// ─── 3) Tagging handler: map backend index to correct slot ─────────────────
+socket.on("paraphrase-tagging", raw => {
+  if (raw === ":end:") return;
+
+  let parsed, backendIndex, eid;
+  try {
+    ({ index: backendIndex, eventId: eid, data: parsed } = JSON.parse(raw));
+    if (eid !== eventId) return;
+  } catch (err) {
+    console.error("Error parsing paraphrase-tagging:", err);
+    return;
+  }
+
+  setResult(prev => {
+    const updated = [...prev];
+    const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+    if (targetIdx < 0) {
+      console.warn("tagging: couldn't map index", backendIndex);
+      return prev;
+    }
+
+    updated[targetIdx] = parsed.map(item => ({
+      ...item,
+      word: item.word, // preserves markdown tokens
+    }));
+    return updated;
+  });
+});
+
+// ─── 4) Synonyms handler: same index mapping ────────────────────────────────
+socket.on("paraphrase-synonyms", raw => {
+  console.log("paraphrase-synonyms:", raw);
+  if (raw === ":end:") {
+    console.log("Synonyms processing completed.");
+    setProcessing({ success: true, loading: false });
+    return;
+  }
+
+  let analysis, backendIndex, eid;
+  try {
+    ({ index: backendIndex, eventId: eid, data: analysis } = JSON.parse(raw));
+    if (eid !== eventId) return;
+  } catch (err) {
+    console.error("Error parsing paraphrase-synonyms:", err);
+    return;
+  }
+
+  setResult(prev => {
+    const updated = [...prev];
+    const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+    if (targetIdx < 0) {
+      console.warn("synonyms: couldn't map index", backendIndex);
+      return prev;
+    }
+
+    updated[targetIdx] = analysis.map(item => ({
+      ...item,
+      word: item.word,
+    }));
+    return updated;
+  });
+});
+
+
 
     // socket.on("paraphrase-tagging", (data) => {
     //   console.log('paraphrase-tagging: ', data)
@@ -241,6 +305,7 @@ socket.on("paraphrase-plain", (data) => {
     //     console.error("Error parsing paraphrase-synonyms data:", error);
     //   }
     // });
+
   }, [language, eventId]);
 
   const handleClear = (_, action = "all") => {
@@ -403,20 +468,21 @@ useEffect(() => {
 
   return (
     <Box sx={{display: 'flex', width: '100%'}}>
-      <Box sx={{ flex: '0 0 auto', width: 'min-content', mr: 2 }}>
-        <FreezeWordsDialog
-          recommendedWords={["streets","filled","people","parade","music"]}
-          frozenWords={Array.from(frozenWords.set)}
-          frozenPhrases={Array.from(frozenPhrases.set)}
-          onAddWords={(words) => words.forEach(w => frozenWords.add(w))}
-          onAddPhrases={(phrases) => phrases.forEach(p => frozenPhrases.add(p))}
-          onRemoveWord={(w) => frozenWords.remove(w)}
-          onRemovePhrase={(p) => frozenPhrases.remove(p)}
-          onClearAll={() => {
-            frozenWords.reset(initialFrozenWords);
-            frozenPhrases.reset(initialFrozenPhrases);
-          }}
-        />
+      <Box sx={{ flex: '0 0 auto', width: 'max-content', mr: 2 }}>
+        <FileHistorySidebar/>
+        {/* <FreezeWordsDialog */}
+        {/*   recommendedWords={["streets","filled","people","parade","music"]} */}
+        {/*   frozenWords={Array.from(frozenWords.set)} */}
+        {/*   frozenPhrases={Array.from(frozenPhrases.set)} */}
+        {/*   onAddWords={(words) => words.forEach(w => frozenWords.add(w))} */}
+        {/*   onAddPhrases={(phrases) => phrases.forEach(p => frozenPhrases.add(p))} */}
+        {/*   onRemoveWord={(w) => frozenWords.remove(w)} */}
+        {/*   onRemovePhrase={(p) => frozenPhrases.remove(p)} */}
+        {/*   onClearAll={() => { */}
+        {/*     frozenWords.reset(initialFrozenWords); */}
+        {/*     frozenPhrases.reset(initialFrozenPhrases); */}
+        {/*   }} */}
+        {/* /> */}
       </Box>
 
     <Box

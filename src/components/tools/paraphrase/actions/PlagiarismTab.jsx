@@ -1,5 +1,3 @@
-
-// src/components/tools/paraphrase/actions/PlagiarismTab.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import {
@@ -16,6 +14,7 @@ import { io } from "socket.io-client";
 
 const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
   const { accessToken } = useSelector(state => state.auth);
+  const { demo } = useSelector((state) => state.settings);
   const enqueueSnackbar = useSnackbar();
   const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
@@ -27,8 +26,19 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
   const [score, setScore] = useState(null);
   const [results, setResults] = useState([]);
 
-  // 1) Initialize socket once
+  // Dummy data for demo modes
+  const demoResults = [
+    { percent: 75, source: "Sample Source 1" },
+    { percent: 60, source: "Sample Source 2" },
+    { percent: 45, source: "Sample Source 3" },
+  ];
+
+  // 1) Initialize socket once (only if not in demo mode)
   useEffect(() => {
+    if (demo === true || demo === 'plagiarism_low' || demo === 'plagiarism_high') {
+      return;
+    }
+
     const socket = io(process.env.NEXT_PUBLIC_SOCKET, { transports: ["websocket"] });
     socketRef.current = socket;
     socket.on("connect", () => setSocketId(socket.id));
@@ -36,26 +46,42 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [demo]);
 
-  // 2) Listen for plagiarism-result events
+  // 2) Handle demo mode state updates
   useEffect(() => {
+    if (demo === true || demo === 'plagiarism_low' || demo === 'plagiarism_high') {
+      setLoading(false);
+      if (demo === 'plagiarism_low') {
+        setScore(0);
+        setResults([]);
+      } else if (demo === true || demo === 'plagiarism_high') {
+        setScore(100);
+        setResults(demoResults);
+      }
+    }
+  }, [demo]);
+
+  // 3) Listen for plagiarism-result events (only if not in demo mode)
+  useEffect(() => {
+    if (demo === true || demo === 'plagiarism_low' || demo === 'plagiarism_high') {
+      return;
+    }
+
     const socket = socketRef.current;
     if (!socket) return;
 
-    const handleResult = ({ eventId, summary, matches = [], score: s }) => {
+    const handleResult = ({ eventId, summary, matches = [], score }) => {
       if (eventId !== eventIdRef.current) return;
       setLoading(false);
 
-      // Determine numeric score
-      if (typeof s === 'number') {
-        setScore(s);
+      if (typeof score === 'number') {
+        setScore(score);
       } else {
         const m = summary.match(/\((\d+)%\)/);
         setScore(m ? parseInt(m[1], 10) : 0);
       }
 
-      // Format match results
       const formatted = matches.map(m => ({
         percent: Math.round(m.score * 100),
         source: m.author || "Unknown",
@@ -77,10 +103,14 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
       socket.off("plagiarism-result", handleResult);
       socket.off("plagiarism-result-error", handleError);
     };
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, demo]);
 
-  // 3) Trigger the async plagiarism check when `text` changes (and when socketId becomes available)
+  // 4) Trigger the async plagiarism check when `text` changes (and when socketId becomes available, only if not in demo mode)
   useEffect(() => {
+    if (demo === true || demo === 'plagiarism_low' || demo === 'plagiarism_high') {
+      return;
+    }
+
     if (!text || !socketId) return;
 
     setLoading(true);
@@ -106,7 +136,7 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
       setLoading(false);
       enqueueSnackbar(err.message, { variant: 'error' });
     });
-  }, [text, socketId]);
+  }, [text, socketId, demo, accessToken, enqueueSnackbar]);
 
   return (
     <Box id="plagiarism_tab" sx={{ px: 2, py: 1 }}>
@@ -117,6 +147,7 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
 
       {/* score card */}
       <Paper
+        id="plagiarism_score"
         variant="outlined"
         sx={{
           bgcolor: loading ? 'grey.100' : 'success.light',
@@ -141,47 +172,48 @@ const PlagiarismTab = ({ text, selectedLang, freezeWords }) => {
       </Paper>
 
       {/* results list */}
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-        Results ({results.length})
-      </Typography>
-
-      {results.map((r, i) => (
-        <Box
-          key={i}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            border: 1,
-            borderColor: "divider",
-            borderRadius: 1,
-            p: 1,
-            mb: 1,
-          }}
-        >
-          <Typography variant="body2" sx={{ width: "20%" }}>
-            {r.percent}%
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ flex: 1, textAlign: "center", ml: 1 }}
-          >
-            {r.source}
-          </Typography>
-          <IconButton size="small">
-            <ExpandMore fontSize="small" />
-          </IconButton>
-        </Box>
-      ))}
-
-      {(!loading && results.length === 0) && (
-        <Typography variant="body2" color="text.secondary">
-          No matches found.
+      <Box id="plagiarism_results">
+        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          Results ({results.length})
         </Typography>
-      )}
+
+        {results.map((r, i) => (
+          <Box
+            key={i}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              border: 1,
+              borderColor: "divider",
+              borderRadius: 1,
+              p: 1,
+              mb: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ width: "20%" }}>
+              {r.percent}%
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ flex: 1, textAlign: "center", ml: 1 }}
+            >
+              {r.source}
+            </Typography>
+            <IconButton size="small">
+              <ExpandMore fontSize="small" />
+            </IconButton>
+          </Box>
+        ))}
+
+        {(!loading && results.length === 0) && (
+          <Typography variant="body2" color="text.secondary">
+            No matches found.
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 };
 
 export default PlagiarismTab;
-

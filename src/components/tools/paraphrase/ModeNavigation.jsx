@@ -138,6 +138,10 @@ const ModeNavigation = ({
           id="mode_more_section"
           sx={{ flexShrink: 0 }}
         >
+          <Button id="mode_x_button" onClick={()=>{
+            handleMoreClose();
+        }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
+
           <Button
             id="mode_more"
             aria-controls={open ? "mode-more-menu" : undefined}

@@ -3,10 +3,8 @@ import { useEffect, useRef } from "react"
 import { driver } from "driver.js"
 import "driver.js/dist/driver.css"
 import './Onboarding.css'
-import { useDispatch, useSelector } from "react-redux";
-import {setDemo} from "../../../redux/slice/settings.js"
+
 export default function Onboarding() {
-  const dispatch= useDispatch()
   const driverRef = useRef(null)
   const stepIndex = useRef(0)
 
@@ -167,66 +165,9 @@ export default function Onboarding() {
         clickElByID("plagiarism_sidebar_x_button")
         setTimeout(()=>highlightStep(stepIndex.current - 1),300)
       },
-      onNext: ()=>{
-        dispatch(setDemo(true))
-        clickAndNext("plagiarism_sidebar_x_button");
-      }
-    },
-    {
-      element: "#paraphrase_plagiarism",
-      popover: {
-        description: "After paraphrasing, click the “Check Plagiarism” icon to analyze the text."
-      },
-      onPrevious:()=>{
-        clickElByID("paraphrase_history_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
-      },
-      onNext: ()=>{
-        dispatch(setDemo('plagiarism_high'))
-        clickAndNext("paraphrase_plagiarism_button");
-      }
-    },
-    {
-      element: "#plagiarism_score",
-      popover: {
-        description: "High Plagiarism (e.g., 100%) – Text is mostly unchanged from original sources"
-      },
-      onPrevious:()=>{
-        dispatch(setDemo(true))
-        clickElByID("plagiarism_sidebar_x_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
-      },
-      onNext: ()=>{
-        dispatch(setDemo('plagiarism_low'))
-        setTimeout(() => highlightStep(stepIndex.current + 1), 300)
-      }
-    },
-    {
-      element: "#plagiarism_score",
-      popover: {
-        description: "Low/No Plagiarism (e.g., 0%) – Paraphrasing was effective."
-      },
-      onPrevious:()=>{
-        dispatch(setDemo('plagiarism_high'))
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
-      },
-      onNext: ()=>{
-        dispatch(setDemo(true))
-        setTimeout(() => highlightStep(stepIndex.current + 1), 300)
-      }
-    },
-    {
-      element: "#plagiarism_results",
-      popover: {
-        description: "Each match can be expanded for preview or collapsed."
-      },
-      onPrevious:()=>{
-        dispatch(setDemo('plagiarism_low'))
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
-      },
-      onNext: ()=>{
-        dispatch(setDemo(true))
-      }
+      // onNext: ()=>{
+      //   clickAndNext("plagiarism_sidebar_x_button");
+      // }
     },
   ];
   const reset = () =>{
@@ -303,12 +244,7 @@ export default function Onboarding() {
       },
     })
   }
-useEffect(()=>{
-    setDemo(true)
-    return ()=>{
-      setDemo(false)
-    }
-  },[])
+
   return null
 }
 

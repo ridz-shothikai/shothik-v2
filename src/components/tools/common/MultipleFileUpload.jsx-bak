@@ -132,7 +132,7 @@ export default function MultipleFileUpload({
 
   return (
     <>
-      <Button id="multi_upload_button" variant="outlined" onClick={handleOpen}>
+      <Button variant="outlined" onClick={handleOpen}>
         Multi Upload Document
       </Button>
 

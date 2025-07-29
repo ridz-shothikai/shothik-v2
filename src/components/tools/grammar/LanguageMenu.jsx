@@ -89,7 +89,11 @@ const LanguageMenu = ({ setLanguage, isLoading, language }) => {
 
       {/* “All” button pinned immediately after the last tab */}
       <Box sx={{ flexShrink: 0, ml: 2 }}>
+        <Button id="language_x_button" onClick={()=>{
+          setShowMenu(false)
+        }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
         <Button
+          id="language_all_button"
           disabled={isLoading}
           onClick={handleLanguage}
           size="small"

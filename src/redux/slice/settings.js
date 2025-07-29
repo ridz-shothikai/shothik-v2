@@ -4,6 +4,7 @@ const getInitialState = () => ({
   themeMode: "light",
   themeLayout: "mini",
   open: false,
+  demo: false,
 });
 
 const settingsSlice = createSlice({
@@ -34,11 +35,15 @@ const settingsSlice = createSlice({
       state.themeMode = localStorage.getItem("themeMode") || "light";
       state.open = localStorage.getItem("open") === "true";
     },
+    setDemo: (state, action) => {
+      state.demo = action.payload
+    }
   },
 });
 
 export const {
   setThemeMode,
+  setDemo,
   setThemeLayout,
   setOpen,
   toggleThemeMode,

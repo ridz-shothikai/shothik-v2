@@ -1,6 +1,21 @@
-import { Box, useTheme } from "@mui/material";
+
+import { 
+  Box, 
+  useTheme,
+  Button,
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import useSnackbar from "../../../hooks/useSnackbar";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import * as htmlDocx from "html-docx-js/dist/html-docx";
+import { marked } from "marked";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
@@ -38,6 +53,7 @@ const ParaphraseOutput = ({
   const enqueueSnackbar = useSnackbar();
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+
   const synonymInit = {
     synonyms: [],
     sentenceIndex: -1,
@@ -45,6 +61,47 @@ const ParaphraseOutput = ({
     showRephraseNav: false,
   };
   const [synonymsOptions, setSynonymsOptions] = useState(synonymInit);
+
+  // ───────── Download Modal State & Helpers ─────────
+  const [openModal, setOpenModal] = useState(false);
+
+  // rebuild a Markdown string from your `data`
+  const buildMarkdown = () => {
+    return data
+      .map((sentenceArr) =>
+        sentenceArr
+          .map((w) => w.word)
+          .join(" ")
+      )
+      .join(selectedLang === "Bengali" ? "।\n\n" : ".\n\n")
+      .trim();
+  };
+
+  const downloadTxt = () => {
+    const md = buildMarkdown();
+    const blob = new Blob([md], { type: "text/plain;charset=utf-8" });
+    saveAs(blob, "report.txt");
+    setOpenModal(false);
+  };
+
+  const downloadPdf = () => {
+    const md = buildMarkdown();
+    const doc = new jsPDF();
+    // simple text split; swap in doc.html() if you need rich HTML rendering
+    const lines = doc.splitTextToSize(md, 180);
+    doc.text(lines, 10, 10);
+    doc.save("report.pdf");
+    setOpenModal(false);
+  };
+
+  const downloadDocx = () => {
+    const md = buildMarkdown();
+    const html = marked(md);
+    const docxBlob = htmlDocx.asBlob(html);
+    saveAs(docxBlob, "report.docx");
+    setOpenModal(false);
+  };
+  // ──────────────────────────────────────────────────
 
   const replaceSynonym = (newWord) => {
     setData((prevData) => {
@@ -57,7 +114,6 @@ const ParaphraseOutput = ({
             )
           : sentence
       );
-
       return newData;
     });
     setSynonymsOptions(synonymInit);
@@ -65,7 +121,6 @@ const ParaphraseOutput = ({
 
   const handleWordClick = (event, synonyms, sentenceIndex, wordIndex) => {
     event.stopPropagation();
-
     setAnchorEl(event.currentTarget);
     setSynonymsOptions({
       synonyms,
@@ -74,16 +129,12 @@ const ParaphraseOutput = ({
       showRephraseNav: true,
     });
     const sentenceArr = data[sentenceIndex];
-    let sentence = "";
+    let s = "";
     for (let i = 0; i < sentenceArr.length; i++) {
-      const word = sentenceArr[i].word;
-      if (/^[.,]$/.test(word)) {
-        sentence += word;
-      } else {
-        sentence += (sentence ? " " : "") + word;
-      }
+      const w = sentenceArr[i].word;
+      s += /^[.,]$/.test(w) ? w : (s ? " " : "") + w;
     }
-    setSentence(sentence);
+    setSentence(s);
   };
 
   const replaceSentence = async (sentenceData) => {
@@ -92,32 +143,26 @@ const ParaphraseOutput = ({
     setData(newData);
     setOutputHistory((prevHistory) => {
       const arr = [];
-      if (!prevHistory.length) {
-        arr.push(data);
-      }
+      if (!prevHistory.length) arr.push(data);
       arr.push(newData);
       return [...prevHistory, ...arr];
     });
 
     setShowRephrase(false);
-
     try {
       setProcessing({ success: false, loading: true });
 
-      let sentence = "";
-      const data = newData[synonymsOptions.sentenceIndex];
-      for (let i = 0; i < data.length; i++) {
-        const word = data[i].word;
-        if (/^[.,]$/.test(word)) {
-          sentence += word;
-        } else {
-          sentence += (sentence ? " " : "") + word;
-        }
+      let s = "";
+      const arr = newData[synonymsOptions.sentenceIndex];
+      for (let i = 0; i < arr.length; i++) {
+        const w = arr[i].word;
+        s += /^[.,]$/.test(w) ? w : (s ? " " : "") + w;
       }
-      const randomNumber = Math.floor(Math.random() * 10000000000);
+
+      const randomNumber = Math.floor(Math.random() * 1e10);
       setEventId(`${socketId}-${randomNumber}`);
       const payload = {
-        sentence,
+        sentence: s,
         socketId,
         index: synonymsOptions.sentenceIndex,
         language,
@@ -125,7 +170,7 @@ const ParaphraseOutput = ({
       };
       await paraphraseForTagging(payload).unwrap();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setProcessing({ success: false, loading: false });
     }
     setSynonymsOptions(synonymInit);
@@ -134,18 +179,16 @@ const ParaphraseOutput = ({
   const sendReprt = async () => {
     try {
       const inputs = input.replace(/<[^>]+>/g, "");
-      const separator = selectedLang === "Bengali" ? "।" : ".";
-      const sentences = inputs.split(separator);
+      const sep = selectedLang === "Bengali" ? "।" : ".";
+      const sentences = inputs.split(sep);
       const output = data[synonymsOptions.sentenceIndex]
-        ?.map((word) => word?.word)
-        ?.join(" ");
-
+        .map((w) => w.word)
+        .join(" ");
       const payload = {
         input: sentences[synonymsOptions.sentenceIndex],
         output,
       };
       const { data: res } = await reportForSentence(payload).unwrap();
-
       enqueueSnackbar(res?.message, { variant: "success" });
     } catch (error) {
       const msg =
@@ -156,12 +199,11 @@ const ParaphraseOutput = ({
   };
 
   const handleCopy = async () => {
-    const msg = "Sentence copied to clipboard";
     const text = data[synonymsOptions.sentenceIndex]
-      ?.map((word) => word?.word)
-      ?.join(" ");
+      .map((w) => w.word)
+      .join(" ");
     await navigator.clipboard.writeText(text);
-    enqueueSnackbar(msg);
+    enqueueSnackbar("Sentence copied to clipboard");
   };
 
   async function rephraseSentence() {
@@ -171,12 +213,13 @@ const ParaphraseOutput = ({
       setShowRephrase(true);
 
       const url =
-        process.env.NEXT_PUBLIC_PARAPHRASE_API_URI + "/paraphrase-with-variantV2";
+        process.env.NEXT_PUBLIC_PARAPHRASE_API_URI +
+        "/paraphrase-with-variantV2";
       const token = localStorage.getItem("accessToken");
       const payload = {
         text: sentence,
-        mode: rephraseMode ? rephraseMode.toLowerCase() : "standard",
-        synonymLevel: synonymLevel ? synonymLevel.toLowerCase() : "basic",
+        mode: rephraseMode.toLowerCase(),
+        synonymLevel: synonymLevel.toLowerCase(),
         model: "sai-nlp-boost",
         language: selectedLang,
         freezeWord: freezeWords,
@@ -191,44 +234,36 @@ const ParaphraseOutput = ({
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw { message: error.message, error: error.error };
+        const err = await response.json();
+        throw { message: err.message };
       }
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
 
       setIsPending(false);
-      if (reader) {
-        let text = "";
-        const saparator = selectedLang === "Bengali" ? "। " : ". ";
-        const pattern = /\{[^}]+\}|\S+/g;
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          // Decode the chunk and add it to the buffer
-          const buffer = decoder.decode(value, { stream: true });
-          text += buffer.replaceAll("\n", " ");
+      let text = "";
+      const separator = selectedLang === "Bengali" ? "। " : ". ";
+      const pattern = /\{[^}]+\}|\S+/g;
 
-          let sentences = text.split(saparator);
-          sentences = sentences.map((sentence) => {
-            let result = sentence.match(pattern) || [];
-            result = result.map((item) => {
-              return {
-                word: item,
-                type: /\{[^}]+\}/.test(item) ? "freeze" : "none",
-                synonyms: [],
-              };
-            });
-            result.push({ word: saparator.trim(), type: "none", synonyms: [] });
-            return result;
-          });
-          sentences = sentences.filter((item) => item.length > 1);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true }).replaceAll("\n", " ");
 
-          setRephraseData(sentences);
-        }
+        let sentences = text.split(separator).map((sent) => {
+          const tokens = sent.match(pattern) || [];
+          const result = tokens.map((item) => ({
+            word: item,
+            type: /\{[^}]+\}/.test(item) ? "freeze" : "none",
+            synonyms: [],
+          }));
+          result.push({ word: separator.trim(), type: "none", synonyms: [] });
+          return result;
+        });
+        setRephraseData(sentences.filter((s) => s.length > 1));
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       enqueueSnackbar(error?.message, { variant: "error" });
     }
   }
@@ -241,6 +276,18 @@ const ParaphraseOutput = ({
 
   return (
     <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
+      {/* ─────── Download Button ─────── */}
+      <Box sx={{ mb: 2, textAlign: "right" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenModal(true)}
+        >
+          Download Report
+        </Button>
+      </Box>
+
+      {/* ─────── Existing UI ─────── */}
       <EditableOutput
         data={data}
         dark={dark}
@@ -250,18 +297,15 @@ const ParaphraseOutput = ({
         highlightSentence={highlightSentence}
         setHighlightSentence={setHighlightSentence}
       />
-
       <Synonyms
         synonyms={synonymsOptions.synonyms}
         open={!!synonymsOptions.synonyms.length}
         handleClose={() =>
-          setSynonymsOptions((prev) => {
-            return {
-              ...synonymInit,
-              sentenceIndex: prev.sentenceIndex,
-              showRephraseNav: prev.showRephraseNav,
-            };
-          })
+          setSynonymsOptions((prev) => ({
+            ...synonymInit,
+            sentenceIndex: prev.sentenceIndex,
+            showRephraseNav: prev.showRephraseNav,
+          }))
         }
         anchorEl={anchorEl}
         replaceSynonym={replaceSynonym}
@@ -273,9 +317,10 @@ const ParaphraseOutput = ({
         handleCopy={handleCopy}
         sendReprt={sendReprt}
         handleClose={() =>
-          setSynonymsOptions((prev) => {
-            return { ...prev, showRephraseNav: false };
-          })
+          setSynonymsOptions((prev) => ({
+            ...prev,
+            showRephraseNav: false,
+          }))
         }
       />
       <RephraseSentences
@@ -289,8 +334,31 @@ const ParaphraseOutput = ({
         setRephraseMode={setRephraseMode}
         rephraseMode={rephraseMode}
       />
+
+      {/* ─────── Download Modal ─────── */}
+      <Dialog onClose={() => setOpenModal(false)} open={openModal}>
+        <DialogTitle>Select format to download</DialogTitle>
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={downloadPdf}>
+              <ListItemText primary="PDF" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={downloadDocx}>
+              <ListItemText primary="DOCX" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton onClick={downloadTxt}>
+              <ListItemText primary="TXT" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Dialog>
     </Box>
   );
 };
 
 export default ParaphraseOutput;
+

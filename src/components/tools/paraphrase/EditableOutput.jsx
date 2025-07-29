@@ -9,6 +9,7 @@ import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { defaultMarkdownParser } from "@tiptap/pm/markdown"
 
+import HardBreak from "@tiptap/extension-hard-break"
 // ─── 1. Color helper ───────────────────────────────────────────────────────
 function getColorStyle(type, dark = false) {
   const adjVerb = dark ? "#ef5c47" : "#d95645"
@@ -147,30 +148,43 @@ const EnterHandler = Extension.create({
 })
 
 // ─── 5. Enhanced Markdown parsing helper ───────────────────────────────────
+
 function parseMarkdownText(text) {
   const marks = []
-  let processedText = text
+  let core = text
+  let trailing = ''
 
-  // Parse bold **text**
-  if (/^\*\*(.+)\*\*$/.test(processedText)) {
-    marks.push({ type: "bold" })
-    processedText = processedText.replace(/^\*\*(.+)\*\*$/, "$1")
+  // 1. Detach trailing punctuation (one of . , ; ? !)
+  const punctMatch = core.match(/^(.*?)([.,;?!])$/)
+  if (punctMatch) {
+    core = punctMatch[1]
+    trailing = punctMatch[2]
   }
-  // Parse italic *text* (only if not already bold)
-  else if (/^\*(.+)\*$/.test(processedText)) {
-    marks.push({ type: "italic" })
-    processedText = processedText.replace(/^\*(.+)\*$/, "$1")
+
+  // 2. Check for bold (** or __)
+  let m
+  if (m = core.match(/^(\*\*|__)([\s\S]+?)\1$/)) {
+    marks.push({ type: 'bold' })
+    core = m[2]
   }
-  // Parse strikethrough ~~text~~
-  else if (/^~~(.+)~~$/.test(processedText)) {
-    marks.push({ type: "strike" })
-    processedText = processedText.replace(/^~~(.+)~~$/, "$1")
+  // 3. Check for strikethrough ~~text~~
+  else if (m = core.match(/^~~([\s\S]+?)~~$/)) {
+    marks.push({ type: 'strike' })
+    core = m[1]
   }
-  // Parse code `text`
-  else if (/^`(.+)`$/.test(processedText)) {
-    marks.push({ type: "code" })
-    processedText = processedText.replace(/^`(.+)`$/, "$1")
+  // 4. Check for italic (* or _), but only if not already bold
+  else if (m = core.match(/^(\*|_)([\s\S]+?)\1$/)) {
+    marks.push({ type: 'italic' })
+    core = m[2]
   }
+  // 5. Check for inline code `text`
+  else if (m = core.match(/^`([\s\S]+?)`$/)) {
+    marks.push({ type: 'code' })
+    core = m[1]
+  }
+
+  // 6. Reattach punctuation to the processed text
+  const processedText = core + trailing
 
   return { text: processedText, marks }
 }
@@ -242,11 +256,16 @@ function formatContent(data) {
   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
     const sentence = sentences[sIdx]
     
-    // Skip newline-only sentences
     if (isNewlineSentence(sentence)) {
+      // emit a hardBreak node wrapped in a paragraph
+      docContent.push({
+        type: "paragraph",
+        content: [
+          { type: "hardBreak" }
+        ],
+      })
       continue
-    }
-    
+    }    
     // Check if this sentence is a heading
     const headingNode = processHeadingSentence(sentence, sIdx)
     if (headingNode) {
@@ -330,6 +349,7 @@ export default function EditableOutput({
         }
       }),
       // Add custom nodes AFTER StarterKit to avoid conflicts
+      HardBreak,
       SentenceNode,
       WordNode,
       CursorWatcher,
