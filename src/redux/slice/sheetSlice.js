@@ -336,7 +336,7 @@ export const selectSheetData = (state) => {
 };
 
 export const selectSheetStatus = (state) => {
-  return state?.sheet?.status || "idle";
+  return state?.sheet?.status;
 };
 
 export const selectSheetTitle = (state) => {

@@ -2,29 +2,29 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import {baseQuery} from "../config";
 
 export const presentationApiSlice = createApi({
-  reducerPath: 'presentationApi',
+  reducerPath: "presentationApi",
   baseQuery: async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
     // console.log(result, "Base Query Result");
     return result;
   },
-  tagTypes: ['presentation', 'logs', 'slides'],
+  tagTypes: ["presentation", "logs", "slides"],
   endpoints: (builder) => ({
     // Create presentation
     createPresentation: builder.mutation({
       query: (message) => ({
-        url: '/presentation/init',
-        method: 'POST',
+        url: "/presentation/init",
+        method: "POST",
         body: message,
       }),
-      invalidatesTags: ['presentation'],
+      invalidatesTags: ["presentation"],
     }),
 
     // Fetch logs
     fetchLogs: builder.query({
       query: (presentationId) => `/presentation/logs/${presentationId}`,
       providesTags: (result, error, presentationId) => [
-        { type: 'logs', id: presentationId },
+        { type: "logs", id: presentationId },
       ],
     }),
 
@@ -32,15 +32,15 @@ export const presentationApiSlice = createApi({
     fetchSlides: builder.query({
       query: (presentationId) => `/presentation/slides/${presentationId}`,
       providesTags: (result, error, presentationId) => [
-        { type: 'slides', id: presentationId },
+        { type: "slides", id: presentationId },
       ],
     }),
 
     // Fetch all presentations
-    // fetchAllPresentations: builder.query({
-    //   query: () => '/presentations/?user_id=demo_user_123',
-    //   providesTags: ['presentation'],
-    // }),
+    fetchAllPresentations: builder.query({
+      query: () => "/presentation/get-slides",
+      providesTags: ["presentation"],
+    }),
   }),
 });
 

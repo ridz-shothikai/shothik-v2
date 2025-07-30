@@ -227,7 +227,7 @@ export default function SheetDataArea() {
   const sheetStatus = useSelector(selectSheetStatus);
   const currentSavePoint = useSelector(selectActiveSavePoint);
 
-  // console.log(currentSavePoint, "currentSavePoint");
+  console.log(sheetStatus, "sheet status");
 
   const dispatch = useDispatch();
 
@@ -447,7 +447,7 @@ export default function SheetDataArea() {
           textAlign: "center",
         }}
       >
-        <CircularProgress size={48} sx={{ mb: 2 }} />
+        {/* <CircularProgress size={48} sx={{ mb: 2 }} /> */}
         <Typography variant="h6" gutterBottom>
           Generating Your Sheet
         </Typography>
