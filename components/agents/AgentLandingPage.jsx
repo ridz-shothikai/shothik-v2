@@ -49,7 +49,7 @@ import { useCreatePresentationMutation } from "../../src/redux/api/presentation/
 import { setPresentationState } from "../../src/redux/slice/presentationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
-import { setShowLoginModal } from "../../src/redux/slice/auth";
+import { setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
 import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
 import { setSheetState } from "../../src/redux/slice/sheetSlice";
@@ -188,8 +188,13 @@ export default function AgentLandingPage() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
-  const accessToken = useSelector((state) => state.auth.accessToken);
-  const { data: myChats, isLoading, error } = useGetMyChatsQuery();
+  const {accessToken, sheetToken} = useSelector((state) => state.auth);
+  const {
+    data: myChats,
+    isLoading,
+    error,
+    refetch: refetchChatHistory,
+  } = useGetMyChatsQuery();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
   // console.log(myChats, "myChats");
@@ -202,6 +207,7 @@ export default function AgentLandingPage() {
     severity: "error",
   });
 
+  // console.log(accessToken, sheetToken);
   // const [sidebarOpen, setSidebarOpen] = useState(false);
   // console.log(isNavbarExpanded, "isNavbarExpanded");
   
@@ -218,9 +224,19 @@ export default function AgentLandingPage() {
   /**
    * When we come to the agents page if user is not registered to our services, make them register it. 
    */
-  const {sheetAIToken} = useSheetAiToken(user?.email);
+  const {sheetAIToken, refreshSheetAIToken} = useSheetAiToken(user?.email);
 
-  console.log(sheetAIToken, "sheet ai token");
+  // for saving sheet token to redux state
+  useEffect(() => {
+    // We will save token on redux and based on that we will generate users sheet chat data
+    if(!sheetAIToken) return;
+
+    dispatch(setSheetToken(sheetAIToken));
+
+    // if sheet token saved to our local storage then we can try to refetch again to get the user sheet chat data
+    refetchChatHistory();
+    console.log("chat data refetched");
+  }, [sheetAIToken]);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -263,7 +279,8 @@ export default function AgentLandingPage() {
             setIsInitiatingSheet,
             router,
             email,
-            showToast
+            showToast,
+            refreshSheetAIToken
           );
         case "download":
           return console.log("download route");

@@ -96,7 +96,8 @@ async function handleSheetGenerationRequest(
   setIsInitiatingSheet,
   router,
   email,
-  showToast
+  showToast,
+  refreshSheetAIToken
 ) {
   try {
     // console.log(inputValue, "input value");
@@ -135,8 +136,7 @@ async function handleSheetGenerationRequest(
     const storedSheetToken = localStorage.getItem("sheetai-token");
 
     if (!storedSheetToken) {
-      // TODO: Authentication needs to be handled on the login and register page
-      await authenticateToSheetService(email);
+      refreshSheetAIToken();
     }
 
     // After authenticate we will have a sheet token on the local storage
