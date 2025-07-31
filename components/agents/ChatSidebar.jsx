@@ -36,10 +36,6 @@ export default function ChatSidebar({
 
   const handleTabChange = (event, newIndex) => {
     setTabIndex(newIndex);
-    if (newIndex === 1) {
-      console.log("Slide selected");
-      // you can later replace this with real slide‑loading logic
-    }
   };
 
   return (
@@ -204,7 +200,7 @@ export default function ChatSidebar({
                   </Typography>
                 </Box>
               )}
-              {slidesChats.length > 0 && (
+              {slidesChats?.length > 0 && (
                 <Stack spacing={1}>
                   {slidesChats.map((chat) => (
                     <Card
