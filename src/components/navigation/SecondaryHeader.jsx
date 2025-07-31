@@ -79,6 +79,7 @@ export default function SecondaryHeader() {
     >
       <Toolbar sx={{ height: 1 }}>
         <Container
+          maxWidth= "xl"
           sx={{
             display: "flex",
             alignItems: "center",

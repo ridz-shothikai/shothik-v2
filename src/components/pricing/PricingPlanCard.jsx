@@ -35,6 +35,8 @@ export default function PricingPlanCard({
   const redirect = searchParams.get("redirect");
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
+  const isPopular = subscription === "pro_plan";
+
   let modePrice;
   if (country === "bangladesh" || country === "india") {
     modePrice = 1;
@@ -61,6 +63,8 @@ export default function PricingPlanCard({
         flexDirection: "column",
         justifyContent: "space-between",
         gap: 0,
+        maxWidth: {xs: "450px", md: "550px"},
+        marginInline: "auto",
         ...sx,
       }}
       {...other}
@@ -152,9 +156,9 @@ export default function PricingPlanCard({
             color:
               subscription === "free"
                 ? "#637381"
-                : subscription === "value plan"
+                : subscription === "value_plan"
                 ? "#00A76F"
-                : subscription === "pro plan"
+                : subscription === "pro_plan"
                 ? "#8E33FF"
                 : "#FFAB00",
             textTransform: "capitalize",
@@ -237,6 +241,7 @@ export default function PricingPlanCard({
         subscription={subscription}
         id={id}
         redirect={redirect}
+        isPopular={isPopular}
       />
     </Card>
   );

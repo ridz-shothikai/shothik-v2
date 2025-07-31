@@ -15,6 +15,7 @@ export default function PricingButton({
   id,
   redirect,
   outline = false,
+  isPopular,
 }) {
   const dispatch = useDispatch();
 
@@ -22,6 +23,40 @@ export default function PricingButton({
   const handleTrigger = () => {
     trackEvent("click", "payment", subscription, 1);
   };
+
+  // console.log(subscription, "subscription");
+
+
+  // Define purple styling for popular plan
+  const purpleButtonSx = isPopular
+    ? {
+        backgroundColor: "#7c3aed", // Purple color
+        "&:hover": {
+          backgroundColor: "#6d28d9", // Darker purple on hover
+        },
+        "&:disabled": {
+          backgroundColor: "#e5e7eb", // Gray when disabled
+          color: "#9ca3af",
+        },
+      }
+    : {};
+
+  const purpleOutlinedSx =
+    isPopular && outline
+      ? {
+          borderColor: "#7c3aed",
+          color: "#7c3aed",
+          "&:hover": {
+            borderColor: "#6d28d9",
+            backgroundColor: "rgba(124, 58, 237, 0.04)",
+          },
+          "&:disabled": {
+            borderColor: "#e5e7eb",
+            color: "#9ca3af",
+          },
+        }
+      : {};
+
   return (
     <Box>
       {user?.email ? (
@@ -42,7 +77,7 @@ export default function PricingButton({
                 }&redirect=${redirect}`
           }
           fullWidth
-          size='large'
+          size="large"
           variant={outline ? "outlined" : "contained"}
           disabled={
             !yearly_plan_available && yearly
@@ -52,6 +87,10 @@ export default function PricingButton({
                   /pro_plan|value_plan/.test(subscription)) ||
                 user?.package === subscription
           }
+          sx={{
+            ...purpleButtonSx,
+            ...purpleOutlinedSx,
+          }}
         >
           {user?.package === subscription
             ? "current plan"
@@ -64,10 +103,14 @@ export default function PricingButton({
           disabled={!yearly_plan_available && yearly}
           onClick={() => dispatch(setShowLoginModal(true))}
           fullWidth
-          size='large'
+          size="large"
           variant={
             outline || subscription === "free" ? `outlined` : "contained"
           }
+          sx={{
+            ...purpleButtonSx,
+            ...purpleOutlinedSx,
+          }}
         >
           {!yearly_plan_available && yearly
             ? "Available for monthly plan"
