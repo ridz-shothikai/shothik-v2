@@ -35,8 +35,6 @@ export default function PricingPlanCard({
   const redirect = searchParams.get("redirect");
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
-  const isPopular = subscription === "pro_plan";
-
   let modePrice;
   if (country === "bangladesh" || country === "india") {
     modePrice = 1;
@@ -241,7 +239,6 @@ export default function PricingPlanCard({
         subscription={subscription}
         id={id}
         redirect={redirect}
-        isPopular={isPopular}
       />
     </Card>
   );
