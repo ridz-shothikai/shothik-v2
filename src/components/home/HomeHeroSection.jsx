@@ -2,7 +2,7 @@
 
 import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { alpha, Grid2 } from "@mui/material";
+import { alpha, Container, Grid2 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
@@ -18,24 +18,53 @@ import VideoImage from "./components/VideoImage";
 
 export default function HomeHeroSection() {
   return (
-    <BgContainer 
-    // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
-    sx={{
-      maxWidth: "xl",
-      mx: "auto"
-    }}
+    <BgContainer
+      // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
+      sx={{
+        maxWidth: "lg",
+        mx: "auto",
+        pt: { xl: "50px" },
+      }}
     >
-      <Grid2
+      <Container
         sx={{
           pt: 6,
           pb: { xs: 2, sm: 2, md: 8, lg: 10, xl: 10 },
           px: { xs: 2, sm: 4, md: 6 },
+          display: "flex",
+          flexDirection: "column",
+          gap: { xs: "30px", sm: "44px", md: "52px", lg: "72px", xl: "80px" },
+          position: "relative",
         }}
         container
         alignItems="center"
         justifyContent="space-between"
         spacing={{ xs: 3, md: 0 }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 1, // Or -1 if it should be in the background
+            pointerEvents: "none", // Avoid blocking clicks
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src="/pattern.svg"
+            alt="pattern"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover", // or "contain", depending on your design
+              opacity: "40%"
+            }}
+          />
+        </Box>
+
         {/* Details Section - Shows first on mobile, left on desktop */}
         {/* <Grid2
           size={{ xs: 12, md: 6 }}
@@ -51,20 +80,21 @@ export default function HomeHeroSection() {
           size={{ xs: 12, md: 6 }}
           sx={{
             order: { xs: 2, md: 2 },
-            pl: { md: 2, lg: 3 },
+            // pl: { md: 2, lg: 3 },
           }}
         >
           <Box
             sx={{
               position: "relative",
               width: "100%",
+              zIndex: 12
             }}
           >
             <Box
               sx={{
                 position: "relative",
                 width: "100%", // Full width instead of maxWidth: 350
-                height: { xs: 250, sm: 300, md: 280, lg: 320, xl: 350 }, // Responsive height
+                height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 }, // Responsive height
                 borderRadius: 2,
                 overflow: "hidden",
                 bgcolor: "#f5f5f5",
@@ -81,6 +111,7 @@ export default function HomeHeroSection() {
                 style={{
                   objectFit: "cover",
                   borderRadius: "8px",
+                  aspectRatio: "9 / 16",
                 }}
               >
                 <source src="/home/hero/demo-video.mp4" type="video/mp4" />
@@ -133,7 +164,7 @@ export default function HomeHeroSection() {
             </Box>
           </Box>
         </Grid2>
-      </Grid2>
+      </Container>
     </BgContainer>
   );
 }

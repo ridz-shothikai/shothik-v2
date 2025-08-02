@@ -655,7 +655,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                 bgcolor:
                   theme.palette.mode === "dark"
                     ? theme.palette.grey[900]
-                    : "#fafafa",
+                    : "#e6f7ee",
               }}
               onClick={handlePreviewOpen}
             >

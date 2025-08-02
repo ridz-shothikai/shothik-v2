@@ -72,7 +72,9 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
                 p: 2,
                 border: `1px solid ${theme.palette.divider}`,
                 cursor: "pointer",
-                bgcolor: theme.palette.action.hover,
+                bgcolor: theme.palette.mode === "dark"
+                    ? theme.palette.action.hover
+                    : "#e6f7ee",
               }}
               onClick={handlePreviewOpen}
             >
