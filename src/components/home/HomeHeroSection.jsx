@@ -33,13 +33,11 @@ export default function HomeHeroSection() {
           px: { xs: 2, sm: 4, md: 6 },
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           gap: { xs: "30px", sm: "44px", md: "52px", lg: "72px", xl: "80px" },
           position: "relative",
         }}
-        container
-        alignItems="center"
-        justifyContent="space-between"
-        spacing={{ xs: 3, md: 0 }}
       >
         <Box
           sx={{
@@ -60,7 +58,7 @@ export default function HomeHeroSection() {
               width: "100%",
               height: "100%",
               objectFit: "cover", // or "contain", depending on your design
-              opacity: "40%"
+              opacity: "40%",
             }}
           />
         </Box>
@@ -80,6 +78,7 @@ export default function HomeHeroSection() {
           size={{ xs: 12, md: 6 }}
           sx={{
             order: { xs: 2, md: 2 },
+            width: "100%",
             // pl: { md: 2, lg: 3 },
           }}
         >
@@ -87,14 +86,14 @@ export default function HomeHeroSection() {
             sx={{
               position: "relative",
               width: "100%",
-              zIndex: 12
+              zIndex: 12,
             }}
           >
             <Box
               sx={{
                 position: "relative",
-                width: "100%", // Full width instead of maxWidth: 350
-                height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 }, // Responsive height
+                width: "100%",
+                height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 },
                 borderRadius: 2,
                 overflow: "hidden",
                 bgcolor: "#f5f5f5",
@@ -109,9 +108,10 @@ export default function HomeHeroSection() {
                 controls
                 poster="/home/hero/video-thumbnail.webp"
                 style={{
+                  width: "100%",
+                  height: "100%",
                   objectFit: "cover",
                   borderRadius: "8px",
-                  aspectRatio: "9 / 16",
                 }}
               >
                 <source src="/home/hero/demo-video.mp4" type="video/mp4" />

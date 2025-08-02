@@ -50,7 +50,7 @@ const createEnhancedIframeContent = (originalContent) => {
         </style>
       </head>
       <body>
-        ${originalContent}
+        ${originalContent ? originalContent : ""}
         
         <script>
           let isEditMode = false;

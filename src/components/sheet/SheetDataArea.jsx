@@ -31,6 +31,7 @@ import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  resetSheetState,
   selectActiveSavePoint,
   selectSheet,
   selectSheetStatus,
@@ -398,6 +399,13 @@ export default function SheetDataArea() {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      dispatch(resetSheetState());
+      console.log(sheetState, "from return");
+    }
+  }, [])
+
   // Grid configuration
   const gridProps = useMemo(
     () => ({
@@ -510,6 +518,7 @@ export default function SheetDataArea() {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+        {sheetState.savePoints?.length > 0 && sheetState.activeSavePointId && (
           <SavePointsDropdown
             savePoints={sheetState.savePoints || []}
             activeSavePointId={sheetState.activeSavePointId}
@@ -519,6 +528,7 @@ export default function SheetDataArea() {
             currentSheetData={sheetState.sheet}
             theme={theme}
           />
+        )}
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
@@ -607,13 +617,11 @@ export default function SheetDataArea() {
 
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
-        {!hasData ? (
-          // <Typography variant="body2" color="text.secondary">
-          //   No data found. Use the chat area to describe your spreadsheet and
-          //   generate data
-          // </Typography>
-          null
-        ) : (
+        {!hasData ? // <Typography variant="body2" color="text.secondary">
+        //   No data found. Use the chat area to describe your spreadsheet and
+        //   generate data
+        // </Typography>
+        null : (
           <DataGrid {...gridProps} />
         )}
       </Box>
@@ -621,7 +629,13 @@ export default function SheetDataArea() {
       {/* Footer */}
       <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: "divider" }}>
         <Typography variant="caption" color="text.secondary">
-          Last updated: {new Date().toLocaleTimeString()}
+          Last updated:{" "}
+          {new Date().toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          })}
         </Typography>
       </Box>
     </Box>

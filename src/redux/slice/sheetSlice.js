@@ -20,7 +20,7 @@ if (typeof window !== "undefined") {
 const initialState = {
   logs: [],
   sheet: null, // Current active sheet data
-  status: "idle", // idle, generating, completed, error, cancelled
+  status: "generating", // idle, generating, completed, error, cancelled
   title: "Ready to Generate",
   // New save points structure
   savePoints: [], // Array of save points with chat history

@@ -451,7 +451,7 @@ export default function SlidePreview({
           )}
           {activeTab === "thinking" && (
             <EnhancedThinkingTab slide={slide} dimensions={dimensions} />
-          )}
+          )} 
           {activeTab === "code" && (
             <Box
               sx={{
