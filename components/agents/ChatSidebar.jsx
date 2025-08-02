@@ -76,19 +76,14 @@ export default function ChatSidebar({
             borderColor: "divider",
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            My Chats
-          </Typography>
+          <Tabs value={tabIndex} onChange={handleTabChange} sx={{ px: 2 }}>
+            <Tab label="Sheet" />
+            <Tab label="Slide" />
+          </Tabs>
           <IconButton onClick={toggleDrawer(false)} size="small">
             <CloseIcon />
           </IconButton>
         </Box>
-
-        {/* Tabs */}
-        <Tabs value={tabIndex} onChange={handleTabChange} sx={{ px: 2 }}>
-          <Tab label="Sheet" />
-          <Tab label="Slide" />
-        </Tabs>
 
         {/* Content */}
         <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>

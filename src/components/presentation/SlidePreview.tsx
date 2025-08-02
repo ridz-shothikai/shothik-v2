@@ -10,8 +10,9 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
-// import ReactMarkdown from "react-markdown";
-// import remarkGfm from "remark-gfm";
+import { Button, useMediaQuery, Snackbar, Alert } from "@mui/material";
+import createEnhancedIframeContent from "../../libs/presentationEditScripts";
+import html2canvas from "html2canvas";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -26,7 +27,8 @@ export default function SlidePreview({
   activeTab,
   onTabChange,
   totalSlides,
-  theme
+  theme,
+  isDarkMode,
 }) {
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -34,7 +36,13 @@ export default function SlidePreview({
     scale: 1,
   });
   const [copied, setCopied] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectionData, setSelectionData] = useState(null);
+  const [showSelectionAlert, setShowSelectionAlert] = useState(false);
+
   const containerRef = useRef(null);
+  const iframeRef = useRef(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Copy to clipboard function
   const handleCopy = async () => {
@@ -46,6 +54,127 @@ export default function SlidePreview({
       console.error("Failed to copy: ", err);
     }
   };
+
+  // EDIT LOGIC STARTS
+  const handleEditSlide = () => {
+    const newEditMode = !isEditMode;
+    setIsEditMode(newEditMode);
+
+    if (newEditMode) {
+      console.log("🎯 Edit mode enabled for slide:", slide?.slide_index + 1);
+      // console.log("📄 Slide data:", slide);
+
+      // Enable selection in iframe
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: "TOGGLE_EDIT_MODE",
+            enabled: true,
+          },
+          "*"
+        );
+      }
+
+      setShowSelectionAlert(true);
+    } else {
+      console.log("🛑 Edit mode disabled for slide:", slide?.slide_index + 1);
+
+      // Disable selection in iframe
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: "TOGGLE_EDIT_MODE",
+            enabled: false,
+          },
+          "*"
+        );
+      }
+
+      setSelectionData(null);
+    }
+  };
+
+  function captureElementAsImageFromIframe(elementPath) {
+    const iframeDoc =
+      iframeRef.current?.contentDocument ||
+      iframeRef.current?.contentWindow?.document;
+    if (!iframeDoc) return;
+
+    const targetElement = iframeDoc.querySelector(elementPath);
+    if (!targetElement) {
+      console.warn("Element not found in iframe for path:", elementPath);
+      return;
+    }
+
+    html2canvas(targetElement).then((canvas) => {
+      const imageData = canvas.toDataURL("image/jpeg"); // or "image/png"
+      console.log("📸 Base64 Image Data:", imageData);
+      // Optionally do something with the image, like saving, copying, previewing
+    });
+  }
+  
+
+  // Handle messages from iframe
+  useEffect(() => {
+    const handleIframeMessage = (event) => {
+      if (event.data.type === "ELEMENT_SELECTED") {
+        const data = event.data.data;
+        setSelectionData(data);
+
+        console.group("🎯 ELEMENT SELECTION DETECTED");
+        console.log("🏷️  Element Type:", data.elementType);
+        console.log("🏗️  Tag Name:", data.element.tagName);
+        console.log("🆔 Element ID:", data.element.id || "No ID");
+        console.log("🎨 Class Names:", data.element.className || "No classes");
+        console.log("🛤️  Element Path:", data.elementPath);
+        console.log(
+          "📝 Text Content:",
+          data.textContent.substring(0, 100) +
+            (data.textContent.length > 100 ? "..." : "")
+        );
+        console.log("🔧 Attributes:", data.element.attributes);
+        console.log("📐 Bounding Rectangle:", data.boundingRect);
+        console.log("🎨 Computed Styles:", data.computedStyles);
+        console.log(
+          "📄 Inner HTML:",
+          data.innerHTML.substring(0, 200) +
+            (data.innerHTML.length > 200 ? "..." : "")
+        );
+        console.log(
+          "📦 Outer HTML:",
+          data.outerHTML.substring(0, 200) +
+            (data.outerHTML.length > 200 ? "..." : "")
+        );
+        console.log("⏰ Timestamp:", data.timestamp);
+        console.log("🎂 Full Element Data:", data);
+
+        console.log(
+          "image data",
+          captureElementAsImageFromIframe(data.elementPath)
+        );
+        console.groupEnd();
+      }
+    };
+
+    window.addEventListener("message", handleIframeMessage);
+    return () => window.removeEventListener("message", handleIframeMessage);
+  }, []);
+
+  // Update iframe pointer events based on edit mode
+  const iframeStyle = {
+    width: `${SLIDE_WIDTH}px`,
+    height: `${SLIDE_HEIGHT}px`,
+    transform: `scale(${dimensions.scale})`,
+    transformOrigin: "center center",
+    border: isEditMode ? `2px solid ${PRIMARY_GREEN}` : "none",
+    display: "block",
+    pointerEvents: isEditMode ? "auto" : "none",
+    transition: "transform 0.2s ease-in-out, border 0.2s ease-in-out",
+    flexShrink: 0,
+    margin: 0,
+    padding: 0,
+  };
+  // EDIT LOGIC ENDS
 
   // Calculate scale factor to fit the iframe within the container
   const calculateScale = (containerWidth) => {
@@ -167,7 +296,6 @@ export default function SlidePreview({
           sx={{
             borderBottom: 1,
             borderColor: "divider",
-            // bgcolor: "#f5f5f5",
             bgcolor: theme.palette.background.paper,
             px: 2,
             overflow: "hidden",
@@ -218,20 +346,55 @@ export default function SlidePreview({
             />
           </Tabs>
 
-          {totalSlides && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: { xs: "4px", md: "8px", lg: "12px", xl: "16px" },
+            }}
+          >
+            {/* When edit mode will be on then we will need this. So don't remove it */}
+            {/* <Button
+              variant={isEditMode ? "contained" : "outlined"}
+              size="small"
               sx={{
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.875rem",
+                px: 2,
+                py: 0.5,
+                fontSize: "0.75rem",
+                bgcolor: isEditMode
+                  ? PRIMARY_GREEN
+                  : isDarkMode
+                  ? "background.paper"
+                  : "white",
+                color: isEditMode ? "white" : PRIMARY_GREEN,
+                borderColor: PRIMARY_GREEN,
+                "&:hover": {
+                  bgcolor: PRIMARY_GREEN,
+                  color: "white",
+                  borderColor: PRIMARY_GREEN,
                 },
               }}
+              onClick={handleEditSlide}
             >
-              {slide?.slide_index + 1} / {totalSlides}
-            </Typography>
-          )}
+              {isEditMode ? "Exit Edit" : "Edit"}
+            </Button> */}
+
+            {totalSlides && !isMobile && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: {
+                    xs: "0.75rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
+                {slide?.slide_index + 1} / {totalSlides}
+              </Typography>
+            )}
+          </Box>
         </Box>
 
         <Box sx={{ p: 0 }}>
@@ -242,7 +405,7 @@ export default function SlidePreview({
                 height: `${dimensions.height}px`,
                 position: "relative",
                 width: "100%",
-                bgcolor: "#f0f0f0",
+                bgcolor: isEditMode ? "#f8f9ff" : "#f0f0f0",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -250,28 +413,40 @@ export default function SlidePreview({
                 overflow: "hidden",
                 margin: 0,
                 padding: 0,
-                transition: "height 0.3s ease-in-out",
+                transition:
+                  "height 0.3s ease-in-out, background-color 0.2s ease-in-out",
               }}
             >
               {dimensions.scale > 0 && (
                 <iframe
-                  srcDoc={slide.body}
-                  style={{
-                    width: `${SLIDE_WIDTH}px`,
-                    height: `${SLIDE_HEIGHT}px`,
-                    transform: `scale(${dimensions.scale})`,
-                    transformOrigin: "center center",
-                    border: "none",
-                    display: "block",
-                    pointerEvents: "none",
-                    transition: "transform 0.2s ease-in-out",
-                    flexShrink: 0,
-                    margin: 0,
-                    padding: 0,
-                  }}
+                  ref={iframeRef}
+                  srcDoc={createEnhancedIframeContent(slide.body)}
+                  style={iframeStyle as React.CSSProperties}
                   title={`Slide ${slide.slide_index + 1}`}
+                  sandbox="allow-scripts allow-same-origin"
                 />
               )}
+
+              {/* Edit mode indicator */}
+              {/* {isEditMode && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    left: 8,
+                    bgcolor: PRIMARY_GREEN,
+                    color: "white",
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    fontSize: "0.75rem",
+                    fontWeight: "bold",
+                    zIndex: 10,
+                  }}
+                >
+                  EDIT MODE
+                </Box>
+              )} */}
             </Box>
           )}
           {activeTab === "thinking" && (
@@ -341,9 +516,25 @@ export default function SlidePreview({
           )}
         </Box>
       </CardContent>
+
+      {/* Selection feedback snackbar */}
+      {/* <Snackbar
+        open={showSelectionAlert}
+        autoHideDuration={4000}
+        onClose={() => setShowSelectionAlert(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setShowSelectionAlert(false)}
+          severity="info"
+          sx={{ width: "100%" }}
+        >
+          Edit mode enabled. Hover over elements and click to select them.
+        </Alert>
+      </Snackbar> */}
     </Card>
   );
-};
+}
 
 // =========== UTILITY FUNCTIONS 👇 ===========
 
@@ -448,7 +639,6 @@ const EnhancedThinkingTab = ({ slide, dimensions }) => {
         },
       }}
     >
-      {/* Decorative header */}
       {/* Content */}
       <Box
         sx={{
