@@ -1,132 +1,133 @@
-"use client"
-import { useEffect, useRef } from "react"
-import { driver } from "driver.js"
-import "driver.js/dist/driver.css"
-import './Onboarding.css'
+"use client";
+import { useEffect, useRef } from "react";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
+import "./Onboarding.css";
 import { useDispatch, useSelector } from "react-redux";
-import {setDemo} from "../../../redux/slice/settings.js"
+import { setDemo } from "../../../redux/slice/settings.js";
 export default function Onboarding() {
-  const dispatch= useDispatch()
-  const driverRef = useRef(null)
-  const stepIndex = useRef(0)
+  const dispatch = useDispatch();
+  const driverRef = useRef(null);
+  const stepIndex = useRef(0);
+  const DELAY = 300;
 
   // Simple utility to wait for element to be properly positioned
   const waitForElementReady = (selector, timeout = 3000) => {
     return new Promise((resolve) => {
       const checkElement = () => {
-        const element = document.querySelector(selector)
+        const element = document.querySelector(selector);
         if (element) {
-          const rect = element.getBoundingClientRect()
+          const rect = element.getBoundingClientRect();
           // Check if element has proper dimensions and position
           if (rect.width > 0 && rect.height > 0) {
-            resolve(element)
-            return
+            resolve(element);
+            return;
           }
         }
-        setTimeout(checkElement, 50)
-      }
-      checkElement()
+        setTimeout(checkElement, 50);
+      };
+      checkElement();
       // Fallback timeout
-      setTimeout(() => resolve(document.querySelector(selector)), timeout)
-    })
-  }
-
+      setTimeout(() => resolve(document.querySelector(selector)), timeout);
+    });
+  };
 
   const steps = [
-    // {
-    //   element: "#sample-paste-section",
-    //   popover: {
-    //     description: 'Paste text or use "Try Sample"',
-    //     side: "top",
-    //   },
-    //   onNext: () => clickAndNext("mode_more"),
-    // },
-    // {
-    //   element: "#mode_more_section",
-    //   popover: {
-    //     description: "Click More to access additional styles",
-    //     side: "top",
-    //   },
-    //   onNext: () => {
-    //     clickElByID("mode_x_button");
-    //     setTimeout(() => clickAndNext("language_all_button"), 300);
-    //   },
-    //   onPrevious: ()=>{
-    //     clickElByID("mode_x_button")
-    //     setTimeout(()=>highlightStep(stepIndex.current - 1),300);
-    //   }
-    //
-    // },
-    // {
-    //   element: "#language_menu",
-    //   popover: {
-    //     description: "Choose from English, Bangla, Hindi…",
-    //     side: "bottom",
-    //   },
-    //   onNext: () => clickAndNext("language_x_button"),
-    //   onPrevious: ()=>{
-    //     clickElByID("language_x_button")
-    //     setTimeout(()=>highlightStep(stepIndex.current - 1),300);
-    //   }
-    // },
-    // {
-    //   element: "#paraphrase_settings",
-    //   popover: {
-    //     description: "Click the gear icon to open Settings",
-    //     side: "bottom",
-    //   },
-    //   onNext: () => clickElByID("paraphrase_settings_button", true),
-    //   onPrevious: ()=>{
-    //     clickElByID("language_all_button")
-    //     setTimeout(()=>highlightStep(stepIndex.current - 1),300);
-    //   }
-    // },
-    // {
-    //   element: "#settings_tab",
-    //   popover: {
-    //     description: "You can set 'Paraphrase Options' and 'Interface options' here",
-    //     side: "top",
-    //   },
-    //   onNext: () => clickElByID("settings_sidebar_x_button", true),
-    //   onPrevious: () => {
-    //     clickElByID("settings_sidebar_x_button");
-    //     setTimeout(() => highlightStep(stepIndex.current - 1), 300);
-    //   },
-    // },
-    // {
-    //   element: "#paraphrase_feedback",
-    //   popover: {
-    //     description: "Click the Feedback icon",
-    //     side: "bottom",
-    //   },
-    //   onNext: () => clickAndNext("paraphrase_feedback_button"),
-    //   onPrevious: () => {
-    //     clickElByID("paraphrase_settings_button");
-    //     setTimeout(() => highlightStep(stepIndex.current - 1), 300);
-    //   },
-    // },
-    // {
-    //   element: "#feedback_tab",
-    //   popover: {
-    //     description: "Give service reviews or suggestions",
-    //     side: "top",
-    //   },
-    //   onPrevious: () => {
-    //     clickElByID("settings_sidebar_x_button");
-    //     setTimeout(() => highlightStep(stepIndex.current - 1), 300);
-    //   },
-    //   // when Next is clicked here, close settings and move to the new shortcuts step
-    //   onNext: () => clickAndNext("settings_sidebar_x_button"),
-    // },
+    {
+      element: "#sample-paste-section",
+      popover: {
+        description: 'Paste text or use "Try Sample"',
+        side: "top",
+      },
+      onNext: () => clickAndNext("mode_more"),
+    },
+    {
+      element: "#mode_more_section",
+      popover: {
+        description: "Click More to access additional styles",
+        side: "top",
+      },
+      onNext: () => {
+        clickElByID("mode_x_button");
+        setTimeout(() => clickAndNext("language_all_button"), DELAY);
+      },
+      onPrevious: () => {
+        clickElByID("mode_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+    },
+    {
+      element: "#language_menu",
+      popover: {
+        description: "Choose from English, Bangla, Hindi…",
+        side: "bottom",
+      },
+      onNext: () => clickAndNext("language_x_button"),
+      onPrevious: () => {
+        clickElByID("language_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+    },
+    {
+      element: "#paraphrase_settings",
+      popover: {
+        description: "Click the gear icon to open Settings",
+        side: "bottom",
+      },
+      onNext: () => clickElByID("paraphrase_settings_button", true),
+      onPrevious: () => {
+        clickElByID("language_all_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+    },
+    {
+      element: "#settings_tab",
+      popover: {
+        description:
+          "You can set 'Paraphrase Options' and 'Interface options' here",
+        side: "top",
+      },
+      onNext: () => clickElByID("settings_sidebar_x_button", true),
+      onPrevious: () => {
+        clickElByID("settings_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+    },
+    {
+      element: "#paraphrase_feedback",
+      popover: {
+        description: "Click the Feedback icon",
+        side: "bottom",
+      },
+      onNext: () => clickAndNext("paraphrase_feedback_button"),
+      onPrevious: () => {
+        clickElByID("paraphrase_settings_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+    },
+    {
+      element: "#feedback_tab",
+      popover: {
+        description: "Give service reviews or suggestions",
+        side: "top",
+      },
+      onPrevious: () => {
+        clickElByID("settings_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      // when Next is clicked here, close settings and move to the new shortcuts step
+      onNext: () => clickAndNext("settings_sidebar_x_button"),
+    },
     {
       element: "#paraphrase_shortcuts",
       popover: {
-        description: "Click the Keyboard icon on the right to open Hotkeys panel",
+        description:
+          "Click the Keyboard icon on the right to open Hotkeys panel",
         side: "right",
       },
       onPrevious: () => {
         clickElByID("paraphrase_feedback");
-        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
       onNext: () => clickAndNext("paraphrase_shortcuts_button"),
     },
@@ -138,177 +139,266 @@ export default function Onboarding() {
       },
       onPrevious: () => {
         clickElByID("settings_sidebar_x_button");
-        setTimeout(() => highlightStep(stepIndex.current - 1), 300);
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        clickAndNext("settings_sidebar_x_button")
-      }
-      // last step: shows "Done" instead of Next
+      onNext: () => {
+        clickAndNext("settings_sidebar_x_button");
+      },
     },
     {
       element: "#paraphrase_history",
       popover: {
-        description: "Click the History icon on the right to open Previous history."
+        description:
+          "Click the History icon on the right to open Previous history.",
       },
-      onPrevious:()=>{
-        clickElByID("plagiarism_sidebar_x_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        clickElByID("plagiarism_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
+      onNext: () => {
         clickAndNext("paraphrase_history_button");
-      }
+      },
     },
     {
       element: "#history_tab",
       popover: {
-        description: "You can see previous history panel on the right, Click entries to revisit and reuse previous outputs."
+        description:
+          "You can see previous history panel on the right, Click entries to revisit and reuse previous outputs.",
       },
-      onPrevious:()=>{
-        clickElByID("plagiarism_sidebar_x_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        clickElByID("plagiarism_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        dispatch(setDemo(true))
+      onNext: () => {
+        dispatch(setDemo(true));
         clickAndNext("plagiarism_sidebar_x_button");
-      }
+      },
     },
     {
       element: "#paraphrase_plagiarism",
       popover: {
-        description: "After paraphrasing, click the “Check Plagiarism” icon to analyze the text."
+        description:
+          "After paraphrasing, click the “Check Plagiarism” icon to analyze the text.",
       },
-      onPrevious:()=>{
-        clickElByID("paraphrase_history_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        clickElByID("paraphrase_history_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        dispatch(setDemo('plagiarism_high'))
+      onNext: () => {
+        dispatch(setDemo("plagiarism_high"));
         clickAndNext("paraphrase_plagiarism_button");
-      }
+      },
     },
     {
       element: "#plagiarism_score",
       popover: {
-        description: "High Plagiarism (e.g., 100%) – Text is mostly unchanged from original sources"
+        description:
+          "High Plagiarism (e.g., 100%) – Text is mostly unchanged from original sources",
       },
-      onPrevious:()=>{
-        dispatch(setDemo(true))
-        clickElByID("plagiarism_sidebar_x_button")
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        dispatch(setDemo(true));
+        clickElByID("plagiarism_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        dispatch(setDemo('plagiarism_low'))
-        setTimeout(() => highlightStep(stepIndex.current + 1), 300)
-      }
+      onNext: () => {
+        dispatch(setDemo("plagiarism_low"));
+        setTimeout(() => highlightStep(stepIndex.current + 1), DELAY);
+      },
     },
     {
       element: "#plagiarism_score",
       popover: {
-        description: "Low/No Plagiarism (e.g., 0%) – Paraphrasing was effective."
+        description:
+          "Low/No Plagiarism (e.g., 0%) – Paraphrasing was effective.",
       },
-      onPrevious:()=>{
-        dispatch(setDemo('plagiarism_high'))
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        dispatch(setDemo("plagiarism_high"));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        dispatch(setDemo(true))
-        setTimeout(() => highlightStep(stepIndex.current + 1), 300)
-      }
+      onNext: () => {
+        dispatch(setDemo(true));
+        setTimeout(() => highlightStep(stepIndex.current + 1), DELAY);
+      },
     },
     {
       element: "#plagiarism_results",
       popover: {
-        description: "Each match can be expanded for preview or collapsed."
+        description: "Each match can be expanded for preview or collapsed.",
       },
-      onPrevious:()=>{
-        dispatch(setDemo('plagiarism_low'))
-        setTimeout(()=>highlightStep(stepIndex.current - 1),300)
+      onPrevious: () => {
+        dispatch(setDemo("plagiarism_low"));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
       },
-      onNext: ()=>{
-        dispatch(setDemo(true))
-      }
+      onNext: () => {
+        dispatch(setDemo("frozen"));
+        clickElByID("plagiarism_sidebar_x_button");
+        setTimeout(() => highlightStep(stepIndex.current + 1), DELAY);
+      },
+    },
+    {
+      element: "#frozen_demo_id",
+      popover: {
+        description:
+          "Highlight a word and click the green Freeze button, Frozen words will remain unchanged in the output",
+      },
+      onPrevious: () => {
+        dispatch(setDemo(true));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        dispatch(setDemo("unfrozen"));
+        setTimeout(() => highlightStep(stepIndex.current + 1), DELAY);
+      },
+    },
+    {
+      element: "#frozen_demo_id",
+      popover: {
+        description:
+          "Highlight a word and click the green Unfreeze button to unfreeze frozen words",
+      },
+      onPrevious: () => {
+        dispatch(setDemo("frozen"));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        dispatch(setDemo(true));
+        setTimeout(() => highlightStep(stepIndex.current + 1), DELAY);
+      },
+    },
+    {
+      element: "#multi_upload_button",
+      popover: {
+        description: "Click Multi Upload Document at the bottom.",
+      },
+      onPrevious: () => {
+        dispatch(setDemo("unfrozen"));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        clickAndNext("multi_upload_button");
+      },
+    },
+    {
+      element: "#multi_upload_view",
+      popover: {
+        description: "Drop or browse pdf, doc, txt, docx files.",
+      },
+      onPrevious: () => {
+        clickElByID("multi_upload_close_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        clickAndNext("multi_upload_close_button");
+      },
+    },
+    {
+      element: "#file_history_buttons",
+      popover: {
+        description: "Click saved document icon to see your uploaded documents",
+      },
+      onPrevious: () => {
+        dispatch(setDemo("frozen"));
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        clickAndNext("file_history_view_button");
+      },
+    },
+    {
+      element: "#file_history_view",
+      popover: {
+        description: "All of your Uploaded documents will stored here.",
+      },
+      onPrevious: () => {
+        clickElByID("file_history_close_button");
+        setTimeout(() => highlightStep(stepIndex.current - 1), DELAY);
+      },
+      onNext: () => {
+        clickElByID("file_history_close_button");
+      },
     },
   ];
-  const reset = () =>{
+  const reset = () => {
     clickElByID("settings_sidebar_x_button");
-    clickElByID("language_x_button")
-  }
+    clickElByID("language_x_button");
+  };
   useEffect(() => {
     reset();
     driverRef.current = driver({
       popoverClass: "driverjs-theme",
       stagePadding: 4,
-      smoothScroll: false,
-      animation: false,
-      allowClose: false,
-    })
-    highlightStep(0)   // start the tour
-  }, [])
+      smoothScroll: true,
+      animation: true,
+      animate: true, // ← enable built-in step animations :contentReference[oaicite:0]{index=0}
+      allowClose: true,
+      doneBtnText: "Done",
+    });
+    highlightStep(0); // start the tour
+  }, []);
 
   function clickElByID(id, moveNext = false) {
-    const el = document.getElementById(id)
-    if (el) el.click()
+    const el = document.getElementById(id);
+    if (el) el.click();
     if (moveNext) {
       // give UI time to update
-      setTimeout(() => highlightStep(stepIndex.current + 1), 300)
+      setTimeout(() => highlightStep(stepIndex.current + 1), 300);
     }
   }
 
   function clickAndNext(id) {
-    clickElByID(id)
+    clickElByID(id);
     // extra delay before moving on
-    setTimeout(() => highlightStep(stepIndex.current + 1), 300)
+    setTimeout(() => highlightStep(stepIndex.current + 1), 300);
   }
 
   async function highlightStep(idx) {
-    if (idx < 0 || idx > steps.length - 1) return
-    stepIndex.current = idx
-    const isLast = idx === steps.length - 1
-    const { element, popover, onNext, onPrevious } = steps[idx]
-    
+    if (idx < 0 || idx > steps.length - 1) return;
+    stepIndex.current = idx;
+    const isLast = idx === steps.length - 1;
+    const { element, popover, onNext, onPrevious } = steps[idx];
+
     // Wait for element to be properly positioned before highlighting
-    await waitForElementReady(element)
-    
+    await waitForElementReady(element);
+
     const btns = isLast
-      ? ["previous"]
-      : ["previous", "next"]
-    
+      ? ["previous", "close"] // show “Done” (close) on last step :contentReference[oaicite:3]{index=3}
+      : ["previous", "next", "close"];
+
     driverRef.current.highlight({
       element,
       popover: {
         ...popover,
         showButtons: btns,
-        // rename the close button on the last step:
-        ...(isLast && { doneBtnText: "Done" }),
         // wire up the Next button:
         onNextClick: (el, step, opts) => {
-          opts.driver.refresh()
-          onNext && onNext(el, step, opts)
+          opts.driver.refresh();
+          onNext && onNext(el, step, opts);
         },
         // wire up the Previous button:
         onPrevClick: (el, step, opts) => {
-          opts.driver.refresh()
+          opts.driver.refresh();
           // Check if this step has a custom onPrevious handler
           if (onPrevious) {
-            onPrevious(el, step, opts)
+            onPrevious(el, step, opts);
           } else {
             // Default behavior: go to previous step with a small delay
-            setTimeout(() => highlightStep(idx - 1), 150)
+            setTimeout(() => highlightStep(idx - 1), 150);
           }
         },
         // wire up the Close/Done button:
         onCloseClick: (el, step, opts) => {
-          opts.driver.destroy()
+          localStorage.setItem("onboarding", true);
+          dispatch(setDemo(false));
+          opts.driver.destroy();
         },
       },
-    })
+    });
   }
-useEffect(()=>{
-    setDemo(true)
-    return ()=>{
-      setDemo(false)
-    }
-  },[])
-  return null
+  useEffect(() => {
+    dispatch(setDemo(true));
+    return () => {
+      dispatch(setDemo(false));
+    };
+  }, []);
+  return null;
 }
-

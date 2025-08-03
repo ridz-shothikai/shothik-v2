@@ -32,6 +32,7 @@ export default function MainHeader() {
   const { isLoading } = useGetUserQuery();
   const pathname = usePathname();
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const dispatch = useDispatch();
 
   const title = () => {
@@ -62,7 +63,7 @@ export default function MainHeader() {
               color: "primary.main",
             }}
           >
-            <SvgColor src='/navbar/ic_menu_item.svg' />
+            <SvgColor src="/navbar/ic_menu_item.svg" />
           </IconButton>
           <Logo sx={{ mr: 2.5 }} />
         </>
@@ -70,9 +71,9 @@ export default function MainHeader() {
 
       <Stack
         flexGrow={1}
-        direction='row'
-        alignItems='center'
-        justifyContent='flex-end'
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
         {isNavMini && isMd && <Logo sx={{ mr: 2.5 }} />}
@@ -80,9 +81,9 @@ export default function MainHeader() {
         {isMd && (
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Typography
-              variant='h5'
+              variant="h5"
               sx={{
-                color: theme.palette.mode === "dark" ? "#FFFFFF" : "#212B36",
+                color: theme.palette.text.primary,
               }}
             >
               {title()}
@@ -96,13 +97,13 @@ export default function MainHeader() {
           user?.package !== "unlimited" && (
             <Link href={"/pricing?redirect=" + pathname}>
               <Button
-                color='primary'
+                color="primary"
                 size={isMd ? "medium" : "small"}
-                variant='contained'
-                rel='noopener'
+                variant="contained"
+                rel="noopener"
                 startIcon={
                   <SvgColor
-                    src='/navbar/diamond.svg'
+                    src="/navbar/diamond.svg"
                     sx={{
                       width: { xs: 20, md: 24 },
                       height: { xs: 20, md: 24 },
@@ -138,9 +139,8 @@ export default function MainHeader() {
         boxShadow: "none",
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
-        ...bgBlur({
-          color: theme.palette.background.paper,
-        }),
+        backgroundColor: theme.palette.background.default,
+        backdropFilter: "blur(6px)",
         transition: theme.transitions.create(["height"], {
           duration: theme.transitions.duration.shorter,
         }),
@@ -149,7 +149,7 @@ export default function MainHeader() {
           height: HEADER.H_DASHBOARD_DESKTOP,
           ...(isNavHorizontal && {
             width: 1,
-            bgcolor: "background.default",
+            bgcolor: theme.palette.background.default,
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
             borderBottom: `dashed 1px ${theme.palette.divider}`,
           }),
@@ -163,6 +163,8 @@ export default function MainHeader() {
         sx={{
           height: 1,
           px: { lg: 5 },
+          bgcolor: theme.palette.background.default,
+          borderBottom: pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
         }}
       >
         {renderContent}

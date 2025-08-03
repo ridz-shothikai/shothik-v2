@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useRef } from "react";
@@ -33,7 +32,7 @@ export default function MultipleFileUpload({
   selectedMode,
   selectedSynonymLevel,
   selectedLang,
-  freezeWords=[],
+  freezeWords = [],
 }) {
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -60,12 +59,28 @@ export default function MultipleFileUpload({
 
     const mapped = incoming.map((file) => {
       if (!/\.(pdf|docx|txt)$/i.test(file.name)) {
-        return { file, status: "error", progress: 0, error: "Unsupported format" };
+        return {
+          file,
+          status: "error",
+          progress: 0,
+          error: "Unsupported format",
+        };
       }
       if (file.size > MAX_FILE_SIZE) {
-        return { file, status: "error", progress: 0, error: "File must be ≤ 25 MB" };
+        return {
+          file,
+          status: "error",
+          progress: 0,
+          error: "File must be ≤ 25 MB",
+        };
       }
-      return { file, status: "idle", progress: 0, downloadUrl: null, error: null };
+      return {
+        file,
+        status: "idle",
+        progress: 0,
+        downloadUrl: null,
+        error: null,
+      };
     });
 
     setFiles(mapped);
@@ -84,8 +99,8 @@ export default function MultipleFileUpload({
   const uploadFile = async (file, idx) => {
     setFiles((fs) =>
       fs.map((f, i) =>
-        i === idx ? { ...f, status: "uploading", progress: 0 } : f
-      )
+        i === idx ? { ...f, status: "uploading", progress: 0 } : f,
+      ),
     );
 
     try {
@@ -96,16 +111,13 @@ export default function MultipleFileUpload({
       formData.append("freeze", freezeWords);
       formData.append("language", selectedLang);
 
-      const res = await fetch(
-        `${apiBase}/files/file-paraphrase`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: formData,
-        }
-      );
+      const res = await fetch(`${apiBase}/files/file-paraphrase`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+      });
 
       if (!res.ok) throw new Error("Upload failed");
 
@@ -116,26 +128,44 @@ export default function MultipleFileUpload({
         fs.map((f, i) =>
           i === idx
             ? { ...f, status: "success", progress: 100, downloadUrl: url }
-            : f
-        )
+            : f,
+        ),
       );
     } catch (err) {
       setFiles((fs) =>
         fs.map((f, i) =>
           i === idx
             ? { ...f, status: "error", error: err.message, progress: 0 }
-            : f
-        )
+            : f,
+        ),
       );
     }
   };
 
   return (
     <>
-      <Button id="multi_upload_button" variant="outlined" onClick={handleOpen}>
+      <Button
+        id="multi_upload_button"
+        sx={{
+          display: "flex",
+          gap: 1,
+          alignItems: "center",
+          textAlign: "center",
+          width: "100%",
+        }}
+        variant="outlined"
+        onClick={handleOpen}
+      >
+        <CloudUploadOutlined fontSize="small" />
         Multi Upload Document
       </Button>
-
+      <Button
+        id="multi_upload_close_button"
+        sx={{ opacity: 0, zIndex: -9999 }}
+        onClick={() => {
+          handleClose();
+        }}
+      ></Button>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           Upload Multiple Documents
@@ -149,6 +179,7 @@ export default function MultipleFileUpload({
 
         <DialogContent>
           <Box
+            id="multi_upload_view"
             onDrop={onDrop}
             onDragOver={onDragOver}
             sx={{
@@ -198,10 +229,10 @@ export default function MultipleFileUpload({
                       f.error
                         ? f.error
                         : f.status === "success"
-                        ? "Completed"
-                        : f.status === "uploading"
-                        ? "Uploading…"
-                        : ""
+                          ? "Completed"
+                          : f.status === "uploading"
+                            ? "Uploading…"
+                            : ""
                     }
                   />
                   {f.status === "success" && f.downloadUrl && (
@@ -243,4 +274,3 @@ export default function MultipleFileUpload({
     </>
   );
 }
-

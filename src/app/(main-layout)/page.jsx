@@ -6,6 +6,14 @@ import HomeHeroSection from "../../components/home/HomeHeroSection";
 import HomeTools from "../../components/home/HomeTools";
 import Testimonials from "../../components/home/Testimonials";
 import WhyShothik from "../../components/home/WhyShothik";
+import AgenticHeroSection from "../../components/home/new-components/AgenticHeroSection";
+import AgnetShowCase from "../../components/home/new-components/AgentShowCase";
+import InteractiveAgentDemo from "../../components/home/new-components/InteractiveAgentDemo";
+import FounderVideoSection from "../../components/home/new-components/FounderVideoSection";
+import ClaritySection from "../../components/home/new-components/ClaritySection";
+import FeaturesSection from "../../components/home/new-components/FeaturesSection";
+import JobsTestimonialsSection from "../../components/home/new-components/JobsTestimonialsSection";
+import CtaSection from "../../components/home/new-components/CtaSection";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -69,13 +77,21 @@ const Home = () => {
   return (
     <>
       <HomeHeroSection />
-      <HomeTools />
-      <HomeFeatures />
-      <B2bFeatures />
-      <WhyShothik />
-      <Testimonials />
-      <CTA />
-      <FAQ />
+      <AgenticHeroSection />
+      <AgnetShowCase />
+      <InteractiveAgentDemo />
+      <FounderVideoSection />
+      <ClaritySection />
+      <FeaturesSection />
+      <JobsTestimonialsSection/>
+      <CtaSection/>
+      {/* <HomeTools /> */}
+      {/* <HomeFeatures /> */}
+      {/* <B2bFeatures /> */}
+      {/* <WhyShothik /> */}
+      {/* <Testimonials /> */}
+      {/* <CTA /> */}
+      {/* <FAQ /> */}
 
       <div hidden>
         <h1>Shothik AI: Humanize, Paraphrase, Detect & Translate AI Text</h1>

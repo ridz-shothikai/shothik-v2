@@ -9,18 +9,19 @@ import Logo from "../../resource/assets/Logo";
 import NavSectionVertical from "./components/NavSectionVertical";
 import NavToggleButton from "./components/toggleButton";
 import UserInfo from "./components/UserInfo";
+import NavigantionIcons from "./components/NavigationIcons";
 
 // ----------------------------------------------------------------------
 
 export default function NavVertical({ openNav, onCloseNav }) {
-  const { user } = useSelector((state) => state.auth);
+  const { user, accessToken } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
 
   
 
   return (
     <Box
-      component='nav'
+      component="nav"
       sx={{
         bgcolor: "background.paper",
         flexShrink: { sm: 0 },
@@ -39,35 +40,46 @@ export default function NavVertical({ openNav, onCloseNav }) {
         slotProps={{
           paper: {
             sx: {
-              zIndex: isDesktop ? 500 : 0,
+              zIndex: isDesktop ? 1103 : 0,
               width: NAV.W_DASHBOARD,
               ...(isDesktop && {
-                bgcolor: "transparent",
+                bgcolor: "background.paper",
                 borderRightStyle: "dashed",
               }),
             },
           },
         }}
       >
-        <Box sx={{ bgcolor: "background.paper", height: 1 }}>
-          <Stack
-            spacing={3}
-            sx={{
-              pt: 2,
-              pr: 2.5,
-              pl: 4,
-              flexShrink: 0,
-            }}
-          >
-            <Logo />
-          </Stack>
+        <Box sx={{display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between"}}>
+          <Box sx={{ bgcolor: "background.paper", height: 1}}>
+            <Stack
+              spacing={3}
+              sx={{
+                pt: 2,
+                pr: 2.5,
+                pl: 4,
+                flexShrink: 0,
+              }}
+            >
+              <Logo />
+            </Stack>
 
-          <NavSectionVertical onCloseNav={onCloseNav} data={navConfig} user={user} />
+            <NavSectionVertical
+              onCloseNav={onCloseNav}
+              data={navConfig}
+              user={user}
+            />
 
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ px: 2 }}>
-            <UserInfo />
+            <Box sx={{ flexGrow: 1 }} />
           </Box>
+            <Box sx={{ mt: 8}}>
+              {
+                !accessToken ?
+                <UserInfo/>
+                :
+                <NavigantionIcons/>
+              }
+            </Box>
         </Box>
       </Drawer>
     </Box>

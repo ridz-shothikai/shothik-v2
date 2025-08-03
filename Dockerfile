@@ -1,38 +1,67 @@
-# Use the official Node.js 18 image as the base image
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Install system dependencies for Sharp and other native modules
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  python3 \
+  pkg-config \
+  libvips-dev \
+  libcfitsio-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Remove any existing Sharp installation and do a clean install
+RUN npm ci --include=optional
+RUN npm uninstall sharp
+RUN npm install --platform=linux --arch=x64 sharp
 
-# Copy the source code
 COPY . .
 
-# Build the Next.js application
-# RUN npm run build
+ARG NEXT_PUBLIC_SOCKET
+ARG NEXT_PUBLIC_API_URI
+ARG NEXT_PUBLIC_DOMAIN_URI
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
-# Use the official Node.js 18 image as the base image for development
-FROM node:18-alpine
+ENV NEXT_PUBLIC_SOCKET=$NEXT_PUBLIC_SOCKET
+ENV NEXT_PUBLIC_API_URI=$NEXT_PUBLIC_API_URI
+ENV NEXT_PUBLIC_DOMAIN_URI=$NEXT_PUBLIC_DOMAIN_URI
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
-# Set the working directory
+RUN npm run build
+
+# ---------- Runner ----------
+FROM node:18-slim AS runner
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Install only runtime dependencies for Sharp
+RUN apt-get update && apt-get install -y \
+  libvips42 \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install production dependencies and ensure Sharp works
+RUN npm ci --only=production --include=optional
+RUN npm uninstall sharp  
+RUN npm install --platform=linux --arch=x64 sharp
 
-# Copy the source code
-COPY . .
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Expose port 3000
+ARG NEXT_PUBLIC_SOCKET
+ARG NEXT_PUBLIC_API_URI
+ARG NEXT_PUBLIC_DOMAIN_URI
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+ENV NEXT_PUBLIC_SOCKET=$NEXT_PUBLIC_SOCKET
+ENV NEXT_PUBLIC_API_URI=$NEXT_PUBLIC_API_URI
+ENV NEXT_PUBLIC_DOMAIN_URI=$NEXT_PUBLIC_DOMAIN_URI
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
 EXPOSE 3000
 
-# Start the Next.js application in development mode
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]

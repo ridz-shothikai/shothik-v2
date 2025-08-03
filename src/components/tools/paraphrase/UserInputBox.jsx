@@ -3,12 +3,12 @@ import HardBreak   from '@tiptap/extension-hard-break'
 import Link        from '@tiptap/extension-link'
 import Underline   from '@tiptap/extension-underline'
 import { defaultMarkdownParser, defaultMarkdownSerializer, MarkdownSerializer } from '@tiptap/pm/markdown'
-
+import {useSelector} from 'react-redux';
 // 1. Clone + extend the default node serializers…
 const nodes = {
   ...defaultMarkdownSerializer.nodes,
 
-  // Tiptap’s hardBreak node → CommonMark line break
+  // Tiptap's hardBreak node → CommonMark line break
   hardBreak: defaultMarkdownSerializer.nodes.hard_break,
 
   // Lists
@@ -62,6 +62,10 @@ import { useEffect, useRef, useState } from "react";
 import "./editor.css";
 import { CombinedHighlighting } from "./extentions";
 
+// Dummy text for demo mode
+const DEMO_TEXT = "The city streets were full of excitement as people gathered for the yearly parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by.";
+const DEMO_SELECTED_WORD = "parade";
+
 function UserInputBox({
   wordLimit = 300,
   setUserInput,
@@ -70,14 +74,21 @@ function UserInputBox({
   frozenPhrases,
   user,
 }) {
+  const {demo} = useSelector((state)=> state.settings)
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const [selectedWord, setSelectedWord] = useState("");
   const [editorKey, setEditorKey] = useState(0); // Force editor recreation
   const isInternalUpdate = useRef(false);
-  const [initialDoc,setInitialDoc]= useState(userInput
-    ? defaultMarkdownParser.parse(userInput).toJSON()
+  const isDemoMode = demo === 'frozen' || demo === 'unfrozen';
+  
+  // Use demo text when in demo mode, otherwise use userInput
+  const editorContent = isDemoMode ? DEMO_TEXT : userInput;
+  
+  const [initialDoc,setInitialDoc]= useState(editorContent
+    ? defaultMarkdownParser.parse(editorContent).toJSON()
     : undefined)
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -94,7 +105,7 @@ function UserInputBox({
       }),
       Underline,
     ],
-    content: userInput,
+    content: editorContent,
     // content: initialDoc,
     immediatelyRender: false,
     onSelectionUpdate: ({ editor }) => {
@@ -120,6 +131,11 @@ function UserInputBox({
       }
     },
     onUpdate: ({ editor }) => {
+      // Don't trigger setUserInput when in demo mode
+      if (isDemoMode) {
+        return;
+      }
+      
       isInternalUpdate.current = true;
       const md = customMarkdownSerializer.serialize(editor.state.doc);
       setUserInput(md);
@@ -135,37 +151,65 @@ function UserInputBox({
     return () => editor?.destroy();
   }, [editor]);
 
+  useEffect(() => {
+    if (!editor || isInternalUpdate.current || isDemoMode) {
+      // clear the flag so that onUpdate can fire next time
+      isInternalUpdate.current = false
+      return
+    }
 
-useEffect(() => {
-  if (!editor || isInternalUpdate.current) {
-    // clear the flag so that onUpdate can fire next time
+    // parse the Markdown into a ProseMirror node
+    const doc = defaultMarkdownParser.parse(userInput)
+
+    // update the editor with that JSON
+    editor.commands.setContent(doc.toJSON())
+
+    // we're done syncing, clear the flag again
     isInternalUpdate.current = false
-    return
-  }
+  }, [userInput, editor, isDemoMode])
 
-  // parse the Markdown into a ProseMirror node
-  const doc = defaultMarkdownParser.parse(userInput)
-
-  // update the editor with that JSON
-  editor.commands.setContent(doc.toJSON())
-
-  // we’re done syncing, clear the flag again
-  isInternalUpdate.current = false
-}, [userInput, editor])
-  // useEffect(() => {
-  //   if (editor && !isInternalUpdate.current && userInput !== JSON.stringify(customMarkdownSerializer.serialize(editor.state.doc))) {
-  //     // editor.commands.setContent(userInput);
-  //     setInitialDoc(userInput
-  //       ? defaultMarkdownParser.parse(userInput).toJSON()
-  //       : undefined)
-  //   }
-  //   isInternalUpdate.current = false;
-  // }, [userInput, editor]);
-
-  // Force editor recreation when frozen words/phrases change
+  // Force editor recreation when frozen words/phrases change or demo mode changes
   useEffect(() => {
     setEditorKey(prev => prev + 1);
-  }, [frozenWords.set, frozenPhrases.set]);
+  }, [frozenWords.set, frozenPhrases.set, isDemoMode]);
+
+  // Auto-select the demo word when in demo mode
+  useEffect(() => {
+    if (isDemoMode && editor) {
+      // Wait for editor to be ready
+      setTimeout(() => {
+        const content = editor.state.doc.textContent;
+        const wordIndex = content.indexOf(DEMO_SELECTED_WORD);
+        
+        if (wordIndex !== -1) {
+          const from = wordIndex;
+          const to = wordIndex + DEMO_SELECTED_WORD.length;
+          
+          // Focus the editor first to make selection visible
+          editor.commands.focus();
+          
+          // Select the word
+          editor.commands.setTextSelection({ from, to });
+          
+          // Trigger selection update manually
+          setSelectedWord(DEMO_SELECTED_WORD);
+          
+          // Position the popover
+          setTimeout(() => {
+            const { view } = editor;
+            const start = view.coordsAtPos(from);
+            
+            setPopoverPosition({
+              top: start.bottom + window.scrollY,
+              left: start.left + window.scrollX,
+            });
+            
+            setAnchorEl(document.body);
+          }, 100);
+        }
+      }, 200);
+    }
+  }, [isDemoMode, editor]);
 
   const normalize = (text) => text.toLowerCase().trim();
   const handleToggleFreeze = () => {
@@ -180,23 +224,20 @@ useEffect(() => {
     clearSelection();
   };
 
-  // const normalize = (text) => text.toLowerCase().trim().replace(/^"+|"+$/g, '');
-  // const isFrozen = () => {
-  //   console.log(frozenPhrases, selectedWord)
-  //   const key = normalize(selectedWord);
-  //   return key.includes(" ")
-  //     ? frozenPhrases.has(key)
-  //     : frozenWords.has(key);
-  // };
+  const isFrozen = () => {
+    // In demo mode, return different values based on demo type
+    if (isDemoMode) {
+      return demo === 'unfrozen';
+    }
+    
+    const raw = selectedWord.trim().toLowerCase();
+    const unquoted = raw.replace(/^"+|"+$/g, "");
 
-const isFrozen = () => {
-  const raw = selectedWord.trim().toLowerCase();
-  const unquoted = raw.replace(/^"+|"+$/g, "");
-
-  // Check both quoted and unquoted keys
-  return frozenPhrases.has(raw) || frozenPhrases.has(`"${unquoted}"`) || frozenPhrases.has(unquoted)
-    || frozenWords.has(raw) || frozenWords.has(unquoted);
-};
+    // Check both quoted and unquoted keys
+    return frozenPhrases.has(raw) || frozenPhrases.has(`"${unquoted}"`) || frozenPhrases.has(unquoted)
+      || frozenWords.has(raw) || frozenWords.has(unquoted);
+  };
+  
   if (!editor) return null;
 
   const paidUser =
@@ -220,7 +261,9 @@ const isFrozen = () => {
         overflowY: "auto",
       }}
     >
-      <EditorContent editor={editor} />
+      <div id={isDemoMode ? (demo === 'frozen' ? "frozen_demo_id" : "unfrozen_demo_id") : undefined}>
+        <EditorContent editor={editor} />
+      </div>
 
       <Popover
         open={Boolean(anchorEl)}

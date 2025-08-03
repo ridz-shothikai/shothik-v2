@@ -1,5 +1,5 @@
 "use client";
-import { Box, Stack, Switch, Typography } from "@mui/material";
+import { Box, Container, Stack, Switch, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useGeolocation from "../../hooks/useGeolocation";
@@ -47,16 +47,16 @@ export default function PricingLayout({ children, TitleContend }) {
         {TitleContend}
 
         <Box sx={{ my: 4 }}>
-          <Stack direction='row' alignItems='center' justifyContent='flex-end'>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end">
             <Typography
-              variant='overline'
+              variant="overline"
               sx={{ mr: 1.5, color: "error.contrastText" }}
             >
               MONTHLY
             </Typography>
             <Switch checked={isMonthly} onClick={handleIsMonthly} />
             <Typography
-              variant='overline'
+              variant="overline"
               sx={{ ml: { xs: 0, sm: 1.5 }, color: "error.contrastText" }}
             >
               YEARLY (save 2 months)
@@ -65,26 +65,54 @@ export default function PricingLayout({ children, TitleContend }) {
         </Box>
       </Box>
 
-      <Box
-        gap={{ xl: 5, md: 3, xs: 3 }}
-        display='grid'
-        gridTemplateColumns={{ xl: "repeat(2, 1fr)", md: "repeat(2, 1fr)" }}
-        sx={{
-          mt: { xs: "-15rem", sm: "-17rem", md: "-15rem" },
-          px: { xs: 2, md: 0 },
-          maxWidth: { sm: "500px", md: "800px" },
-          mx: "auto",
-        }}
-        className='pricing_card_style'
-      >
-        {data?.data
-          ? data.data.map((card, index) => (
-              <PricingPlanCard
-                key={index}
-                user={user}
-                card={card}
-                index={index}
+      <Container maxWidth="xl">
+        <Box
+          gap={{ xl: 5, md: 3, xs: 3 }}
+          display="grid"
+          gridTemplateColumns={{
+            xs: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
+          }}
+          sx={{
+            mt: { xs: "-15rem", sm: "-17rem", md: "-15rem" },
+            px: { xs: 2, md: 0 },
+            // maxWidth: { sm: "500px", md: "800px", xl: "100%" },
+            mx: "auto",
+          }}
+          className="pricing_card_style"
+        >
+          {data?.data
+            ? data.data.map((card, index) => (
+                <PricingPlanCard
+                  key={index}
+                  user={user}
+                  card={card}
+                  index={index}
+                  yearly={isMonthly}
+                  paymentMethod={
+                    location === "bangladesh"
+                      ? "bkash"
+                      : location === "india"
+                      ? "razor"
+                      : "stripe"
+                  }
+                  country={location}
+                />
+              ))
+            : null}
+        </Box>
+        {!isLoading && data?.data ? (
+          <Stack
+            spacing={10}
+            sx={{ my: { xs: 5, md: "56px" }, mx: { xs: 2, md: "140px" } }}
+          >
+            {isMobile && (
+              <PricingSlider
+                data={data?.data}
                 yearly={isMonthly}
+                country={location}
                 paymentMethod={
                   location === "bangladesh"
                     ? "bkash"
@@ -92,32 +120,10 @@ export default function PricingLayout({ children, TitleContend }) {
                     ? "razor"
                     : "stripe"
                 }
-                country={location}
+                user={user}
               />
-            ))
-          : null}
-      </Box>
-      {!isLoading && data?.data ? (
-        <Stack
-          spacing={10}
-          sx={{ my: { xs: 5, md: "56px" }, mx: { xs: 2, md: "140px" } }}
-        >
-          {isMobile && (
-            <PricingSlider
-              data={data?.data}
-              yearly={isMonthly}
-              country={location}
-              paymentMethod={
-                location === "bangladesh"
-                  ? "bkash"
-                  : location === "india"
-                  ? "razor"
-                  : "stripe"
-              }
-              user={user}
-            />
-          )}
-          <PricingTable
+            )}
+            {/* <PricingTable
             user={user}
             data={data?.data}
             yearly={isMonthly}
@@ -129,10 +135,11 @@ export default function PricingLayout({ children, TitleContend }) {
                 : "stripe"
             }
             country={location}
-          />
-        </Stack>
-      ) : null}
-      {children}
+          /> */}
+          </Stack>
+        ) : null}
+        {children}
+      </Container>
     </Box>
   );
 }

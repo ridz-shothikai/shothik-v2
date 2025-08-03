@@ -1,6 +1,8 @@
+"use client";
+
 import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Grid2 } from "@mui/material";
+import { alpha, Container, Grid2 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
@@ -16,181 +18,153 @@ import VideoImage from "./components/VideoImage";
 
 export default function HomeHeroSection() {
   return (
-    <BgContainer image='url(/home/bg.png)'>
-      <Grid2
+    <BgContainer
+      // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
+      sx={{
+        maxWidth: "lg",
+        mx: "auto",
+        pt: { xl: "50px" },
+      }}
+    >
+      <Container
         sx={{
-          pt: 4,
+          pt: 6,
           pb: { xs: 2, sm: 2, md: 8, lg: 10, xl: 10 },
           px: { xs: 2, sm: 4, md: 6 },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: { xs: "30px", sm: "44px", md: "52px", lg: "72px", xl: "80px" },
+          position: "relative",
         }}
-        container
-        alignItems='center'
-        justifyContent='space-between'
       >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 1, // Or -1 if it should be in the background
+            pointerEvents: "none", // Avoid blocking clicks
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src="/pattern.svg"
+            alt="pattern"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover", // or "contain", depending on your design
+              opacity: "40%",
+            }}
+          />
+        </Box>
+
+        {/* Details Section - Shows first on mobile, left on desktop */}
+        {/* <Grid2
+          size={{ xs: 12, md: 6 }}
+          sx={{
+            order: { xs: 1, md: 1 },
+            pr: { md: 2, lg: 3 },
+          }}
+        > */}
         <Details />
+
+        {/* Video Section - Shows second on mobile, right on desktop */}
         <Grid2
           size={{ xs: 12, md: 6 }}
-          sx={{ display: { xs: "none", md: "block", lg: "block" } }}
+          sx={{
+            order: { xs: 2, md: 2 },
+            width: "100%",
+            // pl: { md: 2, lg: 3 },
+          }}
         >
           <Box
             sx={{
               position: "relative",
-              right: { xs: 0, md: -150 },
+              width: "100%",
+              zIndex: 12,
             }}
           >
             <Box
-              component={motion.div}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
               sx={{
-                position: "absolute",
-                bottom: "-50px",
-                right: "130px",
-                zIndex: 0,
+                position: "relative",
+                width: "100%",
+                height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 },
+                borderRadius: 2,
+                overflow: "hidden",
+                bgcolor: "#f5f5f5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Image
-                src='/home/hero/box.svg'
-                alt='button'
-                width={140}
-                height={140}
-              />
-            </Box>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              style={{
-                position: "absolute",
-                bottom: "-50px",
-                right: "130px",
-                zIndex: 0,
-              }}
-            >
-              <div>
-                <Image
-                  src='/home/hero/pattern.svg'
-                  alt='button'
-                  width={140}
-                  height={140}
-                />
-              </div>
-            </motion.div>
-
-            {/* Hero Video */}
-            <VideoImage
-              lightImage='/home/hero/hero-light.webp'
-              darkImage='/home/hero/hero-dark.webp'
-              width={350}
-              height={300}
-            />
-
-            {/* Additional Elements */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Paper
-                elevation={4}
-                sx={{
-                  position: "absolute",
-                  bottom: -60,
-                  left: { md: -100, lg: -120 },
-                  bgcolor: "rgba(33, 33, 33, 0.9)",
-                  color: "white",
-                  p: 1.5,
-                  borderRadius: 1.5,
-                  height: { md: "120px", lg: "140px" },
-                  width: { md: "220px", lg: "260px" },
-                  zIndex: 1,
+              <video
+                width="100%"
+                height="100%"
+                controls
+                poster="/home/hero/video-thumbnail.webp"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "8px",
                 }}
               >
-                <List
-                  dense
+                <source src="/home/hero/demo-video.mp4" type="video/mp4" />
+                <source src="/home/hero/demo-video.webm" type="video/webm" />
+                Your browser does not support the video tag.
+              </video>
+
+              {/* Custom play button overlay */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  border: "1.5px solid #00A76F",
+                  bgcolor: "rgba(255, 255, 255, 0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255, 255, 255, 1)",
+                    transform: "translate(-50%, -50%) scale(1.1)",
+                  },
+                }}
+                onClick={(e) => {
+                  const video =
+                    e.currentTarget.parentElement.querySelector("video");
+                  if (video.paused) {
+                    video.play();
+                    e.currentTarget.style.display = "none";
+                  }
+                }}
+              >
+                <Box
                   sx={{
-                    "& .MuiListItemText-primary": {
-                      fontSize: { md: "0.8rem", lg: "1rem" },
-                    },
+                    width: 0,
+                    height: 0,
+                    borderLeft: "12px solid #00A76F",
+                    borderTop: "8px solid transparent",
+                    borderBottom: "8px solid transparent",
+                    marginLeft: "2px",
                   }}
-                >
-                  <ListItem>
-                    <ListItemIcon
-                      sx={{
-                        "& svg": {
-                          width: { md: 16, lg: 24 },
-                          height: { md: 16, lg: 24 },
-                        },
-                      }}
-                    >
-                      <VolumeUp
-                        sx={{
-                          color: "white",
-                          borderRadius: "50%",
-                        }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText primary='Match the tone' />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon
-                      sx={{
-                        "& svg": {
-                          width: { md: 16, lg: 24 },
-                          height: { md: 16, lg: 24 },
-                        },
-                      }}
-                    >
-                      <Speed sx={{ color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary='Enhance your fluency' />
-                  </ListItem>
-                  <ListItem>
-                    <ListItemIcon
-                      sx={{
-                        "& svg": {
-                          width: { md: 16, lg: 24 },
-                          height: { md: 16, lg: 24 },
-                        },
-                      }}
-                    >
-                      <SmartToy sx={{ color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary='Identify AI' />
-                  </ListItem>
-                </List>
-              </Paper>
-            </motion.div>
-
-            {/* Button */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Paper
-                elevation={2}
-                sx={{
-                  position: "absolute",
-                  top: { md: 130, lg: 180, xl: 180 },
-                  left: { md: -120 },
-                  borderRadius: 2,
-                  width: { md: 166, lg: 220, xl: 220 },
-                  zIndex: 1,
-                }}
-              >
-                <Image
-                  src='/home/hero/button.png'
-                  alt='button'
-                  width={186}
-                  height={48}
                 />
-              </Paper>
-            </motion.div>
+              </Box>
+            </Box>
           </Box>
         </Grid2>
-      </Grid2>
+      </Container>
     </BgContainer>
   );
 }
@@ -204,8 +178,8 @@ export function SigninButtonRenderer({ title }) {
           dispatch(setIsSignUpModalOpen(false));
           dispatch(setIsSignInModalOpen(true));
         }}
-        variant='contained'
-        size='large'
+        variant="contained"
+        size="large"
         sx={{
           maxWidth: 202,
           borderRadius: "0.5rem",

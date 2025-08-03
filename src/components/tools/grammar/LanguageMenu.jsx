@@ -1,11 +1,8 @@
 
+// LanguageMenu.jsx
 "use client";
-
-import {
-  ExpandMoreOutlined,
-  KeyboardArrowUpOutlined,
-} from "@mui/icons-material";
-import { Button, Stack, Box, Tab, Tabs } from "@mui/material";
+import { ExpandMoreOutlined, KeyboardArrowUpOutlined } from "@mui/icons-material";
+import { Button, Tabs, Tab, Box } from "@mui/material";
 import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
@@ -18,103 +15,110 @@ const initLanguage = [
   "Bangla",
 ];
 
-const LanguageMenu = ({ setLanguage, isLoading, language }) => {
+const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   const [languageTabs, setLanguageTabs] = useState(initLanguage);
-  const [showMenu, setShowMenu] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const isMobile = useResponsive("down", "sm");
   const maxTabs = isMobile ? 3 : 5;
+  const showMenu = Boolean(anchorEl);
 
-  const handleLanguage = (e) => {
-    setAnchorEl(e.currentTarget);
-    setShowMenu(true);
-  };
-
-  const handleLanguageMenu = (value) => {
+  const handleOpen = (e) => setAnchorEl(e.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const handleSelect = (value) => {
+    // promote selected to front, keep maxTabs
     setLanguageTabs((prev) => {
       const filtered = prev.filter((l) => l !== value);
       return [value, ...filtered].slice(0, maxTabs);
     });
     setLanguage(value);
-    setShowMenu(false);
+    handleClose();
   };
 
-  // Always ensure the selected language appears in the tabs
+  // desktop: what you had before
   const displayTabs = languageTabs.includes(language)
     ? languageTabs
     : [language, ...languageTabs].slice(0, maxTabs);
 
-  return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      spacing={{ xs: 2, sm: 4 }}
-      sx={{ px: 2, width: "100%" }}
-    >
-      {/* Only the tabs scroll horizontally */}
-      <Box sx={{ overflowX: "auto", whiteSpace: "nowrap", maxWidth: "100%" }}>
-        <Tabs
-          value={language}
-          onChange={(_, v) => setLanguage(v)}
-          variant="standard"
-          textColor="primary"
-          sx={{
-            minHeight: 48,
-            "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
-            "& .MuiTabs-indicator": { display: "none" },
-          }}
-        >
-          {displayTabs.map((tab) => (
-            <Tab
-              key={tab}
-              value={tab}
-              label={tab}
-              disabled={isLoading}
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: "common.white",
-                  borderRadius: "8px 8px 0 0",
-                  borderBottom: "2px solid",
-                  borderColor: "grey.300",
-                  marginBottom: "-2px",
-                  px: 2, // horizontal padding for selected tab
-                },
-                "&.MuiTab-root": { display: "inline-flex" },
-                "&.MuiTab-root:hover": { color: "text.primary" },
-              }}
-            />
-          ))}
-        </Tabs>
-      </Box>
-
-      {/* “All” button pinned immediately after the last tab */}
-      <Box sx={{ flexShrink: 0, ml: 2 }}>
-        <Button id="language_x_button" onClick={()=>{
-          setShowMenu(false)
-        }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
+  if (isMobile) {
+    // mobile: single button
+    return (
+      <>
         <Button
-          id="language_all_button"
+          onClick={handleOpen}
           disabled={isLoading}
-          onClick={handleLanguage}
-          size="small"
-          variant="text"
-          sx={{ color: "text.secondary" }}
-          endIcon={
-            showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
-          }
+          endIcon={<ExpandMoreOutlined />}
+          sx={{ textTransform: "none", width: "100%", justifyContent: "space-between" }}
         >
-          All
+          {language}
         </Button>
-
         <LanguageMenus
           selectedLanguage={language}
           anchorEl={anchorEl}
           open={showMenu}
-          handleClose={() => setShowMenu(false)}
-          handleLanguageMenu={handleLanguageMenu}
+          handleClose={handleClose}
+          handleLanguageMenu={handleSelect}
         />
-      </Box>
-    </Stack>
+      </>
+    );
+  }
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <Tabs
+        value={language}
+        onChange={(_, v) => setLanguage(v)}
+        variant="standard"
+        textColor="primary"
+        sx={{
+          flex: 1,
+          minHeight: 48,
+          "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
+          "& .MuiTabs-indicator": { display: "none" },
+        }}
+      >
+        {displayTabs.map((tab) => (
+          <Tab
+            key={tab}
+            value={tab}
+            label={tab}
+            disabled={isLoading}
+            sx={{
+              "&.Mui-selected": {
+                backgroundColor: "common.white",
+                borderRadius: "8px 8px 0 0",
+                borderBottom: "2px solid",
+                borderColor: "divider",
+                marginBottom: "-2px",
+                px: 2,
+              },
+              "&.MuiTab-root": { display: "inline-flex" },
+              "&.MuiTab-root:hover": { color: "text.primary" },
+            }}
+          />
+        ))}
+      </Tabs>
+      <Button id="language_x_button" onClick={()=>{
+        handleClose();
+      }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
+
+
+      <Button
+        onClick={handleOpen}
+        disabled={isLoading}
+        endIcon={showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />}
+        sx={{ color: "text.secondary", ml: 1 }}
+        id="language_all_button"
+      >
+        All
+      </Button>
+      <LanguageMenus
+        selectedLanguage={language}
+        anchorEl={anchorEl}
+        open={showMenu}
+        handleClose={handleClose}
+        handleLanguageMenu={handleSelect}
+      />
+    </Box>
   );
 };
 

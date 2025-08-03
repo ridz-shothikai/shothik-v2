@@ -13,7 +13,10 @@ const ICONS = {
   grammar: icon("grammar"),
   translator: icon("translator"),
   agents: icon("agents"),
+  agents: icon("agents"),
   user: icon("user"),
+  agent: icon("ai-brain"),
+  marketing_automation: icon("marketing-automation"),
 };
 
 const navConfig = [
@@ -24,6 +27,7 @@ const navConfig = [
         title: "Paraphrase",
         path: PATH_TOOLS.paraphrase,
         icon: ICONS.paraphrase,
+        id:"paraphrase_nav_item",
         id:"paraphrase_nav_item",
         iconColor: "#FF595E",
       },
@@ -57,12 +61,18 @@ const navConfig = [
         icon: ICONS.translator,
         iconColor: "#A07EFB",
       },
-      // {
-      //   title: "AI Agents",
-      //   path: PATH_TOOLS.agents,
-      //   icon: ICONS.agents,
-      //   iconColor: "#f29b18",
-      // },
+      {
+        title: "Agent",
+        path: "/agents",
+        icon: ICONS.agent,
+        iconColor: "#1976D2",
+      },
+      {
+        title: "Marketing Automation",
+        path: "/",
+        icon: ICONS.marketing_automation,
+        iconColor: "#1976D2",
+      },
     ],
   },
   // ----------------------------------------------------------------------
@@ -129,14 +139,22 @@ const tools = [
     link: "/translator",
     iconColor: "#A07EFB",
   },
-  // {
-  //   icon: ICONS.agents,
-  //   title: "AI Agents",
-  //   description: "Agentic Solutions",
-  //   label: null,
-  //   link: "/agents",
-  //   iconColor: "#f29b18",
-  // },
+  {
+    icon: ICONS.agent,
+    title: "Agent",
+    description: "AI Agent Platform",
+    label: null,
+    link: "/agents",
+    iconColor: "#1976D2",
+  },
+  {
+    icon: ICONS.marketing_automation,
+    title: "Marketing Automation",
+    description: "Marketing automation tools",
+    label: null,
+    link: "/",
+    iconColor: "#1976D2",
+  },
 ];
 
 // export
