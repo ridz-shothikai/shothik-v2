@@ -184,7 +184,7 @@ export default function ChatSidebar({
               {SlideDataLoadingError && (
                 <Typography color="text.secondary">No chats found</Typography>
               )}
-              {!SlideDataLoading && slidesChats.length === 0 && (
+              {!SlideDataLoading && slidesChats?.length === 0 && (
                 <Box sx={{ textAlign: "center", mt: 4 }}>
                   <ChatBubbleOutlineIcon
                     sx={{ fontSize: 48, color: "text.disabled" }}
