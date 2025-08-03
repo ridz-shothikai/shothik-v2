@@ -4,12 +4,25 @@ const getInitialState = () => ({
   themeMode: "light",
   themeLayout: "mini",
   open: false,
+  demo: false,
+  paraphraseOptions: {
+    paraphraseQuotations: true,      // <<< new
+    avoidContractions:      false,
+    preferActiveVoice:      false,
+    automaticStartParaphrasing:         false,
+  },
 });
 
 const settingsSlice = createSlice({
   name: "settings",
   initialState: getInitialState(),
   reducers: {
+    toggleParaphraseOption(state, action) {
+      const key = action.payload;
+      if (state.paraphraseOptions.hasOwnProperty(key)) {
+        state.paraphraseOptions[key] = !state.paraphraseOptions[key];
+      }
+    },
     setThemeMode: (state, action) => {
       state.themeMode = action.payload;
       localStorage.setItem("themeMode", action.payload);
@@ -34,16 +47,21 @@ const settingsSlice = createSlice({
       state.themeMode = localStorage.getItem("themeMode") || "light";
       state.open = localStorage.getItem("open") === "true";
     },
+    setDemo: (state, action) => {
+      state.demo = action.payload
+    }
   },
 });
 
 export const {
   setThemeMode,
+  setDemo,
   setThemeLayout,
   setOpen,
   toggleThemeMode,
   toggleThemeLayout,
   loadSettingsFromLocalStorage,
+  toggleParaphraseOption
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

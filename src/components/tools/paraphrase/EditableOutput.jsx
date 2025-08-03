@@ -1,27 +1,32 @@
-import { Extension } from "@tiptap/core";
+// src/components/tools/paraphrase/EditableOutput.jsx
+"use client";
+
+import React, { useEffect } from "react";
+import { Node, Extension } from "@tiptap/core";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { EditorContent, Node, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { Plugin, TextSelection } from "prosemirror-state";
-import { useEffect } from "react";
-// import { data } from "./extentions";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { defaultMarkdownParser } from "@tiptap/pm/markdown";
 
-const getColorStyle = (type, dark = false) => {
-  const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
-  const nounColor = dark ? "#b6bdbd" : "#530a78";
-  const phraseColor = dark ? "#b6bdbd" : "#051780";
-  const freezeColor = "#006ACC";
+import HardBreak from "@tiptap/extension-hard-break";
+// ─── 1. Color helper ───────────────────────────────────────────────────────
+function getColorStyle(type, dark = false) {
+  const adjVerb = dark ? "#ef5c47" : "#d95645";
+  const noun = dark ? "#b6bdbd" : "#530a78";
+  const phrase = dark ? "#b6bdbd" : "#051780";
+  const freeze = "#006ACC";
 
-  if (/NP/.test(type)) return adJectiveVerbAdverbColor;
-  if (/VP/.test(type)) return nounColor;
-  if (/PP|CP|AdvP|AdjP/.test(type)) return phraseColor;
-  if (/freeze/.test(type)) return freezeColor;
+  if (/NP/.test(type)) return adjVerb;
+  if (/VP/.test(type)) return noun;
+  if (/PP|CP|AdvP|AdjP/.test(type)) return phrase;
+  if (/freeze/.test(type)) return freeze;
   return "inherit";
-};
+}
 
+// ─── 2. CursorWatcher extension ────────────────────────────────────────────
 const CursorWatcher = Extension.create({
   name: "cursorWatcher",
-
   addProseMirrorPlugins() {
     return [
       new Plugin({
@@ -30,24 +35,21 @@ const CursorWatcher = Extension.create({
             const { from, empty } = state.selection;
             if (!empty) return null;
 
-            const decorations = [];
-
+            const decos = [];
             state.doc.descendants((node, pos) => {
               if (node.type.name === "sentenceNode") {
-                const sentenceStart = pos;
-                const sentenceEnd = pos + node.nodeSize;
-
-                if (from >= sentenceStart && from <= sentenceEnd) {
-                  decorations.push(
-                    Decoration.node(sentenceStart, sentenceEnd, {
+                const start = pos;
+                const end = pos + node.nodeSize;
+                if (from >= start && from <= end) {
+                  decos.push(
+                    Decoration.node(start, end, {
                       class: "active-sentence",
-                    })
+                    }),
                   );
                 }
               }
             });
-
-            return DecorationSet.create(state.doc, decorations);
+            return DecorationSet.create(state.doc, decos);
           },
         },
       }),
@@ -55,13 +57,13 @@ const CursorWatcher = Extension.create({
   },
 });
 
+// ─── 3. WordNode & SentenceNode ───────────────────────────────────────────
 const WordNode = Node.create({
   name: "wordNode",
-
   group: "inline",
   inline: true,
   content: "text*",
-
+  priority: 50, // Lower priority than default nodes
   addAttributes() {
     return {
       "data-sentence-index": { default: null },
@@ -71,11 +73,9 @@ const WordNode = Node.create({
       style: { default: null },
     };
   },
-
   parseHTML() {
     return [{ tag: "span.word-span" }];
   },
-
   renderHTML({ HTMLAttributes }) {
     return ["span", HTMLAttributes, 0];
   },
@@ -83,181 +83,453 @@ const WordNode = Node.create({
 
 const SentenceNode = Node.create({
   name: "sentenceNode",
-
   group: "inline",
   inline: true,
-  content: "wordNode*",
-
+  content: "wordNode* text*", // Allow both wordNode and regular text
+  priority: 50, // Lower priority than default nodes
   addAttributes() {
     return {
-      "data-sentence-index": {
-        default: null,
-      },
-      class: {
-        default: "sentence-span",
-      },
+      "data-sentence-index": { default: null },
+      class: { default: "sentence-span" },
     };
   },
-
   parseHTML() {
     return [{ tag: "span.sentence-span" }];
   },
-
   renderHTML({ HTMLAttributes }) {
     return ["span", HTMLAttributes, 0];
   },
 });
 
-const generateFormatedText = (data) => {
-  const content = data.map((sentence, sIndex) => {
-    return {
-      type: "sentenceNode",
-      attrs: {
-        "data-sentence-index": sIndex + 1,
-        class: "sentence-span",
-      },
-      content: sentence.map((word, wIndex) => {
-        return {
-          type: "wordNode",
-          attrs: {
-            "data-sentence-index": sIndex + 1,
-            "data-word-index": wIndex + 1,
-            "data-type": word.type,
-            class: "word-span",
-            style: `color:${getColorStyle(word.type)};cursor:pointer`,
-          },
-          content: [
-            {
-              type: "text",
-              text:
-                ((wIndex === 0 && sIndex === 0) || /^[.,;?!]$/.test(word.word)
-                  ? ""
-                  : " ") + word.word,
-            },
-          ],
-        };
-      }),
-    };
-  });
-
-  return {
-    type: "doc",
-    content: [{ type: "paragraph", content }],
-  };
-};
-
+// ─── 4. EnterHandler extension ─────────────────────────────────────────────
 const EnterHandler = Extension.create({
   name: "enterHandler",
-
   addKeyboardShortcuts() {
     return {
       Enter: ({ editor }) => {
         const { state, view } = editor;
         const { tr, selection, doc, schema } = state;
-        const { from } = selection;
+        const from = selection.from;
 
-        // === Step 1: Count current sentenceNode to generate index ===
+        // find max existing sentence index
         let maxIndex = 0;
         doc.descendants((node) => {
           if (node.type.name === "sentenceNode") {
-            const index = parseInt(node.attrs["data-sentence-index"]);
-            if (!isNaN(index) && index > maxIndex) {
-              maxIndex = index;
-            }
+            const idx = parseInt(node.attrs["data-sentence-index"], 10);
+            if (!isNaN(idx) && idx > maxIndex) maxIndex = idx;
           }
         });
+        const nextIndex = maxIndex + 1;
 
-        const nextSentenceIndex = maxIndex + 1;
-
-        // === Step 2: Create new sentenceNode with one wordNode ===
+        // build a single-word sentenceNode
         const wordNode = schema.nodes.wordNode.create(
           {
-            "data-sentence-index": nextSentenceIndex,
+            "data-sentence-index": nextIndex,
             "data-word-index": 1,
             "data-type": "",
             class: "word-span",
             style: "color:inherit;cursor:pointer",
           },
-          schema.text(" ") // <-- Use non-breaking space to avoid RangeError
+          schema.text("\u00A0"),
         );
-
         const sentenceNode = schema.nodes.sentenceNode.create(
-          {
-            "data-sentence-index": nextSentenceIndex,
-            class: "sentence-span",
-          },
-          [wordNode]
+          { "data-sentence-index": nextIndex, class: "sentence-span" },
+          [wordNode],
         );
+        const paragraph = schema.nodes.paragraph.create({}, [sentenceNode]);
+        const newTr = tr.insert(from, paragraph);
 
-        const paragraphNode = schema.nodes.paragraph.create({}, [sentenceNode]);
-
-        const newTr = tr.insert(from, paragraphNode);
-
-        // === Step 3: Move cursor into the new wordNode ===
-        const resolvedPos = newTr.doc.resolve(from + 3); // Rough offset
-        const newSelection = TextSelection.near(resolvedPos);
-
-        view.dispatch(newTr.setSelection(newSelection).scrollIntoView());
-
+        // move cursor inside new word
+        const resolved = newTr.doc.resolve(from + paragraph.nodeSize - 1);
+        const sel = TextSelection.near(resolved);
+        view.dispatch(newTr.setSelection(sel).scrollIntoView());
         return true;
       },
     };
   },
 });
 
-const EditableOutput = ({ setSynonymsOptions, setSentence, setAnchorEl,   highlightSentence,  setHighlightSentence, data}) => {
+// ─── 5. Enhanced Markdown parsing helper ───────────────────────────────────
+
+function parseMarkdownText(text) {
+  const marks = [];
+  let core = text;
+  let trailing = "";
+
+  // 1. Detach trailing punctuation (one of . , ; ? !)
+  const punctMatch = core.match(/^(.*?)([.,;?!])$/);
+  if (punctMatch) {
+    core = punctMatch[1];
+    trailing = punctMatch[2];
+  }
+
+  // 2. Check for bold (** or __)
+  let m;
+  if ((m = core.match(/^(\*\*|__)([\s\S]+?)\1$/))) {
+    marks.push({ type: "bold" });
+    core = m[2];
+  }
+  // 3. Check for strikethrough ~~text~~
+  else if ((m = core.match(/^~~([\s\S]+?)~~$/))) {
+    marks.push({ type: "strike" });
+    core = m[1];
+  }
+  // 4. Check for italic (* or _), but only if not already bold
+  else if ((m = core.match(/^(\*|_)([\s\S]+?)\1$/))) {
+    marks.push({ type: "italic" });
+    core = m[2];
+  }
+  // 5. Check for inline code `text`
+  else if ((m = core.match(/^`([\s\S]+?)`$/))) {
+    marks.push({ type: "code" });
+    core = m[1];
+  }
+
+  // 6. Reattach punctuation to the processed text
+  const processedText = core + trailing;
+
+  return { text: processedText, marks };
+}
+
+// ─── 6. Helper to detect and process heading sentences ────────────────────
+function processHeadingSentence(sentence, sIdx) {
+  // Check if sentence starts with heading markers
+  const firstWord = sentence[0]?.word || "";
+  const headingMatch = firstWord.match(/^(#{1,6})$/);
+
+  if (headingMatch && sentence.length > 1) {
+    const level = headingMatch[1].length;
+    const headingText = sentence
+      .slice(1)
+      .map((w) => w.word)
+      .join(" ")
+      .trim();
+
+    return {
+      type: "heading",
+      attrs: { level },
+      content: [
+        {
+          type: "text",
+          text: headingText,
+        },
+      ],
+    };
+  }
+
+  return null;
+}
+
+// ─── 7. Helper to process newline sentences ───────────────────────────────
+function isNewlineSentence(sentence) {
+  return sentence.length === 1 && /^\n+$/.test(sentence[0].word);
+}
+
+// ─── 8. formatContent: JSON ⇄ ProseMirror document ─────────────────────────
+// Updated formatContent function to better handle paragraph structure
+
+function formatContent(data) {
+  if (!data) {
+    return { type: "doc", content: [] };
+  }
+
+  if (typeof data === "string") {
+    try {
+      const parsed = defaultMarkdownParser.parse(data);
+      if (parsed) {
+        const jsonDoc = parsed.toJSON();
+        console.log("Parsed markdown JSON:", JSON.stringify(jsonDoc, null, 2));
+        return jsonDoc;
+      }
+    } catch (error) {
+      console.warn(
+        "Failed to parse markdown, falling back to plain text:",
+        error,
+      );
+    }
+    return {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: data,
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  const sentences = Array.isArray(data[0]) ? data : [data];
+  const docContent = [];
+  let currentParagraphSentences = [];
+
+  for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
+    const sentence = sentences[sIdx];
+
+    // Check if this is a newline sentence (paragraph break)
+    if (isNewlineSentence(sentence)) {
+      // If we have accumulated sentences, add them as a paragraph
+      if (currentParagraphSentences.length > 0) {
+        docContent.push({
+          type: "paragraph",
+          content: currentParagraphSentences,
+        });
+        currentParagraphSentences = [];
+      }
+
+      // Add the line break
+      docContent.push({
+        type: "paragraph",
+        content: [{ type: "hardBreak" }],
+      });
+      continue;
+    }
+
+    // Check if this sentence is a heading
+    const headingNode = processHeadingSentence(sentence, sIdx);
+    if (headingNode) {
+      // Flush any accumulated sentences before adding heading
+      if (currentParagraphSentences.length > 0) {
+        docContent.push({
+          type: "paragraph",
+          content: currentParagraphSentences,
+        });
+        currentParagraphSentences = [];
+      }
+
+      docContent.push(headingNode);
+      continue;
+    }
+
+    // Process as regular sentence
+    const sentenceNode = {
+      type: "sentenceNode",
+      attrs: {
+        "data-sentence-index": sIdx + 1,
+        class: "sentence-span",
+      },
+      content: sentence.map((wObj, wIdx) => {
+        const raw = wObj.word;
+        const { text: processedText, marks } = parseMarkdownText(raw);
+
+        // Better spacing logic - don't add space before punctuation or at start
+        const prefix =
+          (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " ";
+
+        return {
+          type: "wordNode",
+          attrs: {
+            "data-sentence-index": sIdx + 1,
+            "data-word-index": wIdx + 1,
+            "data-type": wObj.type,
+            class: "word-span",
+            style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
+          },
+          content: [
+            {
+              type: "text",
+              text: prefix + processedText,
+              ...(marks.length ? { marks } : {}),
+            },
+          ],
+        };
+      }),
+    };
+
+    // Add sentence to current paragraph
+    currentParagraphSentences.push(sentenceNode);
+  }
+
+  // Add any remaining sentences as the final paragraph
+  if (currentParagraphSentences.length > 0) {
+    docContent.push({
+      type: "paragraph",
+      content: currentParagraphSentences,
+    });
+  }
+
+  return {
+    type: "doc",
+    content: docContent,
+  };
+}
+// function formatContent(data) {
+//   // empty
+//   if (!data) {
+//     return { type: "doc", content: [] }
+//   }
+
+//   // Markdown string?
+//   if (typeof data === "string") {
+//     try {
+//       const parsed = defaultMarkdownParser.parse(data)
+//       if (parsed) {
+//         const jsonDoc = parsed.toJSON()
+//         console.log("Parsed markdown JSON:", JSON.stringify(jsonDoc, null, 2))
+//         return jsonDoc
+//       }
+//     } catch (error) {
+//       console.warn("Failed to parse markdown, falling back to plain text:", error)
+//     }
+//     // Fallback: treat as plain text in a paragraph
+//     return {
+//       type: "doc",
+//       content: [{
+//         type: "paragraph",
+//         content: [{
+//           type: "text",
+//           text: data
+//         }]
+//       }]
+//     }
+//   }
+
+//   // assume `data` is Array< Array<WordObj> >
+//   const sentences = Array.isArray(data[0]) ? data : [data]
+//   const docContent = []
+
+//   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
+//     const sentence = sentences[sIdx]
+
+//     if (isNewlineSentence(sentence)) {
+//       // emit a hardBreak node wrapped in a paragraph
+//       docContent.push({
+//         type: "paragraph",
+//         content: [
+//           { type: "hardBreak" }
+//         ],
+//       })
+//       continue
+//     }
+//     // Check if this sentence is a heading
+//     const headingNode = processHeadingSentence(sentence, sIdx)
+//     if (headingNode) {
+//       docContent.push(headingNode)
+//       continue
+//     }
+
+//     // Process as regular sentence with word nodes
+//     const sentenceNode = {
+//       type: "sentenceNode",
+//       attrs: {
+//         "data-sentence-index": sIdx + 1,
+//         class: "sentence-span",
+//       },
+//       content: sentence.map((wObj, wIdx) => {
+//         const raw = wObj.word
+
+//         // Enhanced markdown parsing for individual words
+//         const { text: processedText, marks } = parseMarkdownText(raw)
+
+//         // spacing logic
+//         const prefix =
+//           (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " "
+
+//         return {
+//           type: "wordNode",
+//           attrs: {
+//             "data-sentence-index": sIdx + 1,
+//             "data-word-index": wIdx + 1,
+//             "data-type": wObj.type,
+//             class: "word-span",
+//             style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
+//           },
+//           content: [
+//             {
+//               type: "text",
+//               text: prefix + processedText,
+//               ...(marks.length ? { marks } : {}),
+//             },
+//           ],
+//         }
+//       }),
+//     }
+
+//     // Wrap sentence in paragraph
+//     docContent.push({
+//       type: "paragraph",
+//       content: [sentenceNode],
+//     })
+//   }
+
+//   return {
+//     type: "doc",
+//     content: docContent,
+//   }
+// }
+
+// ─── 9. EditableOutput component ───────────────────────────────────────────
+export default function EditableOutput({
+  data,
+  setSynonymsOptions,
+  setSentence,
+  setAnchorEl,
+  highlightSentence,
+  setHighlightSentence,
+}) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         enter: false,
+        // Enable all text formatting features
+        bold: true,
+        italic: true,
+        strike: true,
+        code: true,
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
+          HTMLAttributes: {
+            class: "heading-node",
+          },
+        },
       }),
+      // Add custom nodes AFTER StarterKit to avoid conflicts
+      HardBreak,
       SentenceNode,
       WordNode,
       CursorWatcher,
       EnterHandler,
     ],
-    content: "",
     editable: true,
-    immediatelyRender: false,
+    immediatelyRender: false, // avoid SSR hydration warnings
   });
 
+  // load (or reload) `data` into the editor whenever it changes
   useEffect(() => {
-    if (!editor || !data?.length) return;
-    editor.commands.setContent(generateFormatedText(data));
+    if (!editor) return;
+    editor.commands.setContent(formatContent(data));
   }, [editor, data]);
 
+  // click-to-synonyms
   useEffect(() => {
     if (!editor) return;
     const dom = editor.view.dom;
-
-    const handleClick = (e) => {
+    const onClick = (e) => {
       const el = e.target.closest(".word-span");
       if (!el) return;
-
-      const sentenceIndex = Number(el.getAttribute("data-sentence-index"));
-      const wordIndex = Number(el.getAttribute("data-word-index"));
-      const wordObj = data?.[sentenceIndex - 1]?.[wordIndex - 1];
-      if (!wordObj) return;
+      const sI = Number(el.getAttribute("data-sentence-index"));
+      const wI = Number(el.getAttribute("data-word-index"));
+      const wObj = data[sI - 1]?.[wI - 1];
+      if (!wObj) return;
 
       setAnchorEl(el);
       setSynonymsOptions({
-        synonyms: wordObj.synonyms || [],
-        sentenceIndex,
-        wordIndex,
+        synonyms: wObj.synonyms || [],
+        sentenceIndex: sI,
+        wordIndex: wI,
         showRephraseNav: true,
       });
-      setHighlightSentence(sentenceIndex - 1);
-
-      const sentence = data[sentenceIndex - 1].map((w) => w.word).join(" ");
-
-      setSentence(sentence);
+      setHighlightSentence(sI - 1);
+      setSentence(data[sI - 1].map((w) => w.word).join(" "));
     };
-
-    dom.addEventListener("click", handleClick);
-    return () => dom.removeEventListener("click", handleClick);
+    dom.addEventListener("click", onClick);
+    return () => dom.removeEventListener("click", onClick);
   }, [editor, data]);
 
+  if (!editor) return null;
   return <EditorContent editor={editor} />;
-};
-
-export default EditableOutput;
+}

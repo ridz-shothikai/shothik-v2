@@ -1,4 +1,4 @@
-import { DeleteRounded } from "@mui/icons-material";
+import { DeleteRounded, AcUnit } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -14,8 +14,10 @@ import useStickyBottom from "../../../hooks/useStickyBottom";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
-
+import FreezeWordsDialog from '../paraphrase/FreezeWordsDialog'
 function WordCounter({
+  freeze_modal=false,
+  freeze_props={},
   userInput,
   isLoading,
   toolName,
@@ -48,6 +50,8 @@ function WordCounter({
           btnIcon={btnIcon}
           dontDisable={dontDisable}
           sx={sx}
+          freeze_modal={freeze_modal}
+          freeze_props={freeze_props}
         >
           {children}
         </Contend>
@@ -68,6 +72,8 @@ function WordCounter({
         btnIcon={btnIcon}
         dontDisable={dontDisable}
         sx={sx}
+        freeze_modal={freeze_modal}
+        freeze_props={freeze_props}
       >
         {children}
       </Contend>
@@ -88,6 +94,8 @@ const Contend = ({
   ExtraCounter = null,
   btnIcon = null,
   sx = {},
+  freeze_modal=false,
+  freeze_props={},
   dontDisable = false,
 }) => {
   const [wordCount, setWordCount] = useState(0);
@@ -98,7 +106,7 @@ const Contend = ({
     const words = userInput.trim() ? String(userInput).split(" ").length : 0;
     setWordCount(words);
   }, [userInput]);
-
+  const [show_freeze, set_show_freeze] = useState(false)
   if (!userInput) return <Box sx={{ height: 48 }} />;
   return (
     <Stack
@@ -114,6 +122,10 @@ const Contend = ({
       }}
       bgcolor='background.paper'
     >
+
+      {freeze_modal && show_freeze  ? <FreezeWordsDialog close={()=>{
+        set_show_freeze(false)
+      }} readOnly={isLoading} freeze_props={freeze_props} /> : null}
       <Stack
         direction='row'
         spacing={2}
@@ -159,6 +171,21 @@ const Contend = ({
               <DeleteRounded sx={{ color: "text.secondary" }} />
             </IconButton>
           </Tooltip>
+          {freeze_modal ? <Tooltip title='Freeze Words' placement='top' arrow>
+            <IconButton
+              id="show_freeze_button"
+              aria-label='freeze'
+              size={isMobile ? "small" : "large"}
+              variant={"outlined"}
+              color='inherit'
+              disabled={false}
+              onClick={()=>set_show_freeze(true)}
+              style={{ marginLeft: "-4px" }}
+              disableRipple
+            >
+              <AcUnit sx={{ color: "text.secondary" }} />
+            </IconButton>
+          </Tooltip>:null}
         </Stack>
         {ExtraCounter}
       </Stack>

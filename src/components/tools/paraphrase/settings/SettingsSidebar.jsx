@@ -1,6 +1,5 @@
-
 // SettingsSidebar.jsx
-import React from 'react';
+import React from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import {
   Close,
@@ -19,7 +18,13 @@ const tabs = [
   { id: "shortcuts", icon: <KeyboardIcon /> },
 ];
 
-const SettingsSidebar = ({ open, onClose, tab = 'settings', setTab }) => {
+const SettingsSidebar = ({
+  open,
+  onClose,
+  tab = "settings",
+  setTab,
+  mobile = false,
+}) => {
   if (!open) return null;
 
   return (
@@ -27,8 +32,8 @@ const SettingsSidebar = ({ open, onClose, tab = 'settings', setTab }) => {
       sx={{
         width: 300,
         height: "100%",
-        borderLeft: "1px solid",
-        borderColor: "divider",
+        borderLeft: mobile ? "none" : "1px solid",
+        borderColor: mobile ? "transparent" : "divider",
         bgcolor: "background.paper",
         boxSizing: "border-box",
         overflowY: "auto",
@@ -88,7 +93,11 @@ const SettingsSidebar = ({ open, onClose, tab = 'settings', setTab }) => {
         </Box>
 
         {/* Close Button */}
-        <IconButton id="settings_sidebar_x_button" size="small" onClick={onClose}>
+        <IconButton
+          id="settings_sidebar_x_button"
+          size="small"
+          onClick={onClose}
+        >
           <Close fontSize="small" />
         </IconButton>
       </Box>
@@ -104,4 +113,3 @@ const SettingsSidebar = ({ open, onClose, tab = 'settings', setTab }) => {
 };
 
 export default SettingsSidebar;
-
