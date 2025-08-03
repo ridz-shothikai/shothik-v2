@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, forwardRef } from "react";
 import {
   Box,
   Typography,
@@ -27,7 +27,7 @@ import {
   TableChart,
   Description,
 } from "@mui/icons-material";
-import { DataGrid } from "react-data-grid";
+import { DataGrid, useRowSelection } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -40,7 +40,7 @@ import {
   switchToSavePoint,
 } from "../../redux/slice/sheetSlice";
 import SavePointsDropdown from "./SavePointsDropDown";
-import * as XLSX from "xlsx"; // Import SheetJS
+import * as XLSX from "xlsx";
 
 // Status indicator component
 const StatusChip = ({ status, title, rowCount = 0 }) => {
@@ -107,6 +107,84 @@ const StatusChip = ({ status, title, rowCount = 0 }) => {
   );
 };
 
+// Custom Row Component with proper styling
+const CustomRow = forwardRef(function CustomRow(props, ref) {
+  const {
+    className,
+    row,
+    viewportColumns,
+    selectedCellIdx,
+    isRowSelected,
+    onRowClick,
+    style,
+    ...rest
+  } = props;
+
+  return (
+    <div
+      ref={ref}
+      className={`${className} ${isRowSelected ? "rdg-row-selected" : ""}`}
+      style={{
+        ...style,
+        position: "relative",
+        backgroundColor: isRowSelected ? "rgba(25, 118, 210, 0.08)" : undefined,
+        outline: isRowSelected ? "2px solid #1976d2" : undefined,
+        outlineOffset: "-2px",
+      }}
+      onClick={onRowClick}
+      {...rest}
+    >
+      {/* Render cells */}
+      {viewportColumns.map((column, cellIdx) => {
+        const { key, renderCell } = column;
+        const value = row[key];
+
+        return (
+          <div
+            key={key}
+            className={`rdg-cell ${
+              cellIdx === selectedCellIdx ? "rdg-cell-selected" : ""
+            }`}
+            style={{
+              gridColumnStart: cellIdx + 1,
+              position: "relative",
+            }}
+          >
+            {renderCell ? renderCell({ row, column }) : value}
+          </div>
+        );
+      })}
+
+      {/* Action button overlay for selected rows */}
+      {isRowSelected && (
+        <Button
+          variant="contained"
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            alert(`Action clicked for row ${row.id}`);
+          }}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: 8,
+            transform: "translateY(-50%)",
+            zIndex: 1001,
+            minWidth: "auto",
+            px: 1,
+            py: 0.5,
+            fontSize: "0.75rem",
+            boxShadow: 2,
+            pointerEvents: "auto",
+          }}
+        >
+          Action
+        </Button>
+      )}
+    </div>
+  );
+});
+
 // Data processing utilities
 const processSheetData = (sheetData) => {
   if (!sheetData || !Array.isArray(sheetData)) {
@@ -122,7 +200,6 @@ const processSheetData = (sheetData) => {
   sheetData.forEach((row) => {
     Object.keys(row).forEach((key) => {
       if (key !== "id") {
-        // Exclude the id field from display
         allKeys.add(key);
       }
     });
@@ -403,10 +480,10 @@ export default function SheetDataArea() {
     return () => {
       dispatch(resetSheetState());
       console.log(sheetState, "from return");
-    }
-  }, [])
+    };
+  }, []);
 
-  // Grid configuration
+  // Grid configuration with proper row renderer
   const gridProps = useMemo(
     () => ({
       columns,
@@ -417,12 +494,6 @@ export default function SheetDataArea() {
       rowHeight: 40,
       headerRowHeight: 45,
       className: theme.palette.mode === "dark" ? "rdg-dark" : "rdg-light",
-      // style: {
-      //   height: "100%",
-      //   border: "1px solid #e0e0e0",
-      //   borderRadius: "4px",
-      //   fontSize: "14px",
-      // },
       style: {
         height: "100%",
         border: "1px solid",
@@ -437,8 +508,12 @@ export default function SheetDataArea() {
       onSortColumnsChange: (sortColumns) => {
         console.log("Sort columns changed:", sortColumns);
       },
+      // Use proper components prop instead of renderers
+      components: {
+        Row: CustomRow,
+      },
     }),
-    [columns, rows, selectedRows, theme.palette.mode]
+    [columns, rows, selectedRows, theme.palette]
   );
 
   // Render generating state
@@ -455,7 +530,6 @@ export default function SheetDataArea() {
           textAlign: "center",
         }}
       >
-        {/* <CircularProgress size={48} sx={{ mb: 2 }} /> */}
         <Typography variant="h6" gutterBottom>
           Generating Your Sheet
         </Typography>
@@ -518,17 +592,18 @@ export default function SheetDataArea() {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
-        {sheetState.savePoints?.length > 0 && sheetState.activeSavePointId && (
-          <SavePointsDropdown
-            savePoints={sheetState.savePoints || []}
-            activeSavePointId={sheetState.activeSavePointId}
-            onSavePointChange={(savePoint) => {
-              dispatch(switchToSavePoint({ savePointId: savePoint.id }));
-            }}
-            currentSheetData={sheetState.sheet}
-            theme={theme}
-          />
-        )}
+          {sheetState.savePoints?.length > 0 &&
+            sheetState.activeSavePointId && (
+              <SavePointsDropdown
+                savePoints={sheetState.savePoints || []}
+                activeSavePointId={sheetState.activeSavePointId}
+                onSavePointChange={(savePoint) => {
+                  dispatch(switchToSavePoint({ savePointId: savePoint.id }));
+                }}
+                currentSheetData={sheetState.sheet}
+                theme={theme}
+              />
+            )}
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
@@ -617,13 +692,7 @@ export default function SheetDataArea() {
 
       {/* Data Grid */}
       <Box sx={{ flex: 1, minHeight: 0 }}>
-        {!hasData ? // <Typography variant="body2" color="text.secondary">
-        //   No data found. Use the chat area to describe your spreadsheet and
-        //   generate data
-        // </Typography>
-        null : (
-          <DataGrid {...gridProps} />
-        )}
+        {!hasData ? null : <DataGrid {...gridProps} />}
       </Box>
 
       {/* Footer */}
