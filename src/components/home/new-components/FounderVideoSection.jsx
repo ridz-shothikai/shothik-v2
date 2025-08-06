@@ -66,7 +66,8 @@ export default function FounderVideoSection() {
     <Box
       component="section"
       sx={{
-        py: { xs: 12, sm: 15, md: 18, lg: 24 },
+        pb: {xs: 6, sm: 8, md: 10, lg: 12},
+        pt: { xs: 12, sm: 15, md: 18, lg: 24 },
         // background:
         //   "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
         bgcolor: isDarkMode ? "inherit" : "#FBFCFD",
@@ -552,7 +553,7 @@ export default function FounderVideoSection() {
                 </Box>
 
                 {/* Founder quote */}
-                <motion.div
+                {/* <motion.div
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -622,10 +623,10 @@ export default function FounderVideoSection() {
                       </Box>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </motion.div> */}
 
                 {/* CTA */}
-                <Box
+                {/* <Box
                   sx={{
                     display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
@@ -683,10 +684,10 @@ export default function FounderVideoSection() {
                   >
                     Read Our Story
                   </Button>
-                </Box>
+                </Box> */}
 
                 {/* Trust indicators */}
-                <Box
+                {/* <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -735,7 +736,7 @@ export default function FounderVideoSection() {
                   >
                     Featured in TechCrunch, Wired
                   </Button>
-                </Box>
+                </Box> */}
               </Box>
             </motion.div>
           </Grid>

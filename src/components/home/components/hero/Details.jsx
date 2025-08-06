@@ -4,6 +4,7 @@ import { Box, Chip, Grid2, Rating, styled, Typography, useTheme } from "@mui/mat
 import * as motion from "motion/react-client";
 import React from "react";
 import UserActionButton from "./UserActionButton";
+import AnimatedText from "./AnimatedText";
 
 
 const Details = () => {
@@ -47,7 +48,7 @@ const Details = () => {
             // WebkitTextFillColor: "transparent",
           }}
         >
-          AI that writes like you <br />
+          <AnimatedText/>
           {/* <span
             style={{
               fontWeight: 700,

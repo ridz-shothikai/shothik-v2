@@ -14,6 +14,10 @@ import ClaritySection from "../../components/home/new-components/ClaritySection"
 import FeaturesSection from "../../components/home/new-components/FeaturesSection";
 import JobsTestimonialsSection from "../../components/home/new-components/JobsTestimonialsSection";
 import CtaSection from "../../components/home/new-components/CtaSection";
+import KeyBenefits from "../../components/home/new-components/KeyBenefits";
+import Guarantee from "../../components/home/new-components/Guarantee";
+import StudentDeserve from "../../components/home/new-components/StudentDeserve";
+import Journey from "../../components/home/new-components/Journey";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -77,11 +81,15 @@ const Home = () => {
   return (
     <>
       <HomeHeroSection />
-      <AgenticHeroSection />
-      <AgnetShowCase />
+      <ClaritySection />
+      {/* <StudentDeserve/> */}
       <InteractiveAgentDemo />
       <FounderVideoSection />
-      <ClaritySection />
+      <AgenticHeroSection />
+      <AgnetShowCase />
+      <Journey/>
+      <KeyBenefits/>
+      {/* <Guarantee/> */}
       <FeaturesSection />
       <JobsTestimonialsSection/>
       <CtaSection/>

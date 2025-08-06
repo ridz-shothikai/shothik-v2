@@ -172,9 +172,9 @@ const agentDemos = [
     name: "AI Slides Agent",
     icon: <FileText size={24} />,
     color: "emerald",
-    placeholder: "Create a presentation about...",
+    placeholder: "Select an example...",
     examples: [
-      "Create a pitch deck for my AI startup targeting Series A investors",
+      "Create a pitch deck for an AI startup targeting Series A investors",
       "Make slides about sustainable fashion for university students",
       "Build a training presentation on remote work best practices",
     ],
@@ -188,11 +188,11 @@ const agentDemos = [
     name: "AI Sheet Agent",
     icon: <Sheet size={24} />,
     color: "blue",
-    placeholder: "Ask me to research and organize findings in a smart sheet...",
+    placeholder: "Select an example...",
     examples: [
-      "Compare pricing of 10 nearby gyms in a sheet",
-      "List top 5 Italian restaurants open tomorrow at 7PM with ratings",
-      "Summarize insurance claim #ABC123 and add contact notes",
+      "Compare pricing of 10 gyms in a sheet",
+      "List top 5 Italian restaurants with ratings",
+      "Generate 10 school and add contact notes",
     ],
     description:
       "Performs real-world research and structures the data in smart sheets",

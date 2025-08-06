@@ -98,7 +98,8 @@ export default function FeaturesSection() {
     <Box
       component="section"
       sx={{
-        py: { xs: 8, sm: 12, xl: 15 },
+        pt: { xs: 4, sm: 6, xl: 8 },
+        pb: { xs: 8, sm: 12, xl: 15 },
         backgroundColor: isDarkMode ? "inherit" : "#f8fafc", // gray-50
       }}
     >

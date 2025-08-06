@@ -34,12 +34,12 @@ const AgenticHeroSection = () => {
           minHeight: "50vh",
           display: "flex",
           flexDirection: "column",
-          alignItems: {xs: "flex-start", sm: "center"},
-          justifyContent: {xs: "flex-start", sm: "center"},
-          textAlign: {xs: "left", sm: "center"},
-          pt: { xs: 0, sm: 1, lg: 2 },
+          alignItems: { xs: "flex-start", sm: "center" },
+          justifyContent: { xs: "flex-start", sm: "center" },
+          textAlign: { xs: "left", sm: "center" },
+          pt: { xs: 6, sm: 8, md: 10, lg: 12 },
           pb: { xs: 6, md: 8 },
-          px: { xs: 0, sm:0, md: 2, lg: 4 },
+          px: { xs: 0, sm: 0, md: 2, lg: 4 },
         }}
       >
         {/* Welcome Badge */}
@@ -95,7 +95,7 @@ const AgenticHeroSection = () => {
               lineHeight: 1.1,
               color: "#059669", // Emerald-600
               letterSpacing: "-0.02em",
-              whiteSpace: "nowrap"
+              whiteSpace: "nowrap",
             }}
           >
             Start Commanding
@@ -116,8 +116,8 @@ const AgenticHeroSection = () => {
               lineHeight: 1.6,
               color: "#6B7280", // Gray-500
               fontWeight: 400,
-              textAlign: {xs: "left", sm: "center"},
-              maxWidth: {xs: "500px", sm: "100%"}
+              textAlign: { xs: "left", sm: "center" },
+              maxWidth: { xs: "500px", sm: "100%" },
             }}
           >
             Tell our agents what you need. They'll research 100+ papers, apply

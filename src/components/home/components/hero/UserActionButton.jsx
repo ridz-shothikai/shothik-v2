@@ -12,7 +12,8 @@ const UserActionButton = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const packageName = user?.package;
-  const userMsg = !packageName ? "Sign up for free" : "Explore the Features";
+  // const userMsg = !packageName ? "Sign up for free" : "Explore the Features";
+  const userMsg = "Join the waitlist";
 
   return (
     <motion.div
