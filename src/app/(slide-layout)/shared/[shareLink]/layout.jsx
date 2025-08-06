@@ -1,13 +1,13 @@
-import { PresentationProvider } from "../../../../components/slide/context/SlideContext"
+import { PresentationProvider } from "../../../../components/slide/context/SlideContextProvider";
 
 export default function SlideShareLayout({ children }) {
   return (
-    <html lang="en">
+    <>
       <PresentationProvider>
-        <body style={{ margin: 0, padding: 0 }}>
+        <div style={{ margin: 0, padding: 0 }}>
           {children}
-        </body>
+        </div>
       </PresentationProvider>
-    </html>
+    </>
   )
 }

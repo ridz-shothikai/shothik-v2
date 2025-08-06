@@ -45,8 +45,13 @@ const links = [
     title: "Agent",
     link: "/agents",
     iconColor: "#1976D2",
-    // iconSrc: "/navbar/smart_toy.svg",
-    iconSrc: "/navbar/ai_brain.svg",
+    iconSrc: "/navbar/ai-brain.svg",
+  },
+  {
+    title: "Marketing Automation",
+    link: "/",
+    iconColor: "#1976D2",
+    iconSrc: "/navbar/marketing-automation.svg",
   },
 ];
 

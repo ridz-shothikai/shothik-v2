@@ -12,7 +12,7 @@ export async function authenticateToSheetService (email) {
               body: JSON.stringify({
                 name: email.split("@")[0], // Use email prefix as name
                 email: email,
-                password: "secure_password", // You might want to generate a random password
+                // password: "secure_password", // You might want to generate a random password
               }),
             }
           );
@@ -31,7 +31,7 @@ export async function authenticateToSheetService (email) {
             },
             body: JSON.stringify({
               email: email,
-              password: "secure_password", // Same password as registration
+              // password: "secure_password", // Same password as registration
             }),
           }
         );

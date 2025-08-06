@@ -173,6 +173,7 @@ export default function PreviewPanel({
                             slidesData?.totalSlide || slidesData?.data?.length
                           }
                           theme={theme}
+                          isDarkMode={isDark}
                         />
                       ))}
 

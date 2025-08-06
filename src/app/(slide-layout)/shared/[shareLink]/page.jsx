@@ -19,9 +19,10 @@ import {
   Button,
   Alert,
 } from "@mui/material";
-import { PresentationMode } from "../../slides/page";
-import { SlideCard } from "../../slides/page";
-import { usePresentation } from "../../../../components/slide/context/SlideContext";
+import { PresentationMode } from "../../../../components/presentation/PresentationMode";
+import { SlideCard } from "../../../../components/presentation/SlideCard";
+import { usePresentation } from "../../../../components/slide/context/SlideContextProvider";
+import { useSelector } from "react-redux";
 
 export default function SharedSlidesPage() {
   const { shareLink } = useParams();
@@ -31,6 +32,8 @@ export default function SharedSlidesPage() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [authError, setAuthError] = useState("");
 
+  const {accessToken} = useSelector((state) => state.auth);
+
   // Fetch shared presentation data
   const {
     data: sharedData,
@@ -38,7 +41,7 @@ export default function SharedSlidesPage() {
     error: sharedError,
     refetch,
   } = useFetchSharedSlidesQuery(
-    { shareLink, password },
+    { shareLink, password, accessToken },
     {
       skip: !shareLink,
     }

@@ -182,6 +182,4 @@ const LanguageMenus = ({
     </>
   );
 };
-
-export default LanguageMenus;
-
+export default LanguageMenus

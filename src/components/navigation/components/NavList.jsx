@@ -47,7 +47,8 @@ export default function NavList({ data, layout, onCloseNav }) {
           minWidth: layout === "mini" ? 72 : "100%",
           borderRadius: 1,
           display: "flex",
-          flexWrap: "wrap",
+          flexDirection: layout === "mini" ? "column" : "row",
+          // flexWrap: "wrap",
           justifyContent: "center",
           alignItems: "center",
           ...(isActive && {
@@ -79,6 +80,7 @@ export default function NavList({ data, layout, onCloseNav }) {
             fontSize: layout === "mini" ? 12 : 16,
             textAlign: layout === "mini" ? "center" : "start",
             flexGrow: 1,
+            whiteSpace: layout === "mini" ? "wrap" : "nowrap"
           }}
           variant={isActive ? "subtitle2" : "body2"}
         >

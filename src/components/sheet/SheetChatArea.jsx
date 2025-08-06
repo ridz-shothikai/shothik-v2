@@ -255,40 +255,55 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     refetch,
   } = useGetChatHistoryQuery(currentChatId, {
     skip: !currentChatId || !sheetAiToken,
-    pollingInterval: shouldPoll ? 3000 : 0,
+    pollingInterval:
+      shouldPoll && sheetState.activeChatIdForPolling === currentChatId
+        ? 3000
+        : 0,
     refetchOnMountOrArgChange: true,
   });
+
+  const hasAnyConversation = Boolean(chatData?.conversations?.length);
+  
 
   console.log(chatData, "chatData");
 
   // Effect to control polling based on data completeness
   useEffect(() => {
-    if (
-      currentChatId && chatData?.isIncomplete
-    ) {
+    if (!chatData) return; // no data yet
+    if (!hasAnyConversation) return; // <— bail out on the default-empty payload
+
+    const isTarget = sheetState.activeChatIdForPolling === currentChatId;
+
+    if (currentChatId && chatData?.isIncomplete) {
+      if (!isTarget) {
+        dispatch(setActiveSheetIdForPolling(currentChatId));
+      }
       setShouldPoll(true);
     } else {
-      setShouldPoll(false);
-      if (
-        sheetState.activeChatIdForPolling !== currentChatId &&
-        sheetState.status === "generating"
-      ) {
-        dispatch(setSheetStatus("idle"));
+      if (isTarget) {
+        dispatch(setActiveSheetIdForPolling(null));
       }
+      setShouldPoll(false);
+      // if (sheetState.status === "generating") {
+      //   dispatch(setSheetStatus("idle"));
+      // }
     }
   }, [
     chatData?.shouldSetGenerating,
+    chatData?.isIncomplete,
     isLoadingHistory,
     currentChatId,
     sheetState.activeChatIdForPolling,
-  ]);
-
+  ]);  
+ 
   // Cleanup effect when component unmounts or chat changes:
   useEffect(() => {
     return () => {
       // Cleanup: if this was the active chat for polling, clear it
       if (sheetState.activeChatIdForPolling === currentChatId) {
         dispatch(setActiveSheetIdForPolling(null));
+        dispatch(setSheetStatus("idle"));
+        // sessionStorage.removeItem("activeChatId");
       }
     };
   }, [currentChatId, dispatch]);
@@ -354,7 +369,9 @@ export default function SheetChatArea({ currentAgentType, theme }) {
 
   // Handle chat history data changes
   useEffect(() => {
-    if (!chatData || !chatData.conversations) return;
+    // if(isLoading) return;
+    if (!chatData) return; // nothing loaded yet
+    if (!hasAnyConversation) return; // <— skip the “empty payload”
 
     const {
       conversations,
@@ -365,8 +382,26 @@ export default function SheetChatArea({ currentAgentType, theme }) {
 
     const convertedMessages = [];
 
+    const isActiveGen =
+      sheetState.status === "generating" &&
+      sheetState.activeChatIdForPolling === currentChatId;
+
+    if (!isActiveGen) {
+      dispatch(setSheetStatus(recommendedStatus));
+    }
+
+    // if (chatData.isIncomplete) {
+    //   dispatch(setSheetStatus("generating"));
+    // } else if (recommendedStatus === "completed") {
+    //   dispatch(setSheetStatus("completed"));
+    // } else if (recommendedStatus === "error") {
+    //   dispatch(setSheetStatus("error"));
+    // } else if (recommendedStatus === "cancelled") {
+    //   dispatch(setSheetStatus("cancelled"));
+    // }
+
     // Set Redux status based on API analysis
-    dispatch(setSheetStatus(recommendedStatus));
+    // dispatch(setSheetStatus(recommendedStatus));
 
     // Add reconnection message if needed
     if (shouldSetGenerating) {
@@ -579,6 +614,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     console.log("generating");
     setError(null);
     setIsLoading(true);
+    dispatch(setSheetStatus("generating"));
     sessionStorage.setItem("activeChatId", currentChatId);
     dispatch(setActiveSheetIdForPolling(currentChatId));
     const userMessage = {
@@ -589,8 +625,6 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
-    dispatch(setSheetStatus("generating"));
-    // dispatch(setSheetData(null));
     try {
       await handleSheetGeneration(messageText, currentChatId);
     } catch (error) {
@@ -780,7 +814,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
 
   const clearError = () => {
     setError(null);
-    dispatch(setSheetStatus("idle"));
+    dispatch(setSheetStatus("completed"));
   };
 
   if (!isInitialized && error) {

@@ -71,7 +71,7 @@ import {
   ExpandLess,
   Check,
 } from "@mui/icons-material";
-import { usePresentation } from "./context/SlideContext";
+import { usePresentation } from "./context/SlideContextProvider";
 import { handleAdvancedPptxExport } from "../../libs/presentationExporter";
 import { handleNativePptxExport } from "../../libs/nativePresentationExporter";
 import { handlePDFExport } from "../../libs/pdfPresentationExporter";

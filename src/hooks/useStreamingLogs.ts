@@ -519,19 +519,15 @@ export const formatTimestamp = (timestamp: string): string => {
       return `${minutes}m ago`;
     }
 
-    // Get the user's local time zone
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+    // Remove explicit timezone - let the browser handle it automatically
     if (date.toDateString() === now.toDateString()) {
       return date.toLocaleTimeString([], {
-        timeZone: userTimeZone,
         hour: "2-digit",
         minute: "2-digit",
       });
     }
 
     return date.toLocaleString([], {
-      timeZone: userTimeZone,
       month: "short",
       day: "numeric",
       hour: "2-digit",

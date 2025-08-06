@@ -52,11 +52,17 @@ export const shareApiSlice = createApi({
 
     // Fetch shared presentation
     fetchSharedSlides: builder.query({
-      query: ({ shareLink, password }) => ({
-        url: `/share/shared/${shareLink}`,
-        method: "GET",
-        params: password ? { password } : {},
-      }),
+      query: ({ shareLink, password, accessToken }) => {
+        const params = {};
+        if (password) params.password = password;
+        if (accessToken) params.token = accessToken;
+
+        return {
+          url: `/share/shared/${shareLink}`,
+          method: "GET",
+          params,
+        };
+      },
       providesTags: ["Share"],
     }),
 

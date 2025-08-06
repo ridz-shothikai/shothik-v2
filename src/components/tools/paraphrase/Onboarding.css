@@ -16,7 +16,7 @@
   font-weight: 800;
   text-shadow: none;
   font-size: 13px;
-  padding-left: 12px;
+  /* padding-left: 12px; */
   border-radius: 8px;
   border: none;
   height: 30px;
@@ -38,3 +38,4 @@
 .driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
   border-bottom-color: #00A76F;
 }
+

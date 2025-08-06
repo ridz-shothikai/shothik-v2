@@ -22,6 +22,9 @@ export default function PricingButton({
   const handleTrigger = () => {
     trackEvent("click", "payment", subscription, 1);
   };
+
+  // console.log(subscription, "subscription");
+
   return (
     <Box>
       {user?.email ? (
@@ -42,7 +45,7 @@ export default function PricingButton({
                 }&redirect=${redirect}`
           }
           fullWidth
-          size='large'
+          size="large"
           variant={outline ? "outlined" : "contained"}
           disabled={
             !yearly_plan_available && yearly
@@ -64,7 +67,7 @@ export default function PricingButton({
           disabled={!yearly_plan_available && yearly}
           onClick={() => dispatch(setShowLoginModal(true))}
           fullWidth
-          size='large'
+          size="large"
           variant={
             outline || subscription === "free" ? `outlined` : "contained"
           }

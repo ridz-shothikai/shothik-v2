@@ -3,6 +3,9 @@ import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
+const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), {
+  ssr: false,
+});
 
 const UserActionInput = ({
   isMobile,
@@ -10,6 +13,12 @@ const UserActionInput = ({
   extraAction,
   disableTrySample = false,
   sampleText,
+  paraphrase = false,
+  paidUser = false,
+  selectedLang = "English (US)",
+  selectedSynonymLevel = "Basic",
+  selectedMode = "Standard",
+  freezeWords = [],
 }) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
@@ -39,29 +48,29 @@ const UserActionInput = ({
       }}
     >
       <Stack
-        direction='row'
-        alignItems='start'
-        justifyContent='center'
-        flexWrap='wrap'
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        flexWrap="wrap"
         rowGap={1.5}
         columnGap={2}
         sx={{ width: "80%", mx: "auto" }}
       >
         <Stack
-          direction='row'
+          direction="row"
           id="sample-paste-section"
-          alignItems='start'
-          justifyContent='center'
-          flexWrap='wrap'
+          alignItems="start"
+          justifyContent="center"
+          flexWrap="wrap"
           rowGap={1.5}
           columnGap={2}
           sx={{ width: "80%", mx: "auto" }}
         >
           {!disableTrySample ? (
             <Button
-              color='warning'
+              color="warning"
               size={isMobile ? "small" : "large"}
-              variant='soft'
+              variant="soft"
               onClick={handleSampleText}
               disabled={!sampleText}
               startIcon={<SaveAsOutlined />}
@@ -80,8 +89,8 @@ const UserActionInput = ({
 
           <Button
             size={isMobile ? "small" : "large"}
-            variant='soft'
-            color='secondary'
+            variant="soft"
+            color="secondary"
             onClick={handlePaste}
             sx={{
               border: { sm: "none", xs: "2px solid" },
@@ -96,19 +105,31 @@ const UserActionInput = ({
             {!isMobile ? "Paste Text" : "Paste"}
           </Button>
         </Stack>
-        <Box id="upload_button">
-          <FileUpload isMobile={isMobile} setInput={handleFileData} />
-          <Typography
-            component='p'
-            variant='caption'
-            sx={{
-              color: "text.secondary",
-              textAlign: "center",
-            }}
-          >
-            {isMobile ? "" : "Supported file"} formats: pdf,docx.
-          </Typography>
-        </Box>
+        {paraphrase ? (
+          <MultipleFileUpload
+            isMobile={isMobile}
+            setInput={() => {}}
+            paidUser={paidUser}
+            freezeWords={freezeWords}
+            selectedMode={selectedMode}
+            selectedSynonymLevel={selectedSynonymLevel}
+            selectedLang={selectedLang}
+          />
+        ) : (
+          <Box id="upload_button">
+            <FileUpload isMobile={isMobile} setInput={handleFileData} />
+            <Typography
+              component="p"
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              {isMobile ? "" : "Supported file"} formats: pdf,docx.
+            </Typography>
+          </Box>
+        )}
       </Stack>
     </Box>
   );

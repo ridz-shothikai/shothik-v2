@@ -45,11 +45,11 @@ import {
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
-import { useCreatePresentationMutation } from "../../src/redux/api/presentation/presentationApi";
+import { useCreatePresentationMutation, useFetchAllPresentationsQuery } from "../../src/redux/api/presentation/presentationApi";
 import { setPresentationState } from "../../src/redux/slice/presentationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
-import { setShowLoginModal } from "../../src/redux/slice/auth";
+import { setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
 import {createPresentationServer} from '../../src/services/createPresentationServer';
 import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
 import { setSheetState } from "../../src/redux/slice/sheetSlice";
@@ -71,6 +71,8 @@ import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
 import Link from "next/link";
 import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
 import { format } from "date-fns";
+import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
+import ChatSidebar from "./ChatSidebar";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -187,8 +189,18 @@ export default function AgentLandingPage() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
-  const accessToken = useSelector((state) => state.auth.accessToken);
-  const { data: myChats, isLoading, error } = useGetMyChatsQuery();
+  const {accessToken, sheetToken} = useSelector((state) => state.auth);
+  const {
+    data: myChats,
+    isLoading: SheetDataLoading,
+    error,
+    refetch: refetchChatHistory,
+  } = useGetMyChatsQuery();
+  const {
+    data: slidesChats,
+    isLoading: SlideDataLoading,
+    error: SlideDataLoadingError,
+  } = useFetchAllPresentationsQuery();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
   // console.log(myChats, "myChats");
@@ -201,18 +213,36 @@ export default function AgentLandingPage() {
     severity: "error",
   });
 
+  // console.log(slidesChats, "slides data");
   // const [sidebarOpen, setSidebarOpen] = useState(false);
   // console.log(isNavbarExpanded, "isNavbarExpanded");
-
+  
   const toggleDrawer = (open) => () => {
     dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
   };
-
+  
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useResponsive("down", "sm");
-
+  
   const user = useSelector((state) => state.auth.user);
+  
+  /**
+   * When we come to the agents page if user is not registered to our services, make them register it. 
+   */
+  const {sheetAIToken, refreshSheetAIToken} = useSheetAiToken(user?.email);
+
+  // for saving sheet token to redux state
+  useEffect(() => {
+    // We will save token on redux and based on that we will generate users sheet chat data
+    if(!sheetAIToken) return;
+
+    dispatch(setSheetToken(sheetAIToken));
+
+    // if sheet token saved to our local storage then we can try to refetch again to get the user sheet chat data
+    refetchChatHistory();
+    console.log("chat data refetched");
+  }, [sheetAIToken]);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -255,7 +285,8 @@ export default function AgentLandingPage() {
             setIsInitiatingSheet,
             router,
             email,
-            showToast
+            showToast,
+            refreshSheetAIToken
           );
         case "download":
           return console.log("download route");
@@ -314,7 +345,7 @@ export default function AgentLandingPage() {
     >
       {/* ============== FOR AGENTS USAGE HISTORY STARTS ================ */}
       {/* Menu Button (Top Left) */}
-      {/* {accessToken && (
+      {accessToken && (
         <IconButton
           onClick={toggleDrawer(true)}
           sx={{
@@ -326,209 +357,23 @@ export default function AgentLandingPage() {
         >
           <MenuIcon />
         </IconButton>
-      )} */}
+      )}
 
       {/* Sidebar Drawer */}
-      <Drawer
-        anchor="left"
-        open={sidebarOpen}
-        onClose={toggleDrawer(false)}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          zIndex: 1102,
-          "& .MuiDrawer-paper": {
-            position: "absolute",
-            left: isMobile ? 0 : isNavbarExpanded ? 273 : 100,
-            width: { xs: "100vw", sm: 320, md: 360 },
-            maxWidth: { xs: "100vw", sm: "calc(100vw - 320px)" },
-            bgcolor: isDarkMode ? "#1e272e" : "#fff",
-            color: isDarkMode ? "#eee" : "#333",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-        >
-          {/* Header */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              p: 2,
-              borderBottom: 1,
-              borderColor: "divider",
-              flexShrink: 0,
-            }}
-          >
-            <Typography
-              variant="h6"
-              component="h2"
-              sx={{
-                fontWeight: 600,
-                fontSize: { xs: "1.1rem", sm: "1.25rem" },
-              }}
-            >
-              My Chats
-            </Typography>
-
-            <IconButton
-              onClick={toggleDrawer(false)}
-              size="small"
-              sx={{
-                color: isDarkMode ? "#eee" : "#333",
-              }}
-              aria-label="Close sidebar"
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
-          {/* Content */}
-          <Box
-            sx={{
-              flex: 1,
-              overflow: "auto",
-              p: { xs: 1, sm: 2 },
-            }}
-          >
-            {isLoading && (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: 100,
-                }}
-              >
-                <CircularProgress size={24} />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ ml: 2 }}
-                >
-                  Loading chats...
-                </Typography>
-              </Box>
-            )}
-
-            {error && (
-              <Typography variant="body1" color="text.secondary">
-                No chats found
-              </Typography>
-            )}
-
-            {!isLoading && myChats?.length === 0 && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: 200,
-                  textAlign: "center",
-                }}
-              >
-                <ChatBubbleOutlineIcon
-                  sx={{
-                    fontSize: 48,
-                    color: "text.disabled",
-                    mb: 2,
-                  }}
-                />
-                <Typography variant="body1" color="text.secondary">
-                  No chats yet
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.disabled"
-                  sx={{ mt: 0.5 }}
-                >
-                  Start a new conversation to see it here
-                </Typography>
-              </Box>
-            )}
-
-            {myChats && myChats.length > 0 && (
-              <Stack spacing={1}>
-                {myChats.map((chat) => (
-                  <Card
-                    key={chat._id || chat.id}
-                    elevation={0}
-                    onClick={() => router.push(`/agents/sheets?id=${chat._id}`)}
-                    sx={{
-                      cursor: "pointer",
-                      transition: "all 0.2s ease-in-out",
-                      border: 1,
-                      borderColor: "divider",
-                      "&:hover": {
-                        bgcolor: "action.hover",
-                        borderColor: "primary.main",
-                        elevation: 1,
-                      },
-                      "&:active": {
-                        transform: "scale(0.98)",
-                      },
-                    }}
-                  >
-                    <CardContent
-                      sx={{
-                        p: { xs: 1.5, sm: 2 },
-                        "&:last-child": {
-                          pb: { xs: 1.5, sm: 2 },
-                        },
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle1"
-                        component="h3"
-                        sx={{
-                          fontWeight: 600,
-                          mb: 0.5,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          fontSize: { xs: "0.9rem", sm: "1rem" },
-                          lineHeight: 1.3,
-                        }}
-                        title={chat.name}
-                      >
-                        {chat.name}
-                      </Typography>
-
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          fontSize: { xs: "0.75rem", sm: "0.8rem" },
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                        }}
-                      >
-                        <AccessTimeIcon sx={{ fontSize: 14 }} />
-                        {format(
-                          new Date(chat.createdAt),
-                          "dd/MM/yyyy, hh:mm a"
-                        )}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Stack>
-            )}
-          </Box>
-        </Box>
-      </Drawer>
+      <ChatSidebar
+        sidebarOpen={sidebarOpen}
+        toggleDrawer={toggleDrawer}
+        isMobile={isMobile}
+        isNavbarExpanded={isNavbarExpanded}
+        isDarkMode={isDarkMode}
+        isLoading={SheetDataLoading}
+        error={error}
+        router={router}
+        myChats={myChats}
+        SlideDataLoading={SlideDataLoading}
+        slidesChats={slidesChats?.data}
+        SlideDataLoadingError={SlideDataLoadingError}
+      />
 
       {/* ============== FOR AGENTS USAGE HISTORY ENDS ================ */}
 

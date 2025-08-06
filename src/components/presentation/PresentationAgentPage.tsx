@@ -39,7 +39,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   const dispatch = useDispatch();
   const { agentType, setAgentType } = useAgentContext();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   const urlPresentationId =
     searchParams.get("id") || searchParams.get("presentation_id");
@@ -188,6 +188,20 @@ export default function PresentationAgentPage({ specificAgent }) {
         clearInterval(pollingIntervalRef.current);
       }
       socketInstance.disconnect();
+
+      // Clear Redux state on unmount
+      dispatch(
+        setPresentationState({
+          logs: [],
+          slides: [],
+          status: "idle",
+          currentPhase: "planning",
+          completedPhases: [],
+          presentationBlueprint: null,
+          title: "Generating",
+          totalSlides: 0,
+        })
+      );  
     };
   }, []);
 
@@ -641,7 +655,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                 bgcolor:
                   theme.palette.mode === "dark"
                     ? theme.palette.grey[900]
-                    : "#fafafa",
+                    : "#e6f7ee",
               }}
               onClick={handlePreviewOpen}
             >

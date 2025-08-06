@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFetchSlidesQuery } from '../../../redux/api/presentation/presentationApi';
-import { usePresentation } from '../../../components/slide/context/SlideContext';
+import { usePresentation } from '../../../components/slide/context/SlideContextProvider';
 import SlidePreviewNavbar from '../../../components/slide/SlidePreviewNavbar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';

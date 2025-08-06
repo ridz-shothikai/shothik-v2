@@ -1,6 +1,5 @@
 "use client";
-// import 'driver.js/dist/driver.min.css'
-import { InsertDriveFile } from "@mui/icons-material";
+import { InsertDriveFile, MoreVert } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -10,7 +9,12 @@ import {
   Paper,
   Stack,
   Typography,
+  IconButton,
 } from "@mui/material";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Onboarding from "./Onboarding";
+import FreezeWordsDialog from "./FreezeWordsDialog";
+import FileHistorySidebar from "./FileHistorySidebar";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -45,13 +49,24 @@ const SYNONYMS = {
   60: "Advanced",
   80: "Expert",
 };
-
 const initialFrozenWords = new Set(protectedSingleWords);
 const initialFrozenPhrase = new Set(protectedPhrases);
 
 const ParaphraseContend = () => {
+  const { paraphraseQuotations, automaticStartParaphrasing } = useSelector(
+    (state) => state.settings.paraphraseOptions,
+  );
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showDemo, setShowDemo] = useState(false);
+  useEffect(() => {
+    const shown = localStorage.getItem("onboarding") || false;
+    if (!shown) {
+      setShowDemo(true);
+    }
+  }, []);
   const [selectedSynonyms, setSelectedSynonyms] = useState(SYNONYMS[20]);
   const [showLanguageDetect, setShowLanguageDetect] = useState(false);
+  const { accessToken } = useSelector((state) => state.auth);
   const [outputHistoryIndex, setOutputHistoryIndex] = useState(0);
   const [highlightSentence, setHighlightSentence] = useState(0);
   const [selectedMode, setSelectedMode] = useState("Standard");
@@ -61,8 +76,15 @@ const ParaphraseContend = () => {
   const { user } = useSelector((state) => state.auth);
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
-  const [language, setLanguage] = useState("English");
-  const sampleText = trySamples.paraphrase[language || "English"];
+  const [language, setLanguage] = useState("English (US)");
+  const sampleText =
+    trySamples.paraphrase[
+      language && language.startsWith("English")
+        ? "English"
+        : language
+          ? language
+          : "English"
+    ];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
@@ -111,10 +133,12 @@ const ParaphraseContend = () => {
       setResult(historyData);
     }
   }, [outputHistoryIndex]);
+  // Fixed frontend socket handling - based on your working version
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET, {
+    const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
       transports: ["websocket"],
+      auth: { token: accessToken },
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
@@ -131,65 +155,344 @@ const ParaphraseContend = () => {
     });
 
     let accumulatedText = "";
+
+    function mapBackendIndexToResultIndex(backendIndex, result) {
+      const sentenceSlots = [];
+      result.forEach((seg, idx) => {
+        if (!(seg.length === 1 && seg[0].type === "newline"))
+          sentenceSlots.push(idx);
+      });
+      return sentenceSlots[backendIndex] ?? -1;
+    }
+
+    const sentenceSeparator =
+      language === "Bangla"
+        ? /(?:।\s+|\.\r?\n+)/ // Bangla: either "। " or ".\n"
+        : /(?:\.\s+|\.\r?\n+)/;
+
+    // ─── 2) Plain handler: clear `result` on first chunk of each run ────────────
     socket.on("paraphrase-plain", (data) => {
+      console.log("paraphrase-plain:", data);
       if (data === ":end:") {
         accumulatedText = "";
         setIsLoading(false);
         return;
       }
 
+      // if this is the very first chunk of a brand-new run, wipe out old result:
+      if (accumulatedText === "") {
+        setResult([]);
+      }
+
+      // accumulate raw Markdown
       accumulatedText += data.replace(/[{}]/g, "");
 
-      const separator = language === "Bangla" ? "। " : ". ";
-      const sentences = accumulatedText.split(separator).map((sentence) => {
-        const words = sentence
-          .trim()
-          .split(/\s+/)
-          .map((word) => ({ word, type: "none", synonyms: [] }));
-        return words;
-      });
+      // update word count, etc…
+      setOutputContend(accumulatedText);
+      setOutputWordCount(
+        accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
+      );
 
-      setResult(sentences);
-      setOutputContend(accumulatedText.replace(/[()]/g, ""));
-      setOutputWordCount(accumulatedText.split(/\s+/).filter(Boolean).length);
-    });
+      // rebuild `result` with blank lines preserved
+      // const lines = accumulatedText.split("\n");
 
-    socket.on("paraphrase-tagging", (data) => {
-      try {
-        const sentence = JSON.parse(data);
-        if (sentence.eventId === eventId) {
-          setResult((prev) => {
-            const updated = [...prev];
-            updated[sentence.index] = sentence.data;
-            return updated;
-          });
+      const lines = accumulatedText.split(/\r?\n/);
+      const sentenceSeparator =
+        language === "Bangla" ? /(?:।\s+|\.\r?\n+)/ : /(?:\.\s+|\.\r?\n+)/;
+      const newResult = [];
+      lines.forEach((line) => {
+        if (!line.trim()) {
+          newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
+        } else {
+          line
+            .split(sentenceSeparator)
+            .filter(Boolean)
+            .forEach((sentence) => {
+              const words = sentence
+                .trim()
+                .split(/\s+/)
+                .map((w) => ({ word: w, type: "none", synonyms: [] }));
+              newResult.push(words);
+            });
         }
-      } catch (error) {
-        console.error("Error parsing paraphrase-tagging data:", error);
-      }
+      });
+      setResult(newResult);
+      console.log("new plain result:", newResult);
     });
 
-    socket.on("paraphrase-synonyms", (data) => {
-      if (data === ":end:") {
+    // ─── 3) Tagging handler: map backend index to correct slot ─────────────────
+    socket.on("paraphrase-tagging", (raw) => {
+      if (raw === ":end:") return;
+      console.log("paraphrase-tagging: ", raw);
+      let parsed, backendIndex, eid;
+      try {
+        ({ index: backendIndex, eventId: eid, data: parsed } = JSON.parse(raw));
+        if (eid !== eventId) return;
+      } catch (err) {
+        console.error("Error parsing paraphrase-tagging:", err);
+        return;
+      }
+
+      setResult((prev) => {
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+        if (targetIdx < 0) {
+          console.warn("tagging: couldn't map index", backendIndex);
+          return prev;
+        }
+
+        updated[targetIdx] = parsed.map((item) => ({
+          ...item,
+          word: item.word, // preserves markdown tokens
+        }));
+        console.log(
+          "updated[targetIdx]: ",
+          updated[targetIdx],
+          "targetIdx: ",
+          targetIdx,
+          "backendIndex: ",
+          backendIndex,
+        );
+        return updated;
+      });
+    });
+
+    // ─── 4) Synonyms handler: same index mapping ────────────────────────────────
+    socket.on("paraphrase-synonyms", (raw) => {
+      console.log("paraphrase-synonyms:", raw);
+      if (raw === ":end:") {
         console.log("Synonyms processing completed.");
         setProcessing({ success: true, loading: false });
         return;
       }
 
+      let analysis, backendIndex, eid;
       try {
-        const sentence = JSON.parse(data);
-        if (sentence.eventId === eventId) {
-          setResult((prev) => {
-            const updated = [...prev];
-            updated[sentence.index] = sentence.data;
-            return updated;
-          });
-        }
-      } catch (error) {
-        console.error("Error parsing paraphrase-synonyms data:", error);
+        ({
+          index: backendIndex,
+          eventId: eid,
+          data: analysis,
+        } = JSON.parse(raw));
+        if (eid !== eventId) return;
+      } catch (err) {
+        console.error("Error parsing paraphrase-synonyms:", err);
+        return;
       }
+
+      setResult((prev) => {
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+        if (targetIdx < 0) {
+          console.warn("synonyms: couldn't map index", backendIndex);
+          return prev;
+        }
+
+        updated[targetIdx] = analysis.map((item) => ({
+          ...item,
+          word: item.word,
+        }));
+        return updated;
+      });
     });
   }, [language, eventId]);
+  // useEffect(() => {
+  //   const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
+  //     transports: ["websocket"],
+  //     auth: { token: accessToken },
+  //     reconnection: true,
+  //     reconnectionAttempts: 5,
+  //     reconnectionDelay: 2000,
+  //   });
+
+  //   socket.on("connect", () => {
+  //     console.log("Socket connected:", socket.id);
+  //     setSocketId(socket.id);
+  //   });
+
+  //   socket.on("disconnect", () => {
+  //     console.warn("Socket disconnected");
+  //     setSocketId("");
+  //   });
+
+  //   let accumulatedText = "";
+
+  //   // ─── 1) Helper to map the backend index into your result array ───────────────
+  //   function mapBackendIndexToResultIndex(backendIndex, result) {
+  //     // Build an array of the actual positions in `result[]` that are real sentences
+  //     const sentenceSlots = [];
+  //     result.forEach((sentence, idx) => {
+  //       const isBlank = sentence.length === 1 && sentence[0].type === "newline";
+  //       if (!isBlank) sentenceSlots.push(idx);
+  //     });
+  //     // Look up the slot for this backendIndex; if missing, return –1
+  //     return sentenceSlots[backendIndex] ?? -1;
+  //   }
+  //   // function mapBackendIndexToResultIndex(backendIndex, result) {
+  //   //   let nonBlankCount = 0;
+  //   //   for (let i = 0; i < result.length; i++) {
+  //   //     const node = result[i];
+  //   //     const isBlank = node.length === 1 && node[0].type === "newline";
+  //   //     if (!isBlank) {
+  //   //       if (nonBlankCount === backendIndex) return i;
+  //   //       nonBlankCount++;
+  //   //     }
+  //   //   }
+  //   //   return -1;
+  //   // }
+
+  //   // ─── 2) Plain handler: clear `result` on first chunk of each run ────────────
+  //   socket.on("paraphrase-plain", (data) => {
+  //     console.log("paraphrase-plain:", data);
+  //     if (data === ":end:") {
+  //       accumulatedText = "";
+  //       setIsLoading(false);
+  //       return;
+  //     }
+
+  //     // if this is the very first chunk of a brand-new run, wipe out old result:
+  //     if (accumulatedText === "") {
+  //       setResult([]);
+  //     }
+
+  //     // accumulate raw Markdown
+  //     accumulatedText += data.replace(/[{}]/g, "");
+
+  //     // update word count, etc…
+  //     setOutputContend(accumulatedText);
+  //     setOutputWordCount(
+  //       accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
+  //     );
+
+  //     // rebuild `result` with blank lines preserved
+  //     const lines = accumulatedText.split("\n");
+  //     const separator = language === "Bangla" ? "। " : ". ";
+  //     const newResult = [];
+
+  //     lines.forEach((line) => {
+  //       if (line.trim() === "") {
+  //         newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
+  //       } else {
+  //         line
+  //           .split(separator)
+  //           .filter(Boolean)
+  //           .forEach((sentence) => {
+  //             const words = sentence
+  //               .trim()
+  //               .split(/\s+/)
+  //               .map((w) => ({ word: w, type: "none", synonyms: [] }));
+  //             newResult.push(words);
+  //           });
+  //       }
+  //     });
+
+  //     setResult(newResult);
+  //     console.log("new plain result:", newResult);
+  //   });
+
+  //   // ─── 3) Tagging handler: map backend index to correct slot ─────────────────
+  //   socket.on("paraphrase-tagging", (raw) => {
+  //     if (raw === ":end:") return;
+
+  //     let parsed, backendIndex, eid;
+  //     try {
+  //       ({ index: backendIndex, eventId: eid, data: parsed } = JSON.parse(raw));
+  //       if (eid !== eventId) return;
+  //     } catch (err) {
+  //       console.error("Error parsing paraphrase-tagging:", err);
+  //       return;
+  //     }
+
+  //     setResult((prev) => {
+  //       const updated = [...prev];
+  //       const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+  //       if (targetIdx < 0) {
+  //         console.warn("tagging: couldn't map index", backendIndex);
+  //         return prev;
+  //       }
+
+  //       updated[targetIdx] = parsed.map((item) => ({
+  //         ...item,
+  //         word: item.word, // preserves markdown tokens
+  //       }));
+  //       return updated;
+  //     });
+  //   });
+
+  //   // ─── 4) Synonyms handler: same index mapping ────────────────────────────────
+  //   socket.on("paraphrase-synonyms", (raw) => {
+  //     console.log("paraphrase-synonyms:", raw);
+  //     if (raw === ":end:") {
+  //       console.log("Synonyms processing completed.");
+  //       setProcessing({ success: true, loading: false });
+  //       return;
+  //     }
+
+  //     let analysis, backendIndex, eid;
+  //     try {
+  //       ({
+  //         index: backendIndex,
+  //         eventId: eid,
+  //         data: analysis,
+  //       } = JSON.parse(raw));
+  //       if (eid !== eventId) return;
+  //     } catch (err) {
+  //       console.error("Error parsing paraphrase-synonyms:", err);
+  //       return;
+  //     }
+
+  //     setResult((prev) => {
+  //       const updated = [...prev];
+  //       const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+  //       if (targetIdx < 0) {
+  //         console.warn("synonyms: couldn't map index", backendIndex);
+  //         return prev;
+  //       }
+
+  //       updated[targetIdx] = analysis.map((item) => ({
+  //         ...item,
+  //         word: item.word,
+  //       }));
+  //       return updated;
+  //     });
+  //   });
+
+  //   // socket.on("paraphrase-tagging", (data) => {
+  //   //   console.log('paraphrase-tagging: ', data)
+  //   //   try {
+  //   //     const sentence = JSON.parse(data);
+  //   //     if (sentence.eventId === eventId) {
+  //   //       setResult((prev) => {
+  //   //         const updated = [...prev];
+  //   //         updated[sentence.index] = sentence.data;
+  //   //         return updated;
+  //   //       });
+  //   //     }
+  //   //   } catch (error) {
+  //   //     console.error("Error parsing paraphrase-tagging data:", error);
+  //   //   }
+  //   // });
+  //   //
+  //   // socket.on("paraphrase-synonyms", (data) => {
+  //   //   if (data === ":end:") {
+  //   //     console.log("Synonyms processing completed.");
+  //   //     setProcessing({ success: true, loading: false });
+  //   //     return;
+  //   //   }
+  //   //
+  //   //   try {
+  //   //     const sentence = JSON.parse(data);
+  //   //     if (sentence.eventId === eventId) {
+  //   //       setResult((prev) => {
+  //   //         const updated = [...prev];
+  //   //         updated[sentence.index] = sentence.data;
+  //   //         return updated;
+  //   //       });
+  //   //     }
+  //   //   } catch (error) {
+  //   //     console.error("Error parsing paraphrase-synonyms data:", error);
+  //   //   }
+  //   // });
+  // }, [language, eventId]);
 
   const handleClear = (_, action = "all") => {
     if (action === "all") {
@@ -201,6 +504,35 @@ const ParaphraseContend = () => {
     setOutputHistory([]);
   };
 
+  useEffect(() => {
+    // If user *wants* to paraphrase quotations, we need to *un*-freeze any
+    // previously frozen quoted phrases.
+    if (paraphraseQuotations) {
+      for (const phrase of frozenPhrases.set) {
+        // match only strings that start AND end with a double-quote
+        if (/^".+"$/.test(phrase)) {
+          frozenPhrases.remove(phrase);
+        }
+      }
+      return; // and skip the auto-freeze step
+    }
+
+    // Otherwise (they DON'T want quotations paraphrased), auto-freeze them:
+    const words = userInput
+      .trim()
+      .split(/\s+/)
+      .filter((w) => w.length > 0);
+    const finalText = words.slice(0, wordLimit).join(" ");
+
+    if (words.length <= wordLimit) {
+      const quotedPhrases = [...finalText.matchAll(/"[^"]+"/g)].map(
+        (m) => m[0],
+      );
+      for (const phrase of quotedPhrases) {
+        frozenPhrases.add(phrase.trim());
+      }
+    }
+  }, [userInputValue, paraphraseQuotations]);
   const handleSubmit = async (value) => {
     try {
       // track event
@@ -214,28 +546,33 @@ const ParaphraseContend = () => {
       setOutputHistoryIndex(0);
       setProcessing({ success: false, loading: true });
 
-      const textToParaphrase = value ? value : userInput;
-      const textAsWrodsArray = textToParaphrase
-        .trim()
+      // use the full raw Markdown string for payload
+      const textToParaphrase = value || userInput;
+
+      // but enforce word-limit on a plain-text version
+      // strip common markdown tokens for counting
+      const plainTextForCount = textToParaphrase
+        .replace(/(```[\s\S]*?```)|(`[^`]*`)/g, "$1") // keep code blocks, but...
+        .replace(/[#*_>\-\[\]\(\)~`]/g, "") // remove markdown markers
+        .trim();
+      const wordCount = plainTextForCount
         .split(/\s+/)
-        .filter((word) => word.length > 0);
-      const finalText = textAsWrodsArray.slice(0, wordLimit).join(" ");
-      if (finalText > wordLimit) {
-        throw { error: "LIMIT_REQUEST", message: "Worads limit execed" };
+        .filter((w) => w.length > 0).length;
+      if (wordCount > wordLimit) {
+        throw { error: "LIMIT_REQUEST", message: "Words limit exceeded" };
       }
-
-      // generate uniqe 10 number randomly;
-      const randomNumber = Math.floor(Math.random() * 10000000000);
+      // now build your payload using the untouched Markdown
+      const randomNumber = Math.floor(Math.random() * 1e10);
       setEventId(`${socketId}-${randomNumber}`);
-
+      const freeze = [
+        ...(frozenWords?.values || []),
+        ...(frozenPhrases?.values || []),
+      ]
+        .filter(Boolean)
+        .join(", ");
       payload = {
-        text: finalText,
-        freeze:
-          frozenWords.size > 0
-            ? frozenWords.values.join(", ")
-            : frozenPhrases.size > 0
-            ? frozenPhrases.values.join(", ")
-            : "",
+        text: textToParaphrase,
+        freeze,
         language: language,
         mode: selectedMode ? selectedMode.toLowerCase() : "standard",
         synonym: selectedSynonyms ? selectedSynonyms.toLowerCase() : "basic",
@@ -269,39 +606,44 @@ const ParaphraseContend = () => {
   };
 
   useEffect(() => {
+    console.log(automaticStartParaphrasing);
+    // only auto-start if the setting is ON
+    if (!automaticStartParaphrasing) return;
+
     if (userInputValue && !processing.loading) {
       handleSubmit(userInputValue);
     }
-  }, [userInputValue]);
+  }, [userInputValue, automaticStartParaphrasing]);
+
   function extractPlainText(array) {
     // Check if input is an array
     if (!Array.isArray(array)) {
-      console.error('Input must be an array');
+      console.error("Input must be an array");
       return null;
     }
 
     // Initialize result string
-    let plainText = '';
+    let plainText = "";
 
     // Iterate through each sentence array
     for (const sentence of array) {
       // Check if sentence is an array
       if (!Array.isArray(sentence)) {
-        console.error('Each sentence must be an array');
+        console.error("Each sentence must be an array");
         return null;
       }
 
       // Process each word object in the sentence
       for (const wordObj of sentence) {
         // Validate word object structure
-        if (!wordObj || typeof wordObj !== 'object') {
-          console.error('Invalid word object in sentence');
+        if (!wordObj || typeof wordObj !== "object") {
+          console.error("Invalid word object in sentence");
           return null;
         }
 
         // Check if word property exists and is a string
-        if (typeof wordObj.word !== 'string') {
-          console.error('Word property must be a string');
+        if (typeof wordObj.word !== "string") {
+          console.error("Word property must be a string");
           return null;
         }
 
@@ -309,8 +651,8 @@ const ParaphraseContend = () => {
         plainText += wordObj.word.trim();
 
         // Add space after word unless it's punctuation
-        if (wordObj.type !== 'none' && wordObj.word !== ',') {
-          plainText += ' ';
+        if (wordObj.type !== "none" && wordObj.word !== ",") {
+          plainText += " ";
         }
       }
     }
@@ -318,132 +660,215 @@ const ParaphraseContend = () => {
     // Return the final string, trimmed
     return plainText.trim();
   }
+  const paidUser =
+    user?.package === "pro_plan" ||
+    user?.package === "value_plan" ||
+    user?.package === "unlimited";
 
   return (
-    <Box>
-      {/* <Onboarding/> */}
-      <LanguageMenu
-        isLoading={isLoading}
-        setLanguage={setLanguage}
-        language={language}
-      />
+    <Box sx={{ display: "flex", width: "100%" }}>
+      <Box sx={{ flex: "0 0 auto", width: "max-content", mr: 2 }}>
+        {!isMobile && (
+          <Box sx={{ flex: "0 0 auto", width: "max-content", mr: 2 }}>
+            <FileHistorySidebar />
+          </Box>
+        )}
+        {/* <FreezeWordsDialog */}
+        {/* /> */}
+      </Box>
+
       <Box
         sx={{
+          flex: "1 1 auto",
+          minWidth: 0, // <— allows this column to shrink
           display: "flex",
-          gap: 2,
-          overflow: "hidden",
+          flexDirection: "column",
         }}
       >
-        <Card
+        {showDemo ? <Onboarding /> : null}
+
+        {/* desktop: language tabs outside card; hide on mobile */}
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <LanguageMenu
+            isLoading={isLoading}
+            setLanguage={setLanguage}
+            language={language}
+          />
+        </Box>
+
+        <Box
           sx={{
-            flex: "1 1 0%",
-            minWidth: 0,
-            mt: 1,
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: "12px",
-            overflow: "visible",
+            display: "flex",
+            gap: 2,
+            overflow: "hidden",
           }}
         >
-          {!isMobile ? (
-            <ModeNavigation
-              selectedMode={selectedMode}
-              setSelectedMode={setSelectedMode}
-              userPackage={user?.package}
-              selectedSynonyms={selectedSynonyms}
-              setSelectedSynonyms={setSelectedSynonyms}
-              SYNONYMS={SYNONYMS}
-              setShowMessage={setShowMessage}
-            />
-          ) : (
-            <ModeNavigationForMobile
-              selectedMode={selectedMode}
-              setSelectedMode={setSelectedMode}
-              initialFrozenWords={initialFrozenWords}
-              frozenWords={frozenWords}
-              userPackage={user?.package}
-            />
-          )}
-
-          <Divider sx={{ borderBottom: "2px solid", borderColor: "divider" }} />
-
-          <Grid2 container>
-            <Grid2
+          <Card
+            sx={{
+              flex: "1 1 0%",
+              minWidth: 0,
+              width: "100%",
+              mt: 0,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: "12px",
+              overflow: "visible",
+            }}
+          >
+            {/* mobile: selected language button in card header */}
+            <Box
               sx={{
-                height: isMobile ? "calc(100vh - 340px)" : 530,
-                position: "relative",
-                borderRight: { md: "2px solid" },
-                borderRightColor: { md: "divider" },
-                padding: 2,
-                paddingBottom: 0,
-                display: "flex",
-                flexDirection: "column",
+                display: { xs: "flex", sm: "none" },
+                borderBottom: 1,
+                borderColor: "divider",
+                px: 2,
+                py: 1,
               }}
-              size={{ xs: 12, md: 6 }}
             >
-              <UserInputBox
-                wordLimit={wordLimit}
-                setUserInput={setUserInput}
-                userInput={userInput}
-                frozenPhrases={frozenPhrases}
-                frozenWords={frozenWords}
-                user={user}
-              />
-
-              {!userInput ? (
-                <UserActionInput
-                  setUserInput={setUserInput}
-                  isMobile={isMobile}
-                  sampleText={sampleText}
-                />
-              ) : null}
-              <WordCounter
-                btnText={outputContend ? "Rephrase" : "Paraphrase"}
-                handleClearInput={handleClear}
-                handleSubmit={handleSubmit}
+              <LanguageMenu
                 isLoading={isLoading}
-                userInput={userInput}
-                userPackage={user?.package}
-                toolName='paraphrase'
-                btnIcon={isMobile ? null : <InsertDriveFile />}
-                sx={{ py: 0 }}
-                dontDisable={true}
-                sticky={320}
+                setLanguage={setLanguage}
+                language={language}
               />
+              {/* three-dots overflow menu for mobile */}
+              <IconButton size="small" onClick={() => setMobileMenuOpen(true)}>
+                <MoreVert fontSize="small" />
+              </IconButton>
+            </Box>
+            {!isMobile ? (
+              <ModeNavigation
+                selectedMode={selectedMode}
+                setSelectedMode={setSelectedMode}
+                userPackage={user?.package}
+                selectedSynonyms={selectedSynonyms}
+                setSelectedSynonyms={setSelectedSynonyms}
+                SYNONYMS={SYNONYMS}
+                setShowMessage={setShowMessage}
+              />
+            ) : (
+              <ModeNavigationForMobile
+                selectedMode={selectedMode}
+                setSelectedMode={setSelectedMode}
+                initialFrozenWords={initialFrozenWords}
+                frozenWords={frozenWords}
+                userPackage={user?.package}
+              />
+            )}
 
-              {showLanguageDetect && (
-                <Stack
-                  direction='row'
-                  alignItems='center'
-                  component={Paper}
-                  gap={2}
-                  sx={{
-                    position: "absolute",
-                    bottom: 80,
-                    left: 20,
-                    padding: 1,
-                  }}
-                >
-                  <Typography>Detected Language: </Typography>
-                  <Button variant='outlined'>{language}</Button>
-                </Stack>
-              )}
-            </Grid2>
-            {isMobile && !userInput ? null : (
+            <Divider
+              sx={{ borderBottom: "2px solid", borderColor: "divider" }}
+            />
+
+            <Grid2 container>
               <Grid2
-                size={{ xs: 12, md: 6 }}
-                ref={outputRef}
                 sx={{
                   height: isMobile ? "calc(100vh - 340px)" : 530,
-                  overflow: "hidden",
-                  borderTop: { xs: "2px solid", md: "none" },
-                  borderTopColor: { xs: "divider", md: undefined },
                   position: "relative",
+                  borderRight: { md: "2px solid" },
+                  borderRightColor: { md: "divider" },
+                  padding: 2,
+                  paddingBottom: 0,
                   display: "flex",
                   flexDirection: "column",
                 }}
+                size={{ xs: 12, md: 6 }}
               >
-                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
+                <UserInputBox
+                  wordLimit={wordLimit}
+                  setUserInput={setUserInput}
+                  userInput={userInput}
+                  frozenPhrases={frozenPhrases}
+                  frozenWords={frozenWords}
+                  user={user}
+                />
+
+                {!userInput ? (
+                  <UserActionInput
+                    setUserInput={setUserInput}
+                    isMobile={isMobile}
+                    sampleText={sampleText}
+                    paraphrase={true}
+                    paidUser={paidUser}
+                    selectedMode={selectedMode}
+                    selectedSynonymLevel={selectedSynonyms}
+                    selectedLang={language}
+                    freezeWords={[
+                      ...(frozenWords?.values || []),
+                      ...(frozenPhrases?.values || []),
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  />
+                ) : null}
+                <WordCounter
+                  freeze_props={{
+                    recommendedWords: [
+                      "streets",
+                      "filled",
+                      "people",
+                      "parade",
+                      "music",
+                    ],
+                    frozenWords: Array.from(frozenWords.set),
+                    frozenPhrases: Array.from(frozenPhrases.set),
+                    onAddWords: (words) =>
+                      words.forEach((w) => frozenWords.add(w)),
+                    onAddPhrases: (phrases) =>
+                      phrases.forEach((p) => frozenPhrases.add(p)),
+                    onRemoveWord: (w) => frozenWords.remove(w),
+                    onRemovePhrase: (p) => frozenPhrases.remove(p),
+                    onClearAll: () => {
+                      frozenWords.reset(initialFrozenWords);
+                      frozenPhrases.reset(initialFrozenPhrases);
+                    },
+                  }}
+                  btnText={outputContend ? "Rephrase" : "Paraphrase"}
+                  handleClearInput={handleClear}
+                  handleSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  userInput={userInput}
+                  userPackage={user?.package}
+                  toolName="paraphrase"
+                  btnIcon={isMobile ? null : <InsertDriveFile />}
+                  sx={{ py: 0 }}
+                  dontDisable={true}
+                  sticky={320}
+                  freeze_modal={true}
+                />
+
+                {showLanguageDetect && (
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    component={Paper}
+                    gap={2}
+                    sx={{
+                      position: "absolute",
+                      bottom: 80,
+                      left: 20,
+                      padding: 1,
+                    }}
+                  >
+                    <Typography>Detected Language: </Typography>
+                    <Button variant="outlined">{language}</Button>
+                  </Stack>
+                )}
+              </Grid2>
+              {isMobile && !userInput ? null : (
+                <Grid2
+                  size={{ xs: 12, md: 6 }}
+                  ref={outputRef}
+                  sx={{
+                    height: isMobile ? "calc(100vh - 340px)" : 530,
+                    overflow: "hidden",
+                    borderTop: { xs: "2px solid", md: "none" },
+                    borderTopColor: { xs: "divider", md: undefined },
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                   {isLoading ? (
                     <ViewInputInOutAsDemo
                       input={userInput}
@@ -454,33 +879,33 @@ const ParaphraseContend = () => {
                   ) : null}
                 </div> */}
 
-                <ParaphraseOutput
-                  data={result}
-                  setData={setResult}
-                  synonymLevel={selectedSynonyms}
-                  dataModes={modes}
-                  userPackage={user?.package}
-                  selectedLang={language}
-                  highlightSentence={highlightSentence}
-                  setOutputHistory={setOutputHistory}
-                  input={userInput}
-                  freezeWords={
-                    frozenWords.size > 0
-                      ? frozenWords.values.join(", ")
-                      : frozenPhrases.size > 0
-                      ? frozenPhrases.values.join(", ")
-                      : ""
-                  }
-                  socketId={socketId}
-                  language={language}
-                  setProcessing={setProcessing}
-                  eventId={eventId}
-                  setEventId={setEventId}
-                />
+                  <ParaphraseOutput
+                    data={result}
+                    setData={setResult}
+                    synonymLevel={selectedSynonyms}
+                    dataModes={modes}
+                    userPackage={user?.package}
+                    selectedLang={language}
+                    highlightSentence={highlightSentence}
+                    setHighlightSentence={setHighlightSentence}
+                    setOutputHistory={setOutputHistory}
+                    input={userInput}
+                    freezeWords={[
+                      ...(frozenWords?.values || []),
+                      ...(frozenPhrases?.values || []),
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                    socketId={socketId}
+                    language={language}
+                    setProcessing={setProcessing}
+                    eventId={eventId}
+                    setEventId={setEventId}
+                  />
 
-                {result.length ? (
-                  <>
-                    {/* <ParaphraseOutput
+                  {result.length ? (
+                    <>
+                      {/* <ParaphraseOutput
                       data={result}
                       setData={setResult}
                       synonymLevel={selectedSynonyms}
@@ -504,52 +929,80 @@ const ParaphraseContend = () => {
                       eventId={eventId}
                       setEventId={setEventId}
                     /> */}
-                    <OutputBotomNavigation
-                      handleClear={handleClear}
-                      highlightSentence={highlightSentence}
-                      outputContend={outputContend}
-                      outputHistory={outputHistory}
-                      outputHistoryIndex={outputHistoryIndex}
-                      outputWordCount={outputWordCount}
-                      proccessing={processing}
-                      sentenceCount={result.length}
-                      setHighlightSentence={setHighlightSentence}
-                      setOutputHistoryIndex={setOutputHistoryIndex}
-                    />
-                  </>
-                ) : null}
+                      <OutputBotomNavigation
+                        handleClear={handleClear}
+                        highlightSentence={highlightSentence}
+                        outputContend={outputContend}
+                        outputHistory={outputHistory}
+                        outputHistoryIndex={outputHistoryIndex}
+                        outputWordCount={outputWordCount}
+                        proccessing={processing}
+                        sentenceCount={result.length}
+                        setHighlightSentence={setHighlightSentence}
+                        setOutputHistoryIndex={setOutputHistoryIndex}
+                      />
+                    </>
+                  ) : null}
 
-                {user?.package === "free" && showMessage.show ? (
-                  <UpdateComponent Component={showMessage.Component} />
-                ) : null}
-              </Grid2>
-            )}
-          </Grid2>
-        </Card>
-        <Box
-          sx={{
-            flex: "0 0 auto", // don’t grow or shrink
-          }}
-        >
-          <VerticalMenu
-            selectedMode={selectedMode}
-            outputText={result}
-            setOutputText={setResult}
-            setSelectedMode={setSelectedMode}
-            freezeWords={
-              frozenWords.size > 0
-                ? frozenWords.values.join(", ")
-                : frozenPhrases.size > 0
-                ? frozenPhrases.values.join(", ")
-                : ""
-            }
-            plainOutput={extractPlainText(result)}
-            text={userInput}
-            selectedLang={language}
-            highlightSentence={highlightSentence}
-            setHighlightSentence={setHighlightSentence}
-            selectedSynonymLevel={selectedSynonyms}
-          />
+                  {user?.package === "free" && showMessage.show ? (
+                    <UpdateComponent Component={showMessage.Component} />
+                  ) : null}
+                </Grid2>
+              )}
+            </Grid2>
+          </Card>
+
+          <SwipeableDrawer
+            anchor="bottom"
+            open={mobileMenuOpen}
+            onOpen={() => setMobileMenuOpen(true)}
+            onClose={() => setMobileMenuOpen(false)}
+          >
+            {/* you can wrap in a Box to add padding if you like */}
+            <Box sx={{ px: 2, pt: 1, pb: 2 }}>
+              <VerticalMenu
+                selectedMode={selectedMode}
+                setSelectedMode={setSelectedMode}
+                outputText={result}
+                setOutputText={setResult}
+                freezeWords={[
+                  ...(frozenWords?.values || []),
+                  ...(frozenPhrases?.values || []),
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+                text={userInput}
+                selectedLang={language}
+                highlightSentence={highlightSentence}
+                setHighlightSentence={setHighlightSentence}
+                plainOutput={extractPlainText(result)}
+                selectedSynonymLevel={selectedSynonyms}
+                mobile={true}
+              />
+            </Box>
+          </SwipeableDrawer>
+          {!isMobile && (
+            <Box sx={{ flex: "0 0 auto" }}>
+              <VerticalMenu
+                selectedMode={selectedMode}
+                outputText={result}
+                setOutputText={setResult}
+                setSelectedMode={setSelectedMode}
+                freezeWords={[
+                  ...(frozenWords?.values || []),
+                  ...(frozenPhrases?.values || []),
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+                plainOutput={extractPlainText(result)}
+                text={userInput}
+                selectedLang={language}
+                highlightSentence={highlightSentence}
+                setHighlightSentence={setHighlightSentence}
+                selectedSynonymLevel={selectedSynonyms}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>
