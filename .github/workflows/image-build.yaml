@@ -45,5 +45,7 @@ jobs:
           --build-arg NEXT_PUBLIC_API_URI=http://163.172.172.38:8080/api \
           --build-arg NEXT_PUBLIC_DOMAIN_URI=http://163.172.172.38:3000 \
           --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID="259331281661-14jks3qs71c27j5h7t2jf7uc6c0d4lm1.apps.googleusercontent.com" \
+          --build-arg NEXT_PUBLIC_PARAPHRASE_API_URI="http://163.172.172.38:3050/api" \
+          --build-arg NEXT_PUBLIC_PARAPHRASE_SOCKET="http://163.172.172.38:3050" \
           .
           docker push ghcr.io/ridz-shothikai/shothik-v2:${{ env.SHORT_SHA }}
