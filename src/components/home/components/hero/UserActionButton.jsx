@@ -7,7 +7,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowLoginModal } from "../../../../redux/slice/auth";
 
-const UserActionButton = () => {
+const UserActionButton = ({ setShowModal }) => {
   const { user } = useSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -23,8 +23,8 @@ const UserActionButton = () => {
       viewport={{ once: true }}
     >
       <Button
-        variant='contained'
-        size='large'
+        variant="contained"
+        size="large"
         sx={{
           maxWidth: "fit-content",
           borderRadius: "0.5rem",
@@ -34,14 +34,17 @@ const UserActionButton = () => {
           justifyContent: "center",
           px: 3,
           py: 1.3,
-          bgcolor: "#059669"
+          bgcolor: "#059669",
         }}
         onClick={() => {
-          if (user?.email) {
-            router.push("/paraphrase");
-          } else {
-            dispatch(setShowLoginModal(true));
-          }
+          // if (user?.email) {
+          //   router.push("/paraphrase");
+          // } else {
+          //   dispatch(setShowLoginModal(true));
+          // }
+          // this was before, don't remove it 👆
+
+          setShowModal(true);
         }}
       >
         <Box

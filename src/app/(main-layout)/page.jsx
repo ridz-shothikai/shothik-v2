@@ -18,6 +18,8 @@ import KeyBenefits from "../../components/home/new-components/KeyBenefits";
 import Guarantee from "../../components/home/new-components/Guarantee";
 import StudentDeserve from "../../components/home/new-components/StudentDeserve";
 import Journey from "../../components/home/new-components/Journey";
+import ExitModal from "../../components/home/ExitModal";
+import EmailModalExample from "../../components/home/EmailCollectModal";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -93,6 +95,8 @@ const Home = () => {
       <FeaturesSection />
       <JobsTestimonialsSection/>
       <CtaSection/>
+      <ExitModal/>
+      <EmailModalExample/>
       {/* <HomeTools /> */}
       {/* <HomeFeatures /> */}
       {/* <B2bFeatures /> */}
