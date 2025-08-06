@@ -85,10 +85,10 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
             sx={{
               "&.Mui-selected": {
                 backgroundColor: "common.white",
-                borderRadius: "8px 8px 0 0",
-                borderBottom: "2px solid",
+                borderRadius: "12px 12px 0 0",
+                border: "1px solid",
                 borderColor: "divider",
-                marginBottom: "-2px",
+                // marginBottom: "-2px",
                 px: 2,
               },
               "&.MuiTab-root": { display: "inline-flex" },

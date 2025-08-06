@@ -42,7 +42,7 @@ export async function generateMetadata() {
 const Paraphrase = () => {
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 12, xs: 10 } }}
+      sx={{ display: "flex", flexDirection: "column", gap: { md: 12, xs: 10 }, maxWidth: '100% !important' }}
     >
       <ParaphraseContend />
       <ToolsSepecigFaq
