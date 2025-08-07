@@ -314,7 +314,7 @@ export default function AgentShowcase() {
 
   const handleEmailSubmit = async (email) => {
     console.log("Email submitted:", email);
-    // Here you would typically send the email to your backend
+    // Here we would typically send the email to your backend
     // await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }) });
   };
 

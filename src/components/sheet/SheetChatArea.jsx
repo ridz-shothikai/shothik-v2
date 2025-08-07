@@ -240,6 +240,11 @@ export default function SheetChatArea({ currentAgentType, theme }) {
   const [chatHistory, setChatHistory] = useState([]);
   // const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [shouldPoll, setShouldPoll] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
@@ -611,45 +616,52 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     if (!messageText.trim() || isLoading || !sheetAiToken) {
       return;
     }
+
     console.log("generating");
     setError(null);
     setIsLoading(true);
     dispatch(setSheetStatus("generating"));
     sessionStorage.setItem("activeChatId", currentChatId);
     dispatch(setActiveSheetIdForPolling(currentChatId));
+
+    // Create user message with a predictable ID
+    const userMessageId = `user-${Date.now()}`;
     const userMessage = {
-      id: `user-${Date.now()}`,
+      id: userMessageId,
       message: messageText,
       isUser: true,
       timestamp: new Date().toISOString(),
     };
+
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
+
     try {
-      await handleSheetGeneration(messageText, currentChatId);
+      await handleSheetGeneration(messageText, currentChatId, userMessageId);
     } catch (error) {
       console.error("Failed to process message:", error);
       const errorMessage =
         error.message || "Failed to generate sheet. Please try again.";
       setError(errorMessage);
       dispatch(setSheetStatus("error"));
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `error-${Date.now()}`,
-          message: errorMessage,
-          isUser: false,
-          timestamp: new Date().toISOString(),
-          type: "error",
-        },
-      ]);
+
+      // Remove the user message that failed to process
+      setMessages((prev) => prev.filter((msg) => msg.id !== userMessageId));
+
+      // Show toast notification
+      setToast({
+        open: true,
+        message:
+          "Your message couldn't be processed. Please try rephrasing your request.",
+        severity: "error",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   // Updated handleSheetGeneration to show each SSE step
-  const handleSheetGeneration = async (prompt, chatId) => {
+  const handleSheetGeneration = async (prompt, chatId, userMessageId) => {
     try {
       abortControllerRef.current = new AbortController();
       const response = await fetch(
@@ -668,24 +680,23 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           signal: abortControllerRef.current.signal,
         }
       );
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Server error (${response.status}): ${errorText}`);
       }
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
       let buffer = "";
       let hasReceivedData = false;
 
-      console.log(response.body, "response body");
-
       while (true) {
         const { value, done } = await reader.read();
-        console.log(value, "stream value");
         if (done) break;
+
         hasReceivedData = true;
         buffer += decoder.decode(value, { stream: true });
-        buffer += decoder.decode();
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";
 
@@ -694,8 +705,40 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           try {
             const data = JSON.parse(line);
 
-            // Handle step-based messages
-            if (data.step && data.step !== "completed") {
+            // Check for validation error first
+            if (data?.data?.error) {
+              console.log(
+                "Validation error detected, removing user message and showing toast"
+              );
+
+              // Remove the user message that couldn't be processed
+              setMessages((prev) =>
+                prev.filter((msg) => msg.id !== userMessageId)
+              );
+
+              // Show meaningful toast notification
+              setToast({
+                open: true,
+                message:
+                  data.data.error.message ||
+                  "Your request couldn't be processed. Please provide more specific details about the spreadsheet you want to create.",
+                severity: "warning",
+              });
+
+              setIsLoading(false);
+              dispatch(setSheetStatus("completed"));
+              dispatch(setActiveSheetIdForPolling(null));
+              setShouldPoll(false);
+              reader.cancel();
+              return;
+            }
+
+            // Handle step-based messages (excluding validation_error since we handle it above)
+            if (
+              data.step &&
+              data.step !== "completed" &&
+              data.step !== "validation_error"
+            ) {
               const stepMessage = getStepMessage(data.step, data.data);
               if (stepMessage) {
                 setMessages((prev) => [
@@ -713,7 +756,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
 
             // Handle completion step
             else if (data.step === "completed") {
-              const responseData = data?.data?.data; // Note the nested structure
+              const responseData = data?.data?.data;
               console.log(responseData, "data from SSE");
 
               const stepMessage = getStepMessage(data.step, data.data);
@@ -741,6 +784,13 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                 );
                 dispatch(setSheetStatus("completed"));
 
+                // Show success toast
+                setToast({
+                  open: true,
+                  message: "Spreadsheet generated successfully!",
+                  severity: "success",
+                });
+
                 const newSavePoint = {
                   id: `savepoint-${responseData._id}`,
                   title: responseData.prompt.substring(0, 50) + "...",
@@ -766,20 +816,13 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                   payload: newSavePoint,
                 });
               }
-            } else if (data.step === "validation_error") {
-              dispatch(setSheetStatus("completed"));
-            }
-
-            // Handle final response object (the one without "step" property)
-            else if (!data.step && data._id && data.response) {
-              // This is the final response object, we can ignore it since we already processed it in the "completed" step. OR do something later
-              // console.log("Final response object received:", data);
             }
           } catch (error) {
             console.error("Error parsing SSE data:", error, "Line:", line);
           }
         }
       }
+
       if (!hasReceivedData) {
         throw new Error("No data received from server");
       }
@@ -817,6 +860,16 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     dispatch(setSheetStatus("completed"));
   };
 
+  useEffect(() => {
+    if (toast.open) {
+      const timer = setTimeout(() => {
+        setToast({ ...toast, open: false });
+      }, 6000); // Hide after 6 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [toast.open]);
+
   if (!isInitialized && error) {
     return (
       <Box sx={{ p: 3 }}>
@@ -846,119 +899,148 @@ export default function SheetChatArea({ currentAgentType, theme }) {
   }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        borderRight: "1px solid #e0e0e0",
-        bgcolor: theme.palette.background.default,
-        overflow: "hidden",
-      }}
-    >
-      {error && (
-        <Box sx={{ p: 2 }}>
-          <Alert severity="error" onClose={clearError}>
-            {error}
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          borderRight: "1px solid #e0e0e0",
+          bgcolor: theme.palette.background.default,
+          overflow: "hidden",
+        }}
+      >
+        {error && (
+          <Box sx={{ p: 2 }}>
+            <Alert severity="error" onClose={clearError}>
+              {error}
+            </Alert>
+          </Box>
+        )}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            minHeight: 0,
+            scrollBehavior: "smooth",
+            "&::-webkit-scrollbar": { width: "6px" },
+            "&::-webkit-scrollbar-track": { background: "transparent" },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#c1c1c1",
+              borderRadius: "3px",
+              "&:hover": { background: "#a8a8a8" },
+            },
+            scrollbarWidth: "thin",
+            scrollbarColor: "#c1c1c1 transparent",
+          }}
+        >
+          <Box sx={{ p: 3 }}>
+            {messages.length === 0 && !isLoadingHistory ? (
+              <Box sx={{ textAlign: "center", mt: 4 }}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  Welcome to Sheet Generator
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Describe what kind of spreadsheet you'd like to create.
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mt: 1, display: "block" }}
+                >
+                  Example: "Create a budget tracker for personal expenses" or
+                  "Generate a student grade sheet"
+                </Typography>
+              </Box>
+            ) : (
+              <>
+                {messages.map((message) => (
+                  <MessageBubble
+                    key={message.id}
+                    message={message.message}
+                    isUser={message.isUser}
+                    timestamp={message.timestamp}
+                    type={message.type}
+                    metadata={message.metadata}
+                    theme={theme}
+                  />
+                ))}
+                {(isLoading ||
+                  sheetState.status === "generating" ||
+                  chatData?.isIncomplete) && (
+                  <TypingAnimation
+                    text={
+                      chatData?.isIncomplete
+                        ? "Generating"
+                        : isLoading || sheetState.status === "generating"
+                        ? "Generating"
+                        : "Process failed"
+                    }
+                  />
+                )}
+              </>
+            )}
+            <div ref={messagesEndRef} />
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            borderTop: "1px solid #e0e0e0",
+            bgcolor: "white",
+            flexShrink: 0,
+          }}
+        >
+          <InputArea
+            currentAgentType={currentAgentType}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            onSend={handleMessage}
+            isLoading={isLoading || sheetState.status === "generating"}
+            disabled={
+              !isInitialized ||
+              isLoading ||
+              !sheetAiToken ||
+              sheetState.status === "generating"
+            }
+            placeholder={
+              !isInitialized
+                ? "Initializing..."
+                : !sheetAiToken
+                ? "Authentication required..."
+                : isLoading || sheetState.status === "generating"
+                ? "Generating sheet..."
+                : "Describe the spreadsheet you want to create..."
+            }
+          />
+        </Box>
+      </Box>
+
+      {toast.open && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 20,
+            right: 20,
+            zIndex: 9999,
+            maxWidth: "400px",
+            minWidth: "300px",
+          }}
+        >
+          <Alert
+            severity={toast.severity}
+            onClose={() => setToast({ ...toast, open: false })}
+            sx={{
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
+              borderRadius: "8px",
+              "& .MuiAlert-message": {
+                fontSize: "0.875rem",
+              },
+            }}
+          >
+            {toast.message}
           </Alert>
         </Box>
       )}
-      <Box
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          minHeight: 0,
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": { background: "transparent" },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#c1c1c1",
-            borderRadius: "3px",
-            "&:hover": { background: "#a8a8a8" },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor: "#c1c1c1 transparent",
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          {messages.length === 0 && !isLoadingHistory ? (
-            <Box sx={{ textAlign: "center", mt: 4 }}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                Welcome to Sheet Generator
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Describe what kind of spreadsheet you'd like to create.
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mt: 1, display: "block" }}
-              >
-                Example: "Create a budget tracker for personal expenses" or
-                "Generate a student grade sheet"
-              </Typography>
-            </Box>
-          ) : (
-            <>
-              {messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message.message}
-                  isUser={message.isUser}
-                  timestamp={message.timestamp}
-                  type={message.type}
-                  metadata={message.metadata}
-                  theme={theme}
-                />
-              ))}
-              {(isLoading ||
-                sheetState.status === "generating" ||
-                chatData?.isIncomplete) && (
-                <TypingAnimation
-                  text={
-                    chatData?.isIncomplete
-                      ? "Generating"
-                      : isLoading || sheetState.status === "generating"
-                      ? "Generating"
-                      : "Process failed"
-                  }
-                />
-              )}
-            </>
-          )}
-          <div ref={messagesEndRef} />
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          borderTop: "1px solid #e0e0e0",
-          bgcolor: "white",
-          flexShrink: 0,
-        }}
-      >
-        <InputArea
-          currentAgentType={currentAgentType}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          onSend={handleMessage}
-          isLoading={isLoading || sheetState.status === "generating"}
-          disabled={
-            !isInitialized ||
-            isLoading ||
-            !sheetAiToken ||
-            sheetState.status === "generating"
-          }
-          placeholder={
-            !isInitialized
-              ? "Initializing..."
-              : !sheetAiToken
-              ? "Authentication required..."
-              : isLoading || sheetState.status === "generating"
-              ? "Generating sheet..."
-              : "Describe the spreadsheet you want to create..."
-          }
-        />
-      </Box>
-    </Box>
+    </>
   );
 }

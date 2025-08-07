@@ -70,21 +70,22 @@ export default function InputArea({ currentAgentType, inputValue, setInputValue,
               },
             }}
           />
-          <IconButton
+          {/* <IconButton
             sx={{ color: "#666", "&:hover": { color: PRIMARY_GREEN } }}
           >
             <MicIcon />
-          </IconButton>
+          </IconButton> */}
         </Box>
 
         <Box
           sx={{
             display: "flex",
+            flexDirection: "row-reverse",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <Button
+          {/* <Button
             startIcon={<PersonIcon />}
             sx={{
               color: "#666",
@@ -96,7 +97,7 @@ export default function InputArea({ currentAgentType, inputValue, setInputValue,
             }}
           >
             Personalize
-          </Button>
+          </Button> */}
           <IconButton
             onClick={() => onSend()}
             disabled={!inputValue.trim() || isLoading}

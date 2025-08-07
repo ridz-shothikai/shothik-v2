@@ -465,7 +465,7 @@ export default function AgentLandingPage() {
               WebkitTextFillColor: "transparent",
             }}
           >
-            Shothik Super Agent
+            Shothik Agent
           </Typography>
           <Box
             sx={{
@@ -707,14 +707,14 @@ export default function AgentLandingPage() {
                 },
               }}
             />
-            <IconButton
+            {/* <IconButton
               sx={{
                 color: "#666",
                 "&:hover": { color: PRIMARY_GREEN },
               }}
             >
               <MicIcon />
-            </IconButton>
+            </IconButton> */}
           </Box>
 
           <Box
@@ -725,7 +725,7 @@ export default function AgentLandingPage() {
             }}
           >
             <Box sx={{ display: "flex", gap: 1 }}>
-              <Button
+              {/* <Button
                 startIcon={<PersonIcon />}
                 sx={{
                   color: "#666",
@@ -737,7 +737,7 @@ export default function AgentLandingPage() {
                 }}
               >
                 Personalize
-              </Button>
+              </Button> */}
               {isFirstTimeUser && (
                 <Button
                   startIcon={<GpsFixedIcon />}

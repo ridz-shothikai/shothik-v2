@@ -58,6 +58,44 @@ export default function ExitModal() {
     useEffect(() => {
       let isExitIntentShown = false;
 
+      // Handle browser close/refresh attempts
+      const handleBeforeUnload = (e) => {
+        if (!isExitIntentShown) {
+          // Prevent the default browser dialog
+          e.preventDefault();
+
+          // Show our custom modal
+          setShowExitIntent(true);
+          isExitIntentShown = true;
+
+          // For older browsers compatibility
+          e.returnValue = "";
+          return "";
+        }
+      };
+
+      // Handle keyboard shortcuts (Ctrl+W, Ctrl+F4, Alt+F4, etc.)
+      const handleKeyDown = (e) => {
+        if (!isExitIntentShown) {
+          // Ctrl+W (close tab), Ctrl+F4 (close tab), Ctrl+R (refresh), F5 (refresh)
+          if (
+            (e.ctrlKey &&
+              (e.key === "w" ||
+                e.key === "W" ||
+                e.key === "r" ||
+                e.key === "R")) ||
+            (e.ctrlKey && e.key === "F4") ||
+            (e.altKey && e.key === "F4") ||
+            e.key === "F5"
+          ) {
+            e.preventDefault();
+            setShowExitIntent(true);
+            isExitIntentShown = true;
+          }
+        }
+      };
+
+      // Handle mouse leave (moving cursor to close button area)
       const handleMouseLeave = (e) => {
         if (!isExitIntentShown && e.clientY <= 0) {
           setShowExitIntent(true);
@@ -65,8 +103,32 @@ export default function ExitModal() {
         }
       };
 
+      // Handle browser navigation (back button, etc.)
+      const handlePopState = (e) => {
+        if (!isExitIntentShown) {
+          setShowExitIntent(true);
+          isExitIntentShown = true;
+          // Push the current state back to prevent actual navigation
+          window.history.pushState(null, "", window.location.href);
+        }
+      };
+
+      // Add event listeners
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      document.addEventListener("keydown", handleKeyDown);
       document.addEventListener("mouseleave", handleMouseLeave);
-      return () => document.removeEventListener("mouseleave", handleMouseLeave);
+      window.addEventListener("popstate", handlePopState);
+
+      // Push initial state for popstate handling
+      window.history.pushState(null, "", window.location.href);
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        document.removeEventListener("keydown", handleKeyDown);
+        document.removeEventListener("mouseleave", handleMouseLeave);
+        window.removeEventListener("popstate", handlePopState);
+      };
     }, []);
 
     const handleClose = () => {
