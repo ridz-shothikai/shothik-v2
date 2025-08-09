@@ -17,6 +17,7 @@ import Details from "./components/hero/Details";
 import VideoImage from "./components/VideoImage";
 
 export default function HomeHeroSection() {
+  
   return (
     <BgContainer
       // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
