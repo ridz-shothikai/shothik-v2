@@ -67,9 +67,23 @@ export const useComponentTracking = (componentName, trackingConfig = {}) => {
     [componentName, trackEvent, isLoaded, consent]
   );
 
+  // Track conversion events
+  const trackConversion = useCallback(
+    (conversionType, value = null) => {
+      trackEvent("conversion", {
+        component_name: componentName,
+        conversion_type: conversionType,
+        conversion_value: value,
+        timestamp: Date.now(),
+      });
+    },
+    [componentName, trackEvent]
+  );
+
   return {
     componentRef,
     trackClick,
     trackFormInteraction,
+    trackConversion
   };
 }

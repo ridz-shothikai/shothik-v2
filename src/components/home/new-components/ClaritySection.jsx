@@ -23,6 +23,8 @@ import {
   Lock,
 } from "lucide-react";
 import EmailModal from "../EmailCollectModal";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 // Styled components to match Tailwind styles
 const StyledChip = styled(Chip)(({ theme }) => ({
@@ -64,6 +66,10 @@ const IconContainer = styled(Box)({
 });
 
 export default function ClaritySection() {
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.PROCESS_STEP
+  );
+
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -71,9 +77,15 @@ export default function ClaritySection() {
 
   const [showModal, setShowModal] = useState(false);
 
-  const handleStepClick = (step) => {
+  const handleStepClick = (idx) => {
     // trackFeatureClick will be added later
-    console.log(`Step clicked: ${step}`);
+    // console.log(`Step clicked: ${step}`);
+
+    // tracking
+    trackClick(trackingList.PROCESS_STEP_CLICK, {
+      step_id: `step-${idx}`,
+      position: "process_step_section",
+    });
   };
 
   const handleBenefitClick = (benefit) => {
@@ -141,6 +153,7 @@ export default function ClaritySection() {
   return (
     <>
       <Box
+        ref={componentRef}
         component="section"
         sx={{
           pt: { xs: 2, sm: 3, xl: 4 },
@@ -234,7 +247,7 @@ export default function ClaritySection() {
                 >
                   <StepCard
                     elevation={0}
-                    onClick={() => handleStepClick(step.id)}
+                    onClick={() => handleStepClick(index + 1)}
                     sx={{
                       position: "relative",
                       "&:hover": {
@@ -330,7 +343,15 @@ export default function ClaritySection() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                setShowModal(true);
+
+                // tracking
+                trackClick("cta_button", {
+                  button_text: "Get early access",
+                  position: "process_step_cta",
+                });
+              }}
               sx={{
                 bgcolor: "#059669",
                 color: "white",

@@ -25,8 +25,39 @@ import {
   People,
   EmojiEvents,
 } from "@mui/icons-material";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 export default function FounderVideoSection() {
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.BUSINESS_SECTION,
+    {
+      viewThreshold: 0.3,
+    }
+  );
+
+  // const videoRef = useRef(null);
+
+  // const formatTime = (seconds) => {
+  //   const mins = Math.floor(seconds / 60);
+  //   const secs = Math.floor(seconds % 60);
+  //   return `${mins}:${secs.toString().padStart(2, "0")}`;
+  // };
+
+  // const handleVideoPlay = () => {
+  //   if (!videoRef.current) return;
+
+  //   const totalDuration = formatTime(videoRef.current.duration);
+
+  //   trackClick("video_play", {
+  //     video_type: "hero_demo",
+  //     video_duration: totalDuration,
+  //     user_interaction_time: Date.now() - performance.now(),
+  //   });
+  // };
+
+  // Will be used when have actual video 👆
+
   const [isPlaying, setIsPlaying] = useState(false);
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
@@ -64,9 +95,10 @@ export default function FounderVideoSection() {
 
   return (
     <Box
+      ref={componentRef}
       component="section"
       sx={{
-        pb: {xs: 6, sm: 8, md: 10, lg: 12},
+        pb: { xs: 6, sm: 8, md: 10, lg: 12 },
         pt: { xs: 12, sm: 15, md: 18, lg: 24 },
         // background:
         //   "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",

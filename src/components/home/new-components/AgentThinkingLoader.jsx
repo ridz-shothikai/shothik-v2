@@ -112,7 +112,7 @@ const AgentThinkingLoader = ({
     justifyContent: "center",
   };
 
-  console.log(mascotImage, "mascotImage");
+  // console.log(mascotImage, "mascotImage");
 
   return (
     <Box sx={containerStyles}>

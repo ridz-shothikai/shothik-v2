@@ -16,8 +16,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=GTM-PPRFW7NP`}
+            height="0"
+            width="0"
+            style={{display:"none", visibility:"hidden"}}
+          ></iframe>
+        </noscript>
+
         <Providers>
           {children}
           {/* login modal  */}

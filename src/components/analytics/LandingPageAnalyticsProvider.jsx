@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import {useScrollTracking} from "../../hooks/useScrollTracking";
 import {useSession} from "../../hooks/useSession";
+import {trackingList} from "../../libs/trackingList"
 
 export default function LandingPageAnalyticsProvider({children}) {
   const { trackEvent, trackPageView } = useAnalytics();
@@ -13,7 +14,7 @@ export default function LandingPageAnalyticsProvider({children}) {
   useScrollTracking();
 
   useEffect(() => {
-    trackPageView();
+    trackPageView(trackingList.LANDING_PAGE); // Page view
   }, [trackPageView]);
   // Tracking ENDS
   return <>{children}</>;

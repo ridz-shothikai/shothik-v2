@@ -4,6 +4,8 @@ import React from "react";
 import { Box, Typography, Chip, Container, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 const StyledChip = styled(Chip)(({ theme }) => ({
   backgroundColor: "#0F766E", // Teal-700
@@ -25,11 +27,16 @@ const StyledChip = styled(Chip)(({ theme }) => ({
 }));
 
 const AgenticHeroSection = () => {
+  const { componentRef } = useComponentTracking(
+    trackingList.STOP_WORKING_SECTION
+  );
+
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   return (
     <Container maxWidth="xl">
       <Box
+        ref={componentRef}
         sx={{
           minHeight: "50vh",
           display: "flex",

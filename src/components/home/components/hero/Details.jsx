@@ -8,17 +8,17 @@ import AnimatedText from "./AnimatedText";
 import EmailModal from "../../EmailCollectModal";
 
 
-const Details = () => {
+const Details = ({ trackClick }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-    const handleEmailSubmit = async (email) => {
-      console.log("Email submitted:", email);
-      // Here we would typically send the email to your backend
-      // await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }) });
-    };
+  const handleEmailSubmit = async (email) => {
+    console.log("Email submitted:", email);
+    // Here we would typically send the email to your backend
+    // await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }) });
+  };
 
   return (
     <>
@@ -136,7 +136,7 @@ const Details = () => {
           &nbsp;happy clients
         </Typography>
       </Box> */}
-        <UserActionButton setShowModal={setShowModal} />
+        <UserActionButton setShowModal={setShowModal} trackClick={trackClick} />
       </Grid2>
 
       {/* email collect modal */}

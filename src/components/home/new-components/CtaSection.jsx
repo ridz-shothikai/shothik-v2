@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { CheckCircle, Shield, Globe } from "lucide-react";
 import EmailModal from "../EmailCollectModal";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 export default function CTASection() {
   const theme = useTheme();
@@ -20,6 +22,10 @@ export default function CTASection() {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const [showModal, setShowModal] = useState(false);
+
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.START_WRITING_SECTION
+  );  
 
   const handleEmailSubmit = async (email) => {
     console.log("Email submitted:", email);
@@ -30,6 +36,7 @@ export default function CTASection() {
   return (
     <>
       <Box
+        ref={componentRef}
         component="section"
         sx={{
           py: { xs: 3, sm: 5, md: 10 },
@@ -91,7 +98,15 @@ export default function CTASection() {
                   {/* Enhanced CTA Button */}
                   <Button
                     variant="contained"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {
+                      setShowModal(true);
+
+                      // tracking
+                      trackClick(trackingList.CTA_BUTTON, {
+                        button_text: "Start Writing Better Papers Now",
+                        postion: "start_writing_section",
+                      });
+                    }}
                     fullWidth
                     sx={{
                       backgroundColor: "white",

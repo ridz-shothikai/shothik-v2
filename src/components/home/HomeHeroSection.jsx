@@ -15,11 +15,16 @@ import Image from "next/image";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
 import VideoImage from "./components/VideoImage";
+import {useComponentTracking} from "../../hooks/useComponentTracking"
+import { trackingList } from "../../libs/trackingList";
+import HeroVideo from "./HeroVideo";
 
 export default function HomeHeroSection() {
-  
+  const { componentRef, trackClick } = useComponentTracking(trackingList.LANDING_HERO);
+
   return (
     <BgContainer
+      ref={componentRef}
       // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
       sx={{
         maxWidth: "lg",
@@ -72,7 +77,7 @@ export default function HomeHeroSection() {
             pr: { md: 2, lg: 3 },
           }}
         > */}
-        <Details />
+        <Details trackClick={trackClick} />
 
         {/* Video Section - Shows second on mobile, right on desktop */}
         <Grid2
@@ -103,22 +108,7 @@ export default function HomeHeroSection() {
                 justifyContent: "center",
               }}
             >
-              <video
-                width="100%"
-                height="100%"
-                controls
-                poster="/home/hero/video-thumbnail.webp"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              >
-                <source src="/home/hero/demo-video.mp4" type="video/mp4" />
-                <source src="/home/hero/demo-video.webm" type="video/webm" />
-                Your browser does not support the video tag.
-              </video>
+              <HeroVideo/>
 
               {/* Custom play button overlay */}
               <Box

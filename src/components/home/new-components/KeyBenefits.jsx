@@ -3,6 +3,8 @@
 import { Box, Container, Grid, styled, Typography } from "@mui/material";
 import {motion} from "framer-motion";
 import { Brain, FileText, Globe, Shield } from "lucide-react";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 
 const BenefitIconContainer = styled(Box)(({ theme }) => ({
@@ -67,6 +69,10 @@ const benefits = [
 ];
 
 export default function KeyBenefits() {
+  const { componentRef } = useComponentTracking(
+    trackingList.WHY_STUDENT_CHOOSE_SECTION
+  );
+
   return (
     <Container
       maxWidth="xl"
@@ -75,6 +81,7 @@ export default function KeyBenefits() {
       }}
     >
       <motion.div
+        ref={componentRef}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}

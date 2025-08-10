@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Dialog,
@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
+import { useComponentTracking } from "../../hooks/useComponentTracking";
+import { trackingList } from "../../libs/trackingList";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -79,12 +81,16 @@ const SkipButton = styled(Button)(({ theme }) => ({
 
 export default function EmailModal({ open, onClose, onSubmit }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { componentRef, trackClick, trackFormInteraction, trackConversion } =
+    useComponentTracking(trackingList.EMAIL_MODAL);
+  const modalOpenTime = useRef(null);
 
   const {
     control,
     handleSubmit,
     reset,
     setError,
+    watch,
     formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
@@ -92,6 +98,19 @@ export default function EmailModal({ open, onClose, onSubmit }) {
       email: "",
     },
   });
+
+  const emailValue = watch("email");
+
+  // Track modal open
+  useEffect(() => {
+    if (open) {
+      modalOpenTime.current = Date.now();
+      trackClick("modal_opened", {
+        modal_type: "email_collection",
+        trigger_source: "cta_button",
+      });
+    }
+  }, [open, trackClick]);
 
   const onSubmitForm = async (data) => {
     setIsSubmitting(true);
@@ -102,26 +121,44 @@ export default function EmailModal({ open, onClose, onSubmit }) {
         await onSubmit(data.email);
       }
 
+      // Tracking successful conversion
+      trackConversion("email_signup", data.email.length);
+
+      trackFormInteraction("submit_success", "email");
+
       // Reset form and close modal
       reset();
       onClose();
     } catch (err) {
+      console.log(err, "form err");
       setError("email", {
         type: "manual",
         message: "Something went wrong. Please try again.",
       });
+      trackFormInteraction("submit_error", "email", err.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
+    trackClick("modal_close", {
+      close_method: "close_button",
+      email_entered: emailValue?.length > 0,
+      time_in_modal: Date.now() - modalOpenTime.current,
+      form_completed: false,
+    });
     reset();
     onClose();
   };
 
   return (
-    <StyledDialog open={open} onClose={handleClose} maxWidth={false}>
+    <StyledDialog
+      ref={componentRef}
+      open={open}
+      onClose={handleClose}
+      maxWidth={false}
+    >
       <DialogContent sx={{ p: 4, position: "relative" }}>
         <IconButton
           onClick={handleClose}

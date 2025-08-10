@@ -35,6 +35,8 @@ import {
   Code,
 } from "@mui/icons-material";
 import EmailModal from "../EmailCollectModal";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 // Styled components for custom styling
 const GradientBox = styled(Box)(({ gradient }) => ({
@@ -265,6 +267,10 @@ export default function AgentShowcase() {
 
   const currentAgent = agents[currentIndex];
 
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.CAROUSEL_SECTION
+  );
+
   const nextAgent = () => {
     setSlideDirection("left");
     setCurrentIndex((prev) => (prev + 1) % agents.length);
@@ -321,6 +327,7 @@ export default function AgentShowcase() {
   return (
     <>
       <Box
+        ref={componentRef}
         sx={{
           pb: { xs: 8, md: 12 },
           bgcolor: isDarkMode ? "" : "white",
@@ -661,7 +668,15 @@ export default function AgentShowcase() {
                         textTransform: "none",
                       }}
                       endIcon={<ArrowForward />}
-                      onClick={() => setShowModal(true)}
+                      onClick={() => {
+                        setShowModal(true);
+
+                        // tracking
+                        trackClick(trackingList.CTA_BUTTON, {
+                          button_text: "Try now",
+                          position: "agent_show_case_section"
+                        });
+                      }}
                     >
                       Try Now
                     </GradientButton>
@@ -698,7 +713,15 @@ export default function AgentShowcase() {
                   textTransform: "none",
                 }}
                 endIcon={<Public />}
-                onClick={() => setShowModal(true)}
+                onClick={() => {
+                  setShowModal(true);
+
+                  // tracking
+                  trackClick(trackingList.CTA_BUTTON, {
+                    button_text: "Command Your AI Writing Team",
+                    position: "agent_show_case_section",
+                  });
+                }}
               >
                 Command Your AI Writing Team
               </GradientButton>

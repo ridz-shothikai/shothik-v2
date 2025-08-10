@@ -7,7 +7,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowLoginModal } from "../../../../redux/slice/auth";
 
-const UserActionButton = ({ setShowModal }) => {
+const UserActionButton = ({ setShowModal, trackClick }) => {
   const { user } = useSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -45,6 +45,12 @@ const UserActionButton = ({ setShowModal }) => {
           // this was before, don't remove it 👆
 
           setShowModal(true);
+
+          // tracking
+          trackClick("cta_button", {
+            button_text: userMsg,
+            position: "hero_section",
+          });
         }}
       >
         <Box

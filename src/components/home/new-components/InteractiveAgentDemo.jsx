@@ -29,6 +29,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AgentThinkingLoader from "./AgentThinkingLoader";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 // Styled components to match Tailwind styles
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -242,6 +244,10 @@ const mockAnalytics = {
 };
 
 export default function InteractiveAgentDemo() {
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.LIVE_AGENT
+  );
+
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -272,6 +278,12 @@ export default function InteractiveAgentDemo() {
       "demo_started",
       userInput.length
     );
+
+    // Tracking simulation for GA4, GTM, and other
+    trackClick(trackingList.LIVE_AGENT_SIMULATION, {
+      agent: selectedAgent.id,
+      userQuer: userInput,
+    })
 
     setIsProcessing(true);
     setShowResults(false);
@@ -356,6 +368,7 @@ export default function InteractiveAgentDemo() {
 
   return (
     <Box
+      ref={componentRef}
       component="section"
       sx={{
         pt: { xs: 12, lg: 15 },
@@ -509,7 +522,7 @@ export default function InteractiveAgentDemo() {
                   sx={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
-                    color: isDarkMode? "inherit" : "#64748b",
+                    color: isDarkMode ? "inherit" : "#64748b",
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
                     mb: 2,
@@ -545,7 +558,11 @@ export default function InteractiveAgentDemo() {
                             onClick={() => useExample(example)}
                           >
                             <Typography
-                              sx={{ fontSize: "inherit", textAlign: "left", color: isDarkMode ? "#000" : "inherit" }}
+                              sx={{
+                                fontSize: "inherit",
+                                textAlign: "left",
+                                color: isDarkMode ? "#000" : "inherit",
+                              }}
                             >
                               "{example}"
                             </Typography>
@@ -639,7 +656,7 @@ export default function InteractiveAgentDemo() {
                         sx={{
                           fontSize: { xs: "0.75rem", sm: "0.875rem" },
                           fontWeight: 500,
-                          color: isDarkMode?  "inherit" : "#374151",
+                          color: isDarkMode ? "inherit" : "#374151",
                           mb: 1,
                           display: "block",
                         }}

@@ -12,6 +12,8 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Brain, Palette, Zap, Languages, Shield, Rocket } from "lucide-react";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 const features = [
   {
@@ -94,8 +96,13 @@ export default function FeaturesSection() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
+  const { componentRef } = useComponentTracking(
+    trackingList.FEATURE_SECTION
+  );  
+
   return (
     <Box
+      ref={componentRef}
       component="section"
       sx={{
         pt: { xs: 4, sm: 6, xl: 8 },

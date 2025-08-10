@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 // Action to mark scripts as loaded (called by AnalyticsLoader component)
 export const markScriptsLoaded = createAsyncThunk(
@@ -92,11 +93,11 @@ export default analyticsSlice.reducer;
 
 
 // Helper function to fire events to external services
-const fireToExternalServices = (event) => {
+const fireToExternalServices = async (event) => {
   // GA4
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     try {
-      window.gtag("event", event.event_name, {
+      window.gtag("event", event.event_name, event.sessionId, {
         ...(event.parameters || {}),
       });
     } catch (err) {
@@ -104,37 +105,38 @@ const fireToExternalServices = (event) => {
     }
   }
 
-    // GA4
-    // if (window.gtag) {
-    //   window.gtag('event', event.event_name, {
-    //     ...(event.parameters || {})});
-    // }
-    
-    // GTM Data Layer
-    // if (window.dataLayer) {
-    //   window.dataLayer.push({
-    //     event: event.event_name,
-    //     ...event.parameters,
-    //   });
-    // }
+  // GA4
+  // if (window.gtag) {
+  //   window.gtag('event', event.event_name, {
+  //     ...(event.parameters || {})});
+  // }
 
-    if (typeof window !== "undefined" && Array.isArray(window.dataLayer)) {
-      try {
-        window.dataLayer.push({
-          event: event.event_name,
-          ...(event.parameters || {}),
-        });
-      } catch (err) {
-        console.error("GTM event failed:", err);
-      }
+  // GTM Data Layer
+  // if (window.dataLayer) {
+  //   window.dataLayer.push({
+  //     event: event.event_name,
+  //     ...event.parameters,
+  //   });
+  // }
+
+  if (typeof window !== "undefined" && Array.isArray(window.dataLayer)) {
+    try {
+      window.dataLayer.push({
+        event: event.event_name,
+        ...(event.parameters || {}),
+        sessionId: event.sessionId,
+      });
+    } catch (err) {
+      console.error("GTM event failed:", err);
     }
+  }
 
-    // Meta Pixel
-    // if (window.fbq && event.event_name === 'conversion') {
-    //   window.fbq('track', event.parameters.conversion_name, {
-    //     value: event.parameters.value
-    //   });
-    // }
+  // Meta Pixel
+  // if (window.fbq && event.event_name === 'conversion') {
+  //   window.fbq('track', event.parameters.conversion_name, {
+  //     value: event.parameters.value
+  //   });
+  // }
 
   // ------------------------
   // Meta Pixel
@@ -159,4 +161,17 @@ const fireToExternalServices = (event) => {
       console.error("Meta Pixel event failed:", err);
     }
   }
-  };
+
+  // ------------------------
+  // Zoho Webhook
+  // ------------------------
+  // IMPORTANT: This needs to be handled and reviewed on ZOHO platform how they want the data.
+  // console.log("Sending to Zoho:", JSON.stringify(event, null, 2)); 
+  // await fetch("/api/zoho-webhook", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(event),
+  // });
+};

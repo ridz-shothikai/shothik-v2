@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import EmailModal from "../EmailCollectModal";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 const studentStories = [
   {
@@ -152,6 +154,10 @@ export default function JobsTestimonialsSection() {
 
   const [showModal, setShowModal] = useState(false);
 
+  const { componentRef, trackClick } = useComponentTracking(trackingList.REAL_RESULT, {
+    viewThreshold: 0.3,
+  });  
+
   const handleEmailSubmit = async (email) => {
     console.log("Email submitted:", email);
     // Here we would typically send the email to your backend
@@ -161,6 +167,7 @@ export default function JobsTestimonialsSection() {
   return (
     <>
       <StyledSection
+        ref={componentRef}
         sx={{
           bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
         }}
@@ -437,7 +444,15 @@ export default function JobsTestimonialsSection() {
                   sx={{
                     fontSize: { xs: "1rem", sm: "1.125rem" },
                   }}
-                  onClick={() => setShowModal(true)}
+                  onClick={() => {
+                    setShowModal(true);
+
+                    // tracking
+                    trackClick(trackingList.CTA_BUTTON, {
+                      button_text: "Transform Your Writing Today",
+                      position: "testimonial_section"
+                    });
+                  }}
                 >
                   Transform Your Writing Today
                 </StyledButton>

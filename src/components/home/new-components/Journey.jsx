@@ -17,6 +17,8 @@ import {
 } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useComponentTracking } from "../../../hooks/useComponentTracking";
+import { trackingList } from "../../../libs/trackingList";
 
 const timelineData = [
   {
@@ -59,8 +61,13 @@ const JourneyTimeline = () => {
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
+  const { componentRef } = useComponentTracking(
+    trackingList.JOURNEY_SECTION
+  );
+
   return (
     <Box
+      ref={componentRef}
       component="section"
       sx={{
         pt: { xs: 2, sm: 3, xl: 4 },
