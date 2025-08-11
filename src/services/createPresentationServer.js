@@ -1,5 +1,5 @@
 
-export async function createPresentationServer({ message, token }) {
+export async function createPresentationServer({ message,file_urls, token }) {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URI}/presentation/init`,
@@ -9,14 +9,14 @@ export async function createPresentationServer({ message, token }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, file_urls }),
       }
     );
 
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || "Failed to create presentation");
+      console.log(data.message || "Failed to create presentation");
     }
 
     return {

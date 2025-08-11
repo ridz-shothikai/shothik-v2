@@ -164,7 +164,7 @@ export default function PreviewPanel({
                     >
                       {slidesData?.data.map((slide, index) => (
                         <SlidePreview
-                          key={slide.slide_index}
+                          key={index}
                           slide={slide}
                           index={index}
                           activeTab={slideTabs[index] || "preview"}

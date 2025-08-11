@@ -20,7 +20,7 @@ import {
   useTheme,
 } from "@mui/material";
 import InteractiveChatMessage from "../../../components/agents/shared/InteractiveChatMessage";
-import InputArea from "./InputArea";
+import InputArea from "./InputAreas";
 import {
   useStreamingLogs,
   formatAgentName,
@@ -1485,6 +1485,10 @@ export default function ChatArea({
   status,
   presentationId,
   optimisticMessages = [],
+  setUploadedFiles,
+  setFileUrls,
+  uploadedFiles,
+  fileUrls,
 }) {
   const theme = useTheme();
 
@@ -1710,6 +1714,10 @@ export default function ChatArea({
           setInputValue={setInputValue}
           onSend={onSend}
           isLoading={isLoading}
+          setUploadedFiles={setUploadedFiles}
+          setFileUrls={setFileUrls}
+          uploadedFiles={uploadedFiles}
+          fileUrls={fileUrls}
         />
       </Box>
     </Box>

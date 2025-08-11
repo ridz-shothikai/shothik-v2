@@ -63,6 +63,9 @@ export default function PresentationAgentPage({ specificAgent }) {
     severity: "success" as "success" | "error" | "warning" | "info",
   });
 
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileUrls, setFileUrls] = useState([]);
+
   const presentationState = useSelector(selectPresentation);
   const {
     logs = [],
@@ -712,6 +715,10 @@ export default function PresentationAgentPage({ specificAgent }) {
                 status={status}
                 presentationId={urlPresentationId}
                 optimisticMessages={optimisticMessages}
+                setUploadedFiles={setUploadedFiles}
+                setFileUrls={setFileUrls}
+                uploadedFiles={uploadedFiles}
+                fileUrls={fileUrls}
               />
             </Box>
             <Dialog
@@ -798,6 +805,10 @@ export default function PresentationAgentPage({ specificAgent }) {
                 status={status}
                 presentationId={urlPresentationId}
                 optimisticMessages={optimisticMessages}
+                setUploadedFiles={setUploadedFiles}
+                setFileUrls={setFileUrls}
+                uploadedFiles={uploadedFiles}
+                fileUrls={fileUrls}
               />
             </Box>
             <Box

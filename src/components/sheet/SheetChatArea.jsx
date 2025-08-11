@@ -11,7 +11,7 @@ import {
   Stop,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import InputArea from "../presentation/InputArea";
+import InputArea from "../presentation/InputAreas";
 import {
   setActiveSheetIdForPolling,
   setSheetData,

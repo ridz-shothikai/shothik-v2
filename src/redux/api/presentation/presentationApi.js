@@ -41,6 +41,54 @@ export const presentationApiSlice = createApi({
       query: () => "/presentation/get-slides",
       providesTags: ["presentation"],
     }),
+
+    // Upload file for Presentation
+    uploadPresentationFiles: builder.mutation({
+      query: ({ files, userId }) => {
+        const formData = new FormData();
+
+        // Ensure files is an array and append each file
+        const fileArray = Array.isArray(files) ? files : [files];
+        fileArray.forEach((file, index) => {
+          console.log(
+            `Appending file ${index}:`,
+            file.name,
+            file.type,
+            file.size
+          );
+          formData.append("files", file);
+        });
+
+        // Add userId if provided
+        if (userId) {
+          formData.append("userId", userId);
+        }
+
+        // Log FormData contents for debugging
+        console.log("FormData entries:");
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        return {
+          url: "/presentation/upload-files",
+          method: "POST",
+          body: formData,
+          // Don't set Content-Type header - let browser set it with boundary
+          // formData: true,
+        };
+      },
+      // Enhanced error handling
+      transformErrorResponse: (response, meta, arg) => {
+        // console.error("Upload error response:", response);
+        // console.error("Upload error meta:", meta);
+        return {
+          status: response.status,
+          data: response.data || "Upload failed",
+          originalError: response,
+        };
+      },
+    }),
   }),
 });
 
@@ -49,4 +97,5 @@ export const {
   useFetchLogsQuery,
   useFetchSlidesQuery,
   useFetchAllPresentationsQuery,
+  useUploadPresentationFilesMutation
 } = presentationApiSlice;

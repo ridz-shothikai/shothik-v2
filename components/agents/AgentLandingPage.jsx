@@ -41,11 +41,14 @@ import {
   ListItemIcon,
   Stack,
   CircularProgress,
+  Menu,
+  MenuItem,
+  Tooltip,
 } from "@mui/material";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
-import { useCreatePresentationMutation, useFetchAllPresentationsQuery } from "../../src/redux/api/presentation/presentationApi";
+import { useCreatePresentationMutation, useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
 import { setPresentationState } from "../../src/redux/slice/presentationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginModal } from "../../src/components/auth/AuthModal";
@@ -64,6 +67,10 @@ import {
   Close as CloseIcon,
   ChatBubbleOutline as ChatBubbleOutlineIcon,
   AccessTime as AccessTimeIcon,
+  AttachFile,
+  Close,
+  Visibility,
+  Download,
 } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import useResponsive from "../../src/hooks/useResponsive";
@@ -73,6 +80,8 @@ import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
 import { format } from "date-fns";
 import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
 import ChatSidebar from "./ChatSidebar";
+import ImageIcon from "@mui/icons-material/Image";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -189,7 +198,7 @@ export default function AgentLandingPage() {
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
-  const {accessToken, sheetToken} = useSelector((state) => state.auth);
+  const { accessToken, sheetToken } = useSelector((state) => state.auth);
   const {
     data: myChats,
     isLoading: SheetDataLoading,
@@ -201,11 +210,14 @@ export default function AgentLandingPage() {
     isLoading: SlideDataLoading,
     error: SlideDataLoadingError,
   } = useFetchAllPresentationsQuery();
+  const [uploadFiles, { isLoading: isUploading, error: uploadError }] =
+    useUploadPresentationFilesMutation();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
   // console.log(myChats, "myChats");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [isInitiatingPresentation, setIsInitiatingPresentation] = useState(false);
+  const [isInitiatingPresentation, setIsInitiatingPresentation] =
+    useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
   const [toast, setToast] = useState({
     open: false,
@@ -213,29 +225,46 @@ export default function AgentLandingPage() {
     severity: "error",
   });
 
+  // console.log(selectedNavItem, "-selectedNavItem");
+
+  // Add this state to your component
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileUrls, setFileUrls] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleSelect = (type) => {
+    console.log(`Selected: ${type}`);
+    // You can trigger file picker logic here
+    handleClose();
+  };
+
   // console.log(slidesChats, "slides data");
   // const [sidebarOpen, setSidebarOpen] = useState(false);
   // console.log(isNavbarExpanded, "isNavbarExpanded");
-  
+
   const toggleDrawer = (open) => () => {
     dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
   };
-  
+
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useResponsive("down", "sm");
-  
+
   const user = useSelector((state) => state.auth.user);
-  
+
   /**
-   * When we come to the agents page if user is not registered to our services, make them register it. 
+   * When we come to the agents page if user is not registered to our services, make them register it.
    */
-  const {sheetAIToken, refreshSheetAIToken} = useSheetAiToken(user?.email);
+  const { sheetAIToken, refreshSheetAIToken } = useSheetAiToken(user?.email);
 
   // for saving sheet token to redux state
   useEffect(() => {
     // We will save token on redux and based on that we will generate users sheet chat data
-    if(!sheetAIToken) return;
+    if (!sheetAIToken) return;
 
     dispatch(setSheetToken(sheetAIToken));
 
@@ -254,19 +283,19 @@ export default function AgentLandingPage() {
   }, []);
 
   const handleSubmit = async () => {
-    
     if (!inputValue.trim() || isSubmitting) return;
-    
+
     setIsSubmitting(true);
 
     // for sheet
     const email = user?.email;
-    
+
     try {
       switch (selectedNavItem) {
         case "slides":
           return await handleSlideCreation(
             inputValue,
+            fileUrls,
             setAgentType,
             dispatch,
             setLoginDialogOpen,
@@ -298,7 +327,7 @@ export default function AgentLandingPage() {
           return console.log("all agents route");
       }
     } catch (error) {
-      console.error("[AgentLandingPage] Error initiating presentation:", error);
+      // console.error("[AgentLandingPage] Error initiating presentation:", error);
       // alert("Failed to create presentation. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -328,9 +357,136 @@ export default function AgentLandingPage() {
   };
 
   // to show toast
-  const showToast = (message, severity = 'error') => {
+  const showToast = (message, severity = "error") => {
     setToast({ open: true, message, severity });
   };
+
+  // Updated click handler
+  const handleClick = () => {
+    // Trigger file input click
+    document.getElementById("file-upload-input").click();
+  };
+
+  // File upload handler
+  const handleFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (!files.length) return;
+
+    console.log(
+      "Selected files:",
+      files.map((f) => ({ name: f.name, type: f.type, size: f.size }))
+    );
+
+    // Check file type and size
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+    ];
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const invalidFiles = [];
+
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        invalidFiles.push(`${file.name} (invalid type: ${file.type})`);
+      } else if (file.size > maxSize) {
+        invalidFiles.push(
+          `${file.name} (too large: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
+        );
+      }
+    }
+
+    if (invalidFiles.length > 0) {
+      showToast(`Invalid files: ${invalidFiles.join(", ")}`, "error");
+      return;
+    }
+
+    // Validate user
+    if (!user?._id) {
+      showToast("User not authenticated", "error");
+      return;
+    }
+
+    const uploadData = {
+      files, // Array of File objects
+      userId: user._id,
+    };
+
+    console.log("Upload data:", {
+      filesCount: files.length,
+      userId: user._id,
+      fileNames: files.map((f) => f.name),
+    });
+
+    try {
+      // Show loading state
+      showToast("Uploading files...", "info");
+
+      const result = await uploadFiles(uploadData).unwrap();
+
+      console.log("Upload successful:", result);
+      showToast(`${files.length} file(s) uploaded successfully`, "success");
+
+      if (result?.success) {
+        setUploadedFiles((prev) => [...prev, ...result.data]);
+        setFileUrls((prev) => [
+          ...prev,
+          ...result.data.map((file) => file.signed_url),
+        ]);
+      }
+
+      // Clear the file input
+      event.target.value = "";
+    } catch (error) {
+      // console.error("Upload failed:", error);
+
+      // More detailed error messages
+      let errorMessage = "Failed to upload files. Please try again.";
+
+      if (error.status === "FETCH_ERROR") {
+        errorMessage =
+          "Network error. Please check your connection and try again.";
+      } else if (error.status === 400) {
+        errorMessage = "Bad request. Please check file format and try again.";
+      } else if (error.status === 413) {
+        errorMessage =
+          "Files too large. Please reduce file size and try again.";
+      } else if (error.data) {
+        errorMessage = error.data.message || errorMessage;
+      }
+
+      showToast(errorMessage, "error");
+      setUploadedFiles([]); // Reset on error
+
+      // Clear the file input on error
+      event.target.value = "";
+    }
+  };
+
+  const truncateFilename = (filename, maxLength = 30) => {
+    if (filename.length <= maxLength) return filename;
+    const extension = getFileExtension(filename);
+    const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
+    const truncatedName = nameWithoutExt.substring(
+      0,
+      maxLength - extension.length - 4
+    );
+    return `${truncatedName}...${extension}`;
+  };
+
+  const handleRemoveFile = (index, filename) => {
+    const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
+    setUploadedFiles(updatedFiles);
+  };
+
+  // Get file extension
+  const getFileExtension = (filename) => {
+    return filename.split(".").pop().toLowerCase();
+  };
+
+  // console.log(fileUrls, "File urls");
 
   return (
     <Box
@@ -724,20 +880,48 @@ export default function AgentLandingPage() {
               alignItems: "center",
             }}
           >
-            <Box sx={{ display: "flex", gap: 1 }}>
-              {/* <Button
-                startIcon={<PersonIcon />}
-                sx={{
-                  color: "#666",
-                  textTransform: "none",
-                  "&:hover": {
-                    color: PRIMARY_GREEN,
-                    bgcolor: "rgba(7, 179, 122, 0.1)",
-                  },
-                }}
-              >
-                Personalize
-              </Button> */}
+            <Box sx={{ display: "flex" }}>
+              {/* Hidden file input */}
+              <input
+                id="file-upload-input"
+                type="file"
+                accept=".pdf,.doc,.docx,.txt"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+              />
+              {selectedNavItem === "slides" && (
+                <Button
+                  startIcon={<AttachFile />}
+                  onClick={handleClick}
+                  sx={{
+                    color: "#666",
+                    textTransform: "none",
+                    "&:hover": {
+                      color: PRIMARY_GREEN,
+                      bgcolor: "rgba(7, 179, 122, 0.1)",
+                    },
+                  }}
+                >
+                  Attach
+                </Button>
+              )}
+
+              {/* <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                <MenuItem onClick={() => handleSelect("image")}>
+                  <ListItemIcon>
+                    <ImageIcon fontSize="small" />
+                  </ListItemIcon>
+                  Image
+                </MenuItem>
+                <MenuItem onClick={() => handleSelect("document")}>
+                  <ListItemIcon>
+                    <DescriptionIcon fontSize="small" />
+                  </ListItemIcon>
+                  Document
+                </MenuItem>
+              </Menu> */}
+
               {isFirstTimeUser && (
                 <Button
                   startIcon={<GpsFixedIcon />}
@@ -760,7 +944,8 @@ export default function AgentLandingPage() {
               disabled={
                 !inputValue.trim() ||
                 isInitiatingPresentation ||
-                isInitiatingSheet
+                isInitiatingSheet ||
+                isUploading
               }
               sx={{
                 bgcolor: PRIMARY_GREEN,
@@ -779,6 +964,116 @@ export default function AgentLandingPage() {
               <SendIcon />
             </IconButton>
           </Box>
+
+          {/* uploaded files preview STARTS */}
+          {uploadedFiles?.length > 0 && (
+            <Grid container spacing={1} sx={{pt: {xs: 1, md: 2, xl: 3}}}>
+              {uploadedFiles?.map((file, index) => {
+                const extension = getFileExtension(file.filename);
+                const truncatedName = truncateFilename(file.filename);
+
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={`${file.filename}-${index}`}
+                  >
+                    <Card
+                      sx={{
+                        position: "relative",
+                        bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
+                        border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
+                        borderRadius: 2,
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                          boxShadow: isDarkMode
+                            ? "0 4px 12px rgba(7, 179, 122, 0.2)"
+                            : "0 4px 12px rgba(0,0,0,0.1)",
+                          borderColor: PRIMARY_GREEN,
+                          transform: "translateY(-2px)",
+                        },
+                      }}
+                    >
+                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                        {/* Remove button */}
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveFile(index, file.filename)}
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            color: "#999",
+                            bgcolor: isDarkMode
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.05)",
+                            width: 24,
+                            height: 24,
+                            "&:hover": {
+                              bgcolor: "#f44336",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+
+                        {/* File icon and info */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            mb: 2,
+                          }}
+                        >
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Tooltip title={file.filename}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight: 600,
+                                  color: isDarkMode ? "#fff" : "#333",
+                                  lineHeight: 1.3,
+                                  mb: 0.5,
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {truncatedName}
+                              </Typography>
+                            </Tooltip>
+                          </Box>
+                        </Box>
+
+                        {/* File extension chip */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Chip
+                            label={extension.toUpperCase()}
+                            size="small"
+                            sx={{
+                              bgcolor: PRIMARY_GREEN,
+                              color: "white",
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                              height: 20,
+                            }}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          )}
+          {/* uploaded files preview ENDS */}
         </Box>
 
         <Box
