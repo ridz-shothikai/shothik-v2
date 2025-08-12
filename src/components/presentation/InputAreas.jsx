@@ -146,7 +146,7 @@ export default function InputArea({
     }
   };
 
-  const truncateFilename = (filename, maxLength = 30) => {
+  const truncateFilename = (filename, maxLength = 20) => {
     if (filename.length <= maxLength) return filename;
     const extension = getFileExtension(filename);
     const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
@@ -176,131 +176,134 @@ export default function InputArea({
             theme.palette.mode === "dark"
               ? theme.palette.background.default
               : "#f8f9fa",
-          position: "relative",
         }}
       >
-        {/* uploaded files preview STARTS */}
-        {uploadedFiles?.length > 0 && (
-          <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 }, position: "absolute", top: "-100px", left: "20px" }}>
-            {uploadedFiles?.map((file, index) => {
-              const extension = getFileExtension(file.filename);
-              const truncatedName = truncateFilename(file.filename);
-
-              return (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  key={`${file.filename}-${index}`}
-                >
-                  <Card
-                    sx={{
-                      position: "relative",
-                      bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
-                      border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-                      borderRadius: 2,
-                      transition: "all 0.2s ease-in-out",
-                      "&:hover": {
-                        boxShadow: isDarkMode
-                          ? "0 4px 12px rgba(7, 179, 122, 0.2)"
-                          : "0 4px 12px rgba(0,0,0,0.1)",
-                        borderColor: PRIMARY_GREEN,
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                  >
-                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                      {/* Remove button */}
-                      <IconButton
-                        size="small"
-                        onClick={() => handleRemoveFile(index, file.filename)}
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          right: 8,
-                          color: "#999",
-                          bgcolor: isDarkMode
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.05)",
-                          width: 24,
-                          height: 24,
-                          "&:hover": {
-                            bgcolor: "#f44336",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        <Close fontSize="small" />
-                      </IconButton>
-
-                      {/* File icon and info */}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          mb: 2,
-                        }}
-                      >
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Tooltip title={file.filename}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: 600,
-                                color: isDarkMode ? "#fff" : "#333",
-                                lineHeight: 1.3,
-                                mb: 0.5,
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {truncatedName}
-                            </Typography>
-                          </Tooltip>
-                        </Box>
-                      </Box>
-
-                      {/* File extension chip */}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Chip
-                          label={extension.toUpperCase()}
-                          size="small"
-                          sx={{
-                            bgcolor: PRIMARY_GREEN,
-                            color: "white",
-                            fontWeight: 600,
-                            fontSize: "0.7rem",
-                            height: 20,
-                          }}
-                        />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        )}
-        {/* uploaded files preview ENDS */}
-
         <Box
           sx={{
             bgcolor:
-              theme.palette.mode === "dark"
-                ? theme.palette.background.default
-                : "#f8f9fa",
+            theme.palette.mode === "dark"
+            ? theme.palette.background.default
+            : "#f8f9fa",
             borderRadius: 4,
             p: 3,
             border: "1px solid #e0e0e0",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            position: "relative"
           }}
-        >
+          >
+
+          {/* uploaded files preview STARTS */}
+          {uploadedFiles?.length > 0 && (
+            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 }}}>
+              {uploadedFiles?.map((file, index) => {
+                const extension = getFileExtension(file.filename);
+                const truncatedName = truncateFilename(file.filename);
+  
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={12}
+                    key={`${file.filename}-${index}`}
+                  >
+                    <Card
+                      sx={{
+                        position: "relative",
+                        bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
+                        border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
+                        borderRadius: 2,
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                          boxShadow: isDarkMode
+                            ? "0 4px 12px rgba(7, 179, 122, 0.2)"
+                            : "0 4px 12px rgba(0,0,0,0.1)",
+                          borderColor: PRIMARY_GREEN,
+                          transform: "translateY(-2px)",
+                        },
+                        maxWidth: "120px"
+                      }}
+                    >
+                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                        {/* Remove button */}
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveFile(index, file.filename)}
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            color: "#999",
+                            bgcolor: isDarkMode
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.05)",
+                            width: 24,
+                            height: 24,
+                            "&:hover": {
+                              bgcolor: "#f44336",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+  
+                        {/* File icon and info */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            mb: 2,
+                            pr: 2,
+                          }}
+                        >
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Tooltip title={file.filename}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight: 600,
+                                  color: isDarkMode ? "#fff" : "#333",
+                                  lineHeight: 1.3,
+                                  mb: 0.5,
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {truncatedName}
+                              </Typography>
+                            </Tooltip>
+                          </Box>
+                        </Box>
+  
+                        {/* File extension chip */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Chip
+                            label={extension.toUpperCase()}
+                            size="small"
+                            sx={{
+                              bgcolor: PRIMARY_GREEN,
+                              color: "white",
+                              fontWeight: 600,
+                              fontSize: "0.7rem",
+                              height: 20,
+                            }}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          )}
+          {/* uploaded files preview ENDS */}
+
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
             <TextField
               fullWidth
@@ -345,12 +348,13 @@ export default function InputArea({
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: "row-reverse",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <input
+            {/* This will be needed later */}
+            {/* <input
               id="file-upload-input-slides"
               type="file"
               accept=".pdf,.doc,.docx,.txt"
@@ -372,7 +376,7 @@ export default function InputArea({
               }}
             >
               Attach
-            </Button>
+            </Button> */}
 
             <IconButton
               onClick={() => onSend()}

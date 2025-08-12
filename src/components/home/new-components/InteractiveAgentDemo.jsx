@@ -31,6 +31,8 @@ import { styled } from "@mui/material/styles";
 import AgentThinkingLoader from "./AgentThinkingLoader";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
+import { useRouter } from "next/navigation";
+import {createSheetSimulationChatId} from "../../../libs/createSheetSimulationChatId"
 
 // Styled components to match Tailwind styles
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -81,10 +83,35 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
       borderColor: "#10b981",
       borderWidth: "1px",
     },
+    // Disabled state cursor styling
+    "&.Mui-disabled": {
+      cursor: "not-allowed !important",
+      "& .MuiInputBase-input": {
+        cursor: "not-allowed !important",
+      },
+    },
   },
   "& .MuiInputBase-input": {
     fontSize: "14px",
     resize: "none",
+    color: "#000 !important", // Force black color
+  },
+  "& .MuiInputBase-input.Mui-disabled": {
+    WebkitTextFillColor: "#000 !important", // Override Chrome's dimming with !important
+    color: "#000 !important", // Override Firefox/other browsers with !important
+    opacity: "1 !important", // Ensure full opacity
+    cursor: "not-allowed !important", // Disabled cursor
+  },
+  // Additional fallback for better cross-browser support
+  "& .MuiInputBase-root.Mui-disabled": {
+    color: "#000 !important",
+    cursor: "not-allowed !important",
+    "& .MuiInputBase-input": {
+      WebkitTextFillColor: "#000 !important",
+      color: "#000 !important",
+      opacity: "1 !important",
+      cursor: "not-allowed !important",
+    },
   },
 }));
 
@@ -176,9 +203,13 @@ const agentDemos = [
     color: "emerald",
     placeholder: "Select an example...",
     examples: [
-      "Create a pitch deck for an AI startup targeting Series A investors",
-      "Make slides about sustainable fashion for university students",
+      "Create an academic presentation about AI in Education",
+      "Create a professional business presentation about Digital Marketing",
       "Build a training presentation on remote work best practices",
+    ],
+    chatId: [
+      "12344e7c-21ca-414b-bab1-6129a2981bc3",
+      "0af635b5-41cb-4d47-9fe0-a0eb91bd0384",
     ],
     description:
       "Creates complete presentations with research, design, and content",
@@ -192,9 +223,14 @@ const agentDemos = [
     color: "blue",
     placeholder: "Select an example...",
     examples: [
-      "Compare pricing of 10 gyms in a sheet",
+      "Compare pricing of top 10 gyms in a sheet",
       "List top 5 Italian restaurants with ratings",
-      "Generate 10 school and add contact notes",
+      "Generate 10 school and contact notes",
+    ],
+    chatId: [
+      "6899c971364813eab1a0a0ce",
+      "6899caacfe89e52d02b85587",
+      "6899cba7364813eab1a0a104",
     ],
     description:
       "Performs real-world research and structures the data in smart sheets",
@@ -222,6 +258,8 @@ const agentDemos = [
 // Mock API function
 const mockApiRequest = async (method, endpoint, data) => {
   await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  // return to the slide simulation api
   return {
     json: async () => ({
       result: `Mock response for ${
@@ -261,6 +299,9 @@ export default function InteractiveAgentDemo() {
   const [aiResponse, setAiResponse] = useState("");
   const [error, setError] = useState("");
   const inputRef = useRef(null);
+  const [userChatId, setUserChatId] = useState(null);
+
+  const router = useRouter();
 
   // Cycle through examples automatically
   useEffect(() => {
@@ -270,7 +311,7 @@ export default function InteractiveAgentDemo() {
     return () => clearInterval(interval);
   }, [selectedAgent]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (idx) => {
     if (!userInput.trim()) return;
 
     mockAnalytics.trackAgentInteraction(
@@ -278,6 +319,10 @@ export default function InteractiveAgentDemo() {
       "demo_started",
       userInput.length
     );
+
+    const simulationId = selectedAgent.chatId[userChatId];
+    // console.log(selectedAgent.chatId[userChatId], "simulationId");
+    // return;
 
     // Tracking simulation for GA4, GTM, and other
     trackClick(trackingList.LIVE_AGENT_SIMULATION, {
@@ -324,6 +369,16 @@ export default function InteractiveAgentDemo() {
 
       const data = await response.json();
       setAiResponse(data.result);
+
+      if(selectedAgent?.id === "slides") {
+        console.log("slides routes");
+      } else if (selectedAgent?.id === "sheet") {
+        console.log("sheets routes");
+        await createSheetSimulationChatId(userInput, router, simulationId)
+      };
+
+      return;
+
       setShowResults(true);
 
       mockAnalytics.trackAgentInteraction(
@@ -347,12 +402,13 @@ export default function InteractiveAgentDemo() {
     }
   };
 
-  const useExample = (example) => {
+  const useExample = (example, index) => {
     setUserInput(example);
     mockAnalytics.trackFeatureClick("example_used", "agent_demo");
     if (inputRef.current) {
       inputRef.current.focus();
     }
+    setUserChatId(index)
   };
 
   const handleAgentSelect = (agent) => {
@@ -555,7 +611,7 @@ export default function InteractiveAgentDemo() {
                         >
                           <ExampleButton
                             fullWidth={true}
-                            onClick={() => useExample(example)}
+                            onClick={() => useExample(example, index)}
                           >
                             <Typography
                               sx={{
@@ -671,7 +727,8 @@ export default function InteractiveAgentDemo() {
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
                         placeholder={selectedAgent.placeholder}
-                        disabled={isProcessing}
+                        // disabled={isProcessing}
+                        disabled={true}
                         variant="outlined"
                       />
                     </Box>
@@ -679,7 +736,7 @@ export default function InteractiveAgentDemo() {
                     <StyledButton
                       fullWidth={true}
                       variant="contained"
-                      onClick={handleSubmit}
+                      onClick={() => handleSubmit()}
                       disabled={!userInput.trim() || isProcessing}
                       startIcon={
                         isProcessing ? (

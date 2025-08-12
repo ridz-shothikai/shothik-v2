@@ -97,8 +97,10 @@ const fireToExternalServices = async (event) => {
   // GA4
   if (typeof window !== "undefined" && typeof window.gtag === "function") {
     try {
-      window.gtag("event", event.event_name, event.sessionId, {
+      window.gtag("event", event.event_name, {
         ...(event.parameters || {}),
+        session_id: event.sessionId,
+        user_id: event.userId,
       });
     } catch (err) {
       console.error("GA4 event failed:", err);

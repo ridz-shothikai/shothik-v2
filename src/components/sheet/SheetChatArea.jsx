@@ -268,7 +268,6 @@ export default function SheetChatArea({ currentAgentType, theme }) {
   });
 
   const hasAnyConversation = Boolean(chatData?.conversations?.length);
-  
 
   console.log(chatData, "chatData");
 
@@ -299,8 +298,8 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     isLoadingHistory,
     currentChatId,
     sheetState.activeChatIdForPolling,
-  ]);  
- 
+  ]);
+
   // Cleanup effect when component unmounts or chat changes:
   useEffect(() => {
     return () => {
@@ -660,6 +659,88 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     }
   };
 
+  // THIS PART IS ONLY FOR SIMULATION STARTS
+
+  const s_id = searchParams.get("s_id"); // simulation id
+  const token = localStorage.getItem("sheetai-token");
+
+  useEffect(() => {
+    const runSimulation = async () => {
+      // Only run simulation if we have s_id and component is properly initialized
+      if (!s_id || !isInitialized || !sheetAiToken || isLoading) {
+        return;
+      }
+
+      // Check if simulation has already been processed
+      const simulationKey = `simulation-processed-${s_id}`;
+      if (sessionStorage.getItem(simulationKey)) {
+        console.log("Simulation already processed for s_id:", s_id);
+        return;
+      }
+
+      // Mark simulation as being processed
+      sessionStorage.setItem(simulationKey, "true");
+
+      try {
+        // Get simulation prompt
+        const simulationPrompt = getSimulationPrompt(s_id); 
+
+        if (!simulationPrompt) {
+          console.error("No simulation prompt found for s_id:", s_id);
+          return;
+        }
+
+        console.log("Running simulation with s_id:", s_id);
+
+        // Set loading state
+        setError(null);
+        setIsLoading(true);
+        dispatch(setSheetStatus("generating"));
+        dispatch(setActiveSheetIdForPolling(currentChatId));
+
+        // Create user message for simulation
+        const userMessage = {
+          id: `user-simulation-${s_id}-${Date.now()}`,
+          message: simulationPrompt,
+          isUser: true,
+          timestamp: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, userMessage]);
+
+        // Run the sheet generation
+        await handleSheetGeneration(
+          simulationPrompt,
+          currentChatId,
+          userMessage.id
+        );
+      } catch (error) {
+        console.error("Simulation failed:", error);
+        setError("Simulation failed to run. Please try again.");
+        dispatch(setSheetStatus("error"));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    runSimulation();
+  }, [s_id, isInitialized, sheetAiToken, currentChatId]);
+
+  // Helper function to get simulation prompt based on s_id
+  const getSimulationPrompt = (simulationId) => {
+    // You can either:
+    // 1. Have predefined prompts based on simulation ID
+    const simulationPrompts = {
+      "6899c971364813eab1a0a0ce": "Compare pricing of top 10 gyms in a sheet",
+      "6899caacfe89e52d02b85587": "List top 5 Italian restaurants with ratings",
+      "6899cba7364813eab1a0a104": "Generate 10 school and contact notes",
+    };
+
+    return simulationPrompts[simulationId] || null;
+  };
+
+  // THIS PART IS ONLY FOR SIMULATION ENDS
+
   // Updated handleSheetGeneration to show each SSE step
   const handleSheetGeneration = async (prompt, chatId, userMessageId) => {
     try {
@@ -670,12 +751,16 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sheetAiToken}`,
+            // Authorization: `Bearer ${sheetAiToken}`,
+            Authorization: `Bearer ${token}`, // only for simulation
             Accept: "text/event-stream",
           },
           body: JSON.stringify({
             prompt: prompt,
             chat: chatId,
+            ...(s_id && {isSimulated: true}),
+            isSimulated: s_id ? true : false, // only for simulation
+            simulatedChat: s_id, // only for simulation
           }),
           signal: abortControllerRef.current.signal,
         }
@@ -686,8 +771,11 @@ export default function SheetChatArea({ currentAgentType, theme }) {
         throw new Error(`Server error (${response.status}): ${errorText}`);
       }
 
+      // console.log(response.body, "response body");
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
+      // console.log(decoder, "decoder");
       let buffer = "";
       let hasReceivedData = false;
 
@@ -754,17 +842,79 @@ export default function SheetChatArea({ currentAgentType, theme }) {
               }
             }
 
-            // Handle completion step
-            else if (data.step === "completed") {
-              const responseData = data?.data?.data;
-              console.log(responseData, "data from SSE");
+            // Handle completion step. [FOR PRODUCTION]
+            // else if (data.step === "completed") {
+            //   const responseData = data?.data?.data;
+            //   console.log(responseData, "data from SSE");
 
-              const stepMessage = getStepMessage(data.step, data.data);
-              if (stepMessage) {
+            //   const stepMessage = getStepMessage(data.step, data.data);
+            //   if (stepMessage) {
+            //     setMessages((prev) => [
+            //       ...prev,
+            //       {
+            //         id: `step-${data.step}-${Date.now()}`,
+            //         message: stepMessage,
+            //         isUser: false,
+            //         timestamp: data.timestamp,
+            //         type: "info",
+            //       },
+            //     ]);
+            //   }
+
+            //   if (
+            //     responseData?.response?.columns &&
+            //     responseData?.response?.rows
+            //   ) {
+            //     // Update Redux store with sheet data
+            //     dispatch(setSheetData(responseData.response.rows));
+            //     dispatch(
+            //       setSheetTitle(responseData.prompt.substring(0, 50) + "...")
+            //     );
+            //     dispatch(setSheetStatus("completed"));
+
+            //     // Show success toast
+            //     setToast({
+            //       open: true,
+            //       message: "Spreadsheet generated successfully!",
+            //       severity: "success",
+            //     });
+
+            //     const newSavePoint = {
+            //       id: `savepoint-${responseData._id}`,
+            //       title: responseData.prompt.substring(0, 50) + "...",
+            //       prompt: responseData.prompt,
+            //       timestamp: responseData.createdAt,
+            //       generations: [
+            //         {
+            //           id: `gen-${responseData._id}`,
+            //           title: "Generation 1",
+            //           timestamp:
+            //             responseData.updatedAt || responseData.createdAt,
+            //           sheetData: responseData.response.rows,
+            //           status: "completed",
+            //           message: "Sheet generated successfully",
+            //           metadata: responseData.response.metadata,
+            //         },
+            //       ],
+            //       activeGenerationId: `gen-${responseData._id}`,
+            //     };
+
+            //     dispatch({
+            //       type: "sheet/addSavePoint",
+            //       payload: newSavePoint,
+            //     });
+            //   }
+            // }
+
+            // FOR SIMULATION
+            else if (data.step === "completed") {
+              // First completed step - just has message
+              if (data.data?.message && !data.data?.columns && !data.data?.rows) {
+                const stepMessage = data.data.message;
                 setMessages((prev) => [
                   ...prev,
                   {
-                    id: `step-${data.step}-${Date.now()}`,
+                    id: `step-${data.step}-message-${Date.now()}`,
                     message: stepMessage,
                     isUser: false,
                     timestamp: data.timestamp,
@@ -772,49 +922,63 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                   },
                 ]);
               }
-
-              if (
-                responseData?.response?.columns &&
-                responseData?.response?.rows
-              ) {
+              
+              // Second completed step - has the actual data
+              else if (data.data?.columns && data.data?.rows) {
+                console.log("Received actual sheet data:", data.data);
+        
                 // Update Redux store with sheet data
-                dispatch(setSheetData(responseData.response.rows));
-                dispatch(
-                  setSheetTitle(responseData.prompt.substring(0, 50) + "...")
-                );
+                dispatch(setSheetData(data.data.rows));
+                dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
                 dispatch(setSheetStatus("completed"));
-
+        
                 // Show success toast
                 setToast({
                   open: true,
                   message: "Spreadsheet generated successfully!",
                   severity: "success",
                 });
-
+        
+                // Create save point with the actual conversation data
+                const conversationId = data.conversation;
+                const chatId = data.chat;
+                
                 const newSavePoint = {
-                  id: `savepoint-${responseData._id}`,
-                  title: responseData.prompt.substring(0, 50) + "...",
-                  prompt: responseData.prompt,
-                  timestamp: responseData.createdAt,
+                  id: `savepoint-${conversationId}`,
+                  title: prompt.substring(0, 50) + "...",
+                  prompt: prompt,
+                  timestamp: data.timestamp,
                   generations: [
                     {
-                      id: `gen-${responseData._id}`,
+                      id: `gen-${conversationId}`,
                       title: "Generation 1",
-                      timestamp:
-                        responseData.updatedAt || responseData.createdAt,
-                      sheetData: responseData.response.rows,
+                      timestamp: data.timestamp,
+                      sheetData: data.data.rows,
                       status: "completed",
                       message: "Sheet generated successfully",
-                      metadata: responseData.response.metadata,
+                      metadata: data.data.metadata,
                     },
                   ],
-                  activeGenerationId: `gen-${responseData._id}`,
+                  activeGenerationId: `gen-${conversationId}`,
                 };
-
+        
                 dispatch({
                   type: "sheet/addSavePoint",
                   payload: newSavePoint,
                 });
+        
+                // Add final success message
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: `final-success-${Date.now()}`,
+                    message: `Successfully generated a ${data.data.metadata?.totalRows || 'spreadsheet'} with ${data.data.metadata?.columnCount || data.data.columns?.length || 'multiple'} columns!`,
+                    isUser: false,
+                    timestamp: data.timestamp,
+                    type: "success",
+                    metadata: data.data.metadata,
+                  },
+                ]);
               }
             }
           } catch (error) {
