@@ -30,8 +30,8 @@ const SettingsSidebar = ({
   return (
     <Box
       sx={{
-        width: 300,
-        height: "100%",
+        width: { xs: "100%", sm: 320 },
+        height: { xs: "auto", sm: "calc(100vh - 90px)" },
         borderLeft: mobile ? "none" : "1px solid",
         borderColor: mobile ? "transparent" : "divider",
         bgcolor: "background.paper",

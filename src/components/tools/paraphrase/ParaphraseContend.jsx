@@ -666,29 +666,41 @@ const ParaphraseContend = () => {
     user?.package === "unlimited";
 
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
-      <Box sx={{ flex: "0 0 auto", width: "max-content", mr: 2 }}>
-        {!isMobile && (
-          <Box sx={{ flex: "0 0 auto", width: "max-content", mr: 2 }}>
-            <FileHistorySidebar />
-          </Box>
-        )}
-        {/* <FreezeWordsDialog */}
-        {/* /> */}
-      </Box>
+    <Box sx={{ display: "flex", width: "100%", overflow: "hidden", }}>
+      {!isMobile && (
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            width: "min-content",
+            mr: 2,
+            transition: "width 200ms",
+            // when collapsed you could toggle a class to shrink to e.g. 40px
+          }}
+        >
+          <FileHistorySidebar />
+        </Box>
+      )}
 
       <Box
         sx={{
-          flex: "1 1 auto",
-          minWidth: 0, // <— allows this column to shrink
+          flex: "1 1 auto",      // can grow & shrink
+          minWidth: 0,           // allow inner overflow hidden
           display: "flex",
           flexDirection: "column",
+          gap: 0,
         }}
-      >
+      >        
         {showDemo ? <Onboarding /> : null}
 
         {/* desktop: language tabs outside card; hide on mobile */}
-        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+        <Box
+          sx={{
+            display: { xs: "none", sm: "block" },
+            width: "100%",       // match card width
+            flex: "0 0 auto",
+            padding: '0 20px'
+          }}
+        >
           <LanguageMenu
             isLoading={isLoading}
             setLanguage={setLanguage}
@@ -701,20 +713,37 @@ const ParaphraseContend = () => {
             display: "flex",
             gap: 2,
             overflow: "hidden",
+            flex: "1 1 auto",    // ← allow this wrapper to grow/shrink
+            minWidth: 0,         // ← so its children can shrink
+            width: "100%",       // ← match the language menu’s 100%
           }}
         >
           <Card
             sx={{
-              flex: "1 1 0%",
-              minWidth: 0,
+              flex: "1 1 auto",    // fill remaining height
+              minWidth: 0,         // allow it to shrink
               width: "100%",
               mt: 0,
               border: "1px solid",
               borderColor: "divider",
               borderRadius: "12px",
               overflow: "visible",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
+          {/* <Card */}
+          {/*   sx={{ */}
+          {/*     flex: "1 1 0%", */}
+          {/*     minWidth: 0, */}
+          {/*     width: "100%", */}
+          {/*     mt: 0, */}
+          {/*     border: "1px solid", */}
+          {/*     borderColor: "divider", */}
+          {/*     borderRadius: "12px", */}
+          {/*     overflow: "visible", */}
+          {/*   }} */}
+          {/* > */}
             {/* mobile: selected language button in card header */}
             <Box
               sx={{
@@ -981,30 +1010,38 @@ const ParaphraseContend = () => {
               />
             </Box>
           </SwipeableDrawer>
-          {!isMobile && (
-            <Box sx={{ flex: "0 0 auto" }}>
-              <VerticalMenu
-                selectedMode={selectedMode}
-                outputText={result}
-                setOutputText={setResult}
-                setSelectedMode={setSelectedMode}
-                freezeWords={[
-                  ...(frozenWords?.values || []),
-                  ...(frozenPhrases?.values || []),
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-                plainOutput={extractPlainText(result)}
-                text={userInput}
-                selectedLang={language}
-                highlightSentence={highlightSentence}
-                setHighlightSentence={setHighlightSentence}
-                selectedSynonymLevel={selectedSynonyms}
-              />
-            </Box>
-          )}
         </Box>
       </Box>
+      {!isMobile && (
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            width: "min-content",
+            ml: 2,
+            transition: "width 200ms",
+          }}
+        >
+          <VerticalMenu
+            selectedMode={selectedMode}
+            outputText={result}
+            setOutputText={setResult}
+            setSelectedMode={setSelectedMode}
+            freezeWords={[
+              ...(frozenWords?.values || []),
+              ...(frozenPhrases?.values || []),
+            ]
+              .filter(Boolean)
+              .join(", ")}
+            plainOutput={extractPlainText(result)}
+            text={userInput}
+            selectedLang={language}
+            highlightSentence={highlightSentence}
+            setHighlightSentence={setHighlightSentence}
+            selectedSynonymLevel={selectedSynonyms}
+          />
+        </Box>
+      )}
+
     </Box>
   );
 };

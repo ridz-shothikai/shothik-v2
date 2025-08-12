@@ -150,8 +150,9 @@ export default function MultipleFileUpload({
           display: "flex",
           gap: 1,
           alignItems: "center",
+          justifyContent:'center',
           textAlign: "center",
-          width: "100%",
+          width: "fit-content",
         }}
         variant="outlined"
         onClick={handleOpen}
@@ -161,7 +162,7 @@ export default function MultipleFileUpload({
       </Button>
       <Button
         id="multi_upload_close_button"
-        sx={{ opacity: 0, zIndex: -9999 }}
+        sx={{ opacity: 0, zIndex: -9999, position:'absolute', top: -9999 }}
         onClick={() => {
           handleClose();
         }}

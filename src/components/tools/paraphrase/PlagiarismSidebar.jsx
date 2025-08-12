@@ -49,8 +49,8 @@ const PlagiarismSidebar = ({
   return (
     <Box
       sx={{
-        width: 300,
-        height: "100%",
+        width: { xs: "100%", sm: 320 },
+        height: { xs: "auto", sm: "calc(100vh - 90px)" },
         borderLeft: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",

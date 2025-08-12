@@ -193,9 +193,9 @@ const ModeNavigation = ({
             mt: { xs: 2, sm: 1 },
             width: "100%",
             "& .MuiSlider-valueLabel": {
-              fontSize: "12px",
+              fontSize: "10px",
               padding: "2px 6px",
-              transform: "translateY(-21px)",
+              transform: "translateY(-15px)",
               "&:before": { width: "6px", height: "6px", bottom: 0 },
             },
           }}

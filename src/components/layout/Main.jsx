@@ -23,7 +23,7 @@ export default function Main({ children }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const containerWidth = pathName === "/" ? "100%" : "xl"
+  const containerWidth = pathName === "/" || pathName === '/paraphrase' ? "100%" : "xl"
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -66,7 +66,7 @@ export default function Main({ children }) {
               justifyContent: "space-evenly",
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
               {children}
             </Box>
             {/* <VerticalMenu/> */}
