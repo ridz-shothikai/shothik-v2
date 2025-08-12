@@ -760,7 +760,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
             chat: chatId,
             ...(s_id && {isSimulated: true}),
             isSimulated: s_id ? true : false, // only for simulation
-            simulatedChat: s_id, // only for simulation
+            ...(s_id && {simulatedChat: s_id}), // only for simulation
           }),
           signal: abortControllerRef.current.signal,
         }
