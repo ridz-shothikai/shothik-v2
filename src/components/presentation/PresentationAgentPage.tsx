@@ -719,6 +719,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                 setFileUrls={setFileUrls}
                 uploadedFiles={uploadedFiles}
                 fileUrls={fileUrls}
+                hideInputField={false}
               />
             </Box>
             <Dialog
@@ -809,6 +810,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                 setFileUrls={setFileUrls}
                 uploadedFiles={uploadedFiles}
                 fileUrls={fileUrls}
+                hideInputField={false}
               />
             </Box>
             <Box

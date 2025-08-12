@@ -1489,6 +1489,7 @@ export default function ChatArea({
   setFileUrls,
   uploadedFiles,
   fileUrls,
+  hideInputField,
 }) {
   const theme = useTheme();
 
@@ -1708,6 +1709,8 @@ export default function ChatArea({
           overflow: "hidden",
         }}
       >
+        {
+          !hideInputField &&
         <InputArea
           currentAgentType={currentAgentType}
           inputValue={inputValue}
@@ -1719,6 +1722,7 @@ export default function ChatArea({
           uploadedFiles={uploadedFiles}
           fileUrls={fileUrls}
         />
+        }
       </Box>
     </Box>
   );

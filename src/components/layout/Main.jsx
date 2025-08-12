@@ -38,7 +38,9 @@ export default function Main({ children }) {
         flexGrow: 1,
         position: "relative",
         backgroundColor:
-          pathName === "/" ? `${isDarkMode ? "#161C24" : "#FFF"}` : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
+          pathName === "/"
+            ? `${isDarkMode ? "#161C24" : "#FFF"}`
+            : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
           px: 2,
@@ -66,7 +68,9 @@ export default function Main({ children }) {
               justifyContent: "space-evenly",
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <Box
+              sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+            >
               {children}
             </Box>
             {/* <VerticalMenu/> */}
@@ -75,7 +79,9 @@ export default function Main({ children }) {
           children
         )}
       </Container>
-      {pathName !== "/research" && !pathName.startsWith("/agents") ? (
+      {pathName !== "/research" &&
+      !pathName.startsWith("/agents") &&
+      !pathName.startsWith("/slide") ? (
         <FooterServerComponent />
       ) : null}
     </Box>

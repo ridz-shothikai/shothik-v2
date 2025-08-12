@@ -203,13 +203,14 @@ const agentDemos = [
     color: "emerald",
     placeholder: "Select an example...",
     examples: [
-      "Create an academic presentation about AI in Education",
       "Create a professional business presentation about Digital Marketing",
-      "Build a training presentation on remote work best practices",
+      "Create an academic presentation about AI in Education",
+      "Create a presentation on Bangladesh Software Industry",
     ],
     chatId: [
       "12344e7c-21ca-414b-bab1-6129a2981bc3",
       "0af635b5-41cb-4d47-9fe0-a0eb91bd0384",
+      "a1f51514-5fb4-4d90-8c6e-c26479a63f72",
     ],
     description:
       "Creates complete presentations with research, design, and content",
@@ -371,7 +372,7 @@ export default function InteractiveAgentDemo() {
       setAiResponse(data.result);
 
       if(selectedAgent?.id === "slides") {
-        console.log("slides routes");
+        router.push(`/slide/replay?id=${simulationId}`);
       } else if (selectedAgent?.id === "sheet") {
         console.log("sheets routes");
         await createSheetSimulationChatId(userInput, router, simulationId)
