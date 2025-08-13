@@ -1,23 +1,70 @@
 "use client";
 
-import { Box, Chip, Grid2, Rating, styled, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Chip,
+  Grid2,
+  Rating,
+  styled,
+  Typography,
+  useTheme,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import * as motion from "motion/react-client";
 import React, { useState } from "react";
 import UserActionButton from "./UserActionButton";
 import AnimatedText from "./AnimatedText";
 import EmailModal from "../../EmailCollectModal";
-
+import { useRegisterUserToBetaListMutation } from "../../../../redux/api/auth/authApi";
 
 const Details = ({ trackClick }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
   const [showModal, setShowModal] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success", // 'success', 'error', 'warning', 'info'
+  });
+
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
 
   const handleEmailSubmit = async (email) => {
-    console.log("Email submitted:", email);
-    // Here we would typically send the email to your backend
-    // await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }) });
+    try {
+      const result = await registerUserForBetaList({ email }).unwrap();
+
+      console.log(result, "result");
+
+      // Success toast
+      setToast({
+        open: true,
+        message: "Successfully registered for beta! We'll be in touch soon.",
+        severity: "success",
+      });
+
+      // Close the modal
+      setShowModal(false);
+    } catch (error) {
+      // Error toast
+      setToast({
+        open: true,
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToast((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -139,12 +186,29 @@ const Details = ({ trackClick }) => {
         <UserActionButton setShowModal={setShowModal} trackClick={trackClick} />
       </Grid2>
 
-      {/* email collect modal */}
+      {/* Email collect modal */}
       <EmailModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
+
+      {/* Toast notification */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

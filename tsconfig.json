@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/hooks/useStreamingLogs.ts", "src/app/(slide-layout)/slides/page.jsx", "src/components/presentation/ChatArea.jsx"  ],
+, "src/hooks/useStreamingLogs.ts", "src/app/(slide-layout)/slides/page.jsx",  ],
   "exclude": [
     "node_modules"
   ]

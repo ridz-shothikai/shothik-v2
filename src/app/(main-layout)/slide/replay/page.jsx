@@ -36,6 +36,10 @@ export default function SlideReplay() {
 
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  const [simulationCompleted, setSimulationCompleted] = useState(false);
+
+   const [showModal, setShowModal] = useState(false);
+
   const handlePreviewOpen = () => setPreviewOpen(true);
   const handlePreviewClose = () => setPreviewOpen(false);
 
@@ -48,10 +52,16 @@ export default function SlideReplay() {
       setTotalSlides,
       id
     );
-    runLogsSimulation(setLogsData, setLogsStatus, setLogsLoading, id);
+    runLogsSimulation(
+      setLogsData,
+      setLogsStatus,
+      setLogsLoading,
+      id,
+      setSimulationCompleted
+    );
   }, []);
 
-//   console.log(logsData, "logsData");
+  //   console.log(logsData, "logsData");
   //   console.log(slides, "slides");
 
   return (
@@ -145,6 +155,9 @@ export default function SlideReplay() {
                 inputValue={""}
                 status={logsStatus}
                 hideInputField={true}
+                simulationCompleted={simulationCompleted}
+                setShowModal={setShowModal}
+                showModal={showModal}
               />
             </Box>
             <Dialog
@@ -204,6 +217,9 @@ export default function SlideReplay() {
                 inputValue={""}
                 status={logsStatus}
                 hideInputField={true}
+                simulationCompleted={simulationCompleted}
+                setShowModal={setShowModal}
+                showModal={showModal}
               />
             </Box>
             <Box
@@ -317,7 +333,13 @@ async function runSlideSimulation(
   }
 }
 
-async function runLogsSimulation(setLogsData, setLogsStatus, setLogsLoading, slideId) {
+async function runLogsSimulation(
+  setLogsData,
+  setLogsStatus,
+  setLogsLoading,
+  slideId,
+  setSimulationCompleted
+) {
   const abortController = new AbortController();
 
   setLogsStatus("processing");
@@ -358,7 +380,7 @@ async function runLogsSimulation(setLogsData, setLogsStatus, setLogsLoading, sli
 
         try {
           const data = JSON.parse(line);
-        //   console.log(data, "logs data");
+          //   console.log(data, "logs data");
           // Store slides in state
           if (data.logs) {
             setLogsData((prev) => [...prev, data.logs]);
@@ -368,6 +390,7 @@ async function runLogsSimulation(setLogsData, setLogsStatus, setLogsLoading, sli
           if (data.status === "completed") {
             setLogsStatus("completed");
             setLogsLoading(false);
+            setSimulationCompleted(true);
             abortController.abort();
             return; // Stop reading
           }

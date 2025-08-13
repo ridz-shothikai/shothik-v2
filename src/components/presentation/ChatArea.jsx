@@ -28,6 +28,8 @@ import {
 } from "../../hooks/useStreamingLogs";
 import { useStaticLogs } from "../../hooks/useStaticLogs";
 import TypingAnimation from "../common/TypingAnimation";
+import { FooterCta } from "../sheet/SheetAgentPage";
+import useResponsive from "../../hooks/useResponsive";
 
 const PRIMARY_GREEN = "#07B37A";
 const USER_MESSAGE_COLOR = "#1976d2";
@@ -1489,10 +1491,14 @@ export default function ChatArea({
   setFileUrls,
   uploadedFiles,
   fileUrls,
-  hideInputField,
+  hideInputField, // for simulation it's true, for regular process it's false. based on this we can also add the CTA footer.
+  simulationCompleted,
+  setShowModal,
+  showModal,
 }) {
   const theme = useTheme();
-
+  const isMobile = useResponsive("down", "sm");
+  
   const {
     processedLogs,
     currentlyTypingIndex,
@@ -1558,172 +1564,182 @@ export default function ChatArea({
   }, [realLogs, deduplicatedOptimisticMessages]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        maxHeight: "100%",
-        borderRight: `1px solid ${theme.palette.divider}`,
-        bgcolor: theme.palette.background.default,
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        ref={scrollContainerRef}
-        onScroll={checkScrollPosition}
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-          minHeight: 0,
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
-            borderRadius: "3px",
-            "&:hover": {
-              background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
-            },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor:
-            theme.palette.mode === "dark"
-              ? "#555 transparent"
-              : "#c1c1c1 transparent",
-        }}
-      >
-        <Box
-          sx={{
-            p: 3,
-            minHeight: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {chatHistory.length === 0 &&
-            allMessages.length === 0 &&
-            !showThinking && (
-              <Box
-                sx={{
-                  textAlign: "center",
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  minHeight: "300px",
-                }}
-              >
-                <SmartToyIcon
-                  sx={{
-                    fontSize: 48,
-                    color: theme.palette.text.disabled,
-                    mb: 2,
-                  }}
-                />
-                <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
-                  {currentAgentType === "presentation"
-                    ? "Presentation Agent"
-                    : "Super Agent"}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Start a conversation to see AI responses stream in real-time
-                </Typography>
-              </Box>
-            )}
-
-          {chatHistory.map((message) => (
-            <InteractiveChatMessage
-              key={message.id}
-              message={message}
-              onResponse={() => {}}
-              onFeedback={() => {}}
-              onPreferenceUpdate={() => {}}
-            />
-          ))}
-
-          {allMessages.map((log, index) => {
-            if (log.role === "user") {
-              return (
-                <UserMessage
-                  key={`user-${log.id || log.timestamp || index}`}
-                  message={log.message}
-                  timestamp={log.timestamp}
-                />
-              );
-            } else if (log.role === "agent") {
-              const agentIndex = processedLogs.findIndex(
-                (processedLog) => processedLog.timestamp === log.timestamp
-              );
-
-              if (agentIndex >= 0) {
-                return (
-                  <StreamingMessage
-                    key={processedLogs[agentIndex].id}
-                    log={processedLogs[agentIndex]}
-                    logIndex={agentIndex}
-                    isTyping={agentIndex === currentlyTypingIndex}
-                    onTypingComplete={handleTypingComplete}
-                    registerAnimationCallback={registerAnimationCallback}
-                    unregisterAnimationCallback={unregisterAnimationCallback}
-                    sessionStatus={sessionStatus}
-                    processedLogs={processedLogs}
-                    theme={theme}
-                  />
-                );
-              }
-            }
-            return null;
-          })}
-
-          {showThinking &&
-            sessionStatus !== "completed" &&
-            sessionStatus !== "failed" &&
-            sessionStatus !== "saved" && (
-              <Box sx={{ mt: 1 }}>
-                <TypingAnimation
-                  text={
-                    sessionStatus === "failed"
-                      ? "Processing failed..."
-                      : isLoading
-                      ? "Thinking..."
-                      : "Processing..."
-                  }
-                />
-              </Box>
-            )}
-
-          <div ref={chatEndRef} />
-        </Box>
-      </Box>
-
+    <>
       <Box
         sx={{
-          borderTop: `1px solid ${theme.palette.divider}`,
-          bgcolor: theme.palette.background.paper,
-          flexShrink: 0,
-          maxHeight: "300px",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          maxHeight: "100%",
+          borderRight: `1px solid ${theme.palette.divider}`,
+          bgcolor: theme.palette.background.default,
           overflow: "hidden",
         }}
       >
-        {
-          !hideInputField &&
-        <InputArea
-          currentAgentType={currentAgentType}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          onSend={onSend}
-          isLoading={isLoading}
-          setUploadedFiles={setUploadedFiles}
-          setFileUrls={setFileUrls}
-          uploadedFiles={uploadedFiles}
-          fileUrls={fileUrls}
-        />
-        }
+        <Box
+          ref={scrollContainerRef}
+          onScroll={checkScrollPosition}
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            minHeight: 0,
+            scrollBehavior: "smooth",
+            "&::-webkit-scrollbar": { width: "6px" },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
+              borderRadius: "3px",
+              "&:hover": {
+                background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
+              },
+            },
+            scrollbarWidth: "thin",
+            scrollbarColor:
+              theme.palette.mode === "dark"
+                ? "#555 transparent"
+                : "#c1c1c1 transparent",
+          }}
+        >
+          <Box
+            sx={{
+              p: 3,
+              minHeight: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {chatHistory.length === 0 &&
+              allMessages.length === 0 &&
+              !showThinking && (
+                <Box
+                  sx={{
+                    textAlign: "center",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    minHeight: "300px",
+                  }}
+                >
+                  <SmartToyIcon
+                    sx={{
+                      fontSize: 48,
+                      color: theme.palette.text.disabled,
+                      mb: 2,
+                    }}
+                  />
+                  <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
+                    {currentAgentType === "presentation"
+                      ? "Presentation Agent"
+                      : "Super Agent"}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Start a conversation to see AI responses stream in real-time
+                  </Typography>
+                </Box>
+              )}
+
+            {chatHistory.map((message) => (
+              <InteractiveChatMessage
+                key={message.id}
+                message={message}
+                onResponse={() => {}}
+                onFeedback={() => {}}
+                onPreferenceUpdate={() => {}}
+              />
+            ))}
+
+            {allMessages.map((log, index) => {
+              if (log.role === "user") {
+                return (
+                  <UserMessage
+                    key={`user-${log.id || log.timestamp || index}`}
+                    message={log.message}
+                    timestamp={log.timestamp}
+                  />
+                );
+              } else if (log.role === "agent") {
+                const agentIndex = processedLogs.findIndex(
+                  (processedLog) => processedLog.timestamp === log.timestamp
+                );
+
+                if (agentIndex >= 0) {
+                  return (
+                    <StreamingMessage
+                      key={processedLogs[agentIndex].id}
+                      log={processedLogs[agentIndex]}
+                      logIndex={agentIndex}
+                      isTyping={agentIndex === currentlyTypingIndex}
+                      onTypingComplete={handleTypingComplete}
+                      registerAnimationCallback={registerAnimationCallback}
+                      unregisterAnimationCallback={unregisterAnimationCallback}
+                      sessionStatus={sessionStatus}
+                      processedLogs={processedLogs}
+                      theme={theme}
+                    />
+                  );
+                }
+              }
+              return null;
+            })}
+
+            {showThinking &&
+              sessionStatus !== "completed" &&
+              sessionStatus !== "failed" &&
+              sessionStatus !== "saved" && (
+                <Box sx={{ mt: 1 }}>
+                  <TypingAnimation
+                    text={
+                      sessionStatus === "failed"
+                        ? "Processing failed..."
+                        : isLoading
+                        ? "Thinking..."
+                        : "Processing..."
+                    }
+                  />
+                </Box>
+              )}
+
+            <div ref={chatEndRef} />
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            borderTop: `1px solid ${theme.palette.divider}`,
+            bgcolor: theme.palette.background.paper,
+            flexShrink: 0,
+            maxHeight: "300px",
+            overflow: "hidden",
+          }}
+        >
+          {!hideInputField && (
+            <InputArea
+              currentAgentType={currentAgentType}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              onSend={onSend}
+              isLoading={isLoading}
+              setUploadedFiles={setUploadedFiles}
+              setFileUrls={setFileUrls}
+              uploadedFiles={uploadedFiles}
+              fileUrls={fileUrls}
+            />
+          )}
+        </Box>
       </Box>
-    </Box>
+
+      {/* for simulation */}
+      {hideInputField && simulationCompleted && (
+        <FooterCta
+          isMobile={isMobile}
+          setShowModal={setShowModal}
+          showModal={showModal}
+        />
+      )}
+    </>
   );
 }

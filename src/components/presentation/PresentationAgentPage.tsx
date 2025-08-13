@@ -65,6 +65,7 @@ export default function PresentationAgentPage({ specificAgent }) {
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileUrls, setFileUrls] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   const presentationState = useSelector(selectPresentation);
   const {
@@ -720,6 +721,9 @@ export default function PresentationAgentPage({ specificAgent }) {
                 uploadedFiles={uploadedFiles}
                 fileUrls={fileUrls}
                 hideInputField={false}
+                simulationCompleted={false}
+                showModal={showModal}
+                setShowModal={setShowModal}
               />
             </Box>
             <Dialog
@@ -811,6 +815,9 @@ export default function PresentationAgentPage({ specificAgent }) {
                 uploadedFiles={uploadedFiles}
                 fileUrls={fileUrls}
                 hideInputField={false}
+                simulationCompleted={false}
+                showModal={showModal}
+                setShowModal={setShowModal}
               />
             </Box>
             <Box

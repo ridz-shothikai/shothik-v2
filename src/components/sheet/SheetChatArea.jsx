@@ -25,6 +25,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import MetadataDisplay from "./MetaDataDisplay";
 import TypingAnimation from "../common/TypingAnimation";
 import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
+import { FooterCta } from "./SheetAgentPage";
 
 const USER_MESSAGE_COLOR = "#1976d2";
 const PRIMARY_GREEN = "#07B37A";
@@ -222,7 +223,7 @@ const getStepMessage = (step, data) => {
 };
 
 // Main SheetChatArea component
-export default function SheetChatArea({ currentAgentType, theme }) {
+export default function SheetChatArea({ isLoadings, currentAgentType, theme, isMobile }) {
   const dispatch = useDispatch();
   const sheetState = useSelector(selectSheet);
   // console.log(sheetState, "sheet state");
@@ -245,6 +246,11 @@ export default function SheetChatArea({ currentAgentType, theme }) {
     message: "",
     severity: "info",
   });
+
+  const [showModal, setShowModal] = useState(false);
+  const [simulationCompleted, setSimulationCompleted] = useState(false);
+  const s_id = searchParams.get("s_id"); // simulation id
+
 
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
@@ -498,6 +504,11 @@ export default function SheetChatArea({ currentAgentType, theme }) {
       );
       return [...preservedMessages, ...convertedMessages];
     });
+
+    // for simulation only
+    if(s_id) {
+      setSimulationCompleted(true);
+    }
   }, [chatData, dispatch]);
 
   // Handle completion detection
@@ -661,7 +672,6 @@ export default function SheetChatArea({ currentAgentType, theme }) {
 
   // THIS PART IS ONLY FOR SIMULATION STARTS
 
-  const s_id = searchParams.get("s_id"); // simulation id
   const token = localStorage.getItem("sheetai-token");
 
   useEffect(() => {
@@ -672,18 +682,18 @@ export default function SheetChatArea({ currentAgentType, theme }) {
       }
 
       // Check if simulation has already been processed
-      const simulationKey = `simulation-processed-${s_id}`;
-      if (sessionStorage.getItem(simulationKey)) {
-        console.log("Simulation already processed for s_id:", s_id);
-        return;
-      }
+      // const simulationKey = `simulation-processed-${s_id}`;
+      // if (sessionStorage.getItem(simulationKey)) {
+      //   console.log("Simulation already processed for s_id:", s_id);
+      //   return;
+      // }
 
       // Mark simulation as being processed
-      sessionStorage.setItem(simulationKey, "true");
+      // sessionStorage.setItem(simulationKey, "true");
 
       try {
         // Get simulation prompt
-        const simulationPrompt = getSimulationPrompt(s_id); 
+        const simulationPrompt = getSimulationPrompt(s_id);
 
         if (!simulationPrompt) {
           console.error("No simulation prompt found for s_id:", s_id);
@@ -758,9 +768,9 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           body: JSON.stringify({
             prompt: prompt,
             chat: chatId,
-            ...(s_id && {isSimulated: true}),
+            ...(s_id && { isSimulated: true }),
             isSimulated: s_id ? true : false, // only for simulation
-            ...(s_id && {simulatedChat: s_id}), // only for simulation
+            ...(s_id && { simulatedChat: s_id }), // only for simulation
           }),
           signal: abortControllerRef.current.signal,
         }
@@ -909,7 +919,11 @@ export default function SheetChatArea({ currentAgentType, theme }) {
             // FOR SIMULATION
             else if (data.step === "completed") {
               // First completed step - just has message
-              if (data.data?.message && !data.data?.columns && !data.data?.rows) {
+              if (
+                data.data?.message &&
+                !data.data?.columns &&
+                !data.data?.rows
+              ) {
                 const stepMessage = data.data.message;
                 setMessages((prev) => [
                   ...prev,
@@ -922,27 +936,27 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                   },
                 ]);
               }
-              
+
               // Second completed step - has the actual data
               else if (data.data?.columns && data.data?.rows) {
                 console.log("Received actual sheet data:", data.data);
-        
+
                 // Update Redux store with sheet data
                 dispatch(setSheetData(data.data.rows));
                 dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
                 dispatch(setSheetStatus("completed"));
-        
+
                 // Show success toast
                 setToast({
                   open: true,
                   message: "Spreadsheet generated successfully!",
                   severity: "success",
                 });
-        
+
                 // Create save point with the actual conversation data
                 const conversationId = data.conversation;
                 const chatId = data.chat;
-                
+
                 const newSavePoint = {
                   id: `savepoint-${conversationId}`,
                   title: prompt.substring(0, 50) + "...",
@@ -961,24 +975,35 @@ export default function SheetChatArea({ currentAgentType, theme }) {
                   ],
                   activeGenerationId: `gen-${conversationId}`,
                 };
-        
+
                 dispatch({
                   type: "sheet/addSavePoint",
                   payload: newSavePoint,
                 });
-        
+
                 // Add final success message
                 setMessages((prev) => [
                   ...prev,
                   {
                     id: `final-success-${Date.now()}`,
-                    message: `Successfully generated a ${data.data.metadata?.totalRows || 'spreadsheet'} with ${data.data.metadata?.columnCount || data.data.columns?.length || 'multiple'} columns!`,
+                    message: `Successfully generated a ${
+                      data.data.metadata?.totalRows || "spreadsheet"
+                    } with ${
+                      data.data.metadata?.columnCount ||
+                      data.data.columns?.length ||
+                      "multiple"
+                    } columns!`,
                     isUser: false,
                     timestamp: data.timestamp,
                     type: "success",
                     metadata: data.data.metadata,
                   },
                 ]);
+
+                // for simulation only
+                if (s_id) {
+                  setSimulationCompleted(true);
+                }
               }
             }
           } catch (error) {
@@ -1072,6 +1097,7 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           borderRight: "1px solid #e0e0e0",
           bgcolor: theme.palette.background.default,
           overflow: "hidden",
+          position: "relative",
         }}
       >
         {error && (
@@ -1147,36 +1173,47 @@ export default function SheetChatArea({ currentAgentType, theme }) {
             <div ref={messagesEndRef} />
           </Box>
         </Box>
-        <Box
-          sx={{
-            borderTop: "1px solid #e0e0e0",
-            bgcolor: "white",
-            flexShrink: 0,
-          }}
-        >
-          <InputArea
-            currentAgentType={currentAgentType}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
-            onSend={handleMessage}
-            isLoading={isLoading || sheetState.status === "generating"}
-            disabled={
-              !isInitialized ||
-              isLoading ||
-              !sheetAiToken ||
-              sheetState.status === "generating"
-            }
-            placeholder={
-              !isInitialized
-                ? "Initializing..."
-                : !sheetAiToken
-                ? "Authentication required..."
-                : isLoading || sheetState.status === "generating"
-                ? "Generating sheet..."
-                : "Describe the spreadsheet you want to create..."
-            }
-          />
-        </Box>
+        {/* for simulation only */}
+        {s_id && (
+          <Box
+            sx={{
+              pt: "20px",
+            }}
+          ></Box>
+        )}
+        {!s_id && (
+          <Box
+            sx={{
+              borderTop: "1px solid #e0e0e0",
+              bgcolor: "white",
+              flexShrink: 0,
+            }}
+          >
+            <InputArea
+              currentAgentType={currentAgentType}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              onSend={handleMessage}
+              isLoading={isLoading || sheetState.status === "generating"}
+              disabled={
+                !isInitialized ||
+                isLoading ||
+                !sheetAiToken ||
+                sheetState.status === "generating"
+              }
+              placeholder={
+                !isInitialized
+                  ? "Initializing..."
+                  : !sheetAiToken
+                  ? "Authentication required..."
+                  : isLoading || sheetState.status === "generating"
+                  ? "Generating sheet..."
+                  : "Describe the spreadsheet you want to create..."
+              }
+            />
+          </Box>
+        )}
+        {/* for simulation only */}
       </Box>
 
       {toast.open && (
@@ -1205,6 +1242,10 @@ export default function SheetChatArea({ currentAgentType, theme }) {
           </Alert>
         </Box>
       )}
+
+      {/* footer cta */}
+      {/* // for simulation only */}
+      {s_id && simulationCompleted && <FooterCta isMobile={isMobile} showModal={showModal} setShowModal={setShowModal} />}
     </>
   );
 }

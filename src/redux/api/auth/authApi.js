@@ -217,6 +217,18 @@ export const authApi = authApiSlice.injectEndpoints({
         };
       },
     }),
+
+    registerUserToBetaList: builder.mutation({
+      query: (email) => {
+        return {
+          url: "/user/register-to-betalist",
+          method: "POST",
+          body: email,
+        };
+      }
+    }),
+
+
   }),
 });
 
@@ -238,4 +250,5 @@ export const {
   useUploadImageMutation,
   useContactMutation,
   useAffiliateMutation,
+  useRegisterUserToBetaListMutation,
 } = authApi;
