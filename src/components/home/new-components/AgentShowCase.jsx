@@ -377,7 +377,7 @@ export default function AgentShowcase() {
       >
         <Container maxWidth="xl" sx={{ px: { xs: 2, md: 4 } }}>
           {/* Carousel Navigation */}
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               alignItems: "center",
@@ -405,7 +405,7 @@ export default function AgentShowcase() {
             <AnimatedIconButton onClick={nextAgent}>
               <ArrowForward sx={{ fontSize: 20 }} />
             </AnimatedIconButton>
-          </Box>
+          </Box> */}
 
           {/* Demo Section with Swipe Support */}
           <TouchArea

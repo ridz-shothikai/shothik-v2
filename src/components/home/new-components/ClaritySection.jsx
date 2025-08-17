@@ -31,18 +31,24 @@ import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authA
 
 // Styled components to match Tailwind styles
 const StyledChip = styled(Chip)(({ theme }) => ({
-  backgroundColor: "#dbeafe", // blue-50
-  color: "#1d4ed8", // blue-700
-  border: "1px solid #bfdbfe", // blue-200
+  backgroundColor: "#00B8D914",
+  color: "#006C9C",
+  border: "1px solid #bfdbfe",
   padding: "8px 16px",
   height: "auto",
+  fontWeight: "600",
   "& .MuiChip-label": {
+    fontSize: "0.8125rem", // default
     display: "flex",
     alignItems: "center",
     gap: "8px",
     padding: 0,
+    [theme.breakpoints.up("lg")]: {
+      fontSize: "1rem",
+    },
   },
 }));
+
 
 const StepCard = styled(Paper)(({ theme }) => ({
   backgroundColor: "#f9fafb", // gray-50
@@ -59,10 +65,8 @@ const StepCard = styled(Paper)(({ theme }) => ({
 }));
 
 const IconContainer = styled(Box)({
-  width: "48px",
-  height: "48px",
-  backgroundColor: "#059669", // emerald-600
-  borderRadius: "12px",
+  width: { xs: "28px", sm: "32px", md: "40px", lg: "44px", xl: "48px" },
+  height: { xs: "28px", sm: "32px", md: "40px", lg: "44px", xl: "48px" },
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -143,7 +147,7 @@ export default function ClaritySection() {
   const steps = [
     {
       id: "upload",
-      icon: Upload,
+      icon: "/home/cl-1.svg",
       title: "Upload Your Document",
       description:
         "Drag and drop any file up to 156 pages. We support Word docs, PDFs, and text files.",
@@ -151,7 +155,7 @@ export default function ClaritySection() {
     },
     {
       id: "select",
-      icon: Brain,
+      icon: "/home/cl-2.svg",
       title: "Choose Your Domain",
       description:
         "Select medical, law, engineering, or general academic writing for specialized AI processing.",
@@ -159,7 +163,7 @@ export default function ClaritySection() {
     },
     {
       id: "freeze",
-      icon: Lock,
+      icon: "/home/cl-3.svg",
       title: "Freeze What Matters",
       description:
         "Mark important sentences, citations, or technical terms to keep them unchanged.",
@@ -167,7 +171,7 @@ export default function ClaritySection() {
     },
     {
       id: "process",
-      icon: Zap,
+      icon: "/home/cl-4.svg",
       title: "AI Processes Your Text",
       description:
         "Our specialized AI rewrites your content while maintaining academic integrity and domain accuracy.",
@@ -175,7 +179,7 @@ export default function ClaritySection() {
     },
     {
       id: "review",
-      icon: Shield,
+      icon: "/home/cl-5.svg",
       title: "Plagiarism Check Included",
       description:
         "Built-in plagiarism detection ensures your improved text is original and safe to submit.",
@@ -183,7 +187,7 @@ export default function ClaritySection() {
     },
     {
       id: "download",
-      icon: Download,
+      icon: "/home/cl-6.svg",
       title: "Download & Submit",
       description:
         "Get your improved document in the same format, ready for submission to your professor.",
@@ -221,7 +225,7 @@ export default function ClaritySection() {
               <StyledChip
                 label={
                   <>
-                    <Zap size={16} />
+                    {/* <Zap size={16} /> */}
                     How It Works
                   </>
                 }
@@ -241,7 +245,7 @@ export default function ClaritySection() {
                 From Upload to{" "}
                 <Box
                   component="span"
-                  sx={{ display: "block", color: "#059669" }}
+                  sx={{ display: "block", color: "#00AB55" }}
                 >
                   Perfect Paper
                 </Box>
@@ -305,25 +309,57 @@ export default function ClaritySection() {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        mb: 3,
+                        mb: { xs: 1.5, md: 2, xl: 3 },
                       }}
                     >
                       <IconContainer>
-                        <step.icon size={24} color="white" />
+                        <Box
+                          component="img"
+                          src={step.icon}
+                          alt={step.title}
+                          sx={{
+                            width: { xs: 28, sm: 28, md: 36, lg: 40, xl: 44 },
+                            height: { xs: 28, sm: 28, md: 36, lg: 40, xl: 44 },
+                          }}
+                        />
                       </IconContainer>
-                      <Typography
+                      <Box
                         sx={{
-                          fontSize: "3rem",
-                          fontWeight: 900,
-                          color: "rgba(16, 185, 129, 0.2)", // emerald-600/20
-                          transition: "color 0.3s ease",
-                          ".MuiPaper-root:hover &": {
-                            color: "rgba(16, 185, 129, 0.4)", // emerald-600/40
-                          },
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "flex-end",
                         }}
                       >
-                        {index + 1}
-                      </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: {
+                              xs: "2rem",
+                              sm: "1.75rem",
+                              md: "2rem",
+                              lg: "2.5rem",
+                              xl: "3rem",
+                            },
+                            fontWeight: 900,
+                            color: "#00AB55",
+                            transition: "color 0.3s ease",
+                            lineHeight: 0.7,
+                            // ".MuiPaper-root:hover &": {
+                            //   color: "rgba(16, 185, 129, 0.4)", // emerald-600/40
+                            // },
+                          }}
+                        >
+                          {index + 1}
+                        </Typography>
+                        {/* Connection line for larger screens */}
+
+                        <Box
+                          sx={{
+                            width: { xs: "26px", lg: "28px", xl: "32px" },
+                            height: "2px",
+                            backgroundColor: "#00AB55",
+                          }}
+                        />
+                      </Box>
                     </Box>
 
                     <Typography
@@ -332,7 +368,12 @@ export default function ClaritySection() {
                         fontWeight: 700,
                         color: "#111827", // gray-900
                         mb: 1.5,
-                        fontSize: "1.25rem",
+                        fontSize: {
+                          xs: "1.15rem",
+                          md: "1.15rem",
+                          lg: "1.25rem",
+                          xl: "1.5rem",
+                        },
                       }}
                     >
                       {step.title}
@@ -357,21 +398,6 @@ export default function ClaritySection() {
                     >
                       {step.details}
                     </Typography>
-
-                    {/* Connection line for larger screens */}
-                    {index < steps.length - 1 && !isTablet && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: "80px",
-                          right: "-16px",
-                          width: "32px",
-                          height: "2px",
-                          backgroundColor: "#a7f3d0", // emerald-200
-                          display: { xs: "none", lg: "block" },
-                        }}
-                      />
-                    )}
                   </StepCard>
                 </motion.div>
               </Grid>
@@ -394,19 +420,16 @@ export default function ClaritySection() {
                 });
               }}
               sx={{
-                bgcolor: "#059669",
-                color: "white",
-                px: 4,
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                borderRadius: 2,
+                maxWidth: "fit-content",
+                borderRadius: "0.5rem",
                 textTransform: "none",
-                boxShadow: "0 4px 16px rgba(76, 175, 80, 0.3)",
-                "&:hover": {
-                  boxShadow: "0 6px 20px rgba(76, 175, 80, 0.4)",
-                },
-                minWidth: { xs: "200px", sm: "auto" },
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                px: 3,
+                py: 1.3,
+                bgcolor: "#00AB55",
+                fontWeight: "400"
               }}
             >
               Get early access
@@ -436,7 +459,7 @@ export default function ClaritySection() {
         >
           {toast.message}
         </Alert>
-      </Snackbar>       
+      </Snackbar>
     </>
   );
 }

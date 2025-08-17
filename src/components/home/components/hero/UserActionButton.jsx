@@ -34,7 +34,7 @@ const UserActionButton = ({ setShowModal, trackClick }) => {
           justifyContent: "center",
           px: 3,
           py: 1.3,
-          bgcolor: "#059669",
+          bgcolor: "#00AB55",
         }}
         onClick={() => {
           // if (user?.email) {
@@ -69,7 +69,7 @@ const UserActionButton = ({ setShowModal, trackClick }) => {
           >
             {userMsg}
           </Typography>
-          <ArrowForward style={{ height: "1.25rem", width: "1.25rem" }} />
+          {/* <ArrowForward style={{ height: "1.25rem", width: "1.25rem" }} /> */}
         </Box>
       </Button>
     </motion.div>

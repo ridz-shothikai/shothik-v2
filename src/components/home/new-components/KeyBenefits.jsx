@@ -163,7 +163,7 @@ export default function KeyBenefits() {
                       sx={{
                         fontSize: "2rem",
                         fontWeight: 900,
-                        color: "#059669", // emerald-600
+                        color: "#00AB55", // emerald-600
                       }}
                     >
                       {benefit.stat}

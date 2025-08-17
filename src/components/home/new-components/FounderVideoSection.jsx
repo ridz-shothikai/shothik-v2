@@ -102,7 +102,7 @@ export default function FounderVideoSection() {
         pt: { xs: 12, sm: 15, md: 18, lg: 24 },
         // background:
         //   "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
-        bgcolor: isDarkMode ? "inherit" : "#FBFCFD",
+        // bgcolor: isDarkMode ? "inherit" : "#FBFCFD",
         minHeight: "auto",
       }}
     >
@@ -478,7 +478,7 @@ export default function FounderVideoSection() {
                       component="span"
                       sx={{
                         display: "block",
-                        color: "#10b981",
+                        color: "#10B981",
                       }}
                     >
                       AI That Understands

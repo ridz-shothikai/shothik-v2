@@ -27,7 +27,7 @@ export default function HomeHeroSection() {
       ref={componentRef}
       // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
       sx={{
-        maxWidth: "lg",
+        maxWidth: "xl",
         mx: "auto",
         pt: { xl: "50px" },
       }}

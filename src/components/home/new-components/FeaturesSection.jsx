@@ -107,7 +107,7 @@ export default function FeaturesSection() {
       sx={{
         pt: { xs: 4, sm: 6, xl: 8 },
         pb: { xs: 8, sm: 12, xl: 15 },
-        backgroundColor: isDarkMode ? "inherit" : "#f8fafc", // gray-50
+        // backgroundColor: isDarkMode ? "inherit" : "#f8fafc", // gray-50
       }}
     >
       <Container maxWidth="lg">
@@ -181,17 +181,13 @@ export default function FeaturesSection() {
                       sx={{
                         height: "100%",
                         p: { xs: 3, sm: 4 },
-                        border: "1px solid #e5e7eb", // gray-200
-                        borderRadius: "12px",
-                        boxShadow:
-                          "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
+                        // border: "1px solid #e5e7eb", // gray-200
+                        borderRadius: "24px",
+                        // boxShadow:
+                          // "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
+                        boxShadow: "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
                         backgroundColor: "#ffffff",
                         transition: "all 0.2s ease-in-out",
-                        "&:hover": {
-                          boxShadow:
-                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)", // shadow-lg
-                          borderColor: "#d1d5db", // gray-300
-                        },
                       }}
                     >
                       <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>

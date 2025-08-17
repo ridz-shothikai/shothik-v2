@@ -67,6 +67,7 @@ export default function HeroVideo() {
           height: "100%",
           objectFit: "cover",
           borderRadius: "8px",
+          aspectRatio: 16 / 9,
         }}
         onPlay={handleVideoPlay}
         onPause={() => trackClick("video_pause", { video_position: "hero" })}

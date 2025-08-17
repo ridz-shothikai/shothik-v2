@@ -99,11 +99,10 @@ const StyledSection = styled(Box)(({ theme }) => ({
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   padding: theme.spacing(4),
-  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-  border: "1px solid #E2E8F0",
+  borderRadius: "14px",
+  boxShadow: "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
   transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
   "&:hover": {
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)",
     transform: "translateY(-4px)",
   },
 }));
@@ -210,7 +209,7 @@ export default function JobsTestimonialsSection() {
       <StyledSection
         ref={componentRef}
         sx={{
-          bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
+          // bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
         }}
       >
         <Container maxWidth="xl">
@@ -423,109 +422,10 @@ export default function JobsTestimonialsSection() {
               >
                 Trusted by students at top universities
               </Typography>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                alignItems="center"
-                justifyContent="center"
-                gap={4}
-                sx={{ opacity: 0.6 }}
-              >
-                {universities.map((university, index) => (
-                  <motion.div
-                    key={university}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 0.6 }}
-                    transition={{ delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ opacity: 1, scale: 1.05 }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        color: "#94A3B8",
-                        fontWeight: 500,
-                        fontSize: { xs: "1rem", md: "1.125rem" },
-                        cursor: "pointer",
-                      }}
-                    >
-                      {university}
-                    </Typography>
-                  </motion.div>
-                ))}
-              </Box>
-            </Box>
-          </motion.div>
-
-          {/* Jobs-style CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <Box textAlign="center" mt={8}>
-              <Typography
-                variant="h5"
-                sx={{
-                  fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" },
-                  fontWeight: 300,
-                  color: isDarkMode ? "inherit" : "#64748B",
-                  mb: 4,
-                }}
-              >
-                Leave it to us. Your success story starts here.
-              </Typography>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <StyledButton
-                  size="large"
-                  sx={{
-                    fontSize: { xs: "1rem", sm: "1.125rem" },
-                  }}
-                  onClick={() => {
-                    setShowModal(true);
-
-                    // tracking
-                    trackClick(trackingList.CTA_BUTTON, {
-                      button_text: "Transform Your Writing Today",
-                      position: "testimonial_section"
-                    });
-                  }}
-                >
-                  Transform Your Writing Today
-                </StyledButton>
-              </motion.div>
             </Box>
           </motion.div>
         </Container>
-      </StyledSection>
-
-      {/* email collect modal */}
-      <EmailModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onSubmit={handleEmailSubmit}
-      />
-
-      {/* Toast notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>           
+      </StyledSection>       
     </>
   );
 }

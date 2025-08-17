@@ -81,7 +81,7 @@ const AgenticHeroSection = () => {
             <Box
               component="span"
               sx={{
-                color: "#059669", // Emerald-600
+                color: "#00AB55", // Emerald-600
               }}
             >
               Working
@@ -100,7 +100,7 @@ const AgenticHeroSection = () => {
               },
               fontWeight: 700,
               lineHeight: 1.1,
-              color: "#059669", // Emerald-600
+              color: "#00AB55", // Emerald-600
               letterSpacing: "-0.02em",
               whiteSpace: "nowrap",
             }}

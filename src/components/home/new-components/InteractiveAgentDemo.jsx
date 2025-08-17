@@ -26,6 +26,8 @@ import {
   CircularProgress,
   useTheme,
   useMediaQuery,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AgentThinkingLoader from "./AgentThinkingLoader";
@@ -33,6 +35,8 @@ import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
 import { useRouter } from "next/navigation";
 import {createSheetSimulationChatId} from "../../../libs/createSheetSimulationChatId"
+import EmailModal from "../EmailCollectModal";
+import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
 
 // Styled components to match Tailwind styles
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -301,6 +305,18 @@ export default function InteractiveAgentDemo() {
   const [error, setError] = useState("");
   const inputRef = useRef(null);
   const [userChatId, setUserChatId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+    const [
+      registerUserForBetaList,
+      { isLoading: registerUserProcessing, isError: registerUserError },
+    ] = useRegisterUserToBetaListMutation();  
+    
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success", // 'success', 'error', 'warning', 'info'
+  });    
 
   const router = useRouter();
 
@@ -423,447 +439,537 @@ export default function InteractiveAgentDemo() {
     );
   };
 
-  return (
-    <Box
-      ref={componentRef}
-      component="section"
-      sx={{
-        pt: { xs: 12, lg: 15 },
-        // background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
-        // background:
-        // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
-        bgcolor: isDarkMode ? "" : "#FBFCFD",
-        minHeight: "100vh",
-      }}
-    >
-      <StyledContainer>
-        {/* Header */}
-        <Box textAlign="center" mb={{ xs: 6, lg: 8 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{
-                fontSize: {
-                  xs: "2rem",
-                  sm: "2.5rem",
-                  lg: "3rem",
-                  xl: "3.75rem",
-                },
-                fontWeight: 300,
-                color: isDarkMode ? "" : "#0f172a",
-                mb: { xs: 2, lg: 3 },
-                px: 2,
-              }}
-            >
-              Try an Agent{" "}
-              <Box component="span" sx={{ color: "#10b981" }}>
-                Live
-              </Box>
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                color: isDarkMode ? "" : "#64748b",
-                maxWidth: "768px",
-                mx: "auto",
-                px: 2,
-                fontWeight: 400,
-              }}
-            >
-              Experience the future of AI. Pick an agent, give it a task, and
-              watch it work in real-time.
-            </Typography>
-          </motion.div>
-        </Box>
+  const handleEmailSubmit = async (email) => {
+    try {
+      const result = await registerUserForBetaList({ email }).unwrap();
 
-        <Grid container spacing={{ xs: 4, lg: 6 }} alignItems="flex-start">
-          {/* Agent Selection */}
-          <Grid item xs={12} lg={6}>
-            <Box>
+      console.log(result, "result");
+
+      // Success toast
+      setToast({
+        open: true,
+        message: "Successfully registered for beta! We'll be in touch soon.",
+        severity: "success",
+      });
+
+      // Close the modal
+      setShowModal(false);
+    } catch (error) {
+      // Error toast
+      setToast({
+        open: true,
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
+        severity: "error",
+      });
+    }
+  };
+
+  
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToast((prev) => ({ ...prev, open: false }));
+  };
+
+  return (
+    <>
+      <Box
+        ref={componentRef}
+        component="section"
+        sx={{
+          pt: { xs: 12, lg: 15 },
+          // background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
+          // background:
+          // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
+          // bgcolor: isDarkMode ? "" : "#FBFCFD",
+          minHeight: "100vh",
+        }}
+      >
+        <StyledContainer>
+          {/* Header */}
+          <Box textAlign="center" mb={{ xs: 6, lg: 8 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               <Typography
-                variant="h5"
-                component="h3"
+                variant="h2"
+                component="h2"
                 sx={{
-                  fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                  fontWeight: 600,
+                  fontSize: {
+                    xs: "2rem",
+                    sm: "2.5rem",
+                    lg: "3rem",
+                    xl: "3.75rem",
+                  },
+                  fontWeight: 300,
                   color: isDarkMode ? "" : "#0f172a",
                   mb: { xs: 2, lg: 3 },
+                  px: 2,
                 }}
               >
-                Choose Your Agent
+                Try an Agent{" "}
+                <Box component="span" sx={{ color: "#10b981" }}>
+                  Live
+                </Box>
               </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: { xs: "1.125rem", sm: "1.25rem" },
+                  color: isDarkMode ? "" : "#64748b",
+                  maxWidth: "768px",
+                  mx: "auto",
+                  px: 2,
+                  fontWeight: 400,
+                }}
+              >
+                Experience the future of AI. Pick an agent, give it a task, and
+                watch it work in real-time.
+              </Typography>
+            </motion.div>
+          </Box>
 
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {agentDemos.map((agent) => (
-                  <motion.div
-                    key={agent.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+          <Grid container spacing={{ xs: 4, lg: 6 }} alignItems="flex-start">
+            {/* Agent Selection */}
+            <Grid item xs={12} lg={6}>
+              <Box>
+                <Typography
+                  variant="h5"
+                  component="h3"
+                  sx={{
+                    fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                    fontWeight: 600,
+                    color: isDarkMode ? "" : "#0f172a",
+                    mb: { xs: 2, lg: 3 },
+                  }}
+                >
+                  Choose Your Agent
+                </Typography>
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {agentDemos.map((agent) => (
+                    <motion.div
+                      key={agent.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <StyledPaper
+                        className={
+                          selectedAgent.id === agent.id
+                            ? `selected-${agent.color}`
+                            : ""
+                        }
+                        onClick={() => handleAgentSelect(agent)}
+                        elevation={0}
+                        sx={{ p: { xs: 2, sm: 3 } }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: { xs: 1.5, sm: 2 },
+                          }}
+                        >
+                          <Paper
+                            elevation={selectedAgent.id === agent.id ? 2 : 0}
+                            sx={{
+                              p: { xs: 1, sm: 1.5 },
+                              borderRadius: "12px",
+                              backgroundColor:
+                                selectedAgent.id === agent.id
+                                  ? "white"
+                                  : "#f1f5f9",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: isDarkMode ? "#000" : "inherit",
+                              "& svg": {
+                                color: isDarkMode ? "#000" : "inherit",
+                              },
+                            }}
+                          >
+                            {agent.icon}
+                          </Paper>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                              component="h4"
+                              sx={{
+                                fontSize: { xs: "1rem", sm: "1.125rem" },
+                                fontWeight: 600,
+                                mb: 0.5,
+                              }}
+                            >
+                              {agent.name}
+                            </Typography>
+                            <Typography
+                              sx={{
+                                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                opacity: 0.8,
+                                lineHeight: 1.6,
+                              }}
+                            >
+                              {agent.description}
+                            </Typography>
+                          </Box>
+                          {selectedAgent.id === agent.id && (
+                            <ChevronRight size={isMobile ? 16 : 20} />
+                          )}
+                        </Box>
+                      </StyledPaper>
+                    </motion.div>
+                  ))}
+                </Box>
+
+                {/* Example Prompts */}
+                <Box sx={{ mt: 4 }}>
+                  <Typography
+                    sx={{
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      color: isDarkMode ? "inherit" : "#64748b",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      mb: 2,
+                    }}
                   >
-                    <StyledPaper
-                      className={
-                        selectedAgent.id === agent.id
-                          ? `selected-${agent.color}`
-                          : ""
-                      }
-                      onClick={() => handleAgentSelect(agent)}
-                      elevation={0}
-                      sx={{ p: { xs: 2, sm: 3 } }}
+                    Try These Examples
+                  </Typography>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`${selectedAgent.id}-${currentExample}`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.5 }}
                     >
                       <Box
                         sx={{
                           display: "flex",
-                          alignItems: "center",
-                          gap: { xs: 1.5, sm: 2 },
+                          flexDirection: "column",
+                          gap: 1.5,
                         }}
                       >
-                        <Paper
-                          elevation={selectedAgent.id === agent.id ? 2 : 0}
-                          sx={{
-                            p: { xs: 1, sm: 1.5 },
-                            borderRadius: "12px",
-                            backgroundColor:
-                              selectedAgent.id === agent.id
-                                ? "white"
-                                : "#f1f5f9",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: isDarkMode ? "#000" : "inherit",
-                            "& svg": {
-                              color: isDarkMode ? "#000" : "inherit",
-                            },
-                          }}
-                        >
-                          {agent.icon}
-                        </Paper>
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography
-                            component="h4"
-                            sx={{
-                              fontSize: { xs: "1rem", sm: "1.125rem" },
-                              fontWeight: 600,
-                              mb: 0.5,
+                        {selectedAgent.examples.map((example, index) => (
+                          <motion.div
+                            key={index}
+                            whileHover={{ scale: 1.01 }}
+                            style={{
+                              opacity: index === currentExample ? 1 : 0.6,
                             }}
                           >
-                            {agent.name}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                              opacity: 0.8,
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {agent.description}
-                          </Typography>
-                        </Box>
-                        {selectedAgent.id === agent.id && (
-                          <ChevronRight size={isMobile ? 16 : 20} />
-                        )}
+                            <ExampleButton
+                              fullWidth={true}
+                              onClick={() => useExample(example, index)}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: "inherit",
+                                  textAlign: "left",
+                                  color: isDarkMode ? "#000" : "inherit",
+                                }}
+                              >
+                                "{example}"
+                              </Typography>
+                            </ExampleButton>
+                          </motion.div>
+                        ))}
                       </Box>
-                    </StyledPaper>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </Box>
               </Box>
+            </Grid>
 
-              {/* Example Prompts */}
-              <Box sx={{ mt: 4 }}>
-                <Typography
+            {/* Interactive Demo */}
+            <Grid item xs={12} lg={6}>
+              <Box sx={{ position: { lg: "sticky" }, top: { lg: "2rem" } }}>
+                <Paper
+                  elevation={8}
                   sx={{
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: isDarkMode ? "inherit" : "#64748b",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05em",
-                    mb: 2,
+                    borderRadius: "16px",
+                    border: "1px solid",
+                    borderColor: "#e2e8f0",
+                    overflow: "hidden",
                   }}
                 >
-                  Try These Examples
-                </Typography>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${selectedAgent.id}-${currentExample}`}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.5 }}
-                  >
+                  {/* Agent Header */}
+                  <HeaderSection className={`header-${selectedAgent.color}`}>
                     <Box
                       sx={{
                         display: "flex",
-                        flexDirection: "column",
-                        gap: 1.5,
+                        alignItems: "center",
+                        gap: { xs: 1.5, sm: 2 },
                       }}
                     >
-                      {selectedAgent.examples.map((example, index) => (
-                        <motion.div
-                          key={index}
-                          whileHover={{ scale: 1.01 }}
-                          style={{
-                            opacity: index === currentExample ? 1 : 0.6,
+                      <Paper
+                        elevation={2}
+                        sx={{
+                          p: { xs: 1, sm: 1.5 },
+                          backgroundColor: "white",
+                          borderRadius: "12px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "inherit",
+                          "& svg": {
+                            color: "inherit",
+                          },
+                        }}
+                      >
+                        {selectedAgent.icon}
+                      </Paper>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          component="h3"
+                          sx={{
+                            fontSize: { xs: "1.125rem", sm: "1.25rem" },
+                            fontWeight: 600,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
                           }}
                         >
-                          <ExampleButton
-                            fullWidth={true}
-                            onClick={() => useExample(example, index)}
-                          >
-                            <Typography
-                              sx={{
-                                fontSize: "inherit",
-                                textAlign: "left",
-                                color: isDarkMode ? "#000" : "inherit",
-                              }}
-                            >
-                              "{example}"
-                            </Typography>
-                          </ExampleButton>
-                        </motion.div>
-                      ))}
-                    </Box>
-                  </motion.div>
-                </AnimatePresence>
-              </Box>
-            </Box>
-          </Grid>
-
-          {/* Interactive Demo */}
-          <Grid item xs={12} lg={6}>
-            <Box sx={{ position: { lg: "sticky" }, top: { lg: "2rem" } }}>
-              <Paper
-                elevation={8}
-                sx={{
-                  borderRadius: "16px",
-                  border: "1px solid",
-                  borderColor: "#e2e8f0",
-                  overflow: "hidden",
-                }}
-              >
-                {/* Agent Header */}
-                <HeaderSection className={`header-${selectedAgent.color}`}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: { xs: 1.5, sm: 2 },
-                    }}
-                  >
-                    <Paper
-                      elevation={2}
-                      sx={{
-                        p: { xs: 1, sm: 1.5 },
-                        backgroundColor: "white",
-                        borderRadius: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "inherit",
-                        "& svg": {
-                          color: "inherit",
-                        },
-                      }}
-                    >
-                      {selectedAgent.icon}
-                    </Paper>
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography
-                        component="h3"
-                        sx={{
-                          fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                          fontWeight: 600,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {selectedAgent.name}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                          opacity: 0.8,
-                        }}
-                      >
-                        Ready to help
-                      </Typography>
-                    </Box>
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <Bot size={isMobile ? 20 : 24} />
-                    </motion.div>
-                  </Box>
-                </HeaderSection>
-
-                {/* Input Area */}
-                <Box sx={{ p: { xs: 2, sm: 3 } }}>
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    <Box>
-                      <Typography
-                        component="label"
-                        sx={{
-                          fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                          fontWeight: 500,
-                          color: isDarkMode ? "inherit" : "#374151",
-                          mb: 1,
-                          display: "block",
-                        }}
-                      >
-                        What would you like {selectedAgent.name} to do?
-                      </Typography>
-                      <StyledTextField
-                        fullWidth={true}
-                        multiline
-                        rows={4}
-                        inputRef={inputRef}
-                        value={userInput}
-                        onChange={(e) => setUserInput(e.target.value)}
-                        placeholder={selectedAgent.placeholder}
-                        // disabled={isProcessing}
-                        disabled={true}
-                        variant="outlined"
-                      />
-                    </Box>
-
-                    <StyledButton
-                      fullWidth={true}
-                      variant="contained"
-                      onClick={() => handleSubmit()}
-                      disabled={!userInput.trim() || isProcessing}
-                      startIcon={
-                        isProcessing ? (
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                          >
-                            <Sparkles size={20} />
-                          </motion.div>
-                        ) : (
-                          <Send size={20} />
-                        )
-                      }
-                    >
-                      {isProcessing ? "Agent Working..." : "Try Now"}
-                    </StyledButton>
-                  </Box>
-
-                  {/* Processing Status */}
-                  <AnimatePresence>
-                    {isProcessing && (
+                          {selectedAgent.name}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                            opacity: 0.8,
+                          }}
+                        >
+                          Ready to help
+                        </Typography>
+                      </Box>
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-6"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
                       >
-                        <AgentThinkingLoader
-                          message={`${selectedAgent.name} is working...`}
-                          steps={[
-                            "Analyzing your request",
-                            selectedAgent.processingMessage,
-                            "Preparing results",
-                          ]}
-                        />
+                        <Bot size={isMobile ? 20 : 24} />
                       </motion.div>
-                    )}
-                  </AnimatePresence>
+                    </Box>
+                  </HeaderSection>
 
-                  {/* Results */}
-                  <AnimatePresence>
-                    {showResults && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                      >
-                        <ResultsBox>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "flex-start",
-                              gap: 1.5,
-                            }}
-                          >
-                            <Paper
-                              elevation={0}
-                              sx={{
-                                p: 1,
-                                backgroundColor: "#10b981",
-                                borderRadius: "8px",
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
+                  {/* Input Area */}
+                  <Box sx={{ p: { xs: 2, sm: 3 } }}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      <Box>
+                        <Typography
+                          component="label"
+                          sx={{
+                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                            fontWeight: 500,
+                            color: isDarkMode ? "inherit" : "#374151",
+                            mb: 1,
+                            display: "block",
+                          }}
+                        >
+                          What would you like {selectedAgent.name} to do?
+                        </Typography>
+                        <StyledTextField
+                          fullWidth={true}
+                          multiline
+                          rows={4}
+                          inputRef={inputRef}
+                          value={userInput}
+                          onChange={(e) => setUserInput(e.target.value)}
+                          placeholder={selectedAgent.placeholder}
+                          // disabled={isProcessing}
+                          disabled={true}
+                          variant="outlined"
+                        />
+                      </Box>
+
+                      <StyledButton
+                        fullWidth={true}
+                        variant="contained"
+                        onClick={() => handleSubmit()}
+                        disabled={!userInput.trim() || isProcessing}
+                        startIcon={
+                          isProcessing ? (
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "linear",
                               }}
                             >
-                              {selectedAgent.icon}
-                            </Paper>
-                            <Box sx={{ flex: 1 }}>
-                              <Typography
+                              <Sparkles size={20} />
+                            </motion.div>
+                          ) : (
+                            <Send size={20} />
+                          )
+                        }
+                      >
+                        {isProcessing ? "Agent Working..." : "Try Now"}
+                      </StyledButton>
+                    </Box>
+
+                    {/* Processing Status */}
+                    <AnimatePresence>
+                      {isProcessing && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-6"
+                        >
+                          <AgentThinkingLoader
+                            message={`${selectedAgent.name} is working...`}
+                            steps={[
+                              "Analyzing your request",
+                              selectedAgent.processingMessage,
+                              "Preparing results",
+                            ]}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Results */}
+                    <AnimatePresence>
+                      {showResults && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                        >
+                          <ResultsBox>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: 1.5,
+                              }}
+                            >
+                              <Paper
+                                elevation={0}
                                 sx={{
-                                  fontWeight: 600,
-                                  color: "#0f172a",
-                                  mb: 1.5,
+                                  p: 1,
+                                  backgroundColor: "#10b981",
+                                  borderRadius: "8px",
+                                  color: "white",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                 }}
                               >
-                                {selectedAgent.name} Results
-                              </Typography>
-                              {error ? (
-                                <Paper
-                                  elevation={0}
-                                  sx={{
-                                    p: 1.5,
-                                    backgroundColor: "#fef2f2",
-                                    border: "1px solid #fecaca",
-                                    borderRadius: "8px",
-                                  }}
-                                >
-                                  <Typography
-                                    sx={{
-                                      fontSize: "0.875rem",
-                                      color: "#dc2626",
-                                    }}
-                                  >
-                                    {error}
-                                  </Typography>
-                                </Paper>
-                              ) : (
+                                {selectedAgent.icon}
+                              </Paper>
+                              <Box sx={{ flex: 1 }}>
                                 <Typography
                                   sx={{
-                                    color: "#374151",
-                                    whiteSpace: "pre-wrap",
-                                    lineHeight: 1.6,
-                                    fontSize: "0.875rem",
+                                    fontWeight: 600,
+                                    color: "#0f172a",
+                                    mb: 1.5,
                                   }}
                                 >
-                                  {aiResponse}
+                                  {selectedAgent.name} Results
                                 </Typography>
-                              )}
+                                {error ? (
+                                  <Paper
+                                    elevation={0}
+                                    sx={{
+                                      p: 1.5,
+                                      backgroundColor: "#fef2f2",
+                                      border: "1px solid #fecaca",
+                                      borderRadius: "8px",
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: "0.875rem",
+                                        color: "#dc2626",
+                                      }}
+                                    >
+                                      {error}
+                                    </Typography>
+                                  </Paper>
+                                ) : (
+                                  <Typography
+                                    sx={{
+                                      color: "#374151",
+                                      whiteSpace: "pre-wrap",
+                                      lineHeight: 1.6,
+                                      fontSize: "0.875rem",
+                                    }}
+                                  >
+                                    {aiResponse}
+                                  </Typography>
+                                )}
+                              </Box>
                             </Box>
-                          </Box>
-                        </ResultsBox>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Box>
-              </Paper>
-            </Box>
+                          </ResultsBox>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Box>
+                </Paper>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </StyledContainer>
-    </Box>
+
+            <Box
+              sx={{ width: "100%", display: "flex", justifyContent: "center", padding: {xs: "20px 0px 0px", sm: "30px 0px 0px", md: "40px 0px 0px", lg: "44px 0px 0px", xl: "48px 0px 0px"} }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => {
+                  setShowModal(true);
+
+                  // tracking
+                  trackClick("cta_button", {
+                    button_text: "Get early access",
+                    position: "live_agent",
+                  });
+                }}
+                sx={{
+                  maxWidth: "fit-content",
+                  borderRadius: "0.5rem",
+                  textTransform: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  px: 3,
+                  py: 1.3,
+                  bgcolor: "#00AB55",
+                  fontWeight: "400"
+                }}
+              >
+                Get early access
+              </Button>
+            </Box>        
+        </StyledContainer>
+      </Box>
+
+      <EmailModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleEmailSubmit}
+      />   
+      
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

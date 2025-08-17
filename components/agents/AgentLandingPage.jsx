@@ -14,15 +14,9 @@ import Modal from "@mui/material/Modal";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import PersonIcon from "@mui/icons-material/Person";
-import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
 import TableChartIcon from "@mui/icons-material/TableChart";
-import DownloadIcon from "@mui/icons-material/Download";
-import ChatIcon from "@mui/icons-material/Chat";
-import PhoneIcon from "@mui/icons-material/Phone";
-import GroupIcon from "@mui/icons-material/Group";
 // import CloseIcon from "@mui/icons-material/Close";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import PaletteIcon from "@mui/icons-material/Palette";
@@ -38,50 +32,32 @@ import {
   DialogActions,
   DialogContentText,
   useTheme,
-  ListItemIcon,
-  Stack,
-  CircularProgress,
-  Menu,
-  MenuItem,
   Tooltip,
 } from "@mui/material";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
-import { useCreatePresentationMutation, useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
-import { setPresentationState } from "../../src/redux/slice/presentationSlice";
+
 import { useDispatch, useSelector } from "react-redux";
-import { LoginModal } from "../../src/components/auth/AuthModal";
 import { setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
-import {createPresentationServer} from '../../src/services/createPresentationServer';
 import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
-import { setSheetState } from "../../src/redux/slice/sheetSlice";
 import { Snackbar, Alert } from "@mui/material";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
 import {
   Close as CloseIcon,
   ChatBubbleOutline as ChatBubbleOutlineIcon,
   AccessTime as AccessTimeIcon,
-  AttachFile,
   Close,
-  Visibility,
-  Download,
 } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
 import useResponsive from "../../src/hooks/useResponsive";
 import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
-import Link from "next/link";
 import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
-import { format } from "date-fns";
 import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
 import ChatSidebar from "./ChatSidebar";
-import ImageIcon from "@mui/icons-material/Image";
-import DescriptionIcon from "@mui/icons-material/Description";
+import { LinkIcon } from "lucide-react";
+import SearchDropdown from "./SearchDropDown";
+import useNavItemFiles from "../../src/hooks/useNavItemFiles";
+import { useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -110,16 +86,18 @@ const NAVIGATION_ITEMS = [
   // },
   // { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
   {
-    id: "call",
+    id: "research",
     label: "Deep research",
     icon: <ManageSearchIcon />,
-    isComingSoon: true,
-    isDisabled: true,
+    isNew: true,
+    isComingSoon: false,
+    isDisabled: false,
   },
   {
-    id: "agents",
+    id: "browse",
     label: "Browse for me",
     icon: <AutoModeIcon />,
+    isNew: false,
     isComingSoon: true,
     isDisabled: true,
   },
@@ -210,7 +188,7 @@ export default function AgentLandingPage() {
     isLoading: SlideDataLoading,
     error: SlideDataLoadingError,
   } = useFetchAllPresentationsQuery();
-  const [uploadFiles, { isLoading: isUploading, error: uploadError }] =
+  const [uploadFilesForSlides, { isLoading: isUploading, error: uploadError }] =
     useUploadPresentationFilesMutation();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
   //   useCreatePresentationMutation();
@@ -228,9 +206,21 @@ export default function AgentLandingPage() {
   // console.log(selectedNavItem, "-selectedNavItem");
 
   // Add this state to your component
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [fileUrls, setFileUrls] = useState([]);
+  // const [uploadedFiles, setUploadedFiles] = useState([]);
+  // const [fileUrls, setFileUrls] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const {
+    currentFiles,
+    currentUrls,
+    addFiles,
+    removeFile,
+    clearCurrentNavItem, // if needed
+    clearAllNavItems, // if needed
+    hasFiles,
+  } = useNavItemFiles(selectedNavItem);
+
+  // console.log(currentFiles, "<-currentFiles", currentUrls, "<- currentUrls");
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -295,7 +285,7 @@ export default function AgentLandingPage() {
         case "slides":
           return await handleSlideCreation(
             inputValue,
-            fileUrls,
+            currentUrls,
             setAgentType,
             dispatch,
             setLoginDialogOpen,
@@ -409,38 +399,81 @@ export default function AgentLandingPage() {
       return;
     }
 
-    const uploadData = {
-      files, // Array of File objects
-      userId: user._id,
-    };
+    let uploadData;
 
-    console.log("Upload data:", {
-      filesCount: files.length,
-      userId: user._id,
-      fileNames: files.map((f) => f.name),
-    });
+    switch (selectedNavItem) {
+      case "slides": {
+        uploadData = {
+          files, // Array of File objects
+          userId: user._id,
+        }; 
+        // console.log("Upload data:", {
+        //   filesCount: files.length,
+        //   userId: user._id,
+        //   fileNames: files.map((f) => f.name),
+        // });
+        return await FileUploadForSlides(event, uploadData, files);
+      }
+      case "sheets":
+        return await FileUploadForSheets();
+      case "research":
+        return await FileUploadForDeepResearch();
+      case "browse":
+        return await FileUploadForBrowserAgents();
+      default:
+        return showToast("Invalid type of agents. Try again", "info");
+    }
+  };
 
+  const truncateFilename = (filename, maxLength = 30) => {
+    if (filename.length <= maxLength) return filename;
+    const extension = getFileExtension(filename);
+    const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
+    const truncatedName = nameWithoutExt.substring(
+      0,
+      maxLength - extension.length - 4
+    );
+    return `${truncatedName}...${extension}`;
+  };
+
+  const handleRemoveFile = (index, filename) => {
+    // const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
+    // setUploadedFiles(updatedFiles);
+
+    removeFile(index);
+  };
+
+  // Get file extension
+  const getFileExtension = (filename) => {
+    return filename.split(".").pop().toLowerCase();
+  };
+
+  // console.log(fileUrls, "File urls");
+
+  const FileUploadForSlides = async (event, uploadData, files) => {
     try {
       // Show loading state
       showToast("Uploading files...", "info");
 
-      const result = await uploadFiles(uploadData).unwrap();
+      const result = await uploadFilesForSlides(uploadData).unwrap();
 
-      console.log("Upload successful:", result);
-      showToast(`${files.length} file(s) uploaded successfully`, "success");
-
+      // console.log("Upload successful:", result);
+      
       if (result?.success) {
-        setUploadedFiles((prev) => [...prev, ...result.data]);
-        setFileUrls((prev) => [
-          ...prev,
-          ...result.data.map((file) => file.signed_url),
-        ]);
+        // setUploadedFiles((prev) => [...prev, ...result.data]);
+        // setFileUrls((prev) => [
+        //   ...prev,
+        //   ...result.data.map((file) => file.signed_url),
+        // ]);
+        const newUrls = result.data.map((file) => file.signed_url);
+        addFiles(result.data, newUrls);
+        showToast(`${files.length} file(s) uploaded successfully`, "success");
       }
 
       // Clear the file input
       event.target.value = "";
     } catch (error) {
-      // console.error("Upload failed:", error);
+      console.error("Upload failed:", error);
 
       // More detailed error messages
       let errorMessage = "Failed to upload files. Please try again.";
@@ -458,35 +491,18 @@ export default function AgentLandingPage() {
       }
 
       showToast(errorMessage, "error");
-      setUploadedFiles([]); // Reset on error
+      // setUploadedFiles([]); // Reset on error
 
       // Clear the file input on error
       event.target.value = "";
     }
   };
 
-  const truncateFilename = (filename, maxLength = 30) => {
-    if (filename.length <= maxLength) return filename;
-    const extension = getFileExtension(filename);
-    const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
-    const truncatedName = nameWithoutExt.substring(
-      0,
-      maxLength - extension.length - 4
-    );
-    return `${truncatedName}...${extension}`;
-  };
+  const FileUploadForSheets = async () => {};
 
-  const handleRemoveFile = (index, filename) => {
-    const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
-    setUploadedFiles(updatedFiles);
-  };
+  const FileUploadForDeepResearch = async () => {};
 
-  // Get file extension
-  const getFileExtension = (filename) => {
-    return filename.split(".").pop().toLowerCase();
-  };
-
-  // console.log(fileUrls, "File urls");
+  const FileUploadForBrowserAgents = async () => {};
 
   return (
     <Box
@@ -740,12 +756,17 @@ export default function AgentLandingPage() {
             >
               Quick Start Templates
             </Typography>
-            <Grid container spacing={2} sx={{ maxWidth: 1000, mx: "auto" }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ maxWidth: 1000, mx: "auto", width: "100%" }}
+            >
               {QUICK_START_TEMPLATES.map((template) => (
                 <Grid item xs={12} sm={6} md={3} key={template.id}>
                   <Card
                     sx={{
                       cursor: "pointer",
+                      width: "100%",
                       height: "100%",
                       border: "1px solid #e0e0e0",
                       transition: "all 0.2s ease",
@@ -880,8 +901,9 @@ export default function AgentLandingPage() {
               alignItems: "center",
             }}
           >
-            <Box sx={{ display: "flex" }}>
-              {/* Hidden file input */}
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {selectedNavItem === "research" && <SearchDropdown />}
+              {/* Hidden file input for slide file selection */}
               <input
                 id="file-upload-input"
                 type="file"
@@ -890,9 +912,10 @@ export default function AgentLandingPage() {
                 style={{ display: "none" }}
                 onChange={handleFileUpload}
               />
-              {selectedNavItem === "slides" && (
+              {(selectedNavItem === "slides" ||
+                selectedNavItem === "research") && (
                 <Button
-                  startIcon={<AttachFile />}
+                  startIcon={<LinkIcon />}
                   onClick={handleClick}
                   sx={{
                     color: "#666",
@@ -966,9 +989,9 @@ export default function AgentLandingPage() {
           </Box>
 
           {/* uploaded files preview STARTS */}
-          {uploadedFiles?.length > 0 && (
-            <Grid container spacing={1} sx={{pt: {xs: 1, md: 2, xl: 3}}}>
-              {uploadedFiles?.map((file, index) => {
+          {hasFiles > 0 && (
+            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 } }}>
+              {currentFiles?.map((file, index) => {
                 const extension = getFileExtension(file.filename);
                 const truncatedName = truncateFilename(file.filename);
 
