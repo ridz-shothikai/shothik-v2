@@ -188,7 +188,7 @@ export default function ClaritySection() {
     {
       id: "download",
       icon: "/home/cl-6.svg",
-      title: "Download & Submit",
+      title: "Maintains original formatting",
       description:
         "Get your improved document in the same format, ready for submission to your professor.",
       details: "Maintains original formatting",
