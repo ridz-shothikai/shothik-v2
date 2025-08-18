@@ -13,7 +13,15 @@ import {
 } from "../../redux/slice/presentationSlice";
 import io from "socket.io-client";
 import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
-import { Button, Dialog, DialogContent, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Snackbar, Alert } from "@mui/material";
 
 const PRIMARY_GREEN = "#07B37A";
@@ -62,6 +70,9 @@ export default function PresentationAgentPage({ specificAgent }) {
     message: "",
     severity: "success" as "success" | "error" | "warning" | "info",
   });
+
+  const [awaitingAck, setAwaitingAck] = useState(false);
+  const ackTimeoutRef = useRef(null); // Flag for handling immediate polling bug. [Problem Statement: we try to immediately call slides, and logs api to get the data that cause the problem, before edit slide sends the response we try to get logs and slide. And because of this the status of logs and slide is still completed and causing issue.]
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fileUrls, setFileUrls] = useState([]);
@@ -142,10 +153,25 @@ export default function PresentationAgentPage({ specificAgent }) {
       "presentationUpdate",
       ({ presentationId, logs, slides, status }) => {
         if (presentationId === currentPresentationId) {
-          console.log(
-            "[SOCKET] Updating presentation state for:",
-            presentationId
+          // console.log(
+          //   "[SOCKET] Updating presentation state for:",
+          //   presentationId,
+          //   logs,
+          //   slides,
+          //   status
+          // );
+          console.log(status, presentationId, "status from presentation update");
+          // server is responding => allow polling now
+          setAwaitingAck(false);
+          dispatch(
+            setPresentationState(prev => ({
+               ...prev,
+               logs: logs ?? prev.logs,
+               slides: slides ?? prev.slides,
+               status: status ?? prev.status,
+             }))
           );
+
           // dispatch(
           //   setPresentationState((prev) => ({
           //     logs: [
@@ -205,7 +231,9 @@ export default function PresentationAgentPage({ specificAgent }) {
           title: "Generating",
           totalSlides: 0,
         })
-      );  
+      );
+
+      if (ackTimeoutRef.current) clearTimeout(ackTimeoutRef.current);
     };
   }, []);
 
@@ -324,7 +352,12 @@ export default function PresentationAgentPage({ specificAgent }) {
     }
 
     // Start polling if we're loading OR status is processing
-    const shouldStartPolling = isLoading || status === "processing";
+    // const shouldStartPolling = isLoading || status === "processing";
+
+    // console.log(!awaitingAck, status, !isSocketConnected, "should start polling");
+
+    const shouldStartPolling =
+      !awaitingAck && status === "processing"; 
 
     if (shouldStartPolling) {
       // Prevent starting a new poller if one is already running
@@ -356,10 +389,16 @@ export default function PresentationAgentPage({ specificAgent }) {
         pollingIntervalRef.current = null;
       }
     };
-  }, [currentPresentationId, isLoading, status]); //these dependencies shouldn't be changed frequently
+  }, [
+    currentPresentationId,
+    isLoading,
+    status,
+    awaitingAck,
+    isSocketConnected,
+  ]); //these dependencies shouldn't be changed frequently
 
-      // (isLoading || status === "processing") && !isSocketConnected;
-      // console.log(isSocketConnected, "isSocketConnected");
+  // (isLoading || status === "processing") && !isSocketConnected;
+  // console.log(isSocketConnected, "isSocketConnected");
 
   const fetchPresentationData = async () => {
     if (!currentPresentationId) return;
@@ -401,12 +440,43 @@ export default function PresentationAgentPage({ specificAgent }) {
         const currentUrlId =
           searchParams.get("id") || searchParams.get("presentation_id");
         if (currentPresentationId === currentUrlId) {
-          const newStatus =
-            logsData?.status || slidesData?.status || presentationState.status;
+          // const newStatus =
+          //   logsData?.status || slidesData?.status || presentationState.status;
+          // let newStatus = presentationState.status;
+          // if (presentationState.status !== "processing") {
+          //   newStatus = logsData?.status || slidesData?.status || newStatus;
+          // }
+
+          // const apiStatus = logsData?.status || slidesData?.status;
+          // const newStatus =
+          //   presentationState.status === "processing"
+          //     ? "processing"
+          //     : apiStatus || presentationState.status;
+
+          const apiStatus = logsData?.status || slidesData?.status;
+          const prevLogsLen = presentationState.logs?.length ?? 0;
+          const prevSlidesLen = presentationState.slides?.length ?? 0;
+          const nextLogsLen = logsData?.data?.length ?? prevLogsLen;
+          const nextSlidesLen = slidesData?.data?.length ?? prevSlidesLen;
+          const hasNewData = nextLogsLen !== prevLogsLen || nextSlidesLen !== prevSlidesLen;
+
+          let newStatus = presentationState.status;
+          if (presentationState.status === "processing") {
+            if (apiStatus === "failed") {
+              newStatus = "failed";
+            } else if (apiStatus === "completed" && !hasNewData) {
+              // stale “completed” snapshot — keep waiting
+              newStatus = "processing";
+            } else {
+              newStatus = apiStatus || "processing";
+            }
+          } else {
+            newStatus = apiStatus || presentationState.status;
+          }
 
           const combinedState = {
-            logs: logsData?.data || presentationState.logs || [],
-            slides: slidesData?.data || presentationState.slides || [],
+            logs: logsData?.data ?? presentationState.logs ?? [],
+            slides: slidesData?.data ?? presentationState.slides ?? [],
             status: newStatus,
             title:
               slidesData?.title || logsData?.title || presentationState.title,
@@ -450,7 +520,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   const handleSend = async (promptText) => {
     const prompt = promptText || inputValue;
     if (!prompt.trim() || isLoading) return;
-
+    
     const optimisticMessage = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -458,13 +528,15 @@ export default function PresentationAgentPage({ specificAgent }) {
       timestamp: new Date().toISOString(),
       isOptimistic: true,
     };
-
-    setChatHistory([]);
+    
+    // setChatHistory([]);
+    setChatHistory((prev) => [...prev, optimisticMessage]);
     // Add to local state immediately
     setOptimisticMessages((prev) => [...prev, optimisticMessage]);
     setInputValue("");
+    
     setIsLoading(true);
-
+    
     // Reset status to processing to ensure polling starts
     dispatch(
       setPresentationState({
@@ -473,6 +545,11 @@ export default function PresentationAgentPage({ specificAgent }) {
       })
     );
 
+    // block polling until the server has had a moment to flip state
+    setAwaitingAck(true);
+    if (ackTimeoutRef.current) clearTimeout(ackTimeoutRef.current);
+    ackTimeoutRef.current = setTimeout(() => setAwaitingAck(false), 5000); // 5s fallback
+    
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
       const token = localStorage.getItem("accessToken");
@@ -489,6 +566,10 @@ export default function PresentationAgentPage({ specificAgent }) {
           body: JSON.stringify({ user_query: prompt }),
         }
       );
+
+      if(response.ok) {
+        setAwaitingAck(false);
+      }
 
       if (!response.ok) {
         // Handle different error status codes
@@ -542,21 +623,6 @@ export default function PresentationAgentPage({ specificAgent }) {
       return;
     }
     setSnackbar({ ...snackbar, open: false });
-  };
-
-  const handleNavItemClick = (itemId) => {
-    setSelectedNavItem(itemId);
-    if (itemId === "slides") {
-      router.push(
-        "/agents/presentation" +
-          (currentPresentationId ? `?id=${currentPresentationId}` : "")
-      );
-    } else if (itemId === "chat") {
-      router.push(
-        "/agents/super" +
-          (currentPresentationId ? `?id=${currentPresentationId}` : "")
-      );
-    }
   };
 
   const handleApplyAutoFixes = () => {
@@ -869,7 +935,7 @@ export default function PresentationAgentPage({ specificAgent }) {
       </Snackbar>
     </Box>
   );
-};
+}
 
 export const CustomSlideshowIcon = ({ sx, ...props }) => (
   <svg
