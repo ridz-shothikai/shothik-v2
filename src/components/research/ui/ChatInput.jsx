@@ -99,8 +99,8 @@ const ChatInput = () => {
         width: "100%",
         maxWidth: 1000,
         margin: "0 auto",
-        padding: 2,
-        backgroundColor: "#F4F6F8",
+        py: 2,
+        // backgroundColor: "#F4F6F8",
       }}
     >
       <Box

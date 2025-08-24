@@ -123,7 +123,7 @@ export default function HeaderTitle({ headerHeight, setHeaderHeight }) {
               boxSizing: "border-box",
               resize: "none",
               overflow: "hidden",
-              // lineHeight: 1.2,
+              lineHeight: {md:1.2},
             },
             "& .MuiInput-underline:before": {
               borderBottom: "none",
