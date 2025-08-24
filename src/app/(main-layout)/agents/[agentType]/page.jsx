@@ -6,6 +6,8 @@ import { AgentContextProvider } from "../../../../../components/agents/shared/Ag
 import AgentPage from "../../../../../components/agents/AgentPage";
 import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
 import SheetAgentPage from "../../../../components/sheet/SheetAgentPage";
+import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
+import ChatInput from "../../../../components/research/ui/ChatInput";
 
 export default function SpecificAgentPage() {
   const params = useParams();
@@ -26,10 +28,10 @@ export default function SpecificAgentPage() {
         );
       case "sheets":
         return <SheetAgentPage specificAgent={agentType} sheetId={id} />;
-      case "download":
-        return <div>Download Agent Page - Coming Soon</div>;
-      case "chat":
-        return <div>Chat Agent Page - Coming Soon</div>;
+      case "research":
+        return <ResearchAgentPage/>;
+      case "browse":
+        return <div>Browse Agent Page - Coming Soon</div>;
       case "call":
         return <div>Call Agent Page - Coming Soon</div>;
       default:
@@ -39,8 +41,23 @@ export default function SpecificAgentPage() {
 
   return (
     <AgentContextProvider>
-      <Box sx={{ minHeight: "calc(100dvh - 200px)", overflowY: "hidden" }}>
+      <Box sx={{ minHeight: "calc(100dvh - 200px)", overflowY: "auto", position: "relative" }}>
         {renderComponent()}
+
+        {/* chat input for research agents */}
+        {
+          agentType === "research" && 
+          (
+            <Box sx={{
+              position: "absolute",
+              bottom: 1,
+              left: 0,
+              width: "100%"
+            }}>
+              <ChatInput/>
+            </Box>
+          )
+        }
       </Box>
     </AgentContextProvider>
   );

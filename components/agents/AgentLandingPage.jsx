@@ -39,8 +39,8 @@ import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
 
 import { useDispatch, useSelector } from "react-redux";
-import { setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
-import {handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
+import { setResearchToken, setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
+import {handleResearchRequest, handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
 import { Snackbar, Alert } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -58,6 +58,8 @@ import { LinkIcon } from "lucide-react";
 import SearchDropdown from "./SearchDropDown";
 import useNavItemFiles from "../../src/hooks/useNavItemFiles";
 import { useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
+import {useResearchAiToken} from "../../src/hooks/useRegisterResearchService";
+import ModelSelectForResearch from "./ModelSelectForResearch";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -197,6 +199,7 @@ export default function AgentLandingPage() {
   const [isInitiatingPresentation, setIsInitiatingPresentation] =
     useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
+  const [isInitiatingResearch, setIsInitiatingResearch] = useState(false);
   const [toast, setToast] = useState({
     open: false,
     message: "",
@@ -219,6 +222,10 @@ export default function AgentLandingPage() {
     clearAllNavItems, // if needed
     hasFiles,
   } = useNavItemFiles(selectedNavItem);
+
+  // RESEARCH STATES
+  const [researchModel, setResearchModel] = useState("gemini-2.0-flash");
+  const [topLevel, setTopLevel] = useState(3); // used for cofig -> 1.number_of_initial_queries, 2.max_research_loops
 
   // console.log(currentFiles, "<-currentFiles", currentUrls, "<- currentUrls");
 
@@ -249,7 +256,8 @@ export default function AgentLandingPage() {
   /**
    * When we come to the agents page if user is not registered to our services, make them register it.
    */
-  const { sheetAIToken, refreshSheetAIToken } = useSheetAiToken(user?.email);
+  const { sheetAIToken, refreshSheetAIToken } = useSheetAiToken();
+  const {researchAIToken, refreshResearchAiToken} = useResearchAiToken();
 
   // for saving sheet token to redux state
   useEffect(() => {
@@ -262,6 +270,17 @@ export default function AgentLandingPage() {
     refetchChatHistory();
     console.log("chat data refetched");
   }, [sheetAIToken]);
+
+  // for saving research token to redux state
+  useEffect(() => {
+    // We will save token on redux and based on that we will generate users sheet chat data
+    if (!researchAIToken) return;
+
+    dispatch(setResearchToken(researchAIToken));
+
+    // if research token saved to our local storage then we can try to refetch again to get the user research chat data
+    // console.log("chat data for research refetched");
+  }, [researchAIToken])
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -307,12 +326,20 @@ export default function AgentLandingPage() {
             showToast,
             refreshSheetAIToken
           );
-        case "download":
-          return console.log("download route");
-        case "chat":
-          return console.log("chat route");
-        case "call":
-          return console.log("call route");
+        case "research":
+          return await handleResearchRequest(
+            inputValue,
+            researchModel,
+            topLevel,
+            setIsInitiatingResearch,
+            setLoginDialogOpen,
+            setIsSubmitting,
+            showToast,
+            refreshResearchAiToken,
+            router
+          );
+        case "browse":
+          return console.log("browse route");
         default:
           return console.log("all agents route");
       }
@@ -406,7 +433,7 @@ export default function AgentLandingPage() {
         uploadData = {
           files, // Array of File objects
           userId: user._id,
-        }; 
+        };
         // console.log("Upload data:", {
         //   filesCount: files.length,
         //   userId: user._id,
@@ -458,7 +485,7 @@ export default function AgentLandingPage() {
       const result = await uploadFilesForSlides(uploadData).unwrap();
 
       // console.log("Upload successful:", result);
-      
+
       if (result?.success) {
         // setUploadedFiles((prev) => [...prev, ...result.data]);
         // setFileUrls((prev) => [
@@ -503,6 +530,8 @@ export default function AgentLandingPage() {
   const FileUploadForDeepResearch = async () => {};
 
   const FileUploadForBrowserAgents = async () => {};
+
+  // console.log(researchModel, researchLoops, "research model");
 
   return (
     <Box
@@ -902,7 +931,12 @@ export default function AgentLandingPage() {
             }}
           >
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {selectedNavItem === "research" && <SearchDropdown />}
+              {selectedNavItem === "research" && (
+                <SearchDropdown
+                  setResearchModel={setResearchModel}
+                  setTopLevel={setTopLevel}
+                />
+              )}
               {/* Hidden file input for slide file selection */}
               <input
                 id="file-upload-input"
@@ -962,30 +996,45 @@ export default function AgentLandingPage() {
               )}
             </Box>
 
-            <IconButton
-              onClick={handleSubmit}
-              disabled={
-                !inputValue.trim() ||
-                isInitiatingPresentation ||
-                isInitiatingSheet ||
-                isUploading
-              }
+            <Box
               sx={{
-                bgcolor: PRIMARY_GREEN,
-                color: "white",
-                width: 40,
-                height: 40,
-                "&:hover": {
-                  bgcolor: "#06A36D",
-                },
-                "&.Mui-disabled": {
-                  bgcolor: "#ddd",
-                  color: "#999",
-                },
+                display: "flex",
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                gap: 2,
               }}
             >
-              <SendIcon />
-            </IconButton>
+              <IconButton
+                onClick={handleSubmit}
+                disabled={
+                  !inputValue.trim() ||
+                  isInitiatingPresentation ||
+                  isInitiatingSheet ||
+                  isUploading ||
+                  isInitiatingResearch
+                }
+                sx={{
+                  bgcolor: PRIMARY_GREEN,
+                  color: "white",
+                  width: 40,
+                  height: 40,
+                  "&:hover": {
+                    bgcolor: "#06A36D",
+                  },
+                  "&.Mui-disabled": {
+                    bgcolor: "#ddd",
+                    color: "#999",
+                  },
+                }}
+              >
+                <SendIcon />
+              </IconButton>
+
+              {/* for research only */}
+              {/* {
+                selectedNavItem === "research" && <ModelSelectForResearch/>
+              } */}
+            </Box>
           </Box>
 
           {/* uploaded files preview STARTS */}

@@ -116,10 +116,10 @@ async function handleSheetGenerationRequest(
       })
     );
 
-    console.log(
-      "[agentPageUtils] Initiating presentation with message:",
-      inputValue
-    );
+    // console.log(
+    //   "[agentPageUtils] Initiating presentation with message:",
+    //   inputValue
+    // );
 
     const token = localStorage.getItem("accessToken");
 
@@ -138,7 +138,7 @@ async function handleSheetGenerationRequest(
     const storedSheetToken = localStorage.getItem("sheetai-token");
 
     if (!storedSheetToken) {
-      refreshSheetAIToken();
+      await refreshSheetAIToken();
     }
 
     // After authenticate we will have a sheet token on the local storage
@@ -190,10 +190,96 @@ async function handleSheetGenerationRequest(
   }
 }
 
-// ====== For Download generation handler ======
+// ====== For Research generation handler ======
+async function handleResearchRequest(
+  inputValue,
+  researchModel,
+  topLevel,
+  setIsInitiatingResearch,
+  setLoginDialogOpen,
+  setIsSubmitting,
+  showToast,
+  refreshResearchAiToken,
+  router
+) {
+  console.log("research start", inputValue, researchModel, topLevel);
+  try {
+    sessionStorage.setItem("initialResearchPrompt", inputValue);
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      // console.error("[AgentPageUtils] No access token found");
+      showToast("You need to be logged in to create a report sheet.");
+      setLoginDialogOpen(true);
+      setIsSubmitting(false);
+      setIsInitiatingResearch(false);
+      return;
+    }
+
+    setIsInitiatingResearch(true);
+
+    // Check if we have a sheet stored token
+    const storedResearchToken = localStorage.getItem("research-token");
+
+    if (!storedResearchToken) {
+      await refreshResearchAiToken();
+    }
+
+    // After authenticate we will have a sheet token on the local storage
+    let response;
+    try {
+      response = await fetch(
+        "http://163.172.172.38:3040/api/chat/create_chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("research-token")}`,
+          },
+          body: JSON.stringify({
+            name: `${inputValue} - ${new Date().toLocaleString()}`,
+          }),
+        }
+      );
+      if (!response.ok) {
+        // console.log("Failed to create chat");
+        showToast("Failed to research. Please try again.");
+        setIsSubmitting(false);
+        setIsInitiatingResearch(false);
+        return;
+      }
+    } catch (error) {
+      console.log("Failed to create chat");
+      setIsSubmitting(false);
+      setIsInitiatingResearch(false);
+      return;
+    }
+
+    const result = await response.json();
+
+    const chatId = result.chat_id || result.id || result._id;
+
+    // Save active chat ID for connection polling
+    sessionStorage.setItem("activeResearchChatId", chatId);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    router.push(`/agents/research/?id=${chatId}`);
+  } catch (error) {
+    console.log("[handleResearchRequest] error:", error);
+    setIsSubmitting(false);
+    showToast("An error occurred while researching.");
+    setIsInitiatingResearch(false);
+  }
+}
 // ====== For AI Chat generation handler ======
 // ====== For Calls generation handler ======
 // ====== For ALl Agents generation handler ======
 
 
-export { handleSlideCreation, handleSheetGenerationRequest };
+export {
+  handleSlideCreation,
+  handleSheetGenerationRequest,
+  handleResearchRequest,
+};

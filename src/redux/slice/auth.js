@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 let sheetToken = null;
+let researchToken = null;
 let accessToken = null;
 
 if (typeof window !== "undefined") {
   try {
     accessToken = localStorage.getItem("accessToken");
     sheetToken = localStorage.getItem("sheetai-token");
+    researchToken = localStorage.getItem("research-token");
   } catch (error) {
     console.error("Error accessing localStorage:", error);
   }
@@ -15,6 +17,7 @@ if (typeof window !== "undefined") {
 const initialState = {
   accessToken: accessToken ? accessToken : null,
   sheetToken: sheetToken ? sheetToken : null,
+  researchToken: researchToken ? researchToken : null,
   user: {},
   userLimit: [],
   isNewRegistered: false,
@@ -49,6 +52,9 @@ const authSlice = createSlice({
     setSheetToken: (state, action) => {
       state.sheetToken = action.payload;
     },
+    setResearchToken: (state, action) => {
+      state.researchToken = action.payload;
+    },
     updateUser: (state, action) => {
       state.accessToken = action.payload.accessToken;
       state.user = { ...state.user, ...action.payload };
@@ -75,6 +81,7 @@ export const {
   setUserLimit,
   setUser,
   setSheetToken,
+  setResearchToken,
   updateUser,
   setIsNewRegistered,
   setShowLoginModal,

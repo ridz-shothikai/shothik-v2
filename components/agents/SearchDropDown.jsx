@@ -16,7 +16,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const SearchDropdown = () => {
+const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState("Level 1-3");
   const open = Boolean(anchorEl);
@@ -44,7 +44,7 @@ const SearchDropdown = () => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (level, isPremium = false) => {
+  const handleMenuItemClick = (level, model, topLevel, isPremium = false) => {
     // If it's a premium feature and user doesn't have premium access
     if (isPremium && !isPremiumUser) {
       // Close the menu first
@@ -59,6 +59,8 @@ const SearchDropdown = () => {
     // For free features or premium users with premium features
     setSelectedLevel(level);
     setAnchorEl(null);
+    setResearchModel(model);
+    setTopLevel(topLevel);
   };
 
   const handleUpgradeClick = (event) => {
@@ -81,6 +83,8 @@ const SearchDropdown = () => {
         "Fast, essential points only - from brief summary to Level 1 to a brief paragraph with key facts at Level 3",
       icon: "/agents/quick-research.svg",
       isPremium: false,
+      model: "gemini-2.0-flash",
+      topLevel: 3,
     },
     {
       level: "Level 4-7",
@@ -89,6 +93,8 @@ const SearchDropdown = () => {
         "Balanced detail - from concise 7 insights at Level 4 to a comprehensive written-up with examples and context at Level 7",
       icon: "/agents/standard-research.svg",
       isPremium: true,
+      model: "gemini-2.5-flash",
+      topLevel: 7,
     },
     {
       level: "Level 8-10",
@@ -97,6 +103,8 @@ const SearchDropdown = () => {
         "Maximum depth - from detailed analysis at Level 8 to a full executive-style report with exhaustive references at Level 10",
       icon: "/agents/deep-dive.svg",
       isPremium: true,
+      model: "gemini-2.5-pro",
+      topLevel: 10,
     },
   ];
 
@@ -172,7 +180,14 @@ const SearchDropdown = () => {
           return (
             <MenuItem
               key={index}
-              onClick={() => handleMenuItemClick(item.level, item.isPremium)}
+              onClick={() =>
+                handleMenuItemClick(
+                  item.level,
+                  item.model,
+                  item.topLevel,
+                  item.isPremium
+                )
+              }
               selected={selectedLevel === item.level}
               sx={{
                 flexDirection: "column",

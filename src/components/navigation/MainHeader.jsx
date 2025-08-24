@@ -44,8 +44,10 @@ export default function MainHeader() {
       "/summarize": "Summarize",
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",
-      "/research": "Research",
-      "/agent": "Shothik AI Agent",
+      "/agents/research": "Research",
+      "/agents/sheets": "Sheet",
+      "/agents/presentation": "Presentation Slide",
+      "/agents": "Shothik AI Agent",
     };
 
     return routeTitles[pathname] || "";

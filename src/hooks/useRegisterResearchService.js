@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const useSheetAIToken = () => {
-  const user = useSelector((state) => state.auth.user);
+export const useResearchAiToken = () => {
+  const { user } = useSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [sheetAIToken, setSheetAIToken] = useState(null);
+  const [researchAIToken, setresearchAIToken] = useState(null);
 
-  const refreshSheetAIToken = useCallback(async () => {
+  const refreshResearchAiToken = useCallback(async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
 
@@ -19,7 +19,7 @@ const useSheetAIToken = () => {
       }
 
       if (!user?.email) {
-        setError("Email is required");
+        setError("Need to login");
         return null;
       }
 
@@ -27,7 +27,7 @@ const useSheetAIToken = () => {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/register-sheet-service`,
+        `${process.env.NEXT_PUBLIC_API_URI}/research/register-research-service`,
         {
           method: "POST",
           headers: {
@@ -36,6 +36,7 @@ const useSheetAIToken = () => {
           },
           body: JSON.stringify({
             email: user?.email,
+            name: user?.name || 'default',
           }),
         }
       );
@@ -47,36 +48,34 @@ const useSheetAIToken = () => {
       const data = await response.json();
 
       if (data.token) {
-        localStorage.setItem("sheetai-token", data.token);
-        setSheetAIToken(data.token);
+        localStorage.setItem("research-token", data.token);
+        setresearchAIToken(data.token);
         return data.token;
       } else {
-        console.error("No sheetai-token received from API");
+        console.error("No research-token received from API");
       }
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError(error.message);
       return null;
     } finally {
       setIsLoading(false);
     }
-  }, [user?.email]);
+  }, [user]);
 
   useEffect(() => {
-    const existingToken = localStorage.getItem("sheetai-token");
+    const existingToken = localStorage.getItem("research-token");
 
     if (existingToken) {
-      setSheetAIToken(existingToken);
+       setresearchAIToken(existingToken);
     } else {
-      refreshSheetAIToken();
+        refreshResearchAiToken();
     }
-  }, [refreshSheetAIToken]);
+  }, [refreshResearchAiToken]);
 
   return {
-    sheetAIToken,
+    researchAIToken,
     isLoading,
     error,
-    refreshSheetAIToken,
+    refreshResearchAiToken,
   };
 };
-
-export default useSheetAIToken;
