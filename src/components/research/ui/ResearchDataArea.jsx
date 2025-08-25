@@ -8,16 +8,10 @@ import SourcesContent from "./SourcesContent";
 import StreamingIndicator from "./StreamingIndicator";
 import ResearchNavigation from "./ResearchNavigation";
 
-export default function ResearchDataArea({ headerHeight }) {
-  const { selectedTab } = useSelector((state) => state.researchUi);
+export default function ResearchDataArea({ headerHeight, selectedTab, research }) {
   const {
     isStreaming,
     streamEvents,
-    currentResearch,
-    sources,
-    images,
-    researches,
-    activeResearchIndex,
   } = useSelector((state) => state.researchCore);
   const { messages } = useSelector((state) => state.researchChat);
 
@@ -31,13 +25,13 @@ export default function ResearchDataArea({ headerHeight }) {
             messages={messages}
             isStreaming={isStreaming}
             streamEvents={streamEvents}
-            currentResearch={currentResearch}
+            currentResearch={research} // Pass the specific research object
           />
         );
       case 1: // Images
-        return <ImagesContent images={images} isStreaming={isStreaming} />;
+        return <ImagesContent images={research.images} isStreaming={isStreaming} />;
       case 2: // Sources
-        return <SourcesContent sources={sources} isStreaming={isStreaming} />;
+        return <SourcesContent sources={research.sources} isStreaming={isStreaming} />;
       default:
         return (
           <ResearchContent messages={messages} isStreaming={isStreaming} />
@@ -46,15 +40,7 @@ export default function ResearchDataArea({ headerHeight }) {
   };
 
   return (
-    <Box
-      sx={{
-        maxHeight: {
-          xs: "calc(90dvh - 300px)",
-          md: "calc(90dvh - 310px)",
-          xl: "calc(90dvh - 350px)",
-        },
-      }}
-    >
+    <Box>
       {/* {researches.length > 1 && <ResearchNavigation />} */}
       {isStreaming && <StreamingIndicator streamEvents={streamEvents} />}
       {renderContent()}

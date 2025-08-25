@@ -1,8 +1,6 @@
 "use client";
 
 import { Tabs, Tab, Box, Badge, styled } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
-import { setSelectedTab } from "../../../redux/slice/researchUiSlice";
 import Image from "next/image";
 
 // Custom styled tabs container
@@ -82,13 +80,9 @@ const TabWithIcon = styled(Tab)(({ theme }) => ({
   },
 }));
 
-export default function TabsPanel() {
-  const dispatch = useDispatch();
-  const { selectedTab } = useSelector((state) => state.researchUi);
-  const { sources, images } = useSelector((state) => state.researchCore);
-
+export default function TabsPanel({ selectedTab, sources, images, onTabChange }) {
   const handleChange = (event, newValue) => {
-    dispatch(setSelectedTab(newValue));
+    onTabChange(newValue);
   };
 
   // Count unique sources

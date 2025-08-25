@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  selectedTab: 0, // 0: Research, 1: Images, 2: Sources
   headerHeight: 20,
   isDarkMode: false,
   uploadedFiles: [],
@@ -12,9 +11,6 @@ export const researchUiSlice = createSlice({
   name: "researchUi",
   initialState,
   reducers: {
-    setSelectedTab: (state, action) => {
-      state.selectedTab = action.payload;
-    },
     setHeaderHeight: (state, action) => {
       state.headerHeight = action.payload;
     },
@@ -39,7 +35,6 @@ export const researchUiSlice = createSlice({
 });
 
 export const {
-  setSelectedTab,
   setHeaderHeight,
   setDarkMode,
   addUploadedFile,

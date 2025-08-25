@@ -2,14 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentResearch: null,
-  researches: [],
+  researches: [], // Each research object will now contain its own sources, images, and selectedTab
   activeResearchIndex: 0,
   streamEvents: [],
   isStreaming: false,
   error: null,
   jobId: null,
-  sources: [],
-  images: [],
   streamingMessage: "",
 };
 
@@ -32,10 +30,14 @@ export const researchCoreSlice = createSlice({
     },
     finishResearch: (state, action) => {
       state.isStreaming = false;
-      state.currentResearch = action.payload;
-      state.sources = action.payload.sources || [];
-      state.images = action.payload.images || [];
-      state.researches.unshift(action.payload);
+      const newResearch = {
+        ...action.payload,
+        sources: action.payload.sources || [],
+        images: action.payload.images || [],
+        selectedTab: 0, // Initialize selectedTab for this research
+      };
+      state.currentResearch = newResearch;
+      state.researches.unshift(newResearch);
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -52,19 +54,32 @@ export const researchCoreSlice = createSlice({
       state.streamingMessage = "";
     },
     loadExistingResearches: (state, action) => {
-      state.researches = action.payload;
-      if (action.payload.length > 0) {
-        state.currentResearch = action.payload[0];
-        state.sources = action.payload[0].sources || [];
-        state.images = action.payload[0].images || [];
+      state.researches = action.payload.map(research => ({
+        ...research,
+        sources: research.sources || [],
+        images: research.images || [],
+        selectedTab: research.selectedTab || 0, // Initialize selectedTab if not present
+      }));
+      if (state.researches.length > 0) {
+        state.currentResearch = state.researches[0];
       }
     },
     setActiveResearch: (state, action) => {
       const index = action.payload;
       state.activeResearchIndex = index;
       state.currentResearch = state.researches[index];
-      state.sources = state.researches[index]?.sources || [];
-      state.images = state.researches[index]?.images || [];
+    },
+    setResearchSelectedTab: (state, action) => {
+      const { researchId, selectedTab } = action.payload;
+      const researchToUpdate = state.researches.find(
+        (research) => research._id === researchId
+      );
+      if (researchToUpdate) {
+        researchToUpdate.selectedTab = selectedTab;
+      }
+      if (state.currentResearch && state.currentResearch._id === researchId) {
+        state.currentResearch.selectedTab = selectedTab;
+      }
     },
   },
 });
@@ -79,6 +94,7 @@ export const {
   resetResearch,
   loadExistingResearches,
   setActiveResearch,
+  setResearchSelectedTab,
 } = researchCoreSlice.actions;
 
 export const researchCoreState = (state) => {

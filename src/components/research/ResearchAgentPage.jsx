@@ -11,6 +11,7 @@ import { clearResearchChatState, researchChatState, setCurrentChat } from "../..
 import { useSearchParams } from "next/navigation";
 import {useResearchHistory} from "../../hooks/useResearchHistory";
 import { useResearchStream } from "../../hooks/useResearchStream";
+import { researchCoreState, setResearchSelectedTab } from "../../redux/slice/researchCoreSlice";
 
 export default function ResearchAgentPage() {
   const [headerHeight, setHeaderHeight] = useState(20); // default
@@ -20,11 +21,13 @@ export default function ResearchAgentPage() {
   const {loadChatResearches} = useResearchHistory();
   const {startResearch} = useResearchStream();
 
-  const research = useSelector(researchChatState);
+  const researchChat = useSelector(researchChatState);
+  const researchCore = useSelector(researchCoreState);
+
   const searchParams = useSearchParams();
   const chatIdFromUrl = searchParams.get("id");
 
-//   console.log(research, "research from ResearchAgentPage");
+  console.log(researchCore, "research from ResearchAgentPage");
 
   const initialQuery = sessionStorage.getItem("activeResearchChatId") || "";
 
@@ -36,7 +39,7 @@ export default function ResearchAgentPage() {
   }, [currentChatId, createNewChat]);
 
   useEffect(() => {
-    if (!research?.currentChatId) {
+    if (!researchChat?.currentChatId) {
       sessionStorage.setItem("activeResearchChatId", chatIdFromUrl);
       dispatch(setCurrentChat(chatIdFromUrl));
     }
@@ -80,12 +83,25 @@ export default function ResearchAgentPage() {
           lg: "calc(100dvh - 250px)",
           xl: "calc(100dvh - 270px)",
         },
+        maxHeight: {
+          xs: "calc(100dvh - 180px)",
+          sm: "calc(100dvh - 200px)",
+          md: "calc(100dvh - 230px)",
+          lg: "calc(100dvh - 250px)",
+          xl: "calc(100dvh - 270px)",
+        },
         marginInline: "auto",
         position: "relative",
         backgroundColor: "#F4F6F8",
         overflowY: "auto",
         px: { xs: 2, sm: 0 },
-        marginBottom: {xs: "50px", sm: "135px", md: "160px", lg: "180px", xl: "200px" },
+        marginBottom: {
+          xs: "50px",
+          sm: "135px",
+          md: "160px",
+          lg: "180px",
+          xl: "200px",
+        },
       }}
     >
       {/* <Box
@@ -96,15 +112,43 @@ export default function ResearchAgentPage() {
           width: "100%",
         }}
       > */}
-      <HeaderTitle
-        headerHeight={headerHeight}
-        setHeaderHeight={setHeaderHeight}
-      />
-      <TabsPanel />
-      {/* </Box> */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}>
+        {researchCore?.researches.length > 0 &&
+          researchCore?.researches?.map((research) => (
+            <Box key={research._id}>
+              <HeaderTitle
+                headerHeight={headerHeight}
+                setHeaderHeight={setHeaderHeight}
+                query={research.query}
+              />
+              <TabsPanel
+                selectedTab={research.selectedTab}
+                sources={research.sources}
+                images={research.images}
+                onTabChange={(newValue) =>
+                  dispatch(
+                    setResearchSelectedTab({
+                      researchId: research._id,
+                      selectedTab: newValue,
+                    })
+                  )
+                }
+              />
+              {/* </Box> */}
 
-      {/* data area */}
-      <ResearchDataArea headerHeight={headerHeight} />
+              {/* data area */}
+              <ResearchDataArea
+                headerHeight={headerHeight}
+                selectedTab={research.selectedTab}
+                research={research} // Pass the entire research object
+              />
+            </Box>
+          ))}
+      </Box>
     </Box>
   );
 }

@@ -6,9 +6,9 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
-export default function HeaderTitle({ headerHeight, setHeaderHeight }) {
+export default function HeaderTitle({ headerHeight, setHeaderHeight, query }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(query ||"");
   const [titleWidth, setTitleWidth] = useState();
   const titleRef = useRef(null);
   const [titleCharCount, setTitleCharCount] = useState(60);
@@ -16,18 +16,18 @@ export default function HeaderTitle({ headerHeight, setHeaderHeight }) {
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { currentResearch } = useSelector((state) => state.researchCore);
+  // const { currentResearch } = useSelector((state) => state.researchCore);
 
   // Initialize title from sessionStorage
   useEffect(() => {
-    if (currentResearch?.query) {
-      setTitle(currentResearch.query);
+    if (query) {
+      setTitle(query);
     } else {
       const initialQuery =
         sessionStorage.getItem("initialResearchPrompt") || "";
       setTitle(initialQuery);
     }
-  }, [currentResearch]);
+  }, [query]);
 
   // Measure Typography dimensions
   useEffect(() => {
