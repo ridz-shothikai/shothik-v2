@@ -120,25 +120,33 @@ export default function ResearchAgentPage() {
         {researchCore?.researches.length > 0 &&
           researchCore?.researches?.map((research) => (
             <Box key={research._id}>
-              <HeaderTitle
-                headerHeight={headerHeight}
-                setHeaderHeight={setHeaderHeight}
-                query={research.query}
-              />
-              <TabsPanel
-                selectedTab={research.selectedTab}
-                sources={research.sources}
-                images={research.images}
-                onTabChange={(newValue) =>
-                  dispatch(
-                    setResearchSelectedTab({
-                      researchId: research._id,
-                      selectedTab: newValue,
-                    })
-                  )
-                }
-              />
-              {/* </Box> */}
+              <Box
+                sx={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: "#F4F6F8",
+                }}
+              >
+                <HeaderTitle
+                  headerHeight={headerHeight}
+                  setHeaderHeight={setHeaderHeight}
+                  query={research.query}
+                />
+                <TabsPanel
+                  selectedTab={research.selectedTab}
+                  sources={research.sources}
+                  images={research.images}
+                  onTabChange={(newValue) =>
+                    dispatch(
+                      setResearchSelectedTab({
+                        researchId: research._id,
+                        selectedTab: newValue,
+                      })
+                    )
+                  }
+                />
+              </Box>
 
               {/* data area */}
               <ResearchDataArea
