@@ -4,6 +4,7 @@ import { Box, Button, Typography, TextField, useMediaQuery, useTheme } from "@mu
 import { SaveIcon } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 
 export default function HeaderTitle({ headerHeight, setHeaderHeight }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -15,11 +16,18 @@ export default function HeaderTitle({ headerHeight, setHeaderHeight }) {
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.down("md"));
 
+  const { currentResearch } = useSelector((state) => state.researchCore);
+
   // Initialize title from sessionStorage
   useEffect(() => {
-    const initialQuery = sessionStorage.getItem("initialResearchPrompt") || "";
-    setTitle(initialQuery);
-  }, []);
+    if (currentResearch?.query) {
+      setTitle(currentResearch.query);
+    } else {
+      const initialQuery =
+        sessionStorage.getItem("initialResearchPrompt") || "";
+      setTitle(initialQuery);
+    }
+  }, [currentResearch]);
 
   // Measure Typography dimensions
   useEffect(() => {

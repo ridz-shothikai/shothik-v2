@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, Tab, Box, Badge, styled } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { setSelectedTab } from "../../../redux/slice/researchUiSlice";
 import Image from "next/image";
 
 // Custom styled tabs container
@@ -23,7 +24,6 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   "& .MuiTab-root": {
     textTransform: "none",
     minWidth: "auto",
-    // minHeight: "56px",
     fontWeight: 400,
     color: "#929CA7",
     [theme.breakpoints.up("xs")]: {
@@ -82,17 +82,29 @@ const TabWithIcon = styled(Tab)(({ theme }) => ({
   },
 }));
 
-export default function MaterialUITabs() {
-  const [value, setValue] = useState(0);
+export default function TabsPanel() {
+  const dispatch = useDispatch();
+  const { selectedTab } = useSelector((state) => state.researchUi);
+  const { sources, images } = useSelector((state) => state.researchCore);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    dispatch(setSelectedTab(newValue));
   };
+
+  // Count unique sources
+  const uniqueSourcesCount = sources
+    ? sources.filter(
+        (source, index, self) =>
+          index === self.findIndex((s) => s.url === source.url)
+      ).length
+    : 0;
+
+  const imagesCount = images ? images.length : 0;
 
   return (
     <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
       <StyledTabs
-        value={value}
+        value={selectedTab}
         onChange={handleChange}
         aria-label="navigation tabs"
         scrollButtons="off"
@@ -103,7 +115,9 @@ export default function MaterialUITabs() {
               <div className="tab-icon">
                 <Image
                   src={
-                    value === 0 ? "/agents/ans-active.svg" : "/agents/ans.svg"
+                    selectedTab === 0
+                      ? "/agents/ans-active.svg"
+                      : "/agents/ans.svg"
                   }
                   alt="Research"
                   fill
@@ -119,13 +133,27 @@ export default function MaterialUITabs() {
               <div className="tab-icon">
                 <Image
                   src={
-                    value === 1 ? "/agents/img-active.svg" : "/agents/img.svg"
+                    selectedTab === 1
+                      ? "/agents/img-active.svg"
+                      : "/agents/img.svg"
                   }
                   alt="Images"
                   fill
                 />
               </div>
-              <span>Images</span>
+              <Badge
+                badgeContent={imagesCount > 0 ? imagesCount : null}
+                color="primary"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    fontSize: "0.6rem",
+                    minWidth: "16px",
+                    height: "16px",
+                  },
+                }}
+              >
+                <span>Images</span>
+              </Badge>
             </div>
           }
         />
@@ -135,7 +163,7 @@ export default function MaterialUITabs() {
               <div className="tab-icon">
                 <Image
                   src={
-                    value === 2
+                    selectedTab === 2
                       ? "/agents/sources-active.svg"
                       : "/agents/sources.svg"
                   }
@@ -143,7 +171,21 @@ export default function MaterialUITabs() {
                   fill
                 />
               </div>
-              <span>Sources</span>
+              <Badge
+                badgeContent={
+                  uniqueSourcesCount > 0 ? uniqueSourcesCount : null
+                }
+                color="primary"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    fontSize: "0.6rem",
+                    minWidth: "16px",
+                    height: "16px",
+                  },
+                }}
+              >
+                <span>Sources</span>
+              </Badge>
             </div>
           }
         />

@@ -13,6 +13,11 @@ import presentationSlice from './slice/presentationSlice';
 import sheetSlice from './slice/sheetSlice';
 import {sheetApiSlice} from "./api/sheet/sheetApi";
 import analyticsReducer from './slice/analyticsSlice';
+import researchChatReducer from "./slice/researchChatSlice";
+import researchCoreReducer from "./slice/researchCoreSlice";
+import researchUiSlice from "./slice/researchUiSlice";
+import { researchChatApi } from "./api/research/researchChatApi";
+import { researchCoreApi } from "./api/research/researchCoreApi";
 
 const store = configureStore({
   reducer: {
@@ -23,6 +28,9 @@ const store = configureStore({
     presentation: presentationSlice,
     sheet: sheetSlice,
     analytics: analyticsReducer,
+    researchChat: researchChatReducer,
+    researchCore: researchCoreReducer,
+    researchUi: researchUiSlice,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
@@ -30,6 +38,8 @@ const store = configureStore({
     [toolsApiSlice.reducerPath]: toolsApiSlice.reducer,
     [presentationApiSlice.reducerPath]: presentationApiSlice.reducer,
     [sheetApiSlice.reducerPath]: sheetApiSlice.reducer,
+    [researchChatApi.reducerPath]: researchChatApi.reducer,
+    [researchCoreApi.reducerPath]: researchCoreApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -42,6 +52,8 @@ const store = configureStore({
       presentationApiSlice.middleware,
       shareApiSlice.middleware,
       sheetApiSlice.middleware,
+      researchChatApi.middleware,
+      researchCoreApi.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

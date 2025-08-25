@@ -220,11 +220,12 @@ async function handleResearchRequest(
     setIsInitiatingResearch(true);
 
     // Check if we have a sheet stored token
-    const storedResearchToken = localStorage.getItem("research-token");
+    // const storedResearchToken = localStorage.getItem("research-token");
+    // const storedResearchToken = localStorage.getItem("accessToken");
 
-    if (!storedResearchToken) {
-      await refreshResearchAiToken();
-    }
+    // if (!storedResearchToken) {
+    //   await refreshResearchAiToken();
+    // }
 
     // After authenticate we will have a sheet token on the local storage
     let response;
@@ -235,7 +236,7 @@ async function handleResearchRequest(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("research-token")}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
           body: JSON.stringify({
             name: `${inputValue} - ${new Date().toLocaleString()}`,

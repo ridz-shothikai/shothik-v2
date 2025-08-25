@@ -18,6 +18,8 @@ import {
   Close,
   Mic as MicIcon,
 } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import {useResearchStream} from "../../../hooks/useResearchStream"
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -34,18 +36,33 @@ const ChatInput = () => {
   const [isInitiatingPresentation, setIsInitiatingPresentation] =
     useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  // const [isUploading, setIsUploading] = useState(false);
   const [isInitiatingResearch, setIsInitiatingResearch] = useState(false);
+
+  // REDUX
+  const dispatch = useDispatch();
+  const [effort, setEffort] = useState("medium");
+  const [model, setModel] = useState("gemini-2.5-pro");
+  const { uploadedFiles, isUploading } = useSelector((state) => state.researchUi);
+  const { isStreaming } = useSelector((state) => state.researchCore);
+
+  const { startResearch, cancelResearch } = useResearchStream();
+
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
-  const handleSubmit = () => {
-    if (inputValue.trim()) {
-      console.log("Sending:", inputValue);
-      // Handle send logic here
-      setInputValue(""); // Clear input after sending
+  const handleSubmit = async () => {
+    if (!inputValue.trim() || isStreaming) return;
+
+    console.log("Submitting research query:", inputValue);
+    // return;
+    try {
+      await startResearch(inputValue, { effort, model });
+      setInputValue("");
+    } catch (error) {
+      console.error("Research failed:", error);
     }
   };
 

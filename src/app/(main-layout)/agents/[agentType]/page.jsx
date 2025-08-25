@@ -52,7 +52,8 @@ export default function SpecificAgentPage() {
               position: "absolute",
               bottom: 1,
               left: 0,
-              width: "100%"
+              width: "100%",
+              px: {xs: 2, sm: 0},
             }}>
               <ChatInput/>
             </Box>

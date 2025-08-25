@@ -57,12 +57,18 @@ export default function AnalyticsLoader() {
   };
 
   // Only render scripts if user has given consent AND interacted
-  const shouldLoadScripts = consent && userInteracted;
+  // const shouldLoadScripts = consent && userInteracted; // when
+  const shouldLoadScripts = true; 
 
   return (
     <>
       {shouldLoadScripts && (
         <>
+          <Script
+            defer
+            src="https://cloud.umami.is/script.js"
+            data-website-id="a19fecea-d6b0-4093-9074-26531c827bfe"
+          ></Script>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
             // src={`https://www.googletagmanager.com/gtag/js?id=G-5E6P963WDP`}
