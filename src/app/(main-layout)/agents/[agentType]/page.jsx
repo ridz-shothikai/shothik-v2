@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
@@ -8,6 +8,7 @@ import PresentationAgentPage from "../../../../components/presentation/Presentat
 import SheetAgentPage from "../../../../components/sheet/SheetAgentPage";
 import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
 import ChatInput from "../../../../components/research/ui/ChatInput";
+import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
 
 export default function SpecificAgentPage() {
   const params = useParams();
@@ -15,6 +16,8 @@ export default function SpecificAgentPage() {
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+
+  const [loadingResearchHistory, setLoadingResearchHistory] = useState(true);
 
   // Function to render the appropriate component based on agentType
   const renderComponent = () => {
@@ -29,7 +32,12 @@ export default function SpecificAgentPage() {
       case "sheets":
         return <SheetAgentPage specificAgent={agentType} sheetId={id} />;
       case "research":
-        return <ResearchAgentPage/>;
+        return (
+          <ResearchAgentPage
+            loadingResearchHistory={loadingResearchHistory}
+            setLoadingResearchHistory={setLoadingResearchHistory}
+          />
+        );
       case "browse":
         return <div>Browse Agent Page - Coming Soon</div>;
       case "call":
@@ -46,18 +54,22 @@ export default function SpecificAgentPage() {
 
         {/* chat input for research agents */}
         {
-          agentType === "research" && 
-          (
-            <Box sx={{
-              position: "absolute",
-              bottom: 1,
-              left: 0,
-              width: "100%",
-              px: {xs: 2, sm: 0},
-            }}>
-              <ChatInput/>
-            </Box>
-          )
+          agentType === "research" && <>
+          {
+            !loadingResearchHistory &&
+            (
+              <Box sx={{
+                position: "absolute",
+                bottom: 1,
+                left: 0,
+                width: "100%",
+                px: {xs: 2, sm: 0},
+              }}>
+                <ChatInput/>
+              </Box>
+            )
+          }
+          </>
         }
       </Box>
     </AgentContextProvider>

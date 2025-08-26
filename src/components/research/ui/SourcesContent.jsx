@@ -36,6 +36,7 @@ export default function SourcesContent({ sources }) {
       sx={{
         px: 2,
         py: 3,
+        mb: { xs: 17, sm: 7 , md: 5},
       }}
     >
       <Grid container spacing={1}>
@@ -58,7 +59,7 @@ export default function SourcesContent({ sources }) {
                     display: "flex",
                     alignItems: "center",
                     gap: 1,
-                    overflowWrap: "anywhere", 
+                    overflowWrap: "anywhere",
                     wordBreak: "break-word",
                   }}
                 >

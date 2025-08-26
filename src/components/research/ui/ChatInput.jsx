@@ -59,8 +59,8 @@ const ChatInput = () => {
     console.log("Submitting research query:", inputValue);
     // return;
     try {
-      await startResearch(inputValue, { effort, model });
       setInputValue("");
+      await startResearch(inputValue, { effort, model });
     } catch (error) {
       console.error("Research failed:", error);
     }
@@ -117,6 +117,8 @@ const ChatInput = () => {
         maxWidth: 1000,
         margin: "0 auto",
         py: 2,
+        position: "relative",
+        zIndex: 11,
         // backgroundColor: "#F4F6F8",
       }}
     >
