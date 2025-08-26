@@ -118,30 +118,7 @@ const SourceCard = ({ source, index }) => (
   </Card>
 );
 
-export default function SourcesContent({ sources, isStreaming }) {
-  if (isStreaming) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 300,
-          textAlign: "center",
-        }}
-      >
-        <SourceIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-        <Typography variant="h6" color="text.secondary">
-          Gathering Sources
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          AI is collecting and verifying sources for your research...
-        </Typography>
-      </Box>
-    );
-  }
-
+export default function SourcesContent({ sources }) {
   if (!sources || sources.length === 0) {
     return (
       <Box

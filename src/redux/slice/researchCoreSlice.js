@@ -37,7 +37,7 @@ export const researchCoreSlice = createSlice({
         selectedTab: 0, // Initialize selectedTab for this research
       };
       state.currentResearch = newResearch;
-      state.researches.unshift(newResearch);
+      state.researches.push(newResearch);
     },
     setError: (state, action) => {
       state.error = action.payload;

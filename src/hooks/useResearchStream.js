@@ -142,7 +142,7 @@ export const useResearchStream = () => {
           finishResearch({
             id: newJobId,
             query,
-            answer: finalAnswer,
+            result: finalAnswer,
             sources: finalSources,
             images: finalImages,
             timestamp: new Date().toISOString(),

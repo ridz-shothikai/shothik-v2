@@ -157,7 +157,6 @@ export default function ResearchAgentPage() {
 
               {/* data area */}
               <ResearchDataArea
-                headerHeight={headerHeight}
                 selectedTab={research.selectedTab}
                 research={research}
               />

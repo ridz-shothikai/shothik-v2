@@ -1,40 +1,28 @@
 "use client";
 
 import { Box } from "@mui/material";
-import { useSelector } from "react-redux";
 import ResearchContent from "./ResearchContent";
 import ImagesContent from "./ImagesContent";
 import SourcesContent from "./SourcesContent";
-import StreamingIndicator from "./StreamingIndicator";
 
-export default function ResearchDataArea({ headerHeight, selectedTab, research }) {
-  const {
-    isStreaming,
-    streamEvents,
-  } = useSelector((state) => state.researchCore);
-  const { messages } = useSelector((state) => state.researchChat);
+export default function ResearchDataArea({ selectedTab, research }) {
 
-  // console.log("research messages", messages);
+  console.log("research data on research data area", research);
 
   const renderContent = () => {
     switch (selectedTab) {
       case 0: // Research
         return (
           <ResearchContent
-            messages={messages}
-            isStreaming={isStreaming}
-            streamEvents={streamEvents}
             currentResearch={research} // Pass the specific research object
           />
         );
       case 1: // Images
-        return <ImagesContent images={research.images} isStreaming={isStreaming} />;
+        return <ImagesContent images={research.images} />;
       case 2: // Sources
-        return <SourcesContent sources={research.sources} isStreaming={isStreaming} />;
+        return <SourcesContent sources={research.sources} />;
       default:
-        return (
-          <ResearchContent messages={messages} isStreaming={isStreaming} />
-        );
+        return <ResearchContent currentResearch={research} />;
     }
   };
 

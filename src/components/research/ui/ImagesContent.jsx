@@ -164,7 +164,7 @@ const ImageModal = ({ image, open, onClose }) => (
   </Dialog>
 );
 
-export default function ImagesContent({ images, isStreaming }) {
+export default function ImagesContent({ images }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -177,29 +177,6 @@ export default function ImagesContent({ images, isStreaming }) {
     setModalOpen(false);
     setSelectedImage(null);
   };
-
-  if (isStreaming) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 300,
-          textAlign: "center",
-        }}
-      >
-        <ImageIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-        <Typography variant="h6" color="text.secondary">
-          Gathering Images
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          AI is collecting relevant images for your research...
-        </Typography>
-      </Box>
-    );
-  }
 
   if (!images || images.length === 0) {
     return (
