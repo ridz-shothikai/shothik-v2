@@ -46,8 +46,11 @@ export const researchCoreSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    resetResearch: (state) => {
+    resetResearchCore: (state) => {
       state.currentResearch = null;
+      state.researches = [];
+      state.activeResearchIndex = 0;
+      state.jobId = null;
       state.streamEvents = [];
       state.isStreaming = false;
       state.error = null;
@@ -91,7 +94,7 @@ export const {
   finishResearch,
   setError,
   clearError,
-  resetResearch,
+  resetResearchCore,
   loadExistingResearches,
   setActiveResearch,
   setResearchSelectedTab,

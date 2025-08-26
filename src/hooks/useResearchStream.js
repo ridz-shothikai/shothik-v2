@@ -55,9 +55,9 @@ export const useResearchStream = () => {
               chat: currentChatId,
               query,
               config: {
-                query_generator_model: "gemini-2.5-pro",
-                reflection_model: "gemini-2.5-pro",
-                answer_model: "gemini-2.5-pro",
+                query_generator_model: "gemini-2.0-flash",
+                reflection_model: "gemini-2.0-flash",
+                answer_model: "gemini-2.0-flash",
                 number_of_initial_queries:
                   config.effort === "low"
                     ? 1

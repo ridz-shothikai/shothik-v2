@@ -11,7 +11,9 @@ import { clearResearchChatState, researchChatState, setCurrentChat } from "../..
 import { useSearchParams } from "next/navigation";
 import {useResearchHistory} from "../../hooks/useResearchHistory";
 import { useResearchStream } from "../../hooks/useResearchStream";
-import { researchCoreState, setResearchSelectedTab } from "../../redux/slice/researchCoreSlice";
+import { researchCoreState, resetResearchCore, setResearchSelectedTab } from "../../redux/slice/researchCoreSlice";
+import StreamingIndicator from "./ui/StreamingIndicator";
+import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 
 export default function ResearchAgentPage() {
   const [headerHeight, setHeaderHeight] = useState(20); // default
@@ -47,6 +49,8 @@ export default function ResearchAgentPage() {
       // clean up effects
       sessionStorage.removeItem("activeResearchChatId");
       dispatch(clearResearchChatState());
+      dispatch(resetResearchCore());
+      dispatch(clearResearchUiState());
     };
   }, [chatIdFromUrl]);
 
@@ -112,11 +116,14 @@ export default function ResearchAgentPage() {
           width: "100%",
         }}
       > */}
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-      }}>
+      {/* research data */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
         {researchCore?.researches.length > 0 &&
           researchCore?.researches?.map((research) => (
             <Box key={research._id}>
@@ -152,11 +159,16 @@ export default function ResearchAgentPage() {
               <ResearchDataArea
                 headerHeight={headerHeight}
                 selectedTab={research.selectedTab}
-                research={research} // Pass the entire research object
+                research={research}
               />
             </Box>
           ))}
       </Box>
+
+      {/* when streaming */}
+      {researchCore?.isStreaming && (
+        <StreamingIndicator streamEvents={researchCore?.streamEvents} />
+      )}
     </Box>
   );
 }

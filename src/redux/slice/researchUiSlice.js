@@ -31,6 +31,12 @@ export const researchUiSlice = createSlice({
     clearUploadedFiles: (state) => {
       state.uploadedFiles = [];
     },
+    clearResearchUiState: (state) => {
+      state.headerHeight = 20;
+      state.isDarkMode = false;
+      state.uploadedFiles = [];
+      state.isUploading = false;
+    },
   },
 });
 
@@ -41,6 +47,7 @@ export const {
   removeUploadedFile,
   setUploading,
   clearUploadedFiles,
+  clearResearchUiState,
 } = researchUiSlice.actions;
 
 export default researchUiSlice.reducer;

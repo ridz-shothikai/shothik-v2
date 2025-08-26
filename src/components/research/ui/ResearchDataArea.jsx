@@ -6,7 +6,6 @@ import ResearchContent from "./ResearchContent";
 import ImagesContent from "./ImagesContent";
 import SourcesContent from "./SourcesContent";
 import StreamingIndicator from "./StreamingIndicator";
-import ResearchNavigation from "./ResearchNavigation";
 
 export default function ResearchDataArea({ headerHeight, selectedTab, research }) {
   const {
@@ -15,7 +14,7 @@ export default function ResearchDataArea({ headerHeight, selectedTab, research }
   } = useSelector((state) => state.researchCore);
   const { messages } = useSelector((state) => state.researchChat);
 
-  console.log("research messages", messages);
+  // console.log("research messages", messages);
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -41,8 +40,6 @@ export default function ResearchDataArea({ headerHeight, selectedTab, research }
 
   return (
     <Box>
-      {/* {researches.length > 1 && <ResearchNavigation />} */}
-      {isStreaming && <StreamingIndicator streamEvents={streamEvents} />}
       {renderContent()}
     </Box>
   );

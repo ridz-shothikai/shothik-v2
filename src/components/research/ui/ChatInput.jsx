@@ -147,6 +147,7 @@ const ChatInput = () => {
             value={inputValue}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
+            // disabled={isStreaming || isUploading}
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: "transparent",
@@ -223,7 +224,8 @@ const ChatInput = () => {
                 isInitiatingPresentation ||
                 isInitiatingSheet ||
                 isUploading ||
-                isInitiatingResearch
+                isInitiatingResearch ||
+                isStreaming
               }
               sx={{
                 bgcolor: PRIMARY_GREEN,
