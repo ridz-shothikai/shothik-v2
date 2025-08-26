@@ -202,15 +202,15 @@ export default function ImagesContent({ images }) {
   }
 
   return (
-    <Box>
-      <Box sx={{ my: 4 }}>
+    <Box sx={{ px: 2, py: 3 }}>
+      {/* <Box sx={{ my: 4 }}>
         <Typography variant="h6" gutterBottom>
           Research Images ({images.length})
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Images related to your research query
         </Typography>
-      </Box>
+      </Box> */}
 
       <Grid container spacing={2}>
         {images.map((image, index) => (
