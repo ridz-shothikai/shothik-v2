@@ -176,6 +176,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
                     headerHeight={headerHeight}
                     setHeaderHeight={setHeaderHeight}
                     query={research.query}
+                    researchItem={research}
                   />
                   <TabsPanel
                     selectedTab={research.selectedTab}
