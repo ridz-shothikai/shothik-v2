@@ -84,14 +84,13 @@ export default function SourcesContent({ sources }) {
                         width={16}
                         height={16}
                       />
-                      <Box
-                        sx={{
-                          overflowWrap: "anywhere",
+                      <span
+                        style={{
                           wordBreak: "break-word",
                         }}
                       >
                         {hostname}
-                      </Box>
+                      </span>
                     </Typography>
                   );
                 })()}

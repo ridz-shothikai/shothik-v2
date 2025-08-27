@@ -15,6 +15,8 @@ import { researchCoreState, resetResearchCore, setResearchSelectedTab } from "..
 import StreamingIndicator from "./ui/StreamingIndicator";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
+import { useConnectionState } from "../../hooks/useConnectionState";
+import { QueueStatusService } from "../../services/queueStatusService";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const scrollRef = useRef(null);
@@ -31,18 +33,22 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
   const searchParams = useSearchParams();
   const chatIdFromUrl = searchParams.get("id");
 
+  const { checkAndRecoverConnection, manualReconnect } = useResearchStream();
+  const { loadChatResearchesWithQueueCheck } = useResearchHistory();
+  const connectionState = useConnectionState();
+
   console.log(researchCore, "research from ResearchAgentPage");
 
   // console.log(loadingResearchHistory, "loadingResearchHistory");  
 
   const initialQuery = sessionStorage.getItem("activeResearchChatId") || "";
 
-  useEffect(() => {
-    // Create initial chat if none exists
-    if (!currentChatId) {
-      createNewChat(initialQuery);
-    }
-  }, [currentChatId, createNewChat]);
+  // useEffect(() => {
+  //   // Create initial chat if none exists
+  //   if (!currentChatId) {
+  //     createNewChat(initialQuery);
+  //   }
+  // }, [currentChatId, createNewChat]);
 
   useEffect(() => {
     if (!researchChat?.currentChatId) {
@@ -62,31 +68,47 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     try {
       const loadResearches = async () => {
         if (currentChatId) {
-          const researches = await loadChatResearches();
-
-          // If no existing researches and we have initialQuery, create new research
-          if (researches.length === 0) {
+          // First check for interrupted connections
+          await checkAndRecoverConnection();
+          
+          // Load existing researches and check queue status
+          const { researches, hasActiveQueue } = await loadChatResearchesWithQueueCheck();
+  
+          // Only start new research if:
+          // 1. No existing researches AND
+          // 2. No active/waiting queue AND  
+          // 3. We have an initial query AND
+          // 4. We're not currently streaming or polling
+          if (
+            researches.length === 0 &&
+            !hasActiveQueue &&
+            !researchCore?.isStreaming &&
+            !researchCore?.isPolling
+          ) {
             const initialQuery = sessionStorage.getItem(
               "initialResearchPrompt"
             );
             if (initialQuery) {
-              // Auto-start research with initial query
-              startResearch(initialQuery, {
-                effort: "medium",
-                model: "gemini-2.5-pro",
-              });
+              // Small delay to ensure all states are properly initialized
+              setTimeout(() => {
+                startResearch(initialQuery, {
+                  effort: "medium",
+                  model: "gemini-2.5-pro",
+                });
+              }, 500);
             }
           }
-
+  
           setLoadingResearchHistory(false);
         }
       };
-
+  
       loadResearches();
     } catch (error) {
       console.error("Error loading research history:", error);
+      setLoadingResearchHistory(false);
     }
-  }, [currentChatId]);
+  }, [currentChatId, checkAndRecoverConnection, loadChatResearchesWithQueueCheck, startResearch, researchCore?.isStreaming, researchCore?.isPolling]);
 
   useEffect(() => {
     if (scrollRef.current && researchCore?.isStreaming) {
@@ -180,9 +202,14 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
         </Box>
 
         {/* when streaming */}
-        {researchCore?.isStreaming && (
-          <StreamingIndicator streamEvents={researchCore?.streamEvents} />
+        {(researchCore?.isStreaming || researchCore?.isPolling) && (
+          <StreamingIndicator
+            streamEvents={researchCore?.streamEvents}
+            isPolling={researchCore?.isPolling}
+            connectionStatus={researchCore?.connectionStatus}
+            onRetry={manualReconnect}
+          />
         )}
       </Box>
     );
-}
+};

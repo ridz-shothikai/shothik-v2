@@ -9,6 +9,8 @@ const initialState = {
   error: null,
   jobId: null,
   streamingMessage: "",
+  isPolling: false,
+  connectionStatus: "disconnected", // 'connected', 'polling', 'reconnecting', 'failed', 'timeout'
 };
 
 export const researchCoreSlice = createSlice({
@@ -30,14 +32,30 @@ export const researchCoreSlice = createSlice({
     },
     finishResearch: (state, action) => {
       state.isStreaming = false;
+      state.isPolling = false;
+      state.connectionStatus = "connected";
       const newResearch = {
         ...action.payload,
         sources: action.payload.sources || [],
         images: action.payload.images || [],
-        selectedTab: 0, // Initialize selectedTab for this research
+        selectedTab: 0,
+        status: "completed",
       };
-      state.currentResearch = newResearch;
-      state.researches.push(newResearch);
+
+      // Check if research already exists before adding
+      const existingIndex = state.researches.findIndex(
+        (research) => research._id === newResearch._id
+      );
+
+      if (existingIndex >= 0) {
+        // Update existing research instead of adding duplicate
+        state.researches[existingIndex] = newResearch;
+        state.currentResearch = newResearch;
+      } else {
+        // Add new research only if it doesn't exist
+        state.currentResearch = newResearch;
+        state.researches.push(newResearch);
+      }
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -57,7 +75,7 @@ export const researchCoreSlice = createSlice({
       state.streamingMessage = "";
     },
     loadExistingResearches: (state, action) => {
-      state.researches = action.payload.map(research => ({
+      state.researches = action.payload.map((research) => ({
         ...research,
         sources: research.sources || [],
         images: research.images || [],
@@ -84,6 +102,15 @@ export const researchCoreSlice = createSlice({
         state.currentResearch.selectedTab = selectedTab;
       }
     },
+    setPollingMode: (state, action) => {
+      state.isPolling = action.payload;
+    },
+    setStreamingMode: (state, action) => {
+      state.isStreaming = action.payload || false;
+    },
+    setConnectionStatus: (state, action) => {
+      state.connectionStatus = action.payload; // 'connected', 'polling', 'reconnecting', 'failed', 'timeout'
+    },
   },
 });
 
@@ -98,6 +125,9 @@ export const {
   loadExistingResearches,
   setActiveResearch,
   setResearchSelectedTab,
+  setPollingMode,
+  setConnectionStatus,
+  setStreamingMode,
 } = researchCoreSlice.actions;
 
 export const researchCoreState = (state) => {

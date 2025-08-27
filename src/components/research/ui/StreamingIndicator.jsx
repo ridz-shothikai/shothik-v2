@@ -9,6 +9,7 @@ import {
   Grid,
   Badge,
   Divider,
+  Alert,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -48,7 +49,12 @@ const stepDescriptions = {
   completed: "Research has been completed successfully",
 };
 
-export default function StreamingIndicator({ streamEvents }) {
+export default function StreamingIndicator({
+  streamEvents,
+  isPolling = false,
+  connectionStatus = "connected",
+  onRetry,
+}) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [aggregatedData, setAggregatedData] = useState({
@@ -59,6 +65,39 @@ export default function StreamingIndicator({ streamEvents }) {
     messages: [],
     currentMessage: "",
   });
+
+  const getConnectionStatusInfo = () => {
+    switch (connectionStatus) {
+      case "polling":
+        return {
+          color: "warning",
+          text: "Reconnecting to research stream...",
+          icon: <HourglassEmptyIcon />,
+        };
+      case "reconnecting":
+        return {
+          color: "info",
+          text: "Attempting to reconnect...",
+          icon: <HourglassEmptyIcon />,
+        };
+      case "failed":
+        return {
+          color: "error",
+          text: "Connection lost - click to retry",
+          icon: <ErrorIcon />,
+        };
+      case "timeout":
+        return {
+          color: "error",
+          text: "Connection timeout - please refresh",
+          icon: <ErrorIcon />,
+        };
+      default:
+        return null;
+    }
+  };
+
+  const statusInfo = getConnectionStatusInfo();
 
   useEffect(() => {
     if (streamEvents && streamEvents.length > 0) {
@@ -156,6 +195,28 @@ export default function StreamingIndicator({ streamEvents }) {
   const currentStepName = latestEvent.step;
   const isCompleted = currentStepName === "completed";
 
+  {
+    statusInfo && (
+      <Box sx={{ mb: 2 }}>
+        <Alert
+          severity={statusInfo.color}
+          action={
+            connectionStatus === "failed" && onRetry ? (
+              <Button color="inherit" size="small" onClick={onRetry}>
+                Retry
+              </Button>
+            ) : null
+          }
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {statusInfo.icon}
+            <Typography variant="body2">{statusInfo.text}</Typography>
+          </Box>
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Card sx={{ mb: 3, bgcolor: "#f8f9fa", border: "1px solid #e9ecef" }}>
       <CardContent>
@@ -177,8 +238,14 @@ export default function StreamingIndicator({ streamEvents }) {
             </Typography>
           </Box>
           <Chip
-            label={isCompleted ? "Completed" : "In Progress"}
-            color={isCompleted ? "success" : "primary"}
+            label={
+              isPolling
+                ? "Reconnecting..."
+                : isCompleted
+                ? "Completed"
+                : "In Progress"
+            }
+            color={isPolling ? "warning" : isCompleted ? "success" : "primary"}
             variant="outlined"
             size="small"
           />
