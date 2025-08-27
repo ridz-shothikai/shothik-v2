@@ -5,9 +5,8 @@ import ResearchContent from "./ResearchContent";
 import ImagesContent from "./ImagesContent";
 import SourcesContent from "./SourcesContent";
 
-export default function ResearchDataArea({ selectedTab, research }) {
-
-  console.log("research data on research data area", research);
+export default function ResearchDataArea({ selectedTab, research, isLastData }) {
+  console.log("research data on research data area", isLastData);
 
   const renderContent = () => {
     switch (selectedTab) {
@@ -15,6 +14,7 @@ export default function ResearchDataArea({ selectedTab, research }) {
         return (
           <ResearchContent
             currentResearch={research} // Pass the specific research object
+            isLastData={isLastData}
           />
         );
       case 1: // Images
@@ -26,9 +26,5 @@ export default function ResearchDataArea({ selectedTab, research }) {
     }
   };
 
-  return (
-    <Box>
-      {renderContent()}
-    </Box>
-  );
+  return <Box>{renderContent()}</Box>;
 }

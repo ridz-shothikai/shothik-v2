@@ -162,7 +162,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           }}
         >
           {researchCore?.researches.length > 0 &&
-            researchCore?.researches?.map((research) => (
+            researchCore?.researches?.map((research, idx) => (
               <Box key={research._id}>
                 <Box
                   sx={{
@@ -196,6 +196,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
                 <ResearchDataArea
                   selectedTab={research.selectedTab}
                   research={research}
+                  isLastData={idx === researchCore?.researches?.length - 1}
                 />
               </Box>
             ))}

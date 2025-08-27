@@ -218,7 +218,7 @@ export default function StreamingIndicator({
   }
 
   return (
-    <Card sx={{ mb: 3, bgcolor: "#f8f9fa", border: "1px solid #e9ecef" }}>
+    <Card sx={{ mb:{xs: 19, sm: 12, xl: 3}, bgcolor: "#f8f9fa", border: "1px solid #e9ecef" }}>
       <CardContent>
         {/* Main Status Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>

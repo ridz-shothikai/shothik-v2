@@ -1,14 +1,11 @@
 "use client";
 
-import { Box, Typography, Paper, Avatar, Chip } from "@mui/material";
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import PersonIcon from "@mui/icons-material/Person";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
+import { Box, Typography, Paper, Chip } from "@mui/material";
 import { marked } from "marked";
 import { useSelector } from "react-redux";
+import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 
-const MessageBubble = ({ message, isUser }) => (
+const MessageBubble = ({ message, isLastData, isDataGenerating }) => (
   <Box
     sx={{
       display: "flex",
@@ -21,11 +18,11 @@ const MessageBubble = ({ message, isUser }) => (
         flex: 1,
         py: 2,
         px: 3,
-        mb: {xs: 19 ,sm: 9, md:2},
+        mb: { xs: (isLastData && isDataGenerating) ? 2 : 19, sm: 9, md: 2 },
         bgcolor: "#F4F6F8",
         // borderRadius: 2,
         border: "none",
-        boxShadow: "none"
+        boxShadow: "none",
       }}
     >
       <Box sx={{ "& p": { mb: 1 }, "& p:last-child": { mb: 0 } }}>
@@ -83,17 +80,18 @@ const MessageBubble = ({ message, isUser }) => (
   </Box>
 );
 
-export default function ResearchContent({
-  currentResearch,
-}) {
+export default function ResearchContent({ currentResearch, isLastData }) {
+  const researchResult =
+    currentResearch?.result || currentResearch?.answer || "";
 
-  const researchResult = currentResearch?.result || currentResearch?.answer || "";
+  const researchCore = useSelector(researchCoreState)
 
   return (
     <Box>
       <MessageBubble
         message={researchResult}
-        isUser={false}
+        isLastData={isLastData}
+        isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
       />
     </Box>
   );
