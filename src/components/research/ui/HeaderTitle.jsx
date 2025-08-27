@@ -528,9 +528,12 @@ export default function HeaderTitleWithDownload({
         MenuListProps={{
           "aria-labelledby": "download-button",
         }}
+        sx={{
+          mt: 1
+        }}
       >
         <MenuItem onClick={downloadPdfFromMarkdown}>
-          Download PDF (styled)
+          Download PDF
         </MenuItem>
         <MenuItem onClick={downloadMarkdown}>
           Download Raw Markdown (.md)
