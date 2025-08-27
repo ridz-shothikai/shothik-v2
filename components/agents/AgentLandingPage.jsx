@@ -60,6 +60,7 @@ import useNavItemFiles from "../../src/hooks/useNavItemFiles";
 import { useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
 import {useResearchAiToken} from "../../src/hooks/useRegisterResearchService";
 import ModelSelectForResearch from "./ModelSelectForResearch";
+import { useGetResearchChats } from "../../src/hooks/useGetResearchChats";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -179,6 +180,7 @@ export default function AgentLandingPage() {
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
   const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
   const { accessToken, sheetToken } = useSelector((state) => state.auth);
+
   const {
     data: myChats,
     isLoading: SheetDataLoading,
@@ -190,6 +192,9 @@ export default function AgentLandingPage() {
     isLoading: SlideDataLoading,
     error: SlideDataLoadingError,
   } = useFetchAllPresentationsQuery();
+
+  const {data: researchData, isLoading: researchDataLoading, isError: researchDataError} = useGetResearchChats();
+
   const [uploadFilesForSlides, { isLoading: isUploading, error: uploadError }] =
     useUploadPresentationFilesMutation();
   // const [initiatePresentation, { isLoading: isInitiatingPresentation }] =
@@ -574,6 +579,9 @@ export default function AgentLandingPage() {
         SlideDataLoading={SlideDataLoading}
         slidesChats={slidesChats?.data}
         SlideDataLoadingError={SlideDataLoadingError}
+        researchData={researchData}
+        researchDataLoading={researchDataLoading}
+        researchDataError={researchDataError}
       />
 
       {/* ============== FOR AGENTS USAGE HISTORY ENDS ================ */}

@@ -31,12 +31,19 @@ export default function ChatSidebar({
   SlideDataLoading,
   slidesChats,
   SlideDataLoadingError,
+  researchData,
+  researchDataLoading,
+  researchDataError,
 }) {
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (event, newIndex) => {
     setTabIndex(newIndex);
   };
+
+  console.log("researchData in ChatSidebar:", researchData);
+  console.log("researchDataLoading in ChatSidebar:", researchDataLoading);
+  console.log("researchDataError in ChatSidebar:", researchDataError);
 
   return (
     <Drawer
@@ -79,6 +86,7 @@ export default function ChatSidebar({
           <Tabs value={tabIndex} onChange={handleTabChange} sx={{ px: 2 }}>
             <Tab label="Sheet" />
             <Tab label="Slide" />
+            <Tab label="Research" />
           </Tabs>
           <IconButton onClick={toggleDrawer(false)} size="small">
             <CloseIcon />
@@ -167,7 +175,6 @@ export default function ChatSidebar({
 
           {tabIndex === 1 && (
             <>
-              {/* your existing sheet‑listing UI */}
               {SlideDataLoading && (
                 <Box
                   sx={{
@@ -232,6 +239,83 @@ export default function ChatSidebar({
                           <AccessTimeIcon sx={{ fontSize: 14 }} />
                           {format(
                             new Date(chat.creation_date),
+                            "dd/MM/yyyy, hh:mm a"
+                          )}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
+            </>
+          )}
+
+          {tabIndex === 2 && (
+            <>
+              {researchDataLoading && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 100,
+                  }}
+                >
+                  <CircularProgress size={24} />
+                  <Typography sx={{ ml: 2 }}>Loading chats…</Typography>
+                </Box>
+              )}
+              {researchDataError && (
+                <Typography color="text.secondary">No chats found</Typography>
+              )}
+              {!researchDataLoading && researchData?.length === 0 && (
+                <Box sx={{ textAlign: "center", mt: 4 }}>
+                  <ChatBubbleOutlineIcon
+                    sx={{ fontSize: 48, color: "text.disabled" }}
+                  />
+                  <Typography>No chats yet</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Start a new conversation to see it here
+                  </Typography>
+                </Box>
+              )}
+              {researchData?.length > 0 && (
+                <Stack spacing={1}>
+                  {researchData.map((chat) => (
+                    <Card
+                      key={chat._id}
+                      onClick={() =>
+                        router.push(`/agents/research?id=${chat._id}`)
+                      }
+                      sx={{
+                        cursor: "pointer",
+                        border: 1,
+                        borderColor: "divider",
+                        "&:hover": {
+                          bgcolor: "action.hover",
+                          borderColor: "primary.main",
+                        },
+                        transition: "transform 0.1s",
+                        "&:active": { transform: "scale(0.98)" },
+                      }}
+                      elevation={0}
+                    >
+                      <CardContent sx={{ p: 2 }}>
+                        <Typography noWrap fontWeight={600} title={chat.name}>
+                          {chat.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          <AccessTimeIcon sx={{ fontSize: 14 }} />
+                          {format(
+                            new Date(chat.createdAt),
                             "dd/MM/yyyy, hh:mm a"
                           )}
                         </Typography>
