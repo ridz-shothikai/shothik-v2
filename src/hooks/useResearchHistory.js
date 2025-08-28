@@ -22,7 +22,7 @@ export const useResearchHistory = () => {
 
     try {
       const response = await fetch(
-        `http://163.172.172.38:3040/api/research/get_chat_researches/${currentChatId}`,
+        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/research/get_chat_researches/${currentChatId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

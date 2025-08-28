@@ -16,14 +16,17 @@ export function useGetResearchChats() {
       setIsError(null);
 
       try {
-        const res = await fetch("http://163.172.172.38:3040/api/chat/get_my_chats", {
-          method: "GET",
-          signal,
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
-          },
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/chat/get_my_chats`,
+          {
+            method: "GET",
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
 
         if (!res.ok) {
           throw new Error(`Error: ${res.status} ${res.statusText}`);

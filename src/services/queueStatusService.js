@@ -2,7 +2,7 @@ export class QueueStatusService {
   static async getQueueStats() {
     try {
       const response = await fetch(
-        "http://163.172.172.38:3040/api/research/queue/stats",
+        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/research/queue/stats`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -24,7 +24,7 @@ export class QueueStatusService {
   static async getJobStatus(jobId) {
     try {
       const response = await fetch(
-        `http://163.172.172.38:3040/api/research/job/${jobId}/status`,
+        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/research/job/${jobId}/status`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

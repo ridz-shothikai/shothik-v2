@@ -4,9 +4,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const sheetApiSlice = createApi({
   reducerPath: "sheetApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://sheetai.pixigenai.com/api",
+    // baseUrl: "https://sheetai.pixigenai.com/api",
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet`,
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem("sheetai-token");
+      // const token = localStorage.getItem("sheetai-token");
+      const token = localStorage.getItem("accessToken");
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }

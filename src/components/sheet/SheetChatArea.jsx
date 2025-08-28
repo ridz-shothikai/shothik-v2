@@ -756,13 +756,16 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     try {
       abortControllerRef.current = new AbortController();
       const response = await fetch(
-        "https://sheetai.pixigenai.com/api/conversation/create_conversation",
+        // "https://sheetai.pixigenai.com/api/conversation/create_conversation",
+        // "http://163.172.172.38:3005/api/conversation/create_conversation",
+        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/create_conversation`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             // Authorization: `Bearer ${sheetAiToken}`,
-            Authorization: `Bearer ${token}`, // only for simulation
+            // Authorization: `Bearer ${token}`, // only for simulation
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // only for simulation
             Accept: "text/event-stream",
           },
           body: JSON.stringify({
@@ -803,6 +806,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           try {
             const data = JSON.parse(line);
 
+            console.log(data, "SSE data");
+
             // Check for validation error first
             if (data?.data?.error) {
               console.log(
@@ -837,6 +842,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
               data.step !== "completed" &&
               data.step !== "validation_error"
             ) {
+              console.log("Processing step:", data);
+
               const stepMessage = getStepMessage(data.step, data.data);
               if (stepMessage) {
                 setMessages((prev) => [
@@ -918,6 +925,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
 
             // FOR SIMULATION
             else if (data.step === "completed") {
+              console.log("Final completion data:", data);
               // First completed step - just has message
               if (
                 data.data?.message &&
@@ -936,74 +944,80 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                   },
                 ]);
               }
+            }
+            // Lastly step - has the actual data
+            else if (!data.step) {
+              console.log("Received actual sheet data:", data.data);
 
-              // Second completed step - has the actual data
-              else if (data.data?.columns && data.data?.rows) {
-                console.log("Received actual sheet data:", data.data);
+              // Update Redux store with sheet data
+              dispatch(setSheetData(data.response?.rows));
+              dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
+              dispatch(setSheetStatus("completed"));
 
-                // Update Redux store with sheet data
-                dispatch(setSheetData(data.data.rows));
-                dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
-                dispatch(setSheetStatus("completed"));
+              // Show success toast
+              setToast({
+                open: true,
+                message: "Spreadsheet generated successfully!",
+                severity: "success",
+              });
 
-                // Show success toast
-                setToast({
-                  open: true,
-                  message: "Spreadsheet generated successfully!",
-                  severity: "success",
-                });
+              // Create save point with the actual conversation data
+              const conversationId = data.conversation;
+              const chatId = data.chat;
 
-                // Create save point with the actual conversation data
-                const conversationId = data.conversation;
-                const chatId = data.chat;
-
-                const newSavePoint = {
-                  id: `savepoint-${conversationId}`,
-                  title: prompt.substring(0, 50) + "...",
-                  prompt: prompt,
-                  timestamp: data.timestamp,
-                  generations: [
-                    {
-                      id: `gen-${conversationId}`,
-                      title: "Generation 1",
-                      timestamp: data.timestamp,
-                      sheetData: data.data.rows,
-                      status: "completed",
-                      message: "Sheet generated successfully",
-                      metadata: data.data.metadata,
-                    },
-                  ],
-                  activeGenerationId: `gen-${conversationId}`,
-                };
-
-                dispatch({
-                  type: "sheet/addSavePoint",
-                  payload: newSavePoint,
-                });
-
-                // Add final success message
-                setMessages((prev) => [
-                  ...prev,
+              const newSavePoint = {
+                id: `savepoint-${conversationId}`,
+                title: prompt.substring(0, 50) + "...",
+                prompt: prompt,
+                timestamp:
+                  data?.updatedAt || data.timestamp || new Date().toISOString(),
+                generations: [
                   {
-                    id: `final-success-${Date.now()}`,
-                    message: `Successfully generated a ${
-                      data.data.metadata?.totalRows || "spreadsheet"
-                    } with ${
-                      data.data.metadata?.columnCount ||
-                      data.data.columns?.length ||
-                      "multiple"
-                    } columns!`,
-                    isUser: false,
-                    timestamp: data.timestamp,
-                    type: "success",
-                    metadata: data.data.metadata,
+                    id: `gen-${conversationId}`,
+                    title: "Generation 1",
+                    timestamp:
+                      data?.updatedAt ||
+                      data.timestamp ||
+                      new Date().toISOString(),
+                    sheetData: data.response?.rows,
+                    status: "completed",
+                    message: "Sheet generated successfully",
+                    metadata: data.response?.metadata,
                   },
-                ]);
+                ],
+                activeGenerationId: `gen-${conversationId}`,
+              };
 
-                // for simulation only
-                if (s_id) {
-                  setSimulationCompleted(true);
-                }
+              dispatch({
+                type: "sheet/addSavePoint",
+                payload: newSavePoint,
+              });
+
+              // Add final success message
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: `final-success-${Date.now()}`,
+                  message: `Successfully generated a ${
+                    data.response?.metadata?.totalRows || "spreadsheet"
+                  } with ${
+                    data.response?.metadata?.columnCount ||
+                    data.response?.columns?.length ||
+                    "multiple"
+                  } columns!`,
+                  isUser: false,
+                  timestamp:
+                    data?.updatedAt ||
+                    data.timestamp ||
+                    new Date().toISOString(),
+                  type: "success",
+                  metadata: data.response?.metadata,
+                },
+              ]);
+
+              // for simulation only
+              if (s_id) {
+                setSimulationCompleted(true);
               }
             }
           } catch (error) {
@@ -1016,11 +1030,93 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
         throw new Error("No data received from server");
       }
     } catch (error) {
+      console.error("Sheet generation error:", error);
+
       if (error.name === "AbortError") {
         console.log("Streaming aborted by user");
+        // Clean up UI state for user cancellation
+        dispatch(setSheetStatus("cancelled"));
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `cancelled-${Date.now()}`,
+            message: "Generation was cancelled.",
+            isUser: false,
+            timestamp: new Date().toISOString(),
+            type: "info",
+          },
+        ]);
         return;
       }
-      throw error;
+
+      // Handle different types of errors gracefully
+      let errorMessage =
+        "Something went wrong while generating your spreadsheet.";
+      let errorType = "error";
+
+      // Network errors
+      if (
+        error.message.includes("fetch") ||
+        error.message.includes("Failed to fetch")
+      ) {
+        errorMessage =
+          "Connection lost. Please check your internet and try again.";
+        errorType = "warning";
+      }
+      // Server errors
+      else if (error.message.includes("Server error")) {
+        errorMessage =
+          "Server is temporarily unavailable. Please try again in a moment.";
+        errorType = "warning";
+      }
+      // Timeout errors
+      else if (error.message.includes("timeout")) {
+        errorMessage = "Request timed out. Please try with a simpler request.";
+        errorType = "warning";
+      }
+      // Parsing errors
+      else if (
+        error.message.includes("JSON") ||
+        error.message.includes("parsing")
+      ) {
+        errorMessage =
+          "Received invalid response from server. Please try again.";
+        errorType = "error";
+      }
+      // Custom error messages from server
+      else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      // Update Redux state
+      dispatch(setSheetStatus("error"));
+      dispatch(setActiveSheetIdForPolling(null));
+      setShouldPoll(false);
+
+      // Remove the failed user message
+      setMessages((prev) => prev.filter((msg) => msg.id !== userMessageId));
+
+      // Add error message to chat
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          message: errorMessage,
+          isUser: false,
+          timestamp: new Date().toISOString(),
+          type: errorType,
+        },
+      ]);
+
+      // Show toast notification
+      setToast({
+        open: true,
+        message: errorMessage,
+        severity: errorType,
+      });
+
+      // Set component error state for additional UI feedback
+      setError(errorMessage);
     } finally {
       abortControllerRef.current = null;
     }
