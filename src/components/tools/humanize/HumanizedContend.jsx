@@ -127,6 +127,7 @@ const HumanizedContend = () => {
           display: "flex",
           flexDirection: "column",
           overflow: "visible",
+          borderRadius: "0 12px 12px 12px",
         }}
       >
         <TopNavigation
