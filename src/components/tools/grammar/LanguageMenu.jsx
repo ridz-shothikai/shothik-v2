@@ -63,7 +63,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%", }}>
       <Tabs
         value={language}
         onChange={(_, v) => setLanguage(v)}

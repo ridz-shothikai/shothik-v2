@@ -698,7 +698,7 @@ const ParaphraseContend = () => {
             display: { xs: "none", sm: "block" },
             width: "100%",       // match card width
             flex: "0 0 auto",
-            padding: '0 20px'
+            // padding: '0 20px'
           }}
         >
           <LanguageMenu
@@ -726,7 +726,7 @@ const ParaphraseContend = () => {
               mt: 0,
               border: "1px solid",
               borderColor: "divider",
-              borderRadius: "12px",
+              borderRadius: "0 12px 12px 12px",
               overflow: "visible",
               display: "flex",
               flexDirection: "column",
