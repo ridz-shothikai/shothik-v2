@@ -123,12 +123,12 @@ const GrammarContend = () => {
           size={{ xs: 12, md: 6 }}
         >
           <TextField
-            name='input'
-            variant='outlined'
+            name="input"
+            variant="outlined"
             fullWidth
             multiline
             rows={isMobile ? 15 : 19}
-            placeholder='Input your text here...'
+            placeholder="Input your text here..."
             value={userInput}
             onChange={handleInput}
             sx={{
@@ -136,12 +136,15 @@ const GrammarContend = () => {
               "& .MuiOutlinedInput-root": {
                 "& .MuiOutlinedInput-notchedOutline": {
                   borderColor: "divider",
+                  borderRadius: "0 8px 8px 8px",
                 },
                 "&:hover .MuiOutlinedInput-notchedOutline": {
                   borderColor: "divider",
+                  borderRadius: "0 8px 8px 8px",
                 },
                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                   borderColor: "divider",
+                  borderRadius: "0 8px 8px 8px",
                 },
               },
             }}
@@ -160,12 +163,12 @@ const GrammarContend = () => {
             size={{ xs: 12, md: 6 }}
           >
             <TextField
-              name='input'
-              variant='outlined'
+              name="input"
+              variant="outlined"
               rows={isMobile ? 15 : 19}
               fullWidth
               multiline
-              placeholder='Corrected output'
+              placeholder="Corrected output"
               value={loadingText ? loadingText : outputContend}
               disabled
               sx={{
