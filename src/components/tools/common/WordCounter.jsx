@@ -33,31 +33,31 @@ function WordCounter({
   dontDisable = false,
   sticky = 635,
 }) {
-  if (sticky) {
-    const { ref, style } = useStickyBottom(sticky);
-    return (
-      <Box ref={ref} sx={style}>
-        <Contend
-          btnText={btnText}
-          handleClearInput={handleClearInput}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          toolName={toolName}
-          userInput={userInput}
-          userPackage={userPackage}
-          ExtraBtn={ExtraBtn}
-          ExtraCounter={ExtraCounter}
-          btnIcon={btnIcon}
-          dontDisable={dontDisable}
-          sx={sx}
-          freeze_modal={freeze_modal}
-          freeze_props={freeze_props}
-        >
-          {children}
-        </Contend>
-      </Box>
-    );
-  } else {
+  // if (false) {
+  //   const { ref, style } = useStickyBottom(sticky);
+  //   return (
+  //     <Box ref={ref} sx={style}>
+  //       <Contend
+  //         btnText={btnText}
+  //         handleClearInput={handleClearInput}
+  //         handleSubmit={handleSubmit}
+  //         isLoading={isLoading}
+  //         toolName={toolName}
+  //         userInput={userInput}
+  //         userPackage={userPackage}
+  //         ExtraBtn={ExtraBtn}
+  //         ExtraCounter={ExtraCounter}
+  //         btnIcon={btnIcon}
+  //         dontDisable={dontDisable}
+  //         sx={sx}
+  //         freeze_modal={freeze_modal}
+  //         freeze_props={freeze_props}
+  //       >
+  //         {children}
+  //       </Contend>
+  //     </Box>
+  //   );
+  // } else {
     return (
       <Contend
         btnText={btnText}
@@ -79,7 +79,7 @@ function WordCounter({
       </Contend>
     );
   }
-}
+// }
 
 const Contend = ({
   userInput,

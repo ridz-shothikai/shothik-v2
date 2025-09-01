@@ -93,7 +93,7 @@ const ParaphraseContend = () => {
   const [socketId, setSocketId] = useState(null);
   const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
-  const isMobile = useResponsive("down", "sm");
+  const isMobile = useResponsive("down", "lg");
   const [result, setResult] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
@@ -924,7 +924,7 @@ const ParaphraseContend = () => {
                   size={{ xs: 12, md: 6 }}
                   ref={outputRef}
                   sx={{
-                    height: isMobile ? "calc(100vh - 340px)" : 530,
+                    height: {md:"calc(100vh - 340px)", lg: "530px"},
                     overflow: "hidden",
                     borderTop: { xs: "2px solid", md: "none" },
                     borderTopColor: { xs: "divider", md: undefined },

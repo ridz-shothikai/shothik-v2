@@ -13,6 +13,7 @@ import {
   ListItemText,
   Tooltip,
   CircularProgress,
+  Drawer,
 } from "@mui/material";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -102,44 +103,49 @@ export default function FileHistorySidebar() {
 
   return (
     <>
-      {!isSidebarOpen ? (
-        <Box
-          id="file_history_buttons"
-          sx={{
-            bgcolor: "#fff",
-            borderRadius: 2,
-            p: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
+      <Box
+        id="file_history_buttons"
+        sx={{
+          bgcolor: "#fff",
+          borderRadius: 2,
+          p: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
+      >
+        <IconButton
+          id="file_history_view_button"
+          size="small"
+          onClick={handleBookClick}
         >
-          <IconButton
-            id="file_history_view_button"
-            size="small"
-            onClick={handleBookClick}
-          >
-            <MenuBookOutlinedIcon />
-          </IconButton>
-          <IconButton size="small" onClick={handleAddClick}>
-            <AddOutlinedIcon />
-          </IconButton>
-        </Box>
-      ) : (
+          <MenuBookOutlinedIcon />
+        </IconButton>
+        <IconButton size="small" onClick={handleAddClick}>
+          <AddOutlinedIcon />
+        </IconButton>
+      </Box>
+
+      <Drawer
+        anchor="left"
+        open={isSidebarOpen}
+        onClose={handleCloseSidebar}
+        variant="temporary"
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: { xs: "100vw", sm: 320 },
+            boxSizing: "border-box",
+          },
+        }}
+      >
         <Box
           id="file_history_view"
           sx={{
             bgcolor: "#fff",
-            boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
             display: "flex",
             flexDirection: "column",
             p: 2,
-            width: { xs: "100vw", sm: 320 },
-            height: { xs: "100vh", sm: "calc(100vh - 90px)", md:"646px"  },
-            position: { xs: "fixed", sm: "relative" },
-            top: { xs: 0, sm: "auto" },
-            left: { xs: 0, sm: "auto" },
-            zIndex: { xs: 1300, sm: "auto" },
+            height: "100%",
           }}
         >
           <Button
@@ -254,7 +260,7 @@ export default function FileHistorySidebar() {
             New
           </Button>
         </Box>
-      )}
+      </Drawer>
     </>
   );
 }

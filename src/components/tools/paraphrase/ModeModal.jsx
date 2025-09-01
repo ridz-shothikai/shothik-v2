@@ -24,7 +24,7 @@ const ModeModal = ({
 
   return (
     <Modal
-      sx={{ zIndex: 0 }}
+      sx={{ zIndex: 1300 }}
       keepMounted
       open={showModeModal}
       onClose={handleClose}
