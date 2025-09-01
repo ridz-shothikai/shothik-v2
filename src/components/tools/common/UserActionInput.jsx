@@ -42,7 +42,7 @@ const UserActionInput = ({
       sx={{
         width: "100%",
         position: "absolute",
-        bottom: { sm: 80, xs: 80 },
+        bottom: { xs: 40, sm: 80 },
         left: "0px",
         right: "0px",
       }}
