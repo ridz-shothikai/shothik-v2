@@ -15,7 +15,7 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import Onboarding from "./Onboarding";
 import FreezeWordsDialog from "./FreezeWordsDialog";
 import FileHistorySidebar from "./FileHistorySidebar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { modes } from "../../../_mock/tools/paraphrase";
@@ -49,12 +49,12 @@ const SYNONYMS = {
   60: "Advanced",
   80: "Expert",
 };
-const initialFrozenWords = new Set(protectedSingleWords);
-const initialFrozenPhrase = new Set(protectedPhrases);
+const initialFrozenWords = new Set();
+const initialFrozenPhrase = new Set();
 
 const ParaphraseContend = () => {
   const { paraphraseQuotations, automaticStartParaphrasing } = useSelector(
-    (state) => state.settings.paraphraseOptions,
+    (state) => state.settings.paraphraseOptions
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
@@ -76,14 +76,15 @@ const ParaphraseContend = () => {
   const { user } = useSelector((state) => state.auth);
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
+  const [recommendedFreezeWords, setRecommendedFreezeWords] = useState([]);
   const [language, setLanguage] = useState("English (US)");
   const sampleText =
     trySamples.paraphrase[
       language && language.startsWith("English")
         ? "English"
         : language
-          ? language
-          : "English"
+        ? language
+        : "English"
     ];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
@@ -190,7 +191,7 @@ const ParaphraseContend = () => {
       // update word count, etc…
       setOutputContend(accumulatedText);
       setOutputWordCount(
-        accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
+        accumulatedText.split(/\s+/).filter((w) => w.length > 0).length
       );
 
       // rebuild `result` with blank lines preserved
@@ -251,7 +252,7 @@ const ParaphraseContend = () => {
           "targetIdx: ",
           targetIdx,
           "backendIndex: ",
-          backendIndex,
+          backendIndex
         );
         return updated;
       });
@@ -526,7 +527,7 @@ const ParaphraseContend = () => {
 
     if (words.length <= wordLimit) {
       const quotedPhrases = [...finalText.matchAll(/"[^"]+"/g)].map(
-        (m) => m[0],
+        (m) => m[0]
       );
       for (const phrase of quotedPhrases) {
         frozenPhrases.add(phrase.trim());
@@ -660,13 +661,54 @@ const ParaphraseContend = () => {
     // Return the final string, trimmed
     return plainText.trim();
   }
+
+  // Frozen words logic
+  const stableFrozenWords = useMemo(() => {
+    // Created a sorted array from the set and join it into a string.
+    // This string will only change if the contents of the set change.
+    return Array.from(frozenWords.set).sort().join(",");
+  }, [frozenWords]); // This calculation only re-runs when frozenWords changes
+
+  // This effect is to extract freeze recommendations from userQuery
+  useEffect(() => {
+    if (!userInput) {
+      setRecommendedFreezeWords([]);
+      return;
+    }
+
+    // console.log("extracting recommendations data");
+
+    // A simple function to get unique, non-trivial words
+    const getWords = userInput
+      .toLowerCase()
+      .replace(/[.,!?"']/g, "") // Remove basic punctuation
+      .split(/\s+/)
+      .filter((word) => word.length > 3); // Filter out very short words
+
+    const uniqueWords = [...new Set(getWords)];
+
+    // Filter out any words that are already in the frozen set.
+    const availableWords = uniqueWords.filter(
+      (word) => !frozenWords.set.has(word)
+    );
+
+    // Select up to 5 random words for recommendation
+    const randomWords = availableWords
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 5);
+
+    // console.log(randomWords, "recomended words");
+
+    setRecommendedFreezeWords(randomWords);
+  }, [userInputValue, stableFrozenWords]); // This effect runs whenever userInput, frozenWords changes
+
   const paidUser =
     user?.package === "pro_plan" ||
     user?.package === "value_plan" ||
     user?.package === "unlimited";
 
   return (
-    <Box sx={{ display: "flex", width: "100%", overflow: "hidden", }}>
+    <Box sx={{ display: "flex", width: "100%", overflow: "hidden" }}>
       {!isMobile && (
         <Box
           sx={{
@@ -683,20 +725,20 @@ const ParaphraseContend = () => {
 
       <Box
         sx={{
-          flex: "1 1 auto",      // can grow & shrink
-          minWidth: 0,           // allow inner overflow hidden
+          flex: "1 1 auto", // can grow & shrink
+          minWidth: 0, // allow inner overflow hidden
           display: "flex",
           flexDirection: "column",
           gap: 0,
         }}
-      >        
+      >
         {showDemo ? <Onboarding /> : null}
 
         {/* desktop: language tabs outside card; hide on mobile */}
         <Box
           sx={{
             display: { xs: "none", sm: "block" },
-            width: "100%",       // match card width
+            width: "100%", // match card width
             flex: "0 0 auto",
             // padding: '0 20px'
           }}
@@ -712,16 +754,16 @@ const ParaphraseContend = () => {
           sx={{
             display: "flex",
             gap: 2,
-            overflow: "hidden",
-            flex: "1 1 auto",    // ← allow this wrapper to grow/shrink
-            minWidth: 0,         // ← so its children can shrink
-            width: "100%",       // ← match the language menu’s 100%
+            overflow: "visible",
+            flex: "1 1 auto", // ← allow this wrapper to grow/shrink
+            minWidth: 0, // ← so its children can shrink
+            width: "100%", // ← match the language menu’s 100%
           }}
         >
           <Card
             sx={{
-              flex: "1 1 auto",    // fill remaining height
-              minWidth: 0,         // allow it to shrink
+              flex: "1 1 auto", // fill remaining height
+              minWidth: 0, // allow it to shrink
               width: "100%",
               mt: 0,
               border: "1px solid",
@@ -732,18 +774,18 @@ const ParaphraseContend = () => {
               flexDirection: "column",
             }}
           >
-          {/* <Card */}
-          {/*   sx={{ */}
-          {/*     flex: "1 1 0%", */}
-          {/*     minWidth: 0, */}
-          {/*     width: "100%", */}
-          {/*     mt: 0, */}
-          {/*     border: "1px solid", */}
-          {/*     borderColor: "divider", */}
-          {/*     borderRadius: "12px", */}
-          {/*     overflow: "visible", */}
-          {/*   }} */}
-          {/* > */}
+            {/* <Card */}
+            {/*   sx={{ */}
+            {/*     flex: "1 1 0%", */}
+            {/*     minWidth: 0, */}
+            {/*     width: "100%", */}
+            {/*     mt: 0, */}
+            {/*     border: "1px solid", */}
+            {/*     borderColor: "divider", */}
+            {/*     borderRadius: "12px", */}
+            {/*     overflow: "visible", */}
+            {/*   }} */}
+            {/* > */}
             {/* mobile: selected language button in card header */}
             <Box
               sx={{
@@ -791,12 +833,12 @@ const ParaphraseContend = () => {
             <Grid2 container>
               <Grid2
                 sx={{
-                  height: isMobile ? "calc(100vh - 340px)" : 530,
+                  // height: isMobile ? "calc(100vh - 340px)" : 530,
                   position: "relative",
                   borderRight: { md: "2px solid" },
                   borderRightColor: { md: "divider" },
                   padding: 2,
-                  paddingBottom: 0,
+                  paddingBottom: 1,
                   display: "flex",
                   flexDirection: "column",
                 }}
@@ -831,13 +873,7 @@ const ParaphraseContend = () => {
                 ) : null}
                 <WordCounter
                   freeze_props={{
-                    recommendedWords: [
-                      "streets",
-                      "filled",
-                      "people",
-                      "parade",
-                      "music",
-                    ],
+                    recommendedWords: recommendedFreezeWords,
                     frozenWords: Array.from(frozenWords.set),
                     frozenPhrases: Array.from(frozenPhrases.set),
                     onAddWords: (words) =>
@@ -848,7 +884,7 @@ const ParaphraseContend = () => {
                     onRemovePhrase: (p) => frozenPhrases.remove(p),
                     onClearAll: () => {
                       frozenWords.reset(initialFrozenWords);
-                      frozenPhrases.reset(initialFrozenPhrases);
+                      frozenPhrases.reset(initialFrozenPhrase);
                     },
                   }}
                   btnText={outputContend ? "Rephrase" : "Paraphrase"}
@@ -1041,7 +1077,6 @@ const ParaphraseContend = () => {
           />
         </Box>
       )}
-
     </Box>
   );
 };

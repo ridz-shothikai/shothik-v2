@@ -135,7 +135,7 @@ export default function FileHistorySidebar() {
             flexDirection: "column",
             p: 2,
             width: { xs: "100vw", sm: 320 },
-            height: { xs: "100vh", sm: "calc(100vh - 90px)"  },
+            height: { xs: "100vh", sm: "calc(100vh - 90px)", md:"646px"  },
             position: { xs: "fixed", sm: "relative" },
             top: { xs: 0, sm: "auto" },
             left: { xs: 0, sm: "auto" },

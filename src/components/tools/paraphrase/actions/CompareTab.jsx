@@ -194,6 +194,8 @@ const CompareTab = ({
   };
 
   useEffect(() => {
+    if(!sentence) return;
+    
     setSuggestions(
       modes.map((mode) => ({
         label: mode.value,

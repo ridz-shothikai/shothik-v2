@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography, Drawer } from "@mui/material";
 import {
   Gavel,
   SentimentSatisfiedAlt,
@@ -35,6 +35,7 @@ const VerticalMenu = ({
   const [showSidebar, setShowSidebar] = useState(false);
   const { demo } = useSelector((state) => state.settings);
 
+  
   // Disable actions only if plainOutput is empty and demo is not true
   const disableActions = !demo && (!plainOutput || !plainOutput.trim());
 
@@ -156,24 +157,144 @@ const VerticalMenu = ({
     <>
       <Box
         sx={{
-          maxHeight: "90vh",
+          maxHeight: { xs: "90vh", lg: "638px" },
           mt: 1,
           // make full-width on mobile
           width: mobile ? "100%" : "fit-content",
-          // add a bit of padding so it doesn’t touch the screen edge
+          // add a bit of padding so it doesn't touch the screen edge
           px: mobile ? 2 : 0,
           display: "flex",
           flexDirection: "column",
           zIndex: 10,
         }}
       >
-        {" "}
-        {["plagiarism", "history", "tone", "compare"].includes(showSidebar) ? (
+        {/* Center icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 0,
+            // left-align the full-width buttons on mobile
+            alignItems: mobile ? "flex-start" : "center",
+            width: mobile ? "100%" : "auto",
+          }}
+        >
+          {" "}
+          <Box id="paraphrase_plagiarism">
+            <ActionButton
+              id="paraphrase_plagiarism_button"
+              title="Check Plagiarism"
+              icon={Gavel}
+              onClick={() => setShowSidebar("plagiarism")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_history">
+            <ActionButton
+              id="paraphrase_history_button"
+              title="History"
+              icon={History}
+              onClick={() => setShowSidebar("history")}
+              disabled={false}
+              crown={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_compare">
+            <ActionButton
+              id="paraphrase_compare_button"
+              title="Compare Modes"
+              icon={Compare}
+              onClick={() => setShowSidebar("compare")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_tone">
+            <ActionButton
+              id="paraphrase_tone_button"
+              title="Tone"
+              icon={SentimentSatisfiedAlt}
+              onClick={() => setShowSidebar("tone")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+            />
+          </Box>
+        </Box>
+
+        {/* Bottom icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 0,
+            mt: 2,
+            // same here: stretch full width and left-align
+            alignItems: mobile ? "flex-start" : "center",
+            width: mobile ? "100%" : "auto",
+          }}
+        >
+          {" "}
+          <Box id="paraphrase_settings">
+            <ActionButton
+              title="Settings"
+              id="paraphrase_settings_button"
+              icon={Settings}
+              onClick={() => setShowSidebar("settings")}
+              disabled={false}
+              black={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_feedback">
+            <ActionButton
+              id="paraphrase_feedback_button"
+              title="Feedback"
+              icon={FeedbackIcon}
+              onClick={() => setShowSidebar("feedback")}
+              disabled={false}
+              black={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_shortcuts">
+            <ActionButton
+              id="paraphrase_shortcuts_button"
+              title="Hotkeys"
+              icon={Keyboard}
+              onClick={() => setShowSidebar("shortcuts")}
+              disabled={false}
+              black={true}
+              mobile={mobile}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Material-UI Drawer Component */}
+      <Drawer
+        anchor="right"
+        open={!!showSidebar}
+        onClose={() => setShowSidebar(false)}
+        variant="temporary"
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: mobile ? "100%" : "auto",
+            maxWidth: mobile ? "100%" : "380px",
+            minWidth: mobile ? "100%" : "400px",
+          },
+        }}
+      >
+        {["plagiarism", "history", "tone", "compare"].includes(showSidebar) && (
           <PlagiarismSidebar
+            open={showSidebar}
+            onClose={() => setShowSidebar((prev) => !prev)}
             active={showSidebar}
             setActive={setShowSidebar}
-            open={!!showSidebar}
-            onClose={() => setShowSidebar(false)}
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
             outputText={outputText}
@@ -192,125 +313,19 @@ const VerticalMenu = ({
             highlightSentence={highlightSentence}
             plainOutput={plainOutput}
             mobile={mobile}
+            disableActions={disableActions}
           />
-        ) : ["settings", "feedback", "shortcuts"].includes(showSidebar) ? (
+        )}
+
+        {["settings", "feedback", "shortcuts"].includes(showSidebar) && (
           <SettingsSidebar
+            open={showSidebar}
             tab={showSidebar}
             setTab={setShowSidebar}
-            open
-            onClose={() => setShowSidebar(false)}
             mobile={mobile}
           />
-        ) : (
-          <>
-            {/* Center icons */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 0,
-                // left-align the full-width buttons on mobile
-                alignItems: mobile ? "flex-start" : "center",
-                width: mobile ? "100%" : "auto",
-              }}
-            >
-              {" "}
-              <Box id="paraphrase_plagiarism">
-                <ActionButton
-                  id="paraphrase_plagiarism_button"
-                  title="Check Plagiarism"
-                  icon={Gavel}
-                  onClick={() => setShowSidebar("plagiarism")}
-                  disabled={disableActions}
-                  crown={true}
-                  mobile={mobile}
-                />
-              </Box>
-              <Box id="paraphrase_history">
-                <ActionButton
-                  id="paraphrase_history_button"
-                  title="History"
-                  icon={History}
-                  onClick={() => setShowSidebar("history")}
-                  disabled={false}
-                  crown={true}
-                  mobile={mobile}
-                />
-              </Box>
-              <Box id="paraphrase_compare">
-                <ActionButton
-                  id="paraphrase_compare_button"
-                  title="Compare Modes"
-                  icon={Compare}
-                  onClick={() => setShowSidebar("compare")}
-                  disabled={disableActions}
-                  crown={true}
-                  mobile={mobile}
-                />
-              </Box>
-              <Box id="paraphrase_tone">
-                <ActionButton
-                  id="paraphrase_tone_button"
-                  title="Tone"
-                  icon={SentimentSatisfiedAlt}
-                  onClick={() => setShowSidebar("tone")}
-                  disabled={disableActions}
-                  crown={true}
-                  mobile={mobile}
-                />
-              </Box>
-            </Box>
-
-            {/* Bottom icons */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 0,
-                mt: 2,
-                // same here: stretch full width and left-align
-                alignItems: mobile ? "flex-start" : "center",
-                width: mobile ? "100%" : "auto",
-              }}
-            >
-              {" "}
-              <Box id="paraphrase_settings">
-                <ActionButton
-                  title="Settings"
-                  id="paraphrase_settings_button"
-                  icon={Settings}
-                  onClick={() => setShowSidebar("settings")}
-                  disabled={false}
-                  black={true}
-                  mobile={mobile}
-                />
-              </Box>
-              <Box id="paraphrase_feedback">
-                <ActionButton
-                  id="paraphrase_feedback_button"
-                  title="Feedback"
-                  icon={FeedbackIcon}
-                  onClick={() => setShowSidebar("feedback")}
-                  disabled={false}
-                  black={true}
-                  mobile={mobile}
-                />
-              </Box>
-              <Box id="paraphrase_shortcuts">
-                <ActionButton
-                  id="paraphrase_shortcuts_button"
-                  title="Hotkeys"
-                  icon={Keyboard}
-                  onClick={() => setShowSidebar("shortcuts")}
-                  disabled={false}
-                  black={true}
-                  mobile={mobile}
-                />
-              </Box>
-            </Box>
-          </>
         )}
-      </Box>
+      </Drawer>
     </>
   );
 };

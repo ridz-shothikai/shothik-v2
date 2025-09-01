@@ -41,6 +41,7 @@ const PlagiarismSidebar = ({
   highlightSentence,
   plainOutput,
   selectedSynonymLevel,
+  disableActions,
 }) => {
   if (!open) return null;
 
@@ -49,8 +50,8 @@ const PlagiarismSidebar = ({
   return (
     <Box
       sx={{
-        width: { xs: "100%", sm: 320 },
-        height: { xs: "auto", sm: "calc(100vh - 90px)" },
+        width: "100%",
+        height: "auto",
         borderLeft: "1px solid",
         borderColor: "divider",
         bgcolor: "background.paper",
@@ -75,21 +76,21 @@ const PlagiarismSidebar = ({
           {tabs.map((t) => (
             <Box
               key={t.id}
-              onClick={() => setActive(t.id)}
+              onClick={disableActions && t.id !== "history" ? null : () => setActive(t.id)}
               sx={{
                 flex: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                cursor: "pointer",
+                cursor: disableActions && t.id !== "history" ? "not-allowed" : "pointer",
               }}
             >
               <IconButton
                 size="large"
                 disableRipple
+                disabled={disableActions && t.id !== "history"}
                 sx={{
-                  color:
-                    active === t.id ? "primary.main" : "text.secondary",
+                  color: active === t.id ? "primary.main" : "text.secondary",
                 }}
               >
                 {React.cloneElement(t.icon, { fontSize: "inherit" })}
@@ -108,7 +109,11 @@ const PlagiarismSidebar = ({
           ))}
         </Box>
 
-        <IconButton size="small" id="plagiarism_sidebar_x_button" onClick={onClose}>
+        <IconButton
+          size="small"
+          id="plagiarism_sidebar_x_button"
+          onClick={onClose}
+        >
           <Close fontSize="small" />
         </IconButton>
       </Box>
@@ -136,4 +141,3 @@ const PlagiarismSidebar = ({
 };
 
 export default PlagiarismSidebar;
-

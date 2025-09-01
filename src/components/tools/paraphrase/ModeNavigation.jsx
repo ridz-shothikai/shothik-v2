@@ -75,6 +75,7 @@ const ModeNavigation = ({
       justifyContent="space-between"
       sx={{ px: 2, pt: 1 }}
       spacing={2}
+      
     >
       {/* Modes */}
       <Box
@@ -193,6 +194,7 @@ const ModeNavigation = ({
             mt: { xs: 2, sm: 1 },
             width: "100%",
             "& .MuiSlider-valueLabel": {
+              zIndex: 1500,
               fontSize: "10px",
               padding: "2px 6px",
               transform: "translateY(-15px)",
