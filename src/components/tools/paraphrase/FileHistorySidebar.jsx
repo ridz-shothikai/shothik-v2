@@ -161,7 +161,7 @@ export default function FileHistorySidebar() {
             }}
           >
             <Typography variant="h6">Documents</Typography>
-            <IconButton size="small" onClick={handleCloseSidebar}>
+            <IconButton id="file_history_close_button" size="small" onClick={handleCloseSidebar}>
               <RemoveCircleOutlineIcon />
             </IconButton>
           </Box>

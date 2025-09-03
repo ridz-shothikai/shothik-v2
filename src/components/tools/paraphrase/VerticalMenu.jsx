@@ -35,7 +35,33 @@ const VerticalMenu = ({
   const [showSidebar, setShowSidebar] = useState(false);
   const { demo } = useSelector((state) => state.settings);
 
-  
+  // Mock data for plagiarism demo based on Redux demo state
+  const mockPlagiarismData = (() => {
+    if (demo === "plagiarism_high") {
+      return {
+        score: 100,
+        results: [
+          {
+            id: 1,
+            source: "Example Source 1",
+            matches: [{ text: "This is a highly plagiarized sentence.", original: "This is a highly plagiarized sentence." }],
+          },
+          {
+            id: 2,
+            source: "Example Source 2",
+            matches: [{ text: "Another copied phrase.", original: "Another copied phrase." }],
+          },
+        ],
+      };
+    } else if (demo === "plagiarism_low") {
+      return {
+        score: 0,
+        results: [], // No plagiarism matches
+      };
+    }
+    return { score: null, results: [] };
+  })();
+
   // Disable actions only if plainOutput is empty and demo is not true
   const disableActions = !demo && (!plainOutput || !plainOutput.trim());
 
@@ -295,6 +321,8 @@ const VerticalMenu = ({
             onClose={() => setShowSidebar((prev) => !prev)}
             active={showSidebar}
             setActive={setShowSidebar}
+            score={mockPlagiarismData.score}
+            results={mockPlagiarismData.results}
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
             outputText={outputText}
@@ -320,6 +348,7 @@ const VerticalMenu = ({
         {["settings", "feedback", "shortcuts"].includes(showSidebar) && (
           <SettingsSidebar
             open={showSidebar}
+            onClose={() => setShowSidebar((prev) => !prev)}
             tab={showSidebar}
             setTab={setShowSidebar}
             mobile={mobile}

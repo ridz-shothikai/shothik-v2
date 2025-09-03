@@ -62,6 +62,12 @@ const HistoryTab = () => {
   };
 
   useEffect(() => {
+    // If user is not signed in then we don't have a history
+    // In this case we should avoid getting history data
+    // accessToken is generated after user signed in, so we are checking that.
+
+    if(!accessToken) return;
+
     fetchHistory();
   }, []);
 

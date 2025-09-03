@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
   Box,
@@ -11,100 +11,99 @@ import {
 import { ExpandMore } from "@mui/icons-material";
 import useSnackbar from "../../../../hooks/useSnackbar";
 
-const PlagiarismTab = ({ text }) => {
+const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
   const { accessToken } = useSelector((s) => s.auth);
   const { demo } = useSelector((s) => s.settings);
   const enqueueSnackbar = useSnackbar();
-  const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
   const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState(null);
-  const [results, setResults] = useState([]);
+  const [realScore, setRealScore] = useState(null);
+  const [realResults, setRealResults] = useState([]);
 
-  const demoResults = [
-    { percent: 75, source: "Sample Source 1" },
-    { percent: 60, source: "Sample Source 2" },
-    { percent: 45, source: "Sample Source 3" },
-  ];
+  // Determine which score and results to display
+  const displayScore = [true, "plagiarism_low", "plagiarism_high"].includes(
+    demo
+  )
+    ? propScore
+    : realScore;
+  const displayResults = [true, "plagiarism_low", "plagiarism_high"].includes(
+    demo
+  )
+    ? propResults
+    : realResults;
 
-  // demo‐mode short‐circuit
-  useEffect(() => {
-    if (
-      demo === true ||
-      demo === "plagiarism_low" ||
-      demo === "plagiarism_high"
-    ) {
-      setLoading(false);
-      if (demo === "plagiarism_low") {
-        setScore(0);
-        setResults([]);
-      } else {
-        setScore(100);
-        setResults(demoResults);
-      }
-    }
-  }, [demo]);
+  // Memoize the API call function to prevent recreation on every render
+  const checkPlagiarism = useCallback(async (textToCheck, token) => {
+    const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
-  // real check: only when text/demo/accessToken change
-  useEffect(() => {
-    // skip demo
-    if ([true, "plagiarism_low", "plagiarism_high"].includes(demo)) {
-      return;
-    }
-
-    // no text → clear state
-    if (!text) {
-      setScore(null);
-      setResults([]);
-      return;
-    }
-
-    setLoading(true);
-    setScore(null);
-    setResults([]);
-
-    fetch(`${API_BASE}/plagiarism`, {
+    const response = await fetch(`${API_BASE}/plagiarism`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, token: accessToken }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (data.success === false) throw new Error(data.message || "Error");
-        return data;
-      })
+      body: JSON.stringify({ text: textToCheck, token }),
+    });
+
+    const data = await response.json();
+    if (data.success === false) {
+      throw new Error(data.message || "Error");
+    }
+    return data;
+  }, []); // Empty dependency array since it only uses parameters
+
+  // Real check: only when text/demo/accessToken change AND not in demo mode
+  useEffect(() => {
+    // In demo mode, rely on props, do not fetch real data
+    if ([true, "plagiarism_low", "plagiarism_high"].includes(demo)) {
+      setLoading(false);
+      return;
+    }
+
+    // Not in demo mode, proceed with real data fetching
+    if (!text || !text.trim()) {
+      setRealScore(null);
+      setRealResults([]);
+      setLoading(false);
+      return;
+    }
+
+    // Don't make API call if already loading to prevent race conditions
+    if (loading) return;
+
+    setLoading(true);
+    setRealScore(null);
+    setRealResults([]);
+
+    checkPlagiarism(text, accessToken)
       .then((data) => {
-        // extract score
         let finalScore =
           typeof data.score === "number"
             ? data.score
-            : (data.summary.match(/\((\d+)%\)/)?.[1] ?? 0) * 1;
+            : (data.summary?.match(/\((\d+)%\)/)?.[1] ?? 0) * 1;
 
-        setScore(finalScore);
+        setRealScore(finalScore);
 
-        // map matches → results
         if (Array.isArray(data.matches)) {
-          setResults(
+          setRealResults(
             data.matches.map((m) => ({
               percent: Math.round(m.score * 100),
               source: m.author || "Unknown",
-            })),
+            }))
           );
         } else {
-          setResults([]);
+          setRealResults([]);
         }
       })
       .catch((err) => {
+        console.error("Plagiarism check error:", err);
         enqueueSnackbar(`Plagiarism check error: ${err.message}`, {
           variant: "error",
         });
-        setScore(0);
-        setResults([]);
+        setRealScore(0);
+        setRealResults([]);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [text, demo, accessToken]);
+  }, [text, demo, accessToken, checkPlagiarism]); // Include checkPlagiarism in dependencies
 
   return (
     <Box sx={{ px: 2, py: 1 }}>
@@ -127,8 +126,8 @@ const PlagiarismTab = ({ text }) => {
           <CircularProgress />
         ) : (
           <>
-            <Typography variant="h2">
-              {score != null ? `${score}%` : "--"}
+            <Typography id="plagiarism_score" variant="h2">
+              {displayScore != null ? `${displayScore}%` : "--"}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Plagiarism
@@ -137,12 +136,12 @@ const PlagiarismTab = ({ text }) => {
         )}
       </Paper>
 
-      <Box>
+      <Box id="plagiarism_results">
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          Results ({results.length})
+          Results ({displayResults.length})
         </Typography>
 
-        {results.map((r, i) => (
+        {displayResults.map((r, i) => (
           <Box
             key={i}
             sx={{
@@ -171,7 +170,7 @@ const PlagiarismTab = ({ text }) => {
           </Box>
         ))}
 
-        {!loading && results.length === 0 && (
+        {!loading && displayResults.length === 0 && (
           <Typography variant="body2" color="text.secondary">
             No matches found.
           </Typography>

@@ -288,11 +288,14 @@ const ParaphraseContend = () => {
           return prev;
         }
 
-        updated[targetIdx] = analysis.map((item) => ({
-          ...item,
-          word: item.word,
-        }));
-        return updated;
+        if(Array.isArray(analysis) && analysis?.length > 0) {
+          updated[targetIdx] = analysis?.map((item) => ({
+            ...item,
+            word: item.word,
+          }));
+          return updated;
+        }
+
       });
     });
   }, [language, eventId]);
@@ -708,7 +711,7 @@ const ParaphraseContend = () => {
     user?.package === "unlimited";
 
   return (
-    <Box sx={{ display: "flex", width: "100%", overflow: "hidden" }}>
+    <Box sx={{ display: "flex", width: "100%", overflow: "hidden", pt: 2 }}>
       {!isMobile && (
         <Box
           sx={{
