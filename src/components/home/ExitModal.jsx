@@ -8,7 +8,8 @@ import {
     Button,
     IconButton,
     Box,
-    Stack
+    Stack,
+    useTheme
   } from '@mui/material';
   import { Close } from '@mui/icons-material';
   import { styled } from '@mui/material/styles';
@@ -56,6 +57,8 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 
 export default function ExitModal({setOpen}) {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const [showExitIntent, setShowExitIntent] = useState(false);
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.EXIT_INTENT_MODAL
@@ -195,7 +198,7 @@ export default function ExitModal({setOpen}) {
                 component="h3"
                 sx={{
                   fontWeight: 700,
-                  color: "#111827",
+                  color: isDarkMode ? "#FFF" : "#111827",
                   fontSize: "24px",
                   lineHeight: 1.2,
                 }}

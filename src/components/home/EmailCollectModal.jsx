@@ -11,6 +11,7 @@ import {
   Box,
   Stack,
   TextField,
+  useTheme,
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
@@ -80,6 +81,8 @@ const SkipButton = styled(Button)(({ theme }) => ({
 }));
 
 export default function EmailModal({ open, onClose, onSubmit }) {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { componentRef, trackClick, trackFormInteraction, trackConversion } =
     useComponentTracking(trackingList.EMAIL_MODAL);
@@ -182,7 +185,7 @@ export default function EmailModal({ open, onClose, onSubmit }) {
               component="h3"
               sx={{
                 fontWeight: 700,
-                color: "#111827",
+                color: isDarkMode ? "#FFF" : "#111827",
                 fontSize: "24px",
                 lineHeight: 1.2,
               }}
