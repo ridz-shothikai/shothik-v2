@@ -92,6 +92,8 @@ const HistoryTab = () => {
         <Typography variant="h6" fontWeight="bold">
           History
         </Typography>
+        {
+          accessToken &&
         <Box>
           <IconButton size="small" onClick={fetchHistory}>
             <Refresh fontSize="small" />
@@ -100,6 +102,7 @@ const HistoryTab = () => {
             <Delete fontSize="small" />
           </IconButton>
         </Box>
+        }
       </Box>
 
       {/* Period groups */}

@@ -2,7 +2,7 @@
 // LanguageMenu.jsx
 "use client";
 import { ExpandMoreOutlined, KeyboardArrowUpOutlined } from "@mui/icons-material";
-import { Button, Tabs, Tab, Box } from "@mui/material";
+import { Button, Tabs, Tab, Box, useTheme } from "@mui/material";
 import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
@@ -21,6 +21,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   const isMobile = useResponsive("down", "sm");
   const maxTabs = isMobile ? 3 : 5;
   const showMenu = Boolean(anchorEl);
+  const theme = useTheme();
 
   const handleOpen = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -47,7 +48,16 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
           onClick={handleOpen}
           disabled={isLoading}
           endIcon={<ExpandMoreOutlined />}
-          sx={{ textTransform: "none", width: "100%", justifyContent: "space-between" }}
+          sx={{
+            textTransform: "none",
+            width: "100%",
+            justifyContent: "space-between",
+            color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
+            bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
+            "&:hover": {
+              bgcolor: theme.palette.mode === "dark" ? "grey.700" : "grey.300",
+            },
+          }}
         >
           {language}
         </Button>
@@ -84,15 +94,20 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
             disabled={isLoading}
             sx={{
               "&.Mui-selected": {
-                backgroundColor: "common.white",
+                backgroundColor: theme.palette.mode === "dark" ? "grey.800" : "common.white",
                 borderRadius: "12px 12px 0 0",
                 border: "1px solid",
-                borderColor: "divider",
-                // marginBottom: "-2px",
+                borderColor: theme.palette.mode === "dark" ? "grey.700" : "divider",
+                color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
                 px: 2,
               },
-              "&.MuiTab-root": { display: "inline-flex" },
-              "&.MuiTab-root:hover": { color: "text.primary" },
+              "&.MuiTab-root": {
+                display: "inline-flex",
+                color: theme.palette.mode === "dark" ? "grey.400" : "text.secondary",
+              },
+              "&.MuiTab-root:hover": {
+                color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
+              },
             }}
           />
         ))}
@@ -123,4 +138,3 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
 };
 
 export default LanguageMenu;
-

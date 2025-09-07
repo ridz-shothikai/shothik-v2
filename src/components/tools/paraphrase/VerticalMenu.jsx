@@ -72,7 +72,6 @@ const VerticalMenu = ({
     onClick,
     disabled,
     crown = false,
-    black = true,
     mobile,
   }) => {
     const theme = useTheme();
@@ -131,7 +130,7 @@ const VerticalMenu = ({
             disabled={disabled}
             sx={{
               p: 0,
-              color: black ? theme.palette.grey[900] : "inherit",
+              color: theme.palette.text.primary,
             }}
           >
             <Icon sx={{ fontSize: ICON_SIZE }} />
@@ -161,7 +160,7 @@ const VerticalMenu = ({
           align="center"
           sx={{
             fontSize: 12,
-            color: black ? theme.palette.grey[900] : "inherit",
+            color: theme.palette.text.primary,
             whiteSpace: mobile ? "nowrap" : "pre-line",
             lineHeight: 1.2,
           }}
@@ -272,7 +271,6 @@ const VerticalMenu = ({
               icon={Settings}
               onClick={() => setShowSidebar("settings")}
               disabled={false}
-              black={true}
               mobile={mobile}
             />
           </Box>
@@ -283,7 +281,6 @@ const VerticalMenu = ({
               icon={FeedbackIcon}
               onClick={() => setShowSidebar("feedback")}
               disabled={false}
-              black={true}
               mobile={mobile}
             />
           </Box>
@@ -294,7 +291,6 @@ const VerticalMenu = ({
               icon={Keyboard}
               onClick={() => setShowSidebar("shortcuts")}
               disabled={false}
-              black={true}
               mobile={mobile}
             />
           </Box>
