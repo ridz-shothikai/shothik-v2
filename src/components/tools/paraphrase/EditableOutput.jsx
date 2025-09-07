@@ -309,7 +309,7 @@ function formatContent(data) {
     const sentenceNode = {
       type: "sentenceNode",
       attrs: {
-        "data-sentence-index": sIdx + 1,
+        "data-sentence-index": sIdx,
         class: "sentence-span",
       },
       content: sentence.map((wObj, wIdx) => {
@@ -323,8 +323,8 @@ function formatContent(data) {
         return {
           type: "wordNode",
           attrs: {
-            "data-sentence-index": sIdx + 1,
-            "data-word-index": wIdx + 1,
+            "data-sentence-index": sIdx,
+            "data-word-index": wIdx,
             "data-type": wObj.type,
             class: "word-span",
             style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
@@ -513,7 +513,7 @@ export default function EditableOutput({
       if (!el) return;
       const sI = Number(el.getAttribute("data-sentence-index"));
       const wI = Number(el.getAttribute("data-word-index"));
-      const wObj = data[sI - 1]?.[wI - 1];
+      const wObj = data[sI]?.[wI];
       if (!wObj) return;
 
       setAnchorEl(el);
@@ -523,8 +523,8 @@ export default function EditableOutput({
         wordIndex: wI,
         showRephraseNav: true,
       });
-      setHighlightSentence(sI - 1);
-      setSentence(data[sI - 1].map((w) => w.word).join(" "));
+      setHighlightSentence(sI);
+      setSentence(data[sI].map((w) => w.word).join(" "));
     };
     dom.addEventListener("click", onClick);
     return () => dom.removeEventListener("click", onClick);

@@ -44,6 +44,53 @@ import VerticalMenu from "./VerticalMenu";
 import { protectedPhrases, protectedSingleWords } from "./extentions";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
+// Define the punctuation marks that require specific spacing rules.
+// This constant can be easily updated if more punctuation types need to be included.
+const PUNCTUATION_FOR_SPACING = '[.,;?!:]';
+
+/**
+ * Normalizes punctuation spacing in a given text string according to standard English conventions.
+ * Specifically:
+ * 1. Replaces any sequence of one or more whitespace characters with a single space.
+ * 2. Removes any space that immediately precedes a defined punctuation mark (e.g., "word . " becomes "word.").
+ * 3. Ensures a single space immediately follows a defined punctuation mark, unless it's already
+ *    followed by a space or is at the very end of the string (e.g., "word.word" becomes "word. word").
+ *
+ * This function is designed to be efficient for large texts by using regular expressions.
+ *
+ * @param {string} text The input text string to format.
+ * @returns {string} The formatted text with normalized punctuation spacing.
+ */
+function normalizePunctuationSpacing(text) {
+  if (!text) return "";
+
+  let formattedText = text;
+
+  // Step 1: Normalize all whitespace to single spaces and trim leading/trailing spaces.
+  // This ensures a clean base for subsequent punctuation adjustments.
+  // Example: "  Hello   world.  " -> "Hello world."
+  formattedText = formattedText.replace(/\s+/g, ' ').trim();
+
+  // Step 2: Remove any space immediately preceding a punctuation mark.
+  // The regex `\\s+(${PUNCTUATION_FOR_SPACING}+)` matches one or more spaces
+  // followed by one or more punctuation marks. The `$1` in the replacement
+  // ensures only the punctuation marks are kept, effectively removing the preceding spaces.
+  // Example: "Hello . World" -> "Hello. World"
+  // Example: "Is this ? " -> "Is this?"
+  formattedText = formattedText.replace(new RegExp(`\\s+(${PUNCTUATION_FOR_SPACING}+)`, 'g'), '$1');
+
+  // Step 3: Ensure a single space immediately follows a punctuation mark,
+  // unless it's already followed by a space or is at the end of the string.
+  // The regex `(${PUNCTUATION_FOR_SPACING}+)(?!\\s|$)` matches one or more punctuation marks
+  // that are NOT followed by a whitespace character (`\\s`) or the end of the string (`$`).
+  // We then replace it with the punctuation marks followed by a single space (`$1 `).
+  // Example: "Hello.World" -> "Hello. World"
+  // Example: "End!" -> "End! " (if not at the very end of the string)
+  formattedText = formattedText.replace(new RegExp(`(${PUNCTUATION_FOR_SPACING}+)(?!\\s|$)`, 'g'), '$1 ');
+
+  return formattedText;
+}
+
 const SYNONYMS = {
   20: "Basic",
   40: "Intermediate",
@@ -135,8 +182,22 @@ const ParaphraseContend = () => {
       setResult(historyData);
     }
   }, [outputHistoryIndex]);
-  // Fixed frontend socket handling - based on your working version
 
+  // Effect to update outputContend and outputWordCount when result changes
+  useEffect(() => {
+    if (result.length > 0) {
+      const plainText = extractPlainText(result);
+      setOutputContend(plainText);
+      setOutputWordCount(
+        plainText.split(/\s+/).filter((w) => w.length > 0).length
+      );
+    } else {
+      setOutputContend("");
+      setOutputWordCount(0);
+    }
+  }, [result]);
+
+  // Fixed frontend socket handling - based on your working version
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
       transports: ["websocket"],
@@ -627,43 +688,50 @@ const ParaphraseContend = () => {
       return null;
     }
 
-    // Initialize result string
-    let plainText = "";
+    let allSegments = []; // Renamed for clarity, as it holds both sentences and newlines
 
-    // Iterate through each sentence array
-    for (const sentence of array) {
-      // Check if sentence is an array
-      if (!Array.isArray(sentence)) {
-        console.error("Each sentence must be an array");
+    // Iterate through each segment (which can be a sentence array or a newline indicator)
+    for (const segment of array) {
+      // Check if segment is an array
+      if (!Array.isArray(segment)) {
+        console.error("Each segment must be an array");
         return null;
       }
 
-      // Process each word object in the sentence
-      for (const wordObj of sentence) {
+      // Handle newline segments separately to preserve their structure
+      if (segment.length === 1 && segment[0].type === "newline") {
+        allSegments.push("\n");
+        continue; // Move to the next segment
+      }
+
+      const wordsInCurrentSegment = [];
+      // Process each word object in the current segment
+      for (const wordObj of segment) {
         // Validate word object structure
         if (!wordObj || typeof wordObj !== "object") {
-          console.error("Invalid word object in sentence");
+          console.error("Invalid word object in segment");
           return null;
         }
-
         // Check if word property exists and is a string
         if (typeof wordObj.word !== "string") {
           console.error("Word property must be a string");
           return null;
         }
-
-        // Add word to result, trim to handle extra spaces
-        plainText += wordObj.word.trim();
-
-        // Add space after word unless it's punctuation
-        if (wordObj.type !== "none" && wordObj.word !== ",") {
-          plainText += " ";
-        }
+        wordsInCurrentSegment.push(wordObj.word);
       }
+      // Join words within the current segment with a single space
+      allSegments.push(wordsInCurrentSegment.join(" "));
     }
 
-    // Return the final string, trimmed
-    return plainText.trim();
+    // Join all processed segments (sentences and newlines) with a space.
+    // This ensures words are correctly spaced. The normalizePunctuationSpacing
+    // function will then handle any excess spaces and punctuation-specific spacing.
+    let plainText = allSegments.join(" ");
+
+    // Apply the punctuation spacing normalization as the final cleanup step
+    plainText = normalizePunctuationSpacing(plainText);
+
+    return plainText;
   }
 
   // Frozen words logic
