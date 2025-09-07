@@ -154,7 +154,7 @@ const ParaphraseContend = () => {
     loading: false,
     success: false,
   });
-
+  const [paraphraseRequestCounter, setParaphraseRequestCounter] = useState(0);
   useEffect(() => {
     if (!userInput) return;
     let timer;
@@ -568,6 +568,7 @@ const ParaphraseContend = () => {
     }
     setResult([]);
     setOutputHistory([]);
+    setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on clear
   };
 
   useEffect(() => {
@@ -611,7 +612,7 @@ const ParaphraseContend = () => {
       setResult([]);
       setOutputHistoryIndex(0);
       setProcessing({ success: false, loading: true });
-
+      setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on new request
       // use the full raw Markdown string for payload
       const textToParaphrase = value || userInput;
 
@@ -1038,6 +1039,7 @@ const ParaphraseContend = () => {
                     setProcessing={setProcessing}
                     eventId={eventId}
                     setEventId={setEventId}
+                    paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
                   />
 
                   {result?.length ? (

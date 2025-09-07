@@ -25,7 +25,8 @@ const ParaphraseOutput = ({
   setProcessing,
   eventId,
   setEventId,
-  setHighlightSentence
+  setHighlightSentence,
+  paraphraseRequestCounter // Receive the new prop
 }) => {
   const [paraphraseForTagging] = useParaphraseForTaggingMutation();
   const [reportForSentence] = useReportForSentenceMutation();
@@ -45,6 +46,13 @@ const ParaphraseOutput = ({
     showRephraseNav: false,
   };
   const [synonymsOptions, setSynonymsOptions] = useState(synonymInit);
+
+  // Effect to clear rephrase suggestions when a new main paraphrase request is made
+  useEffect(() => {
+    setRephraseData([]);
+    setShowRephrase(false);
+    setSynonymsOptions(synonymInit);
+  }, [paraphraseRequestCounter]);
 
   const replaceSynonym = (newWord) => {
     setData((prevData) => {
@@ -169,6 +177,7 @@ const ParaphraseOutput = ({
       if (!sentence || !selectedLang) return;
       setIsPending(true);
       setShowRephrase(true);
+      setRephraseData([]); // Clear previous rephrase data immediately
 
       const url =
         process.env.NEXT_PUBLIC_PARAPHRASE_API_URI + "/paraphrase-with-variantV2";
@@ -200,7 +209,7 @@ const ParaphraseOutput = ({
       setIsPending(false);
       if (reader) {
         let text = "";
-        const saparator = selectedLang === "Bengali" ? "। " : ". ";
+        const saparator = selectedLang === "Bengali" ? "।" : ". ";
         const pattern = /\{[^}]+\}|\S+/g;
         while (true) {
           const { done, value } = await reader.read();
@@ -233,11 +242,12 @@ const ParaphraseOutput = ({
     }
   }
 
+  // This useEffect should trigger rephraseSentence when the selected sentence or rephrase mode changes
   useEffect(() => {
-    if (rephraseData.length) {
+    if (sentence && showRephrase) { // Only rephrase if a sentence is selected and the rephrase popover is open
       rephraseSentence();
     }
-  }, [rephraseMode]);
+  }, [sentence, rephraseMode]);
 
   return (
     <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
