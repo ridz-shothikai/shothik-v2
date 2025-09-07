@@ -42,6 +42,7 @@ import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
 import { protectedPhrases, protectedSingleWords } from "./extentions";
+import MultipleFileUpload from "../common/MultipleFileUpload";
 
 const SYNONYMS = {
   20: "Basic",
@@ -622,7 +623,7 @@ const ParaphraseContend = () => {
   function extractPlainText(array) {
     // Check if input is an array
     if (!Array.isArray(array)) {
-      console.error("Input must be an array");
+      console.log("Input must be an array");
       return null;
     }
 
@@ -927,7 +928,7 @@ const ParaphraseContend = () => {
                   size={{ xs: 12, md: 6 }}
                   ref={outputRef}
                   sx={{
-                    height: {md:"calc(100vh - 340px)", lg: "530px"},
+                    height: { md: "calc(100vh - 340px)", lg: "530px" },
                     overflow: "hidden",
                     borderTop: { xs: "2px solid", md: "none" },
                     borderTopColor: { xs: "divider", md: undefined },
@@ -971,7 +972,7 @@ const ParaphraseContend = () => {
                     setEventId={setEventId}
                   />
 
-                  {result.length ? (
+                  {result?.length ? (
                     <>
                       {/* <ParaphraseOutput
                       data={result}
@@ -1080,6 +1081,15 @@ const ParaphraseContend = () => {
           />
         </Box>
       )}
+
+      <MultipleFileUpload
+        isMobile={isMobile}
+        setInput={() => {}}
+        paidUser={paidUser}
+        freezeWords={[]}
+        selectedMode={selectedMode}
+        shouldShowButton={false}
+      />
     </Box>
   );
 };

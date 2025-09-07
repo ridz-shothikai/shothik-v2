@@ -117,7 +117,7 @@ export default function AccountBilling({ user }) {
                       color: dark ? "white" : "black",
                     }}
                   >
-                    {user.package.replace("_", " ")}
+                    {user?.package?.replace("_", " ")}
                   </Typography>
                   <Typography
                     sx={{

@@ -10,9 +10,16 @@ export default function RHFTextField({
   startAdornment,
   readOnly,
   border = true,
+  InputProps, // Accept InputProps directly
   ...other
 }) {
   const { control } = useFormContext();
+
+  const mergedInputProps = {
+    ...InputProps, // InputProps from parent take precedence
+    ...(endAdornment && { endAdornment }),
+    ...(startAdornment && { startAdornment }),
+  };
 
   return (
     <Controller
@@ -25,9 +32,10 @@ export default function RHFTextField({
           value={field.value ?? ""} // Ensures value is never undefined
           error={!!error}
           helperText={error ? error?.message : helperText}
+          InputProps={mergedInputProps} // Pass merged InputProps
+          inputProps={{ readOnly }} // Pass readOnly to native input
           slotProps={{
             inputLabel: { style: { color: error ? "red" : "inherit" } },
-            input: { endAdornment, readOnly, startAdornment },
           }}
           sx={{
             "& .MuiInputLabel-root": {

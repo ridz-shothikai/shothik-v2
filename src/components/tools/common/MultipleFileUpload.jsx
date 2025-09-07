@@ -33,6 +33,7 @@ export default function MultipleFileUpload({
   selectedSynonymLevel,
   selectedLang,
   freezeWords = [],
+  shouldShowButton = true
 }) {
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -106,8 +107,8 @@ export default function MultipleFileUpload({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("mode", selectedMode.toLowerCase());
-      formData.append("synonym", selectedSynonymLevel.toLowerCase());
+      formData.append("mode", selectedMode?.toLowerCase());
+      formData.append("synonym", selectedSynonymLevel?.toLowerCase());
       formData.append("freeze", freezeWords);
       formData.append("language", selectedLang);
 
@@ -144,29 +145,35 @@ export default function MultipleFileUpload({
 
   return (
     <>
-      <Button
-        id="multi_upload_button"
-        sx={{
-          display: "flex",
-          gap: 1,
-          alignItems: "center",
-          justifyContent:'center',
-          textAlign: "center",
-          width: "fit-content",
-        }}
-        variant="outlined"
-        onClick={handleOpen}
-      >
-        <CloudUploadOutlined fontSize="small" />
-        Multi Upload Document
-      </Button>
-      <Button
-        id="multi_upload_close_button"
-        sx={{ opacity: 0, zIndex: -9999, position:'absolute', top: -9999 }}
-        onClick={() => {
-          handleClose();
-        }}
-      ></Button>
+        <Button
+          id="multi_upload_button"
+          sx={{
+            display: shouldShowButton ? "flex" : "none",
+            gap: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            width: "fit-content",
+          }}
+          variant="outlined"
+          onClick={handleOpen}
+        >
+          <CloudUploadOutlined fontSize="small" />
+          Multi Upload Document
+        </Button>
+        <Button
+          id="multi_upload_close_button"
+          sx={{
+            opacity: 0,
+            zIndex: -9999,
+            position: "absolute",
+            top: -9999,
+            display: shouldShowButton ? "flex" : "none",
+          }}
+          onClick={() => {
+            handleClose();
+          }}
+        ></Button>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           Upload Multiple Documents
@@ -230,10 +237,10 @@ export default function MultipleFileUpload({
                       f.error
                         ? f.error
                         : f.status === "success"
-                          ? "Completed"
-                          : f.status === "uploading"
-                            ? "Uploading…"
-                            : ""
+                        ? "Completed"
+                        : f.status === "uploading"
+                        ? "Uploading…"
+                        : ""
                     }
                   />
                   {f.status === "success" && f.downloadUrl && (
