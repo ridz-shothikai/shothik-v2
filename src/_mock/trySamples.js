@@ -1,7 +1,7 @@
 export const trySamples = {
   paraphrase: {
     English:
-      "The city streets were filled with excitement as people gathered for the annual parade. Brightly colored floats and marching bands filled the air with music and laughter. Spectators lined the sidewalks, cheering and waving as the procession passed by.",
+      "The city buzzed with energy as crowds assembled for the annual parade. Vibrant floats and lively marching bands infused the atmosphere with music and joy, while spectators lined the streets, applauding and waving as the procession moved along.",
     Bangla:
       "বর্ষজয়ন্তী শোভাযাত্রার জন্য মানুষ জড়ো হওয়ায় শহরের রাস্তা উত্তেজনায় পরিপূর্ণ ছিল।  চকচকে রঙের  ফ্লোট এবং মার্চিং ব্যান্ড  সঙ্গীত ও হাসির আবহ তৈরি করেছিল।  দর্শকরা ফুটপাতের ধারে দাঁড়িয়ে শোভাযাত্রা  পেরিয়ে যাওয়ার সাথে সাথে  জয়ধ্বনি দিচ্ছিলেন এবং হাত নাড়ছিলেন।",
   },
