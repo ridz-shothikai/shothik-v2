@@ -64,23 +64,31 @@ const GradientButton = styled(Button)(({ gradient }) => ({
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: "16px",
-  border: "1px solid #e5e7eb",
-  boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+  border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[800] : "#e5e7eb"}`,
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 1px 3px 0 rgba(255, 255, 255, 0.1)"
+      : "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
   overflow: "hidden",
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.background.paper,
 }));
 
 const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
   width: 48,
   height: 48,
-  backgroundColor: "#ffffff",
-  border: "1px solid #e5e7eb",
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : "#ffffff",
+  border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[700] : "#e5e7eb"}`,
   borderRadius: "50%",
   "&:hover": {
-    backgroundColor: "#f9fafb",
+    backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : "#f9fafb",
     transform: "scale(1.1)",
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 10px 15px -3px rgba(255, 255, 255, 0.1)"
+        : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
   },
   transition: "all 0.3s ease",
+  color: theme.palette.mode === "dark" ? theme.palette.grey[300] : theme.palette.text.primary,
 }));
 
 // const IndicatorButton = styled(Button)(({ active, theme }) => ({
@@ -103,10 +111,24 @@ const IndicatorButton = styled("button")(({ theme, active }) => ({
   border: "none",
   cursor: "pointer",
   transition: "all 0.3s ease",
-  backgroundColor: active === "true" ? "#10b981" : "#e5e7eb",
+  backgroundColor:
+    active === "true"
+      ? theme.palette.mode === "dark"
+        ? theme.palette.primary.main
+        : "#10b981"
+      : theme.palette.mode === "dark"
+      ? theme.palette.grey[700]
+      : "#e5e7eb",
   transform: active === "true" ? "scale(1.2)" : "scale(1)",
   "&:hover": {
-    backgroundColor: active === "true" ? "#059669" : "#d1d5db",
+    backgroundColor:
+      active === "true"
+        ? theme.palette.mode === "dark"
+          ? theme.palette.primary.dark
+          : "#059669"
+        : theme.palette.mode === "dark"
+        ? theme.palette.grey[600]
+        : "#d1d5db",
   },
 }));
 
@@ -371,7 +393,7 @@ export default function AgentShowcase() {
         ref={componentRef}
         sx={{
           pb: { xs: 8, md: 12 },
-          bgcolor: isDarkMode ? "" : "white",
+          bgcolor: isDarkMode ? "inherit" : "white",
           overflow: "hidden",
         }}
       >
@@ -576,6 +598,7 @@ export default function AgentShowcase() {
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
+                          color: isDarkMode ? theme.palette.text.primary : theme.palette.text.primary,
                         }}
                       >
                         <Code sx={{ color: "#10b981" }} />
@@ -583,15 +606,15 @@ export default function AgentShowcase() {
                       </Typography>
                       <Paper
                         sx={{
-                          bgcolor: "#f8fafc",
+                          bgcolor: isDarkMode ? theme.palette.grey[800] : "#f8fafc",
                           p: 3,
-                          border: "1px solid #e2e8f0",
+                          border: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#e2e8f0"}`,
                           borderRadius: 1.5,
                         }}
                       >
                         <Typography
                           sx={{
-                            color: "#334155",
+                            color: isDarkMode ? theme.palette.grey[300] : "#334155",
                             fontStyle: "italic",
                             lineHeight: 1.6,
                           }}
@@ -610,6 +633,7 @@ export default function AgentShowcase() {
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
+                          color: isDarkMode ? theme.palette.text.primary : theme.palette.text.primary,
                         }}
                       >
                         <AutoAwesome sx={{ color: "#a855f7" }} />
@@ -617,9 +641,9 @@ export default function AgentShowcase() {
                       </Typography>
                       <Paper
                         sx={{
-                          bgcolor: "#ecfdf5",
+                          bgcolor: isDarkMode ? theme.palette.grey[800] : "#ecfdf5",
                           p: 3,
-                          border: "1px solid #bbf7d0",
+                          border: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#bbf7d0"}`,
                           borderRadius: 1.5,
                         }}
                       >
@@ -651,7 +675,7 @@ export default function AgentShowcase() {
                           </Fade>
                         ) : (
                           <Typography
-                            sx={{ color: "#334155", lineHeight: 1.6 }}
+                            sx={{ color: isDarkMode ? theme.palette.grey[300] : "#334155", lineHeight: 1.6 }}
                           >
                             {currentAgent.output}
                           </Typography>
@@ -673,7 +697,7 @@ export default function AgentShowcase() {
                               display: "flex",
                               alignItems: "center",
                               gap: 1,
-                              color: "#475569",
+                              color: isDarkMode ? theme.palette.grey[400] : "#475569",
                             }}
                           >
                             <CheckCircle
@@ -686,7 +710,7 @@ export default function AgentShowcase() {
                             <Typography
                               variant="body2"
                               sx={{
-                                color: isDarkMode ? "#FFF" : "text.secondary",
+                                color: isDarkMode ? theme.palette.grey[300] : "text.secondary",
                               }}
                             >
                               {capability}
@@ -698,7 +722,7 @@ export default function AgentShowcase() {
                   </Box>
 
                   {/* CTA */}
-                  <Box sx={{ mt: 4, pt: 3, borderTop: "1px solid #e2e8f0" }}>
+                  <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#e2e8f0"}` }}>
                     <GradientButton
                       gradient={currentAgent.gradient}
                       fullWidth
@@ -740,7 +764,7 @@ export default function AgentShowcase() {
               >
                 Ready to Command the Future?
               </Typography>
-              <Typography variant="h6" sx={{ color: "#64748b", mb: 4 }}>
+              <Typography variant="h6" sx={{ color: isDarkMode ? theme.palette.grey[400] : "#64748b", mb: 4 }}>
                 Leave it to us. Stop working for your tools. Make them work for
                 you.
               </Typography>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Grid, styled, Typography } from "@mui/material";
+import { Box, Container, Grid, styled, Typography, useTheme } from "@mui/material";
 import {motion} from "framer-motion";
 import { Brain, FileText, Globe, Shield } from "lucide-react";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
@@ -10,17 +10,22 @@ import { trackingList } from "../../../libs/trackingList";
 const BenefitIconContainer = styled(Box)(({ theme }) => ({
   width: "64px",
   height: "64px",
-  backgroundColor: "#ffffff",
+  backgroundColor: theme.palette.background.paper,
   borderRadius: "16px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   margin: "0 auto 16px",
   boxShadow:
-    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    theme.palette.mode === "dark"
+      ? "0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05)"
+      : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
   transition: "box-shadow 0.3s ease",
   "&:hover": {
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 25px 50px -12px rgba(255, 255, 255, 0.25)"
+        : "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
   },
 }));
 
@@ -69,6 +74,9 @@ const benefits = [
 ];
 
 export default function KeyBenefits() {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   const { componentRef } = useComponentTracking(
     trackingList.WHY_STUDENT_CHOOSE_SECTION
   );
@@ -89,7 +97,9 @@ export default function KeyBenefits() {
       >
         <Box
           sx={{
-            background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)", // emerald-50 to blue-50
+            background: isDarkMode
+              ? theme.palette.background.default
+              : "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)", // emerald-50 to blue-50
             borderRadius: "24px",
             p: { xs: 4, lg: 6 },
           }}
@@ -100,7 +110,7 @@ export default function KeyBenefits() {
               sx={{
                 fontSize: { xs: "1.5rem", sm: "1.875rem" },
                 fontWeight: 700,
-                color: "#111827", // gray-900
+                color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
                 mb: 2,
               }}
             >
@@ -110,7 +120,7 @@ export default function KeyBenefits() {
               variant="h6"
               sx={{
                 fontSize: "1.125rem",
-                color: "#4b5563", // gray-600
+                color: isDarkMode ? theme.palette.text.secondary : "#4b5563", // gray-600
                 maxWidth: "512px",
                 mx: "auto",
                 fontWeight: 400,
@@ -133,7 +143,7 @@ export default function KeyBenefits() {
                 >
                   <BenefitCard onClick={() => handleBenefitClick(benefit.id)}>
                     <BenefitIconContainer>
-                      <benefit.icon size={32} color="#059669" />
+                      <benefit.icon size={32} color={theme.palette.success.main} />
                     </BenefitIconContainer>
 
                     <Typography
@@ -141,7 +151,7 @@ export default function KeyBenefits() {
                       sx={{
                         fontSize: "1.125rem",
                         fontWeight: 700,
-                        color: "#111827", // gray-900
+                        color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
                         mb: 1,
                       }}
                     >
@@ -150,7 +160,7 @@ export default function KeyBenefits() {
 
                     <Typography
                       sx={{
-                        color: "#4b5563", // gray-600
+                        color: isDarkMode ? theme.palette.text.secondary : "#4b5563", // gray-600
                         fontSize: "0.875rem",
                         lineHeight: 1.6,
                         mb: 1.5,
@@ -163,7 +173,7 @@ export default function KeyBenefits() {
                       sx={{
                         fontSize: "2rem",
                         fontWeight: 900,
-                        color: "#00AB55", // emerald-600
+                        color: theme.palette.success.main, // emerald-600
                       }}
                     >
                       {benefit.stat}

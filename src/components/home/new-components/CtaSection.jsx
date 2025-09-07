@@ -81,7 +81,10 @@ export default function CTASection() {
         component="section"
         sx={{
           py: { xs: 3, sm: 5, md: 10 },
-          background: "linear-gradient(to right, #059669, #047857, #0f766e)", // emerald-600 to teal-700
+          background:
+            theme.palette.mode === "dark"
+              ? "linear-gradient(to right, #1a202c, #2d3748)" // Darker gradient for dark mode
+              : "linear-gradient(to right, #059669, #047857, #0f766e)", // emerald-600 to teal-700
           position: "relative",
         }}
       >
@@ -105,7 +108,7 @@ export default function CTASection() {
                 sx={{
                   fontSize: { xs: "2.25rem", sm: "3rem" }, // text-4xl sm:text-5xl
                   fontWeight: 700, // font-bold
-                  color: "white",
+                  color: theme.palette.mode === "dark" ? "white" : "white", // Keep white for both, or adjust if needed
                   mb: 2, // mb-4
                   lineHeight: 1.1,
                   fontFamily:
@@ -120,7 +123,10 @@ export default function CTASection() {
                 variant="h5"
                 sx={{
                   fontSize: "1.25rem", // text-xl
-                  color: "#a7f3d0", // text-emerald-100
+                  color:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.grey[300]
+                      : "#a7f3d0", // text-emerald-100
                   mb: 4, // mb-8
                   maxWidth: "48rem", // max-w-3xl
                   mx: "auto",
@@ -150,8 +156,14 @@ export default function CTASection() {
                     }}
                     fullWidth
                     sx={{
-                      backgroundColor: "white",
-                      color: "#059669", // text-emerald-600
+                      backgroundColor:
+                        theme.palette.mode === "dark"
+                          ? theme.palette.primary.main
+                          : "white",
+                      color:
+                        theme.palette.mode === "dark"
+                          ? theme.palette.primary.contrastText
+                          : "#059669", // text-emerald-600
                       fontWeight: 700, // font-bold
                       height: "4rem", // h-16
                       px: 4, // px-8
@@ -161,27 +173,6 @@ export default function CTASection() {
                       boxShadow:
                         "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)", // shadow-lg
                       textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: "#ecfdf5", // hover:bg-emerald-50
-                        boxShadow:
-                          "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)", // hover:shadow-xl
-                      },
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background:
-                          "linear-gradient(to right, transparent, rgba(167, 243, 208, 0.2), transparent)",
-                        transform: "skewX(-12deg) translateX(-100%)",
-                        transition: "transform 1s ease",
-                        zIndex: 0,
-                      },
-                      "&:hover::before": {
-                        transform: "skewX(-12deg) translateX(100%)",
-                      },
                       "& .MuiButton-label, & > span": {
                         position: "relative",
                         zIndex: 1,
@@ -208,7 +199,7 @@ export default function CTASection() {
                       bottom: "-0.5rem", // -bottom-2
                       left: "50%",
                       transform: "translateX(-50%)",
-                      backgroundColor: "#ea580c", // bg-orange-500
+                      backgroundColor: "#ea580c", // bg-orange-500 (keeping orange for both modes as it's a warning/scarcity color)
                       color: "white",
                       fontSize: "0.75rem", // text-xs
                       fontWeight: 700, // font-bold
@@ -226,7 +217,10 @@ export default function CTASection() {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: "#a7f3d0", // text-emerald-100
+                      color:
+                        theme.palette.mode === "dark"
+                          ? theme.palette.grey[400]
+                          : "#a7f3d0", // text-emerald-100
                       fontSize: "0.875rem", // text-sm
                     }}
                   >
@@ -244,7 +238,10 @@ export default function CTASection() {
                 sx={{
                   mb: 2, // mb-4
                   fontSize: "0.875rem", // text-sm
-                  color: "#a7f3d0", // text-emerald-100
+                  color:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.grey[400]
+                      : "#a7f3d0", // text-emerald-100
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -282,7 +279,10 @@ export default function CTASection() {
                   variant="body2"
                   sx={{
                     fontSize: "0.75rem", // text-xs
-                    color: "#bbf7d0", // text-emerald-200
+                    color:
+                      theme.palette.mode === "dark"
+                        ? theme.palette.grey[500]
+                        : "#bbf7d0", // text-emerald-200
                   }}
                 >
                   Accepted payments:
@@ -293,7 +293,10 @@ export default function CTASection() {
                     alignItems: "center",
                     gap: 1,
                     fontSize: "0.75rem", // text-xs
-                    color: "#bbf7d0", // text-emerald-200
+                    color:
+                      theme.palette.mode === "dark"
+                        ? theme.palette.grey[500]
+                        : "#bbf7d0", // text-emerald-200
                   }}
                 >
                   <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>

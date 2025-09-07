@@ -72,7 +72,7 @@ const JourneyTimeline = () => {
       sx={{
         pt: { xs: 2, sm: 3, xl: 4 },
         pb: { xs: 7, sm: 9, xl: 12 },
-        backgroundColor: isDarkMode ? "inherit" : "#ffffff",
+        // backgroundColor: theme.palette.background.default,
       }}
     >
       <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, lg: 4 } }}>
@@ -95,7 +95,7 @@ const JourneyTimeline = () => {
               sx={{
                 fontSize: { xs: "2rem", sm: "2.5rem", lg: "3rem" },
                 fontWeight: 700,
-                color: isDarkMode ? "inherit" : "#111827", // gray-900
+                color: theme.palette.text.primary,
                 mb: 3,
                 lineHeight: 1.2,
               }}
@@ -107,7 +107,7 @@ const JourneyTimeline = () => {
               variant="h6"
               sx={{
                 fontSize: { xs: "0.95rem", md: "1rem", lg: "1.25rem" },
-                color: isDarkMode ? "inherit" : "#4b5563", // gray-600
+                color: theme.palette.text.secondary,
                 lineHeight: 1.6,
                 fontWeight: 400,
               }}
@@ -127,7 +127,7 @@ const JourneyTimeline = () => {
               top: "0px",
               bottom: "80px",
               width: "3px",
-              backgroundColor: "#E5E7EB",
+              backgroundColor: theme.palette.divider,
               borderRadius: "99999px",
               zIndex: 1,
               height: "100%",
@@ -176,7 +176,7 @@ const JourneyTimeline = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      border: "4px solid #ffffff",
+                      border: `4px solid ${theme.palette.background.default}`,
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                     }}
                   />
@@ -206,7 +206,7 @@ const JourneyTimeline = () => {
                   <Typography
                     sx={{
                       fontSize: { xs: "12px", lg: "14px", xl: "16px" },
-                      color: "#212B36",
+                      color: theme.palette.text.secondary,
                       mb: 1,
                       lineHeight: 1.3,
                     }}
@@ -220,8 +220,8 @@ const JourneyTimeline = () => {
                     ml: 4,
                     flex: 1,
                     p: { xs: 2, md: 3, xl: 4 },
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #E5E8EB",
+                    backgroundColor: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: { xs: "12px", lg: "16px" },
                     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
                     transition: "all 0.3s ease",
@@ -230,8 +230,8 @@ const JourneyTimeline = () => {
                     gap: { xs: "12px", lg: "16px", xl: "20px" },
                     alignItems: { xs: "center", sm: "flex-start" },
                     "&:hover": {
-                      backgroundColor: "#00A76F14",
-                      border: "1px solid #00A76F14",
+                      backgroundColor: theme.palette.action.hover,
+                      border: `1px solid ${theme.palette.action.hover}`,
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                       transform: "translateY(-2px)",
                     },
@@ -244,7 +244,7 @@ const JourneyTimeline = () => {
                       alignItems: "center",
                       justifyContent: "center",
                       p: { xs: "12px", lg: "16px", xl: "20px" },
-                      backgroundColor: "#ffffff",
+                      backgroundColor: theme.palette.background.default,
                       borderRadius: "12px",
                       boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                       flexShrink: 0,
@@ -252,7 +252,7 @@ const JourneyTimeline = () => {
                       minHeight: { xs: "52px", lg: "60px", xl: "68px" },
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        backgroundColor: "#ffffff",
+                        backgroundColor: theme.palette.background.default,
                         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.12)",
                       },
                     }}
@@ -282,7 +282,7 @@ const JourneyTimeline = () => {
                     <Typography
                       sx={{
                         fontSize: { xs: "16px", lg: "18px", xl: "20px" },
-                        color: "#212B36",
+                        color: theme.palette.text.primary,
                         fontWeight: 600,
                         mb: 1,
                         lineHeight: 1.3,
@@ -294,7 +294,7 @@ const JourneyTimeline = () => {
                     <Typography
                       sx={{
                         fontSize: { xs: "14px", lg: "16px" },
-                        color: "#374151",
+                        color: theme.palette.text.secondary,
                         lineHeight: 1.6,
                         textAlign: { xs: "center", sm: "left" },
                       }}

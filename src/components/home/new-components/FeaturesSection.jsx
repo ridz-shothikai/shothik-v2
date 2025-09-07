@@ -107,7 +107,7 @@ export default function FeaturesSection() {
       sx={{
         pt: { xs: 4, sm: 6, xl: 8 },
         pb: { xs: 8, sm: 12, xl: 15 },
-        // backgroundColor: isDarkMode ? "inherit" : "#f8fafc", // gray-50
+        backgroundColor: isDarkMode ? theme.palette.background.default : "#f8fafc", // gray-50
       }}
     >
       <Container maxWidth="lg">
@@ -148,7 +148,7 @@ export default function FeaturesSection() {
                 component="p"
                 sx={{
                   fontSize: { xs: "1.125rem", md: "1.25rem" },
-                  color: "#6b7280", // gray-500
+                  color: isDarkMode ? theme.palette.text.secondary : "#6b7280", // gray-500
                   fontWeight: 400,
                   lineHeight: 1.6,
                   maxWidth: "42rem",
@@ -185,8 +185,10 @@ export default function FeaturesSection() {
                         borderRadius: "24px",
                         // boxShadow:
                           // "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
-                        boxShadow: "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
-                        backgroundColor: "#ffffff",
+                        boxShadow: isDarkMode
+                          ? "0 12px 24px -4px rgba(0, 0, 0, 0.3)"
+                          : "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
+                        backgroundColor: theme.palette.background.paper,
                         transition: "all 0.2s ease-in-out",
                       }}
                     >
@@ -200,13 +202,13 @@ export default function FeaturesSection() {
                             width: 48,
                             height: 48,
                             borderRadius: "8px",
-                            backgroundColor: feature.bgColor,
+                            backgroundColor: isDarkMode ? theme.palette.action.hover : feature.bgColor,
                             mb: 3,
                           }}
                         >
                           <IconComponent
                             size={24}
-                            style={{ color: feature.color }}
+                            style={{ color: isDarkMode ? theme.palette.text.primary : feature.color }}
                           />
                         </Box>
 
@@ -217,7 +219,7 @@ export default function FeaturesSection() {
                           sx={{
                             fontSize: { xs: "1.125rem", sm: "1.25rem" },
                             fontWeight: 700,
-                            color: "#111827", // gray-900
+                            color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
                             mb: 2,
                             lineHeight: 1.3,
                           }}
@@ -229,7 +231,7 @@ export default function FeaturesSection() {
                         <Typography
                           variant="body1"
                           sx={{
-                            color: "#6b7280", // gray-500
+                            color: isDarkMode ? theme.palette.text.secondary : "#6b7280", // gray-500
                             lineHeight: 1.6,
                             fontSize: { xs: "0.875rem", sm: "1rem" },
                           }}

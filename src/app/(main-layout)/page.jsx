@@ -94,7 +94,7 @@ const Home = () => {
       <KeyBenefits/>
       {/* <Guarantee/> */}
       <FeaturesSection />
-      <JobsTestimonialsSection/>
+      {/* <JobsTestimonialsSection/> */}
       <CtaSection/>
       <ModalProvider/>
       {/* <HomeTools /> */}

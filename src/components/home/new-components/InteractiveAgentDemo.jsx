@@ -50,26 +50,28 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 const StyledPaper = styled(Paper)(({ theme }) => ({
   borderRadius: "16px",
   border: "2px solid",
-  borderColor: theme.palette.grey[200],
+  borderColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[200],
   cursor: "pointer",
   transition: "all 0.3s ease",
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.background.paper,
+  color: theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.text.primary,
   "&:hover": {
-    borderColor: theme.palette.grey[300],
+    borderColor: theme.palette.mode === "dark" ? theme.palette.grey[600] : theme.palette.grey[300],
   },
   "&.selected-emerald": {
     borderColor: "#10b981",
-    backgroundColor: "#ecfdf5",
-    color: "#047857",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
+    color: theme.palette.mode === "dark" ? "#34d399" : "#047857",
   },
   "&.selected-blue": {
     borderColor: "#3b82f6",
-    backgroundColor: "#eff6ff",
-    color: "#1d4ed8",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "#eff6ff",
+    color: theme.palette.mode === "dark" ? "#60a5fa" : "#1d4ed8",
   },
   "&.selected-purple": {
     borderColor: "#8b5cf6",
-    backgroundColor: "#f3e8ff",
-    color: "#7c3aed",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(139, 92, 246, 0.2)" : "#f3e8ff",
+    color: theme.palette.mode === "dark" ? "#a78bfa" : "#7c3aed",
   },
 }));
 
@@ -77,8 +79,9 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiOutlinedInput-root": {
     borderRadius: "12px",
     minHeight: "120px",
+    backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.background.paper,
     "& fieldset": {
-      borderColor: theme.palette.grey[200],
+      borderColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[200],
     },
     "&:hover fieldset": {
       borderColor: "#10b981",
@@ -98,21 +101,21 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     fontSize: "14px",
     resize: "none",
-    color: "#000 !important", // Force black color
+    color: `${theme.palette.text.primary} !important`, // Use theme-aware color
   },
   "& .MuiInputBase-input.Mui-disabled": {
-    WebkitTextFillColor: "#000 !important", // Override Chrome's dimming with !important
-    color: "#000 !important", // Override Firefox/other browsers with !important
+    WebkitTextFillColor: `${theme.palette.text.primary} !important`, // Override Chrome's dimming with !important
+    color: `${theme.palette.text.primary} !important`, // Override Firefox/other browsers with !important
     opacity: "1 !important", // Ensure full opacity
     cursor: "not-allowed !important", // Disabled cursor
   },
   // Additional fallback for better cross-browser support
   "& .MuiInputBase-root.Mui-disabled": {
-    color: "#000 !important",
+    color: `${theme.palette.text.primary} !important`,
     cursor: "not-allowed !important",
     "& .MuiInputBase-input": {
-      WebkitTextFillColor: "#000 !important",
-      color: "#000 !important",
+      WebkitTextFillColor: `${theme.palette.text.primary} !important`,
+      color: `${theme.palette.text.primary} !important`,
       opacity: "1 !important",
       cursor: "not-allowed !important",
     },
@@ -141,14 +144,14 @@ const ExampleButton = styled(Button)(({ theme }) => ({
   fontSize: "12px",
   padding: theme.spacing(1.5, 2),
   border: "1px solid",
-  borderColor: theme.palette.grey[200],
-  backgroundColor: "white",
-  color: theme.palette.text.primary,
+  borderColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[200],
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.background.paper,
+  color: theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.text.primary,
   textAlign: "left",
   justifyContent: "flex-start",
   "&:hover": {
     borderColor: "#10b981",
-    backgroundColor: "#ecfdf5",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
   },
   [theme.breakpoints.up("sm")]: {
     fontSize: "14px",
@@ -159,21 +162,23 @@ const ExampleButton = styled(Button)(({ theme }) => ({
 const HeaderSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3, 2),
   borderBottom: "1px solid",
-  borderColor: theme.palette.grey[200],
+  borderColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[200],
+  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : theme.palette.background.paper,
+  color: theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.text.primary,
   "&.header-emerald": {
     borderColor: "#10b981",
-    backgroundColor: "#ecfdf5",
-    color: "#047857",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
+    color: theme.palette.mode === "dark" ? "#34d399" : "#047857",
   },
   "&.header-blue": {
     borderColor: "#3b82f6",
-    backgroundColor: "#eff6ff",
-    color: "#1d4ed8",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "#eff6ff",
+    color: theme.palette.mode === "dark" ? "#60a5fa" : "#1d4ed8",
   },
   "&.header-purple": {
     borderColor: "#8b5cf6",
-    backgroundColor: "#f3e8ff",
-    color: "#7c3aed",
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(139, 92, 246, 0.2)" : "#f3e8ff",
+    color: theme.palette.mode === "dark" ? "#a78bfa" : "#7c3aed",
   },
   [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4, 3),
@@ -183,7 +188,7 @@ const HeaderSection = styled(Box)(({ theme }) => ({
 const ResultsBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3),
   padding: theme.spacing(3),
-  background: "linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%)",
+  background: theme.palette.mode === "dark" ? "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%)" : "linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%)",
   borderRadius: "12px",
   border: "1px solid #10b981",
 }));
@@ -495,21 +500,21 @@ export default function InteractiveAgentDemo() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Typography
-                variant="h2"
-                component="h2"
-                sx={{
-                  fontSize: {
-                    xs: "2rem",
-                    sm: "2.5rem",
-                    lg: "3rem",
-                    xl: "3.75rem",
-                  },
-                  fontWeight: 300,
-                  color: isDarkMode ? "" : "#0f172a",
-                  mb: { xs: 2, lg: 3 },
-                  px: 2,
-                }}
+                <Typography
+                  variant="h2"
+                  component="h2"
+                  sx={{
+                    fontSize: {
+                      xs: "2rem",
+                      sm: "2.5rem",
+                      lg: "3rem",
+                      xl: "3.75rem",
+                    },
+                    fontWeight: 300,
+                    color: isDarkMode ? theme.palette.text.primary : "#0f172a",
+                    mb: { xs: 2, lg: 3 },
+                    px: 2,
+                  }}
               >
                 Try an Agent{" "}
                 <Box component="span" sx={{ color: "#10b981" }}>
@@ -520,7 +525,7 @@ export default function InteractiveAgentDemo() {
                 variant="h6"
                 sx={{
                   fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                  color: isDarkMode ? "" : "#64748b",
+                  color: isDarkMode ? theme.palette.text.secondary : "#64748b",
                   maxWidth: "768px",
                   mx: "auto",
                   px: 2,
@@ -669,7 +674,7 @@ export default function InteractiveAgentDemo() {
                                 sx={{
                                   fontSize: "inherit",
                                   textAlign: "left",
-                                  color: isDarkMode ? "#000" : "inherit",
+                                  color: isDarkMode ? "#FFF" : "inherit",
                                 }}
                               >
                                 "{example}"
