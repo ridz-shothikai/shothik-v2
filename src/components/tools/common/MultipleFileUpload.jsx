@@ -58,6 +58,17 @@ export default function MultipleFileUpload({
       // optional: show warning
     }
 
+    if (!accessToken) {
+      const mapped = incoming.map((file) => ({
+        file,
+        status: "error",
+        progress: 0,
+        error: "Please log in to upload files",
+      }));
+      setFiles(mapped);
+      return;
+    }
+
     const mapped = incoming.map((file) => {
       if (!/\.(pdf|docx|txt)$/i.test(file.name)) {
         return {
@@ -241,6 +252,9 @@ export default function MultipleFileUpload({
                         : f.status === "uploading"
                         ? "Uploading…"
                         : ""
+                    }
+                    secondaryTypographyProps={
+                      f.error ? { color: "error.main" } : {}
                     }
                   />
                   {f.status === "success" && f.downloadUrl && (

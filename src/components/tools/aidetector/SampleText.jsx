@@ -96,7 +96,7 @@ const SampleTextForLarge = ({
 
   return (
     <Stack
-      justifyContent='center'
+      justifyContent="center"
       sx={{
         height: "100%",
         paddingX: 3,
@@ -118,13 +118,14 @@ const SampleTextForLarge = ({
           sx={{
             width: isDrawer ? "100%" : 250,
             boxShadow: isDrawer ? "none" : undefined,
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
-          <Stack direction='column' spacing={0.5} sx={{ paddingY: 1 }}>
+          <Stack direction="column" spacing={0.5} sx={{ paddingY: 1 }}>
             {gptModel.map((item, index) => (
               <Button
-                variant='soft'
-                color='inherit'
+                variant="soft"
+                color="inherit"
                 key={index}
                 sx={{
                   display: "flex",
@@ -149,13 +150,13 @@ const SampleTextForLarge = ({
                 >
                   <img src={item.icon} alt={item.name} />
                 </Box>
-                <Typography variant='body2'>{item.name}</Typography>
+                <Typography variant="body2">{item.name}</Typography>
               </Button>
             ))}
           </Stack>
         </Card>
         <Stack
-          direction='column'
+          direction="column"
           alignItems={isDrawer ? "center" : "flex-start"}
         >
           <Box
@@ -167,7 +168,7 @@ const SampleTextForLarge = ({
               mt: 3,
             }}
           >
-            <img src='/tools/language.svg' alt='language' />
+            <img src="/tools/language.svg" alt="language" />
             <Typography fontWeight={600}>Supported languages:</Typography>
           </Box>
           <Typography sx={{ mt: 0.5, mb: 1 }}>

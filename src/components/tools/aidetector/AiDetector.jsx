@@ -148,7 +148,9 @@ const AiDetector = () => {
               height: isMobile ? 400 : 600,
               display: "flex",
               flexDirection: "column",
+              border: (theme) => `1px solid ${theme.palette.divider}`,
             }}
+            elevation={16}
           >
             {enableEdit ? (
               <TextField
