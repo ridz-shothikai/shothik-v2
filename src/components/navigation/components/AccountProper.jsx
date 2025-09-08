@@ -49,6 +49,7 @@ export default function AccountPopover({ accessToken, user }) {
     try {
       dispatch(logout());
       handleClosePopover();
+      enqueueSnackbar("Logout successful!", { variant: "success" });
     } catch (error) {
       console.error(error);
       enqueueSnackbar("Unable to logout!", { variant: "error" });
