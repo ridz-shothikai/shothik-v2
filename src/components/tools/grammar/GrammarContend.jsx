@@ -42,6 +42,7 @@ const GrammarContend = () => {
     setUserInput("");
     setOutputContend("");
     setErrors([]);
+    setLanguage("English");
   }
 
   async function fetchWithStreaming(payload) {
