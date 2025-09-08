@@ -18,12 +18,14 @@ export default function AlertDialog() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log(user, "alert dialog user data");
+
   return (
     <Dialog
       open={showAlert}
       onClose={() => dispatch(setShowAlert(false))}
       fullWidth
-      maxWidth='xs'
+      maxWidth="xs"
     >
       <span
         style={{
@@ -35,7 +37,7 @@ export default function AlertDialog() {
       >
         <span style={{ paddingTop: 20, paddingRight: 20 }}>
           <SvgColor
-            src='/icons/close.svg'
+            src="/icons/close.svg"
             onClick={() => dispatch(setAlertMessage(false))}
             sx={{ cursor: "pointer" }}
           />
@@ -44,22 +46,23 @@ export default function AlertDialog() {
       <DialogContent>
         <Stack sx={{ pt: { xs: 3, md: 5 } }}>
           <SvgColor
-            color='primary.main'
+            color="primary.main"
             src={"/tools/ic-lock.svg"}
             sx={{ margin: "0 auto", width: 96, height: 96 }}
           />
         </Stack>
         <DialogContentText
           sx={{ pt: { xs: 3, md: 3 }, textAlign: "center" }}
-          id='alert-dialog-description'
+          id="alert-dialog-description"
         >
           {alertMessage}
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ mb: { xs: 1.5, md: 2.5 } }}>
+      {alertMessage !== "You can't use less than 30 words" &&
         <Button
           fullWidth
-          color='inherit'
+          color="inherit"
           sx={{
             bgcolor: (theme) =>
               theme.palette.mode === "dark"
@@ -76,19 +79,20 @@ export default function AlertDialog() {
                   : alpha(theme.palette.grey[900], 0.9),
             },
           }}
-          variant='contained'
-          size='medium'
+          variant="contained"
+          size="medium"
           onClick={() => {
             if (!user) {
-              router.push("/pricing");
+              dispatch(setShowLoginModal(true));
             } else {
               dispatch(setShowAlert(false));
-              dispatch(setShowLoginModal(true));
+              router.push("/pricing");
             }
           }}
         >
           {!user ? "Login" : "Upgrade now"}
         </Button>
+      }
       </DialogActions>
     </Dialog>
   );
