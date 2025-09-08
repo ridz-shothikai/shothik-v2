@@ -54,15 +54,13 @@ function FileUpload({ isMobile, setInput }) {
       try {
         const result = await mammoth.convertToHtml({ arrayBuffer });
 
-        // Ensure line breaks are added for new paragraphs
-        let htmlWithLineBreaks = result.value.replace(/<\/p>/g, "</p><br>");
-        // Wrap the HTML in a container with a class for styling
-        htmlWithLineBreaks = htmlWithLineBreaks.replace(
-          /<p>/g,
-          '<p style="margin: 0">'
-        );
+        // Convert paragraph and break tags to newlines, then strip all other HTML tags
+        let plainText = result.value.replace(/<\/p>/g, "\n\n"); // Replace closing paragraph tags with two newlines
+        plainText = plainText.replace(/<br\s*\/?>/g, "\n"); // Replace break tags with one newline
+        plainText = plainText.replace(/<p[^>]*>/g, "\n"); // Replace opening paragraph tags (with attributes) with one newline
+        plainText = plainText.replace(/<[^>]*>/g, ''); // Strip any remaining HTML tags
 
-        setInput(htmlWithLineBreaks);
+        setInput(plainText.trim()); // Trim leading/trailing whitespace
       } catch (error) {
         console.error("Error converting DOCX to HTML:", error);
       }
