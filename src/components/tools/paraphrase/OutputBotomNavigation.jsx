@@ -29,6 +29,7 @@ import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import WordIcon from "../../../resource/assets/WordIcon";
 import { downloadFile } from "../common/downloadfile";
+import {loadTTFAsArrayBuffer} from "../../../utils/fontLoader";
 
 const OutputBotomNavigation = ({
   setHighlightSentence,
@@ -64,10 +65,39 @@ const OutputBotomNavigation = ({
     setFormatMenuAnchor(null);
   };
 
-  const handleDownloadFormat = (format) => {
-    downloadFile(outputContend, "paraphrase", format);
-    enqueueSnackbar(`Text Downloaded as ${format.toUpperCase()}`);
-    handleCloseModal();
+
+  const handleDownloadFormat = async (format) => {
+    try {
+      let fontData = null;
+
+      if (format === "pdf") {
+        // Try loading font as base64 directly
+        try {
+          const fontResponse = await fetch("/fonts/bangla-font.ttf");
+          if (fontResponse.ok) {
+            const arrayBuffer = await fontResponse.arrayBuffer();
+            fontData = arrayBuffer;
+            console.log(
+              "Font loaded successfully, size:",
+              arrayBuffer.byteLength
+            );
+          } else {
+            console.warn(
+              "Font file not accessible, PDF will use fallback font"
+            );
+          }
+        } catch (fontError) {
+          console.warn("Failed to load font:", fontError);
+        }
+      }
+
+      await downloadFile(outputContend, "paraphrase", format, fontData);
+      enqueueSnackbar(`Text Downloaded as ${format.toUpperCase()}`);
+      handleCloseModal();
+    } catch (error) {
+      console.error("Download failed:", error);
+      enqueueSnackbar("Download failed", { variant: "error" });
+    }
   };
 
   async function handleCopy() {

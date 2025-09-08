@@ -1,135 +1,396 @@
+// downloadfile.js (patched)
+// - Loads pdfMake (cdn), ensures vfs & fonts are available
+// - Loads Bengali TTF fonts from /fonts/ and injects into pdfMake.vfs
+// - Ensures Roboto exists for English fallback
+// - Exports downloadFile(outputContent, toolName, format)
+
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { saveAs } from "file-saver";
+// jsPDF was present previously; keep import in case other code expects it
 import jsPDF from "jspdf";
 
-// Helper function to parse markdown text and maintain structure
+/* ---------------------------
+   Text / Markdown helpers
+   --------------------------- */
 const parseMarkdownText = (text) => {
-  // Split by double newlines to get paragraphs
+  // Split on double newlines into paragraphs, preserve single-line breaks inside paragraphs by converting them to spaces
   const paragraphs = text.split(/\n\s*\n/);
-  
-  return paragraphs.map(paragraph => {
-    // Remove extra whitespace but preserve single line breaks within paragraphs
-    return paragraph.trim().replace(/\n/g, ' ');
-  }).filter(p => p.length > 0);
+  return paragraphs
+    .map((paragraph) => paragraph.trim().replace(/\n/g, " "))
+    .filter((p) => p.length > 0);
 };
 
-// Helper function to convert markdown to plain text while preserving structure
 const markdownToPlainText = (text) => {
   return text
-    // Remove markdown bold/italic syntax
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/__(.*?)__/g, '$1')
-    .replace(/_(.*?)_/g, '$1')
-    // Remove markdown headers
-    .replace(/^#{1,6}\s+/gm, '')
-    // Remove markdown links but keep text
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    // Remove markdown code blocks
-    .replace(/```[\s\S]*?```/g, '')
-    .replace(/`([^`]+)`/g, '$1')
-    // Clean up extra spaces
-    .replace(/\s+/g, ' ')
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/_(.*?)_/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\s+/g, " ")
     .trim();
 };
 
+/* ---------------------------
+   Exports: TXT & DOCX
+   --------------------------- */
 const downloadAsTxt = (outputContent, filename) => {
   const plainText = markdownToPlainText(outputContent);
   const blob = new Blob([plainText], { type: "text/plain;charset=utf-8" });
   saveAs(blob, filename);
 };
 
-const downloadAsPdf = (outputContent, filename) => {
-  const doc = new jsPDF();
-  const plainText = markdownToPlainText(outputContent);
-  const paragraphs = parseMarkdownText(plainText);
-  
-  let yPosition = 20;
-  const pageHeight = doc.internal.pageSize.height;
-  const margin = 20;
-  const maxWidth = doc.internal.pageSize.width - 2 * margin;
-  
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  
-  paragraphs.forEach((paragraph, index) => {
-    // Split long paragraphs into lines that fit the page width
-    const lines = doc.splitTextToSize(paragraph, maxWidth);
-    
-    // Check if we need a new page
-    if (yPosition + (lines.length * 7) > pageHeight - margin) {
-      doc.addPage();
-      yPosition = margin;
-    }
-    
-    // Add paragraph with proper spacing
-    lines.forEach((line, lineIndex) => {
-      doc.text(line, margin, yPosition);
-      yPosition += 7; // Line height
-    });
-    
-    // Add space between paragraphs
-    if (index < paragraphs.length - 1) {
-      yPosition += 5;
-    }
-  });
-  
-  doc.save(filename);
-};
-
 const downloadAsDocx = (outputContent, filename) => {
   const plainText = markdownToPlainText(outputContent);
   const paragraphs = parseMarkdownText(plainText);
-  
-  // Create document with proper paragraph structure
-  const documentChildren = paragraphs.map(paragraphText => 
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: paragraphText,
-          size: 24, // 12pt font size (24 half-points)
-          font: "Arial",
-        }),
-      ],
-      spacing: {
-        after: 200, // Space after paragraph
-      },
-    })
+
+  const documentChildren = paragraphs.map(
+    (paragraphText) =>
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: paragraphText,
+            size: 24, // 12pt
+            font: "Arial",
+          }),
+        ],
+        spacing: { after: 200 },
+      })
   );
-  
+
   const doc = new Document({
-    sections: [
-      {
-        properties: {},
-        children: documentChildren,
-      },
-    ],
+    sections: [{ properties: {}, children: documentChildren }],
   });
-  
-  Packer.toBlob(doc).then((blob) => {
-    saveAs(blob, filename);
-  });
+
+  Packer.toBlob(doc).then((blob) => saveAs(blob, filename));
 };
 
-export const downloadFile = (outputContent, toolName, format = 'docx') => {
-  const currentDate = new Date();
+/* ---------------------------
+   PDF: pdfMake loader + font injection
+   --------------------------- */
+
+// Chunked ArrayBuffer -> base64 to avoid stack limits
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000; // 32KB
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode.apply(null, chunk);
+  }
+  return btoa(binary);
+}
+
+/**
+ * loadPDFMake()
+ * Load pdfmake and vfs_fonts.js (from cdnjs) and wait until both scripts are ready.
+ * Returns window.pdfMake.
+ */
+async function loadPDFMake() {
+  if (window.pdfMake && window.pdfMake.vfs) return window.pdfMake;
+
+  // Insert scripts if not present
+  const addScript = (src) =>
+    new Promise((resolve, reject) => {
+      // if a script with same src already loaded, just wait for window.pdfMake
+      const existing = Array.from(document.getElementsByTagName("script")).find(
+        (s) => s.src && s.src.includes(src)
+      );
+      if (existing) {
+        existing.onload ? (existing.onload = () => resolve()) : resolve();
+        existing.onerror ? (existing.onerror = (e) => reject(e)) : null;
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = (e) => reject(e);
+      document.head.appendChild(script);
+    });
+
+  try {
+    // pdfmake and vfs (vfs contains Roboto mapping by default)
+    await Promise.all([
+      addScript(
+        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"
+      ),
+      addScript(
+        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"
+      ),
+    ]);
+    // tiny delay to ensure pdfMake initialises
+    await new Promise((r) => setTimeout(r, 10));
+    if (!window.pdfMake) throw new Error("pdfMake failed to initialize");
+    window.pdfMake.vfs = window.pdfMake.vfs || {};
+    window.pdfMake.fonts = window.pdfMake.fonts || {};
+    return window.pdfMake;
+  } catch (err) {
+    console.error("Failed to load pdfMake or vfs_fonts.js:", err);
+    throw err;
+  }
+}
+
+/**
+ * loadBengaliFontForPDFMake(pdfMakeInstance)
+ * - Attempts to fetch TTFs from static /fonts/ paths
+ * - Injects each successful base64 into pdfMakeInstance.vfs keyed by filename
+ * - Returns a mapping object suitable for pdfMake.fonts (e.g. { NotoSansBengali: { normal: 'NotoSansBengali.ttf', ... } })
+ *
+ * Place TTFs in /public/fonts/ (Next.js) or a static /fonts/ path:
+ *   /fonts/NotoSansBengali-Regular.ttf
+ *   /fonts/Kalpurush.ttf
+ *   /fonts/SolaimanLipi.ttf
+ */
+const loadBengaliFontForPDFMake = async (pdfMakeInstance) => {
+  if (!pdfMakeInstance) pdfMakeInstance = window.pdfMake;
+  if (!pdfMakeInstance) throw new Error("pdfMake not loaded");
+
+  // Map: familyName -> fetch URL (static /fonts/ path)
+  const fontUrls = {
+    NotoSansBengali: "/fonts/NotoSansBengali-Regular.ttf",
+  };
+
+  pdfMakeInstance.vfs = pdfMakeInstance.vfs || {};
+  const fontsMapping = {};
+
+  for (const [fontFamily, fontUrl] of Object.entries(fontUrls)) {
+    try {
+      console.log(`Attempting to load font '${fontFamily}' from ${fontUrl}`);
+      const resp = await fetch(fontUrl);
+      if (!resp.ok) {
+        console.warn(`Font fetch returned ${resp.status} for ${fontUrl}`);
+        continue;
+      }
+      const buffer = await resp.arrayBuffer();
+      const base64 = arrayBufferToBase64(buffer);
+      const fileName = `${fontFamily}.ttf`;
+
+      // Inject into pdfMake.vfs
+      pdfMakeInstance.vfs[fileName] = base64;
+
+      // Map family -> filenames (pdfMake expects filenames here)
+      fontsMapping[fontFamily] = {
+        normal: fileName,
+        bold: fileName,
+        italics: fileName,
+        bolditalics: fileName,
+      };
+
+      console.log(`Loaded and injected ${fileName} into pdfMake.vfs`);
+      // Stop after first successful font to choose primary font quickly.
+      // If you'd like to load all fonts, remove the break.
+      break;
+    } catch (err) {
+      console.warn(`Failed to load font ${fontFamily} from ${fontUrl}:`, err);
+      continue;
+    }
+  }
+
+  return fontsMapping;
+};
+
+/**
+ * ensureRoboto(pdfMakeInstance)
+ * Ensures that a 'Roboto' mapping exists in pdfMake.fonts and referenced ttf files are present in pdfMake.vfs.
+ * If original Roboto files are present in vfs (e.g. from vfs_fonts.js) reconstruct mapping.
+ * If no Roboto files but some .ttf exists in vfs, alias Roboto -> that ttf.
+ * Returns true if Roboto is valid after checking/aliasing; false otherwise.
+ */
+function ensureRoboto(pdfMakeInstance) {
+  pdfMakeInstance.fonts = pdfMakeInstance.fonts || {};
+  pdfMakeInstance.vfs = pdfMakeInstance.vfs || {};
+
+  // If Roboto exists and its normal points to a file in vfs, we're done.
+  if (
+    pdfMakeInstance.fonts.Roboto &&
+    typeof pdfMakeInstance.fonts.Roboto.normal === "string" &&
+    pdfMakeInstance.vfs[pdfMakeInstance.fonts.Roboto.normal]
+  ) {
+    return true;
+  }
+
+  // Common Roboto filenames used by vfs_fonts.js
+  const robotoFiles = {
+    normal: "Roboto-Regular.ttf",
+    bold: "Roboto-Medium.ttf",
+    italics: "Roboto-Italic.ttf",
+    bolditalics: "Roboto-MediumItalic.ttf",
+  };
+
+  const hasAllRoboto = Object.values(robotoFiles).every(
+    (fn) => !!pdfMakeInstance.vfs[fn]
+  );
+
+  if (hasAllRoboto) {
+    pdfMakeInstance.fonts.Roboto = { ...robotoFiles };
+    console.log("Reconstructed Roboto font family from vfs.");
+    return true;
+  }
+
+  // If roboto ttf not present, but there exists any ttf in vfs, alias Roboto -> that ttf file (fallback)
+  const vfsTtfKeys = Object.keys(pdfMakeInstance.vfs || {}).filter((k) =>
+    k.toLowerCase().endsWith(".ttf")
+  );
+  if (vfsTtfKeys.length > 0) {
+    const pick = vfsTtfKeys[0];
+    pdfMakeInstance.fonts.Roboto = {
+      normal: pick,
+      bold: pick,
+      italics: pick,
+      bolditalics: pick,
+    };
+    console.warn(`Roboto not found; aliased Roboto -> ${pick}`);
+    return true;
+  }
+
+  console.warn(
+    "Roboto font not found and no TTFs present in pdfMake.vfs to alias."
+  );
+  return false;
+}
+
+/* ---------------------------
+   Bengali detection helper
+   --------------------------- */
+function containsBengaliText(text) {
+  return /[\u0980-\u09FF\u200C\u200D]/.test(text);
+}
+
+/* ---------------------------
+   Main PDF download flow
+   --------------------------- */
+const downloadAsPdf = async (outputContent, filename) => {
+  try {
+    console.log("Using PDFMake for PDF generation (Bengali/English aware)");
+
+    const pdfMake = await loadPDFMake();
+
+    // Debug: before injecting anything
+    console.log("pdfMake.fonts keys before:", Object.keys(pdfMake.fonts || {}));
+    console.log(
+      "pdfMake.vfs keys sample:",
+      Object.keys(pdfMake.vfs || {}).slice(0, 12)
+    );
+
+    // Load Bengali fonts (inject into pdfMake.vfs and return fontsMapping)
+    const bengaliFonts = await loadBengaliFontForPDFMake(pdfMake);
+
+    // Merge fonts mapping (do not clobber existing fonts)
+    pdfMake.fonts = {
+      ...(pdfMake.fonts || {}),
+      ...(bengaliFonts || {}),
+    };
+
+    // Ensure Roboto exists for English fallback (reconstruct or alias if possible)
+    const robotoReady = ensureRoboto(pdfMake);
+    if (!robotoReady) {
+      // If Roboto can't be prepared but bengaliFonts exist, alias Roboto -> first bengali font to avoid errors
+      const bengaliFirst = Object.keys(bengaliFonts || {})[0];
+      if (bengaliFirst && pdfMake.fonts[bengaliFirst]) {
+        pdfMake.fonts.Roboto = pdfMake.fonts[bengaliFirst];
+        console.warn(`Roboto missing; aliased Roboto -> ${bengaliFirst}`);
+      } else {
+        // As last resort we still set Roboto to some vfs ttf if available (attempt again)
+        const anyTtf = Object.keys(pdfMake.vfs || {}).find((k) =>
+          k.toLowerCase().endsWith(".ttf")
+        );
+        if (anyTtf) {
+          pdfMake.fonts.Roboto = {
+            normal: anyTtf,
+            bold: anyTtf,
+            italics: anyTtf,
+            bolditalics: anyTtf,
+          };
+          console.warn(
+            `No Roboto or Bengali fonts; aliased Roboto -> ${anyTtf}`
+          );
+        }
+      }
+    }
+
+    // After merge check again
+    console.log("pdfMake.fonts keys after:", Object.keys(pdfMake.fonts || {}));
+    console.log("pdfMake.vfs size:", Object.keys(pdfMake.vfs || {}).length);
+
+    // Now ensure we have at least one bengali font name to use if needed
+    const bengaliFontName = Object.keys(bengaliFonts || {})[0] || null;
+
+    if (!bengaliFontName) {
+      console.log(
+        "No Bengali font loaded; PDF generation will still proceed for English content."
+      );
+    } else {
+      console.log(`Primary Bengali font: ${bengaliFontName}`);
+    }
+
+    const plainText = markdownToPlainText(outputContent);
+    const paragraphs = parseMarkdownText(plainText);
+    const hasBengali = containsBengaliText(plainText);
+
+    // choose fallback font for English content
+    const defaultEnglishFont = "Roboto";
+
+    // Create docDefinition — ensure 'fontName' is defined before map
+    const chosenFont =
+      hasBengali && bengaliFontName ? bengaliFontName : defaultEnglishFont;
+
+    const docDefinition = {
+      content: paragraphs.map((paragraph) => ({
+        text: paragraph,
+        font: chosenFont,
+        fontSize: 12,
+        lineHeight: 1.5,
+        margin: [0, 0, 0, 10],
+      })),
+      defaultStyle: {
+        font: chosenFont,
+        fontSize: 12,
+      },
+      pageSize: "A4",
+      pageMargins: [40, 60, 40, 60],
+    };
+
+    // Generate and download PDF (pdfMake will use pdfMake.vfs and pdfMake.fonts)
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+    // Use getBlob/download depending on environment; .download is fine here
+    pdfDocGenerator.download(filename);
+
+    console.log("PDFMake: PDF generated and download started.");
+  } catch (error) {
+    console.error("PDFMake generation failed:", error);
+    throw error;
+  }
+};
+
+/* ---------------------------
+   downloadFile exported function
+   --------------------------- */
+export const downloadFile = async (outputContent, toolName, format = "docx") => {
+  const now = new Date();
   const formattedDate = `${
-    currentDate.getMonth() + 1
-  }_${currentDate.getDate()}_${currentDate.getFullYear()}`;
-  const formattedTime = `${currentDate.getHours()}_${currentDate.getMinutes()}_${currentDate.getSeconds()}`;
-  
+    now.getMonth() + 1
+  }_${now.getDate()}_${now.getFullYear()}`;
+  const formattedTime = `${now.getHours()}_${now.getMinutes()}_${now.getSeconds()}`;
   const filename = `${toolName}_Text_${formattedDate}_${formattedTime}.${format}`;
-  
+
   switch (format.toLowerCase()) {
-    case 'pdf':
+    case "pdf":
       downloadAsPdf(outputContent, filename);
       break;
-    case 'txt':
+    case "txt":
       downloadAsTxt(outputContent, filename);
       break;
-    case 'docx':
+    case "docx":
     default:
       downloadAsDocx(outputContent, filename);
       break;
   }
 };
+
+/* ---------------------------
+   End of file
+   --------------------------- */
