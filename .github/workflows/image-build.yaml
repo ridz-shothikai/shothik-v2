@@ -29,8 +29,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ridz-shothikai
-          password: ${{ secrets.ACCESS_TOKEN }}
-
+          password: ${{secrets.ACCESS_TOKEN}}
       - name: 'Set Short Commit Hash'
         id: vars
         run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
@@ -40,7 +39,7 @@ jobs:
         run: |
           docker build --no-cache \
           --tag ghcr.io/ridz-shothikai/shothik-v2:${{ env.SHORT_SHA }} \
-          --build-arg GITHUB_PAT=${{ secrets.ACCESS_TOKEN }} \
+          --build-arg GITHUB_PAT=${{secrets.ACCESS_TOKEN}} \
           --build-arg NEXT_PUBLIC_SOCKET=http://163.172.172.38:8080 \
           --build-arg NEXT_PUBLIC_API_URI=http://163.172.172.38:8080/api \
           --build-arg NEXT_PUBLIC_DOMAIN_URI=http://163.172.172.38:3000 \
