@@ -8,6 +8,7 @@ import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
 import PricingPlanCard from "./PricingPlanCard";
 import PricingSlider from "./PricingSlider";
 import PricingTable from "./PricingTable";
+import PricingPlanCardSkeleton from "./pricingPlanCardSkeleton";
 
 export default function PricingLayout({ children, TitleContend }) {
   const { user } = useSelector((state) => state.auth);
@@ -15,6 +16,8 @@ export default function PricingLayout({ children, TitleContend }) {
   const { data, isLoading } = useGetPricingPlansQuery();
   const { location } = useGeolocation();
   const isMobile = useResponsive("down", "sm");
+
+  // console.log(location, "location data on pricing layout");
 
   useEffect(() => {
     const haveValue = localStorage.getItem("isMonthly");
@@ -78,13 +81,15 @@ export default function PricingLayout({ children, TitleContend }) {
           sx={{
             mt: { xs: "-15rem", sm: "-17rem", md: "-15rem" },
             px: { xs: 2, md: 0 },
-            // maxWidth: { sm: "500px", md: "800px", xl: "100%" },
             mx: "auto",
           }}
           className="pricing_card_style"
         >
-          {data?.data
-            ? data.data.map((card, index) => (
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <PricingPlanCardSkeleton key={`skeleton-${index}`} />
+              ))
+            : data?.data?.map((card, index) => (
                 <PricingPlanCard
                   key={index}
                   user={user}
@@ -100,8 +105,7 @@ export default function PricingLayout({ children, TitleContend }) {
                   }
                   country={location}
                 />
-              ))
-            : null}
+              ))}
         </Box>
         {!isLoading && data?.data ? (
           <Stack
