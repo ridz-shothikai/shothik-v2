@@ -35,10 +35,11 @@ const HumanizedContend = () => {
   const [humanizeContend] = useHumanizeContendMutation();
   const miniLabel = useResponsive("between", "md", "xl");
   const { user } = useSelector((state) => state.auth);
-  const [language, setLanguage] = useState("English");
+  const [language, setLanguage] = useState("English (US)");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
-  const sampleText = trySamples.humanize[language];
+  const sampleText =
+    trySamples.humanize[language.startsWith("English") ? "English" : language];
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const loadingText = useLoadingText(isLoading);
@@ -140,12 +141,12 @@ const HumanizedContend = () => {
           setCurrentLength={setCurrentLength}
         />
         <TextField
-          name='input'
-          variant='outlined'
+          name="input"
+          variant="outlined"
           rows={13}
           fullWidth
           multiline
-          placeholder='Enter your text here...'
+          placeholder="Enter your text here..."
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           disabled={showShalowAlert}
@@ -224,9 +225,13 @@ const HumanizedContend = () => {
       {/* output  */}
       <Card sx={{ height: 380, overflowY: "auto", padding: 2 }}>
         {outputContent[showIndex] ? (
-          <Typography sx={{
-            whiteSpace: "pre-line"
-          }}>{outputContent[showIndex].text}</Typography>
+          <Typography
+            sx={{
+              whiteSpace: "pre-line",
+            }}
+          >
+            {outputContent[showIndex].text}
+          </Typography>
         ) : (
           <Typography sx={{ color: "text.disabled" }}>
             {loadingText ? loadingText : "Humanized Contend"}

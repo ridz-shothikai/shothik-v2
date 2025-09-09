@@ -17,7 +17,7 @@ import LanguageMenu from "./LanguageMenu";
 const GrammarContend = () => {
   const { user, accessToken } = useSelector((state) => state.auth);
   const [outputContend, setOutputContend] = useState("");
-  const [language, setLanguage] = useState("English");
+  const [language, setLanguage] = useState("English (US)");
   const [isLoading, setIsLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
   const isMobile = useResponsive("down", "sm");
@@ -25,7 +25,8 @@ const GrammarContend = () => {
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const loadingText = useLoadingText(isLoading);
-  const sampleText = trySamples.grammar[language];
+  const sampleText =
+    trySamples.grammar[language.startsWith("English") ? "English" : language];
 
   useEffect(() => {
     if (!userInput) return;
