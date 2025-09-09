@@ -224,7 +224,9 @@ const HumanizedContend = () => {
       {/* output  */}
       <Card sx={{ height: 380, overflowY: "auto", padding: 2 }}>
         {outputContent[showIndex] ? (
-          <Typography>{outputContent[showIndex].text}</Typography>
+          <Typography sx={{
+            whiteSpace: "pre-line"
+          }}>{outputContent[showIndex].text}</Typography>
         ) : (
           <Typography sx={{ color: "text.disabled" }}>
             {loadingText ? loadingText : "Humanized Contend"}
