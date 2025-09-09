@@ -168,6 +168,21 @@ const ONBOARDING_STEPS = [
   },
 ];
 
+const suggestedTopics = {
+  slides: [],
+  sheets: [
+    "Compare pricing of top 10 gyms in a sheet",
+    "List top 5 Italian restaurants with ratings",
+    "Generate 10 school and contact notes",
+  ],
+  research: [
+    "Find all recent studies on intermittent fasting and longevity",
+    "Compare pricing, pros, and cons of top 5 project management tools",
+    "Investigate the latest laws on crypto trading in the US and Europe",
+  ],
+  browse: [],
+};
+
 export default function AgentLandingPage() {
   const router = useRouter();
   const { setAgentType } = useAgentContext();
@@ -1178,19 +1193,7 @@ export default function AgentLandingPage() {
               gap: 1,
             }}
           >
-            {selectedNavItem === "slides"
-              ? [
-                  "Create a presentation about AI trends in 2024",
-                  "Present our Q4 financial results",
-                  "Explain machine learning to beginners",
-                  "Product roadmap for next year",
-                ]
-              : [
-                  "Summarize the latest tech news",
-                  "Help me write a professional email",
-                  "Generate a business plan outline",
-                  "Create a marketing strategy",
-                ].map((prompt) => (
+            {suggestedTopics[selectedNavItem].length > 0 && suggestedTopics[selectedNavItem].map((prompt) => (
                   <Chip
                     key={prompt}
                     label={prompt}
