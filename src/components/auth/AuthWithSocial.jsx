@@ -35,7 +35,7 @@ export default function AuthWithSocial({ loading, setLoading, title = "in" }) {
     },
     flow: "auth-code",
     onError: (err) => {
-      console.error(err);
+      console.error(err, "google login error");
       setLoading(false);
     },
     scope: "email profile",
