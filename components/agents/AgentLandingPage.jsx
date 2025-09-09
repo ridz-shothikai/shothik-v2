@@ -969,8 +969,7 @@ export default function AgentLandingPage() {
                 style={{ display: "none" }}
                 onChange={handleFileUpload}
               />
-              {(selectedNavItem === "slides" ||
-                selectedNavItem === "research") && (
+              {(selectedNavItem === "slides") && (
                 <Button
                   startIcon={<LinkIcon />}
                   onClick={handleClick}
