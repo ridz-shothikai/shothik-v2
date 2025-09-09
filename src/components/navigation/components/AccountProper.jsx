@@ -212,7 +212,7 @@ export default function AccountPopover({ accessToken, user }) {
         >
           <Stack direction="row" alignItems="center" spacing={1} pl={1.5}>
             <Brightness4OutlinedIcon sx={{ width: 20, height: 20 }} />
-            <Typography variant="body2" sx={{ pl: 1 }}>
+            <Typography variant="body2" sx={{ pl: 0, ml: '0 !important' }}>
               Dark mode
             </Typography>
             <Switch checked={themeMode === "dark"} size="medium" />
