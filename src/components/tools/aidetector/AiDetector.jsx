@@ -84,6 +84,7 @@ const AiDetector = () => {
   function handleClear() {
     setOutputContend(null);
     setUserInput("");
+    setEnableEdit(true);
   }
   async function handleSubmit() {
     try {
