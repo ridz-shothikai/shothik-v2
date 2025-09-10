@@ -19,6 +19,8 @@ import useSnackbar from "../../hooks/useSnackbar";
 import { useResetPasswordMutation } from "../../redux/api/auth/authApi";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
+import { setShowLoginModal } from "../../redux/slice/auth";
+import { useDispatch } from "react-redux";
 
 // ----------------------------------------------------------------------
 const commonPasswords = [
@@ -46,6 +48,7 @@ export default function AuthForgotPasswordForm() {
   const [resetPassword, { isLoading, isError, error }] =
     useResetPasswordMutation();
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   const ResetSchema = Yup.object().shape({
     password: Yup.string()
@@ -89,7 +92,8 @@ export default function AuthForgotPasswordForm() {
       const result = await resetPassword(payload);
       if (result.data) {
         enqueueSnackbar("Update success! Please login");
-        push("/auth/login");
+        push("/");
+        dispatch(setShowLoginModal(true));
       }
     } catch (error) {
       console.error(error);

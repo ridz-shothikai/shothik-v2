@@ -17,6 +17,7 @@ const ReturnToHome = () => {
 
   return (
     <Link
+      href="/"
       component='p'
       onClick={handleNavigation}
       color='inherit'
@@ -29,7 +30,7 @@ const ReturnToHome = () => {
       }}
     >
       <ChevronLeft fontSize='small' />
-      Return to sign in
+      Return to home
     </Link>
   );
 };

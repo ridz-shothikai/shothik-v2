@@ -80,11 +80,19 @@ export default function NavList({ data, layout, onCloseNav }) {
             fontSize: layout === "mini" ? 12 : 16,
             textAlign: layout === "mini" ? "center" : "start",
             flexGrow: 1,
-            whiteSpace: layout === "mini" ? "wrap" : "nowrap"
+            whiteSpace: layout === "mini" ? "wrap" : "nowrap",
           }}
           variant={isActive ? "subtitle2" : "body2"}
         >
-          {title}
+          {title === "AI Detector" ? (
+            <>
+              AI
+              <br />
+              Detector
+            </>
+          ) : (
+            title
+          )}
         </Typography>
       </ListItemText>
     </ListItemButton>
