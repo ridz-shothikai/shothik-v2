@@ -208,6 +208,7 @@ export default function AccountPopover({ accessToken, user }) {
           onClick={() => dispatch(toggleThemeMode())}
           sx={{
             "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
+            py: 0
           }}
         >
           <Stack direction="row" alignItems="center" spacing={1} pl={1.5}>
