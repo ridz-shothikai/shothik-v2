@@ -54,9 +54,13 @@ const BottomContend = ({
       const data = res?.result || [];
       setErrors(data);
     } catch (error) {
-      enqueueSnackbar(error.message || "Something went wrong", {
-        variant: "error",
-      });
+      // console.log(error);
+      enqueueSnackbar(
+        error.message || error.data.message || "Something went wrong",
+        {
+          variant: "error",
+        }
+      );
     } finally {
       setErrorChecking(false);
     }
