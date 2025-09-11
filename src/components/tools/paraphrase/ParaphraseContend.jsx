@@ -199,7 +199,8 @@ const ParaphraseContend = () => {
 
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
+    const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
+      path: "/p-v2/socket.io",
       transports: ["websocket"],
       auth: { token: accessToken },
       reconnection: true,

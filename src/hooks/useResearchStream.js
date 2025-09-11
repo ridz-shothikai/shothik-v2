@@ -185,7 +185,7 @@ export const useResearchStream = () => {
               pollingIntervalRef.current = null;
             }
 
-            dispatch(setError("Polling timeout - please refresh the page"));
+            dispatch(setError("Network timeout - please refresh the page"));
             dispatch(setPollingMode(false));
             dispatch(setConnectionStatus("timeout"));
           }
@@ -257,6 +257,8 @@ export const useResearchStream = () => {
         return;
       }
 
+      console.log(config, "config data");
+
       // Check if there's already an active research
       const hasActive = await QueueStatusService.hasActiveResearch();
       if (hasActive) {
@@ -300,9 +302,9 @@ export const useResearchStream = () => {
               chat: currentChatId,
               query,
               config: {
-                query_generator_model: "gemini-2.0-flash",
-                reflection_model: "gemini-2.0-flash",
-                answer_model: "gemini-2.0-flash",
+                query_generator_model: config.model || "gemini-2.0-flash",
+                reflection_model: config.model || "gemini-2.0-flash",
+                answer_model: config.model || "gemini-2.0-flash",
                 number_of_initial_queries:
                   config.effort === "low"
                     ? 1

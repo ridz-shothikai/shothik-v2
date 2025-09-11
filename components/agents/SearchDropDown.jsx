@@ -84,7 +84,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
       icon: "/agents/quick-research.svg",
       isPremium: false,
       model: "gemini-2.0-flash",
-      topLevel: 3,
+      topLevel: 2,
     },
     {
       level: "Level 4-7",
@@ -93,8 +93,8 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
         "Balanced detail - from concise 7 insights at Level 4 to a comprehensive written-up with examples and context at Level 7",
       icon: "/agents/standard-research.svg",
       isPremium: true,
-      model: "gemini-2.5-flash",
-      topLevel: 7,
+      model: "gemini-2.0-flash",
+      topLevel: 6,
     },
     {
       level: "Level 8-10",
@@ -104,7 +104,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
       icon: "/agents/deep-dive.svg",
       isPremium: true,
       model: "gemini-2.5-pro",
-      topLevel: 10,
+      topLevel: 9,
     },
   ];
 

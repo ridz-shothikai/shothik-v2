@@ -248,6 +248,7 @@ export default function AgentLandingPage() {
   const [topLevel, setTopLevel] = useState(3); // used for cofig -> 1.number_of_initial_queries, 2.max_research_loops
 
   // console.log(currentFiles, "<-currentFiles", currentUrls, "<- currentUrls");
+  console.log(researchModel, topLevel, "research config");
 
   const handleClose = () => {
     setAnchorEl(null);

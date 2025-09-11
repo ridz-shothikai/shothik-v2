@@ -208,6 +208,13 @@ async function handleResearchRequest(
   console.log("research start", inputValue, researchModel, topLevel);
   try {
     sessionStorage.setItem("initialResearchPrompt", inputValue);
+    sessionStorage.setItem(
+      "r-config",
+      JSON.stringify({
+        topK: topLevel,
+        model: researchModel === "gemini-2.0-flash" ? "basic" : "pro",
+      })
+    );
 
     const token = localStorage.getItem("accessToken");
 

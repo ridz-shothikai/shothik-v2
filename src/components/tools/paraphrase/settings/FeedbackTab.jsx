@@ -33,14 +33,15 @@ const FeedbackTab = () => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/feedback`,
+        `${
+          process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api"}/feedback`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ message: feedback })
+          body: JSON.stringify({ message: feedback }),
         }
       );
 

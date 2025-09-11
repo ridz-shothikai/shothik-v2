@@ -173,7 +173,8 @@ class PlagiarismRequestManager {
 
   // Actual API call
   async performPlagiarismCheck(text, accessToken, signal) {
-    const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
+    const API_BASE =
+      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
 
     const response = await fetch(`${API_BASE}/plagiarism`, {
       method: "POST",

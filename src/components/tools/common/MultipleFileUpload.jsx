@@ -42,7 +42,9 @@ export default function MultipleFileUpload({
   const inputRef = useRef(null);
 
   const limit = paidUser ? PAID_LIMIT : FREE_LIMIT;
-  const apiBase = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
+  const redirectPrefix = "p-v2"
+  const apiBase =
+    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {

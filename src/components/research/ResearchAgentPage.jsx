@@ -17,6 +17,7 @@ import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
 import { useConnectionState } from "../../hooks/useConnectionState";
 import { QueueStatusService } from "../../services/queueStatusService";
+import ResearchProcessLogs from "./ui/ResearchProcessLogs";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const scrollRef = useRef(null);
@@ -36,6 +37,8 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
   const { checkAndRecoverConnection, manualReconnect } = useResearchStream();
   const { loadChatResearchesWithQueueCheck } = useResearchHistory();
   const connectionState = useConnectionState();
+
+  const researchConfig = JSON.parse(sessionStorage.getItem("r-config"));
 
   console.log(researchCore, "research from ResearchAgentPage");
 
@@ -58,6 +61,8 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     return () => {
       // clean up effects
       sessionStorage.removeItem("activeResearchChatId");
+      sessionStorage.removeItem("initialResearchPrompt");
+      sessionStorage.removeItem("r-config");
       dispatch(clearResearchChatState());
       dispatch(resetResearchCore());
       dispatch(clearResearchUiState());
@@ -92,8 +97,8 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
               // Small delay to ensure all states are properly initialized
               setTimeout(() => {
                 startResearch(initialQuery, {
-                  effort: "medium",
-                  model: "gemini-2.5-pro",
+                  effort: researchConfig?.topK === 2 ? "low" : researchConfig?.topK === 6 ? "medium" : "high",
+                  model: researchConfig?.model === "basic" ? "gemini-2.0-flash" : "gemini-2.5-pro",
                 });
               }, 500);
             }
@@ -212,6 +217,16 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
             onRetry={manualReconnect}
           />
         )}
+
+        {((researchCore?.streamEvents?.length > 0 ||
+          researchCore?.researches?.length > 0) &&
+          researchCore?.isStreaming) && (
+            <ResearchProcessLogs
+              streamEvents={researchCore?.streamEvents}
+              researches={researchCore?.researches}
+              isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
+            />
+          )}
       </Box>
     );
 };
