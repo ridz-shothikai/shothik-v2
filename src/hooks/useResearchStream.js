@@ -22,204 +22,337 @@ export const useResearchStream = () => {
   const { isStreaming, jobId, isPolling, researches } = useSelector(
     (state) => state.researchCore
   );
+
   const abortControllerRef = useRef(null);
   const pollingIntervalRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
+  const isPollingActiveRef = useRef(false);
+  const lastStatusRef = useRef(null);
+  const handlingCompletionRef = useRef(false);
 
   const {
     storeConnectionMetadata,
-    getStoredMetadata,
     clearConnectionMetadata,
     isConnectionInterrupted,
   } = useConnectionState();
+
+  const hasNewEvents = useCallback((newStatus, lastStatus) => {
+    if (!lastStatus || !newStatus) return true;
+
+    const newEvents = newStatus.progress?.events || [];
+    const lastEvents = lastStatus.progress?.events || [];
+
+    // Check if we have new events
+    if (newEvents.length > lastEvents.length) return true;
+
+    // Check if status changed (completed/failed)
+    if (newStatus.status !== lastStatus.status) return true;
+
+    return false;
+  }, []);
+
+  const processNewEvents = useCallback((newStatus, lastStatus) => {
+    const newEvents = newStatus.progress?.events || [];
+    const lastEventCount = lastStatus?.progress?.events?.length || 0;
+
+    // Get only the new events since last poll
+    const eventsToProcess = newEvents.slice(lastEventCount);
+
+    return eventsToProcess;
+  }, []);
 
   // Recovery and polling logic
 
   const handleCompletedJob = useCallback(
     async (jobStatus) => {
-      // CRITICAL: Clear polling state FIRST
-      dispatch(setPollingMode(false));
-      dispatch(setStreamingMode(false));
-
-      // Clear interval if it still exists
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-      }
-
-      // Check if this research already exists in state to prevent duplicates
-      const currentState = store.getState();
-      const existingResearches = currentState.researchCore.researches;
-      const existingResearch = existingResearches?.find(
-        (research) => research._id === jobStatus.result?._id
-      );
-
-      if (existingResearch) {
-        console.log("Research already exists, skipping duplicate addition");
-        clearConnectionMetadata();
-        dispatch(setConnectionStatus("connected"));
+      // Prevent multiple completion handlers
+      if (handlingCompletionRef.current) {
+        console.log("Completion already being handled, skipping");
         return;
       }
 
-      const result = jobStatus.result;
-      if (result) {
-        // Add AI message for completed research
-        const aiMessage = {
-          id: (Date.now() + 1).toString(),
-          type: "ai",
-          content: result.result,
-          sources: result.sources || [],
-          images: result.images || [],
-          timestamp: new Date().toISOString(),
-        };
+      handlingCompletionRef.current = true;
 
-        dispatch(addMessage(aiMessage));
-        dispatch(
-          finishResearch({
-            id: result._id,
-            query: result.query,
-            result: result.result,
+      try {
+        // Clear polling state
+        dispatch(setPollingMode(false));
+        dispatch(setStreamingMode(false));
+
+        // Check for duplicates
+        const currentState = store.getState();
+        const existingResearches = currentState.researchCore.researches;
+        const existingResearch = existingResearches?.find(
+          (research) => research._id === jobStatus.result?._id
+        );
+
+        if (existingResearch) {
+          console.log("Research already exists, skipping duplicate addition");
+          clearConnectionMetadata();
+          dispatch(setConnectionStatus("connected"));
+          return;
+        }
+
+        const result = jobStatus.result;
+        if (result) {
+          const aiMessage = {
+            id: (Date.now() + 1).toString(),
+            type: "ai",
+            content: result.result,
             sources: result.sources || [],
             images: result.images || [],
-            timestamp: result.createdAt,
-            _id: result._id,
-          })
-        );
-      }
+            timestamp: new Date().toISOString(),
+          };
 
-      clearConnectionMetadata();
-      dispatch(setConnectionStatus("connected"));
+          dispatch(addMessage(aiMessage));
+          dispatch(
+            finishResearch({
+              id: result._id,
+              query: result.query,
+              result: result.result,
+              sources: result.sources || [],
+              images: result.images || [],
+              timestamp: result.createdAt,
+              _id: result._id,
+            })
+          );
+        }
+
+        clearConnectionMetadata();
+        dispatch(setConnectionStatus("connected"));
+      } catch (error) {
+        console.error("Error in handleCompletedJob:", error);
+        dispatch(setConnectionStatus("failed"));
+      } finally {
+        handlingCompletionRef.current = false;
+      }
     },
     [dispatch, clearConnectionMetadata]
   );
 
   const startPollingMode = useCallback(
     async (targetJobId) => {
-      // Clear any existing polling first
+      // Prevent multiple polling sessions
+      if (isPollingActiveRef.current) {
+        console.log("Polling already active for", targetJobId);
+        return;
+      }
+
+      // Clear any existing polling
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
       }
 
+      // Reset state
+      isPollingActiveRef.current = true;
+      lastStatusRef.current = null;
+      handlingCompletionRef.current = false;
+      reconnectAttemptsRef.current = 0;
+
+      // Set initial state
       dispatch(startStreaming({ jobId: targetJobId }));
       dispatch(setPollingMode(true));
       dispatch(setConnectionStatus("polling"));
 
       let pollCount = 0;
-      const maxPolls = 300;
-      let isPolling = false;
-      let shouldContinuePolling = true;
+      const maxPolls = 600; // 30 minutes at 3 second intervals
 
-      const poll = async () => {
-        // CRITICAL: Check if polling should continue BEFORE doing anything
-        if (!shouldContinuePolling || isPolling) return;
+      const pollFunction = async () => {
+        if (pollFunction.isRunning) {
+          console.log("Poll already running, skipping");
+          return;
+        }
 
-        isPolling = true;
+        pollFunction.isRunning = true;
 
         try {
-          const jobStatus = await QueueStatusService.getJobStatus(targetJobId);
-
-          // CRITICAL: Double-check after async call
-          if (!shouldContinuePolling) {
-            isPolling = false;
+          // Check if we should continue polling
+          if (!isPollingActiveRef.current) {
+            console.log("Polling stopped by external signal");
             return;
           }
-
-          if (QueueStatusService.isJobCompleted(jobStatus)) {
-            // CRITICAL: flag and clear interval BEFORE handling completion
-            shouldContinuePolling = false;
-
-            if (pollingIntervalRef.current) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = null;
-            }
-
-            // Set polling to false in Redux BEFORE handling completion
-            dispatch(setPollingMode(false));
-
-            await handleCompletedJob(jobStatus);
+  
+          if (handlingCompletionRef.current) {
+            console.log("Completion being handled, skipping poll");
             return;
           }
-
-          if (QueueStatusService.isJobFailed(jobStatus)) {
-            shouldContinuePolling = false;
-
-            if (pollingIntervalRef.current) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = null;
-            }
-
-            dispatch(setError("Research job failed"));
-            dispatch(setPollingMode(false));
-            dispatch(setConnectionStatus("failed"));
-            clearConnectionMetadata();
-            return;
-          }
-
-          // Update streaming indicator with current progress
-          if (jobStatus?.progress) {
-            dispatch(
-              addStreamEvent({
-                step: jobStatus.progress.step,
-                data: jobStatus.progress.data,
-                timestamp: jobStatus.progress.timestamp,
-                researchId: jobStatus.progress.researchId,
-              })
+  
+          try {
+            const jobStatus = await QueueStatusService.getJobStatus(
+              targetJobId
             );
-          }
 
-          pollCount++;
+            console.log(jobStatus, "...Job status from polling...");
 
-          if (pollCount === 30) {
-            if (pollingIntervalRef.current && shouldContinuePolling) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = setInterval(poll, 5000);
-            }
-          }
+            // Reset reconnect attempts on successful response
+            reconnectAttemptsRef.current = 0;
 
-          if (pollCount >= maxPolls) {
-            shouldContinuePolling = false;
-
-            if (pollingIntervalRef.current) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = null;
+            if (!jobStatus) {
+              console.warn("No job status received");
+              return;
             }
 
-            dispatch(setError("Network timeout - please refresh the page"));
-            dispatch(setPollingMode(false));
-            dispatch(setConnectionStatus("timeout"));
-          }
-        } catch (error) {
-          console.error("Polling error:", error);
-          reconnectAttemptsRef.current++;
-
-          if (reconnectAttemptsRef.current >= 5) {
-            shouldContinuePolling = false;
-
-            if (pollingIntervalRef.current) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = null;
+            if (!hasNewEvents(jobStatus, lastStatusRef.current)) {
+              return; // Skip if no new events
             }
 
-            dispatch(setError("Failed to reconnect to research stream"));
-            dispatch(setPollingMode(false));
-            dispatch(setConnectionStatus("failed"));
+            // Process new events
+            const newEvents = processNewEvents(
+              jobStatus,
+              lastStatusRef.current
+            );
+            lastStatusRef.current = { ...jobStatus };
+
+            // Dispatch new events sequentially with small delays to avoid overwhelming UI
+            newEvents.forEach((event, index) => {
+              setTimeout(() => {
+                if (isPollingActiveRef.current) {
+                  dispatch(addStreamEvent(event));
+                }
+              }, index * 1500); // 1.5s delay between each event
+            });
+
+            if (QueueStatusService.isJobCompleted(jobStatus)) {
+              console.log("Job completed, stopping polling");
+              isPollingActiveRef.current = false;
+
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+
+              await handleCompletedJob(jobStatus);
+              return;
+            }
+
+            if (QueueStatusService.isJobFailed(jobStatus)) {
+              console.log("Job failed, stopping polling");
+              isPollingActiveRef.current = false;
+
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+
+              dispatch(setError("Research job failed"));
+              dispatch(setPollingMode(false));
+              dispatch(setConnectionStatus("failed"));
+              clearConnectionMetadata();
+              return;
+            }
+
+            pollCount++;
+
+            // Adjust polling frequency over time
+            if (pollCount === 20) {
+              if (pollingIntervalRef.current && isPollingActiveRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                // Add a small delay before creating new interval to prevent overlap
+                setTimeout(() => {
+                  if (isPollingActiveRef.current) {
+                    pollingIntervalRef.current = setInterval(
+                      pollFunction,
+                      8000
+                    );
+                  }
+                }, 100);
+              }
+            } else if (pollCount === 100) {
+              if (pollingIntervalRef.current && isPollingActiveRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                setTimeout(() => {
+                  if (isPollingActiveRef.current) {
+                    pollingIntervalRef.current = setInterval(
+                      pollFunction,
+                      15000
+                    );
+                  }
+                }, 100);
+              }
+            }
+
+            // Timeout after maximum polls
+            if (pollCount >= maxPolls) {
+              console.log("Polling timeout reached");
+              isPollingActiveRef.current = false;
+
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+
+              dispatch(setError("Research timeout - please try again"));
+              dispatch(setPollingMode(false));
+              dispatch(setConnectionStatus("timeout"));
+              clearConnectionMetadata();
+            }
+          } catch (error) {
+            console.error("Polling error:", error);
+            reconnectAttemptsRef.current++;
+  
+            if (reconnectAttemptsRef.current >= 5) {
+              console.log("Too many polling errors, stopping");
+              isPollingActiveRef.current = false;
+  
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+  
+              dispatch(setError("Failed to connect to research service"));
+              dispatch(setPollingMode(false));
+              dispatch(setConnectionStatus("failed"));
+              clearConnectionMetadata();
+            }
           }
         } finally {
-          isPolling = false;
+          pollFunction.isRunning = false;
         }
+
       };
 
       // Start polling immediately
-      await poll();
+      // await pollFunction();
 
-      // Only set interval if we should continue polling
-      if (shouldContinuePolling) {
-        pollingIntervalRef.current = setInterval(poll, 3000);
+      // Continue polling if still active
+      if (isPollingActiveRef.current && !handlingCompletionRef.current) {
+        pollingIntervalRef.current = setInterval(pollFunction, 5000);
       }
     },
-    [dispatch, handleCompletedJob, clearConnectionMetadata]
-  ); 
+    [dispatch, handleCompletedJob, clearConnectionMetadata, hasNewEvents, processNewEvents]
+  );
+
+  const cancelResearch = useCallback(() => {
+    console.log("Canceling research");
+
+    // Stop polling
+    isPollingActiveRef.current = false;
+    handlingCompletionRef.current = false;
+    lastStatusRef.current = null;
+    reconnectAttemptsRef.current = 0;
+
+    // Clear intervals
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
+    // Abort streaming
+    if (abortControllerRef.current) {
+      try {
+        abortControllerRef.current.abort();
+      } catch (e) {
+        console.warn("Error aborting controller:", e);
+      }
+      abortControllerRef.current = null;
+    }
+
+    // Update state
+    dispatch(setPollingMode(false));
+    dispatch(setStreamingMode(false));
+    dispatch(setConnectionStatus("disconnected"));
+    clearConnectionMetadata();
+  }, [clearConnectionMetadata, dispatch]);
 
   const checkAndRecoverConnection = useCallback(async () => {
     const storedJobId = sessionStorage.getItem("currentResearchJobId");
@@ -424,25 +557,6 @@ export const useResearchStream = () => {
     ]
   );
 
-  const cancelResearch = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Clear interval and reset reference
-    if (pollingIntervalRef.current) {
-      clearInterval(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-
-    // Update state
-    dispatch(setPollingMode(false));
-    dispatch(setConnectionStatus("disconnected"));
-    reconnectAttemptsRef.current = 0;
-
-    clearConnectionMetadata();
-  }, [clearConnectionMetadata, dispatch]);
-
   const manualReconnect = useCallback(async () => {
     reconnectAttemptsRef.current = 0;
     dispatch(setConnectionStatus("reconnecting"));
@@ -451,6 +565,30 @@ export const useResearchStream = () => {
       dispatch(setConnectionStatus("failed"));
     }
   }, [checkAndRecoverConnection, dispatch]);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      console.log("useResearchStream cleanup");
+
+      isPollingActiveRef.current = false;
+      handlingCompletionRef.current = false;
+
+      if (abortControllerRef.current) {
+        try {
+          abortControllerRef.current.abort();
+        } catch (e) {}
+        abortControllerRef.current = null;
+      }
+
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+
+      clearConnectionMetadata();
+    };
+  }, [clearConnectionMetadata]);
 
   // Check for interrupted connections on hook initialization
   useEffect(() => {
@@ -463,20 +601,6 @@ export const useResearchStream = () => {
 
     checkInterrupted();
   }, [isConnectionInterrupted, checkAndRecoverConnection]);
-
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null; // Add this line
-      }
-      // Clear any stored connection metadata on unmount
-      clearConnectionMetadata();
-    };
-  }, [clearConnectionMetadata]);
 
   return {
     startResearch,

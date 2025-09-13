@@ -1,27 +1,15 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Box,
   Typography,
   Chip,
-  Card,
-  CardContent,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Divider,
-  IconButton,
-  Collapse,
   Paper,
   Stack,
-  Badge,
-  LinearProgress,
+  Card,
+  CardContent,
+  Divider,
 } from "@mui/material";
 import {
   Timeline,
@@ -32,551 +20,240 @@ import {
   TimelineDot,
   timelineItemClasses,
 } from "@mui/lab";
-import {
-  ExpandMore as ExpandMoreIcon,
-  CheckCircle as CheckCircleIcon,
-  HourglassEmpty as HourglassEmptyIcon,
-  Search as SearchIcon,
-  Psychology as PsychologyIcon,
-  Edit as EditIcon,
-  Image as ImageIcon,
-  Source as SourceIcon,
-  QueryBuilder as QueryBuilderIcon,
-  TrendingUp as TrendingUpIcon,
-  ExpandMore,
-  ExpandLess,
-  OpenInNew,
-  Error as ErrorIcon,
-  AccessTime as AccessTimeIcon,
-  AutorenewOutlined,
-} from "@mui/icons-material";
 
-const stepIcons = {
-  queued: HourglassEmptyIcon,
-  generate_query: PsychologyIcon,
-  web_research: SearchIcon,
-  reflection: TrendingUpIcon,
-  finalize_answer: EditIcon,
-  image_search: ImageIcon,
-  completed: CheckCircleIcon,
-};
+/**
+ * Timeline UI with clickable sources and a "shine" animation on the last message title.
+ *
+ * Props:
+ *  - streamEvents: array of SSE event objects
+ *  - researches: optional meta info
+ *  - isStreaming: boolean
+ */
 
-const stepLabels = {
+const STEP_LABELS = {
   queued: "Queued",
-  generate_query: "Query Generation",
-  web_research: "Web Research",
-  reflection: "Analysis & Reflection",
-  finalize_answer: "Finalizing Answer",
-  image_search: "Image Search",
+  generate_query: "Query generation",
+  web_research: "Web research",
+  reflection: "Analysis & reflection",
+  finalize_answer: "Finalizing answer",
+  image_search: "Image search",
   completed: "Completed",
 };
 
-const stepColors = {
-  queued: "warning",
-  generate_query: "info",
-  web_research: "primary",
-  reflection: "secondary",
-  finalize_answer: "success",
-  image_search: "info",
-  completed: "success",
-};
-
-const ProcessStepItem = ({ event, isLast, isActive = false }) => {
-  const [showSources, setShowSources] = useState(false);
-  const [showQueries, setShowQueries] = useState(false);
-
-  const getDomainFromUrl = (url) => {
-    try {
-      return new URL(url).hostname.replace("www.", "");
-    } catch {
-      return "Unknown source";
-    }
-  };
-
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return "";
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
+const defaultFormatTime = (ts) => {
+  if (!ts) return "";
+  try {
+    const d = new Date(ts);
+    return d.toLocaleTimeString([], {
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit",
     });
-  };
+  } catch {
+    return String(ts);
+  }
+};
 
-  const StepIcon = stepIcons[event.step] || QueryBuilderIcon;
-  const stepColor = stepColors[event.step] || "primary";
+const shortText = (text, n = 220) => {
+  if (!text) return "";
+  const s = String(text).trim();
+  return s.length > n ? s.slice(0, n) + "…" : s;
+};
 
-  const renderStepContent = () => {
-    switch (event.step) {
-      case "queued":
-        return (
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {event.data.position !== undefined
-                ? `Position in queue: #${event.data.position + 1}`
-                : "Processing request..."}
-            </Typography>
-            {isActive && (
-              <Box sx={{ mt: 1 }}>
-                <LinearProgress size="small" />
-              </Box>
-            )}
-          </Box>
-        );
-
-      case "generate_query":
-        if (event.data.search_query) {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Box
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
-              >
-                <Typography variant="subtitle2" color="text.primary">
-                  Generated Queries ({event.data.search_query.length}):
-                </Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => setShowQueries(!showQueries)}
-                  aria-label="toggle queries"
-                >
-                  {showQueries ? <ExpandLess /> : <ExpandMore />}
-                </IconButton>
-              </Box>
-              <Collapse in={showQueries}>
-                <Stack spacing={1}>
-                  {event.data.search_query.map((query, idx) => (
-                    <Paper
-                      key={idx}
-                      elevation={0}
-                      sx={{
-                        p: 1.5,
-                        bgcolor: "rgba(25, 118, 210, 0.04)",
-                        border: "1px solid rgba(25, 118, 210, 0.12)",
-                        borderRadius: 1,
-                      }}
-                    >
-                      <Typography variant="body2" color="primary.main">
-                        "{query}"
-                      </Typography>
-                    </Paper>
-                  ))}
-                </Stack>
-              </Collapse>
-            </Box>
-          );
-        } else {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {event.data.message || "Generating search queries..."}
-              </Typography>
-              {isActive && (
-                <Box sx={{ mt: 1 }}>
-                  <LinearProgress size="small" />
-                </Box>
-              )}
-            </Box>
-          );
-        }
-
-      case "web_research":
-        if (event.data.sources_gathered) {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Box
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
-              >
-                <Typography variant="subtitle2" color="text.primary">
-                  Sources Found: {event.data.sources_gathered.length}
-                </Typography>
-                {event.data.sources_gathered.length > 0 && (
-                  <IconButton
-                    size="small"
-                    onClick={() => setShowSources(!showSources)}
-                    aria-label="toggle sources"
-                  >
-                    {showSources ? <ExpandLess /> : <ExpandMore />}
-                  </IconButton>
-                )}
-              </Box>
-              <Collapse in={showSources}>
-                <List
-                  dense
-                  sx={{ bgcolor: "background.paper", borderRadius: 1 }}
-                >
-                  {event.data.sources_gathered
-                    .slice(0, 5)
-                    .map((source, idx) => (
-                      <ListItem
-                        key={idx}
-                        sx={{
-                          pl: 0,
-                          borderBottom:
-                            idx <
-                            Math.min(4, event.data.sources_gathered.length - 1)
-                              ? "1px solid"
-                              : "none",
-                          borderColor: "divider",
-                        }}
-                      >
-                        <ListItemAvatar>
-                          <Avatar
-                            sx={{
-                              width: 32,
-                              height: 32,
-                              fontSize: "0.75rem",
-                              bgcolor: "primary.main",
-                            }}
-                          >
-                            {getDomainFromUrl(source.url)
-                              .charAt(0)
-                              .toUpperCase()}
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            <Typography
-                              variant="body2"
-                              sx={{ fontWeight: 500 }}
-                            >
-                              {source.title || "Untitled Source"}
-                            </Typography>
-                          }
-                          secondary={
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {getDomainFromUrl(source.url)}
-                            </Typography>
-                          }
-                        />
-                        <IconButton
-                          size="small"
-                          onClick={() => window.open(source.url, "_blank")}
-                          aria-label="open source"
-                        >
-                          <OpenInNew fontSize="small" />
-                        </IconButton>
-                      </ListItem>
-                    ))}
-                  {event.data.sources_gathered.length > 5 && (
-                    <ListItem sx={{ justifyContent: "center", pt: 1 }}>
-                      <Chip
-                        label={`+${
-                          event.data.sources_gathered.length - 5
-                        } more sources`}
-                        size="small"
-                        variant="outlined"
-                        color="primary"
-                      />
-                    </ListItem>
-                  )}
-                </List>
-              </Collapse>
-            </Box>
-          );
-        } else {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {event.data.message || "Searching web sources..."}
-              </Typography>
-              {isActive && (
-                <Box sx={{ mt: 1 }}>
-                  <LinearProgress size="small" />
-                </Box>
-              )}
-            </Box>
-          );
-        }
-
-      case "reflection":
-        if (event.data.knowledge_gap || event.data.follow_up_queries) {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Analysis complete.{" "}
-                {event.data.is_sufficient
-                  ? "Research sufficient."
-                  : "Additional research needed."}
-              </Typography>
-
-              {event.data.knowledge_gap && (
-                <Paper
-                  sx={{
-                    p: 2,
-                    mb: 2,
-                    bgcolor: "rgba(255, 193, 7, 0.08)",
-                    border: "1px solid rgba(255, 193, 7, 0.2)",
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    gutterBottom
-                    color="warning.main"
-                  >
-                    Knowledge Gap Identified:
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {event.data.knowledge_gap}
-                  </Typography>
-                </Paper>
-              )}
-
-              {event.data.follow_up_queries &&
-                event.data.follow_up_queries.length > 0 && (
-                  <Box>
-                    <Typography
-                      variant="subtitle2"
-                      gutterBottom
-                      color="text.primary"
-                    >
-                      Follow-up Queries ({event.data.follow_up_queries.length}):
-                    </Typography>
-                    <Stack spacing={1}>
-                      {event.data.follow_up_queries.map((query, idx) => (
-                        <Paper
-                          key={idx}
-                          elevation={0}
-                          sx={{
-                            p: 1.5,
-                            bgcolor: "rgba(156, 39, 176, 0.04)",
-                            border: "1px solid rgba(156, 39, 176, 0.12)",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography variant="body2" color="secondary.main">
-                            "{query}"
-                          </Typography>
-                        </Paper>
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-            </Box>
-          );
-        } else {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                {event.data.message || "Analyzing research results..."}
-              </Typography>
-              {isActive && (
-                <Box sx={{ mt: 1 }}>
-                  <LinearProgress size="small" />
-                </Box>
-              )}
-            </Box>
-          );
-        }
-
-      case "image_search":
-        return (
-          <Box sx={{ ml: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              {event.data.images_found !== undefined ? (
-                event.data.images_found > 0 ? (
-                  <>
-                    <CheckCircleIcon color="success" fontSize="small" />
-                    <Typography variant="body2" color="success.main">
-                      Found {event.data.images_found} images
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <ErrorIcon color="warning" fontSize="small" />
-                    <Typography variant="body2" color="warning.main">
-                      {event.data.message || "No images found"}
-                    </Typography>
-                  </>
-                )
-              ) : (
-                <>
-                  <Typography variant="body2" color="text.secondary">
-                    {event.data.message || "Searching for images..."}
-                  </Typography>
-                  {isActive && (
-                    <Box sx={{ ml: 1 }}>
-                      <AutorenewOutlined
-                        fontSize="small"
-                        sx={{ animation: "spin 1s linear infinite" }}
-                      />
-                    </Box>
-                  )}
-                </>
-              )}
-            </Box>
-          </Box>
-        );
-
-      case "finalize_answer":
-        return (
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {event.data.message || "Composing final answer..."}
-            </Typography>
-            {isActive && (
-              <Box sx={{ mt: 1 }}>
-                <LinearProgress size="small" />
-              </Box>
-            )}
-          </Box>
-        );
-
-      case "completed":
-        if (
-          event.data.sources ||
-          event.data.research_loops ||
-          event.data.search_queries
-        ) {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography
-                variant="body2"
-                color="success.main"
-                sx={{ mb: 1, fontWeight: 500 }}
-              >
-                Research completed successfully!
-              </Typography>
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                {event.data.sources_count && (
-                  <Chip
-                    icon={<SourceIcon />}
-                    label={`${event.data.sources_count} sources`}
-                    size="small"
-                    color="primary"
-                    variant="filled"
-                  />
-                )}
-                {event.data.research_loops && (
-                  <Chip
-                    icon={<TrendingUpIcon />}
-                    label={`${event.data.research_loops} research loops`}
-                    size="small"
-                    color="secondary"
-                    variant="filled"
-                  />
-                )}
-                {event.data.search_queries && (
-                  <Chip
-                    icon={<SearchIcon />}
-                    label={`${event.data.search_queries.length} queries`}
-                    size="small"
-                    color="info"
-                    variant="filled"
-                  />
-                )}
-              </Stack>
-            </Box>
-          );
-        } else {
-          return (
-            <Box sx={{ ml: 2 }}>
-              <Typography
-                variant="body2"
-                color="success.main"
-                sx={{ fontWeight: 500 }}
-              >
-                Research completed successfully!
-              </Typography>
-            </Box>
-          );
-        }
-
-      default:
-        return (
-          <Box sx={{ ml: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {event.data.message || event.data.title || "Processing..."}
-            </Typography>
-            {isActive && (
-              <Box sx={{ mt: 1 }}>
-                <LinearProgress size="small" />
-              </Box>
-            )}
-          </Box>
-        );
+const aggregateFromEvents = (events = []) => {
+  const summary = { totalSources: 0, totalQueries: 0, researchLoops: 0 };
+  const aggregatedSources = [];
+  const queries = [];
+  events.forEach((ev) => {
+    if (ev?.data?.sources_gathered && Array.isArray(ev.data.sources_gathered)) {
+      aggregatedSources.push(...ev.data.sources_gathered);
     }
+    if (ev?.data?.sources && Array.isArray(ev.data.sources)) {
+      aggregatedSources.push(...ev.data.sources);
+    }
+    if (ev?.data?.sources_count) {
+      summary.totalSources = Math.max(
+        summary.totalSources,
+        ev.data.sources_count
+      );
+    }
+    if (ev?.data?.search_query && Array.isArray(ev.data.search_query)) {
+      queries.push(...ev.data.search_query);
+    }
+    if (ev?.data?.search_queries && Array.isArray(ev.data.search_queries)) {
+      queries.push(...ev.data.search_queries);
+    }
+    if (ev?.data?.research_loops) {
+      summary.researchLoops = Math.max(
+        summary.researchLoops,
+        ev.data.research_loops
+      );
+    }
+  });
+
+  // dedupe by url/title if possible
+  const uniqueSources = [];
+  const seen = new Set();
+  aggregatedSources.forEach((s) => {
+    const key = (s.url || s.title || JSON.stringify(s)).toString();
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueSources.push(s);
+    }
+  });
+
+  summary.totalSources = Math.max(summary.totalSources, uniqueSources.length);
+  summary.totalQueries = queries.length;
+
+  return { summary, uniqueSources, queries };
+};
+
+const ProcessTimelineItem = ({ ev, isLast, isActive }) => {
+  const stepLabel = STEP_LABELS[ev.step] || ev.step || "Step";
+  const timestamp = ev.timestamp ? defaultFormatTime(ev.timestamp) : "";
+  const messageCandidates = [
+    ev.data?.message,
+    ev.data?.title,
+    ev.data?.text,
+    ev.data?.output,
+    ev.data?.description,
+  ];
+  const message = messageCandidates.find(Boolean) || null;
+
+  const badges = [];
+  if (ev.data?.sources_gathered?.length)
+    badges.push(`${ev.data.sources_gathered.length} sources`);
+  if (ev.data?.sources_count) badges.push(`${ev.data.sources_count} sources`);
+  if (ev.data?.search_query?.length)
+    badges.push(`${ev.data.search_query.length} queries`);
+  if (ev.data?.search_queries?.length)
+    badges.push(`${ev.data.search_queries.length} queries`);
+  if (ev.data?.images_found !== undefined)
+    badges.push(`${ev.data.images_found} images`);
+  // if (ev.data?.position !== undefined) badges.push(`#${ev.data.position + 1}`);
+
+  // Title SX: apply shine overlay only when this is the last timeline item
+  const titleSx = {
+    position: "relative",
+    overflow: "hidden",
+    display: "inline-block",
+    // ensure text is above the shine
+    zIndex: 1,
+    ...(isLast && {
+      // pseudo-element used for the moving white glow
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: "-140%",
+        width: "140%",
+        height: "100%",
+        // semi-transparent white band in the middle
+        background:
+          "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.65) 55%, rgba(255,255,255,0) 100%)",
+        transform: "skewX(-20deg)",
+        pointerEvents: "none",
+        animation: "shineMove 1800ms linear infinite",
+        mixBlendMode: "screen",
+      },
+      // keyframes for the shine
+      "@keyframes shineMove": {
+        "0%": { left: "-140%" },
+        "100%": { left: "140%" },
+      },
+    }),
   };
 
   return (
     <TimelineItem>
       <TimelineSeparator>
         <TimelineDot
-          color={stepColor}
           sx={{
-            p: 1,
+            width: 10,
+            height: 10,
+            boxShadow: "none",
+            bgcolor: isActive ? "primary.main" : "grey.400",
             ...(isActive && {
-              animation: "pulse 1.5s ease-in-out infinite",
-              "@keyframes pulse": {
-                "0%": { transform: "scale(1)" },
-                "50%": { transform: "scale(1.1)" },
-                "100%": { transform: "scale(1)" },
+              animation: "blink 2s ease-in-out infinite",
+              "@keyframes blink": {
+                "0%, 100%": { opacity: 1, transform: "scale(1)" },
+                "50%": { opacity: 0.5, transform: "scale(1.5)" },
               },
             }),
           }}
-        >
-          <StepIcon fontSize="small" />
-        </TimelineDot>
+        />
         {!isLast && <TimelineConnector sx={{ bgcolor: "grey.300" }} />}
       </TimelineSeparator>
-      <TimelineContent>
-        <Card
-          variant="outlined"
-          sx={{
-            mb: 2,
-            transition: "all 0.2s ease-in-out",
-            ...(isActive && {
-              boxShadow: 2,
-              borderColor: `${stepColor}.main`,
-            }),
-            "&:hover": {
-              boxShadow: 2,
-            },
-          }}
-        >
-          <CardContent sx={{ pb: "16px !important" }}>
+
+      <TimelineContent sx={{ py: 1 }}>
+        <Card variant="outlined" sx={{ borderRadius: 1, mb: 1 }}>
+          <CardContent sx={{ pb: "12px !important", pt: 1 }}>
             <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                mb: 1,
-              }}
+              sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
             >
-              <Box sx={{ flex: 1, mr: 2 }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  {event.data.title || stepLabels[event.step]}
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                  {/* title wrapper receives the shine styling when isLast === true */}
+                  <Box component="span" sx={titleSx}>
+                    {stepLabel}
+                  </Box>
                 </Typography>
-                {renderStepContent()}
+
+                {message && (
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 0.5, color: "text.secondary" }}
+                  >
+                    {shortText(message, 260)}
+                  </Typography>
+                )}
+
+                {Array.isArray(ev.data?.search_query) &&
+                  ev.data.search_query.length > 0 && (
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ mt: 1, flexWrap: "wrap", gap:1 }}
+                    >
+                      {ev.data.search_query.slice(0, 3).map((q, i) => (
+                        <Chip
+                          key={i}
+                          size="small"
+                          label={shortText(q, 40)}
+                          variant="outlined"
+                        />
+                      ))}
+                      {ev.data.search_query.length > 3 && (
+                        <Chip
+                          size="small"
+                          label={`+${ev.data.search_query.length - 3} more`}
+                        />
+                      )}
+                    </Stack>
+                  )}
               </Box>
+
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-end",
-                  gap: 0.5,
+                  ml: 1,
                 }}
               >
-                {event.timestamp && (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <AccessTimeIcon fontSize="small" color="disabled" />
-                    <Typography variant="caption" color="text.secondary">
-                      {formatTimestamp(event.timestamp)}
-                    </Typography>
-                  </Box>
-                )}
-                {isActive && (
-                  <Chip
-                    label="Active"
-                    size="small"
-                    color={stepColor}
-                    variant="filled"
-                    sx={{ minWidth: 60 }}
-                  />
-                )}
+                <Typography variant="caption" color="text.secondary">
+                  {timestamp}
+                </Typography>
+
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  sx={{ mt: 0.5, flexWrap: "wrap", justifyContent: "flex-end" }}
+                >
+                  {badges.slice(0, 3).map((b, i) => (
+                    <Chip key={i} label={b} size="small" variant="outlined" />
+                  ))}
+                </Stack>
               </Box>
             </Box>
           </CardContent>
@@ -586,196 +263,213 @@ const ProcessStepItem = ({ event, isLast, isActive = false }) => {
   );
 };
 
-// Main component
 const ResearchProcessLogs = ({
   streamEvents = [],
   researches = [],
   isStreaming = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const processed = useMemo(() => {
+    if (!Array.isArray(streamEvents) || streamEvents.length === 0) {
+      return null;
+    }
 
-  const processedData = useMemo(() => {
-    if (!streamEvents || streamEvents.length === 0) return null;
+    let activeIndex = -1;
+    const steps = streamEvents.map((e, idx) => ({ ...e, __idx: idx }));
 
-    // Group events by step type and extract relevant data
-    const steps = [];
-    const sourceCount = { total: 0 };
-    const queryCount = { total: 0 };
-    let researchLoops = 0;
-
-    // Track the current active step
-    let activeStepIndex = -1;
-
-    streamEvents.forEach((event, index) => {
-      // Count sources
-      if (event.data?.sources_gathered) {
-        sourceCount.total += event.data.sources_gathered.length;
+    if (isStreaming) {
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (steps[i].step !== "completed") {
+          activeIndex = i;
+          break;
+        }
       }
-      if (event.data?.sources_count) {
-        sourceCount.total = event.data.sources_count;
-      }
+    } else {
+      activeIndex = steps.length - 1;
+    }
 
-      // Count queries
-      if (event.data?.search_query) {
-        queryCount.total += event.data.search_query.length;
-      }
-      if (event.data?.search_queries) {
-        queryCount.total += event.data.search_queries.length;
-      }
-
-      // Count research loops
-      if (event.data?.research_loops) {
-        researchLoops = event.data.research_loops;
-      }
-
-      // Determine if this is the active step
-      if (isStreaming && event.step !== "completed") {
-        activeStepIndex = index;
-      }
-
-      steps.push({
-        ...event,
-        isActive: isStreaming && index === activeStepIndex,
-      });
-    });
+    const { summary, uniqueSources, queries } =
+      aggregateFromEvents(streamEvents);
 
     return {
-      steps,
-      summary: {
-        totalSources: sourceCount.total,
-        totalQueries: queryCount.total,
-        researchLoops,
-        isComplete: steps.some((s) => s.step === "completed"),
-        duration:
-          steps.length > 1
-            ? new Date(steps[steps.length - 1].timestamp) -
-              new Date(steps[0].timestamp)
-            : 0,
-      },
+      steps: steps.map((s, i) => ({ ...s, isActive: i === activeIndex })),
+      summary,
+      uniqueSources,
+      queries,
     };
   }, [streamEvents, isStreaming]);
 
-  const formatDuration = (duration) => {
-    if (!duration) return "";
-    const seconds = Math.floor(duration / 1000);
-    const minutes = Math.floor(seconds / 60);
-    if (minutes > 0) {
-      return `${minutes}m ${seconds % 60}s`;
-    }
-    return `${seconds}s`;
-  };
+  if (!processed) return null;
 
-  if (!processedData || processedData.steps.length === 0) {
-    return null;
-  }
+  const { steps, summary, uniqueSources, queries } = processed;
 
-  const { steps, summary } = processedData;
+  const mainTitle =
+    (researches &&
+      researches[0] &&
+      (researches[0].title || researches[0].name)) ||
+    steps[0]?.data?.title ||
+    "Research Process";
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Accordion
-        expanded={isExpanded}
-        onChange={() => setIsExpanded(!isExpanded)}
-        sx={{
-          boxShadow: "none",
-          border: "1px solid",
-          borderColor: "divider",
-          "&:before": { display: "none" },
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          sx={{
-            bgcolor: "background.default",
-            "&:hover": { bgcolor: "action.hover" },
-          }}
+      {/* Header */}
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 1, mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+          {mainTitle}
+        </Typography>
+
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          sx={{ mb: 1, flexWrap: "wrap" }}
         >
+          <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+            Searching
+          </Typography>
+
+          {queries && queries.length > 0 ? (
+            <>
+              {queries.slice(0, 3).map((q, i) => (
+                <Chip
+                  key={i}
+                  label={shortText(q, 36)}
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+              {queries.length > 3 && (
+                <Chip label={`+${queries.length - 3} more`} size="small" />
+              )}
+            </>
+          ) : (
+            <Chip label="no queries yet" size="small" variant="outlined" />
+          )}
+
           <Box
             sx={{
+              ml: "auto",
               display: "flex",
+              gap: 1,
               alignItems: "center",
-              gap: 2,
-              width: "100%",
+              flexWrap: "wrap",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <SearchIcon color="primary" />
-              <Typography variant="h6" fontWeight={600}>
-                Research Process
-              </Typography>
-              {isStreaming && (
-                <Chip
-                  label="In Progress"
-                  size="small"
-                  color="primary"
-                  variant="filled"
-                  icon={
-                    <AutorenewOutlined
-                      sx={{ animation: "spin 1s linear infinite" }}
-                    />
-                  }
-                />
-              )}
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 1, ml: "auto", flexWrap: "wrap" }}>
-              {summary.totalSources > 0 && (
-                <Chip
-                  label={`${summary.totalSources} sources`}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
-              )}
-              {summary.totalQueries > 0 && (
-                <Chip
-                  label={`${summary.totalQueries} queries`}
-                  size="small"
-                  color="secondary"
-                  variant="outlined"
-                />
-              )}
-              {summary.researchLoops > 0 && (
-                <Chip
-                  label={`${summary.researchLoops} loops`}
-                  size="small"
-                  color="info"
-                  variant="outlined"
-                />
-              )}
-              {summary.duration > 0 && (
-                <Chip
-                  label={formatDuration(summary.duration)}
-                  size="small"
-                  color="default"
-                  variant="outlined"
-                />
-              )}
-            </Box>
+            {summary.totalSources > 0 && (
+              <Chip label={`${summary.totalSources} sources`} size="small" />
+            )}
+            {summary.totalQueries > 0 && (
+              <Chip label={`${summary.totalQueries} queries`} size="small" />
+            )}
+            {summary.researchLoops > 0 && (
+              <Chip label={`${summary.researchLoops} loops`} size="small" />
+            )}
           </Box>
-        </AccordionSummary>
+        </Stack>
 
-        <AccordionDetails sx={{ pt: 2 }}>
-          <Timeline
-            // position="right"
-            sx={{
-              [`& .${timelineItemClasses.root}:before`]: {
-                flex: 0,
-                padding: 0,
-              },
-            }}
+        <Divider sx={{ my: 1 }} />
+
+        {/* Sources preview block with clickable links */}
+        <Box sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Reviewing sources — {uniqueSources.length}
+          </Typography>
+
+          <Paper
+            variant="outlined"
+            sx={{ p: 1, borderRadius: 1, maxHeight: 160, overflow: "auto" }}
           >
-            {steps.map((event, index) => (
-              <ProcessStepItem
-                key={`${event.step}-${event.timestamp}-${index}`}
-                event={event}
-                isLast={index === steps.length - 1}
-                isActive={event.isActive}
-              />
-            ))}
-          </Timeline>
-        </AccordionDetails>
-      </Accordion>
+            <Stack spacing={1}>
+              {uniqueSources.length === 0 && (
+                <Typography variant="caption" color="text.secondary">
+                  No sources found yet.
+                </Typography>
+              )}
+
+              {uniqueSources.slice(0, 8).map((s, i) => {
+                const title =
+                  s.title || s.name || s.label || s.url || "Untitled";
+                const domain = (() => {
+                  try {
+                    return s.url
+                      ? new URL(s.url).hostname.replace("www.", "")
+                      : "";
+                  } catch {
+                    return "";
+                  }
+                })();
+
+                return (
+                  <Box
+                    key={i}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: 1,
+                      alignItems: "center",
+                    }}
+                  >
+                    {s.url ? (
+                      <Typography
+                        component="a"
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="body2"
+                        sx={{
+                          fontSize: 13,
+                          fontWeight: 500,
+                          textDecoration: "none",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        {shortText(title, 60)}
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: 13, fontWeight: 500 }}
+                      >
+                        {shortText(title, 60)}
+                      </Typography>
+                    )}
+
+                    <Typography variant="caption" color="text.secondary">
+                      {domain}
+                    </Typography>
+                  </Box>
+                );
+              })}
+
+              {uniqueSources.length > 8 && (
+                <Typography variant="caption" color="text.secondary">
+                  +{uniqueSources.length - 8} more...
+                </Typography>
+              )}
+            </Stack>
+          </Paper>
+        </Box>
+      </Paper>
+
+      {/* Timeline */}
+      <Box>
+        <Timeline
+          sx={{
+            [`& .${timelineItemClasses.root}:before`]: {
+              flex: 0,
+              padding: 0,
+            },
+          }}
+        >
+          {steps.map((ev, idx) => (
+            <ProcessTimelineItem
+              key={`${ev.step}-${ev.timestamp || idx}-${idx}`}
+              ev={ev}
+              isLast={idx === steps.length - 1}
+              isActive={ev.isActive}
+            />
+          ))}
+        </Timeline>
+      </Box>
     </Box>
   );
 };

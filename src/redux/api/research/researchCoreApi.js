@@ -1,47 +1,49 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../config";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const researchCoreApi = createApi({
   reducerPath: "researchCoreApi",
-  baseQuery: async (args, api, extraOptions) => {
-    let result = await baseQuery(args, api, extraOptions);
-    // console.log(result, "Base Query Result");
-    return result;
-  },
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX,
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("accessToken");
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      return headers;
+    },
+  }),
   tagTypes: ["Research"],
   endpoints: (builder) => ({
-    getChatResearches: builder.query({
-      query: (chatId) => `/research/get_chat_researches/${chatId}`,
-      providesTags: (result, error, chatId) => [
-        { type: "Research", id: chatId },
-      ],
-    }),
+    // getChatResearches: builder.query({
+    //   query: (chatId) => `/research/get_chat_researches/${chatId}`,
+    //   providesTags: (result, error, chatId) => [
+    //     { type: "Research", id: chatId },
+    //   ],
+    // }),
     getJobStatus: builder.query({
-      query: (jobId) => `/research/job/${jobId}/status`,
-      providesTags: (result, error, jobId) => [{ type: "Research", id: jobId }],
+      query: (jobId) => `/deep-research/research/job/${jobId}/status`,
+      keepUnusedDataFor: 0,
     }),
-    cancelJob: builder.mutation({
-      query: (jobId) => ({
-        url: `/research/job/${jobId}/cancel`,
-        method: "POST",
-      }),
-    }),
-    retryJob: builder.mutation({
-      query: (jobId) => ({
-        url: `/research/job/${jobId}/retry`,
-        method: "POST",
-      }),
-    }),
-    getQueueStats: builder.query({
-      query: () => "/research/queue/stats",
-    }),
+    // cancelJob: builder.mutation({
+    //   query: (jobId) => ({
+    //     url: `/research/job/${jobId}/cancel`,
+    //     method: "POST",
+    //   }),
+    // }),
+    // retryJob: builder.mutation({
+    //   query: (jobId) => ({
+    //     url: `/research/job/${jobId}/retry`,
+    //     method: "POST",
+    //   }),
+    // }),
+    // getQueueStats: builder.query({
+    //   query: () => "/research/queue/stats",
+    // }),
   }),
 });
 
 export const {
-  useGetChatResearchesQuery,
+  // useGetChatResearchesQuery,
   useGetJobStatusQuery,
-  useCancelJobMutation,
-  useRetryJobMutation,
-  useGetQueueStatsQuery,
+  // useCancelJobMutation,
+  // useRetryJobMutation,
+  // useGetQueueStatsQuery,
 } = researchCoreApi;

@@ -18,6 +18,7 @@ import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
 import { useConnectionState } from "../../hooks/useConnectionState";
 import { QueueStatusService } from "../../services/queueStatusService";
 import ResearchProcessLogs from "./ui/ResearchProcessLogs";
+import ResearchStreamingShell from "./ui/ResearchStreamingShell";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const scrollRef = useRef(null);
@@ -44,7 +45,8 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
 
   // console.log(loadingResearchHistory, "loadingResearchHistory");  
 
-  const initialQuery = sessionStorage.getItem("activeResearchChatId") || "";
+  // const initialQuery = sessionStorage.getItem("activeResearchChatId") || "";
+  const initialUserPrompt = sessionStorage.getItem("initialResearchPrompt");
 
   // useEffect(() => {
   //   // Create initial chat if none exists
@@ -209,24 +211,27 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
         </Box>
 
         {/* when streaming */}
-        {(researchCore?.isStreaming || researchCore?.isPolling) && (
+        {/* {(researchCore?.isStreaming || researchCore?.isPolling) && (
           <StreamingIndicator
             streamEvents={researchCore?.streamEvents}
             isPolling={researchCore?.isPolling}
             connectionStatus={researchCore?.connectionStatus}
             onRetry={manualReconnect}
           />
-        )}
+        )} */}
 
-        {((researchCore?.streamEvents?.length > 0 ||
-          researchCore?.researches?.length > 0) &&
-          researchCore?.isStreaming) && (
-            <ResearchProcessLogs
-              streamEvents={researchCore?.streamEvents}
-              researches={researchCore?.researches}
-              isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
-            />
-          )}
+        {(researchCore?.isStreaming || researchCore?.isPolling) && (
+          // <ResearchProcessLogs
+          //   streamEvents={researchCore?.streamEvents}
+          //   researches={researchCore?.researches}
+          //   isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
+          // />
+          <ResearchStreamingShell
+            streamEvents={researchCore?.streamEvents}
+            isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
+            userQuery={initialUserPrompt}
+          />
+        )}
       </Box>
     );
 };

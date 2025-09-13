@@ -20,6 +20,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import {useResearchStream} from "../../../hooks/useResearchStream"
+import { setUserPrompt } from "../../../redux/slice/researchCoreSlice";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -59,6 +60,7 @@ const ChatInput = () => {
     console.log("Submitting research query:", inputValue);
     // return;
     try {
+      dispatch(setUserPrompt(inputValue));
       setInputValue("");
       await startResearch(inputValue, { effort, model });
     } catch (error) {

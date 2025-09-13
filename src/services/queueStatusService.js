@@ -17,8 +17,18 @@ export class QueueStatusService {
   }
 
   static async hasActiveResearch() {
-    const stats = await this.getQueueStats();
-    return stats.research.active > 0 || stats.research.waiting > 0;
+    const storedJobId = sessionStorage.getItem("currentResearchJobId");
+    if (storedJobId) {
+      const status = await this.getJobStatus(storedJobId);
+      return (
+        !!status && (this.isJobActive(status) || this.isJobCompleted(status))
+      );
+    }
+    // fallback: avoid relying on /queue/stats; return false if no stored job
+    return false;
+    // previous👇
+    // const stats = await this.getQueueStats();
+    // return stats.research.active > 0 || stats.research.waiting > 0;
   }
 
   static async getJobStatus(jobId) {
