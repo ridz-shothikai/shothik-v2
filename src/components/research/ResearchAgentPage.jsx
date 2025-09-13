@@ -22,6 +22,7 @@ import ResearchStreamingShell from "./ui/ResearchStreamingShell";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const scrollRef = useRef(null);
+  const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
   const dispatch = useDispatch();
   //   const { headerHeight } = useSelector((state) => state.ui);
@@ -96,14 +97,28 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
               "initialResearchPrompt"
             );
             if (initialQuery) {
+              setIsInitializingResearch(true); // still initializing
               // Small delay to ensure all states are properly initialized
               setTimeout(() => {
                 startResearch(initialQuery, {
-                  effort: researchConfig?.topK === 2 ? "low" : researchConfig?.topK === 6 ? "medium" : "high",
-                  model: researchConfig?.model === "basic" ? "gemini-2.0-flash" : "gemini-2.5-pro",
+                  effort:
+                    researchConfig?.topK === 2
+                      ? "low"
+                      : researchConfig?.topK === 6
+                      ? "medium"
+                      : "high",
+                  model:
+                    researchConfig?.model === "basic"
+                      ? "gemini-2.0-flash"
+                      : "gemini-2.5-pro",
                 });
+                setIsInitializingResearch(false); // after call triggered
               }, 500);
+            } else {
+              setIsInitializingResearch(false);
             }
+          } else {
+            setIsInitializingResearch(false);
           }
   
           setLoadingResearchHistory(false);
@@ -114,6 +129,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     } catch (error) {
       console.error("Error loading research history:", error);
       setLoadingResearchHistory(false);
+      setIsInitializingResearch(false);
     }
   }, [currentChatId, checkAndRecoverConnection, loadChatResearchesWithQueueCheck, startResearch, researchCore?.isStreaming, researchCore?.isPolling]);
 
@@ -123,7 +139,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     }
   }, [researchCore?.isStreaming, researchCore?.researches?.length, researchCore?.streamEvents]);
 
-  if (loadingResearchHistory) {
+  if (loadingResearchHistory || isInitializingResearch) {
     return <ResearchPageSkeletonLoader />;
   }
 
