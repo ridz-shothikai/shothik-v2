@@ -159,7 +159,7 @@ export default function AccountBilling({ user }) {
                         ? "₹"
                         : "$"}
                     </Typography>
-                    <Button variant='text'>Download</Button>
+                    {/* <Button variant='text'>Download</Button> */}
                   </Box>
                 </Stack>
               </Card>

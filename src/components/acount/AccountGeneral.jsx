@@ -62,6 +62,8 @@ export default function AccountGeneral({user}) {
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
 
+  console.log(user, "account general")
+
   const UpdateUserSchema = Yup.object().shape({
     name: Yup.string()
       .trim()
@@ -89,7 +91,7 @@ export default function AccountGeneral({user}) {
     name: user?.name || "",
     email: user?.email || "",
     image: user?.image || null,
-    country: user?.country || "Bangladesh",
+    country: user?.country !== "unknown" ? user?.country : "BD",
     address: user?.address || "",
     state: user?.state || "",
     city: user?.city || "",
@@ -115,7 +117,7 @@ export default function AccountGeneral({user}) {
         name: user?.name || "",
         email: user?.email || "",
         image: user?.image || null,
-        country: user?.country || "Bangladesh",
+        country: user?.country !== "unknown" ? user?.country : "BD",
         address: user?.address || "",
         state: user?.state || "",
         city: user?.city || "",
