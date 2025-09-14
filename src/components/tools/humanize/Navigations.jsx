@@ -68,7 +68,7 @@ const Navigations = ({
         spacing={2}
         sx={{ marginLeft: { xs: 1, md: 0 } }}
       >
-        <Button
+        {/* <Button
           color='warning'
           size={isMobile ? "small" : "large"}
           variant='soft'
@@ -86,7 +86,7 @@ const Navigations = ({
           }}
         >
           {miniLabel ? "Check for AI" : "Check AI"}
-        </Button>
+        </Button> */}
 
         <Button
           onClick={handleSubmit}

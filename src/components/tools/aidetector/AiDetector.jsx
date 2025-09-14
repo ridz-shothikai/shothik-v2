@@ -65,6 +65,8 @@ const AiDetector = () => {
     service: "ai-detector",
   });
 
+  console.log(outputContend, "output contend");
+
   useEffect(() => {
     if (!shareContend) return;
     const data = shareContend?.result;
@@ -155,12 +157,12 @@ const AiDetector = () => {
           >
             {enableEdit ? (
               <TextField
-                name='input'
-                variant='outlined'
+                name="input"
+                variant="outlined"
                 rows={isMobile ? 13 : 18}
                 fullWidth
                 multiline
-                placeholder='Enter your text here...'
+                placeholder="Enter your text here..."
                 value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 sx={{
@@ -214,7 +216,7 @@ const AiDetector = () => {
               >
                 <WordCounter
                   btnText={enableEdit ? "Scan" : "Edit"}
-                  toolName='ai-detector'
+                  toolName="ai-detector"
                   userInput={userInput}
                   isLoading={isLoading}
                   handleClearInput={handleClear}
@@ -255,7 +257,7 @@ const AiDetector = () => {
         <ShareURLModal
           open={showShareModal}
           handleClose={() => setshowShareModal(false)}
-          title='AI Detection Report'
+          title="AI Detection Report"
           content={outputContend}
           hashtags={["Shothik AI", "AI Detector"]}
         />

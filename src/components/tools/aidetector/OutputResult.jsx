@@ -48,16 +48,22 @@ const widths = [130, 80, 60, 60, 80, 130];
 export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
   const p = parseInt(perplexity);
 
+  console.log(highlight_sentence_for_ai, perplexity, "from output result");
+
   if (highlight_sentence_for_ai) {
     // AI text thresholds (higher perplexity = more AI-like)
     if (p >= colorValue.aiHigh) return colorName.aiHigh;
     if (p >= colorValue.aiMedium) return colorName.aiMedium;
     if (p >= colorValue.aiLow) return colorName.aiLow;
+
+    return colorName.aiLow; // default to low
   } else {
     // Human text thresholds (lower perplexity = more human-like)
     if (p <= colorValue.humanHigh) return colorName.humanHigh;
     if (p <= colorValue.humanMedium) return colorName.humanMedium;
     if (p <= colorValue.humanLow) return colorName.humanLow;
+
+    return colorName.humanLow;
   }
 
   return "inherit";

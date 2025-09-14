@@ -54,7 +54,8 @@ export const toolsApiSlice = createApi({
     humanizeContend: builder.mutation({
       query: (payload) => {
         return {
-          url: "/humanizerV4",
+          // url: "/humanizerV4",
+          url: "/humanizerV5",
           method: "POST",
           body: payload,
         };

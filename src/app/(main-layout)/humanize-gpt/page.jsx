@@ -3,7 +3,6 @@ import { humanizeFaq } from "../../../_mock/tools/humanizefaq";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
-// import HumanizedContend from "../../../components/tools/humanize/HumanizedContend";
 import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HumanizedContend from "../../../components/tools/humanize/HumanizedContend";
 
