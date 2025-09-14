@@ -81,12 +81,17 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
         }}
       >
         {loading ? (
-          <>
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            alignItems: "center"
+          }}>
             <CircularProgress size={24} sx={{ mb: 1 }} />
             <Typography variant="caption" color="text.secondary">
               Checking plagiarism...
             </Typography>
-          </>
+          </Box>
         ) : error ? (
           <>
             <Typography variant="h4" color="error">

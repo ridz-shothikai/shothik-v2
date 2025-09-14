@@ -53,7 +53,7 @@ const SuggestionCard = ({
   return (
     <Card
       variant="outlined"
-      sx={{ mb: 2, borderRadius: "14px", border: "1px solid", borderColor: theme.palette.divider }}
+      sx={{ mb: 2, borderRadius: "14px", border: "1px solid", borderColor: theme.palette.divider, overflow: "visible" }}
     >
       <CardContent sx={{ pb: 0 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -182,9 +182,9 @@ const CompareTab = ({
       })
       .catch((error) => {
         setSuggestions((prev) =>
-          prev.map((item, i) => (i === idx ? { ...item, plain: "[Error]", loading: false } : item))
+          prev.map((item, i) => (i === idx ? { ...item, plain: "Upgrade plan", loading: false } : item))
         );
-        enqueueSnackbar(`Mode "${card.mode}" error: ${error.message}`, { variant: "error" });
+        // enqueueSnackbar(`Mode "${card.mode}" error: Limited acce`, { variant: "error" });
       });
   };
 
