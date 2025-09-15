@@ -135,7 +135,14 @@ const Translator = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 2 }}>
+    <Card
+      sx={{
+        mt: 1,
+        paddingX: 2,
+        paddingTop: 2,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <LanguageMenu
         isLoading={isLoading || isHumanizing}
         userInput={userInput}
@@ -154,8 +161,8 @@ const Translator = () => {
           size={{ xs: 12, md: 6 }}
         >
           <TextField
-            name='input'
-            variant='outlined'
+            name="input"
+            variant="outlined"
             rows={isMobile ? 15 : 19}
             fullWidth
             multiline
@@ -191,8 +198,8 @@ const Translator = () => {
             size={{ xs: 12, md: 6 }}
           >
             <TextField
-              name='output'
-              variant='outlined'
+              name="output"
+              variant="outlined"
               rows={isMobile ? 15 : 19}
               fullWidth
               multiline

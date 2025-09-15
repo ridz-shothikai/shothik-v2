@@ -109,7 +109,14 @@ const GrammarContend = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 1 }}>
+    <Card
+      sx={{
+        mt: 1,
+        paddingX: 2,
+        paddingTop: 1,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <LanguageMenu
         isLoading={isLoading}
         setLanguage={setLanguage}

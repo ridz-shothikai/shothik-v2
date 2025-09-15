@@ -71,10 +71,14 @@ export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
 
 const OutputResult = ({ handleOpen, outputContend }) => {
   return (
-    <Card>
+    <Card
+      sx={{
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <Stack
-        justifyContent='flex-end'
-        flexDirection='row'
+        justifyContent="flex-end"
+        flexDirection="row"
         gap={1}
         sx={{
           paddingX: 2,
@@ -100,8 +104,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
         <Stack
           sx={{ flexDirection: { md: "column", lg: "row", sm: "row" }, my: 2 }}
           gap={3}
-          alignItems='center'
-          justifyContent='flex-start'
+          alignItems="center"
+          justifyContent="flex-start"
         >
           <Box
             sx={{
@@ -114,22 +118,22 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             }}
           >
             <CircularProgress
-              variant='determinate'
+              variant="determinate"
               value={100}
               size={150}
               thickness={4}
               sx={{ color: colorName.humanHigh, position: "absolute" }}
             />
             <CircularProgress
-              variant='determinate'
+              variant="determinate"
               value={outputContend.ai_percentage}
               size={150}
               thickness={4}
               sx={{ color: colorName.aiHigh, position: "absolute" }}
             />
             <Typography
-              variant='h6'
-              component='div'
+              variant="h6"
+              component="div"
               sx={{
                 color:
                   outputContend.ai_percentage > 50
@@ -140,13 +144,13 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               {outputContend.ai_percentage > 50 ? "AI" : "Human"}
             </Typography>
           </Box>
-          <Stack flexDirection='column' gap={1.5}>
-            <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Typography sx={{ textWrap: "nowrap" }} color='GrayText'>
+          <Stack flexDirection="column" gap={1.5}>
+            <Stack flexDirection="row" gap={1} alignItems="center">
+              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
                 We are{" "}
               </Typography>
               <Typography
-                color='inherit'
+                color="inherit"
                 fontWeight={700}
                 fontSize={18}
                 sx={{
@@ -159,7 +163,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               >
                 highly confident
               </Typography>
-              <Typography sx={{ textWrap: "nowrap" }} color='GrayText'>
+              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
                 this text is
               </Typography>
             </Stack>
@@ -198,7 +202,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
                 border: "1px solid rgba(127, 129, 133, 0.28)",
                 borderRadius: 1,
               }}
-              color='GrayText'
+              color="GrayText"
             >
               <InfoOutlined />
               <Typography>
@@ -209,10 +213,10 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           </Stack>
         </Stack>
         <Box sx={{ mt: 2 }}>
-          <Typography color='inherit' fontWeight={600} fontSize={18}>
+          <Typography color="inherit" fontWeight={600} fontSize={18}>
             Enhanced Sentence Detection
           </Typography>
-          <Typography color='gray'>
+          <Typography color="gray">
             Sentences that have the biggest influence on the probability score.
           </Typography>
         </Box>
@@ -243,8 +247,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           </Box>
           <Stack
             sx={{ mt: 0.6 }}
-            flexDirection='row'
-            justifyContent='space-between'
+            flexDirection="row"
+            justifyContent="space-between"
           >
             <Typography
               sx={{
@@ -271,12 +275,12 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       <Accortion
         colorList={Object.values(aiColorName)}
         data={outputContend.aiSentences}
-        title='Top sentences driving AI probability'
+        title="Top sentences driving AI probability"
       />
       <Accortion
         colorList={Object.values(humanColorName)}
         data={outputContend.humanSentences}
-        title='Top sentences driving Human probability'
+        title="Top sentences driving Human probability"
       />
     </Card>
   );

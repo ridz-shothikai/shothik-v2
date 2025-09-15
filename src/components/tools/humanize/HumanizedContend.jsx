@@ -51,6 +51,7 @@ const HumanizedContend = () => {
   const [scores, setScores] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  // const theme = useTheme();
 
   function handleClear() {
     setUserInput("");
@@ -129,6 +130,7 @@ const HumanizedContend = () => {
           flexDirection: "column",
           overflow: "visible",
           borderRadius: "0 12px 12px 12px",
+          border: (theme) => `1px solid ${theme.palette.divider}`,
         }}
       >
         <TopNavigation
@@ -223,7 +225,14 @@ const HumanizedContend = () => {
       ) : null}
 
       {/* output  */}
-      <Card sx={{ height: 380, overflowY: "auto", padding: 2 }}>
+      <Card
+        sx={{
+          height: 380,
+          overflowY: "auto",
+          padding: 2,
+          border: (theme) => `1px solid ${theme.palette.divider}`,
+        }}
+      >
         {outputContent[showIndex] ? (
           <Typography
             sx={{

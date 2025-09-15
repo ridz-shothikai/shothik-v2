@@ -12,8 +12,8 @@ import CustomDonutChart from "./CustomDonutChart";
 const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
   return (
     <Stack
-      flexDirection='row'
-      alignItems='center'
+      flexDirection="row"
+      alignItems="center"
       sx={{ gap: { lg: 10, md: 3, sm: 1 } }}
     >
       <Card
@@ -23,32 +23,33 @@ const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
           display: "flex",
           flexDirection: "column",
           padding: 2,
+          border: (theme) => `1px solid ${theme.palette.divider}`,
         }}
       >
         <Typography fontWeight={700}>Shothik AI Detector</Typography>
 
         {loadingAi ? (
-          <CircularProgress size={16} color='inherit' />
+          <CircularProgress size={16} color="inherit" />
         ) : scores ? (
           // <Box>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Box style={{ width: "100%" }}>
               <Slider
-                aria-label='AI Score'
+                aria-label="AI Score"
                 key={showIndex}
                 value={scores[showIndex]}
                 sx={{ height: 5 }}
-                valueLabelDisplay='on'
+                valueLabelDisplay="on"
               />
             </Box>
             <Box style={{ marginTop: -18 }}>
-              <span className='progress-text'>
+              <span className="progress-text">
                 {scores[showIndex]}% Human Written
               </span>
             </Box>
           </div>
         ) : (
-          <span className='progress-text'>No score</span>
+          <span className="progress-text">No score</span>
         )}
       </Card>
 

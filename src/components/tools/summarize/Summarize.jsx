@@ -120,7 +120,14 @@ const SummarizeContend = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, overflow: "visible" }}>
+    <Card
+      sx={{
+        mt: 1,
+        paddingX: 2,
+        overflow: "visible",
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <TopNavigations
         LENGTH={LENGTH}
         currentLength={currentLength}
@@ -139,13 +146,13 @@ const SummarizeContend = () => {
           size={{ xs: 12, md: 6 }}
         >
           <TextField
-            name='input'
-            variant='outlined'
+            name="input"
+            variant="outlined"
             minRows={isMobile ? 12 : 19}
             maxRows={isMobile ? 12 : 19}
             fullWidth
             multiline
-            placeholder='Input your text here...'
+            placeholder="Input your text here..."
             value={userInput}
             onChange={handleInput}
             sx={{
@@ -177,13 +184,13 @@ const SummarizeContend = () => {
             size={{ xs: 12, md: 6 }}
           >
             <TextField
-              name='input'
-              variant='outlined'
+              name="input"
+              variant="outlined"
               minRows={isMobile ? 12 : 19}
               maxRows={isMobile ? 12 : 19}
               fullWidth
               multiline
-              placeholder='Summarized text'
+              placeholder="Summarized text"
               value={loadingText ? loadingText : outputContend}
               disabled
               sx={{
