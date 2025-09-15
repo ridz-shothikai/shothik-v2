@@ -20,6 +20,7 @@ import {
   TimelineDot,
   timelineItemClasses,
 } from "@mui/lab";
+import useTitleSx from "./useTittleSx";
 
 /**
  * Timeline UI with clickable sources and a "shine" animation on the last message title.

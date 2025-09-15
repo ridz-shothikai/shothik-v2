@@ -12,6 +12,7 @@ import {
   Button,
   Card,
   CardContent,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
@@ -100,6 +101,7 @@ const ResearchStreamingShell = ({
   isStreaming = false,
   userQuery = "",
 }) => {
+  const theme = useTheme();
   const [selectedTab, setSelectedTab] = useState(0);
   const [titleCharCount, setTitleCharCount] = useState(100);
   const researchCoreData = useSelector(researchCoreState);
@@ -156,161 +158,168 @@ const ResearchStreamingShell = ({
           position: "sticky",
           top: 0,
           zIndex: 10,
-          backgroundColor: "#F4F6F8",
+          bgcolor: theme.palette.mode === "dark" ? "#161C24" : "#F4F6F8",
         }}
       >
-      {/* Header Section - Matches HeaderTitle */}
-      <Box
-        sx={{
-          mb: { xl: 1 },
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 4,
-          padding: 1,
-          position: "relative",
-        }}
-      >
-        <Typography
-          variant="h1"
+        {/* Header Section - Matches HeaderTitle */}
+        <Box
           sx={{
-            fontSize: {
-              xs: "16px",
-              sm: "16px",
-              md: "20px",
-              lg: "22px",
-              xl: "30px",
-            },
-            fontWeight: "700",
-            cursor: "pointer",
-            "&:hover": { opacity: 0.8 },
-          }}
-        >
-          {getTruncatedTitle(displayQuery, titleCharCount)}
-        </Typography>
-
-        {/* Download button placeholder - matches HeaderTitle */}
-        <Button
-          disabled
-          sx={{
-            backgroundColor: "#FFF",
-            borderRadius: "6px",
-            width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            padding: { xs: "4px", lg: "8px", xl: "12px" },
+            mb: { xl: 1 },
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            opacity: 0.5,
+            justifyContent: "space-between",
+            gap: 4,
+            padding: 1,
+            position: "relative",
           }}
         >
-          <Image
-            src={"/agents/edit.svg"}
-            alt={"Download"}
-            width={24}
-            height={24}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "contain",
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: {
+                xs: "16px",
+                sm: "16px",
+                md: "20px",
+                lg: "22px",
+                xl: "30px",
+              },
+              fontWeight: "700",
+              cursor: "pointer",
+              "&:hover": { opacity: 0.8 },
             }}
-          />
-        </Button>
-      </Box>
+          >
+            {getTruncatedTitle(displayQuery, titleCharCount)}
+          </Typography>
 
-      {/* Tab Panel - Matches TabsPanel */}
-      <Box
-        sx={{ width: "100%", borderBottom: 1, borderColor: "divider", mb: 2 }}
-      >
-        <StyledTabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          aria-label="research tabs"
-          scrollButtons="off"
+          {/* Download button placeholder - matches HeaderTitle */}
+          <Button
+            disabled
+            sx={{
+              backgroundColor:
+                theme.palette.mode === "dark"
+                  ? theme.palette.grey[800]
+                  : theme.palette.grey[100],
+              borderRadius: "6px",
+              width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+              height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+              minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+              minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+              padding: { xs: "4px", lg: "8px", xl: "12px" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              opacity: 0.5,
+            }}
+          >
+            <Image
+              src={"/agents/edit.svg"}
+              alt={"Download"}
+              width={24}
+              height={24}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                filter:
+                  theme.palette.mode === "dark"
+                    ? "invert(1) brightness(0.9)"
+                    : "none",
+              }}
+            />
+          </Button>
+        </Box>
+
+        {/* Tab Panel - Matches TabsPanel */}
+        <Box
+          sx={{ width: "100%", borderBottom: 1, borderColor: "divider", mb: 2 }}
         >
-          <TabWithIcon
-            label={
-              <div className="tab-content">
-                <div className="tab-icon">
-                  <Image
-                    src={
-                      selectedTab === 0
-                        ? "/agents/ans-active.svg"
-                        : "/agents/ans.svg"
-                    }
-                    alt="Research"
-                    fill
-                  />
+          <StyledTabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            aria-label="research tabs"
+            scrollButtons="off"
+          >
+            <TabWithIcon
+              label={
+                <div className="tab-content">
+                  <div className="tab-icon">
+                    <Image
+                      src={
+                        selectedTab === 0
+                          ? "/agents/ans-active.svg"
+                          : "/agents/ans.svg"
+                      }
+                      alt="Research"
+                      fill
+                    />
+                  </div>
+                  <span>Research</span>
                 </div>
-                <span>Research</span>
-              </div>
-            }
-          />
-          <TabWithIcon
-            label={
-              <div className="tab-content">
-                <div className="tab-icon">
-                  <Image
-                    src={
-                      selectedTab === 1
-                        ? "/agents/img-active.svg"
-                        : "/agents/img.svg"
-                    }
-                    alt="Images"
-                    fill
-                  />
+              }
+            />
+            <TabWithIcon
+              label={
+                <div className="tab-content">
+                  <div className="tab-icon">
+                    <Image
+                      src={
+                        selectedTab === 1
+                          ? "/agents/img-active.svg"
+                          : "/agents/img.svg"
+                      }
+                      alt="Images"
+                      fill
+                    />
+                  </div>
+                  <Badge
+                    badgeContent={imageCount > 0 ? imageCount : null}
+                    color="primary"
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        fontSize: "0.6rem",
+                        minWidth: "16px",
+                        height: "16px",
+                      },
+                    }}
+                  >
+                    <span>Images</span>
+                  </Badge>
                 </div>
-                <Badge
-                  badgeContent={imageCount > 0 ? imageCount : null}
-                  color="primary"
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      fontSize: "0.6rem",
-                      minWidth: "16px",
-                      height: "16px",
-                    },
-                  }}
-                >
-                  <span>Images</span>
-                </Badge>
-              </div>
-            }
-          />
-          <TabWithIcon
-            label={
-              <div className="tab-content">
-                <div className="tab-icon">
-                  <Image
-                    src={
-                      selectedTab === 2
-                        ? "/agents/sources-active.svg"
-                        : "/agents/sources.svg"
-                    }
-                    alt="Sources"
-                    fill
-                  />
+              }
+            />
+            <TabWithIcon
+              label={
+                <div className="tab-content">
+                  <div className="tab-icon">
+                    <Image
+                      src={
+                        selectedTab === 2
+                          ? "/agents/sources-active.svg"
+                          : "/agents/sources.svg"
+                      }
+                      alt="Sources"
+                      fill
+                    />
+                  </div>
+                  <Badge
+                    badgeContent={sourceCount > 0 ? sourceCount : null}
+                    color="primary"
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        fontSize: "0.6rem",
+                        minWidth: "16px",
+                        height: "16px",
+                      },
+                    }}
+                  >
+                    <span>Sources</span>
+                  </Badge>
                 </div>
-                <Badge
-                  badgeContent={sourceCount > 0 ? sourceCount : null}
-                  color="primary"
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      fontSize: "0.6rem",
-                      minWidth: "16px",
-                      height: "16px",
-                    },
-                  }}
-                >
-                  <span>Sources</span>
-                </Badge>
-              </div>
-            }
-          />
-        </StyledTabs>
-      </Box>
+              }
+            />
+          </StyledTabs>
+        </Box>
       </Box>
 
       {/* Research Process Timeline */}

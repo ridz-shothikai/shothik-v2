@@ -47,9 +47,7 @@ const BulletPoint = styled(Box)(({ theme }) => ({
 
 const ResearchPageSkeletonLoader = () => {
   return (
-    <StyledContainer
-      maxWidth="lg"
-    >
+    <StyledContainer maxWidth="lg">
       {/* Header Section */}
       <HeaderSection>
         <Skeleton variant="text" width={300} height={40} />
@@ -77,7 +75,12 @@ const ResearchPageSkeletonLoader = () => {
       </TabSection>
 
       {/* Main Content */}
-      <ContentCard elevation={0}>
+      <ContentCard
+        elevation={0}
+        sx={{
+          bgcolor: (theme) => theme.palette.mode === "dark" && "#161C24",
+        }}
+      >
         {/* Title */}
         <Skeleton
           variant="text"
