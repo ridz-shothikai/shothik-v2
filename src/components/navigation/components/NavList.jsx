@@ -87,8 +87,12 @@ export default function NavList({ data, layout, onCloseNav }) {
           {title === "AI Detector" ? (
             <>
               AI
-              <br />
-              Detector
+              <br
+                style={{
+                  display: `${layout === "mini" ? "block" : "none"}`,
+                }}
+              />
+              {" "}Detector
             </>
           ) : (
             title

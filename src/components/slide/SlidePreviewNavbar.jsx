@@ -372,7 +372,8 @@ export default function SlidePreviewNavbar({
     }
   };
 
-  const isDownloadAllowed = shareSettings?.allowDownload !== false;
+  // const isDownloadAllowed = shareSettings?.allowDownload !== false; // when exporting will fully functional only then make the export button available.
+  const isDownloadAllowed = false;
 
   return (
     <>

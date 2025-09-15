@@ -14,6 +14,7 @@ import {
   Tooltip,
   CircularProgress,
   Drawer,
+  useTheme,
 } from "@mui/material";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -22,6 +23,7 @@ import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import { useSelector } from "react-redux";
 
 export default function FileHistorySidebar() {
+  const theme = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [fileHistory, setFileHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -108,12 +110,16 @@ export default function FileHistorySidebar() {
       <Box
         id="file_history_buttons"
         sx={{
-          bgcolor: "#fff",
+          bgcolor: theme.palette.background.paper,
           borderRadius: 2,
           p: 1,
           display: "flex",
           flexDirection: "column",
           gap: 1,
+          border:
+            theme.palette.mode === "dark"
+              ? `1px solid ${theme.palette.divider}`
+              : "none",
         }}
       >
         <IconButton
@@ -137,17 +143,19 @@ export default function FileHistorySidebar() {
           "& .MuiDrawer-paper": {
             width: { xs: "100vw", sm: 320 },
             boxSizing: "border-box",
+            bgcolor: theme.palette.background.default,
+            color: theme.palette.text.primary,
           },
         }}
       >
         <Box
           id="file_history_view"
           sx={{
-            bgcolor: "#fff",
             display: "flex",
             flexDirection: "column",
             p: 2,
             height: "100%",
+            bgcolor: theme.palette.background.default,
           }}
         >
           <Button
@@ -163,7 +171,11 @@ export default function FileHistorySidebar() {
             }}
           >
             <Typography variant="h6">Documents</Typography>
-            <IconButton id="file_history_close_button" size="small" onClick={handleCloseSidebar}>
+            <IconButton
+              id="file_history_close_button"
+              size="small"
+              onClick={handleCloseSidebar}
+            >
               <RemoveCircleOutlineIcon />
             </IconButton>
           </Box>
@@ -175,7 +187,10 @@ export default function FileHistorySidebar() {
                     key={i}
                     variant="rectangular"
                     height={60}
-                    sx={{ mb: i < 2 ? 1 : 0 }}
+                    sx={{
+                      mb: i < 2 ? 1 : 0,
+                      bgcolor: theme.palette.action.hover,
+                    }}
                   />
                 ))}
               </Box>
@@ -190,8 +205,8 @@ export default function FileHistorySidebar() {
                       alignItems: "center",
                       py: 1,
                       px: 2,
-                      borderBottom: "1px solid #eee",
                       "&:last-of-type": { borderBottom: "none" },
+                      borderBottom: `1px solid ${theme.palette.divider}`,
                     }}
                   >
                     <ListItemIcon sx={{ minWidth: 0, mr: 1 }}>
@@ -245,7 +260,9 @@ export default function FileHistorySidebar() {
               </List>
             ) : (
               <Box sx={{ textAlign: "center", p: 2 }}>
-                <MenuBookOutlinedIcon sx={{ fontSize: 48, color: "#2e7d32" }} />
+                <MenuBookOutlinedIcon
+                  sx={{ fontSize: 48, color: theme.palette.success.main }}
+                />
                 <Typography color="text.secondary" sx={{ mt: 2 }}>
                   All of your stored documents can be found here.
                 </Typography>
