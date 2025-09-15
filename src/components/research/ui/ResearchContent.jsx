@@ -1,11 +1,11 @@
 "use client";
 
-import { Box, Typography, Paper, Chip } from "@mui/material";
+import { Box, Typography, Paper, Chip, useTheme } from "@mui/material";
 import { marked } from "marked";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 
-const MessageBubble = ({ message, isLastData, isDataGenerating }) => (
+const MessageBubble = ({ message, isLastData, isDataGenerating, theme }) => (
   <Box
     sx={{
       display: "flex",
@@ -20,7 +20,7 @@ const MessageBubble = ({ message, isLastData, isDataGenerating }) => (
         py: 2,
         px: 3,
         mb: { xs: isLastData && isDataGenerating ? 2 : 19, sm: 9, md: 2 },
-        bgcolor: "#F4F6F8",
+        bgcolor: theme?.palette.mode === "dark" ? "#161C24" : "#F4F6F8",
         border: "none",
         boxShadow: "none",
         width: "100%", // Ensure paper takes full width
@@ -207,12 +207,15 @@ export default function ResearchContent({ currentResearch, isLastData }) {
 
   const researchCore = useSelector(researchCoreState);
 
+  const theme = useTheme();
+
   return (
     <Box sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
       <MessageBubble
         message={researchResult}
         isLastData={isLastData}
         isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
+        theme={theme}
       />
     </Box>
   );

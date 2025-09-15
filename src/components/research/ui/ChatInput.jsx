@@ -10,6 +10,7 @@ import {
   Typography,
   Chip,
   Tooltip,
+  useTheme,
 } from "@mui/material";
 import {
   Send as SendIcon,
@@ -25,6 +26,7 @@ import { setUserPrompt } from "../../../redux/slice/researchCoreSlice";
 const PRIMARY_GREEN = "#07B37A";
 
 const ChatInput = () => {
+  const theme = useTheme();
   const [inputValue, setInputValue] = useState("");
   const [selectedNavItem, setSelectedNavItem] = useState("slides"); // Default to slides for demo
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -128,11 +130,11 @@ const ChatInput = () => {
         sx={{
           maxWidth: 1000,
           mx: "auto",
-          bgcolor: isDarkMode ? "#161C24" : "#f8f9fa",
+          bgcolor: theme.palette.background.paper,
           borderRadius: 4,
           p: 3,
-          border: "1px solid #e0e0e0",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: theme.shadows[3],
         }}
       >
         <Box
@@ -155,7 +157,7 @@ const ChatInput = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: "transparent",
-                color: "#333",
+                color: theme.palette.text.primary,
                 fontSize: "1.1rem",
                 border: "none",
                 "& fieldset": {
@@ -165,11 +167,11 @@ const ChatInput = () => {
                   color: "#333",
                 },
                 "& textarea": {
-                  color: isDarkMode ? "#fff" : "#333",
+                  color: theme.palette.text.primary,
                 },
               },
               "& .MuiOutlinedInput-input::placeholder": {
-                color: "#999",
+                color: theme.palette.text.secondary,
                 opacity: 1,
               },
             }}
@@ -193,9 +195,8 @@ const ChatInput = () => {
               style={{ display: "none" }}
               onChange={handleFileUpload}
             />
-
-            {(selectedNavItem === "slides" ||
-              selectedNavItem === "research") && (
+            {/* Attach button will be needed later */}
+            {/* {(selectedNavItem === "slides") && (
               <Button
                 startIcon={<LinkIcon />}
                 onClick={handleClick}
@@ -210,7 +211,7 @@ const ChatInput = () => {
               >
                 Attach
               </Button>
-            )}
+            )} */}
           </Box>
 
           <Box
@@ -232,16 +233,18 @@ const ChatInput = () => {
                 isStreaming
               }
               sx={{
-                bgcolor: PRIMARY_GREEN,
-                color: "white",
+                bgcolor: theme.palette.success.main,
+                color: theme.palette.getContrastText(
+                  theme.palette.success.main
+                ),
                 width: 40,
                 height: 40,
                 "&:hover": {
-                  bgcolor: "#06A36D",
+                  bgcolor: theme.palette.success.dark,
                 },
                 "&.Mui-disabled": {
-                  bgcolor: "#ddd",
-                  color: "#999",
+                  bgcolor: theme.palette.action.disabledBackground,
+                  color: theme.palette.action.disabled,
                 },
               }}
             >

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import HeaderTitle from "./ui/HeaderTitle";
 import TabsPanel from "./ui/TabPanel";
 import ResearchDataArea from "./ui/ResearchDataArea";
@@ -21,6 +21,7 @@ import ResearchProcessLogs from "./ui/ResearchProcessLogs";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
+  const theme = useTheme();
   const scrollRef = useRef(null);
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
@@ -174,6 +175,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
             lg: "180px",
             xl: "200px",
           },
+        bgcolor: theme.palette.mode === "dark" && "#161C24",
         }}
       >
         {/* research data */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, Tab, Box, Badge, styled } from "@mui/material";
+import { Tabs, Tab, Box, Badge, styled, useTheme } from "@mui/material";
 import Image from "next/image";
 
 // Custom styled tabs container
@@ -15,7 +15,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
     height: "46px",
   },
   "& .MuiTabs-indicator": {
-    backgroundColor: "#07B37A",
+    backgroundColor: theme.palette.success.main, // ✅ theme-aware
     height: "3px",
     bottom: 0,
   },
@@ -23,7 +23,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
     textTransform: "none",
     minWidth: "auto",
     fontWeight: 400,
-    color: "#929CA7",
+    color: theme.palette.text.secondary, // ✅ adapts to dark mode
     [theme.breakpoints.up("xs")]: {
       padding: "0px 12px",
       fontSize: "10px",
@@ -41,11 +41,11 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
       fontSize: "14px",
     },
     "&.Mui-selected": {
-      color: "#07B37A",
+      color: theme.palette.success.main, // ✅ adaptive highlight
       fontWeight: 500,
     },
     "&:hover": {
-      color: "#07B37A",
+      color: theme.palette.success.main,
       opacity: 0.8,
     },
   },
@@ -80,7 +80,14 @@ const TabWithIcon = styled(Tab)(({ theme }) => ({
   },
 }));
 
-export default function TabsPanel({ selectedTab, sources, images, onTabChange }) {
+export default function TabsPanel({
+  selectedTab,
+  sources,
+  images,
+  onTabChange,
+}) {
+  const theme = useTheme();
+
   const handleChange = (event, newValue) => {
     onTabChange(newValue);
   };
@@ -95,24 +102,38 @@ export default function TabsPanel({ selectedTab, sources, images, onTabChange })
 
   const imagesCount = images ? images.length : 0;
 
+  // Helper: choose icon variant based on theme + tab state
+  const getIconSrc = (base, activeBase, isActive) => {
+    if (isActive) return activeBase; // use active icon
+    return theme.palette.mode === "dark" ? `${base}.svg` : `${base}.svg`;
+  };
+
   return (
-    <Box sx={{ width: "100%", borderBottom: 1, borderColor: "divider" }}>
+    <Box
+      sx={{
+        width: "100%",
+        borderBottom: 1,
+        borderColor: "divider",
+        bgcolor: theme.palette.mode === "dark" && "#161C24",
+      }}
+    >
       <StyledTabs
         value={selectedTab}
         onChange={handleChange}
         aria-label="navigation tabs"
         scrollButtons="off"
       >
+        {/* Research */}
         <TabWithIcon
           label={
             <div className="tab-content">
               <div className="tab-icon">
                 <Image
-                  src={
+                  src={getIconSrc(
+                    "/agents/ans",
+                    "/agents/ans-active.svg",
                     selectedTab === 0
-                      ? "/agents/ans-active.svg"
-                      : "/agents/ans.svg"
-                  }
+                  )}
                   alt="Research"
                   fill
                 />
@@ -121,16 +142,18 @@ export default function TabsPanel({ selectedTab, sources, images, onTabChange })
             </div>
           }
         />
+
+        {/* Images */}
         <TabWithIcon
           label={
             <div className="tab-content">
               <div className="tab-icon">
                 <Image
-                  src={
+                  src={getIconSrc(
+                    "/agents/img",
+                    "/agents/img-active.svg",
                     selectedTab === 1
-                      ? "/agents/img-active.svg"
-                      : "/agents/img.svg"
-                  }
+                  )}
                   alt="Images"
                   fill
                 />
@@ -151,16 +174,18 @@ export default function TabsPanel({ selectedTab, sources, images, onTabChange })
             </div>
           }
         />
+
+        {/* Sources */}
         <TabWithIcon
           label={
             <div className="tab-content">
               <div className="tab-icon">
                 <Image
-                  src={
+                  src={getIconSrc(
+                    "/agents/sources",
+                    "/agents/sources-active.svg",
                     selectedTab === 2
-                      ? "/agents/sources-active.svg"
-                      : "/agents/sources.svg"
-                  }
+                  )}
                   alt="Sources"
                   fill
                 />

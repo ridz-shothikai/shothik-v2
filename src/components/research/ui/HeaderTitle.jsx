@@ -452,13 +452,14 @@ export default function HeaderTitleWithDownload({
   return (
     <Box
       sx={{
-        mb: { xl: 1 },
+        pb: { xl: 1 },
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         gap: 4,
         padding: 1,
         position: "relative",
+        bgcolor: theme.palette.mode === "dark" && "#161C24"
       }}
     >
       <Typography
@@ -474,6 +475,7 @@ export default function HeaderTitleWithDownload({
           },
           fontWeight: "700",
           cursor: "pointer",
+          color: "text.primary",
           "&:hover": { opacity: 0.8 },
         }}
       >
@@ -490,7 +492,7 @@ export default function HeaderTitleWithDownload({
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         sx={{
-          backgroundColor: "#FFF",
+          backgroundColor: "background.paper",
           borderRadius: "6px",
           width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
           height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
@@ -502,7 +504,10 @@ export default function HeaderTitleWithDownload({
           justifyContent: "center",
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           "&:hover": {
-            backgroundColor: "#f5f5f5",
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? theme.palette.grey[800]
+                : theme.palette.grey[100],
             boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
           },
         }}
@@ -516,6 +521,10 @@ export default function HeaderTitleWithDownload({
             maxWidth: "100%",
             maxHeight: "100%",
             objectFit: "contain",
+            filter:
+              theme.palette.mode === "dark"
+                ? "invert(1) brightness(0.9)"
+                : "none",
           }}
         />
       </Button>
@@ -529,12 +538,14 @@ export default function HeaderTitleWithDownload({
           "aria-labelledby": "download-button",
         }}
         sx={{
-          mt: 1
+          mt: 1,
+          "& .MuiPaper-root": {
+            backgroundColor: "background.paper",
+            color: "text.primary",
+          },
         }}
       >
-        <MenuItem onClick={downloadPdfFromMarkdown}>
-          Download PDF
-        </MenuItem>
+        <MenuItem onClick={downloadPdfFromMarkdown}>Download PDF</MenuItem>
         <MenuItem onClick={downloadMarkdown}>
           Download Raw Markdown (.md)
         </MenuItem>
