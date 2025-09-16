@@ -750,7 +750,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
         dispatch(setSheetStatus("generating"));
         dispatch(setActiveSheetIdForPolling(actualChatId));
 
-        const prompt = dev_mode ? getSimulationPromptDev(actualChatId) : getSimulationPromptProd(actualChatId);
+        // const prompt = dev_mode ? getSimulationPromptDev(actualChatId) : getSimulationPromptProd(actualChatId);
+        const prompt = getSimulationPrompt(actualChatId);
 
         // Create user message for simulation
         const userMessage = {
@@ -776,19 +777,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     runSimulation();
   }, [isSimulationMode, isInitialized, actualChatId]);
 
-  // Helper function to get simulation prompt based on s_id
-  const getSimulationPromptDev = (simulationId) => {
-    const simulationPrompts = {
-      "68c908eebcee6f7df8e5e7d2":
-        "Compare pricing of top 10 gyms of the world in a sheet",
-      "68c92aca40832171c9f73c13": "List top 5 Italian restaurants with ratings",
-      "68c92b7240832171c9f73c15": "Generate 10 school and contact notes",
-    };
-
-    return simulationPrompts[simulationId] || null;
-  };
-
-  const getSimulationPromptProd = (simulationId) => {
+  const getSimulationPrompt = (simulationId) => {
     const simulationPrompts = {
       "68c92076dc985a1ee342aa72":
         "Compare pricing of top 10 gyms of the world in a sheet",
