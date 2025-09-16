@@ -31,14 +31,16 @@ export default function MainLayout({ children }) {
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const dispatch = useDispatch();
-  const { isLoading } = useGetUserQuery();
+  const { user, accessToken } = useSelector((state) => state.auth);
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
   useGetUserLimitQuery();
 
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
   const [login] = useLoginMutation();
-  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setIsLoadingPage(false);
