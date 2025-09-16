@@ -22,8 +22,9 @@ import {
   Close as CloseIcon,
   GetApp as DownloadIcon,
 } from "@mui/icons-material";
+import UpgradePopover from "./UpgradePopover";
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
 const FREE_LIMIT = 3;
 const PAID_LIMIT = 250;
 
@@ -33,41 +34,46 @@ export default function MultipleFileUpload({
   selectedSynonymLevel,
   selectedLang,
   freezeWords = [],
-  shouldShowButton = true
+  shouldShowButton = true,
 }) {
   const { accessToken } = useSelector((state) => state.auth);
 
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState(null);
   const inputRef = useRef(null);
 
   const limit = paidUser ? PAID_LIMIT : FREE_LIMIT;
-  const redirectPrefix = "p-v2"
-  const apiBase =
-    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
+  const redirectPrefix = "p-v2";
+  const apiBase = `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/${redirectPrefix}/api`;
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (event) => {
+    if (paidUser) {
+      setOpen(true);
+    } else {
+      setPopoverAnchorEl(event.currentTarget);
+    }
+  };
+
+  const handlePopoverClose = () => setPopoverAnchorEl(null);
+
   const handleClose = () => {
     setFiles([]);
     setOpen(false);
   };
 
   const handleFilesSelected = (fileList) => {
-    const incoming = Array.from(fileList);
-
-    if (incoming.length > limit) {
-      incoming.splice(limit);
-      // optional: show warning
-    }
+    let incoming = Array.from(fileList).slice(0, limit);
 
     if (!accessToken) {
-      const mapped = incoming.map((file) => ({
-        file,
-        status: "error",
-        progress: 0,
-        error: "Please log in to upload files",
-      }));
-      setFiles(mapped);
+      setFiles(
+        incoming.map((file) => ({
+          file,
+          status: "error",
+          progress: 0,
+          error: "Please log in to upload files",
+        }))
+      );
       return;
     }
 
@@ -85,7 +91,7 @@ export default function MultipleFileUpload({
           file,
           status: "error",
           progress: 0,
-          error: "File must be ≤ 25 MB",
+          error: "File must be ≤ 25 MB",
         };
       }
       return {
@@ -108,85 +114,80 @@ export default function MultipleFileUpload({
     e.preventDefault();
     handleFilesSelected(e.dataTransfer.files);
   };
+
   const onDragOver = (e) => e.preventDefault();
 
   const uploadFile = async (file, idx) => {
-    setFiles((fs) =>
-      fs.map((f, i) =>
-        i === idx ? { ...f, status: "uploading", progress: 0 } : f,
-      ),
-    );
+    updateFileStatus(idx, "uploading", 0);
 
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("mode", selectedMode?.toLowerCase());
-      formData.append("synonym", selectedSynonymLevel?.toLowerCase());
+      formData.append("mode", selectedMode?.toLowerCase() ?? "");
+      formData.append("synonym", selectedSynonymLevel?.toLowerCase() ?? "");
       formData.append("freeze", freezeWords);
-      formData.append("language", selectedLang);
+      formData.append("language", selectedLang ?? "");
 
       const res = await fetch(`${apiBase}/files/file-paraphrase`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) throw new Error(`Upload failed: ${res.statusText}`);
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
-      setFiles((fs) =>
-        fs.map((f, i) =>
-          i === idx
-            ? { ...f, status: "success", progress: 100, downloadUrl: url }
-            : f,
-        ),
-      );
+      updateFileStatus(idx, "success", 100, url);
     } catch (err) {
-      setFiles((fs) =>
-        fs.map((f, i) =>
-          i === idx
-            ? { ...f, status: "error", error: err.message, progress: 0 }
-            : f,
-        ),
-      );
+      updateFileStatus(idx, "error", 0, null, err.message);
     }
+  };
+
+  const updateFileStatus = (
+    idx,
+    status,
+    progress,
+    downloadUrl = null,
+    error = null
+  ) => {
+    setFiles((fs) =>
+      fs.map((f, i) =>
+        i === idx ? { ...f, status, progress, downloadUrl, error } : f
+      )
+    );
   };
 
   return (
     <>
-        <Button
-          id="multi_upload_button"
-          sx={{
-            display: shouldShowButton ? "flex" : "none",
-            gap: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            width: "fit-content",
-          }}
-          variant="outlined"
-          onClick={handleOpen}
-        >
-          <CloudUploadOutlined fontSize="small" />
-          Multi Upload Document
-        </Button>
-        <Button
-          id="multi_upload_close_button"
-          sx={{
-            opacity: 0,
-            zIndex: -9999,
-            position: "absolute",
-            top: -9999,
-            display: shouldShowButton ? "flex" : "none",
-          }}
-          onClick={() => {
-            handleClose();
-          }}
-        ></Button>
+      <Button
+        id="multi_upload_button"
+        sx={{
+          display: shouldShowButton ? "flex" : "none",
+          gap: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          width: "fit-content",
+        }}
+        variant="outlined"
+        onClick={handleOpen}
+      >
+        <CloudUploadOutlined fontSize="small" />
+        Multi Upload Document
+      </Button>
+      <Button
+        id="multi_upload_close_button"
+        sx={{
+          opacity: 0,
+          zIndex: -9999,
+          position: "absolute",
+          top: -9999,
+          display: shouldShowButton ? "flex" : "none",
+        }}
+        onClick={handleClose}
+      />
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
           Upload Multiple Documents
@@ -197,7 +198,6 @@ export default function MultipleFileUpload({
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-
         <DialogContent>
           <Box
             id="multi_upload_view"
@@ -212,7 +212,7 @@ export default function MultipleFileUpload({
               cursor: "pointer",
               mb: 2,
             }}
-            onClick={() => inputRef.current.click()}
+            onClick={() => inputRef.current?.click()}
           >
             <CloudUploadOutlined fontSize="large" sx={{ mb: 1 }} />
             <Typography variant="h6">Upload Multiple Documents</Typography>
@@ -222,7 +222,6 @@ export default function MultipleFileUpload({
             <Typography variant="caption" color="text.secondary">
               pdf, txt, docx — up to {limit} file{limit > 1 ? "s" : ""} at once
             </Typography>
-
             <input
               ref={inputRef}
               type="file"
@@ -232,7 +231,6 @@ export default function MultipleFileUpload({
               onChange={(e) => handleFilesSelected(e.target.files)}
             />
           </Box>
-
           <List disablePadding>
             {files.map((f, i) => (
               <ListItem
@@ -282,7 +280,6 @@ export default function MultipleFileUpload({
             ))}
           </List>
         </DialogContent>
-
         <DialogActions>
           <Typography
             variant="caption"
@@ -295,6 +292,12 @@ export default function MultipleFileUpload({
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+      <UpgradePopover
+        anchorEl={popoverAnchorEl}
+        onClose={handlePopoverClose}
+        message="Unlock document upload and more premium features."
+        redirectPath="/pricing?redirect=/paraphrase"
+      />
     </>
   );
 }

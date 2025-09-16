@@ -8,7 +8,10 @@ import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useForgotPasswordMutation } from "../../redux/api/auth/authApi";
-import { setShowLoginModal } from "../../redux/slice/auth";
+import {
+  setShowForgotPasswordModal,
+  setShowLoginModal,
+} from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
 
@@ -49,11 +52,18 @@ export default function AuthResetPasswordForm() {
 
     try {
       const result = await forgotPassword(payload);
-      if (result.data.success) {
+
+      if (result?.data?.success) {
         dispatch(setShowLoginModal(false));
         enqueueSnackbar(
           "Reset password link sent to your email. Please check."
         );
+      }
+
+      if (result?.error) {
+        dispatch(setShowForgotPasswordModal(false));
+        dispatch(setShowLoginModal(false));
+        enqueueSnackbar(result?.error?.data?.message, { variant: "error" });
       }
     } catch (error) {
       console.error(error);
@@ -71,13 +81,13 @@ export default function AuthResetPasswordForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <RHFTextField name='email' label='Email address' />
+      <RHFTextField name="email" label="Email address" />
 
       <Button
         fullWidth
-        size='large'
-        type='submit'
-        variant='contained'
+        size="large"
+        type="submit"
+        variant="contained"
         loading={isSubmitting}
         sx={{ mt: 3 }}
       >
