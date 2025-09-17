@@ -265,7 +265,7 @@ async function runSlideSimulation(
     setSlideDataLoading(true);
 
     const response = await fetch(
-      `http://163.172.176.81:8030/simulation_slides/${slideId}`,
+      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/slide/simulation_slides/${slideId}`,
       {
         method: "GET",
         headers: {
@@ -347,7 +347,7 @@ async function runLogsSimulation(
 
   try {
     const response = await fetch(
-      `http://163.172.176.81:8030/simulation-logs/${slideId}`,
+      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/slide/simulation-logs/${slideId}`,
       {
         method: "GET",
         headers: {

@@ -344,7 +344,6 @@ export default function InteractiveAgentDemo() {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const [selectedAgent, setSelectedAgent] = useState(agentDemos[0]);
   const [userInput, setUserInput] = useState("");
