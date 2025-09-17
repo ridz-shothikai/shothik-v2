@@ -2,10 +2,9 @@
 
 import { motion } from "framer-motion";
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
-import { Brain, Lightbulb, Cpu, Sparkles } from "lucide-react";
+import { Brain, Sparkles } from "lucide-react";
 import mascotImage from "../../../../public/home/shothik-mascot.png";
 import Image from "next/image";
-import { Padding } from "@mui/icons-material";
 
 const AgentThinkingLoader = ({
   message = "Agent is thinking...",

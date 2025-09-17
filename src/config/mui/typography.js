@@ -29,6 +29,7 @@ export const primaryFont = Public_Sans({
   subsets: ["latin"],
   display: "swap",
   fallback: ["Helvetica", "Arial", "sans-serif"],
+  preload: true,
 });
 
 export const secondaryFont = Barlow({
@@ -36,6 +37,7 @@ export const secondaryFont = Barlow({
   subsets: ["latin"],
   display: "swap",
   fallback: ["Helvetica", "Arial", "sans-serif"],
+  preload: true,
 });
 
 // ----------------------------------------------------------------------

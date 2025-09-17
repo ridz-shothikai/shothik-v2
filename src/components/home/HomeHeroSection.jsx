@@ -1,23 +1,16 @@
 "use client";
 
-import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
+// import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { alpha, Container, Grid2 } from "@mui/material";
+import { Container, Grid2 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
-import * as motion from "motion/react-client";
-import Image from "next/image";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
-import VideoImage from "./components/VideoImage";
 import {useComponentTracking} from "../../hooks/useComponentTracking"
 import { trackingList } from "../../libs/trackingList";
 import HeroVideo from "./HeroVideo";
+import Image from "next/image";
 
 export default function HomeHeroSection() {
   const { componentRef, trackClick } = useComponentTracking(trackingList.LANDING_HERO);
@@ -57,15 +50,18 @@ export default function HomeHeroSection() {
             overflow: "hidden",
           }}
         >
-          <img
+          <Image
             src="/pattern.svg"
             alt="pattern"
+            width={100}
+            height={100}
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover", // or "contain", depending on your design
+              objectFit: "cover",
               opacity: "40%",
             }}
+            priority={true}
           />
         </Box>
 

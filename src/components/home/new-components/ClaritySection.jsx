@@ -16,14 +16,6 @@ import {
   Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import {
-  Upload,
-  Brain,
-  Shield,
-  Download,
-  Zap,
-  Lock,
-} from "lucide-react";
 import EmailModal from "../EmailCollectModal";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";

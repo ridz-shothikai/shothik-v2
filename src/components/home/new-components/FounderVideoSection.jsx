@@ -10,10 +10,6 @@ import {
   Button,
   Chip,
   IconButton,
-  Card,
-  CardContent,
-  Avatar,
-  Rating,
   useTheme,
   useMediaQuery,
 } from "@mui/material";

@@ -1,11 +1,7 @@
 "use client";
 
 import {
-  Box,
-  Chip,
   Grid2,
-  Rating,
-  styled,
   Typography,
   useTheme,
   Snackbar,

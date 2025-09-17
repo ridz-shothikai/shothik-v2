@@ -6,10 +6,7 @@ import {
   Send,
   Sparkles,
   FileText,
-  Phone,
-  Users,
   ChevronRight,
-  Zap,
   Bot,
   Sheet,
   BrainCog,
@@ -22,8 +19,6 @@ import {
   Container,
   Grid,
   Paper,
-  Chip,
-  CircularProgress,
   useTheme,
   useMediaQuery,
   Snackbar,
@@ -34,7 +29,6 @@ import AgentThinkingLoader from "./AgentThinkingLoader";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
 import { useRouter } from "next/navigation";
-import { createSheetSimulationChatId } from "../../../libs/createSheetSimulationChatId";
 import EmailModal from "../EmailCollectModal";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
 

@@ -8,7 +8,6 @@ import {
   Typography,
   Button,
   useTheme,
-  useMediaQuery,
   Stack,
   Snackbar,
   Alert,
@@ -21,8 +20,6 @@ import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authA
 
 export default function CTASection() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const [showModal, setShowModal] = useState(false);
 

@@ -6,7 +6,6 @@ import {
   Container,
   Typography,
   Button,
-  Chip,
   Grid,
   IconButton,
   Paper,
@@ -21,8 +20,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
-  Monitor,
-  TableChart,
   SmartToy,
   Phone,
   People,
@@ -91,68 +88,10 @@ const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.mode === "dark" ? theme.palette.grey[300] : theme.palette.text.primary,
 }));
 
-// const IndicatorButton = styled(Button)(({ active, theme }) => ({
-//   minWidth: active ? 32 : 12,
-//   width: active ? 32 : 12,
-//   height: 12,
-//   borderRadius: 6,
-//   backgroundColor: active ? theme.palette.primary.main : "#d1d5db",
-//   "&:hover": {
-//     backgroundColor: active ? theme.palette.primary.main : "#9ca3af",
-//     transform: "scale(1.25)",
-//   },
-//   transition: "all 0.3s ease",
-//   padding: 0,
-// }));
-const IndicatorButton = styled("button")(({ theme, active }) => ({
-  width: "12px",
-  height: "12px",
-  borderRadius: "50%",
-  border: "none",
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  backgroundColor:
-    active === "true"
-      ? theme.palette.mode === "dark"
-        ? theme.palette.primary.main
-        : "#10b981"
-      : theme.palette.mode === "dark"
-      ? theme.palette.grey[700]
-      : "#e5e7eb",
-  transform: active === "true" ? "scale(1.2)" : "scale(1)",
-  "&:hover": {
-    backgroundColor:
-      active === "true"
-        ? theme.palette.mode === "dark"
-          ? theme.palette.primary.dark
-          : "#059669"
-        : theme.palette.mode === "dark"
-        ? theme.palette.grey[600]
-        : "#d1d5db",
-  },
-}));
-
 const TouchArea = styled(Box)({
   touchAction: "pan-y",
   userSelect: "none",
 });
-
-// interface Agent {
-//   id: string;
-//   name: string;
-//   description: string;
-//   icon: React.ReactNode;
-//   gradient: string;
-//   capabilities: string[];
-//   demoPrompt: string;
-//   output: string;
-//   stats: {
-//     timesSaved: string,
-//     accuracy: string,
-//     automationLevel: string,
-//   };
-//   isRevolutionary: boolean;
-// }
 
 const agents = [
   {
