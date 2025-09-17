@@ -14,10 +14,10 @@ import useStickyBottom from "../../../hooks/useStickyBottom";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
-import FreezeWordsDialog from '../paraphrase/FreezeWordsDialog'
+import FreezeWordsDialog from "../paraphrase/FreezeWordsDialog";
 function WordCounter({
-  freeze_modal=false,
-  freeze_props={},
+  freeze_modal = false,
+  freeze_props = {},
   userInput,
   isLoading,
   toolName,
@@ -58,27 +58,27 @@ function WordCounter({
   //     </Box>
   //   );
   // } else {
-    return (
-      <Contend
-        btnText={btnText}
-        handleClearInput={handleClearInput}
-        handleSubmit={handleSubmit}
-        isLoading={isLoading}
-        toolName={toolName}
-        userInput={userInput}
-        userPackage={userPackage}
-        ExtraBtn={ExtraBtn}
-        ExtraCounter={ExtraCounter}
-        btnIcon={btnIcon}
-        dontDisable={dontDisable}
-        sx={sx}
-        freeze_modal={freeze_modal}
-        freeze_props={freeze_props}
-      >
-        {children}
-      </Contend>
-    );
-  }
+  return (
+    <Contend
+      btnText={btnText}
+      handleClearInput={handleClearInput}
+      handleSubmit={handleSubmit}
+      isLoading={isLoading}
+      toolName={toolName}
+      userInput={userInput}
+      userPackage={userPackage}
+      ExtraBtn={ExtraBtn}
+      ExtraCounter={ExtraCounter}
+      btnIcon={btnIcon}
+      dontDisable={dontDisable}
+      sx={sx}
+      freeze_modal={freeze_modal}
+      freeze_props={freeze_props}
+    >
+      {children}
+    </Contend>
+  );
+}
 // }
 
 const Contend = ({
@@ -94,8 +94,8 @@ const Contend = ({
   ExtraCounter = null,
   btnIcon = null,
   sx = {},
-  freeze_modal=false,
-  freeze_props={},
+  freeze_modal = false,
+  freeze_props = {},
   dontDisable = false,
 }) => {
   const [wordCount, setWordCount] = useState(0);
@@ -106,7 +106,7 @@ const Contend = ({
     const words = userInput.trim() ? String(userInput).split(" ").length : 0;
     setWordCount(words);
   }, [userInput]);
-  const [show_freeze, set_show_freeze] = useState(false)
+  const [show_freeze, set_show_freeze] = useState(false);
   if (!userInput) return <Box sx={{ height: 48 }} />;
   return (
     <Stack
@@ -120,28 +120,34 @@ const Contend = ({
         py: 1,
         ...sx,
       }}
-      bgcolor='background.paper'
+      bgcolor="background.paper"
     >
-
-      {freeze_modal && show_freeze  ? <FreezeWordsDialog close={()=>{
-        set_show_freeze(false)
-      }} readOnly={isLoading} freeze_props={freeze_props} /> : null}
+      {freeze_modal && show_freeze ? (
+        <FreezeWordsDialog
+          close={() => {
+            set_show_freeze(false);
+          }}
+          readOnly={isLoading}
+          freeze_props={freeze_props}
+        />
+      ) : null}
       <Stack
-        direction='row'
+        direction="row"
         spacing={2}
-        alignItems='center'
-        justifyContent='space-between'
+        alignItems="center"
+        justifyContent="space-between"
         height={48}
         sx={
           btnText === "Fix Grammar"
             ? { width: { xs: "100%", sm: "auto" } }
             : undefined
         }
+        flex={1}
       >
-        <Stack direction='row' spacing={1} alignItems='center'>
+        <Stack direction="row" spacing={1} alignItems="center">
           <WordIcon />
           <Typography
-            variant='subtitle2'
+            variant="subtitle2"
             sx={{
               color: `${wordCount > wordLimit ? "error.main" : ""}`,
               whiteSpace: "nowrap",
@@ -149,7 +155,7 @@ const Contend = ({
           >
             <b>{wordCount}</b> /{" "}
             {wordLimit === 9999 ? (
-              <Typography component='span' sx={{ color: "primary.main" }}>
+              <Typography component="span" sx={{ color: "primary.main" }}>
                 Unlimited
               </Typography>
             ) : (
@@ -157,12 +163,12 @@ const Contend = ({
             )}
           </Typography>
 
-          <Tooltip title='Clear text' placement='top' arrow>
+          <Tooltip title="Clear text" placement="top" arrow>
             <IconButton
-              aria-label='delete'
+              aria-label="delete"
               size={isMobile ? "small" : "large"}
               variant={"outlined"}
-              color='inherit'
+              color="inherit"
               disabled={isLoading}
               onClick={handleClearInput}
               style={{ marginLeft: "-4px" }}
@@ -171,34 +177,45 @@ const Contend = ({
               <DeleteRounded sx={{ color: "text.secondary" }} />
             </IconButton>
           </Tooltip>
-          {freeze_modal ? <Tooltip title='Freeze Words' placement='top' arrow>
-            <IconButton
-              id="show_freeze_button"
-              aria-label='freeze'
-              size={isMobile ? "small" : "large"}
-              variant={"outlined"}
-              color='inherit'
-              disabled={false}
-              onClick={()=>set_show_freeze(true)}
-              style={{ marginLeft: "-4px" }}
-              disableRipple
-            >
-              <AcUnit sx={{ color: "text.secondary" }} />
-            </IconButton>
-          </Tooltip>:null}
+          {freeze_modal ? (
+            <Tooltip title="Freeze Words" placement="top" arrow>
+              <IconButton
+                id="show_freeze_button"
+                aria-label="freeze"
+                size={isMobile ? "small" : "large"}
+                variant={"outlined"}
+                color="inherit"
+                disabled={false}
+                onClick={() => set_show_freeze(true)}
+                style={{ marginLeft: "-4px" }}
+                disableRipple
+              >
+                <AcUnit sx={{ color: "text.secondary" }} />
+              </IconButton>
+            </Tooltip>
+          ) : null}
         </Stack>
         {ExtraCounter}
       </Stack>
-
-      <Stack sx={{ flexDirection: "row", gap: 2 }}>
+      <Stack
+        sx={{
+          flexDirection: "row",
+          gap: 2,
+          flex: 1,
+          justifyContent: {
+            md: "center",
+            xs: "flex-end",
+          },
+        }}
+      >
         {wordCount > wordLimit && userPackage !== "unlimited" && (
-          <Link href='/pricing'>
+          <Link href="/pricing">
             <Button
               sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-              variant='contained'
+              variant="contained"
               startIcon={
                 <SvgColor
-                  src='/navbar/diamond.svg'
+                  src="/navbar/diamond.svg"
                   sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
                 />
               }
@@ -209,7 +226,7 @@ const Contend = ({
         )}
         <Button
           onClick={() => handleSubmit()}
-          variant='contained'
+          variant="contained"
           loading={isLoading}
           disabled={!dontDisable ? wordCount > wordLimit : false}
           sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
@@ -219,7 +236,21 @@ const Contend = ({
         </Button>
         {ExtraBtn}
       </Stack>
-      {children}
+
+      <Stack
+        sx={{
+          flexDirection: "row",
+          gap: 2,
+          flex: {
+            md: 1,
+          },
+          justifyContent: {
+            md: "flex-end",
+          },
+        }}
+      >
+        {children}
+      </Stack>
     </Stack>
   );
 };
