@@ -39,19 +39,19 @@ const BottomBar = ({
       handleSubmit={handleSubmit}
       btnText={outputContend ? "Regenerate" : "Translate"}
       sticky={320}
-      ExtraBtn={
-        outputContend ? (
-          <Button
-            onClick={handleHumanize}
-            variant='contained'
-            disabled={isLoading}
-            loading={isHumanizing}
-            sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-          >
-            Humanize
-          </Button>
-        ) : null
-      }
+      // ExtraBtn={
+      //   outputContend ? (
+      //     <Button
+      //       onClick={handleHumanize}
+      //       variant='contained'
+      //       disabled={isLoading}
+      //       loading={isHumanizing}
+      //       sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
+      //     >
+      //       Humanize
+      //     </Button>
+      //   ) : null
+      // }
     >
       <Stack direction='row' alignItems='center'>
         {outputContend && (
