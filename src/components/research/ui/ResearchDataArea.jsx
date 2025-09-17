@@ -5,7 +5,11 @@ import ResearchContent from "./ResearchContent";
 import ImagesContent from "./ImagesContent";
 import SourcesContent from "./SourcesContent";
 
-export default function ResearchDataArea({ selectedTab, research, isLastData }) {
+export default function ResearchDataArea({
+  selectedTab,
+  research,
+  isLastData,
+}) {
   console.log("research data on research data area", isLastData);
 
   const renderContent = () => {

@@ -286,10 +286,7 @@ const agentDemos = [
     chatId: [
       "68c92076dc985a1ee342aa72", // for prod
       "68c9237adc985a1ee342aa75", // for prod
-      "68c926eedc985a1ee342aa77" // for prod
-      // "68c908eebcee6f7df8e5e7d2", // for dev
-      // "68c92aca40832171c9f73c13", // for dev
-      // "68c92b7240832171c9f73c15" // for dev
+      "68c926eedc985a1ee342aa77", // for prod
     ],
     description:
       "Performs real-world research and structures the data in smart sheets",
@@ -302,6 +299,11 @@ const agentDemos = [
     icon: <BrainCog size={24} />,
     color: "purple",
     placeholder: "Research deeply about...",
+    chatId: [
+      "68ca4f4ee4baf23966d0d8de",
+      "68ca4fe4e4baf23966d0d922",
+      "68ca5154e4baf23966d0d975",
+    ],
     examples: [
       "Find all recent studies on intermittent fasting and longevity",
       "Compare pricing, pros, and cons of top 5 project management tools",
@@ -444,9 +446,10 @@ export default function InteractiveAgentDemo() {
       if (selectedAgent?.id === "slides") {
         router.push(`/slide/replay?id=${simulationId}`);
       } else if (selectedAgent?.id === "sheet") {
-        console.log("sheets routes");
         // await createSheetSimulationChatId(userInput, router, simulationId); // Previously we needed to create chat ID and then we needed to add token to add and work simulation. With new update now we only need simulation ID. No authentication needed.
         router.push(`/agents/sheets/?s_id=${simulationId}`);
+      } else if (selectedAgent?.id === "deep-research") {
+        router.push(`/agents/research/?r_id=${simulationId}`);
       }
 
       return;

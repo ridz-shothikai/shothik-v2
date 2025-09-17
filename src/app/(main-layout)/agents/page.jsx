@@ -16,11 +16,9 @@ export default function AgentsPage() {
 
   return (
     <AgentContextProvider>
-      <Box>
         <AgentLandingPage />
         {/* Tutorial Overlay. For now not needed */}
         {/* <AgentTutorialOverlay open={tutorialOpen} onClose={() => setTutorialOpen(false)} /> */}
-      </Box>
     </AgentContextProvider>
   );
 } 

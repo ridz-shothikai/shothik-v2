@@ -35,6 +35,8 @@ const initialState = {
   userPrompt: "",
   lastEventTimestamp: null,
   eventSequenceNumber: 0,
+  isSimulating: false,
+  simulationStatus: "idle", // "idle" | "ongoing" | "completed"
 };
 
 export const researchCoreSlice = createSlice({
@@ -193,6 +195,12 @@ export const researchCoreSlice = createSlice({
     setConnectionStatus: (state, action) => {
       state.connectionStatus = action.payload; // 'connected', 'polling', 'reconnecting', 'failed', 'timeout'
     },
+    setSimulationStatus: (state, action) => {
+      state.simulationStatus = action.payload; //
+    },
+    setIsSimulating: (state, action) => {
+      state.isSimulating = action.payload
+    },
     forceAddStreamEvent: (state, action) => {
       const eventWithMetadata = {
         ...action.payload,
@@ -227,6 +235,8 @@ export const {
   setStreamingMode,
   setUserPrompt,
   forceAddStreamEvent,
+  setSimulationStatus,
+  setIsSimulating
 } = researchCoreSlice.actions;
 
 export const researchCoreState = (state) => {

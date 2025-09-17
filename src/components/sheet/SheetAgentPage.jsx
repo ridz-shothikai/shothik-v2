@@ -248,6 +248,7 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
           py: 1.5,
           px: 2,
           width: "100%",
+          maxWidth: "1000px"
         }}
       >
         <Container maxWidth="xl">

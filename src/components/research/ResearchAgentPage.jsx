@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, useTheme } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 import HeaderTitle from "./ui/HeaderTitle";
 import TabsPanel from "./ui/TabPanel";
 import ResearchDataArea from "./ui/ResearchDataArea";
@@ -11,7 +11,8 @@ import { clearResearchChatState, researchChatState, setCurrentChat } from "../..
 import { useSearchParams } from "next/navigation";
 import {useResearchHistory} from "../../hooks/useResearchHistory";
 import { useResearchStream } from "../../hooks/useResearchStream";
-import { researchCoreState, resetResearchCore, setResearchSelectedTab } from "../../redux/slice/researchCoreSlice";
+import { useResearchSimulation } from "../../hooks/useResearchSimulation";
+import { researchCoreState, resetResearchCore, setIsSimulating, setResearchSelectedTab, setSimulationStatus } from "../../redux/slice/researchCoreSlice";
 import StreamingIndicator from "./ui/StreamingIndicator";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
@@ -19,23 +20,33 @@ import { useConnectionState } from "../../hooks/useConnectionState";
 import { QueueStatusService } from "../../services/queueStatusService";
 import ResearchProcessLogs from "./ui/ResearchProcessLogs";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
+import { FooterCta } from "../sheet/SheetAgentPage";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const theme = useTheme();
   const scrollRef = useRef(null);
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
+  const [isSimulationCompleted, setIsSimulationCompleted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useDispatch();
   //   const { headerHeight } = useSelector((state) => state.ui);
   const { currentChatId, createNewChat } = useChat();
   const { loadChatResearches } = useResearchHistory();
   const { startResearch } = useResearchStream();
+  const { startSimulationResearch } = useResearchSimulation();
 
   const researchChat = useSelector(researchChatState);
   const researchCore = useSelector(researchCoreState);
 
   const searchParams = useSearchParams();
   const chatIdFromUrl = searchParams.get("id");
+
+  const researchId = searchParams.get("r_id");
+  const isSimulationMode = Boolean(researchId);
+  const actualChatId = researchId || chatIdFromUrl;
 
   const { checkAndRecoverConnection, manualReconnect } = useResearchStream();
   const { loadChatResearchesWithQueueCheck } = useResearchHistory();
@@ -59,33 +70,52 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
 
   useEffect(() => {
     if (!researchChat?.currentChatId) {
-      sessionStorage.setItem("activeResearchChatId", chatIdFromUrl);
-      dispatch(setCurrentChat(chatIdFromUrl));
+      sessionStorage.setItem("activeResearchChatId", actualChatId);
+      dispatch(setCurrentChat(actualChatId));
     }
     return () => {
       // clean up effects
-      sessionStorage.removeItem("activeResearchChatId");
-      sessionStorage.removeItem("initialResearchPrompt");
-      sessionStorage.removeItem("r-config");
+      if(!isSimulationMode) {
+        sessionStorage.removeItem("activeResearchChatId");
+        sessionStorage.removeItem("initialResearchPrompt");
+        sessionStorage.removeItem("r-config");
+      }
       dispatch(clearResearchChatState());
       dispatch(resetResearchCore());
       dispatch(clearResearchUiState());
     };
-  }, [chatIdFromUrl]);
+  }, [actualChatId, isSimulationMode]);
 
   useEffect(() => {
     try {
       const loadResearches = async () => {
         if (currentChatId) {
+          // For simulation mode, skip recovery and queue checks
+          if (isSimulationMode) {
+            setIsInitializingResearch(true);
+            dispatch(setIsSimulating(true));
+            dispatch(setSimulationStatus("ongoing"));
+
+            // Start simulation immediately
+            setTimeout(() => {
+              startSimulationResearch(researchId, setIsSimulationCompleted);
+              setIsInitializingResearch(false);
+            }, 500);
+
+            setLoadingResearchHistory(false);
+            return;
+          }
+
           // First check for interrupted connections
           await checkAndRecoverConnection();
-          
+
           // Load existing researches and check queue status
-          const { researches, hasActiveQueue } = await loadChatResearchesWithQueueCheck();
-  
+          const { researches, hasActiveQueue } =
+            await loadChatResearchesWithQueueCheck();
+
           // Only start new research if:
           // 1. No existing researches AND
-          // 2. No active/waiting queue AND  
+          // 2. No active/waiting queue AND
           // 3. We have an initial query AND
           // 4. We're not currently streaming or polling
           if (
@@ -121,18 +151,18 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           } else {
             setIsInitializingResearch(false);
           }
-  
+
           setLoadingResearchHistory(false);
         }
       };
-  
+
       loadResearches();
     } catch (error) {
       console.error("Error loading research history:", error);
       setLoadingResearchHistory(false);
       setIsInitializingResearch(false);
     }
-  }, [currentChatId, checkAndRecoverConnection, loadChatResearchesWithQueueCheck, startResearch, researchCore?.isStreaming, researchCore?.isPolling]);
+  }, [currentChatId, isSimulationMode, researchId]);
 
   useEffect(() => {
     if (scrollRef.current && researchCore?.isStreaming) {
@@ -157,11 +187,21 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
             xl: "calc(100dvh - 270px)",
           },
           maxHeight: {
-            xs: "calc(100dvh - 180px)",
-            sm: "calc(100dvh - 200px)",
-            md: "calc(100dvh - 230px)",
-            lg: "calc(100dvh - 250px)",
-            xl: "calc(100dvh - 270px)",
+            xs: isSimulationMode
+              ? "calc(100dvh - 130px)"
+              : "calc(100dvh - 180px)",
+            sm: isSimulationMode
+              ? "calc(100dvh - 100px)"
+              : "calc(100dvh - 200px)",
+            md: isSimulationMode
+              ? "calc(100dvh - 130px)"
+              : "calc(100dvh - 230px)",
+            lg: isSimulationMode
+              ? "calc(100dvh - 150px)"
+              : "calc(100dvh - 250px)",
+            xl: isSimulationMode
+              ? "calc(100dvh - 170px)"
+              : "calc(100dvh - 270px)",
           },
           marginInline: "auto",
           position: "relative",
@@ -169,13 +209,13 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           overflowY: "auto",
           px: { xs: 2, sm: 0 },
           marginBottom: {
-            xs: "50px",
-            sm: "135px",
-            md: "160px",
-            lg: "180px",
-            xl: "200px",
+            xs: isSimulationMode ? "0px" : "50px",
+            sm: isSimulationMode ? "35px" : "135px",
+            md: isSimulationMode ? "60px" : "160px",
+            lg: isSimulationMode ? "80px" : "180px",
+            xl: isSimulationMode ? "100px" : "200px",
           },
-        bgcolor: theme.palette.mode === "dark" && "#161C24",
+          bgcolor: theme.palette.mode === "dark" && "#161C24",
         }}
       >
         {/* research data */}

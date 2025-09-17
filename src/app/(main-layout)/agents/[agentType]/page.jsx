@@ -5,19 +5,32 @@ import Box from "@mui/material/Box";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
 import AgentPage from "../../../../../components/agents/AgentPage";
 import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
-import SheetAgentPage from "../../../../components/sheet/SheetAgentPage";
+import SheetAgentPage, { FooterCta } from "../../../../components/sheet/SheetAgentPage";
 import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
 import ChatInput from "../../../../components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
+import { useSelector } from "react-redux";
+import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 export default function SpecificAgentPage() {
+    const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [showModal, setShowModal] = useState(false);
   const params = useParams();
   const agentType = params.agentType;
 
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
+  const researchId = searchParams.get("r_id"); // this ID is presents when we are on research simulation mode
+  const isResarchSimulating = !!researchId;
+
+  // console.log(isResarchSimulating, "is research simulating");
+
   const [loadingResearchHistory, setLoadingResearchHistory] = useState(true);
+
+  const { isSimulating, simulationStatus } = useSelector(researchCoreState);
 
   // Function to render the appropriate component based on agentType
   const renderComponent = () => {
@@ -49,28 +62,51 @@ export default function SpecificAgentPage() {
 
   return (
     <AgentContextProvider>
-      <Box sx={{ minHeight: "calc(100dvh - 200px)", overflowY: "auto", position: "relative" }}>
+      <Box
+        sx={{
+          minHeight: "calc(100dvh - 200px)",
+          overflowY: "auto",
+          position: "relative",
+        }}
+      >
         {renderComponent()}
 
         {/* chat input for research agents */}
-        {
-          agentType === "research" && <>
-          {
-            !loadingResearchHistory &&
-            (
-              <Box sx={{
-                position: "absolute",
-                bottom: 1,
-                left: 0,
-                width: "100%",
-                px: {xs: 2, sm: 0},
-              }}>
-                <ChatInput/>
+        {agentType === "research" && !isResarchSimulating && (
+          <>
+            {!loadingResearchHistory && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 1,
+                  left: 0,
+                  width: "100%",
+                  px: { xs: 2, sm: 0 },
+                }}
+              >
+                <ChatInput />
               </Box>
-            )
-          }
+            )}
           </>
-        }
+        )}
+
+        {/* join the beta list footer cta for research only now */}
+        {!isSimulating && simulationStatus === "completed" && (
+          <Box sx={{
+            position: "absolute",
+            bottom:0,
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <FooterCta
+              isMobile={isMobile}
+              showModal={showModal}
+              setShowModal={setShowModal}
+            />
+          </Box>
+        )}
       </Box>
     </AgentContextProvider>
   );
