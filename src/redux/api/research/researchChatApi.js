@@ -1,14 +1,17 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../config";
 
 export const researchChatApi = createApi({
   reducerPath: "researchChatApi",
-  baseQuery: async (args, api, extraOptions) => {
-    let result = await baseQuery(args, api, extraOptions);
-    // console.log(result, "Base Query Result");
-    return result;
-  },
-  tagTypes: ["Chat"],
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/deep-research",
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("accessToken");
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      return headers;
+    },
+  }),
+  tagTypes: ["Research-Chat"],
   endpoints: (builder) => ({
     createChat: builder.mutation({
       query: (name) => ({
@@ -16,11 +19,11 @@ export const researchChatApi = createApi({
         method: "POST",
         body: { name },
       }),
-      invalidatesTags: ["Chat"],
+      invalidatesTags: ["Research-Chat"],
     }),
-    getMyChats: builder.query({
+    getMyResearchChats: builder.query({
       query: () => "/chat/get_my_chats",
-      providesTags: ["Chat"],
+      providesTags: ["Research-Chat"],
     }),
     getOneChat: builder.query({
       query: (id) => `/chat/get_one_chat/${id}`,
@@ -39,14 +42,14 @@ export const researchChatApi = createApi({
         url: `/chat/delete_chat/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Chat"],
+      invalidatesTags: ["Research-Chat"],
     }),
   }),
 });
 
 export const {
   useCreateChatMutation,
-  useGetMyChatsQuery,
+  useGetMyResearchChatsQuery,
   useGetOneChatQuery,
   useUpdateChatNameMutation,
   useDeleteChatMutation,

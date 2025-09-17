@@ -11,10 +11,14 @@ import {
   useGetUserQuery,
 } from "../../redux/api/auth/authApi";
 import LoadingScreen from "../../resource/LoadingScreen";
+import { useSelector } from "react-redux";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
-  useGetUserQuery();
+  const {accessToken} = useSelector((state) => state.auth);
+  useGetUserQuery(undefined, {
+    skip: !accessToken
+  });
   useGetUserLimitQuery();
 
   useEffect(() => {

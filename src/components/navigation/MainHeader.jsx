@@ -29,7 +29,9 @@ export default function MainHeader() {
   const isDesktop = useResponsive("up", "sm");
   const isMd = useResponsive("up", "sm");
   const isMobile = useResponsive("down", "sm");
-  const { isLoading } = useGetUserQuery();
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
   const pathname = usePathname();
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";

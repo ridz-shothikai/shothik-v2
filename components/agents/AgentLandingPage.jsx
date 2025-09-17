@@ -61,6 +61,7 @@ import { useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } fro
 import {useResearchAiToken} from "../../src/hooks/useRegisterResearchService";
 import ModelSelectForResearch from "./ModelSelectForResearch";
 import { useGetResearchChats } from "../../src/hooks/useGetResearchChats";
+import { useGetMyResearchChatsQuery } from "../../src/redux/api/research/researchChatApi";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -201,14 +202,25 @@ export default function AgentLandingPage() {
     isLoading: SheetDataLoading,
     error,
     refetch: refetchChatHistory,
-  } = useGetMyChatsQuery();
+  } = useGetMyChatsQuery(undefined, {
+    skip: !accessToken,
+  });
+
   const {
     data: slidesChats,
     isLoading: SlideDataLoading,
     error: SlideDataLoadingError,
-  } = useFetchAllPresentationsQuery();
+  } = useFetchAllPresentationsQuery(undefined, {
+    skip: !accessToken,
+  });
 
-  const {data: researchData, isLoading: researchDataLoading, isError: researchDataError} = useGetResearchChats();
+  const {
+    data: researchData,
+    isLoading: researchDataLoading,
+    isError: researchDataError,
+  } = useGetMyResearchChatsQuery(undefined, {
+    skip: !accessToken,
+  });
 
   const [uploadFilesForSlides, { isLoading: isUploading, error: uploadError }] =
     useUploadPresentationFilesMutation();

@@ -279,15 +279,17 @@ const agentDemos = [
     color: "blue",
     placeholder: "Select an example...",
     examples: [
-      "Compare pricing of top 10 gyms in a sheet",
+      "Compare pricing of top 10 gyms of the world in a sheet",
       "List top 5 Italian restaurants with ratings",
       "Generate 10 school and contact notes",
     ],
     chatId: [
-      "6899c971364813eab1a0a0ce",
-      "6899caacfe89e52d02b85587",
-      // "6899cba7364813eab1a0a104",
-      "68c2504b614832ff7b4615e2",
+      "68c92076dc985a1ee342aa72", // for prod
+      "68c9237adc985a1ee342aa75", // for prod
+      "68c926eedc985a1ee342aa77" // for prod
+      // "68c908eebcee6f7df8e5e7d2", // for dev
+      // "68c92aca40832171c9f73c13", // for dev
+      // "68c92b7240832171c9f73c15" // for dev
     ],
     description:
       "Performs real-world research and structures the data in smart sheets",
@@ -314,7 +316,7 @@ const agentDemos = [
 
 // Mock API function
 const mockApiRequest = async (method, endpoint, data) => {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   // return to the slide simulation api
   return {
@@ -443,7 +445,8 @@ export default function InteractiveAgentDemo() {
         router.push(`/slide/replay?id=${simulationId}`);
       } else if (selectedAgent?.id === "sheet") {
         console.log("sheets routes");
-        await createSheetSimulationChatId(userInput, router, simulationId);
+        // await createSheetSimulationChatId(userInput, router, simulationId); // Previously we needed to create chat ID and then we needed to add token to add and work simulation. With new update now we only need simulation ID. No authentication needed.
+        router.push(`/agents/sheets/?s_id=${simulationId}`);
       }
 
       return;

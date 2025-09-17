@@ -3,9 +3,9 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useCreateChatMutation,
-  useGetMyChatsQuery,
   useUpdateChatNameMutation,
   useDeleteChatMutation,
+  useGetMyResearchChatsQuery,
 } from "../redux/api/research/researchChatApi";
 import { setCurrentChat, updateTitle } from "../redux/slice/researchChatSlice";
 
@@ -17,7 +17,7 @@ export const useChat = () => {
   const [updateChatName] = useUpdateChatNameMutation();
   const [deleteChat] = useDeleteChatMutation();
 
-  const { data: chats, isLoading, refetch } = useGetMyChatsQuery();
+  const { data: chats, isLoading, refetch } = useGetMyResearchChatsQuery();
 
   const createNewChat = useCallback(
     async (name) => {

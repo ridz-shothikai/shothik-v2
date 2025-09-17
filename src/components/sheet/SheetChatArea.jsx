@@ -26,6 +26,7 @@ import MetadataDisplay from "./MetaDataDisplay";
 import TypingAnimation from "../common/TypingAnimation";
 import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
 import { FooterCta } from "./SheetAgentPage";
+import useSnackbar from "../../hooks/useSnackbar";
 
 const USER_MESSAGE_COLOR = "#1976d2";
 const PRIMARY_GREEN = "#07B37A";
@@ -224,20 +225,21 @@ const getStepMessage = (step, data) => {
 
 // Main SheetChatArea component
 export default function SheetChatArea({ isLoadings, currentAgentType, theme, isMobile }) {
+  const dev_mode = process.env.NODE_ENV === "development";
   const dispatch = useDispatch();
   const sheetState = useSelector(selectSheet);
   // console.log(sheetState, "sheet state");
-  const user = useSelector((state) => state.auth.user);
+  const { accessToken: sheetAiToken } = useSelector((state) => state.auth); // Naming it for better understanding, sheet service uses accesstoken
   const searchParams = useSearchParams();
   const currentChatId = searchParams.get("id");
   const router = useRouter();
+  const enqueueSnackbar = useSnackbar();
 
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [sheetAiToken, setSheetAiToken] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   // const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [shouldPoll, setShouldPoll] = useState(false);
@@ -251,6 +253,9 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
   const [simulationCompleted, setSimulationCompleted] = useState(false);
   const s_id = searchParams.get("s_id"); // simulation id
 
+  // Determine the actual chat ID to use
+  const actualChatId = s_id || currentChatId;
+  const isSimulationMode = Boolean(s_id);
 
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
@@ -265,9 +270,9 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     error: historyError,
     refetch,
   } = useGetChatHistoryQuery(currentChatId, {
-    skip: !currentChatId || !sheetAiToken,
+    skip: !currentChatId || (!sheetAiToken && !isSimulationMode), // when we have s_id -> simulation Id we don't need this query.
     pollingInterval:
-      shouldPoll && sheetState.activeChatIdForPolling === currentChatId
+      shouldPoll && sheetState.activeChatIdForPolling === actualChatId
         ? 3000
         : 0,
     refetchOnMountOrArgChange: true,
@@ -282,11 +287,11 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     if (!chatData) return; // no data yet
     if (!hasAnyConversation) return; // <— bail out on the default-empty payload
 
-    const isTarget = sheetState.activeChatIdForPolling === currentChatId;
+    const isTarget = sheetState.activeChatIdForPolling === actualChatId;
 
-    if (currentChatId && chatData?.isIncomplete) {
+    if (actualChatId && chatData?.isIncomplete) {
       if (!isTarget) {
-        dispatch(setActiveSheetIdForPolling(currentChatId));
+        dispatch(setActiveSheetIdForPolling(actualChatId));
       }
       setShouldPoll(true);
     } else {
@@ -302,7 +307,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     chatData?.shouldSetGenerating,
     chatData?.isIncomplete,
     isLoadingHistory,
-    currentChatId,
+    actualChatId,
     sheetState.activeChatIdForPolling,
   ]);
 
@@ -310,7 +315,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
   useEffect(() => {
     return () => {
       // Cleanup: if this was the active chat for polling, clear it
-      if (sheetState.activeChatIdForPolling === currentChatId) {
+      if (sheetState.activeChatIdForPolling === actualChatId) {
         dispatch(setActiveSheetIdForPolling(null));
         dispatch(setSheetStatus("idle"));
         // sessionStorage.removeItem("activeChatId");
@@ -325,13 +330,20 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
       if (initializationAttemptedRef.current) return;
       initializationAttemptedRef.current = true;
 
+      // For simulation mode, no token required - initialize directly
+      if (isSimulationMode) {
+        setIsInitialized(true);
+        dispatch(setSheetStatus("generating"));
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("sheetai-token");
-        if (!token) {
+        if (!sheetAiToken) {
           router.push("/");
-          throw new Error("Please log to use this service.");
+          enqueueSnackbar("Please log in to use this service.", {
+            variant: "error",
+          });
         }
-        setSheetAiToken(token);
         setIsInitialized(true);
         dispatch(setSheetStatus("idle"));
       } catch (error) {
@@ -355,7 +367,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
         !isInitialized ||
         isLoading ||
         initialPromptProcessedRef.current ||
-        !sheetAiToken
+        !sheetAiToken ||
+        isSimulationMode
       ) {
         return;
       }
@@ -375,7 +388,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
       }
     };
     processInitialPrompt();
-  }, [isInitialized, sheetAiToken]);
+  }, [isInitialized, sheetAiToken, isSimulationMode]);
 
   // Handle chat history data changes
   useEffect(() => {
@@ -506,7 +519,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     });
 
     // for simulation only
-    if(s_id) {
+    if (s_id) {
       setSimulationCompleted(true);
     }
   }, [chatData, dispatch]);
@@ -622,8 +635,50 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
   //   }
   // };
 
+  const handleSimulationGeneration = async (simulationChatId) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/simulate_conversation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          chat: simulationChatId, // This will be the s_id from URL
+        }),
+        signal: abortControllerRef.current.signal,
+      }
+    );
+    return response;
+  };
+
+  const handleUserSheetGeneration = async (prompt, chatId, token) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/create_conversation`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          chat: chatId,
+        }),
+        signal: abortControllerRef.current.signal,
+      }
+    );
+    return response;
+  };
+
   const handleMessage = async (messageText = inputValue) => {
-    if (!messageText.trim() || isLoading || !sheetAiToken) {
+    if (
+      !messageText.trim() ||
+      isLoading ||
+      (!isSimulationMode && !sheetAiToken)
+    ) {
       return;
     }
 
@@ -631,8 +686,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     setError(null);
     setIsLoading(true);
     dispatch(setSheetStatus("generating"));
-    sessionStorage.setItem("activeChatId", currentChatId);
-    dispatch(setActiveSheetIdForPolling(currentChatId));
+    sessionStorage.setItem("activeChatId", actualChatId);
+    dispatch(setActiveSheetIdForPolling(actualChatId));
 
     // Create user message with a predictable ID
     const userMessageId = `user-${Date.now()}`;
@@ -647,7 +702,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     setInputValue("");
 
     try {
-      await handleSheetGeneration(messageText, currentChatId, userMessageId);
+      await handleSheetGeneration(messageText, actualChatId, userMessageId);
     } catch (error) {
       console.error("Failed to process message:", error);
       const errorMessage =
@@ -671,13 +726,10 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
   };
 
   // THIS PART IS ONLY FOR SIMULATION STARTS
-
-  const token = localStorage.getItem("sheetai-token");
-
   useEffect(() => {
     const runSimulation = async () => {
       // Only run simulation if we have s_id and component is properly initialized
-      if (!s_id || !isInitialized || !sheetAiToken || isLoading) {
+      if (!isSimulationMode || !isInitialized || isLoading) {
         return;
       }
 
@@ -692,26 +744,19 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
       // sessionStorage.setItem(simulationKey, "true");
 
       try {
-        // Get simulation prompt
-        const simulationPrompt = getSimulationPrompt(s_id);
-
-        if (!simulationPrompt) {
-          console.error("No simulation prompt found for s_id:", s_id);
-          return;
-        }
-
-        console.log("Running simulation with s_id:", s_id);
-
         // Set loading state
         setError(null);
         setIsLoading(true);
         dispatch(setSheetStatus("generating"));
-        dispatch(setActiveSheetIdForPolling(currentChatId));
+        dispatch(setActiveSheetIdForPolling(actualChatId));
+
+        // const prompt = dev_mode ? getSimulationPromptDev(actualChatId) : getSimulationPromptProd(actualChatId);
+        const prompt = getSimulationPrompt(actualChatId);
 
         // Create user message for simulation
         const userMessage = {
           id: `user-simulation-${s_id}-${Date.now()}`,
-          message: simulationPrompt,
+          message: prompt,
           isUser: true,
           timestamp: new Date().toISOString(),
         };
@@ -719,11 +764,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
         setMessages((prev) => [...prev, userMessage]);
 
         // Run the sheet generation
-        await handleSheetGeneration(
-          simulationPrompt,
-          currentChatId,
-          userMessage.id
-        );
+        await handleSheetGeneration(prompt, actualChatId, userMessage.id);
       } catch (error) {
         console.error("Simulation failed:", error);
         setError("Simulation failed to run. Please try again.");
@@ -734,16 +775,14 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     };
 
     runSimulation();
-  }, [s_id, isInitialized, sheetAiToken, currentChatId]);
+  }, [isSimulationMode, isInitialized, actualChatId]);
 
-  // Helper function to get simulation prompt based on s_id
   const getSimulationPrompt = (simulationId) => {
-    // You can either:
-    // 1. Have predefined prompts based on simulation ID
     const simulationPrompts = {
-      "6899c971364813eab1a0a0ce": "Compare pricing of top 10 gyms in a sheet",
-      "6899caacfe89e52d02b85587": "List top 5 Italian restaurants with ratings",
-      "6899cba7364813eab1a0a104": "Generate 10 school and contact notes",
+      "68c92076dc985a1ee342aa72":
+        "Compare pricing of top 10 gyms of the world in a sheet",
+      "68c9237adc985a1ee342aa75": "List top 5 Italian restaurants with ratings",
+      "68c926eedc985a1ee342aa77": "Generate 10 school and contact notes",
     };
 
     return simulationPrompts[simulationId] || null;
@@ -755,29 +794,9 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
   const handleSheetGeneration = async (prompt, chatId, userMessageId) => {
     try {
       abortControllerRef.current = new AbortController();
-      const response = await fetch(
-        // "https://sheetai.pixigenai.com/api/conversation/create_conversation",
-        // "http://163.172.172.38:3005/api/conversation/create_conversation",
-        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/create_conversation`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: `Bearer ${sheetAiToken}`,
-            // Authorization: `Bearer ${token}`, // only for simulation
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // only for simulation
-            Accept: "text/event-stream",
-          },
-          body: JSON.stringify({
-            prompt: prompt,
-            chat: chatId,
-            ...(s_id && { isSimulated: true }),
-            isSimulated: s_id ? true : false, // only for simulation
-            ...(s_id && { simulatedChat: s_id }), // only for simulation
-          }),
-          signal: abortControllerRef.current.signal,
-        }
-      );
+      const response = isSimulationMode
+        ? await handleSimulationGeneration(actualChatId) // Using s_id for simulation
+        : await handleUserSheetGeneration(prompt, actualChatId, sheetAiToken); // Using id for user specific prompt
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -943,9 +962,82 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                     type: "info",
                   },
                 ]);
+              } else if(data.data?.columns.length > 0 && data.data?.rows.length > 0) {
+                // Update Redux store with sheet data
+                dispatch(setSheetData(data.data?.rows));
+                dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
+                dispatch(setSheetStatus("completed"));
+
+                // Show success toast
+                setToast({
+                  open: true,
+                  message: "Spreadsheet generated successfully!",
+                  severity: "success",
+                });
+
+                // Create save point with the actual conversation data
+                const conversationId = data.conversation;
+                const chatId = data.chat;
+
+                const newSavePoint = {
+                  id: `savepoint-${conversationId}`,
+                  title: prompt.substring(0, 50) + "...",
+                  prompt: prompt,
+                  timestamp:
+                    data?.updatedAt ||
+                    data.timestamp ||
+                    new Date().toISOString(),
+                  generations: [
+                    {
+                      id: `gen-${conversationId}`,
+                      title: "Generation 1",
+                      timestamp:
+                        data?.updatedAt ||
+                        data.timestamp ||
+                        new Date().toISOString(),
+                      sheetData: data.response?.rows,
+                      status: "completed",
+                      message: "Sheet generated successfully",
+                      metadata: data.response?.metadata,
+                    },
+                  ],
+                  activeGenerationId: `gen-${conversationId}`,
+                };
+
+                dispatch({
+                  type: "sheet/addSavePoint",
+                  payload: newSavePoint,
+                });
+
+                // Add final success message
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: `final-success-${Date.now()}`,
+                    message: `Successfully generated a ${
+                      data.response?.metadata?.totalRows || "spreadsheet"
+                    } with ${
+                      data.response?.metadata?.columnCount ||
+                      data.response?.columns?.length ||
+                      "multiple"
+                    } columns!`,
+                    isUser: false,
+                    timestamp:
+                      data?.updatedAt ||
+                      data.timestamp ||
+                      new Date().toISOString(),
+                    type: "success",
+                    metadata: data.response?.metadata,
+                  },
+                ]);
+
+                // for simulation only
+                if (s_id) {
+                  setSimulationCompleted(true);
+                }
               }
             }
-            // Lastly step - has the actual data
+            // Lastly step - has the actual data || New update simulation doesn't sending data separately
             else if (!data.step) {
               console.log("Received actual sheet data:", data.data);
 
@@ -1155,7 +1247,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     }
   }, [toast.open]);
 
-  if (!isInitialized && error) {
+  if (!isInitialized && error && !isSimulationMode) {
     return (
       <Box sx={{ p: 3 }}>
         <Alert severity="error">
@@ -1177,6 +1269,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
         <Typography variant="body2" color="text.secondary">
           {isLoadingHistory
             ? "Loading chat history..."
+            : isSimulationMode
+            ? "Initializing Simulation..."
             : "Initializing Sheet AI..."}
         </Typography>
       </Box>
@@ -1270,14 +1364,14 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           </Box>
         </Box>
         {/* for simulation only */}
-        {s_id && (
+        {isSimulationMode && (
           <Box
             sx={{
               pt: "20px",
             }}
           ></Box>
         )}
-        {!s_id && (
+        {!isSimulationMode && (
           <Box
             sx={{
               borderTop: "1px solid #e0e0e0",
@@ -1341,7 +1435,13 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
 
       {/* footer cta */}
       {/* // for simulation only */}
-      {s_id && simulationCompleted && <FooterCta isMobile={isMobile} showModal={showModal} setShowModal={setShowModal} />}
+      {isSimulationMode && simulationCompleted && (
+        <FooterCta
+          isMobile={isMobile}
+          showModal={showModal}
+          setShowModal={setShowModal}
+        />
+      )}
     </>
   );
 }
