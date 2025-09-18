@@ -13,14 +13,10 @@ import {useResearchHistory} from "../../hooks/useResearchHistory";
 import { useResearchStream } from "../../hooks/useResearchStream";
 import { useResearchSimulation } from "../../hooks/useResearchSimulation";
 import { researchCoreState, resetResearchCore, setIsSimulating, setResearchSelectedTab, setSimulationStatus } from "../../redux/slice/researchCoreSlice";
-import StreamingIndicator from "./ui/StreamingIndicator";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
 import { useConnectionState } from "../../hooks/useConnectionState";
-import { QueueStatusService } from "../../services/queueStatusService";
-import ResearchProcessLogs from "./ui/ResearchProcessLogs";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
-import { FooterCta } from "../sheet/SheetAgentPage";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
   const theme = useTheme();
@@ -28,13 +24,11 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
   const [isSimulationCompleted, setIsSimulationCompleted] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useDispatch();
   //   const { headerHeight } = useSelector((state) => state.ui);
-  const { currentChatId, createNewChat } = useChat();
-  const { loadChatResearches } = useResearchHistory();
+  const { currentChatId } = useChat();
   const { startResearch } = useResearchStream();
   const { startSimulationResearch } = useResearchSimulation();
 
@@ -50,7 +44,6 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
 
   const { checkAndRecoverConnection, manualReconnect } = useResearchStream();
   const { loadChatResearchesWithQueueCheck } = useResearchHistory();
-  const connectionState = useConnectionState();
 
   const researchConfig = JSON.parse(sessionStorage.getItem("r-config"));
 

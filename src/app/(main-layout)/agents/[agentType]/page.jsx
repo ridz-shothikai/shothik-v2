@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
@@ -8,13 +8,12 @@ import PresentationAgentPage from "../../../../components/presentation/Presentat
 import SheetAgentPage, { FooterCta } from "../../../../components/sheet/SheetAgentPage";
 import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
 import ChatInput from "../../../../components/research/ui/ChatInput";
-import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
 import { useMediaQuery, useTheme } from "@mui/material";
 
 export default function SpecificAgentPage() {
-    const theme = useTheme();
+  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [showModal, setShowModal] = useState(false);
   const params = useParams();

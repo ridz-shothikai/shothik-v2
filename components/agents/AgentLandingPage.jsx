@@ -1230,7 +1230,7 @@ export default function AgentLandingPage() {
               variant="h6"
               sx={{ color: isDarkMode ? "#fff" : "#333", mb: 3 }}
             >
-              Powered by 7 AI Agents
+              Powered by 4 AI Agents
             </Typography>
             <Grid container spacing={3} sx={{ maxWidth: 800, mx: "auto" }}>
               <Grid item xs={12} sm={4}>
