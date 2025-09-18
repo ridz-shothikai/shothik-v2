@@ -22,6 +22,7 @@ const HistoryTab = () => {
   const redirectPrefix = "p-v2";
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
+    // process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
   const fetchHistory = async () => {
     try {
