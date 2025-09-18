@@ -173,7 +173,9 @@ const ParaphraseOutput = ({
       };
       const { data: res } = await reportForSentence(payload).unwrap();
 
-      enqueueSnackbar(res?.message, { variant: "success" });
+      enqueueSnackbar(res?.data?.message || "Report send successfully", {
+        variant: "success",
+      });
     } catch (error) {
       const msg =
         error?.response?.data?.message ||
