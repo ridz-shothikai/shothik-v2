@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 const useGeolocation = () => {
@@ -9,69 +11,20 @@ const useGeolocation = () => {
     const fetchLocation = async () => {
       setIsLoading(true);
       try {
-        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GEOLOCATION_KEY;
+        const response = await fetch("/api/geolocation", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-        // console.log(apiKey, "api key data");
-        if (!apiKey) {
-          throw new Error("Google Geolocation API key is not configured");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch location");
         }
 
-        const geolocationResponse = await fetch(
-          `https://www.googleapis.com/geolocation/v1/geolocate?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        // console.log(geolocationResponse, "geolocationResponse");
-
-        if (!geolocationResponse.ok) {
-          throw new Error("Invalid response from geolocation API");
-        }
-
-        const geolocationData = await geolocationResponse.json();
-
-        if (!geolocationData.location) {
-          throw new Error("Invalid response from geolocation API");
-        }
-
-        // console.log(geolocationData, "geolocationData");
-
-        const { lat, lng } = geolocationData.location;
-
-        const geocodingResponse = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
-        );
-
-        // console.log(geocodingResponse, "geocodingResponse");
-
-        if (!geocodingResponse.ok) {
-          throw new Error("Invalid response from geocoding API");
-        }
-
-        const geocodingData = await geocodingResponse.json();
-
-        if (!geocodingData.results) {
-          throw new Error("Invalid response from geocoding API");
-        }
-
-        // console.log(geocodingData, "geocodingData");
-
-        const countryResult = geocodingData.results.find((result) =>
-          result.types.includes("country")
-        );
-
-        if (!countryResult?.formatted_address) {
-          throw new Error("Country not found in geocoding response");
-        }
-
-        // console.log(countryResult, "countryResult");
-
-        const country = countryResult.formatted_address.toLowerCase();
-        setLocation(country);
+        const data = await response.json();
+        setLocation(data.location);
       } catch (error) {
         setError(error.message);
       } finally {
