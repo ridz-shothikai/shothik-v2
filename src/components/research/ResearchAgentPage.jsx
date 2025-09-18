@@ -15,7 +15,6 @@ import { useResearchSimulation } from "../../hooks/useResearchSimulation";
 import { researchCoreState, resetResearchCore, setIsSimulating, setResearchSelectedTab, setSimulationStatus } from "../../redux/slice/researchCoreSlice";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
-import { useConnectionState } from "../../hooks/useConnectionState";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
 
 export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
