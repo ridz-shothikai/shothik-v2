@@ -2,6 +2,7 @@ import { KeyboardArrowDown } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { detectLanguage } from "../../../hooks/languageDitector";
+import { detectLanguageV2 } from "../../../hooks/languageDitectorV2";
 import { FluentMdl2Switch } from "../../../resource/assets/LanguageToggleSwitch";
 import LanguageMenus from "../common/LanguageMenus";
 
@@ -18,7 +19,7 @@ const LanguageMenu = ({
 
   useEffect(() => {
     if (!userInput) return;
-    const language = detectLanguage(userInput);
+    const language = detectLanguageV2(userInput);
     setTranslateLang((prev) => {
       return { ...prev, fromLang: language };
     });

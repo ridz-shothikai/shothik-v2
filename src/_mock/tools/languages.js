@@ -45,7 +45,7 @@ export const languages = [
   { name: "Mende", code: "men", range: [0x1e800, 0x1e8df] },
   { name: "Bassa", code: "bsq", range: [0x16ad0, 0x16aff] },
   { name: "Warang Citi", code: "wra", range: [0x118a0, 0x118ff] },
-  { name: "Spanish", code: "es", range: [0x0041, 0x007a] },
+  { name: "Spanish", code: "es", range: [0x00c0, 0x00ff] },
   { name: "French", code: "fr", range: [0x0041, 0x007a] },
   { name: "German", code: "de", range: [0x0041, 0x007a] },
   { name: "Portuguese", code: "pt", range: [0x0041, 0x007a] },
