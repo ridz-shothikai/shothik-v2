@@ -7,11 +7,8 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -230,7 +227,7 @@ export default function InteractiveChatMessage({
             )}
           </CardContent>
 
-          {message.sender !== 'user' && onFeedback && (
+          {/* {message.sender !== 'user' && onFeedback && (
             <Box sx={{ display: 'flex', justifyContent: 'center', pb: 1 }}>
               <IconButton
                 size="small"
@@ -247,7 +244,7 @@ export default function InteractiveChatMessage({
                 <ThumbDownIcon fontSize="small" />
               </IconButton>
             </Box>
-          )}
+          )} */}
         </Card>
       </Box>
     </Box>
