@@ -15,7 +15,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
   doc.descendants((node, pos) => {
     if (!node.isText) return;
     const text = node.text;
-    const wordRegex = /\b\w+\b/g;
+    const wordRegex = /\b[\w-]+\b/g;
     let match;
     while ((match = wordRegex.exec(text)) !== null) {
       wordCount++;
@@ -74,7 +74,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
   doc.descendants((node, pos) => {
     if (!node.isText) return;
     const lowerText = node.text.toLowerCase();
-    const wordRegex = /\b\w+\b/g;
+    const wordRegex = /\b[\w-]+\b/g;
     let match;
     while ((match = wordRegex.exec(lowerText)) !== null) {
       const word = match[0];

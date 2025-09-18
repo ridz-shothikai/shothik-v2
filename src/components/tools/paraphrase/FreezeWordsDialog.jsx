@@ -288,6 +288,7 @@ export default function FreezeWordsDialog({
                               display: "flex",
                               alignItems: "center",
                               gap: 1,
+                              // textTransform: "capitalize",
                             }}
                           >
                             <span>{item}</span>

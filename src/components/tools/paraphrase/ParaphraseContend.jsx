@@ -951,9 +951,9 @@ const ParaphraseContend = () => {
                     frozenWords: Array.from(frozenWords.set),
                     frozenPhrases: Array.from(frozenPhrases.set),
                     onAddWords: (words) =>
-                      words.forEach((w) => frozenWords.add(w)),
+                      words.forEach((w) => frozenWords.add(w.toLowerCase())),
                     onAddPhrases: (phrases) =>
-                      phrases.forEach((p) => frozenPhrases.add(p)),
+                      phrases.forEach((p) => frozenPhrases.add(p.toLowerCase())),
                     onRemoveWord: (w) => frozenWords.remove(w),
                     onRemovePhrase: (p) => frozenPhrases.remove(p),
                     onClearAll: () => {
