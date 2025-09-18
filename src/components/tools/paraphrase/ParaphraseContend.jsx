@@ -307,7 +307,8 @@ const ParaphraseContend = () => {
 
         updated[targetIdx] = parsed.map((item) => ({
           ...item,
-          word: item.word, // preserves markdown tokens
+          // word: item.word, // preserves markdown tokens
+          word: item.word.replace(/[{}]/g, ""),
         }));
         console.log(
           "updated[targetIdx]: ",
@@ -354,7 +355,8 @@ const ParaphraseContend = () => {
         if(Array.isArray(analysis) && analysis?.length > 0) {
           updated[targetIdx] = analysis?.map((item) => ({
             ...item,
-            word: item.word,
+            // word: item.word,
+            word: item.word.replace(/[{}]/g, ""),
           }));
           return updated;
         }
@@ -601,6 +603,7 @@ const ParaphraseContend = () => {
       }
     }
   }, [userInputValue, paraphraseQuotations]);
+
   const handleSubmit = async (value) => {
     try {
       // track event

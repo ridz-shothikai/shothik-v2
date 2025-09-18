@@ -177,7 +177,15 @@ const CompareTab = ({
       .then((res) => { if (!res.ok) throw new Error(`Status ${res.status}`); return res.json(); })
       .then((data) => {
         setSuggestions((prev) =>
-          prev.map((item, i) => (i === idx ? { ...item, plain: data.plain, loading: false } : item))
+          prev.map((item, i) =>
+            i === idx
+              ? {
+                  ...item,
+                  plain: data.plain.replace(/[{}]/g, ""), // removing curly braces from output/preserved frozen words
+                  loading: false,
+                }
+              : item
+          )
         );
       })
       .catch((error) => {
