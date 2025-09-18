@@ -6,7 +6,8 @@ import {
   Box,
   Typography,
   Divider,
-  IconButton
+  IconButton,
+  Button
 } from "@mui/material";
 import {
   ExpandLess,
@@ -16,6 +17,7 @@ import {
 } from "@mui/icons-material";
 
 const HistoryTab = () => {
+  const [expandedEntries, setExpandedEntries] = useState({});
   const [historyGroups, setHistoryGroups] = useState([]);
   const [expandedGroups, setExpandedGroups] = useState({});
   const { accessToken } = useSelector((state) => state.auth);
@@ -80,6 +82,13 @@ const HistoryTab = () => {
     }));
   };
 
+  const toggleEntryExpansion = (period, index) => {
+    setExpandedEntries((prev) => ({
+      ...prev,
+      [`${period}-${index}`]: !prev[`${period}-${index}`],
+    }));
+  };
+
   return (
     <Box id="history_tab" sx={{ px: 2, py: 1 }}>
       {/* Header */}
@@ -88,23 +97,22 @@ const HistoryTab = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 2
+          mb: 2,
         }}
       >
         <Typography variant="h6" fontWeight="bold">
           History
         </Typography>
-        {
-          accessToken &&
-        <Box>
-          <IconButton size="small" onClick={fetchHistory}>
-            <Refresh fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={handleDeleteAll}>
-            <Delete fontSize="small" />
-          </IconButton>
-        </Box>
-        }
+        {accessToken && (
+          <Box>
+            <IconButton size="small" onClick={fetchHistory}>
+              <Refresh fontSize="small" />
+            </IconButton>
+            <IconButton size="small" onClick={handleDeleteAll}>
+              <Delete fontSize="small" />
+            </IconButton>
+          </Box>
+        )}
       </Box>
 
       {/* Period groups */}
@@ -122,46 +130,74 @@ const HistoryTab = () => {
                 alignItems: "center",
                 justifyContent: "space-between",
                 cursor: "pointer",
-                mb: 1
+                mb: 1,
               }}
             >
               <Typography variant="subtitle2" color="text.secondary">
                 {period}
               </Typography>
-              {expandedGroups[period]
-                ? <ExpandLess fontSize="small" />
-                : <ExpandMore fontSize="small" />
-              }
+              {expandedGroups[period] ? (
+                <ExpandLess fontSize="small" />
+              ) : (
+                <ExpandMore fontSize="small" />
+              )}
             </Box>
             <Divider />
-            {expandedGroups[period] && history.map((entry, i) => (
-              <Box
-                key={i}
-                sx={{
-                  pt: 1,
-                  pb: i < history.length - 1 ? 1 : 0,
-                  borderBottom: i < history.length - 1 ? 1 : 0,
-                  borderColor: "divider",
-                }}
-              >
-                <Typography variant="caption" color="text.secondary">
-                  {new Date(entry.time).toLocaleString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </Typography>
-                <Typography variant="body2">
+            {expandedGroups[period] &&
+              history.map((entry, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    pt: 1,
+                    pb: i < history.length - 1 ? 1 : 0,
+                    borderBottom: i < history.length - 1 ? 1 : 0,
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(entry.time).toLocaleString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Typography>
+                  {/* <Typography variant="body2">
                   {entry.text}
-                </Typography>
-              </Box>
-            ))}
+                </Typography> */}
+                  <Typography variant="body2">
+                    {expandedEntries[`${period}-${i}`]
+                      ? entry.text
+                      : truncateText(entry.text, 40)}
+                    {entry.text.split(" ").length > 40 && (
+                      <Button
+                        size="small"
+                        onClick={() => toggleEntryExpansion(period, i)}
+                        sx={{ ml: 1, textTransform: "none" }}
+                      >
+                        {expandedEntries[`${period}-${i}`]
+                          ? "Read Less"
+                          : "Read More"}
+                      </Button>
+                    )}
+                  </Typography>
+                </Box>
+              ))}
           </Box>
         ))
       )}
     </Box>
   );
+};
+
+// HELPER FUNCTION
+
+function truncateText (text, limit) {
+  const words = text.split(" ");
+  if (words.length > limit) {
+    return words.slice(0, limit).join(" ") + "...";
+  }
+  return text;
 };
 
 export default HistoryTab;
