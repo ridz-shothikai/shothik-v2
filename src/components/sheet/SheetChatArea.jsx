@@ -66,7 +66,12 @@ const MessageBubble = ({
               color={theme.palette.text.secondary}
               sx={{ fontSize: "0.7rem" }}
             >
-              {new Date(timestamp).toLocaleTimeString()}
+              {/* {new Date(timestamp).toLocaleTimeString()} */}
+              {new Date(timestamp).toLocaleTimeString(undefined, {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })}
             </Typography>
             <Typography
               variant="caption"
@@ -153,7 +158,12 @@ const MessageBubble = ({
               color="text.disabled"
               sx={{ fontSize: "0.7rem" }}
             >
-              {new Date(timestamp).toLocaleTimeString()}
+              {/* {new Date(timestamp).toLocaleTimeString()} */}
+              {new Date(timestamp).toLocaleTimeString(undefined, {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })}
             </Typography>
           </Box>
           <Paper
@@ -162,8 +172,8 @@ const MessageBubble = ({
               boxShadow: "none",
               bgcolor:
                 // theme.palette.mode === "dark"
-                   theme.palette.background.default
-                  // : "#FAFAFA",
+                theme.palette.background.default,
+              // : "#FAFAFA",
               // p: 2,
               // bgcolor:
               //   type === "error"

@@ -49,6 +49,7 @@ const defaultFormatTime = (ts) => {
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true
     });
   } catch {
     return String(ts);
