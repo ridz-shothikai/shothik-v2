@@ -181,19 +181,19 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           maxHeight: {
             xs: isSimulationMode
               ? "calc(100dvh - 130px)"
-              : "calc(100dvh - 180px)",
+              : "calc(100dvh - 155px)",
             sm: isSimulationMode
               ? "calc(100dvh - 100px)"
-              : "calc(100dvh - 200px)",
+              : "calc(100dvh - 170px)",
             md: isSimulationMode
               ? "calc(100dvh - 130px)"
-              : "calc(100dvh - 230px)",
+              : "calc(100dvh - 200px)",
             lg: isSimulationMode
               ? "calc(100dvh - 150px)"
-              : "calc(100dvh - 250px)",
+              : "calc(100dvh - 220px)",
             xl: isSimulationMode
               ? "calc(100dvh - 170px)"
-              : "calc(100dvh - 270px)",
+              : "calc(100dvh - 220px)",
           },
           marginInline: "auto",
           position: "relative",
@@ -201,11 +201,11 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           overflowY: "auto",
           px: { xs: 2, sm: 0 },
           marginBottom: {
-            xs: isSimulationMode ? "0px" : "50px",
-            sm: isSimulationMode ? "35px" : "135px",
-            md: isSimulationMode ? "60px" : "160px",
-            lg: isSimulationMode ? "80px" : "180px",
-            xl: isSimulationMode ? "100px" : "200px",
+            xs: isSimulationMode ? "0px" : "20px",
+            sm: isSimulationMode ? "35px" : "105px",
+            md: isSimulationMode ? "60px" : "130px",
+            lg: isSimulationMode ? "80px" : "150px",
+            xl: isSimulationMode ? "100px" : "150px",
           },
           bgcolor: theme.palette.mode === "dark" && "#161C24",
         }}

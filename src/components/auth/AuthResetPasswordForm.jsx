@@ -9,7 +9,6 @@ import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useForgotPasswordMutation } from "../../redux/api/auth/authApi";
 import {
-  setShowForgotPasswordModal,
   setShowLoginModal,
 } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
@@ -82,13 +81,16 @@ export default function AuthResetPasswordForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <RHFTextField name="email" label="Email address" />
-      <Typography
-        variant="body2"
-        color="error"
-        sx={{ mt: 1, minHeight: '1.5em' }} // Added minHeight to reserve space
-      >
-        {errorMessage}
-      </Typography>
+      {
+        errorMessage &&
+        <Typography
+          variant="body2"
+          color="error"
+          sx={{ mt: 1, minHeight: '1.5em' }} // Added minHeight to reserve space
+        >
+          {errorMessage}
+        </Typography>
+      }
 
       <Button
         fullWidth

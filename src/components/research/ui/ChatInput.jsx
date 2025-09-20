@@ -149,7 +149,7 @@ const ChatInput = () => {
             fullWidth
             multiline
             maxRows={4}
-            placeholder="Ask a followup..."
+            placeholder="Enter a new research topic"
             value={inputValue}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
@@ -176,8 +176,6 @@ const ChatInput = () => {
               },
             }}
           />
-        </Box>
-
         <Box
           sx={{
             display: "flex",
@@ -252,6 +250,8 @@ const ChatInput = () => {
             </IconButton>
           </Box>
         </Box>
+        </Box>
+
 
         {/* uploaded files preview STARTS */}
         {/* {hasFiles > 0 && (

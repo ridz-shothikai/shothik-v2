@@ -172,9 +172,9 @@ const SampleTextForLarge = ({
             <Typography fontWeight={600}>Supported languages:</Typography>
           </Box>
           <Typography sx={{ mt: 0.5, mb: 1 }}>
-            English, French and Spanish
+            English, French and 100+
           </Typography>
-          <Typography
+          {/* <Typography
             fontSize={15}
             sx={{
               borderBottom: "1px solid #333",
@@ -186,7 +186,7 @@ const SampleTextForLarge = ({
             }}
           >
             Request more languages
-          </Typography>
+          </Typography> */}
         </Stack>
       </Box>
     </Stack>
