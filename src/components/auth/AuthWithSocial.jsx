@@ -11,18 +11,47 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { useGoogleLoginMutation } from "../../redux/api/auth/authApi";
 import {
+  logout,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 // ----------------------------------------------------------------------
 
 export default function AuthWithSocial({ loading, setLoading, title = "in" }) {
   const theme = useTheme();
   const [googleLogin] = useGoogleLoginMutation();
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      localStorage.setItem("logout-event", Date.now().toString());
+    } catch (error) {
+      console.log("🚀 ~ handleLogout ~ error:", error);
+    }
+  };
+
+  useEffect(() => {
+    const syncLogout = (event) => {
+      if (event.key === "logout-event") {
+        dispatch(logout());
+        router.replace("/");
+      }
+    };
+
+    window.addEventListener("storage", syncLogout);
+
+    return () => {
+      window.removeEventListener("storage", syncLogout);
+    };
+  }, [dispatch]);
 
   const onGoogleLogin = useGoogleLogin({
     onSuccess: async (res) => {
+      handleLogout();
       const { code } = res;
       if (code) {
         const res = await googleLogin({ code });
@@ -43,7 +72,7 @@ export default function AuthWithSocial({ loading, setLoading, title = "in" }) {
 
   return (
     <Box sx={{ mt: "1.25rem" }}>
-      <Stack direction='row' justifyContent='center' spacing={2}>
+      <Stack direction="row" justifyContent="center" spacing={2}>
         <Button
           sx={{
             marginTop: 20,
@@ -66,9 +95,9 @@ export default function AuthWithSocial({ loading, setLoading, title = "in" }) {
         >
           <Box sx={{ mt: "5px" }}>
             {loading ? (
-              <CircularProgress color='success' thickness={6} size={24} />
+              <CircularProgress color="success" thickness={6} size={24} />
             ) : (
-              <Google color='primary.main' />
+              <Google color="primary.main" />
             )}
           </Box>
           <Typography
