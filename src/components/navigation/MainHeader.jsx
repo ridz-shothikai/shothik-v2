@@ -18,7 +18,6 @@ import { setOpen } from "../../redux/slice/settings";
 import DotFlashing from "../../resource/DotFlashing";
 import SvgColor from "../../resource/SvgColor";
 import Logo from "../../resource/assets/Logo";
-import { bgBlur } from "../../resource/cssStyles";
 import AccountPopover from "./components/AccountProper";
 
 export default function MainHeader() {
@@ -34,7 +33,6 @@ export default function MainHeader() {
   });
   const pathname = usePathname();
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const dispatch = useDispatch();
 
   const title = () => {

@@ -8,7 +8,6 @@ import useResponsive from "../../hooks/useResponsive";
 import { loadSettingsFromLocalStorage } from "../../redux/slice/settings";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 import MobileNavigation from "../navigation/MobileNavigation";
-import VerticalMenu from "../auth/../../components/tools/paraphrase/VerticalMenu.jsx"
 // ----------------------------------------------------------------------
 
 const SPACING = 8;

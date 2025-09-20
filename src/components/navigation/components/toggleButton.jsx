@@ -7,7 +7,6 @@ import useResponsive from "../../../hooks/useResponsive";
 import { toggleThemeLayout } from "../../../redux/slice/settings";
 import { bgBlur } from "../../../resource/cssStyles";
 import { setIsNavVertical } from "../../../redux/slice/tools";
-import { useState } from "react";
 
 // ----------------------------------------------------------------------
 

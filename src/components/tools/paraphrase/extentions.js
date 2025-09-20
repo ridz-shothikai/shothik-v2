@@ -108,15 +108,15 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
   });
 
   // === 6. Highlight duplicate sentences ===
-  for (const [, ranges] of sentenceMap.entries()) {
-    if (ranges.length > 1) {
-      for (const { from, to } of ranges) {
-        decorations.push(
-          Decoration.inline(from, to, { class: "duplicate-sentence" })
-        );
-      }
-    }
-  }
+  // for (const [, ranges] of sentenceMap.entries()) {
+  //   if (ranges.length > 1) {
+  //     for (const { from, to } of ranges) {
+  //       decorations.push(
+  //         Decoration.inline(from, to, { class: "duplicate-sentence" })
+  //       );
+  //     }
+  //   }
+  // }
 
   return DecorationSet.create(doc, decorations);
 }

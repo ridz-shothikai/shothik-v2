@@ -15,7 +15,7 @@ const SettingsTab = () => {
   const paraphraseOptionsMeta = [
      { key: "paraphraseQuotations",     label: "Paraphrase quotations",        info: false },
      { key: "avoidContractions",        label: "Avoid contractions",           info: true  },
-     { key: "preferActiveVoice",        label: "Prefer active voice",         info: true  },
+    //  { key: "preferActiveVoice",        label: "Prefer active voice",         info: true  },
      { key: "automaticStartParaphrasing", label: "Automatic start paraphrasing", info: false },
    ];
 
