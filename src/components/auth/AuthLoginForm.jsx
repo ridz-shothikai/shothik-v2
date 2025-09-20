@@ -8,19 +8,21 @@ import {
   Stack,
   useTheme,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { trackEvent } from "../../analysers/eventTracker";
 import { useLoginMutation } from "../../redux/api/auth/authApi";
 import {
+  logout,
   setShowForgotPasswordModal,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
+import { useRouter } from "next/navigation";
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +31,7 @@ export default function AuthLoginForm({ loading, setLoading }) {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const theme = useTheme();
+  const router = useRouter();
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
@@ -42,6 +45,30 @@ export default function AuthLoginForm({ loading, setLoading }) {
     password: "",
   };
 
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      localStorage.setItem("logout-event", Date.now().toString());
+    } catch (error) {
+      console.log("🚀 ~ handleLogout ~ error:", error);
+    }
+  };
+
+  useEffect(() => {
+    const syncLogout = (event) => {
+      if (event.key === "logout-event") {
+        dispatch(logout());
+        router.replace("/");
+      }
+    };
+
+    window.addEventListener("storage", syncLogout);
+
+    return () => {
+      window.removeEventListener("storage", syncLogout);
+    };
+  }, [dispatch]);
+
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
     defaultValues,
@@ -51,6 +78,8 @@ export default function AuthLoginForm({ loading, setLoading }) {
 
   const onSubmit = async (data) => {
     try {
+      handleLogout();
+
       trackEvent("click", "auth", "login-button", 1);
 
       let payload = {
@@ -78,21 +107,21 @@ export default function AuthLoginForm({ loading, setLoading }) {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        {isError && <Alert severity='error'>{error?.data?.message}</Alert>}
+        {isError && <Alert severity="error">{error?.data?.message}</Alert>}
 
-        <RHFTextField name='email' label='Email address' size='small' />
+        <RHFTextField name="email" label="Email address" size="small" />
 
         <RHFTextField
-          name='password'
-          label='Password'
+          name="password"
+          label="Password"
           type={showPassword ? "text" : "password"}
-          size='small'
+          size="small"
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end'>
+              <InputAdornment position="end">
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
-                  edge='end'
+                  edge="end"
                 >
                   {showPassword ? (
                     <RemoveRedEyeRounded />
@@ -106,12 +135,12 @@ export default function AuthLoginForm({ loading, setLoading }) {
         />
       </Stack>
 
-      <Stack alignItems='flex-end'>
+      <Stack alignItems="flex-end">
         <Button
           onClick={() => {
             dispatch(setShowForgotPasswordModal(true));
           }}
-          variant='body2'
+          variant="body2"
           color={theme.palette.primary.main}
           fontWeight={600}
         >
@@ -121,9 +150,9 @@ export default function AuthLoginForm({ loading, setLoading }) {
 
       <Button
         fullWidth
-        size='large'
-        type='submit'
-        variant='contained'
+        size="large"
+        type="submit"
+        variant="contained"
         loading={loading || isLoading}
       >
         Login
