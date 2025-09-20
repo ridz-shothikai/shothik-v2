@@ -43,26 +43,19 @@ export default function HeaderTitleWithDownload({
   };
 
   // Build markdown string: CONTENT (researchItem.result) then SOURCES list, images excluded
-  const buildMarkdown = (item) => {
+  const buildMarkdown = (item, includeSources = false) => {
     if (!item) return `# ${query || "Research"}\n\n`;
 
-    // Start with the result text (assumed to be markdown already)
     let md = item.result || "";
-
-    // Remove image markdown syntax (e.g. ![alt](url)) and HTML <img> tags
-    md = md.replace(/!\[[^\]]*\]\([^)]*\)/g, "");
-    md = md.replace(/<img[^>]*>/g, "");
-
-    // Ensure there's a newline before sources
+    md = md.replace(/!\[[^\]]*\]\([^)]*\)/g, ""); // remove markdown images
+    md = md.replace(/<img[^>]*>/g, ""); // remove HTML img tags
     md = md.trim() + "\n\n";
 
-    // Append sources (if present) in order
-    if (item.sources && item.sources.length > 0) {
+    if (includeSources && item.sources?.length > 0) {
       md += "## Sources\n\n";
       item.sources.forEach((s) => {
         const title = s.title || s.resolved_url || s.url || "source";
         const url = s.url || s.resolved_url || "";
-        // If url missing, just add title
         if (url) md += `- [${title}](${url})\n`;
         else md += `- ${title}\n`;
       });
@@ -70,6 +63,7 @@ export default function HeaderTitleWithDownload({
 
     return md;
   };
+  
 
   // Utility to make a filename-safe string
   const safeFilename = (str) =>
@@ -105,7 +99,7 @@ export default function HeaderTitleWithDownload({
     handleClose();
 
     try {
-      const md = buildMarkdown(researchItem);
+      const md = buildMarkdown(researchItem, false);
 
       // Dynamic imports
       const markedMod = await import("marked").catch((e) => {
@@ -308,13 +302,15 @@ export default function HeaderTitleWithDownload({
             }
             break;
 
-          case "li":
+          case "li": {
             checkPageBreak(1);
-            // Check if this li contains a link
+
             const link = element.querySelector("a");
             if (link) {
               const linkText = link.textContent;
               const linkUrl = link.getAttribute("href");
+
+              // Build full line: bullet + text
               const beforeLink = textContent.substring(
                 0,
                 textContent.indexOf(linkText)
@@ -322,23 +318,33 @@ export default function HeaderTitleWithDownload({
               const afterLink = textContent.substring(
                 textContent.indexOf(linkText) + linkText.length
               );
+              const fullLine = `• ${beforeLink}${linkText}${afterLink}`;
 
-              if (beforeLink) {
-                addTextToPdf(`• ${beforeLink}`, 12, "normal", "#000000");
-              } else {
-                addTextToPdf("• ", 12, "normal", "#000000");
-              }
+              // Draw the full line
+              pdf.setFontSize(12);
+              pdf.setFont("helvetica", "normal");
+              pdf.setTextColor("#000000");
+              pdf.text(fullLine, margin, yPosition);
 
-              // Add the link in blue
-              addTextToPdf(linkText, 12, "normal", "#0066cc", linkUrl);
+              // Make just the link clickable & blue
+              const beforeWidth = pdf.getTextWidth(`• ${beforeLink}`);
+              const linkWidth = pdf.getTextWidth(linkText);
 
-              if (afterLink) {
-                addTextToPdf(afterLink, 12, "normal", "#000000");
-              }
+              pdf.setTextColor("#0066cc");
+              pdf.text(linkText, margin + beforeWidth, yPosition);
+              pdf.link(margin + beforeWidth, yPosition - 12, linkWidth, 14, {
+                url: linkUrl,
+              });
+              pdf.setTextColor("#000000");
+
+              yPosition += lineHeight;
+              currentLineCount++;
             } else {
+              // No link, just one call
               addTextToPdf(`• ${textContent}`, 12, "normal", "#000000");
             }
             break;
+          }
 
           default:
             // Handle links within other elements
@@ -432,6 +438,23 @@ export default function HeaderTitleWithDownload({
           processElement(node);
           processedElements.add(node);
         }
+      }
+
+      if (researchItem?.sources?.length > 0) {
+        checkPageBreak(3);
+        addSpacing(1);
+        addTextToPdf("Sources", 16, "bold", "#1a1a1a");
+        addSpacing(1);
+
+        researchItem.sources.forEach((s) => {
+          const title = s.title || s.resolved_url || s.url || "source";
+          const url = s.url || s.resolved_url || "";
+          if (url) {
+            addTextToPdf(`• ${title}`, 12, "normal", "#0066cc", url);
+          } else {
+            addTextToPdf(`• ${title}`, 12, "normal", "#000000");
+          }
+        });
       }
 
       const filename = `${safeFilename(researchItem?.query || query)}.pdf`;
