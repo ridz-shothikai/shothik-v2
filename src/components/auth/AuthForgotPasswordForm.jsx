@@ -151,7 +151,7 @@ export default function AuthForgotPasswordForm() {
               />
             )}
             <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
-              Must be at least 6 characters
+              Must be at least 8 characters
             </Typography>
           </Box>
         </Stack>
