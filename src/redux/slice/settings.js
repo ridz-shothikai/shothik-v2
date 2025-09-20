@@ -9,7 +9,7 @@ const getInitialState = () => ({
     paraphraseQuotations: true,      // <<< new
     avoidContractions:      false,
     preferActiveVoice:      false,
-    automaticStartParaphrasing:         false,
+    automaticStartParaphrasing: false,
   },
 });
 
@@ -21,8 +21,13 @@ const settingsSlice = createSlice({
       const key = action.payload;
       if (state.paraphraseOptions.hasOwnProperty(key)) {
         state.paraphraseOptions[key] = !state.paraphraseOptions[key];
+        localStorage.setItem(
+          "paraphraseOptions",
+          JSON.stringify(state.paraphraseOptions)
+        );
       }
     },
+
     setThemeMode: (state, action) => {
       state.themeMode = action.payload;
       localStorage.setItem("themeMode", action.payload);
@@ -46,10 +51,16 @@ const settingsSlice = createSlice({
     loadSettingsFromLocalStorage: (state) => {
       state.themeMode = localStorage.getItem("themeMode") || "light";
       state.open = localStorage.getItem("open") === "true";
+
+      const storedOptions = localStorage.getItem("paraphraseOptions");
+      if (storedOptions) {
+        state.paraphraseOptions = JSON.parse(storedOptions);
+      }
     },
+
     setDemo: (state, action) => {
-      state.demo = action.payload
-    }
+      state.demo = action.payload;
+    },
   },
 });
 

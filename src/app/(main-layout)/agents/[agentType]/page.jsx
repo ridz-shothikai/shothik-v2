@@ -1,16 +1,38 @@
 "use client";
-import React, {  useState } from "react";
+import {  useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
 import AgentPage from "../../../../../components/agents/AgentPage";
-import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
-import SheetAgentPage, { FooterCta } from "../../../../components/sheet/SheetAgentPage";
-import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
 import ChatInput from "../../../../components/research/ui/ChatInput";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
 import { useMediaQuery, useTheme } from "@mui/material";
+import dynamic from "next/dynamic";
+import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
+import { FooterCta } from "../../../../components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
+// import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
+// import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
+const PresentationAgentPage = dynamic(() =>
+  import("../../../../components/presentation/PresentationAgentPage"), {
+    loading: () => <ResearchPageSkeletonLoader/>,
+    ssr: false,
+  }
+);
+const SheetAgentPage = dynamic(
+  () => import("../../../../components/sheet/SheetAgentPage"),
+  {
+    loading: () => <ResearchPageSkeletonLoader />,
+    ssr: false,
+  }
+);
+const ResearchAgentPage = dynamic(
+  () => import("../../../../components/research/ResearchAgentPage"),
+  {
+    loading: () => <ResearchPageSkeletonLoader />,
+    ssr: false,
+  }
+);
 
 export default function SpecificAgentPage() {
   const theme = useTheme();

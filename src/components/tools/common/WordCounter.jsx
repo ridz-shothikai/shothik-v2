@@ -118,6 +118,7 @@ const Contend = ({
         flexWrap: "wrap",
         gap: 1,
         py: 1,
+        px: 2,
         ...sx,
       }}
       bgcolor="background.paper"

@@ -50,7 +50,7 @@ export default function HomeHeroSection() {
             overflow: "hidden",
           }}
         >
-          <Image
+          {/* <Image
             src="/pattern.svg"
             alt="pattern"
             width={100}
@@ -62,7 +62,7 @@ export default function HomeHeroSection() {
               opacity: "40%",
             }}
             priority={true}
-          />
+          /> */}
         </Box>
 
         {/* Details Section - Shows first on mobile, left on desktop */}

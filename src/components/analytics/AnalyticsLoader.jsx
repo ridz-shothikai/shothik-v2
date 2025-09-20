@@ -65,11 +65,6 @@ export default function AnalyticsLoader() {
       {shouldLoadScripts && (
         <>
           <Script
-            defer
-            src="https://cloud.umami.is/script.js"
-            data-website-id="a19fecea-d6b0-4093-9074-26531c827bfe"
-          ></Script>
-          <Script
             src={`https://www.googletagmanager.com/gtag/js?id=G-5E6P963WDP`}
             // src={`https://www.googletagmanager.com/gtag/js?id=G-5E6P963WDP`}
             strategy="afterInteractive"

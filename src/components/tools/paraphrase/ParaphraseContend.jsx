@@ -910,11 +910,15 @@ const ParaphraseContend = () => {
             <Grid2 container>
               <Grid2
                 sx={{
-                  // height: isMobile ? "calc(100vh - 340px)" : 530,
+                  height: {
+                    xs: "400px",
+                    md: "calc(100vh - 340px)",
+                    lg: "530px",
+                  },
                   position: "relative",
                   borderRight: { md: "2px solid" },
                   borderRightColor: { md: "divider" },
-                  padding: 2,
+                  // padding: 2,
                   paddingBottom: 1,
                   display: "flex",
                   flexDirection: "column",
@@ -956,7 +960,9 @@ const ParaphraseContend = () => {
                     onAddWords: (words) =>
                       words.forEach((w) => frozenWords.add(w.toLowerCase())),
                     onAddPhrases: (phrases) =>
-                      phrases.forEach((p) => frozenPhrases.add(p.toLowerCase())),
+                      phrases.forEach((p) =>
+                        frozenPhrases.add(p.toLowerCase())
+                      ),
                     onRemoveWord: (w) => frozenWords.remove(w),
                     onRemovePhrase: (p) => frozenPhrases.remove(p),
                     onClearAll: () => {
@@ -1001,7 +1007,11 @@ const ParaphraseContend = () => {
                   size={{ xs: 12, md: 6 }}
                   ref={outputRef}
                   sx={{
-                    height: { md: "calc(100vh - 340px)", lg: "530px" },
+                    height: {
+                      xs: "400px",
+                      md: "calc(100vh - 340px)",
+                      lg: "530px",
+                    },
                     overflow: "hidden",
                     borderTop: { xs: "2px solid", md: "none" },
                     borderTopColor: { xs: "divider", md: undefined },

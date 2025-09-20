@@ -312,6 +312,7 @@ function UserInputBox({
         cursor: "text",
         position: "relative",
         overflowY: "auto",
+        p: 2,
       }}
     >
       <div

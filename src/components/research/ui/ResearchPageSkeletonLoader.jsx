@@ -69,7 +69,7 @@ const CleanSkeleton = styled(Skeleton)(({ theme }) => ({
   },
 }));
 
-const ResearchPageSkeletonLoader = () => {
+export default function ResearchPageSkeletonLoader () {
   return (
     <StyledContainer maxWidth="lg">
       {/* Header Section */}
@@ -157,6 +157,4 @@ const ResearchPageSkeletonLoader = () => {
       </ContentCard>
     </StyledContainer>
   );
-};
-
-export default ResearchPageSkeletonLoader;
+}

@@ -51,7 +51,7 @@ const useSheetAIToken = () => {
         setSheetAIToken(data.token);
         return data.token;
       } else {
-        console.error("No sheetai-token received from API");
+        console.log("No sheetai-token received from API");
       }
     } catch (err) {
       setError(err.message);
