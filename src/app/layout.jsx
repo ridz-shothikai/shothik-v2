@@ -4,6 +4,7 @@ import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
 import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
+import "./globals.css";
 
 export const metadata = {
   title: "Shothik AI",
