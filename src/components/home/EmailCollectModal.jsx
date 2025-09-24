@@ -232,6 +232,7 @@ export default function EmailModal({ open, onClose, onSubmit }) {
 
                 <Stack spacing={1.5}>
                   <SubmitButton
+                    data-umami-event="Form: Join the waitlist"
                     fullWidth
                     type="submit"
                     variant="contained"
@@ -241,6 +242,7 @@ export default function EmailModal({ open, onClose, onSubmit }) {
                   </SubmitButton>
 
                   <SkipButton
+                    data-umami-event="Form: Maybe later"
                     fullWidth
                     onClick={handleClose}
                     variant="text"

@@ -20,6 +20,7 @@ export default function NavList({ data, layout, onCloseNav }) {
 
   return (
     <ListItemButton
+      data-umami-event={`Nav: ${title}`}
       component={Link}
       href={path}
       id={data?.id}

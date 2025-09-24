@@ -140,6 +140,7 @@ export default function UserInfo() {
             </Stack>
             <Stack spacing={1.5}>
               <Button
+                data-umami-event="Nav: Sign In"
                 onClick={() => {
                   dispatch(setShowRegisterModal(false));
                   dispatch(setShowLoginModal(true));
@@ -152,6 +153,7 @@ export default function UserInfo() {
               </Button>
 
               <Button
+                data-umami-event="Nav: Sign Up"
                 onClick={() => {
                   dispatch(setShowLoginModal(false));
                   dispatch(setShowRegisterModal(true));

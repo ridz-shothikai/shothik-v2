@@ -48,6 +48,7 @@ export default function MainHeader() {
       "/agents/sheets": "Sheet",
       "/agents/presentation": "Presentation Slide",
       "/agents": "Shothik AI Agent",
+      "/marketing-automation": "Marketing Automation",
     };
 
     return routeTitles[pathname] || "";
@@ -99,6 +100,7 @@ export default function MainHeader() {
           user?.package !== "unlimited" && (
             <Link href={"/pricing?redirect=" + pathname}>
               <Button
+                data-umami-event="Nav: Upgrade To Premium"
                 color="primary"
                 size={isMd ? "medium" : "small"}
                 variant="contained"

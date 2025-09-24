@@ -248,7 +248,7 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
           py: 1.5,
           px: 2,
           width: "100%",
-          maxWidth: "1000px"
+          maxWidth: "1000px",
         }}
       >
         <Container maxWidth="xl">
@@ -296,10 +296,11 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
               }}
             >
               <Button
+                data-umami-event="Modal: Join the waitlist"
                 variant="contained"
                 startIcon={<Person sx={{ fontSize: 18 }} />}
                 onClick={() => {
-                  setShowModal(true)
+                  setShowModal(true);
                 }}
                 sx={{
                   backgroundColor: "#00AB55",
@@ -346,7 +347,7 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
         >
           {toast.message}
         </Alert>
-      </Snackbar>       
+      </Snackbar>
     </>
   );
 };

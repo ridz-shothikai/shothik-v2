@@ -156,6 +156,7 @@ const TopNavigation = ({
           Unlock advanced features and enhance your humanize experience.
         </Typography>
         <Button
+          data-umami-event="Nav: Upgrade To Premium"
           variant='contained'
           color='success'
           size='small'
