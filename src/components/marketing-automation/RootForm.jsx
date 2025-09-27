@@ -50,6 +50,8 @@ const RootForm = () => {
     return `abc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
+  console.log("User from Redux:", user);
+
   return (
     <>
       <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
@@ -91,9 +93,9 @@ const RootForm = () => {
               {isSubmitting ? "Processing..." : "Continue"}
             </Button>
             {isSubmitting && (
-              <div className="w-20 h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
+              <div className="bg-muted h-1.5 w-20 flex-1 overflow-hidden rounded-full">
                 <div
-                  className="h-full bg-primary rounded-full transition-all duration-30"
+                  className="bg-primary h-full rounded-full transition-all duration-30"
                   style={{ width: `${progress}%` }}
                 />
               </div>
