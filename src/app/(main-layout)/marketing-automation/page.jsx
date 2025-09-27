@@ -1,5 +1,5 @@
-import RootForm from "@/components/(marketing-automation-page)/RootForm";
 import Image from "next/image";
+import RootForm from "../../../components/(marketing-automation-page)/RootForm/RootForm";
 
 const MarketingAutomationPage = () => {
   return (

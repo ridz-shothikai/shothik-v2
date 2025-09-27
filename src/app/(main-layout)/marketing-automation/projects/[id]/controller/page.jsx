@@ -1,5 +1,5 @@
 import ControllerClientSection from "@/components/(marketing-automation-page)/(project-controller-page)/ControllerClientSection";
-import PageHeader from "@/components/(marketing-automation-page)/PageHeader";
+import PageHeader from "@/components/(marketing-automation-page)/PageHeader/PageHeader";
 import { TextField } from "@mui/material";
 
 const project = {

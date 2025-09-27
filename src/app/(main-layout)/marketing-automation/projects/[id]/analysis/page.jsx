@@ -1,5 +1,5 @@
 import ProcessStreamClientSection from "@/components/(marketing-automation-page)/(project-analysis-page)/AnalysisStreamClientSection";
-import PageHeader from "@/components/(marketing-automation-page)/PageHeader";
+import PageHeader from "@/components/(marketing-automation-page)/PageHeader/PageHeader";
 import { TextField } from "@mui/material";
 
 const project = {
