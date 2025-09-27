@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Autocomplete, TextField, CircularProgress } from "@mui/material";
-import { Country, State, City } from "country-state-city";
+import { Autocomplete, CircularProgress, TextField } from "@mui/material";
+import { City, Country, State } from "country-state-city";
 import "flag-icon-css/css/flag-icons.min.css";
+import { useMemo, useState } from "react";
 
 const LocationField = ({
   value,

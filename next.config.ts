@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 import webpack from "webpack";
 
 const nextConfig: NextConfig = {
@@ -56,15 +57,21 @@ const nextConfig: NextConfig = {
           default:
             throw new Error(`Not found ${mod}`);
         }
-      })
+      }),
     );
 
     // Provide global Buffer for libraries that require it
     config.plugins.push(
       new webpack.ProvidePlugin({
         Buffer: ["buffer", "Buffer"],
-      })
+      }),
     );
+
+    // Alias `@` to `src` directory
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": path.resolve(__dirname, "src"),
+    };
 
     // Ignore source map warnings
     config.ignoreWarnings = [/Failed to parse source map/];
