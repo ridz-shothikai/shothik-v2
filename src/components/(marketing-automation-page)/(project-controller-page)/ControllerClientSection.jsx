@@ -1,9 +1,10 @@
 "use client";
 
 import { Radio, TextField } from "@mui/material";
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, CreditCardIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import LocationField from "./LocationField";
 
 const ControllerClientSection = () => {
   const [selectedGoal, setSelectedGoal] = useState("sales");
@@ -29,7 +30,7 @@ const ControllerClientSection = () => {
   };
 
   return (
-    <div className="">
+    <div className="mb-6 space-y-6 lg:mb-10 lg:space-y-10">
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -172,8 +173,72 @@ const ControllerClientSection = () => {
             </div>
           </label>
         </div>
+        <label className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="flex size-8 items-center justify-center rounded-full shadow">
+              <Image
+                src={"/images/marketing-automation/star-icon.png"}
+                alt={"ControllerClientSection"}
+                width={20}
+                height={20}
+                className={" "}
+              />
+            </div>
+            <strong className="text-muted-foreground">
+              Cities and Countries to Advertise
+            </strong>
+            <CircleAlert className="text-muted-foreground size-4" />
+          </div>
+          <div>
+            <LocationField />
+          </div>
+        </label>
       </div>
-      <div></div>
+      <div className="bg-card space-y-6 rounded-2xl p-6 lg:p-10">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4>Human Quality AI Writing Assistant</h4>
+            <div className="bg-primary/10 text-primary rounded-md px-4 py-2 capitalize">
+              {selectedGoal}
+            </div>
+          </div>
+          <div className="text-muted-foreground flex items-center justify-end gap-2 text-sm">
+            {startDateTime && (
+              <span>
+                Start: {new Date(startDateTime).toLocaleDateString("en-CA")}{" "}
+                {new Date(startDateTime).toLocaleTimeString()}
+              </span>
+            )}{" "}
+            -{" "}
+            {endDateTime && (
+              <span>
+                End: {new Date(endDateTime).toLocaleDateString("en-CA")}{" "}
+                {new Date(endDateTime).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="bg-card rounded-lg p-4 shadow">
+          <div className="flex items-center justify-between gap-4 px-2">
+            <div className="flex items-center gap-2">
+              <CreditCardIcon />
+              <strong className="text-muted-foreground">
+                Instagram account you want to use
+              </strong>
+              <CircleAlert className="text-muted-foreground size-4" />
+            </div>
+            <div className="border-primary text-primary inline-block rounded-md border px-2">
+              <span>$</span>
+              <input
+                type="number"
+                step="any"
+                placeholder="100.00"
+                className="text-primary w-20 border-0 bg-transparent px-2 py-1 text-center outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

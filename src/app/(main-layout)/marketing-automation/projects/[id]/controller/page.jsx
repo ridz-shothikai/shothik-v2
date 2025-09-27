@@ -13,7 +13,7 @@ const ProjectControllerPage = async ({ params }) => {
   const { id } = await params;
 
   return (
-    <main className="bg-card relative flex min-h-[calc(100vh-100px)] flex-col space-y-6 p-6">
+    <main className="relative flex min-h-[calc(100vh-100px)] flex-col space-y-6">
       <PageHeader />
       <div className="space-y-6 md:space-y-10">
         <div className="mx-auto max-w-2xl space-y-4 text-center">

@@ -62,10 +62,8 @@ const LocationField = ({
     return [...countryOptions, ...stateCityOptions];
   }, [countryOptions, stateCityOptions]);
 
-  console.log("Combined Options:", value);
-
   return (
-    <div className="bg-card flex items-center rounded-full border shadow">
+    <div className="bg-card flex items-center rounded-md border shadow">
       {value?.flag && (
         <span
           className={`flag-icon inline-block size-6 px-4 flag-icon-${value.flag} ml-4 rounded-sm`}
@@ -95,10 +93,11 @@ const LocationField = ({
             {...params}
             placeholder={placeholder}
             variant="standard"
+            size="small"
             InputProps={{
               ...params.InputProps,
               disableUnderline: true,
-              className: "px-4 !py-2",
+              className: "px-4 !py-1",
               endAdornment: (
                 <>
                   {loading ? (
