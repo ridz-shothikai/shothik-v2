@@ -6,15 +6,15 @@ const getInitialState = () => ({
   open: false,
   demo: false,
   paraphraseOptions: {
-    paraphraseQuotations: true, // <<< new
+    paraphraseQuotations: true,
     avoidContractions: false,
     preferActiveVoice: false,
     automaticStartParaphrasing: false,
   },
   interfaceOptions: {
-    useYellowHighlight: false, // New setting for yellow highlight
-    showTooltips: false,
-    showLegend: false,
+    useYellowHighlight: false,
+    showTooltips: true,
+    // showLegend: false,
     showChangedWords: false,
     showStructuralChanges: false,
     showLongestUnchangedWords: false,

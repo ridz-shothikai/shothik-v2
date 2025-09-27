@@ -30,7 +30,7 @@ const SettingsTab = () => {
   const interfaceOptionsMeta = [
     { key: "useYellowHighlight", label: "Use yellow highlight", info: false },
     { key: "showTooltips", label: "Show tooltips", info: false },
-    { key: "showLegend", label: "Show legend", info: false },
+    // { key: "showLegend", label: "Show legend", info: false },
     {
       key: "showChangedWords",
       label: "Show changed words",

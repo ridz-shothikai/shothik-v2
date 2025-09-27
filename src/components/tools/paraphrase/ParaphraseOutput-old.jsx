@@ -30,6 +30,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { modes } from "../../../_mock/tools/paraphrase";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -80,9 +81,9 @@ const ParaphraseOutput = ({
           ? sentence.map((wordObj, wIndex) =>
               wIndex === synonymsOptions.wordIndex
                 ? { ...wordObj, word: newWord }
-                : wordObj
+                : wordObj,
             )
-          : sentence
+          : sentence,
       );
 
       return newData;
@@ -278,7 +279,7 @@ const ParaphraseOutput = ({
     <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
       {data.map((sentence, index) => (
         <Typography
-          component='span'
+          component="span"
           key={index}
           sx={{
             backgroundColor:
@@ -290,18 +291,18 @@ const ParaphraseOutput = ({
           {sentence &&
             sentence?.map((segment, i, arr) => (
               <Typography
-                component='span'
+                component="span"
                 key={i}
                 sx={{
                   color: /NP/.test(segment.type)
                     ? adJectiveVerbAdverbColor
                     : /VP/.test(segment.type)
-                    ? nounColor
-                    : /PP|CP|AdvP|AdjP/.test(segment.type)
-                    ? phraseColor
-                    : /freeze/.test(segment.type)
-                    ? freezeColor
-                    : undefined,
+                      ? nounColor
+                      : /PP|CP|AdvP|AdjP/.test(segment.type)
+                        ? phraseColor
+                        : /freeze/.test(segment.type)
+                          ? freezeColor
+                          : undefined,
                   cursor: "pointer",
                   transition: "all 0.1s ease-in-out",
                   "&:hover": {
@@ -374,7 +375,7 @@ function Synonyms({ synonyms, open, handleClose, anchorEl, replaceSynonym }) {
   return (
     <Popper
       anchorEl={anchorEl}
-      placement='bottom-start'
+      placement="bottom-start"
       ref={ref}
       open={open}
       onClose={handleClose}
@@ -411,7 +412,7 @@ function Synonyms({ synonyms, open, handleClose, anchorEl, replaceSynonym }) {
               >
                 <ListItemText sx={{}} primary={`${synonym}`} />
                 <ChevronRight
-                  className='arrow-icon'
+                  className="arrow-icon"
                   sx={{ display: "none", color: "text.secondary" }}
                 />
               </ListItemButton>
@@ -431,54 +432,59 @@ function RephraseSentenceNav({
   rephraseSentence,
 }) {
   const ref = useOutsideClick(() => handleClose());
+  const { showTooltips } = useSelector(
+    (state) => state.settings.interfaceOptions,
+  );
 
   return (
     <Popper
       ref={ref}
-      placement='top-start'
+      placement="top-start"
       open={open}
       anchorEl={anchorEl}
       onClose={handleClose}
     >
-      <Paper variant='outlined'>
-        <Stack
-          direction='row'
-          alignItems='center'
-          sx={{ p: "5px" }}
-          spacing={1}
-        >
-          <Tooltip title='See More Sentence' placement='top' arrow>
-            <Button
-              onClick={rephraseSentence}
-              variant='outlined'
-              sx={{ mb: 0 }}
-              spacing={1}
-              size='small'
-            >
-              Rephrase
-            </Button>
-          </Tooltip>
+      {showTooltips && (
+        <Paper variant="outlined">
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{ p: "5px" }}
+            spacing={1}
+          >
+            <Tooltip title="See More Sentence" placement="top" arrow>
+              <Button
+                onClick={rephraseSentence}
+                variant="outlined"
+                sx={{ mb: 0 }}
+                spacing={1}
+                size="small"
+              >
+                Rephrase
+              </Button>
+            </Tooltip>
 
-          <Tooltip title='Copy Sentence' placement='top' arrow>
-            <IconButton
-              onClick={handleCopy}
-              aria-label='Copy Sentence'
-              size='small'
-            >
-              <InsertDriveFileRounded />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title='Report Sentence' placement='top' arrow>
-            <IconButton
-              aria-label='Report Sentence'
-              size='small'
-              onClick={sendReprt}
-            >
-              <AssistantPhotoRounded />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </Paper>
+            <Tooltip title="Copy Sentence" placement="top" arrow>
+              <IconButton
+                onClick={handleCopy}
+                aria-label="Copy Sentence"
+                size="small"
+              >
+                <InsertDriveFileRounded />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Report Sentence" placement="top" arrow>
+              <IconButton
+                aria-label="Report Sentence"
+                size="small"
+                onClick={sendReprt}
+              >
+                <AssistantPhotoRounded />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Paper>
+      )}
     </Popper>
   );
 }
@@ -524,7 +530,7 @@ function RephraseSentences(props) {
       open={open}
       anchorEl={anchorEl}
       onClose={handleClose}
-      placement='bottom'
+      placement="bottom"
       sx={{ zIndex: 500 }}
     >
       <Box
@@ -537,7 +543,7 @@ function RephraseSentences(props) {
           borderColor: "background.neutral",
         }}
       >
-        <Grid2 container spacing={2} sx={{ pl: 2 }} alignItems='center'>
+        <Grid2 container spacing={2} sx={{ pl: 2 }} alignItems="center">
           <Grid2 size={{ xs: 11 }}>
             <Tabs
               value={rephraseMode}
@@ -546,9 +552,9 @@ function RephraseSentences(props) {
                 // }
                 setRephraseMode(selectedMode);
               }}
-              variant='scrollable'
-              scrollButtons='auto'
-              textColor='primary'
+              variant="scrollable"
+              scrollButtons="auto"
+              textColor="primary"
               sx={{
                 "& .MuiTabs-indicator": {
                   display: "none",
@@ -575,7 +581,7 @@ function RephraseSentences(props) {
                         <HtmlTooltip
                           title={
                             <Link
-                              href='/pricing'
+                              href="/pricing"
                               style={{ textDecoration: "none" }}
                             >
                               <div
@@ -584,18 +590,18 @@ function RephraseSentences(props) {
                                   marginBottom: "10px",
                                 }}
                               >
-                                <Typography variant='h6' gutterBottom>
+                                <Typography variant="h6" gutterBottom>
                                   Upgrade
                                 </Typography>
-                                <Typography variant='body2'>
+                                <Typography variant="body2">
                                   Access premium modes by upgrading your plan.
                                 </Typography>
                                 <Button
-                                  variant='contained'
-                                  color='primary'
+                                  variant="contained"
+                                  color="primary"
                                   sx={{ mt: 1, width: "100%" }}
                                 >
-                                  <Diamond fontSize='small' sx={{ mr: 1 }} />
+                                  <Diamond fontSize="small" sx={{ mr: 1 }} />
                                   Upgrade Plan
                                 </Button>
                               </div>
@@ -615,7 +621,7 @@ function RephraseSentences(props) {
                         <Lock sx={{ width: 12, height: 12 }} />
                       ) : undefined
                     }
-                    iconPosition='start'
+                    iconPosition="start"
                     onClick={(e) => isDisabled && e.preventDefault()}
                     sx={{
                       color: isDisabled ? "text.disabled" : "text.primary",
@@ -643,7 +649,7 @@ function RephraseSentences(props) {
           {isPending ? (
             <Box sx={{ px: 2 }}>
               <Skeleton />
-              <Skeleton animation='wave' />
+              <Skeleton animation="wave" />
               <Skeleton animation={false} />
             </Box>
           ) : (
@@ -659,18 +665,18 @@ function RephraseSentences(props) {
                         {sentence &&
                           sentence?.map((segment, i, arr) => (
                             <Typography
-                              component='span'
+                              component="span"
                               key={i}
                               sx={{
                                 color: /NP/.test(segment.type)
                                   ? adJectiveVerbAdverbColor
                                   : /VP/.test(segment.type)
-                                  ? nounColor
-                                  : /PP|CP|AdvP|AdjP/.test(segment.type)
-                                  ? phraseColor
-                                  : /freeze/.test(segment.type)
-                                  ? freezeColor
-                                  : undefined,
+                                    ? nounColor
+                                    : /PP|CP|AdvP|AdjP/.test(segment.type)
+                                      ? phraseColor
+                                      : /freeze/.test(segment.type)
+                                        ? freezeColor
+                                        : undefined,
                                 cursor: "pointer",
                                 transition: "all 0.1s ease-in-out",
                                 "&:hover": {
