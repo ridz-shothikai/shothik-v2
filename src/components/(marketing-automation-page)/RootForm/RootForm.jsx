@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import LocationField from "./(input-fields)/LocationField";
 import NameField from "./(input-fields)/NameField";
-import UrlFiled from "./(input-fields)/UrlField";
+import UrlFiled from "./(input-fields)/URLFIeld";
 
 const RootForm = () => {
   const user = useSelector((state) => state.auth.user);
