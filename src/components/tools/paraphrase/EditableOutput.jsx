@@ -1,17 +1,20 @@
 // src/components/tools/paraphrase/EditableOutput.jsx
 "use client";
 
-import React, { useEffect } from "react";
-import { Node, Extension } from "@tiptap/core";
+import { Extension, Node } from "@tiptap/core";
+import { defaultMarkdownParser } from "@tiptap/pm/markdown";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { Plugin, TextSelection } from "prosemirror-state";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { defaultMarkdownParser } from "@tiptap/pm/markdown";
+import { Plugin, TextSelection } from "prosemirror-state";
+import { useEffect } from "react";
 
 import HardBreak from "@tiptap/extension-hard-break";
+import { useSelector } from "react-redux";
 // ─── 1. Color helper ───────────────────────────────────────────────────────
-function getColorStyle(type, dark = false) {
+function getColorStyle(type, dark = false, showChangedWords) {
+  if (!showChangedWords) return "inherit"; // Controlled by settings options on the parpahrase settings
+
   const adjVerb = dark ? "#ef5c47" : "#d95645";
   const noun = dark ? "#b6bdbd" : "#530a78";
   const phrase = dark ? "#b6bdbd" : "#051780";
@@ -228,7 +231,7 @@ function isNewlineSentence(sentence) {
 // ─── 8. formatContent: JSON ⇄ ProseMirror document ─────────────────────────
 // Updated formatContent function to better handle paragraph structure
 
-function formatContent(data) {
+function formatContent(data, showChangedWords) {
   if (!data) {
     return { type: "doc", content: [] };
   }
@@ -327,7 +330,7 @@ function formatContent(data) {
             "data-word-index": wIdx,
             "data-type": wObj.type,
             class: "word-span",
-            style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
+            style: `color:${getColorStyle(wObj.type, false, showChangedWords)};cursor:pointer`,
           },
           content: [
             {
@@ -471,6 +474,9 @@ export default function EditableOutput({
   highlightSentence,
   setHighlightSentence,
 }) {
+  const { showChangedWords } = useSelector(
+    (state) => state.settings.interfaceOptions,
+  );
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -501,8 +507,8 @@ export default function EditableOutput({
   // load (or reload) `data` into the editor whenever it changes
   useEffect(() => {
     if (!editor) return;
-    editor.commands.setContent(formatContent(data));
-  }, [editor, data]);
+    editor.commands.setContent(formatContent(data, showChangedWords));
+  }, [editor, data, showChangedWords]);
 
   // click-to-synonyms
   useEffect(() => {

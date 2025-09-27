@@ -15,9 +15,9 @@ const getInitialState = () => ({
     useYellowHighlight: false,
     showTooltips: true,
     // showLegend: false,
-    showChangedWords: false,
-    showStructuralChanges: false,
-    showLongestUnchangedWords: false,
+    showChangedWords: true,
+    showStructuralChanges: true,
+    showLongestUnchangedWords: true,
   },
 });
 
