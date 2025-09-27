@@ -65,10 +65,10 @@ const LocationField = ({
   console.log("Combined Options:", value);
 
   return (
-    <div className="flex items-center bg-card shadow rounded-full border">
+    <div className="bg-card flex items-center rounded-full border shadow">
       {value?.flag && (
         <span
-          className={`flag-icon inline-block px-4 size-6 flag-icon-${value.flag} rounded-sm ml-4`}
+          className={`flag-icon inline-block size-6 px-4 flag-icon-${value.flag} ml-4 rounded-sm`}
         ></span>
       )}
       <Autocomplete
@@ -82,10 +82,10 @@ const LocationField = ({
         renderOption={(props, option) => (
           <li
             {...props}
-            className="flex items-center gap-2 px-2 py-1 hover:bg-muted cursor-pointer"
+            className="hover:bg-muted flex cursor-pointer items-center gap-2 px-2 py-1"
           >
             <span
-              className={`flag-icon flag-icon-${option.flag} w-5 h-5 rounded-sm`}
+              className={`flag-icon flag-icon-${option.flag} h-5 w-5 rounded-sm`}
             ></span>
             <span>{option.label}</span>
           </li>
@@ -117,4 +117,4 @@ const LocationField = ({
   );
 };
 
-export default LocationField
+export default LocationField;

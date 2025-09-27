@@ -140,11 +140,11 @@ const ResearchStreamingShell = ({
 
   const getImageCount = () => {
     const imageEvents = streamEvents.filter(
-      (event) => event.step === "image_search" && event.data?.images_found > 0
+      (event) => event.step === "image_search" && event.data?.images_found > 0,
     );
     return imageEvents.reduce(
       (total, event) => total + (event.data?.images_found || 0),
-      0
+      0,
     );
   };
 

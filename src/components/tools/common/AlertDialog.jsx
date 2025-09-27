@@ -59,40 +59,40 @@ export default function AlertDialog() {
         </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ mb: { xs: 1.5, md: 2.5 } }}>
-      {alertMessage !== "You can't use less than 30 words" &&
-        <Button
-          fullWidth
-          color="inherit"
-          sx={{
-            bgcolor: (theme) =>
-              theme.palette.mode === "dark"
-                ? theme.palette.grey[300]
-                : theme.palette.grey[900],
-            color: (theme) =>
-              theme.palette.mode === "dark"
-                ? theme.palette.grey[900]
-                : theme.palette.grey[300],
-            "&:hover": {
+        {alertMessage !== "You can't use less than 30 words" && (
+          <Button
+            fullWidth
+            color="inherit"
+            sx={{
               bgcolor: (theme) =>
                 theme.palette.mode === "dark"
-                  ? alpha(theme.palette.grey[300], 0.9)
-                  : alpha(theme.palette.grey[900], 0.9),
-            },
-          }}
-          variant="contained"
-          size="medium"
-          onClick={() => {
-            if (!user) {
-              dispatch(setShowLoginModal(true));
-            } else {
-              dispatch(setShowAlert(false));
-              router.push("/pricing");
-            }
-          }}
-        >
-          {!user ? "Login" : "Upgrade now"}
-        </Button>
-      }
+                  ? theme.palette.grey[300]
+                  : theme.palette.grey[900],
+              color: (theme) =>
+                theme.palette.mode === "dark"
+                  ? theme.palette.grey[900]
+                  : theme.palette.grey[300],
+              "&:hover": {
+                bgcolor: (theme) =>
+                  theme.palette.mode === "dark"
+                    ? alpha(theme.palette.grey[300], 0.9)
+                    : alpha(theme.palette.grey[900], 0.9),
+              },
+            }}
+            variant="contained"
+            size="medium"
+            onClick={() => {
+              if (!user) {
+                dispatch(setShowLoginModal(true));
+              } else {
+                dispatch(setShowAlert(false));
+                router.push("/pricing");
+              }
+            }}
+          >
+            {!user ? "Login" : "Upgrade now"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

@@ -8,13 +8,13 @@ import NavSectionMini from "./components/NavSectionMini";
 import NavToggleButton from "./components/toggleButton";
 // ----------------------------------------------------------------------
 
-export default function NavMini({isDarkMode}) {
+export default function NavMini({ isDarkMode }) {
   const { user } = useSelector((state) => state.auth);
   const plan = user.package;
 
   return (
     <Box
-      component='nav'
+      component="nav"
       sx={{
         flexShrink: 0,
         width: NAV.W_DASHBOARD_MINI,

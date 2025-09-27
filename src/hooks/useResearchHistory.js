@@ -27,7 +27,7 @@ export const useResearchHistory = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       const researches = await response.json();
 

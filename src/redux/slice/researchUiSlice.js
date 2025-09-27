@@ -22,7 +22,7 @@ export const researchUiSlice = createSlice({
     },
     removeUploadedFile: (state, action) => {
       state.uploadedFiles = state.uploadedFiles.filter(
-        (_, index) => index !== action.payload
+        (_, index) => index !== action.payload,
       );
     },
     setUploading: (state, action) => {

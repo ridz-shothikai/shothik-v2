@@ -1,21 +1,21 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import InnovationIcon from "@mui/icons-material/Lightbulb";
+import SchoolIcon from "@mui/icons-material/School";
 import {
+  Avatar,
   Box,
-  Container,
-  Typography,
   Button,
   Card,
   CardContent,
-  Avatar,
-  useTheme,
+  Container,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { motion, useAnimation, useInView } from "framer-motion";
-import SchoolIcon from "@mui/icons-material/School";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import InnovationIcon from "@mui/icons-material/Lightbulb";
+import { useEffect, useRef } from "react";
 
 const AnimatedTimelineItem = ({ children, index }) => {
   const ref = useRef(null);
@@ -99,11 +99,11 @@ export default function StudentDeserve() {
               lineHeight: 1.2,
             }}
           >
-            "Every Student Deserves{" "}
+            &quot;Every Student Deserves{" "}
             <Box component="span" sx={{ color: "#4CAF50" }}>
               AI That Understands
             </Box>{" "}
-            Their Domain"
+            Their Domain&quot;
           </Typography>
 
           <Typography
@@ -120,7 +120,7 @@ export default function StudentDeserve() {
           >
             As a former PhD student who struggled with domain-specific writing,
             I built Shothik AI to solve the problem every academic faces:
-            generic tools that don't understand your field.
+            generic tools that don&apos;t understand your field.
           </Typography>
         </motion.div>
 
@@ -204,10 +204,11 @@ export default function StudentDeserve() {
                           lineHeight: 1.6,
                         }}
                       >
-                        "I spent countless nights rewriting papers because
-                        generic paraphrasing tools couldn't handle medical
+                        &quot;I spent countless nights rewriting papers because
+                        generic paraphrasing tools couldn&apos;t handle medical
                         terminology. That frustration became our mission: build
-                        AI that actually understands what you're writing about."
+                        AI that actually understands what you&apos;re writing
+                        about.&quot;
                       </Typography>
                       <Typography
                         variant="subtitle1"

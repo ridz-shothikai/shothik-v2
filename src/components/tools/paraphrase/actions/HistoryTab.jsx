@@ -1,20 +1,8 @@
-
 // HistoryTab.jsx
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import {
-  Box,
-  Typography,
-  Divider,
-  IconButton,
-  Button
-} from "@mui/material";
-import {
-  ExpandLess,
-  ExpandMore,
-  Refresh,
-  Delete
-} from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Box, Typography, Divider, IconButton, Button } from "@mui/material";
+import { ExpandLess, ExpandMore, Refresh, Delete } from "@mui/icons-material";
 
 const HistoryTab = () => {
   const [expandedEntries, setExpandedEntries] = useState({});
@@ -23,25 +11,30 @@ const HistoryTab = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const redirectPrefix = "p-v2";
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
-    // process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
+    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+    "/" +
+    redirectPrefix +
+    "/api";
+  // process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
   const fetchHistory = async () => {
     try {
       const res = await fetch(`${API_BASE}/history`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
       });
-      if (!res.ok) throw new Error('Failed to fetch history');
+      if (!res.ok) throw new Error("Failed to fetch history");
       const data = await res.json();
       setHistoryGroups(data);
 
       // Initialize all groups as expanded
       const init = {};
-      data.forEach(group => { init[group.period] = true; });
+      data.forEach((group) => {
+        init[group.period] = true;
+      });
       setExpandedGroups(init);
     } catch (err) {
       console.error(err);
@@ -49,16 +42,16 @@ const HistoryTab = () => {
   };
 
   const handleDeleteAll = async () => {
-    if (!window.confirm('Are you sure you want to clear all history?')) return;
+    if (!window.confirm("Are you sure you want to clear all history?")) return;
     try {
       const res = await fetch(`${API_BASE}/history`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
       });
-      if (!res.ok) throw new Error('Failed to delete history');
+      if (!res.ok) throw new Error("Failed to delete history");
       setHistoryGroups([]);
     } catch (err) {
       console.error(err);
@@ -70,13 +63,13 @@ const HistoryTab = () => {
     // In this case we should avoid getting history data
     // accessToken is generated after user signed in, so we are checking that.
 
-    if(!accessToken) return;
+    if (!accessToken) return;
 
     fetchHistory();
   }, []);
 
   const toggleGroup = (period) => {
-    setExpandedGroups(prev => ({
+    setExpandedGroups((prev) => ({
       ...prev,
       [period]: !prev[period],
     }));
@@ -192,13 +185,12 @@ const HistoryTab = () => {
 
 // HELPER FUNCTION
 
-function truncateText (text, limit) {
+function truncateText(text, limit) {
   const words = text.split(" ");
   if (words.length > limit) {
     return words.slice(0, limit).join(" ") + "...";
   }
   return text;
-};
+}
 
 export default HistoryTab;
-

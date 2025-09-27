@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 
@@ -31,9 +31,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility"; // ai detector
 import SmartToyIcon from "@mui/icons-material/SmartToy"; // agents
 import CampaignIcon from "@mui/icons-material/Campaign"; // marketing automation
 
-export default function ClaritSectionV2({
-  onCTAClick = () => {},
-}) {
+export default function ClaritSectionV2({ onCTAClick = () => {} }) {
   const theme = useTheme();
 
   const stages = [
@@ -161,7 +159,11 @@ export default function ClaritSectionV2({
             >
               Get early access
             </Button>
-            <Button data-umami-event="View features" variant="outlined" onClick={() => onCTAClick("features")}>
+            <Button
+              data-umami-event="View features"
+              variant="outlined"
+              onClick={() => onCTAClick("features")}
+            >
               View features
             </Button>
           </Stack>

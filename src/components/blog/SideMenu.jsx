@@ -3,8 +3,8 @@ import Navlink from "next/link";
 
 export default function SideMenu() {
   return (
-    <Stack flexDirection='column' sx={{ mt: 2, p: 1 }}>
-      <Link component={Navlink} href='/tutorials'>
+    <Stack flexDirection="column" sx={{ mt: 2, p: 1 }}>
+      <Link component={Navlink} href="/tutorials">
         <Button
           sx={{
             color: "primary.main",
@@ -17,7 +17,7 @@ export default function SideMenu() {
           Tutorial series →
         </Button>
       </Link>
-      <Link component={Navlink} href='/tutorials'>
+      <Link component={Navlink} href="/tutorials">
         <Button
           sx={{
             color: "primary.main",
@@ -30,7 +30,7 @@ export default function SideMenu() {
           Product tutorials →
         </Button>
       </Link>
-      <Link component={Navlink} href='/paraphrase'>
+      <Link component={Navlink} href="/paraphrase">
         <Button
           sx={{
             color: "primary.main",

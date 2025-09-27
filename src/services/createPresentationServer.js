@@ -1,5 +1,4 @@
-
-export async function createPresentationServer({ message,file_urls, token }) {
+export async function createPresentationServer({ message, file_urls, token }) {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URI}/presentation/init`,
@@ -10,7 +9,7 @@ export async function createPresentationServer({ message,file_urls, token }) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message, file_urls }),
-      }
+      },
     );
 
     const data = await res.json();

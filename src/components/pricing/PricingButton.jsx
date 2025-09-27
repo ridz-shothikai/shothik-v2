@@ -37,12 +37,12 @@ export default function PricingButton({
                   yearly ? "yearly" : "monthly"
                 }&redirect=${redirect}`
               : paymentMethod === "razor"
-              ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
-                  yearly ? "yearly" : "monthly"
-                }&redirect=${redirect}`
-              : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
-                  yearly ? "yearly" : "monthly"
-                }&redirect=${redirect}`
+                ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
+                    yearly ? "yearly" : "monthly"
+                  }&redirect=${redirect}`
+                : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
+                    yearly ? "yearly" : "monthly"
+                  }&redirect=${redirect}`
           }
           fullWidth
           size="large"
@@ -59,8 +59,8 @@ export default function PricingButton({
           {user?.package === subscription
             ? "current plan"
             : !yearly_plan_available && yearly
-            ? "Available for monthly plan"
-            : `Choose ${caption}`}
+              ? "Available for monthly plan"
+              : `Choose ${caption}`}
         </Button>
       ) : (
         <Button
@@ -75,8 +75,8 @@ export default function PricingButton({
           {!yearly_plan_available && yearly
             ? "Available for monthly plan"
             : subscription === "free"
-            ? `Sign up - it's free`
-            : `Choose ${caption}`}
+              ? `Sign up - it's free`
+              : `Choose ${caption}`}
         </Button>
       )}
     </Box>

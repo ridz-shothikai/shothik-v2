@@ -1,5 +1,14 @@
 import { ExpandMore, Info, Lightbulb } from "@mui/icons-material";
-import { Accordion, AccordionDetails, AccordionSummary, Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 
 // Metadata display component (unchanged)
 const MetadataDisplay = ({ metadata }) => {

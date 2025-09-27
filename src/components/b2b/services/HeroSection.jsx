@@ -18,8 +18,8 @@ export const HeroSection = ({ slug }) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        textAlign='center'
-        variant='h2'
+        textAlign="center"
+        variant="h2"
         mb={1}
         sx={{ color: isDarkMode ? "common.white" : "#005249" }}
       >
@@ -47,7 +47,7 @@ export const HeroSection = ({ slug }) => {
         >
           <img
             src={headerInfo?.img}
-            alt='Workspace'
+            alt="Workspace"
             style={{
               width: "100%",
               display: "block",
@@ -82,7 +82,7 @@ export const HeroSection = ({ slug }) => {
             >
               {item.description && (
                 <Typography
-                  variant='h5'
+                  variant="h5"
                   fontSize={24}
                   sx={{ color: "primary.main" }}
                 >
@@ -90,10 +90,10 @@ export const HeroSection = ({ slug }) => {
                 </Typography>
               )}
               {item.isLink ? (
-                <Link href='#'>{item.title}</Link>
+                <Link href="#">{item.title}</Link>
               ) : (
                 <Typography
-                  variant='h5'
+                  variant="h5"
                   fontSize={24}
                   sx={{ color: "primary.main" }}
                 >

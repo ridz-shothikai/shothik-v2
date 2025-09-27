@@ -56,7 +56,7 @@ export default function UserInfo() {
     <Stack
       sx={{ px: { xs: 2, sm: 2 }, py: { xs: 5, sm: 5 }, textAlign: "center" }}
     >
-      <Stack alignItems='center'>
+      <Stack alignItems="center">
         {user?.email ? (
           <>
             <Box sx={{ position: "relative" }}>
@@ -70,7 +70,7 @@ export default function UserInfo() {
 
             <Stack spacing={0.5} sx={{ mt: 1.5, mb: 3 }}>
               <Typography
-                variant='subtitle2'
+                variant="subtitle2"
                 sx={{ overflowWrap: "break-word", wordBreak: "break-all" }}
               >
                 {user?.name}
@@ -95,9 +95,9 @@ export default function UserInfo() {
             {user.package !== "unlimited" && (
               <Button
                 style={{ marginTop: -10 }}
-                variant='contained'
+                variant="contained"
                 component={Link}
-                href='/pricing'
+                href="/pricing"
               >
                 Upgrade plan
               </Button>
@@ -121,20 +121,20 @@ export default function UserInfo() {
               }}
             >
               Logout
-              <LogoutIcon fontSize='24px' />
+              <LogoutIcon fontSize="24px" />
             </Box>
           </>
         ) : (
           <Stack
             spacing={2}
-            alignItems='left'
+            alignItems="left"
             sx={{ width: "100%", textAlign: "left" }}
           >
             <Stack spacing={0.5}>
-              <Typography variant='subtitle2' sx={{ color: "text.primary" }}>
+              <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
                 Log In or Sign Up
               </Typography>
-              <Typography variant='caption' sx={{ color: "text.primary" }}>
+              <Typography variant="caption" sx={{ color: "text.primary" }}>
                 Unlock hidden features. Write with confidence.{" "}
               </Typography>
             </Stack>
@@ -145,8 +145,8 @@ export default function UserInfo() {
                   dispatch(setShowRegisterModal(false));
                   dispatch(setShowLoginModal(true));
                 }}
-                variant='contained'
-                size='medium'
+                variant="contained"
+                size="medium"
                 sx={{ width: "100%" }}
               >
                 Sign In
@@ -158,8 +158,8 @@ export default function UserInfo() {
                   dispatch(setShowLoginModal(false));
                   dispatch(setShowRegisterModal(true));
                 }}
-                variant='outlined'
-                size='medium'
+                variant="outlined"
+                size="medium"
                 sx={{
                   width: "100%",
                   borderColor:

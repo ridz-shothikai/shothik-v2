@@ -1,6 +1,6 @@
 /**
  * Usages components
- * @param{LANDING_PAGE} -> LandingPageAnalyticsProvider, 
+ * @param{LANDING_PAGE} -> LandingPageAnalyticsProvider,
  */
 
 export const trackingList = {
@@ -12,7 +12,7 @@ export const trackingList = {
   EMAIL_MODAL: "email_modal",
   EXIT_INTENT_MODAL: "exit_intent_modal",
   MODAL_OPENED: "modal_opened",
-  
+
   // HOW_IT_WORKS_CTA: "how_it_works_cta",
   PROCESS_STEP: "process_step",
   PROCESS_STEP_CLICK: "process_step_click",
@@ -29,7 +29,7 @@ export const trackingList = {
 
   // CAROUSEL_CTA: "stop_working_cta",
   // AI_WRITING_CTA: "ai_writting_team_cta",
-  
+
   JOURNEY_SECTION: "journey_section",
 
   WHY_STUDENT_CHOOSE_SECTION: "why_student_choose_section",

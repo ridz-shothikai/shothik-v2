@@ -46,7 +46,7 @@ export const sheetApiSlice = createApi({
           const isCompleted = events.some(
             (event) =>
               event.step === "completed" ||
-              event.message?.toLowerCase().includes("completed successfully")
+              event.message?.toLowerCase().includes("completed successfully"),
           );
 
           // Check for failure indicators
@@ -56,14 +56,14 @@ export const sheetApiSlice = createApi({
               event.step === "error" ||
               event.step === "validation_error" ||
               event.message?.toLowerCase().includes("failed") ||
-              event.message?.toLowerCase().includes("error")
+              event.message?.toLowerCase().includes("error"),
           );
 
           // Check for cancellation indicators
           const isCancelled = events.some(
             (event) =>
               event.step === "cancelled" ||
-              event.message?.toLowerCase().includes("cancelled")
+              event.message?.toLowerCase().includes("cancelled"),
           );
 
           // Determine if generation is incomplete/in-progress

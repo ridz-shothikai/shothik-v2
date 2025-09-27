@@ -1,67 +1,72 @@
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Chip from "@mui/material/Chip";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import Modal from "@mui/material/Modal";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
+/* eslint-disable react-hooks/exhaustive-deps */
 import SendIcon from "@mui/icons-material/Send";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
 import TableChartIcon from "@mui/icons-material/TableChart";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Modal from "@mui/material/Modal";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 // import CloseIcon from "@mui/icons-material/Close";
-import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import PaletteIcon from "@mui/icons-material/Palette";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
+import AutoModeIcon from "@mui/icons-material/AutoMode";
 import BusinessIcon from "@mui/icons-material/Business";
-import SchoolIcon from "@mui/icons-material/School";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import FactCheckIcon from "@mui/icons-material/FactCheck";
+import GpsFixedIcon from "@mui/icons-material/GpsFixed";
+import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import TrainingIcon from "@mui/icons-material/ModelTraining";
+import PaletteIcon from "@mui/icons-material/Palette";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import SchoolIcon from "@mui/icons-material/School";
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
   DialogContentText,
-  useTheme,
+  DialogTitle,
   Tooltip,
+  useTheme,
 } from "@mui/material";
-import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import AutoModeIcon from "@mui/icons-material/AutoMode";
 import { useAgentContext } from "./shared/AgentContextProvider";
 
-import { useDispatch, useSelector } from "react-redux";
-import { setResearchToken, setSheetToken, setShowLoginModal } from "../../src/redux/slice/auth";
-import {handleResearchRequest, handleSheetGenerationRequest, handleSlideCreation} from "./super-agent/agentPageUtils"
-import { Snackbar, Alert } from "@mui/material";
-import {
-  Close as CloseIcon,
-  ChatBubbleOutline as ChatBubbleOutlineIcon,
-  AccessTime as AccessTimeIcon,
-  Close,
-} from "@mui/icons-material";
+import { Close, Close as CloseIcon } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
-import useResponsive from "../../src/hooks/useResponsive";
-import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
-import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
-import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
-import ChatSidebar from "./ChatSidebar";
+import { Alert, Snackbar } from "@mui/material";
 import { LinkIcon } from "lucide-react";
-import SearchDropdown from "./SearchDropDown";
+import { useDispatch, useSelector } from "react-redux";
 import useNavItemFiles from "../../src/hooks/useNavItemFiles";
-import { useFetchAllPresentationsQuery, useUploadPresentationFilesMutation } from "../../src/redux/api/presentation/presentationApi";
-import {useResearchAiToken} from "../../src/hooks/useRegisterResearchService";
-import ModelSelectForResearch from "./ModelSelectForResearch";
-import { useGetResearchChats } from "../../src/hooks/useGetResearchChats";
+import { useResearchAiToken } from "../../src/hooks/useRegisterResearchService";
+import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
+import useResponsive from "../../src/hooks/useResponsive";
+import {
+  useFetchAllPresentationsQuery,
+  useUploadPresentationFilesMutation,
+} from "../../src/redux/api/presentation/presentationApi";
 import { useGetMyResearchChatsQuery } from "../../src/redux/api/research/researchChatApi";
+import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
+import {
+  setResearchToken,
+  setSheetToken,
+  setShowLoginModal,
+} from "../../src/redux/slice/auth";
+import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
+import ChatSidebar from "./ChatSidebar";
+import SearchDropdown from "./SearchDropDown";
+import {
+  handleResearchRequest,
+  handleSheetGenerationRequest,
+  handleSlideCreation,
+} from "./super-agent/agentPageUtils";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -290,7 +295,7 @@ export default function AgentLandingPage() {
    * When we come to the agents page if user is not registered to our services, make them register it.
    */
   const { sheetAIToken, refreshSheetAIToken } = useSheetAiToken();
-  const {researchAIToken, refreshResearchAiToken} = useResearchAiToken();
+  const { researchAIToken, refreshResearchAiToken } = useResearchAiToken();
 
   // for saving sheet token to redux state
   useEffect(() => {
@@ -313,7 +318,7 @@ export default function AgentLandingPage() {
 
     // if research token saved to our local storage then we can try to refetch again to get the user research chat data
     // console.log("chat data for research refetched");
-  }, [researchAIToken])
+  }, [researchAIToken]);
 
   useEffect(() => {
     const hasVisited = localStorage.getItem("shothik_has_visited");
@@ -344,7 +349,7 @@ export default function AgentLandingPage() {
             setIsSubmitting,
             setIsInitiatingPresentation,
             router,
-            showToast
+            showToast,
           );
         case "sheets":
           return await handleSheetGenerationRequest(
@@ -357,7 +362,7 @@ export default function AgentLandingPage() {
             router,
             email,
             showToast,
-            refreshSheetAIToken
+            refreshSheetAIToken,
           );
         case "research":
           return await handleResearchRequest(
@@ -369,7 +374,7 @@ export default function AgentLandingPage() {
             setIsSubmitting,
             showToast,
             refreshResearchAiToken,
-            router
+            router,
           );
         case "browse":
           return console.log("browse route");
@@ -424,7 +429,7 @@ export default function AgentLandingPage() {
 
     console.log(
       "Selected files:",
-      files.map((f) => ({ name: f.name, type: f.type, size: f.size }))
+      files.map((f) => ({ name: f.name, type: f.type, size: f.size })),
     );
 
     // Check file type and size
@@ -443,7 +448,7 @@ export default function AgentLandingPage() {
         invalidFiles.push(`${file.name} (invalid type: ${file.type})`);
       } else if (file.size > maxSize) {
         invalidFiles.push(
-          `${file.name} (too large: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
+          `${file.name} (too large: ${(file.size / 1024 / 1024).toFixed(2)}MB)`,
         );
       }
     }
@@ -491,7 +496,7 @@ export default function AgentLandingPage() {
     const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
     const truncatedName = nameWithoutExt.substring(
       0,
-      maxLength - extension.length - 4
+      maxLength - extension.length - 4,
     );
     return `${truncatedName}...${extension}`;
   };
@@ -651,8 +656,9 @@ export default function AgentLandingPage() {
             </Box>
 
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Experience the world's most advanced AI presentation generation
-              system powered by 7 specialized agents working together.
+              Experience the world&apos;s most advanced AI presentation
+              generation system powered by 7 specialized agents working
+              together.
             </Typography>
 
             <Stepper orientation="vertical" sx={{ mb: 3 }}>
@@ -982,7 +988,7 @@ export default function AgentLandingPage() {
                 style={{ display: "none" }}
                 onChange={handleFileUpload}
               />
-              {(selectedNavItem === "slides") && (
+              {selectedNavItem === "slides" && (
                 <Button
                   startIcon={<LinkIcon />}
                   onClick={handleClick}
@@ -1205,22 +1211,23 @@ export default function AgentLandingPage() {
               gap: 1,
             }}
           >
-            {suggestedTopics[selectedNavItem].length > 0 && suggestedTopics[selectedNavItem].map((prompt) => (
-                  <Chip
-                    key={prompt}
-                    label={prompt}
-                    onClick={() => setInputValue(prompt)}
-                    sx={{
-                      bgcolor: "rgba(7, 179, 122, 0.1)",
-                      color: PRIMARY_GREEN,
-                      border: `1px solid ${PRIMARY_GREEN}33`,
-                      cursor: "pointer",
-                      "&:hover": {
-                        bgcolor: "rgba(7, 179, 122, 0.2)",
-                      },
-                    }}
-                  />
-                ))}
+            {suggestedTopics[selectedNavItem].length > 0 &&
+              suggestedTopics[selectedNavItem].map((prompt) => (
+                <Chip
+                  key={prompt}
+                  label={prompt}
+                  onClick={() => setInputValue(prompt)}
+                  sx={{
+                    bgcolor: "rgba(7, 179, 122, 0.1)",
+                    color: PRIMARY_GREEN,
+                    border: `1px solid ${PRIMARY_GREEN}33`,
+                    cursor: "pointer",
+                    "&:hover": {
+                      bgcolor: "rgba(7, 179, 122, 0.2)",
+                    },
+                  }}
+                />
+              ))}
           </Box>
         </Box>
 
@@ -1299,30 +1306,29 @@ export default function AgentLandingPage() {
       </Snackbar>
     </Box>
   );
-};
-
+}
 
 // Note: This code is for alerting user to login for using agentic services
-const LoginDialog = ({ loginDialogOpen , setLoginDialogOpen}) => {
+const LoginDialog = ({ loginDialogOpen, setLoginDialogOpen }) => {
   const dispatch = useDispatch();
   return (
-  <Dialog
-    open={loginDialogOpen}
-    onClose={() => setLoginDialogOpen(false)}
-    aria-labelledby="login-dialog-title"
-    aria-describedby="login-dialog-description"
-  >
-    <DialogTitle id="login-dialog-title">Authentication Required</DialogTitle>
-    <DialogContent>
-      <DialogContentText id="login-dialog-description">
-        You need to be logged in to create a presentation. Please log in to
-        continue.
-      </DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={() => setLoginDialogOpen(false)} color="secondary">
-        Cancel
-      </Button>
+    <Dialog
+      open={loginDialogOpen}
+      onClose={() => setLoginDialogOpen(false)}
+      aria-labelledby="login-dialog-title"
+      aria-describedby="login-dialog-description"
+    >
+      <DialogTitle id="login-dialog-title">Authentication Required</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="login-dialog-description">
+          You need to be logged in to create a presentation. Please log in to
+          continue.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setLoginDialogOpen(false)} color="secondary">
+          Cancel
+        </Button>
         <Button
           onClick={() => {
             dispatch(setShowLoginModal(true));
@@ -1333,7 +1339,7 @@ const LoginDialog = ({ loginDialogOpen , setLoginDialogOpen}) => {
         >
           Login
         </Button>
-    </DialogActions>
-  </Dialog>
+      </DialogActions>
+    </Dialog>
   );
 };

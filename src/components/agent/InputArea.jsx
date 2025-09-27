@@ -54,19 +54,19 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
   };
 
   return (
-    <Stack alignItems='center' sx={{ width: "100%" }}>
+    <Stack alignItems="center" sx={{ width: "100%" }}>
       {showTitle && !selectedAgent && (
         <Box mb={1}>
           <Typography
             fontWeight={600}
             fontSize={22}
             mb={1}
-            textAlign='center'
+            textAlign="center"
             sx={{ color: "primary.main" }}
           >
             Shothik AI multi Agent solution
           </Typography>
-          <Stack flexDirection='row' alignItems='center' gap={0.5}>
+          <Stack flexDirection="row" alignItems="center" gap={0.5}>
             {ai_agent_list.map((agent, index) => (
               <Stack
                 sx={{
@@ -90,9 +90,9 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
       )}
       {selectedAgent && (
         <Stack
-          flexDirection='row'
-          alignItems='center'
-          justifyContent='flex-start'
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="flex-start"
           sx={{
             width: isMobile ? "100%" : "80%",
             border: "1px solid",
@@ -105,13 +105,13 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
           }}
         >
           <IconButton onClick={() => setSelectedAgent(null)}>
-            <ArrowBackIos fontSize='small' />
+            <ArrowBackIos fontSize="small" />
           </IconButton>
           <Typography>{selectedAgent.title}</Typography>
         </Stack>
       )}
       <Box
-        component='form'
+        component="form"
         onSubmit={handleAdd}
         sx={{
           display: "flex",
@@ -129,8 +129,8 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
         }}
       >
         <Stack
-          flexDirection='row'
-          alignItems='center'
+          flexDirection="row"
+          alignItems="center"
           sx={{
             width: isMobile && !showTitle ? undefined : "100%",
             justifyContent: isMobile && !showTitle ? undefined : "flex-start",
@@ -139,8 +139,8 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
           <SmartToy sx={{ color: "#00A76F", mr: 1 }} />
           <TextField
             fullWidth
-            variant='standard'
-            placeholder='Give a task to Shothik AI Agent'
+            variant="standard"
+            placeholder="Give a task to Shothik AI Agent"
             slotProps={{
               input: { disableUnderline: true },
             }}
@@ -150,18 +150,18 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
           />
 
           <input
-            type='file'
+            type="file"
             ref={filesRef}
             hidden
-            accept='.pdf,.jpg,.jpeg,.png'
+            accept=".pdf,.jpg,.jpeg,.png"
             multiple
             onChange={handleInputChange}
           />
         </Stack>
 
         <Stack
-          flexDirection='row'
-          alignItems='center'
+          flexDirection="row"
+          alignItems="center"
           sx={{
             width: isMobile && !showTitle ? undefined : "100%",
             justifyContent: isMobile && !showTitle ? undefined : "flex-end",
@@ -180,22 +180,22 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
                 "&:hover .filesCount": { display: "none" },
               }}
               onClick={handleFileInputClick}
-              type='button'
+              type="button"
             >
               {files ? (
                 <Typography
                   sx={{ position: "absolute", top: -5, right: 5 }}
-                  className='filesCount'
+                  className="filesCount"
                   fontSize={14}
                 >
                   {Array.from(files).length}
                 </Typography>
               ) : null}
-              <AttachFile fontSize='small' />
+              <AttachFile fontSize="small" />
             </IconButton>
           </Tooltip>
 
-          <IconButton disabled={loading} type='submit' color='primary'>
+          <IconButton disabled={loading} type="submit" color="primary">
             {loading ? (
               <AutoMode
                 sx={{

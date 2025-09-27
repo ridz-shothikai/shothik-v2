@@ -16,7 +16,7 @@ import { LikeDislike } from "./LikeDislike";
 import ShareIcons from "./ShareIcons";
 
 export default function MainLayout({ blog }) {
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL??"https://shothik.ai"}/blogs/${blog?.slag}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL ?? "https://shothik.ai"}/blogs/${blog?.slag}`;
   const title = blog?.title || "Check out this blog!";
   const hashtags = ["ShothikAI", "AIContent", "Tech"];
 
@@ -94,7 +94,7 @@ export default function MainLayout({ blog }) {
           <AvatarGroup>
             <Avatar
               alt={blog?.author?.name}
-              src='/static/images/avatar/1.jpg'
+              src="/static/images/avatar/1.jpg"
             />
           </AvatarGroup>
           <Typography
@@ -113,7 +113,7 @@ export default function MainLayout({ blog }) {
         </Box>
       </Box>
       <Box
-        component='img'
+        component="img"
         src={blog?.banner}
         alt={blog?.title}
         sx={{
@@ -145,7 +145,7 @@ export default function MainLayout({ blog }) {
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
 
-      <Stack sx={{ my: 10 }} alignItems='center'>
+      <Stack sx={{ my: 10 }} alignItems="center">
         <Box
           sx={{
             border: "1px solid",
@@ -163,46 +163,46 @@ export default function MainLayout({ blog }) {
           </Typography>
           <Stack
             sx={{ color: "primary.main", mt: 1 }}
-            flexDirection='row'
+            flexDirection="row"
             gap={0.5}
-            alignItems='center'
+            alignItems="center"
           >
-            <Link href='/pricing'>Learn more about our products</Link>
-            <KeyboardDoubleArrowRight fontSize='small' color='primary.main' />
+            <Link href="/pricing">Learn more about our products</Link>
+            <KeyboardDoubleArrowRight fontSize="small" color="primary.main" />
           </Stack>
         </Box>
         <Card sx={{ mt: 5, p: 4, width: { md: "70%", sm: "100%" } }}>
           <Stack
-            flexDirection='row'
+            flexDirection="row"
             gap={3}
             sx={{
               borderBottom: "1px solid",
               borderBottomColor: "divider",
               pb: 2,
             }}
-            flexWrap='wrap'
+            flexWrap="wrap"
           >
-            <Typography variant='h6'>Still looking for an answer?</Typography>
-            <Link href='/blogs'>
-              <Button variant='outlined'>Search for more help</Button>
+            <Typography variant="h6">Still looking for an answer?</Typography>
+            <Link href="/blogs">
+              <Button variant="outlined">Search for more help</Button>
             </Link>
           </Stack>
           <Stack
             sx={{ mt: 4 }}
-            flexDirection='row'
+            flexDirection="row"
             gap={1}
-            alignItems='center'
-            justifyContent='space-between'
-            flexWrap='wrap'
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="wrap"
             rowGap={2}
           >
-            <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Typography sx={{ mr: 2 }} variant='h6'>
+            <Stack flexDirection="row" gap={1} alignItems="center">
+              <Typography sx={{ mr: 2 }} variant="h6">
                 Was this helpful?
               </Typography>
               <LikeDislike
                 id={blog?._id}
-                api='/blog'
+                api="/blog"
                 like={blog?.likes}
                 dislike={blog?.dislikes}
                 data={blog}
@@ -211,7 +211,7 @@ export default function MainLayout({ blog }) {
 
             <Divider
               sx={{ display: { xs: "none", sm: "block" } }}
-              orientation='vertical'
+              orientation="vertical"
               flexItem
             />
 

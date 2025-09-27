@@ -20,7 +20,7 @@ import {
   Mic as MicIcon,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import {useResearchStream} from "../../../hooks/useResearchStream"
+import { useResearchStream } from "../../../hooks/useResearchStream";
 import { setUserPrompt } from "../../../redux/slice/researchCoreSlice";
 
 const PRIMARY_GREEN = "#07B37A";
@@ -46,11 +46,12 @@ const ChatInput = () => {
   const dispatch = useDispatch();
   const [effort, setEffort] = useState("medium");
   const [model, setModel] = useState("gemini-2.5-pro");
-  const { uploadedFiles, isUploading } = useSelector((state) => state.researchUi);
+  const { uploadedFiles, isUploading } = useSelector(
+    (state) => state.researchUi,
+  );
   const { isStreaming } = useSelector((state) => state.researchCore);
 
   const { startResearch, cancelResearch } = useResearchStream();
-
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -107,7 +108,7 @@ const ChatInput = () => {
     const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
     const truncatedName = nameWithoutExt.substring(
       0,
-      maxLength - extension.length - 4
+      maxLength - extension.length - 4,
     );
     return `${truncatedName}...${extension}`;
   };
@@ -176,25 +177,25 @@ const ChatInput = () => {
               },
             }}
           />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            {/* Hidden file input for slide file selection */}
-            <input
-              id="file-upload-input"
-              type="file"
-              accept=".pdf,.doc,.docx,.txt"
-              multiple
-              style={{ display: "none" }}
-              onChange={handleFileUpload}
-            />
-            {/* Attach button will be needed later */}
-            {/* {(selectedNavItem === "slides") && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {/* Hidden file input for slide file selection */}
+              <input
+                id="file-upload-input"
+                type="file"
+                accept=".pdf,.doc,.docx,.txt"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+              />
+              {/* Attach button will be needed later */}
+              {/* {(selectedNavItem === "slides") && (
               <Button
                 startIcon={<LinkIcon />}
                 onClick={handleClick}
@@ -210,48 +211,47 @@ const ChatInput = () => {
                 Attach
               </Button>
             )} */}
-          </Box>
+            </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row-reverse",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <IconButton
-              onClick={handleSubmit}
-              disabled={
-                !inputValue.trim() ||
-                isInitiatingPresentation ||
-                isInitiatingSheet ||
-                isUploading ||
-                isInitiatingResearch ||
-                isStreaming
-              }
+            <Box
               sx={{
-                bgcolor: theme.palette.success.main,
-                color: theme.palette.getContrastText(
-                  theme.palette.success.main
-                ),
-                width: 40,
-                height: 40,
-                "&:hover": {
-                  bgcolor: theme.palette.success.dark,
-                },
-                "&.Mui-disabled": {
-                  bgcolor: theme.palette.action.disabledBackground,
-                  color: theme.palette.action.disabled,
-                },
+                display: "flex",
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                gap: 2,
               }}
             >
-              <SendIcon />
-            </IconButton>
+              <IconButton
+                onClick={handleSubmit}
+                disabled={
+                  !inputValue.trim() ||
+                  isInitiatingPresentation ||
+                  isInitiatingSheet ||
+                  isUploading ||
+                  isInitiatingResearch ||
+                  isStreaming
+                }
+                sx={{
+                  bgcolor: theme.palette.success.main,
+                  color: theme.palette.getContrastText(
+                    theme.palette.success.main,
+                  ),
+                  width: 40,
+                  height: 40,
+                  "&:hover": {
+                    bgcolor: theme.palette.success.dark,
+                  },
+                  "&.Mui-disabled": {
+                    bgcolor: theme.palette.action.disabledBackground,
+                    color: theme.palette.action.disabled,
+                  },
+                }}
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
           </Box>
         </Box>
-        </Box>
-
 
         {/* uploaded files preview STARTS */}
         {/* {hasFiles > 0 && (

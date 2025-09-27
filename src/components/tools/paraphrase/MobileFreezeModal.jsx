@@ -35,7 +35,7 @@ const MobileFreezeModal = ({
 
   return (
     <Drawer
-      anchor='right'
+      anchor="right"
       slotProps={{
         paper: {
           sx: { width: "65%" },
@@ -54,7 +54,7 @@ const MobileFreezeModal = ({
           justifyContent: "space-between",
         }}
       >
-        <Typography variant='h4'>Freeze Words</Typography>
+        <Typography variant="h4">Freeze Words</Typography>
 
         <IconButton onClick={handleClose}>
           <CloseRounded />
@@ -66,19 +66,19 @@ const MobileFreezeModal = ({
         style={{ padding: "10px", marginTop: "30px", marginBottom: "20px" }}
       >
         <TextField
-          name='input'
-          variant='outlined'
+          name="input"
+          variant="outlined"
           rows={3}
           fullWidth
           multiline
-          label='Enter the word to freeze...'
+          label="Enter the word to freeze..."
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
 
         <Button
           sx={{ mt: 1, textAlign: "right" }}
-          variant='contained'
+          variant="contained"
           type={needToUpgrade ? "button" : "submit"}
           onClick={(e) => {
             router.push("/pricing?redirect=paraphrase");
@@ -90,16 +90,16 @@ const MobileFreezeModal = ({
 
       {frozenWords.size > 0 && (
         <Stack
-          direction='row'
+          direction="row"
           sx={{ px: 2, width: "100%" }}
           spacing={{ xs: 1, sm: 2 }}
           useFlexGap
-          flexWrap='wrap'
+          flexWrap="wrap"
         >
           <Chip
-            label='Clear All'
-            color='error'
-            variant='filled'
+            label="Clear All"
+            color="error"
+            variant="filled"
             onClick={() => frozenWords.reset(initialFrozenWords)}
             onDelete={() => frozenWords.reset(initialFrozenWords)}
             sx={{
@@ -112,7 +112,7 @@ const MobileFreezeModal = ({
             <Chip
               key={index}
               label={item}
-              variant='outlined'
+              variant="outlined"
               onDelete={(e) => handleDelete(item)}
             />
           ))}

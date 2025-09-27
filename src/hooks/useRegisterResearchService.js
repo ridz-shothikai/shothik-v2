@@ -36,9 +36,9 @@ export const useResearchAiToken = () => {
           },
           body: JSON.stringify({
             email: user?.email,
-            name: user?.name || 'default',
+            name: user?.name || "default",
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -66,9 +66,9 @@ export const useResearchAiToken = () => {
     const existingToken = localStorage.getItem("research-token");
 
     if (existingToken) {
-       setresearchAIToken(existingToken);
+      setresearchAIToken(existingToken);
     } else {
-        refreshResearchAiToken();
+      refreshResearchAiToken();
     }
   }, [refreshResearchAiToken]);
 

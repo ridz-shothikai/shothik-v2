@@ -48,15 +48,15 @@ const LanguageMenu = ({
 
   return (
     <Stack
-      direction='row'
-      alignItems='center'
-      justifyContent='center'
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
       sx={{ mb: 1 }}
     >
       <Button
         disabled={isLoading}
         onClick={(e) => handleLanguage(e, "fromLang")}
-        endIcon={<KeyboardArrowDown fontSize='small' />}
+        endIcon={<KeyboardArrowDown fontSize="small" />}
       >
         {translateLang.fromLang}
       </Button>
@@ -76,7 +76,7 @@ const LanguageMenu = ({
       <Button
         disabled={isLoading}
         onClick={(e) => handleLanguage(e, "toLang")}
-        endIcon={<KeyboardArrowDown fontSize='small' />}
+        endIcon={<KeyboardArrowDown fontSize="small" />}
       >
         {translateLang.toLang}
       </Button>

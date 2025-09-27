@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,7 +28,7 @@ export default function PaymentLayout({
     window.history.pushState(
       {},
       "",
-      `${route}/?subscription=${subscription}&tenure=${value}`
+      `${route}/?subscription=${subscription}&tenure=${value}`,
     );
 
     setMonthly(value);
@@ -36,7 +37,7 @@ export default function PaymentLayout({
   useEffect(() => {
     if (data) {
       const planData = data?.data.filter(
-        (item) => item._id === subscription
+        (item) => item._id === subscription,
       )[0];
       setPlan(planData);
       setMonthly(tenure);

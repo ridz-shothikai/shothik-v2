@@ -48,7 +48,7 @@ export const researchChatSlice = createSlice({
       state.messages = [];
       state.title = "";
       state.isEditing = false;
-    }
+    },
   },
 });
 
@@ -62,12 +62,12 @@ export const {
 } = researchChatSlice.actions;
 
 export const researchChatState = (state) => {
-    if(!state || !state.researchChat) {
-        console.warn("researchChat state is undefined");
-        return initialState;
-    }
+  if (!state || !state.researchChat) {
+    console.warn("researchChat state is undefined");
+    return initialState;
+  }
 
-    return state.researchChat;
-}
+  return state.researchChat;
+};
 
 export default researchChatSlice.reducer;

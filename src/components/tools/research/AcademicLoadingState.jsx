@@ -24,11 +24,11 @@ export const AcademicLoadingState = () => {
       }}
     >
       <CardContent sx={{ p: 2, width: "100%" }}>
-        <Box display='flex' alignItems='center' gap={2}>
+        <Box display="flex" alignItems="center" gap={2}>
           {/* Icon Container */}
           <IconButton
-            color='text.secondary'
-            aria-label='User'
+            color="text.secondary"
+            aria-label="User"
             sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
           >
             <Book sx={{ color: "text.secondary", fontSize: 24 }} />
@@ -36,12 +36,12 @@ export const AcademicLoadingState = () => {
 
           {/* Loading Text & Animation */}
           <Box>
-            <Typography variant='body1' fontWeight={500} color='text.secondary'>
+            <Typography variant="body1" fontWeight={500} color="text.secondary">
               Searching academic papers...
             </Typography>
 
             {/* Pulse Loading Effect */}
-            <Box display='flex' gap={1} mt={0.5}>
+            <Box display="flex" gap={1} mt={0.5}>
               {[...Array(3)].map((_, i) => (
                 <Skeleton
                   key={i}

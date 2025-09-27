@@ -10,11 +10,11 @@ import {
   VerticalAlignBottom,
   ExpandMore,
 } from "@mui/icons-material";
-import { 
-  Box, 
-  IconButton, 
-  Stack, 
-  Tooltip, 
+import {
+  Box,
+  IconButton,
+  Stack,
+  Tooltip,
   Typography,
   Modal,
   Button,
@@ -29,7 +29,7 @@ import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import WordIcon from "../../../resource/assets/WordIcon";
 import { downloadFile } from "../common/downloadfile";
-import {loadTTFAsArrayBuffer} from "../../../utils/fontLoader";
+import { loadTTFAsArrayBuffer } from "../../../utils/fontLoader";
 
 const OutputBotomNavigation = ({
   setHighlightSentence,
@@ -65,7 +65,6 @@ const OutputBotomNavigation = ({
     setFormatMenuAnchor(null);
   };
 
-
   const handleDownloadFormat = async (format) => {
     try {
       let fontData = null;
@@ -79,11 +78,11 @@ const OutputBotomNavigation = ({
             fontData = arrayBuffer;
             console.log(
               "Font loaded successfully, size:",
-              arrayBuffer.byteLength
+              arrayBuffer.byteLength,
             );
           } else {
             console.warn(
-              "Font file not accessible, PDF will use fallback font"
+              "Font file not accessible, PDF will use fallback font",
             );
           }
         } catch (fontError) {
@@ -106,26 +105,26 @@ const OutputBotomNavigation = ({
   }
 
   const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 400,
-    bgcolor: 'background.paper',
+    bgcolor: "background.paper",
     boxShadow: 24,
     borderRadius: 2,
     p: 4,
-    outline: 'none',
+    outline: "none",
   };
 
   return (
     <>
       <Stack
-        direction='row'
+        direction="row"
         columnGap={2}
-        alignItems='center'
-        justifyContent='space-between'
-        flexWrap='wrap'
+        alignItems="center"
+        justifyContent="space-between"
+        flexWrap="wrap"
         rowGap={1}
         sx={{
           paddingBottom: 1,
@@ -135,15 +134,15 @@ const OutputBotomNavigation = ({
           mt: "auto",
         }}
       >
-        <Stack direction='row' columnGap={1} alignItems='center'>
-          <Stack direction='row' spacing={0.5} alignItems='center'>
-            <Tooltip title='Previous sentence' arrow placement='top'>
+        <Stack direction="row" columnGap={1} alignItems="center">
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Tooltip title="Previous sentence" arrow placement="top">
               <IconButton
                 onClick={() => setHighlightSentence((prev) => prev - 1)}
                 disabled={highlightSentence === 0}
-                color='primary'
-                size='small'
-                aria-label='delete'
+                color="primary"
+                size="small"
+                aria-label="delete"
                 sx={{
                   bgcolor: "rgba(73, 149, 87, 0.04)",
                   borderRadius: "5px",
@@ -157,34 +156,34 @@ const OutputBotomNavigation = ({
               <b>{highlightSentence + 1}</b>/{sentenceCount}
             </Typography>
 
-            <Tooltip title='Next sentence' arrow placement='top'>
+            <Tooltip title="Next sentence" arrow placement="top">
               <IconButton
                 onClick={() => setHighlightSentence((prev) => prev + 1)}
                 disabled={highlightSentence === sentenceCount - 1}
-                size='small'
+                size="small"
                 sx={{
                   bgcolor: "rgba(73, 149, 87, 0.04)",
                   borderRadius: "5px",
                 }}
-                aria-label='delete'
-                color='primary'
+                aria-label="delete"
+                color="primary"
               >
                 <KeyboardArrowDown />
               </IconButton>
             </Tooltip>
           </Stack>
 
-          <Stack direction='row' alignItems='center' gap={0.5}>
+          <Stack direction="row" alignItems="center" gap={0.5}>
             <WordIcon />
             <Typography sx={{ fontWeight: 600 }}>{outputWordCount}</Typography>
           </Stack>
         </Stack>
-        <Stack direction='row' alignItems='center' justifyContent='end'>
+        <Stack direction="row" alignItems="center" justifyContent="end">
           <Box>
             {proccessing.loading ? (
               <Image
-                src='/loading-gif.gif'
-                alt='arrow-left'
+                src="/loading-gif.gif"
+                alt="arrow-left"
                 width={25}
                 height={25}
               />
@@ -193,17 +192,17 @@ const OutputBotomNavigation = ({
             ) : null}
           </Box>
           {!isMobile && (
-            <Stack direction='row' spacing={0.5} alignItems='center'>
-              <Tooltip title='Previous history' arrow placement='top'>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <Tooltip title="Previous history" arrow placement="top">
                 <IconButton
-                  size='small'
+                  size="small"
                   onClick={() => setOutputHistoryIndex((prev) => prev + 1)}
                   disabled={
                     !outputHistory.length ||
                     outputHistoryIndex === outputHistory.length - 1
                   }
-                  color='primary'
-                  aria-label='delete'
+                  color="primary"
+                  aria-label="delete"
                   sx={{
                     bgcolor: "rgba(73, 149, 87, 0.04)",
                     borderRadius: "5px",
@@ -214,9 +213,9 @@ const OutputBotomNavigation = ({
               </Tooltip>
 
               <IconButton
-                color='text.secondary'
-                aria-label='History'
-                size='small'
+                color="text.secondary"
+                aria-label="History"
+                size="small"
                 sx={{
                   bgcolor: "rgba(73, 149, 87, 0.04)",
                   borderRadius: "5px",
@@ -225,7 +224,7 @@ const OutputBotomNavigation = ({
                 <History />
               </IconButton>
 
-              <Tooltip title='Next history' arrow placement='top'>
+              <Tooltip title="Next history" arrow placement="top">
                 <IconButton
                   onClick={() => setOutputHistoryIndex((prev) => prev - 1)}
                   disabled={outputHistoryIndex === 0}
@@ -234,8 +233,8 @@ const OutputBotomNavigation = ({
                     borderRadius: "5px",
                     mr: 0.5,
                   }}
-                  aria-label='delete'
-                  color='primary'
+                  aria-label="delete"
+                  color="primary"
                 >
                   <ChevronRight />
                 </IconButton>
@@ -243,7 +242,7 @@ const OutputBotomNavigation = ({
             </Stack>
           )}
 
-          <Tooltip title='Clear result' placement='top' arrow>
+          <Tooltip title="Clear result" placement="top" arrow>
             <IconButton
               onClick={() => handleClear("output")}
               sx={{
@@ -255,13 +254,13 @@ const OutputBotomNavigation = ({
                   boxShadow: "none",
                 },
               }}
-              aria-label='clear'
-              size='large'
+              aria-label="clear"
+              size="large"
             >
               <DeleteRounded />
             </IconButton>
           </Tooltip>
-          <Tooltip title='Export' placement='top' arrow>
+          <Tooltip title="Export" placement="top" arrow>
             <IconButton
               onClick={handleDownloadClick}
               sx={{
@@ -273,14 +272,14 @@ const OutputBotomNavigation = ({
                   boxShadow: "none",
                 },
               }}
-              aria-label='download'
-              size='large'
+              aria-label="download"
+              size="large"
             >
               <VerticalAlignBottom sx={{ fontWeight: 600 }} />
             </IconButton>
           </Tooltip>
 
-          <Tooltip title='Copy Full Text' placement='top' arrow>
+          <Tooltip title="Copy Full Text" placement="top" arrow>
             <IconButton
               onClick={handleCopy}
               sx={{
@@ -292,8 +291,8 @@ const OutputBotomNavigation = ({
                   boxShadow: "none",
                 },
               }}
-              aria-label='download'
-              size='large'
+              aria-label="download"
+              size="large"
             >
               <ContentCopy />
             </IconButton>
@@ -308,29 +307,29 @@ const OutputBotomNavigation = ({
         aria-labelledby="download-modal-title"
       >
         <Box sx={modalStyle}>
-          <Typography 
-            id="download-modal-title" 
-            variant="h4" 
-            component="h2" 
-            sx={{ 
-              fontWeight: 'bold', 
-              mb: 3, 
-              textAlign: 'center' 
+          <Typography
+            id="download-modal-title"
+            variant="h4"
+            component="h2"
+            sx={{
+              fontWeight: "bold",
+              mb: 3,
+              textAlign: "center",
             }}
           >
             Download Report
           </Typography>
-          
+
           <Button
             variant="outlined"
             onClick={handleFormatMenuOpen}
             endIcon={<ExpandMore />}
             fullWidth
             sx={{
-              justifyContent: 'space-between',
-              textTransform: 'none',
+              justifyContent: "space-between",
+              textTransform: "none",
               py: 1.5,
-              fontSize: '16px',
+              fontSize: "16px",
             }}
           >
             Download
@@ -341,40 +340,30 @@ const OutputBotomNavigation = ({
             open={Boolean(formatMenuAnchor)}
             onClose={handleFormatMenuClose}
             PaperProps={{
-              sx: { width: formatMenuAnchor?.offsetWidth || 200 }
+              sx: { width: formatMenuAnchor?.offsetWidth || 200 },
             }}
           >
-            <MenuItem onClick={() => handleDownloadFormat('pdf')}>
+            <MenuItem onClick={() => handleDownloadFormat("pdf")}>
               <ListItemIcon>
-                <Image 
-                  src="/icons/pdf.svg" 
-                  alt="PDF" 
-                  width={20} 
-                  height={20} 
-                />
+                <Image src="/icons/pdf.svg" alt="PDF" width={20} height={20} />
               </ListItemIcon>
               <ListItemText>.pdf</ListItemText>
             </MenuItem>
-            
-            <MenuItem onClick={() => handleDownloadFormat('txt')}>
+
+            <MenuItem onClick={() => handleDownloadFormat("txt")}>
               <ListItemIcon>
-                <Image 
-                  src="/icons/txt.svg" 
-                  alt="TXT" 
-                  width={20} 
-                  height={20} 
-                />
+                <Image src="/icons/txt.svg" alt="TXT" width={20} height={20} />
               </ListItemIcon>
               <ListItemText>.txt</ListItemText>
             </MenuItem>
-            
-            <MenuItem onClick={() => handleDownloadFormat('docx')}>
+
+            <MenuItem onClick={() => handleDownloadFormat("docx")}>
               <ListItemIcon>
-                <Image 
-                  src="/icons/docx.svg" 
-                  alt="DOCX" 
-                  width={20} 
-                  height={20} 
+                <Image
+                  src="/icons/docx.svg"
+                  alt="DOCX"
+                  width={20}
+                  height={20}
                 />
               </ListItemIcon>
               <ListItemText>.docx</ListItemText>

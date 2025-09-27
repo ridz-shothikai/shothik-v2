@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useNewsletterMutation } from "../../redux/api/blog/blogApiSlice";
 
@@ -34,12 +34,12 @@ const NewsLetter = () => {
     }
   }
   return (
-    <Box onSubmit={handlenewLatter} component='form' sx={{ mt: 10 }}>
-      <Typography variant='h6' gutterBottom>
+    <Box onSubmit={handlenewLatter} component="form" sx={{ mt: 10 }}>
+      <Typography variant="h6" gutterBottom>
         Get our newsletter
       </Typography>
-      <Typography variant='body2' color='text.secondary'>
-        Stay up to date by signing up for Shothik AI's Infrastructure as a
+      <Typography variant="body2" color="text.secondary">
+        Stay up to date by signing up for Shothik AI&apos;s Infrastructure as a
         Newsletter.
       </Typography>
       <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
@@ -47,15 +47,15 @@ const NewsLetter = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          placeholder='Email address'
-          size='small'
+          placeholder="Email address"
+          size="small"
           sx={{ flexGrow: 1 }}
         />
         <Button
           disabled={isLoading}
-          type='submit'
-          variant='contained'
-          color='primary'
+          type="submit"
+          variant="contained"
+          color="primary"
           sx={{ textTransform: "none" }}
         >
           Submit

@@ -10,8 +10,8 @@ export async function generateMetadata() {
 
 export default function ResellerPanel() {
   return (
-    <WaitingpageContainer title='Reseller Program'>
-      <WaitlistForm userType='reseller' />
+    <WaitingpageContainer title="Reseller Program">
+      <WaitlistForm userType="reseller" />
     </WaitingpageContainer>
   );
 }

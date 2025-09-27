@@ -36,8 +36,8 @@ export default function RephraseSentences(props) {
     rephraseMode,
   } = props;
 
-  if (!open) return null;
   const theme = useTheme();
+  if (!open) return null;
   const dark = theme.palette.mode === "dark";
 
   // Styled Tooltip
@@ -64,7 +64,7 @@ export default function RephraseSentences(props) {
       open={open}
       anchorEl={anchorEl}
       onClose={handleClose}
-      placement='bottom'
+      placement="bottom"
       sx={{ zIndex: 500 }}
     >
       <Box
@@ -77,16 +77,16 @@ export default function RephraseSentences(props) {
           borderColor: "background.neutral",
         }}
       >
-        <Grid2 container spacing={2} sx={{ pl: 2 }} alignItems='center'>
+        <Grid2 container spacing={2} sx={{ pl: 2 }} alignItems="center">
           <Grid2 size={{ xs: 11 }}>
             <Tabs
               value={rephraseMode}
               onChange={(_, selectedMode) => {
                 setRephraseMode(selectedMode);
               }}
-              variant='scrollable'
-              scrollButtons='auto'
-              textColor='primary'
+              variant="scrollable"
+              scrollButtons="auto"
+              textColor="primary"
               sx={{
                 "& .MuiTabs-indicator": {
                   display: "none",
@@ -113,7 +113,7 @@ export default function RephraseSentences(props) {
                         <HtmlTooltip
                           title={
                             <Link
-                              href='/pricing'
+                              href="/pricing"
                               style={{ textDecoration: "none" }}
                             >
                               <div
@@ -122,18 +122,18 @@ export default function RephraseSentences(props) {
                                   marginBottom: "10px",
                                 }}
                               >
-                                <Typography variant='h6' gutterBottom>
+                                <Typography variant="h6" gutterBottom>
                                   Upgrade
                                 </Typography>
-                                <Typography variant='body2'>
+                                <Typography variant="body2">
                                   Access premium modes by upgrading your plan.
                                 </Typography>
                                 <Button
-                                  variant='contained'
-                                  color='primary'
+                                  variant="contained"
+                                  color="primary"
                                   sx={{ mt: 1, width: "100%" }}
                                 >
-                                  <Diamond fontSize='small' sx={{ mr: 1 }} />
+                                  <Diamond fontSize="small" sx={{ mr: 1 }} />
                                   Upgrade Plan
                                 </Button>
                               </div>
@@ -153,7 +153,7 @@ export default function RephraseSentences(props) {
                         <Lock sx={{ width: 12, height: 12 }} />
                       ) : undefined
                     }
-                    iconPosition='start'
+                    iconPosition="start"
                     onClick={(e) => isDisabled && e.preventDefault()}
                     sx={{
                       color: isDisabled ? "text.disabled" : "text.primary",
@@ -181,7 +181,7 @@ export default function RephraseSentences(props) {
           {isPending ? (
             <Box sx={{ px: 2 }}>
               <Skeleton />
-              <Skeleton animation='wave' />
+              <Skeleton animation="wave" />
               <Skeleton animation={false} />
             </Box>
           ) : (
@@ -197,18 +197,18 @@ export default function RephraseSentences(props) {
                         {sentence &&
                           sentence?.map((segment, i, arr) => (
                             <Typography
-                              component='span'
+                              component="span"
                               key={i}
                               sx={{
                                 color: /NP/.test(segment.type)
                                   ? adJectiveVerbAdverbColor
                                   : /VP/.test(segment.type)
-                                  ? nounColor
-                                  : /PP|CP|AdvP|AdjP/.test(segment.type)
-                                  ? phraseColor
-                                  : /freeze/.test(segment.type)
-                                  ? freezeColor
-                                  : undefined,
+                                    ? nounColor
+                                    : /PP|CP|AdvP|AdjP/.test(segment.type)
+                                      ? phraseColor
+                                      : /freeze/.test(segment.type)
+                                        ? freezeColor
+                                        : undefined,
                                 cursor: "pointer",
                                 transition: "all 0.1s ease-in-out",
                                 "&:hover": {

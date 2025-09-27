@@ -121,7 +121,7 @@ class PlagiarismRequestManager {
     const promise = this.performPlagiarismCheck(
       text,
       accessToken,
-      abortController.signal
+      abortController.signal,
     );
 
     // Store active request

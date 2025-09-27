@@ -1,7 +1,14 @@
 "use client";
 
 // components/ChatArea.tsx
-import React, { useEffect, useRef, memo, useCallback, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useRef,
+  memo,
+  useCallback,
+  useState,
+  useMemo,
+} from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
@@ -93,7 +100,7 @@ const ToolOutputsLog = memo(({ toolOutputs, statusText }) => (
                 )}
                 <Typography variant="caption">{`${key.replace(
                   /_/g,
-                  " "
+                  " ",
                 )}: `}</Typography>
                 <Typography variant="caption" sx={{ fontWeight: "bold" }}>
                   {value}
@@ -157,8 +164,7 @@ const isNonEmptyObject = (value) =>
 const isString = (value) => typeof value === "string";
 
 // Utility to check if a value is a non-empty array
-const isNonEmptyArray = (value) =>
-  Array.isArray(value) && value.length > 0;
+const isNonEmptyArray = (value) => Array.isArray(value) && value.length > 0;
 
 // Component for Presentation Plan logs
 const PlanningLog = memo(({ plan }) => {
@@ -192,7 +198,7 @@ const PlanningLog = memo(({ plan }) => {
         "accent_color",
         "header_font",
         "body_font",
-      ].includes(key)
+      ].includes(key),
     );
 
   return (
@@ -220,8 +226,8 @@ const PlanningLog = memo(({ plan }) => {
                   typeof value === "string"
                     ? value
                     : typeof value === "object"
-                    ? JSON.stringify(value)
-                    : String(value);
+                      ? JSON.stringify(value)
+                      : String(value);
 
                 return (
                   <Box
@@ -243,7 +249,7 @@ const PlanningLog = memo(({ plan }) => {
                       )}
                     <Typography variant="caption">{`${key.replace(
                       /_/g,
-                      " "
+                      " ",
                     )}: `}</Typography>
                     <Typography variant="caption" sx={{ fontWeight: "bold" }}>
                       {displayValue}
@@ -282,7 +288,7 @@ const PlanningLog = memo(({ plan }) => {
                       isString(slide.slide_data.body_content)
                         ? `${slide.slide_data.body_content.substring(
                             0,
-                            100
+                            100,
                           )}...`
                         : "No content available"}
                     </Typography>
@@ -430,8 +436,6 @@ UserMessage.displayName = "UserMessage";
 
 // --- Main Components ---
 
-
-
 // Component for Slide Data Fetcher Tool logs
 const SlideDataFetcherLog = memo(({ data, theme }) => {
   const { original_plan, global_theme } = data;
@@ -545,7 +549,8 @@ const SlideDataFetcherLog = memo(({ data, theme }) => {
                     width: 20,
                     height: 20,
                     borderRadius: "4px",
-                    bgcolor: theme.palette.mode === "dark" ? "#374151" : "#f3f4f6",
+                    bgcolor:
+                      theme.palette.mode === "dark" ? "#374151" : "#f3f4f6",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -803,7 +808,8 @@ const SlideDataFetcherLog = memo(({ data, theme }) => {
                       sx={{
                         fontWeight: 600,
                         fontSize: { xs: "1rem", sm: "1.1rem" },
-                        color:theme.palette.mode === "dark" ? "white" : "#374151",
+                        color:
+                          theme.palette.mode === "dark" ? "white" : "#374151",
                         lineHeight: 1.3,
                       }}
                     >
@@ -900,7 +906,7 @@ const SlideDataFetcherLog = memo(({ data, theme }) => {
                                   },
                                 }}
                               />
-                            )
+                            ),
                           )}
                         </Box>
                       </Box>
@@ -923,57 +929,66 @@ const PlanModifierLog = memo(({ data }) => {
       <Card
         elevation={0}
         sx={{
-          borderRadius: '12px',
-          border: '1px solid #e8eaed',
-          bgcolor: 'white',
-          overflow: 'hidden',
-          transition: 'all 0.2s ease-in-out',
-          '&:hover': {
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            borderColor: '#dadce0',
+          borderRadius: "12px",
+          border: "1px solid #e8eaed",
+          bgcolor: "white",
+          overflow: "hidden",
+          transition: "all 0.2s ease-in-out",
+          "&:hover": {
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+            borderColor: "#dadce0",
           },
         }}
       >
         {/* Header */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-            color: 'white',
+            background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+            color: "white",
             p: { xs: 2, sm: 2.5 },
-            position: 'relative',
-            overflow: 'hidden',
-            '&::before': {
+            position: "relative",
+            overflow: "hidden",
+            "&::before": {
               content: '""',
-              position: 'absolute',
+              position: "absolute",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'url("data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M20 20c0-8.837-7.163-16-16-16S-12 11.163-12 20s7.163 16 16 16 16-7.163 16-16zm0 0c0 8.837 7.163 16 16 16s16-7.163 16-16-7.163-16-16-16-16 7.163-16 16z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
+              background:
+                'url("data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M20 20c0-8.837-7.163-16-16-16S-12 11.163-12 20s7.163 16 16 16 16-7.163 16-16zm0 0c0 8.837 7.163 16 16 16s16-7.163 16-16-7.163-16-16-16-16 7.163-16 16z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
             },
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, position: 'relative', zIndex: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
             <Box
               sx={{
                 width: 28,
                 height: 28,
-                borderRadius: '8px',
-                bgcolor: 'rgba(255,255,255,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backdropFilter: 'blur(10px)',
+                borderRadius: "8px",
+                bgcolor: "rgba(255,255,255,0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backdropFilter: "blur(10px)",
               }}
             >
-              <PaletteIcon sx={{ fontSize: 16, color: 'white' }} />
+              <PaletteIcon sx={{ fontSize: 16, color: "white" }} />
             </Box>
             <Box>
               <Typography
                 variant="h6"
                 sx={{
                   fontWeight: 600,
-                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  fontSize: { xs: "1rem", sm: "1.1rem" },
                   lineHeight: 1.3,
                 }}
               >
@@ -983,7 +998,7 @@ const PlanModifierLog = memo(({ data }) => {
                 variant="body2"
                 sx={{
                   opacity: 0.9,
-                  fontSize: '0.85rem',
+                  fontSize: "0.85rem",
                   fontWeight: 400,
                 }}
               >
@@ -997,19 +1012,19 @@ const PlanModifierLog = memo(({ data }) => {
           <Card
             elevation={0}
             sx={{
-              borderRadius: '12px',
-              border: '1px solid #fed7aa',
-              bgcolor: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-              overflow: 'hidden',
+              borderRadius: "12px",
+              border: "1px solid #fed7aa",
+              bgcolor: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+              overflow: "hidden",
             }}
           >
             <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
               <Box
                 sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  justifyContent: 'space-between',
-                  alignItems: { xs: 'flex-start', sm: 'center' },
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  justifyContent: "space-between",
+                  alignItems: { xs: "flex-start", sm: "center" },
                   gap: 1.5,
                   mb: 2,
                 }}
@@ -1018,8 +1033,8 @@ const PlanModifierLog = memo(({ data }) => {
                   variant="h6"
                   sx={{
                     fontWeight: 600,
-                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                    color: '#92400e',
+                    fontSize: { xs: "1rem", sm: "1.1rem" },
+                    color: "#92400e",
                     lineHeight: 1.3,
                   }}
                 >
@@ -1029,24 +1044,24 @@ const PlanModifierLog = memo(({ data }) => {
                   label={data.slide_type}
                   size="small"
                   sx={{
-                    bgcolor: '#f59e0b',
-                    color: 'white',
+                    bgcolor: "#f59e0b",
+                    color: "white",
                     fontWeight: 500,
                     height: 28,
-                    '& .MuiChip-label': { px: 1.5 },
+                    "& .MuiChip-label": { px: 1.5 },
                   }}
                 />
               </Box>
-              
+
               {/* Visual Suggestion */}
               {data.visual_suggestion && (
                 <Box
                   sx={{
                     mb: 2.5,
                     p: 2,
-                    borderRadius: '10px',
-                    bgcolor: 'rgba(245, 158, 11, 0.08)',
-                    border: '1px solid rgba(245, 158, 11, 0.2)',
+                    borderRadius: "10px",
+                    bgcolor: "rgba(245, 158, 11, 0.08)",
+                    border: "1px solid rgba(245, 158, 11, 0.2)",
                   }}
                 >
                   <Typography
@@ -1054,8 +1069,8 @@ const PlanModifierLog = memo(({ data }) => {
                     sx={{
                       fontWeight: 600,
                       mb: 0.5,
-                      color: '#92400e',
-                      fontSize: '0.85rem',
+                      color: "#92400e",
+                      fontSize: "0.85rem",
                     }}
                   >
                     📈 {data.visual_suggestion.chart_type}
@@ -1063,9 +1078,9 @@ const PlanModifierLog = memo(({ data }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: '#78716c',
+                      color: "#78716c",
                       lineHeight: 1.5,
-                      fontSize: '0.85rem',
+                      fontSize: "0.85rem",
                     }}
                   >
                     {data.visual_suggestion.highlight}
@@ -1074,54 +1089,60 @@ const PlanModifierLog = memo(({ data }) => {
               )}
 
               {/* Modified Data Points */}
-              {data.slide_data?.body_content && Array.isArray(data.slide_data.body_content) && (
-                <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: 600,
-                      mb: 1.5,
-                      color: '#374151',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    Modified Content
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    {data.slide_data.body_content.map((item, index) => (
-                      <Box
-                        key={index}
-                        sx={{
-                          p: 1.5,
-                          borderRadius: '8px',
-                          bgcolor: 'rgba(255,255,255,0.7)',
-                          border: '1px solid rgba(245, 158, 11, 0.2)',
-                          fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-                          fontSize: '0.8rem',
-                          transition: 'all 0.2s ease',
-                          '&:hover': {
-                            bgcolor: 'rgba(255,255,255,0.9)',
-                            transform: 'translateY(-1px)',
-                          },
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
+              {data.slide_data?.body_content &&
+                Array.isArray(data.slide_data.body_content) && (
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 600,
+                        mb: 1.5,
+                        color: "#374151",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      Modified Content
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                    >
+                      {data.slide_data.body_content.map((item, index) => (
+                        <Box
+                          key={index}
                           sx={{
-                            fontFamily: 'inherit',
-                            fontSize: 'inherit',
-                            color: '#374151',
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word',
+                            p: 1.5,
+                            borderRadius: "8px",
+                            bgcolor: "rgba(255,255,255,0.7)",
+                            border: "1px solid rgba(245, 158, 11, 0.2)",
+                            fontFamily:
+                              'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                            fontSize: "0.8rem",
+                            transition: "all 0.2s ease",
+                            "&:hover": {
+                              bgcolor: "rgba(255,255,255,0.9)",
+                              transform: "translateY(-1px)",
+                            },
                           }}
                         >
-                          {typeof item === 'string' ? item : JSON.stringify(item, null, 2)}
-                        </Typography>
-                      </Box>
-                    ))}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontFamily: "inherit",
+                              fontSize: "inherit",
+                              color: "#374151",
+                              whiteSpace: "pre-wrap",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {typeof item === "string"
+                              ? item
+                              : JSON.stringify(item, null, 2)}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
                   </Box>
-                </Box>
-              )}
+                )}
             </CardContent>
           </Card>
         </CardContent>
@@ -1305,11 +1326,10 @@ const StreamingMessage = memo(
 
     const renderContent = () => {
       if (log.agent_name === "unknown_agent" && isStringContent) {
-        const shouldSkip =
-          fullText.includes("```tool_outputs"); // TODO: Have to add json formatter here
+        const shouldSkip = fullText.includes("```tool_outputs"); // TODO: Have to add json formatter here
 
         if (shouldSkip) return null;
-      };
+      }
 
       const output = log.parsed_output;
       if (typeof output === "object" && output !== null) {
@@ -1352,7 +1372,10 @@ const StreamingMessage = memo(
             whiteSpace: "pre-wrap",
             wordBreak: "break-word",
             lineHeight: 1.6,
-            color: theme.palette.mode === "dark" ? theme.palette.text.primary : "#374151",
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.text.primary
+                : "#374151",
             fontSize: "0.95rem",
           }}
         >
@@ -1424,7 +1447,7 @@ const StreamingMessage = memo(
         <Box sx={{ ml: 0 }}>{renderContent()}</Box>
       </Box>
     );
-  }
+  },
 );
 StreamingMessage.displayName = "StreamingMessage";
 
@@ -1456,7 +1479,7 @@ const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
   optimisticMessages.forEach((optMsg) => {
     const exists = realLogs.some(
       (real) =>
-        real.role === "user" && real.message?.trim() === optMsg.message?.trim()
+        real.role === "user" && real.message?.trim() === optMsg.message?.trim(),
     );
 
     if (!exists) {
@@ -1467,10 +1490,9 @@ const mergeMessagesWithDeduplication = (realLogs, optimisticMessages) => {
   // console.log(merged, "merged logs");
 
   return merged.sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
   );
 };
-
 
 export default function ChatArea({
   currentAgentType,
@@ -1498,7 +1520,7 @@ export default function ChatArea({
 }) {
   const theme = useTheme();
   const isMobile = useResponsive("down", "sm");
-  
+
   const {
     processedLogs,
     currentlyTypingIndex,
@@ -1551,15 +1573,15 @@ export default function ChatArea({
           (log) =>
             log.message === optMsg.message &&
             Math.abs(new Date(log.timestamp) - new Date(optMsg.timestamp)) <
-              5000
-        )
+              5000,
+        ),
     );
   }, [realLogs, optimisticMessages]);
 
   const allMessages = useMemo(() => {
     return mergeMessagesWithDeduplication(
       realLogs,
-      deduplicatedOptimisticMessages
+      deduplicatedOptimisticMessages,
     );
   }, [realLogs, deduplicatedOptimisticMessages]);
 
@@ -1663,7 +1685,7 @@ export default function ChatArea({
                 );
               } else if (log.role === "agent") {
                 const agentIndex = processedLogs.findIndex(
-                  (processedLog) => processedLog.timestamp === log.timestamp
+                  (processedLog) => processedLog.timestamp === log.timestamp,
                 );
 
                 if (agentIndex >= 0) {
@@ -1696,8 +1718,8 @@ export default function ChatArea({
                       sessionStatus === "failed"
                         ? "Processing failed..."
                         : isLoading
-                        ? "Thinking..."
-                        : "Processing..."
+                          ? "Thinking..."
+                          : "Processing..."
                     }
                   />
                 </Box>

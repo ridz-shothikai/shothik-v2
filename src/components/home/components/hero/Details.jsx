@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Grid2,
-  Typography,
-  useTheme,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Grid2, Typography, useTheme, Snackbar, Alert } from "@mui/material";
 import * as motion from "motion/react-client";
 import React, { useState } from "react";
 import UserActionButton from "./UserActionButton";
@@ -148,8 +142,8 @@ const Details = ({ trackClick }) => {
             {/* AI that understands your thoughts before you do. Paraphrasing, */}
             {/* Humanizer, Grammer Fix, and AI Agents at your service.  */}
             Shothik is a general ai agent that understands your thoughts before
-            you do. It doesn't just think, it delivers results. Paraphrasing,
-            Humanizer, Grammer Fix, and AI Agents at your service.
+            you do. It doesn&apos;t just think, it delivers results.
+            Paraphrasing, Humanizer, Grammer Fix, and AI Agents at your service.
           </Typography>
         </motion.div>
 

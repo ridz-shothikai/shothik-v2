@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -67,17 +67,22 @@ const StyledCard = styled(Card)(({ theme }) => ({
       ? "0 1px 3px 0 rgba(255, 255, 255, 0.1)"
       : "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
   overflow: "hidden",
-  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[900] : theme.palette.background.paper,
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? theme.palette.grey[900]
+      : theme.palette.background.paper,
 }));
 
 const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
   width: 48,
   height: 48,
-  backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[800] : "#ffffff",
+  backgroundColor:
+    theme.palette.mode === "dark" ? theme.palette.grey[800] : "#ffffff",
   border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[700] : "#e5e7eb"}`,
   borderRadius: "50%",
   "&:hover": {
-    backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[700] : "#f9fafb",
+    backgroundColor:
+      theme.palette.mode === "dark" ? theme.palette.grey[700] : "#f9fafb",
     transform: "scale(1.1)",
     boxShadow:
       theme.palette.mode === "dark"
@@ -85,7 +90,10 @@ const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
         : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
   },
   transition: "all 0.3s ease",
-  color: theme.palette.mode === "dark" ? theme.palette.grey[300] : theme.palette.text.primary,
+  color:
+    theme.palette.mode === "dark"
+      ? theme.palette.grey[300]
+      : theme.palette.text.primary,
 }));
 
 const TouchArea = styled(Box)({
@@ -232,7 +240,7 @@ export default function AgentShowcase() {
   const currentAgent = agents[currentIndex];
 
   const { componentRef, trackClick } = useComponentTracking(
-    trackingList.CAROUSEL_SECTION
+    trackingList.CAROUSEL_SECTION,
   );
 
   const [toast, setToast] = useState({
@@ -241,10 +249,10 @@ export default function AgentShowcase() {
     severity: "success", // 'success', 'error', 'warning', 'info'
   });
 
-    const [
-      registerUserForBetaList,
-      { isLoading: registerUserProcessing, isError: registerUserError },
-    ] = useRegisterUserToBetaListMutation();
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
 
   const nextAgent = () => {
     setSlideDirection("left");

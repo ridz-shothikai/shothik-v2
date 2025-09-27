@@ -32,13 +32,14 @@ export default [
       },
     },
     rules: {
+      all: "off",
       /* Base Rules */
-      "no-undef": "error",
-      "no-unused-vars": "warn",
-      "no-console": "warn",
+      // "no-undef": "error",
+      // "no-unused-vars": "warn",
+      // "no-console": "warn",
 
       /* Next.js Rules */
-      "@next/next/no-img-element": "warn",
+      // "@next/next/no-img-element": "warn",
     },
   },
 

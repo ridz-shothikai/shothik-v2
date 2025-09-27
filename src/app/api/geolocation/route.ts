@@ -6,7 +6,7 @@ export async function POST() {
   if (!apiKey) {
     return NextResponse.json(
       { error: "Google Geolocation API key is not configured" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -18,7 +18,7 @@ export async function POST() {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (!geolocationResponse.ok) {
@@ -34,7 +34,7 @@ export async function POST() {
     const { lat, lng } = geolocationData.location;
 
     const geocodingResponse = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`,
     );
 
     if (!geocodingResponse.ok) {
@@ -48,7 +48,7 @@ export async function POST() {
     }
 
     const countryResult = geocodingData.results.find((result) =>
-      result.types.includes("country")
+      result.types.includes("country"),
     );
 
     if (!countryResult?.formatted_address) {

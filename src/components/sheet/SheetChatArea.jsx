@@ -1,32 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  IconButton,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
-import {
-  Stop,
-} from "@mui/icons-material";
+import PersonIcon from "@mui/icons-material/Person";
+import { Alert, Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import InputArea from "../presentation/InputAreas";
+import useSnackbar from "../../hooks/useSnackbar";
+import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
 import {
+  selectSheet,
   setActiveSheetIdForPolling,
   setSheetData,
   setSheetStatus,
   setSheetTitle,
 } from "../../redux/slice/sheetSlice";
-import { selectSheet } from "../../redux/slice/sheetSlice";
-import { authenticateToSheetService } from "../../libs/sheetUtils";
-import { useRouter, useSearchParams } from "next/navigation";
-import PersonIcon from "@mui/icons-material/Person";
-import MetadataDisplay from "./MetaDataDisplay";
 import TypingAnimation from "../common/TypingAnimation";
-import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
+import InputArea from "../presentation/InputAreas";
+import MetadataDisplay from "./MetaDataDisplay";
 import { FooterCta } from "./SheetAgentPage";
-import useSnackbar from "../../hooks/useSnackbar";
 
 const USER_MESSAGE_COLOR = "#1976d2";
 const PRIMARY_GREEN = "#07B37A";
@@ -227,14 +216,21 @@ const getStepMessage = (step, data) => {
     database_update: "Updating conversation with response...",
     followup_analysis: "Analyzing follow-up intent...",
     followup_decision: "Determining response strategy...",
-    validation_error: data?.error?.message || "Your requested prompt is not contextual enough. Please try again with more details.",
+    validation_error:
+      data?.error?.message ||
+      "Your requested prompt is not contextual enough. Please try again with more details.",
   };
 
   return stepMessages[step] || `Processing step: ${step}...`;
 };
 
 // Main SheetChatArea component
-export default function SheetChatArea({ isLoadings, currentAgentType, theme, isMobile }) {
+export default function SheetChatArea({
+  isLoadings,
+  currentAgentType,
+  theme,
+  isMobile,
+}) {
   const dev_mode = process.env.NODE_ENV === "development";
   const dispatch = useDispatch();
   const sheetState = useSelector(selectSheet);
@@ -439,7 +435,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     // Add reconnection message if needed
     if (shouldSetGenerating) {
       const hasReconnectMessage = messages.some((msg) =>
-        msg.id.includes("reconnecting")
+        msg.id.includes("reconnecting"),
       );
       // Uncomment if you want reconnection message
       // if (!hasReconnectMessage) {
@@ -468,13 +464,13 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           status: item.response?.rows
             ? "completed"
             : shouldSetGenerating && item._id === lastConversation.id
-            ? "generating"
-            : "error",
+              ? "generating"
+              : "error",
           message: item.response?.rows
             ? "Sheet generated successfully"
             : shouldSetGenerating && item._id === lastConversation.id
-            ? "Resuming generation..."
-            : "No data generated",
+              ? "Resuming generation..."
+              : "No data generated",
           metadata: item.response?.metadata,
         },
       ],
@@ -523,7 +519,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
     setMessages((prevMessages) => {
       const userMessageIds = new Set(convertedMessages.map((m) => m.id));
       const preservedMessages = prevMessages.filter(
-        (m) => !userMessageIds.has(m.id)
+        (m) => !userMessageIds.has(m.id),
       );
       return [...preservedMessages, ...convertedMessages];
     });
@@ -658,7 +654,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           chat: simulationChatId, // This will be the s_id from URL
         }),
         signal: abortControllerRef.current.signal,
-      }
+      },
     );
     return response;
   };
@@ -678,7 +674,7 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           chat: chatId,
         }),
         signal: abortControllerRef.current.signal,
-      }
+      },
     );
     return response;
   };
@@ -840,12 +836,12 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
             // Check for validation error first
             if (data?.data?.error) {
               console.log(
-                "Validation error detected, removing user message and showing toast"
+                "Validation error detected, removing user message and showing toast",
               );
 
               // Remove the user message that couldn't be processed
               setMessages((prev) =>
-                prev.filter((msg) => msg.id !== userMessageId)
+                prev.filter((msg) => msg.id !== userMessageId),
               );
 
               // Show meaningful toast notification
@@ -972,7 +968,10 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                     type: "info",
                   },
                 ]);
-              } else if(data.data?.columns.length > 0 && data.data?.rows.length > 0) {
+              } else if (
+                data.data?.columns.length > 0 &&
+                data.data?.rows.length > 0
+              ) {
                 // Update Redux store with sheet data
                 dispatch(setSheetData(data.data?.rows));
                 dispatch(setSheetTitle(prompt.substring(0, 50) + "..."));
@@ -1280,8 +1279,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
           {isLoadingHistory
             ? "Loading chat history..."
             : isSimulationMode
-            ? "Initializing Simulation..."
-            : "Initializing Sheet AI..."}
+              ? "Initializing Simulation..."
+              : "Initializing Sheet AI..."}
         </Typography>
       </Box>
     );
@@ -1331,15 +1330,15 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                   Welcome to Sheet Generator
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Describe what kind of spreadsheet you'd like to create.
+                  Describe what kind of spreadsheet you&apos;d like to create.
                 </Typography>
                 <Typography
                   variant="caption"
                   color="text.secondary"
                   sx={{ mt: 1, display: "block" }}
                 >
-                  Example: "Create a budget tracker for personal expenses" or
-                  "Generate a student grade sheet"
+                  Example: &quot;Create a budget tracker for personal
+                  expenses&quot; or &quot;Generate a student grade sheet&quot;
                 </Typography>
               </Box>
             ) : (
@@ -1363,8 +1362,8 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                       chatData?.isIncomplete
                         ? "Generating"
                         : isLoading || sheetState.status === "generating"
-                        ? "Generating"
-                        : "Process failed"
+                          ? "Generating"
+                          : "Process failed"
                     }
                   />
                 )}
@@ -1405,10 +1404,10 @@ export default function SheetChatArea({ isLoadings, currentAgentType, theme, isM
                 !isInitialized
                   ? "Initializing..."
                   : !sheetAiToken
-                  ? "Authentication required..."
-                  : isLoading || sheetState.status === "generating"
-                  ? "Generating sheet..."
-                  : "Describe the spreadsheet you want to create..."
+                    ? "Authentication required..."
+                    : isLoading || sheetState.status === "generating"
+                      ? "Generating sheet..."
+                      : "Describe the spreadsheet you want to create..."
               }
             />
           </Box>

@@ -71,7 +71,7 @@ export default function SlidePreview({
             type: "TOGGLE_EDIT_MODE",
             enabled: true,
           },
-          "*"
+          "*",
         );
       }
 
@@ -86,7 +86,7 @@ export default function SlidePreview({
             type: "TOGGLE_EDIT_MODE",
             enabled: false,
           },
-          "*"
+          "*",
         );
       }
 
@@ -112,7 +112,6 @@ export default function SlidePreview({
       // Optionally do something with the image, like saving, copying, previewing
     });
   }
-  
 
   // Handle messages from iframe
   useEffect(() => {
@@ -130,7 +129,7 @@ export default function SlidePreview({
         console.log(
           "📝 Text Content:",
           data.textContent.substring(0, 100) +
-            (data.textContent.length > 100 ? "..." : "")
+            (data.textContent.length > 100 ? "..." : ""),
         );
         console.log("🔧 Attributes:", data.element.attributes);
         console.log("📐 Bounding Rectangle:", data.boundingRect);
@@ -138,19 +137,19 @@ export default function SlidePreview({
         console.log(
           "📄 Inner HTML:",
           data.innerHTML.substring(0, 200) +
-            (data.innerHTML.length > 200 ? "..." : "")
+            (data.innerHTML.length > 200 ? "..." : ""),
         );
         console.log(
           "📦 Outer HTML:",
           data.outerHTML.substring(0, 200) +
-            (data.outerHTML.length > 200 ? "..." : "")
+            (data.outerHTML.length > 200 ? "..." : ""),
         );
         console.log("⏰ Timestamp:", data.timestamp);
         console.log("🎂 Full Element Data:", data);
 
         console.log(
           "image data",
-          captureElementAsImageFromIframe(data.elementPath)
+          captureElementAsImageFromIframe(data.elementPath),
         );
         console.groupEnd();
       }
@@ -451,7 +450,7 @@ export default function SlidePreview({
           )}
           {activeTab === "thinking" && (
             <EnhancedThinkingTab slide={slide} dimensions={dimensions} />
-          )} 
+          )}
           {activeTab === "code" && (
             <Box
               sx={{
@@ -546,53 +545,53 @@ const parseSimpleMarkdown = (text) => {
       // Headers
       .replace(
         /^### (.*$)/gm,
-        '<h3 style="margin: 16px 0 8px 0; font-size: 1.1em; font-weight: 600; color: #1976d2;">$1</h3>'
+        '<h3 style="margin: 16px 0 8px 0; font-size: 1.1em; font-weight: 600; color: #1976d2;">$1</h3>',
       )
       .replace(
         /^## (.*$)/gm,
-        '<h2 style="margin: 18px 0 10px 0; font-size: 1.2em; font-weight: 600; color: #1976d2;">$1</h2>'
+        '<h2 style="margin: 18px 0 10px 0; font-size: 1.2em; font-weight: 600; color: #1976d2;">$1</h2>',
       )
       .replace(
         /^# (.*$)/gm,
-        '<h1 style="margin: 20px 0 12px 0; font-size: 1.3em; font-weight: 600; color: #1976d2;">$1</h1>'
+        '<h1 style="margin: 20px 0 12px 0; font-size: 1.3em; font-weight: 600; color: #1976d2;">$1</h1>',
       )
 
       // Bold and italic
       .replace(
         /\*\*(.*?)\*\*/g,
-        '<strong style="font-weight: 600; color: #2e7d32;">$1</strong>'
+        '<strong style="font-weight: 600; color: #2e7d32;">$1</strong>',
       )
       .replace(
         /\*(.*?)\*/g,
-        '<em style="font-style: italic; color: #666;">$1</em>'
+        '<em style="font-style: italic; color: #666;">$1</em>',
       )
 
       // Code blocks
       .replace(
         /```([\s\S]*?)```/g,
-        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 12px 0; overflow-x: auto; font-family: monospace; font-size: 0.9em; border-left: 4px solid #07B37A;"><code>$1</code></pre>'
+        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 12px 0; overflow-x: auto; font-family: monospace; font-size: 0.9em; border-left: 4px solid #07B37A;"><code>$1</code></pre>',
       )
 
       // Inline code
       .replace(
         /`(.*?)`/g,
-        '<code style="background: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-size: 0.9em; color: #d73502;">$1</code>'
+        '<code style="background: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-size: 0.9em; color: #d73502;">$1</code>',
       )
 
       // Lists
       .replace(
         /^\* (.*$)/gm,
-        '<li style="margin: 4px 0; padding-left: 8px;">$1</li>'
+        '<li style="margin: 4px 0; padding-left: 8px;">$1</li>',
       )
       .replace(
         /^\- (.*$)/gm,
-        '<li style="margin: 4px 0; padding-left: 8px;">$1</li>'
+        '<li style="margin: 4px 0; padding-left: 8px;">$1</li>',
       )
 
       // Links
       .replace(
         /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" style="color: #1976d2; text-decoration: none;" target="_blank" rel="noopener">$1</a>'
+        '<a href="$2" style="color: #1976d2; text-decoration: none;" target="_blank" rel="noopener">$1</a>',
       )
 
       // Line breaks

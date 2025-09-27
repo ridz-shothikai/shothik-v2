@@ -42,19 +42,19 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
 
   const getIconForCategory = (category) => {
     const iconMap = {
-      trending: <TrendingUp size='small' />,
-      community: <Group size='small' />,
-      science: <Psychology size='small' />,
-      tech: <Code size='small' />,
-      travel: <Language size='small' />,
-      politics: <Flag size='small' />,
-      health: <Favorite size='small' />,
-      sports: <SportsSoccer size='small' />,
-      finance: <AttachMoney size='small' />,
-      football: <SportsFootball size='small' />,
+      trending: <TrendingUp size="small" />,
+      community: <Group size="small" />,
+      science: <Psychology size="small" />,
+      tech: <Code size="small" />,
+      travel: <Language size="small" />,
+      politics: <Flag size="small" />,
+      health: <Favorite size="small" />,
+      sports: <SportsSoccer size="small" />,
+      finance: <AttachMoney size="small" />,
+      football: <SportsFootball size="small" />,
     };
 
-    return iconMap[category] || <TrendingUp size='small' />;
+    return iconMap[category] || <TrendingUp size="small" />;
   };
 
   if (!trendingQueries?.length) {
@@ -91,7 +91,7 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
             >
               {/* Skeleton placeholder for image */}
               <Skeleton
-                variant='rectangular'
+                variant="rectangular"
                 sx={{
                   width: 16,
                   height: 16,
@@ -184,8 +184,8 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
                 }}
               >
                 <IconButton
-                  color='text.secondary'
-                  aria-label='User'
+                  color="text.secondary"
+                  aria-label="User"
                   sx={{
                     bgcolor: "rgba(73, 149, 87, 0.04)",
                     borderRadius: "5px",
@@ -203,7 +203,7 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
                   }}
                 >
                   <Typography
-                    variant='body2'
+                    variant="body2"
                     sx={{
                       fontWeight: "medium",
                       display: "-webkit-box",
@@ -215,7 +215,7 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
                     {query.text}
                   </Typography>
                   <Typography
-                    variant='caption'
+                    variant="caption"
                     sx={{
                       color: "text.secondary",
                       textTransform: "capitalize",

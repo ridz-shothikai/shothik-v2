@@ -31,7 +31,10 @@ export default function FileHistorySidebar() {
   const { accessToken } = useSelector((state) => state.auth);
   const redirectPrefix = "p-v2";
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
+    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+    "/" +
+    redirectPrefix +
+    "/api";
 
   // Trigger upload button
   const handleAddClick = () =>

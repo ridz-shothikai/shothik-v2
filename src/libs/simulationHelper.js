@@ -24,22 +24,26 @@ const SIMULATION_CONFIG = {
 
 // Simulation validation
 const isValidSimulation = (agentType, simulationId) => {
-    if (!SIMULATION_CONFIG.enabled) return false;
-    return SIMULATION_CONFIG.agents[agentType]?.simulations?.[simulationId] !== null;
+  if (!SIMULATION_CONFIG.enabled) return false;
+  return (
+    SIMULATION_CONFIG.agents[agentType]?.simulations?.[simulationId] !== null
+  );
 };
 
 // Get simulation prompt
 const getSimulationPrompt = (agentType, simulationId) => {
-    if (!SIMULATION_CONFIG.enabled) return null;
-    return SIMULATION_CONFIG.agents[agentType]?.simulations?.[simulationId] || null;
-  };
+  if (!SIMULATION_CONFIG.enabled) return null;
+  return (
+    SIMULATION_CONFIG.agents[agentType]?.simulations?.[simulationId] || null
+  );
+};
 
 // =============================================================================
 // SSE HANDLING - PRODUCTION VS SIMULATION
 // =============================================================================
 
 const parseSimulationCompleted = (data) => {
-    // It's handled like this way because the backend developer.
+  // It's handled like this way because the backend developer.
 
   // First completed step - just message
   if (data.data?.message && !data.data?.columns && !data.data?.rows) {

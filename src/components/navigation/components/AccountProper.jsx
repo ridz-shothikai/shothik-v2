@@ -209,12 +209,12 @@ export default function AccountPopover({ accessToken, user }) {
           onClick={() => dispatch(toggleThemeMode())}
           sx={{
             "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
-            py: 0
+            py: 0,
           }}
         >
           <Stack direction="row" alignItems="center" spacing={1} pl={1.5}>
             <Brightness4OutlinedIcon sx={{ width: 20, height: 20 }} />
-            <Typography variant="body2" sx={{ pl: 0, ml: '0 !important' }}>
+            <Typography variant="body2" sx={{ pl: 0, ml: "0 !important" }}>
               Dark mode
             </Typography>
             <Switch checked={themeMode === "dark"} size="medium" />

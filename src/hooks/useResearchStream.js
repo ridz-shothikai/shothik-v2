@@ -20,7 +20,7 @@ export const useResearchStream = () => {
   const dispatch = useDispatch();
   const { currentChatId } = useSelector((state) => state.researchChat);
   const { isStreaming, jobId, isPolling, researches } = useSelector(
-    (state) => state.researchCore
+    (state) => state.researchCore,
   );
 
   const abortControllerRef = useRef(null);
@@ -82,7 +82,7 @@ export const useResearchStream = () => {
         const currentState = store.getState();
         const existingResearches = currentState.researchCore.researches;
         const existingResearch = existingResearches?.find(
-          (research) => research._id === jobStatus.result?._id
+          (research) => research._id === jobStatus.result?._id,
         );
 
         if (existingResearch) {
@@ -113,7 +113,7 @@ export const useResearchStream = () => {
               images: result.images || [],
               timestamp: result.createdAt,
               _id: result._id,
-            })
+            }),
           );
         }
 
@@ -126,7 +126,7 @@ export const useResearchStream = () => {
         handlingCompletionRef.current = false;
       }
     },
-    [dispatch, clearConnectionMetadata]
+    [dispatch, clearConnectionMetadata],
   );
 
   const startPollingMode = useCallback(
@@ -171,16 +171,15 @@ export const useResearchStream = () => {
             console.log("Polling stopped by external signal");
             return;
           }
-  
+
           if (handlingCompletionRef.current) {
             console.log("Completion being handled, skipping poll");
             return;
           }
-  
+
           try {
-            const jobStatus = await QueueStatusService.getJobStatus(
-              targetJobId
-            );
+            const jobStatus =
+              await QueueStatusService.getJobStatus(targetJobId);
 
             console.log(jobStatus, "...Job status from polling...");
 
@@ -199,7 +198,7 @@ export const useResearchStream = () => {
             // Process new events
             const newEvents = processNewEvents(
               jobStatus,
-              lastStatusRef.current
+              lastStatusRef.current,
             );
             lastStatusRef.current = { ...jobStatus };
 
@@ -252,7 +251,7 @@ export const useResearchStream = () => {
                   if (isPollingActiveRef.current) {
                     pollingIntervalRef.current = setInterval(
                       pollFunction,
-                      8000
+                      8000,
                     );
                   }
                 }, 100);
@@ -264,7 +263,7 @@ export const useResearchStream = () => {
                   if (isPollingActiveRef.current) {
                     pollingIntervalRef.current = setInterval(
                       pollFunction,
-                      15000
+                      15000,
                     );
                   }
                 }, 100);
@@ -289,16 +288,16 @@ export const useResearchStream = () => {
           } catch (error) {
             console.error("Polling error:", error);
             reconnectAttemptsRef.current++;
-  
+
             if (reconnectAttemptsRef.current >= 5) {
               console.log("Too many polling errors, stopping");
               isPollingActiveRef.current = false;
-  
+
               if (pollingIntervalRef.current) {
                 clearInterval(pollingIntervalRef.current);
                 pollingIntervalRef.current = null;
               }
-  
+
               dispatch(setError("Failed to connect to research service"));
               dispatch(setPollingMode(false));
               dispatch(setConnectionStatus("failed"));
@@ -308,7 +307,6 @@ export const useResearchStream = () => {
         } finally {
           pollFunction.isRunning = false;
         }
-
       };
 
       // Start polling immediately
@@ -319,7 +317,13 @@ export const useResearchStream = () => {
         pollingIntervalRef.current = setInterval(pollFunction, 5000);
       }
     },
-    [dispatch, handleCompletedJob, clearConnectionMetadata, hasNewEvents, processNewEvents]
+    [
+      dispatch,
+      handleCompletedJob,
+      clearConnectionMetadata,
+      hasNewEvents,
+      processNewEvents,
+    ],
   );
 
   const cancelResearch = useCallback(() => {
@@ -442,18 +446,18 @@ export const useResearchStream = () => {
                   config.effort === "low"
                     ? 1
                     : config.effort === "medium"
-                    ? 2
-                    : 3,
+                      ? 2
+                      : 3,
                 max_research_loops:
                   config.effort === "low"
                     ? 1
                     : config.effort === "medium"
-                    ? 2
-                    : 3,
+                      ? 2
+                      : 3,
               },
             }),
             signal: abortControllerRef.current.signal,
-          }
+          },
         );
 
         if (!response.ok) {
@@ -531,7 +535,7 @@ export const useResearchStream = () => {
             images: finalImages,
             timestamp: new Date().toISOString(),
             _id: `temp-${Date.now()}`,
-          })
+          }),
         );
 
         // Clear metadata on successful completion
@@ -543,7 +547,7 @@ export const useResearchStream = () => {
 
           // Don't clear metadata on error - might need for recovery
           console.log(
-            "Stream error, metadata preserved for potential recovery"
+            "Stream error, metadata preserved for potential recovery",
           );
         }
       }
@@ -554,7 +558,7 @@ export const useResearchStream = () => {
       storeConnectionMetadata,
       clearConnectionMetadata,
       checkAndRecoverConnection,
-    ]
+    ],
   );
 
   const manualReconnect = useCallback(async () => {

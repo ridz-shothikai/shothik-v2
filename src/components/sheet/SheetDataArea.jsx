@@ -338,7 +338,7 @@ export default function SheetDataArea() {
         }
 
         return String(value);
-      })
+      }),
     );
 
     return { headers, dataRows };
@@ -365,7 +365,7 @@ export default function SheetDataArea() {
             }
             return `"${value}"`;
           })
-          .join(",")
+          .join(","),
       );
 
       const csvContent = [csvHeaders, ...csvRows].join("\n");
@@ -394,7 +394,7 @@ export default function SheetDataArea() {
       const colWidths = headers.map((header, index) => {
         const maxLength = Math.max(
           header.length,
-          ...dataRows.map((row) => String(row[index] || "").length)
+          ...dataRows.map((row) => String(row[index] || "").length),
         );
         return { wch: Math.min(Math.max(maxLength + 2, 10), 50) };
       });
@@ -454,7 +454,7 @@ export default function SheetDataArea() {
     if (!currentSavePoint) return;
 
     const activeGen = currentSavePoint.generations.find(
-      (g) => g.id === currentSavePoint.activeGenerationId
+      (g) => g.id === currentSavePoint.activeGenerationId,
     );
 
     console.log(activeGen, "activeGen");
@@ -465,7 +465,7 @@ export default function SheetDataArea() {
           switchToGeneration({
             savePointId: currentSavePoint.id,
             generationId: currentSavePoint.activeGenerationId,
-          })
+          }),
         );
       } else {
         // No generation found, just mark it as idle to allow retry
@@ -513,7 +513,7 @@ export default function SheetDataArea() {
         Row: CustomRow,
       },
     }),
-    [columns, rows, selectedRows, theme.palette]
+    [columns, rows, selectedRows, theme.palette],
   );
 
   // Render generating state

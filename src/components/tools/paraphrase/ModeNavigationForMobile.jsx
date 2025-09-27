@@ -16,16 +16,16 @@ const ModeNavigationForMobile = ({
 
   return (
     <Stack
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       spacing={2}
-      justifyContent='center'
+      justifyContent="center"
       sx={{ paddingTop: 1.5, paddingBottom: 1 }}
     >
       <Button
-        variant='outlined'
-        size='medium'
-        color='primary'
+        variant="outlined"
+        size="medium"
+        color="primary"
         onClick={() => setShowModeModal(true)}
         sx={{
           textTransform: "none",
@@ -41,7 +41,7 @@ const ModeNavigationForMobile = ({
         disabled={!userPackage || userPackage === "free"}
         sx={{ textAlign: "right" }}
         startIcon={<AcUnit />}
-        variant='outlined'
+        variant="outlined"
       >
         Freeze Words
       </Button>

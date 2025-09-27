@@ -25,8 +25,8 @@ export default function FacebookPixel() {
       ></script>
       <noscript>
         <img
-          height='1'
-          width='1'
+          height="1"
+          width="1"
           style={{ display: "none" }}
           src={`https://www.facebook.com/tr?id=${FB_PIXEL_ID}&ev=PageView&noscript=1`}
         />

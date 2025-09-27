@@ -5,8 +5,8 @@ import { useComponentTracking } from "../../hooks/useComponentTracking";
 
 export default function HeroVideo() {
   const { componentRef, trackClick } = useComponentTracking("hero_video", {
-      viewThreshold: 0.3,
-    });
+    viewThreshold: 0.3,
+  });
 
   const videoRef = useRef(null);
 

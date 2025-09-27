@@ -17,14 +17,13 @@ export default function NavToggleButton({ sx, ...other }) {
   const dispatch = useDispatch();
   const isVerticalNav = useSelector((state) => state.tools.isNavVertical);
 
-
   if (!isDesktop) {
     return null;
   }
 
   return (
     <IconButton
-      size='small'
+      size="small"
       onClick={() => {
         dispatch(toggleThemeLayout());
         dispatch(setIsNavVertical(!isVerticalNav));
@@ -45,9 +44,9 @@ export default function NavToggleButton({ sx, ...other }) {
       {...other}
     >
       {themeLayout === "vertical" ? (
-        <ChevronLeft fontSize='small' />
+        <ChevronLeft fontSize="small" />
       ) : (
-        <ChevronRight fontSize='small' />
+        <ChevronRight fontSize="small" />
       )}
     </IconButton>
   );

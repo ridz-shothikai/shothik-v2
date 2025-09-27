@@ -18,7 +18,7 @@ const useYoutubeSubscriber = () => {
           headers: {
             Accept: "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {

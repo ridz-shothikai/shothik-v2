@@ -14,7 +14,6 @@ export default function AnalyticsLoader() {
   const [scriptsReady, setScriptsReady] = useState(false);
   const { initializeWithConsent } = useAnalytics();
 
-
   useEffect(() => {
     const handleInteraction = () => {
       setUserInteracted(true);
@@ -58,7 +57,7 @@ export default function AnalyticsLoader() {
 
   // Only render scripts if user has given consent AND interacted
   // const shouldLoadScripts = consent && userInteracted; // when
-  const shouldLoadScripts = true; 
+  const shouldLoadScripts = true;
 
   return (
     <>

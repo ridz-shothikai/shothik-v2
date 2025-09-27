@@ -68,8 +68,8 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", slug }) {
   };
 
   return (
-    <Stack flexDirection='row' alignItems='center' gap={1}>
-      <Stack flexDirection='row' alignItems='center' gap={0.5}>
+    <Stack flexDirection="row" alignItems="center" gap={1}>
+      <Stack flexDirection="row" alignItems="center" gap={0.5}>
         {like?.includes(userId) ? (
           <ThumbUpAlt
             sx={{
@@ -90,11 +90,11 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", slug }) {
             disabled={loading}
           />
         )}
-        <Typography align='center' fontWeight={"700"} color='primary.main'>
+        <Typography align="center" fontWeight={"700"} color="primary.main">
           {like?.length || 0}
         </Typography>
       </Stack>
-      <Stack flexDirection='row' alignItems='center' gap={0.5}>
+      <Stack flexDirection="row" alignItems="center" gap={0.5}>
         {dislike?.includes(userId) ? (
           <ThumbDownAlt
             sx={{
@@ -115,7 +115,7 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", slug }) {
             disabled={loading}
           />
         )}
-        <Typography align='center' fontWeight={"700"} color='warning.main'>
+        <Typography align="center" fontWeight={"700"} color="warning.main">
           {dislike?.length || 0}
         </Typography>
       </Stack>

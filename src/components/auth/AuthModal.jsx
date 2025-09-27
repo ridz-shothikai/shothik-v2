@@ -14,8 +14,8 @@ const AuthModal = ({ isOpen, onClose, children }) => {
     <Modal
       open={isOpen}
       onClose={onClose}
-      aria-labelledby='auth-modal-title'
-      aria-describedby='auth-modal-description'
+      aria-labelledby="auth-modal-title"
+      aria-describedby="auth-modal-description"
       sx={{
         display: "flex",
         alignItems: "center",

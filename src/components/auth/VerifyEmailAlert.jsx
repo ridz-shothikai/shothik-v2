@@ -39,12 +39,12 @@ const VerifyEmailAlert = () => {
   return email && showVerifyModal ? (
     <Box sx={{ position: "relative", px: { xs: 2, sm: 0 }, mb: 2 }}>
       <Alert
-        severity='warning'
+        severity="warning"
         action={
           <Button
-            color='warning'
-            variant='contained'
-            size='small'
+            color="warning"
+            variant="contained"
+            size="small"
             disabled={isLoading}
             onClick={handleVerify}
             sx={{ zIndex: 1000 }}

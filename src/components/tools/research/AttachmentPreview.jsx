@@ -32,9 +32,9 @@ const AttachmentPreview = ({ attachment, isUploading, onRemove }) => {
     >
       {isUploading ? (
         <Box
-          display='flex'
-          alignItems='center'
-          justifyContent='center'
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           width={40}
           height={40}
         >
@@ -45,7 +45,7 @@ const AttachmentPreview = ({ attachment, isUploading, onRemove }) => {
           src={attachment.url}
           alt={`Image preview`}
           sx={{ width: 40, height: 40, borderRadius: 2 }}
-          variant='rounded'
+          variant="rounded"
         />
       )}
 
@@ -69,9 +69,9 @@ const AttachmentPreview = ({ attachment, isUploading, onRemove }) => {
             backgroundColor: "grey.100",
           },
         }}
-        size='small'
+        size="small"
       >
-        <CloseIcon fontSize='small' />
+        <CloseIcon fontSize="small" />
       </IconButton>
     </Paper>
   );

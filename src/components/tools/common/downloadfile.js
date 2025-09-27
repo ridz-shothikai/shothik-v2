@@ -58,7 +58,7 @@ const downloadAsDocx = (outputContent, filename) => {
           }),
         ],
         spacing: { after: 200 },
-      })
+      }),
   );
 
   const doc = new Document({
@@ -97,7 +97,7 @@ async function loadPDFMake() {
     new Promise((resolve, reject) => {
       // if a script with same src already loaded, just wait for window.pdfMake
       const existing = Array.from(document.getElementsByTagName("script")).find(
-        (s) => s.src && s.src.includes(src)
+        (s) => s.src && s.src.includes(src),
       );
       if (existing) {
         existing.onload ? (existing.onload = () => resolve()) : resolve();
@@ -116,10 +116,10 @@ async function loadPDFMake() {
     // pdfmake and vfs (vfs contains Roboto mapping by default)
     await Promise.all([
       addScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"
+        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js",
       ),
       addScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"
+        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js",
       ),
     ]);
     // tiny delay to ensure pdfMake initialises
@@ -222,7 +222,7 @@ function ensureRoboto(pdfMakeInstance) {
   };
 
   const hasAllRoboto = Object.values(robotoFiles).every(
-    (fn) => !!pdfMakeInstance.vfs[fn]
+    (fn) => !!pdfMakeInstance.vfs[fn],
   );
 
   if (hasAllRoboto) {
@@ -233,7 +233,7 @@ function ensureRoboto(pdfMakeInstance) {
 
   // If roboto ttf not present, but there exists any ttf in vfs, alias Roboto -> that ttf file (fallback)
   const vfsTtfKeys = Object.keys(pdfMakeInstance.vfs || {}).filter((k) =>
-    k.toLowerCase().endsWith(".ttf")
+    k.toLowerCase().endsWith(".ttf"),
   );
   if (vfsTtfKeys.length > 0) {
     const pick = vfsTtfKeys[0];
@@ -248,7 +248,7 @@ function ensureRoboto(pdfMakeInstance) {
   }
 
   console.warn(
-    "Roboto font not found and no TTFs present in pdfMake.vfs to alias."
+    "Roboto font not found and no TTFs present in pdfMake.vfs to alias.",
   );
   return false;
 }
@@ -273,7 +273,7 @@ const downloadAsPdf = async (outputContent, filename) => {
     console.log("pdfMake.fonts keys before:", Object.keys(pdfMake.fonts || {}));
     console.log(
       "pdfMake.vfs keys sample:",
-      Object.keys(pdfMake.vfs || {}).slice(0, 12)
+      Object.keys(pdfMake.vfs || {}).slice(0, 12),
     );
 
     // Load Bengali fonts (inject into pdfMake.vfs and return fontsMapping)
@@ -296,7 +296,7 @@ const downloadAsPdf = async (outputContent, filename) => {
       } else {
         // As last resort we still set Roboto to some vfs ttf if available (attempt again)
         const anyTtf = Object.keys(pdfMake.vfs || {}).find((k) =>
-          k.toLowerCase().endsWith(".ttf")
+          k.toLowerCase().endsWith(".ttf"),
         );
         if (anyTtf) {
           pdfMake.fonts.Roboto = {
@@ -306,7 +306,7 @@ const downloadAsPdf = async (outputContent, filename) => {
             bolditalics: anyTtf,
           };
           console.warn(
-            `No Roboto or Bengali fonts; aliased Roboto -> ${anyTtf}`
+            `No Roboto or Bengali fonts; aliased Roboto -> ${anyTtf}`,
           );
         }
       }
@@ -321,7 +321,7 @@ const downloadAsPdf = async (outputContent, filename) => {
 
     if (!bengaliFontName) {
       console.log(
-        "No Bengali font loaded; PDF generation will still proceed for English content."
+        "No Bengali font loaded; PDF generation will still proceed for English content.",
       );
     } else {
       console.log(`Primary Bengali font: ${bengaliFontName}`);
@@ -369,7 +369,11 @@ const downloadAsPdf = async (outputContent, filename) => {
 /* ---------------------------
    downloadFile exported function
    --------------------------- */
-export const downloadFile = async (outputContent, toolName, format = "docx") => {
+export const downloadFile = async (
+  outputContent,
+  toolName,
+  format = "docx",
+) => {
   const now = new Date();
   const formattedDate = `${
     now.getMonth() + 1

@@ -32,8 +32,8 @@ export default function FAQ() {
     <Box sx={{ marginY: 6 }}>
       {/* Title */}
       <Typography
-        variant='h2'
-        align='center'
+        variant="h2"
+        align="center"
         sx={{
           mb: 4,
           fontSize: { xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" },
@@ -61,7 +61,7 @@ export default function FAQ() {
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
-          variant='scrollable'
+          variant="scrollable"
           scrollButtons
           allowScrollButtonsMobile
           sx={{
@@ -103,8 +103,8 @@ export default function FAQ() {
         <Grid2
           container
           spacing={3}
-          justifyContent='center'
-          alignItems='center'
+          justifyContent="center"
+          alignItems="center"
           sx={{
             maxWidth: "900px",
           }}
@@ -173,7 +173,7 @@ export default function FAQ() {
                   }}
                 >
                   <Typography
-                    component='div'
+                    component="div"
                     sx={{
                       color: "text.seconday",
                       fontSize: "1.2rem",

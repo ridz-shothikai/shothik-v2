@@ -29,7 +29,7 @@ export default function NavSectionVertical({ data, user, onCloseNav }) {
               <NavList
                 key={list.title + list.path}
                 data={list}
-                layout='vertical'
+                layout="vertical"
                 onCloseNav={onCloseNav}
               />
             ))}

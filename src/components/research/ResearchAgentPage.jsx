@@ -7,17 +7,30 @@ import ResearchDataArea from "./ui/ResearchDataArea";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useChat } from "../../hooks/useChat";
-import { clearResearchChatState, researchChatState, setCurrentChat } from "../../redux/slice/researchChatSlice";
+import {
+  clearResearchChatState,
+  researchChatState,
+  setCurrentChat,
+} from "../../redux/slice/researchChatSlice";
 import { useSearchParams } from "next/navigation";
-import {useResearchHistory} from "../../hooks/useResearchHistory";
+import { useResearchHistory } from "../../hooks/useResearchHistory";
 import { useResearchStream } from "../../hooks/useResearchStream";
 import { useResearchSimulation } from "../../hooks/useResearchSimulation";
-import { researchCoreState, resetResearchCore, setIsSimulating, setResearchSelectedTab, setSimulationStatus } from "../../redux/slice/researchCoreSlice";
+import {
+  researchCoreState,
+  resetResearchCore,
+  setIsSimulating,
+  setResearchSelectedTab,
+  setSimulationStatus,
+} from "../../redux/slice/researchCoreSlice";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
 
-export default function ResearchAgentPage({loadingResearchHistory, setLoadingResearchHistory }) {
+export default function ResearchAgentPage({
+  loadingResearchHistory,
+  setLoadingResearchHistory,
+}) {
   const theme = useTheme();
   const scrollRef = useRef(null);
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
@@ -48,7 +61,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
 
   console.log(researchCore, "research from ResearchAgentPage");
 
-  // console.log(loadingResearchHistory, "loadingResearchHistory");  
+  // console.log(loadingResearchHistory, "loadingResearchHistory");
 
   // const initialQuery = sessionStorage.getItem("activeResearchChatId") || "";
   const initialUserPrompt = sessionStorage.getItem("initialResearchPrompt");
@@ -67,7 +80,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     }
     return () => {
       // clean up effects
-      if(!isSimulationMode) {
+      if (!isSimulationMode) {
         sessionStorage.removeItem("activeResearchChatId");
         sessionStorage.removeItem("initialResearchPrompt");
         sessionStorage.removeItem("r-config");
@@ -117,7 +130,7 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
             !researchCore?.isPolling
           ) {
             const initialQuery = sessionStorage.getItem(
-              "initialResearchPrompt"
+              "initialResearchPrompt",
             );
             if (initialQuery) {
               setIsInitializingResearch(true); // still initializing
@@ -128,8 +141,8 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
                     researchConfig?.topK === 2
                       ? "low"
                       : researchConfig?.topK === 6
-                      ? "medium"
-                      : "high",
+                        ? "medium"
+                        : "high",
                   model:
                     researchConfig?.model === "basic"
                       ? "gemini-2.0-flash"
@@ -160,108 +173,112 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
     if (scrollRef.current && researchCore?.isStreaming) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [researchCore?.isStreaming, researchCore?.researches?.length, researchCore?.streamEvents]);
+  }, [
+    researchCore?.isStreaming,
+    researchCore?.researches?.length,
+    researchCore?.streamEvents,
+  ]);
 
   if (loadingResearchHistory || isInitializingResearch) {
     return <ResearchPageSkeletonLoader />;
   }
 
-    return (
+  return (
+    <Box
+      ref={scrollRef}
+      sx={{
+        maxWidth: { xs: "1000px" },
+        minHeight: {
+          xs: "calc(100dvh - 180px)",
+          sm: "calc(100dvh - 200px)",
+          md: "calc(100dvh - 230px)",
+          lg: "calc(100dvh - 250px)",
+          xl: "calc(100dvh - 270px)",
+        },
+        maxHeight: {
+          xs: isSimulationMode
+            ? "calc(100dvh - 130px)"
+            : "calc(100dvh - 155px)",
+          sm: isSimulationMode
+            ? "calc(100dvh - 100px)"
+            : "calc(100dvh - 170px)",
+          md: isSimulationMode
+            ? "calc(100dvh - 130px)"
+            : "calc(100dvh - 200px)",
+          lg: isSimulationMode
+            ? "calc(100dvh - 150px)"
+            : "calc(100dvh - 220px)",
+          xl: isSimulationMode
+            ? "calc(100dvh - 170px)"
+            : "calc(100dvh - 220px)",
+        },
+        marginInline: "auto",
+        position: "relative",
+        backgroundColor: "#F4F6F8",
+        overflowY: "auto",
+        px: { xs: 2, sm: 0 },
+        marginBottom: {
+          xs: isSimulationMode ? "0px" : "20px",
+          sm: isSimulationMode ? "35px" : "105px",
+          md: isSimulationMode ? "60px" : "130px",
+          lg: isSimulationMode ? "80px" : "150px",
+          xl: isSimulationMode ? "100px" : "150px",
+        },
+        bgcolor: theme.palette.mode === "dark" && "#161C24",
+      }}
+    >
+      {/* research data */}
       <Box
-        ref={scrollRef}
         sx={{
-          maxWidth: { xs: "1000px" },
-          minHeight: {
-            xs: "calc(100dvh - 180px)",
-            sm: "calc(100dvh - 200px)",
-            md: "calc(100dvh - 230px)",
-            lg: "calc(100dvh - 250px)",
-            xl: "calc(100dvh - 270px)",
-          },
-          maxHeight: {
-            xs: isSimulationMode
-              ? "calc(100dvh - 130px)"
-              : "calc(100dvh - 155px)",
-            sm: isSimulationMode
-              ? "calc(100dvh - 100px)"
-              : "calc(100dvh - 170px)",
-            md: isSimulationMode
-              ? "calc(100dvh - 130px)"
-              : "calc(100dvh - 200px)",
-            lg: isSimulationMode
-              ? "calc(100dvh - 150px)"
-              : "calc(100dvh - 220px)",
-            xl: isSimulationMode
-              ? "calc(100dvh - 170px)"
-              : "calc(100dvh - 220px)",
-          },
-          marginInline: "auto",
-          position: "relative",
-          backgroundColor: "#F4F6F8",
-          overflowY: "auto",
-          px: { xs: 2, sm: 0 },
-          marginBottom: {
-            xs: isSimulationMode ? "0px" : "20px",
-            sm: isSimulationMode ? "35px" : "105px",
-            md: isSimulationMode ? "60px" : "130px",
-            lg: isSimulationMode ? "80px" : "150px",
-            xl: isSimulationMode ? "100px" : "150px",
-          },
-          bgcolor: theme.palette.mode === "dark" && "#161C24",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
         }}
       >
-        {/* research data */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          {researchCore?.researches.length > 0 &&
-            researchCore?.researches?.map((research, idx) => (
-              <Box key={research._id}>
-                <Box
-                  sx={{
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 10,
-                    backgroundColor: "#F4F6F8",
-                  }}
-                >
-                  <HeaderTitle
-                    headerHeight={headerHeight}
-                    setHeaderHeight={setHeaderHeight}
-                    query={research.query}
-                    researchItem={research}
-                  />
-                  <TabsPanel
-                    selectedTab={research.selectedTab}
-                    sources={research.sources}
-                    images={research.images}
-                    onTabChange={(newValue) =>
-                      dispatch(
-                        setResearchSelectedTab({
-                          researchId: research._id,
-                          selectedTab: newValue,
-                        })
-                      )
-                    }
-                  />
-                </Box>
-
-                {/* data area */}
-                <ResearchDataArea
+        {researchCore?.researches.length > 0 &&
+          researchCore?.researches?.map((research, idx) => (
+            <Box key={research._id}>
+              <Box
+                sx={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: "#F4F6F8",
+                }}
+              >
+                <HeaderTitle
+                  headerHeight={headerHeight}
+                  setHeaderHeight={setHeaderHeight}
+                  query={research.query}
+                  researchItem={research}
+                />
+                <TabsPanel
                   selectedTab={research.selectedTab}
-                  research={research}
-                  isLastData={idx === researchCore?.researches?.length - 1}
+                  sources={research.sources}
+                  images={research.images}
+                  onTabChange={(newValue) =>
+                    dispatch(
+                      setResearchSelectedTab({
+                        researchId: research._id,
+                        selectedTab: newValue,
+                      }),
+                    )
+                  }
                 />
               </Box>
-            ))}
-        </Box>
 
-        {/* when streaming */}
-        {/* {(researchCore?.isStreaming || researchCore?.isPolling) && (
+              {/* data area */}
+              <ResearchDataArea
+                selectedTab={research.selectedTab}
+                research={research}
+                isLastData={idx === researchCore?.researches?.length - 1}
+              />
+            </Box>
+          ))}
+      </Box>
+
+      {/* when streaming */}
+      {/* {(researchCore?.isStreaming || researchCore?.isPolling) && (
           <StreamingIndicator
             streamEvents={researchCore?.streamEvents}
             isPolling={researchCore?.isPolling}
@@ -270,18 +287,18 @@ export default function ResearchAgentPage({loadingResearchHistory, setLoadingRes
           />
         )} */}
 
-        {(researchCore?.isStreaming || researchCore?.isPolling) && (
-          // <ResearchProcessLogs
-          //   streamEvents={researchCore?.streamEvents}
-          //   researches={researchCore?.researches}
-          //   isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
-          // />
-          <ResearchStreamingShell
-            streamEvents={researchCore?.streamEvents}
-            isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
-            userQuery={initialUserPrompt}
-          />
-        )}
-      </Box>
-    );
-};
+      {(researchCore?.isStreaming || researchCore?.isPolling) && (
+        // <ResearchProcessLogs
+        //   streamEvents={researchCore?.streamEvents}
+        //   researches={researchCore?.researches}
+        //   isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
+        // />
+        <ResearchStreamingShell
+          streamEvents={researchCore?.streamEvents}
+          isStreaming={researchCore?.isStreaming || researchCore?.isPolling}
+          userQuery={initialUserPrompt}
+        />
+      )}
+    </Box>
+  );
+}

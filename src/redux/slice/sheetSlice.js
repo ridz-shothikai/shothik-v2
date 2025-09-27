@@ -124,7 +124,7 @@ const sheetSlice = createSlice({
 
         // Set sheet data from active generation
         const activeGeneration = lastSavePoint.generations.find(
-          (gen) => gen.id === lastSavePoint.activeGenerationId
+          (gen) => gen.id === lastSavePoint.activeGenerationId,
         );
         if (activeGeneration && activeGeneration.sheetData) {
           state.sheet = activeGeneration.sheetData;
@@ -140,7 +140,7 @@ const sheetSlice = createSlice({
 
       // Check if savepoint already exists (prevent duplicates)
       const existingIndex = state.savePoints.findIndex(
-        (sp) => sp.id === newSavePoint.id
+        (sp) => sp.id === newSavePoint.id,
       );
 
       if (existingIndex === -1) {
@@ -151,7 +151,7 @@ const sheetSlice = createSlice({
         // Update sheet data if the new savepoint has generations
         if (newSavePoint.generations.length > 0) {
           const activeGeneration = newSavePoint.generations.find(
-            (gen) => gen.id === newSavePoint.activeGenerationId
+            (gen) => gen.id === newSavePoint.activeGenerationId,
           );
           if (activeGeneration && activeGeneration.sheetData) {
             state.sheet = activeGeneration.sheetData;
@@ -170,14 +170,14 @@ const sheetSlice = createSlice({
       const { savePointId, generation } = action.payload;
 
       const savePointIndex = state.savePoints.findIndex(
-        (sp) => sp.id === savePointId
+        (sp) => sp.id === savePointId,
       );
       if (savePointIndex !== -1) {
         const savePoint = state.savePoints[savePointIndex];
 
         // Check if generation already exists
         const existingGenIndex = savePoint.generations.findIndex(
-          (gen) => gen.id === generation.id
+          (gen) => gen.id === generation.id,
         );
 
         if (existingGenIndex === -1) {
@@ -210,7 +210,7 @@ const sheetSlice = createSlice({
 
         // Load data from active generation
         const activeGeneration = savePoint.generations.find(
-          (gen) => gen.id === savePoint.activeGenerationId
+          (gen) => gen.id === savePoint.activeGenerationId,
         );
 
         if (activeGeneration) {
@@ -230,7 +230,7 @@ const sheetSlice = createSlice({
       if (!savePoint) return;
 
       const generation = savePoint.generations.find(
-        (gen) => gen.id === generationId
+        (gen) => gen.id === generationId,
       );
       if (!generation) return;
 
@@ -286,11 +286,11 @@ const sheetSlice = createSlice({
       // Set current sheet data from active save point
       if (activeSavePointId && savePoints.length > 0) {
         const activeSavePoint = savePoints.find(
-          (sp) => sp.id === activeSavePointId
+          (sp) => sp.id === activeSavePointId,
         );
         if (activeSavePoint) {
           const activeGeneration = activeSavePoint.generations.find(
-            (gen) => gen.id === activeSavePoint.activeGenerationId
+            (gen) => gen.id === activeSavePoint.activeGenerationId,
           );
           if (activeGeneration && activeGeneration.sheetData) {
             state.sheet = activeGeneration.sheetData;
@@ -325,7 +325,9 @@ export const {
 // Selectors
 export const selectSheet = (state) => {
   if (!state || !state.sheet) {
-    console.warn("Sheet state not found in Redux store, returning initial state");
+    console.warn(
+      "Sheet state not found in Redux store, returning initial state",
+    );
     return initialState;
   }
   return state.sheet;
@@ -350,16 +352,18 @@ export const selectSavePoints = (state) => {
 export const selectActiveSavePoint = (state) => {
   const savePoints = selectSavePoints(state);
   const activeSavePointId = state?.sheet?.activeSavePointId;
-  return savePoints.find(sp => sp.id === activeSavePointId) || null;
+  return savePoints.find((sp) => sp.id === activeSavePointId) || null;
 };
 
 export const selectActiveGeneration = (state) => {
   const activeSavePoint = selectActiveSavePoint(state);
   if (!activeSavePoint) return null;
-  
-  return activeSavePoint.generations.find(
-    gen => gen.id === activeSavePoint.activeGenerationId
-  ) || null;
+
+  return (
+    activeSavePoint.generations.find(
+      (gen) => gen.id === activeSavePoint.activeGenerationId,
+    ) || null
+  );
 };
 
 export const selectCurrentChatId = (state) => {
@@ -369,14 +373,14 @@ export const selectCurrentChatId = (state) => {
 // Computed selectors
 export const selectSheetStats = (state) => {
   const sheetData = selectSheetData(state);
-  
+
   if (!sheetData || !Array.isArray(sheetData)) {
     return { rowCount: 0, columnCount: 0, hasData: false };
   }
-  
+
   const rowCount = sheetData.length;
   let columnCount = 0;
-  
+
   if (rowCount > 0) {
     const allColumns = new Set();
     sheetData.forEach((row) => {
@@ -388,7 +392,7 @@ export const selectSheetStats = (state) => {
     });
     columnCount = allColumns.size;
   }
-  
+
   return {
     rowCount,
     columnCount,

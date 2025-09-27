@@ -41,7 +41,6 @@ const StyledChip = styled(Chip)(({ theme }) => ({
   },
 }));
 
-
 const StepCard = styled(Paper)(({ theme }) => ({
   backgroundColor: "#f9fafb", // gray-50
   borderRadius: "16px",
@@ -66,7 +65,7 @@ const IconContainer = styled(Box)({
 
 export default function ClaritySection() {
   const { componentRef, trackClick } = useComponentTracking(
-    trackingList.PROCESS_STEP
+    trackingList.PROCESS_STEP,
   );
 
   const theme = useTheme();
@@ -82,10 +81,10 @@ export default function ClaritySection() {
     severity: "success", // 'success', 'error', 'warning', 'info'
   });
 
-    const [
-      registerUserForBetaList,
-      { isLoading: registerUserProcessing, isError: registerUserError },
-    ] = useRegisterUserToBetaListMutation();  
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
 
   const handleStepClick = (idx) => {
     // trackFeatureClick will be added later
@@ -422,7 +421,7 @@ export default function ClaritySection() {
                 px: 3,
                 py: 1.3,
                 bgcolor: "#00AB55",
-                fontWeight: "400"
+                fontWeight: "400",
               }}
             >
               Get early access

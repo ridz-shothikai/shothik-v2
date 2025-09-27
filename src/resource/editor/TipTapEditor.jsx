@@ -62,19 +62,19 @@ const TipTapEditor = ({ content, onChange }) => {
         }}
       >
         {/* Bold */}
-        <IconButton onClick={() => editor.commands.toggleBold()} size='small'>
+        <IconButton onClick={() => editor.commands.toggleBold()} size="small">
           <FormatBold />
         </IconButton>
 
         {/* Italic */}
-        <IconButton onClick={() => editor.commands.toggleItalic()} size='small'>
+        <IconButton onClick={() => editor.commands.toggleItalic()} size="small">
           <FormatItalic />
         </IconButton>
 
         {/* Underline */}
         <IconButton
           onClick={() => editor.commands.toggleUnderline()}
-          size='small'
+          size="small"
         >
           <FormatUnderlined />
         </IconButton>
@@ -82,7 +82,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* p */}
         <IconButton
           onClick={() => editor.commands.setParagraph({ level: 1 })}
-          size='small'
+          size="small"
         >
           <Typography fontWeight={600}>P</Typography>
         </IconButton>
@@ -90,7 +90,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* H2 */}
         <IconButton
           onClick={() => editor.commands.setHeading({ level: 2 })}
-          size='small'
+          size="small"
         >
           <Typography fontWeight={600}>H2</Typography>
         </IconButton>
@@ -98,7 +98,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* H3 */}
         <IconButton
           onClick={() => editor.commands.setHeading({ level: 3 })}
-          size='small'
+          size="small"
         >
           <Typography fontWeight={600}>H3</Typography>
         </IconButton>
@@ -106,7 +106,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* H4 */}
         <IconButton
           onClick={() => editor.commands.setHeading({ level: 4 })}
-          size='small'
+          size="small"
         >
           <Typography fontWeight={600}>H4</Typography>
         </IconButton>
@@ -114,7 +114,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* Ordered List (OL) */}
         <IconButton
           onClick={() => editor.commands.toggleOrderedList()}
-          size='small'
+          size="small"
         >
           <FormatListNumbered />
         </IconButton>
@@ -122,7 +122,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* Unordered List (UL) */}
         <IconButton
           onClick={() => editor.commands.toggleBulletList()}
-          size='small'
+          size="small"
         >
           <FormatListBulleted />
         </IconButton>
@@ -130,7 +130,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* Blockquote */}
         <IconButton
           onClick={() => editor.commands.toggleBlockquote()}
-          size='small'
+          size="small"
         >
           <FormatQuote />
         </IconButton>
@@ -138,7 +138,7 @@ const TipTapEditor = ({ content, onChange }) => {
         {/* Divider (Horizontal Rule) */}
         <IconButton
           onClick={() => editor.commands.setHorizontalRule()}
-          size='small'
+          size="small"
         >
           <HorizontalRule />
         </IconButton>

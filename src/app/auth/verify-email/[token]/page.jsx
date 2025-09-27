@@ -23,16 +23,21 @@ export default function VerifyEmailPage() {
       // console.log("Email verification successful!");
       enqueueSnackbar("Email verification successful!", { variant: "success" });
       setTimeout(() => {
-        router.push("/"); 
+        router.push("/");
       }, 0);
     }
 
     if (isError) {
       // console.error("Email verification failed:", error);
       if (error?.data?.message === "Invalid or expired token") {
-        enqueueSnackbar("Token expired. Please request a new verification email.", { variant: "error" });
+        enqueueSnackbar(
+          "Token expired. Please request a new verification email.",
+          { variant: "error" },
+        );
       } else {
-        enqueueSnackbar("Email verification failed. Please try again.", { variant: "error" });
+        enqueueSnackbar("Email verification failed. Please try again.", {
+          variant: "error",
+        });
       }
       setTimeout(() => {
         router.push("/");

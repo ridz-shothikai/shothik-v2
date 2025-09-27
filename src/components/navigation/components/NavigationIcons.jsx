@@ -32,12 +32,17 @@ const NavigationBar = () => {
   const navigationItems = [
     { id: "home", icon: Home, label: "Home", href: "/" },
     { id: "help", icon: HelpCircle, label: "Help", href: "/" },
-    { id: "Settings", icon: Settings2, label: "Info", href: "/account/settings" },
+    {
+      id: "Settings",
+      icon: Settings2,
+      label: "Info",
+      href: "/account/settings",
+    },
   ];
 
   const handleItemClick = (itemId, href) => {
     setSelectedItem(itemId);
-    router.push(href)
+    router.push(href);
   };
 
   return (

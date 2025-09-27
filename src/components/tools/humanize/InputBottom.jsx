@@ -47,7 +47,7 @@ const InputBottom = ({
         >
           {userInputInfo.words} /{" "}
           {wordLimit === 9999 ? (
-            <Typography component='span' sx={{ color: "primary.main" }}>
+            <Typography component="span" sx={{ color: "primary.main" }}>
               Unlimited
             </Typography>
           ) : (
@@ -55,20 +55,20 @@ const InputBottom = ({
           )}{" "}
           Words
         </Typography>
-        <Typography color='gray'>|</Typography>
+        <Typography color="gray">|</Typography>
         <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
           {userInputInfo.charecters} {isMobile ? "Char" : "Characters"}
         </Typography>
-        <Typography color='gray'>|</Typography>
+        <Typography color="gray">|</Typography>
         <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
           {userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}
         </Typography>
       </Box>
       <IconButton
-        aria-label='delete'
+        aria-label="delete"
         size={isMobile ? "small" : "large"}
         variant={miniLabel ? "soft" : "outlined"}
-        color='inherit'
+        color="inherit"
         disabled={isLoading}
         onClick={handleClear}
       >

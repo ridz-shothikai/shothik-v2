@@ -7,13 +7,15 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
-import {useComponentTracking} from "../../hooks/useComponentTracking"
+import { useComponentTracking } from "../../hooks/useComponentTracking";
 import { trackingList } from "../../libs/trackingList";
 import HeroVideo from "./HeroVideo";
 import Image from "next/image";
 
 export default function HomeHeroSection() {
-  const { componentRef, trackClick } = useComponentTracking(trackingList.LANDING_HERO);
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.LANDING_HERO,
+  );
 
   return (
     <BgContainer
@@ -104,7 +106,7 @@ export default function HomeHeroSection() {
                 justifyContent: "center",
               }}
             >
-              <HeroVideo/>
+              <HeroVideo />
 
               {/* Custom play button overlay */}
               <Box

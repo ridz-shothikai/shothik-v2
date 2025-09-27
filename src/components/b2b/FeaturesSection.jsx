@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const FeaturesSection = ({ features, title, subtitle }) => {
   return (
-    <Box id='services'>
+    <Box id="services">
       <Typography
         component={motion.div}
         initial={{ x: -100, opacity: 0 }}
@@ -23,10 +23,10 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
         }}
       >
         <Typography
-          variant='h2'
+          variant="h2"
           fontWeight={600}
-          component='span'
-          color='primary.darker'
+          component="span"
+          color="primary.darker"
         >
           {title}
         </Typography>
@@ -37,7 +37,7 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
           if (feature.image) {
             return (
               <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                <Link href='/b2b'>
+                <Link href="/b2b">
                   <Box
                     sx={{
                       cursor: "pointer",
@@ -94,8 +94,8 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
               }}
             >
               <Typography
-                variant='h3'
-                className='number'
+                variant="h3"
+                className="number"
                 sx={{
                   color: "primary.dark",
                   fontWeight: 700,
@@ -104,7 +104,7 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
                 {index < 9 ? `0${index + 1}` : index + 1}
               </Typography>
               <Box
-                className='titleBox'
+                className="titleBox"
                 sx={{
                   mt: 1,
                   position: "relative",
@@ -119,9 +119,9 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
                   },
                 }}
               >
-                <Typography variant='h4'>{feature.title}</Typography>
+                <Typography variant="h4">{feature.title}</Typography>
               </Box>
-              <Typography variant='body2'>{feature.content}</Typography>
+              <Typography variant="body2">{feature.content}</Typography>
               <Box
                 sx={{
                   display: "flex",
@@ -131,7 +131,7 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
               >
                 <Link href={`/b2b/services?slug=${feature.slug}`}>
                   <Button
-                    variant='outlined'
+                    variant="outlined"
                     sx={{
                       backgroundColor: "primary.darker",
                       borderColor: "primary.dark",
@@ -139,7 +139,7 @@ export const FeaturesSection = ({ features, title, subtitle }) => {
                       px: 2,
                     }}
                     endIcon={<ArrowForward />}
-                    size='large'
+                    size="large"
                   >
                     Read more
                   </Button>

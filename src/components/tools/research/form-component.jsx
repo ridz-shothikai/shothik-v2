@@ -106,8 +106,8 @@ const ToolbarButton = ({ group, isSelected, onClick }) => {
     <HtmlTooltip
       title={
         <Box>
-          <Typography variant='subtitle2'>{group.name}</Typography>
-          <Typography sx={{ color: "text.secondary" }} variant='caption'>
+          <Typography variant="subtitle2">{group.name}</Typography>
+          <Typography sx={{ color: "text.secondary" }} variant="caption">
             {group.description}
           </Typography>
         </Box>
@@ -206,7 +206,7 @@ const FormComponent = ({
       setSelectedGroup(group.id);
       inputRef.current?.focus();
     },
-    [setSelectedGroup, inputRef]
+    [setSelectedGroup, inputRef],
   );
 
   const uploadFile = async (file) => {
@@ -256,14 +256,14 @@ const FormComponent = ({
           "Failed to upload one or more files. Please try again.",
           {
             variant: "error",
-          }
+          },
         );
       } finally {
         setUploadQueue([]);
         event.target.value = "";
       }
     },
-    [attachments, setAttachments]
+    [attachments, setAttachments],
   );
 
   const removeAttachment = (index) => {
@@ -280,7 +280,7 @@ const FormComponent = ({
         setIsDragging(true);
       }
     },
-    [attachments.length]
+    [attachments.length],
   );
 
   const handleDragLeave = useCallback((e) => {
@@ -300,7 +300,7 @@ const FormComponent = ({
       setIsDragging(false);
 
       const files = Array.from(e.dataTransfer.files).filter((file) =>
-        file.type.startsWith("image/")
+        file.type.startsWith("image/"),
       );
 
       if (files.length === 0) {
@@ -324,7 +324,7 @@ const FormComponent = ({
         enqueueSnackbar(
           `Switched to ${
             models.find((m) => m.value === visionModel)?.label
-          } for image support`
+          } for image support`,
         );
       }
 
@@ -343,7 +343,7 @@ const FormComponent = ({
           "Failed to upload one or more files. Please try again.",
           {
             variant: "error",
-          }
+          },
         );
       } finally {
         setUploadQueue([]);
@@ -356,7 +356,7 @@ const FormComponent = ({
       selectedModel,
       setSelectedModel,
       getFirstVisionModel,
-    ]
+    ],
   );
 
   const onSubmit = (event) => {
@@ -393,7 +393,7 @@ const FormComponent = ({
 
   return (
     <Card
-      component='div'
+      component="div"
       sx={{
         padding: 1,
         borderWidth: "1px",
@@ -403,8 +403,8 @@ const FormComponent = ({
           dark && isDragging
             ? "#ededed"
             : !dark && isDragging
-            ? "#ccc"
-            : "divider",
+              ? "#ccc"
+              : "divider",
       }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -465,9 +465,9 @@ const FormComponent = ({
                 }
               />
             </Paper>
-            <Box textAlign='center'>
+            <Box textAlign="center">
               <Typography
-                variant='body2'
+                variant="body2"
                 sx={{
                   color:
                     theme.palette.mode === "dark"
@@ -479,7 +479,7 @@ const FormComponent = ({
                 Drop images here
               </Typography>
               <Typography
-                variant='caption'
+                variant="caption"
                 sx={{
                   color:
                     theme.palette.mode === "dark"
@@ -495,17 +495,17 @@ const FormComponent = ({
       )}
 
       <input
-        type='file'
+        type="file"
         hidden
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
-        accept='image/*'
+        accept="image/*"
         tabIndex={-1}
       />
 
       {(attachments.length > 0 || uploadQueue.length > 0) && (
-        <Stack direction='row' flexWrap='wrap' gap={1}>
+        <Stack direction="row" flexWrap="wrap" gap={1}>
           {/* Existing attachment previews */}
           {attachments.map((attachment, index) => (
             <AttachmentPreview
@@ -533,8 +533,8 @@ const FormComponent = ({
 
       <Box sx={{ position: "relative" }}>
         <TextField
-          name='question'
-          type='text'
+          name="question"
+          type="text"
           ref={inputRef}
           placeholder={
             hasSubmitted ? "Ask a new question..." : "Ask a question..."
@@ -547,11 +547,11 @@ const FormComponent = ({
         />
 
         <Stack
-          flexDirection='row'
-          alignItems='center'
-          justifyContent='space-between'
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
         >
-          <Stack flexDirection='row' alignItems='center' gap={2}>
+          <Stack flexDirection="row" alignItems="center" gap={2}>
             {!hasSubmitted ? (
               <>
                 <SelectionContent
@@ -569,10 +569,10 @@ const FormComponent = ({
             ) : null}
           </Stack>
 
-          <Stack flexDirection='row' alignItems='center' gap={1}>
+          <Stack flexDirection="row" alignItems="center" gap={1}>
             <IconButton
-              color='text.secondary'
-              aria-label='Stop'
+              color="text.secondary"
+              aria-label="Stop"
               sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
               onClick={(event) => {
                 event.preventDefault();
@@ -582,18 +582,18 @@ const FormComponent = ({
             >
               <Attachment
                 sx={{ transform: "rotate(135deg)" }}
-                fontSize='small'
+                fontSize="small"
               />
             </IconButton>
 
             <IconButton
-              color='text.secondary'
-              aria-label='Submit'
+              color="text.secondary"
+              aria-label="Submit"
               sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
               onClick={onSubmit}
               disabled={!input || isLoading}
             >
-              <ArrowUpward fontSize='small' />
+              <ArrowUpward fontSize="small" />
             </IconButton>
           </Stack>
         </Stack>

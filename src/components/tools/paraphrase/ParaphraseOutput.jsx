@@ -26,7 +26,7 @@ const ParaphraseOutput = ({
   eventId,
   setEventId,
   setHighlightSentence,
-  paraphraseRequestCounter // Receive the new prop
+  paraphraseRequestCounter, // Receive the new prop
 }) => {
   const [paraphraseForTagging] = useParaphraseForTaggingMutation();
   const [reportForSentence] = useReportForSentenceMutation();
@@ -61,9 +61,9 @@ const ParaphraseOutput = ({
           ? sentence.map((wordObj, wIndex) =>
               wIndex === synonymsOptions.wordIndex
                 ? { ...wordObj, word: newWord }
-                : wordObj
+                : wordObj,
             )
-          : sentence
+          : sentence,
       );
 
       return newData;
@@ -182,7 +182,9 @@ const ParaphraseOutput = ({
       setRephraseData([]); // Clear previous rephrase data immediately
 
       const url =
-        process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api" + "/paraphrase-with-variantV2";
+        process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+        "/p-v2/api" +
+        "/paraphrase-with-variantV2";
       const token = localStorage.getItem("accessToken");
       const payload = {
         text: sentence,
@@ -246,7 +248,8 @@ const ParaphraseOutput = ({
 
   // This useEffect should trigger rephraseSentence when the selected sentence or rephrase mode changes
   useEffect(() => {
-    if (sentence && showRephrase) { // Only rephrase if a sentence is selected and the rephrase popover is open
+    if (sentence && showRephrase) {
+      // Only rephrase if a sentence is selected and the rephrase popover is open
       rephraseSentence();
     }
   }, [sentence, rephraseMode]);

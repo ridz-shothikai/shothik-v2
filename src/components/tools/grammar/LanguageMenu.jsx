@@ -1,7 +1,9 @@
-
 // LanguageMenu.jsx
 "use client";
-import { ExpandMoreOutlined, KeyboardArrowUpOutlined } from "@mui/icons-material";
+import {
+  ExpandMoreOutlined,
+  KeyboardArrowUpOutlined,
+} from "@mui/icons-material";
 import { Button, Tabs, Tab, Box, useTheme } from "@mui/material";
 import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
@@ -52,7 +54,8 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
             textTransform: "none",
             width: "100%",
             justifyContent: "space-between",
-            color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
+            color:
+              theme.palette.mode === "dark" ? "common.white" : "text.primary",
             bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
             "&:hover": {
               bgcolor: theme.palette.mode === "dark" ? "grey.700" : "grey.300",
@@ -73,7 +76,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%", }}>
+    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
       <Tabs
         value={language}
         onChange={(_, v) => setLanguage(v)}
@@ -94,33 +97,47 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
             disabled={isLoading}
             sx={{
               "&.Mui-selected": {
-                backgroundColor: theme.palette.mode === "dark" ? "grey.800" : "common.white",
+                backgroundColor:
+                  theme.palette.mode === "dark" ? "grey.800" : "common.white",
                 borderRadius: "12px 12px 0 0",
                 border: "1px solid",
-                borderColor: theme.palette.mode === "dark" ? "grey.700" : "divider",
-                color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
+                borderColor:
+                  theme.palette.mode === "dark" ? "grey.700" : "divider",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "common.white"
+                    : "text.primary",
                 px: 2,
               },
               "&.MuiTab-root": {
                 display: "inline-flex",
-                color: theme.palette.mode === "dark" ? "grey.400" : "text.secondary",
+                color:
+                  theme.palette.mode === "dark" ? "grey.400" : "text.secondary",
               },
               "&.MuiTab-root:hover": {
-                color: theme.palette.mode === "dark" ? "common.white" : "text.primary",
+                color:
+                  theme.palette.mode === "dark"
+                    ? "common.white"
+                    : "text.primary",
               },
             }}
           />
         ))}
       </Tabs>
-      <Button id="language_x_button" onClick={()=>{
-        handleClose();
-      }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
-
+      <Button
+        id="language_x_button"
+        onClick={() => {
+          handleClose();
+        }}
+        sx={{ opacity: 0, zIndex: -99, width: 0, height: 0 }}
+      ></Button>
 
       <Button
         onClick={handleOpen}
         disabled={isLoading}
-        endIcon={showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />}
+        endIcon={
+          showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
+        }
         sx={{ color: "text.secondary", ml: 1 }}
         id="language_all_button"
       >

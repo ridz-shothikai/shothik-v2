@@ -62,7 +62,6 @@ const MobileNavigation = () => {
 
   if (!isMobile) return null;
 
-
   const validPath = links.some((tab) => tab.link === pathname)
     ? pathname
     : false;
@@ -78,7 +77,7 @@ const MobileNavigation = () => {
         {links.map((tab) => (
           <Tab
             key={tab.link}
-            iconPosition='top'
+            iconPosition="top"
             icon={
               <SvgColor
                 sx={{ width: 30, height: 30 }}

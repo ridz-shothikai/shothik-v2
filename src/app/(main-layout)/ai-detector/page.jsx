@@ -25,10 +25,10 @@ const Aidetector = () => {
         </Suspense>
       </ErrorBoundary>
       <ToolsSepecigFaq
-        tag='All you need to know about AI Detector feature'
+        tag="All you need to know about AI Detector feature"
         data={aidetectorFaq}
       />
-      <ToolsCTA toolType='aidetector' />
+      <ToolsCTA toolType="aidetector" />
       <HomeAdvertisement />
     </Container>
   );

@@ -202,7 +202,7 @@ export default function ImagesContent({ images }) {
   }
 
   return (
-    <Box sx={{ px: 2, py: 3, mb: {xs: 17, sm: 7, md: 5} }}>
+    <Box sx={{ px: 2, py: 3, mb: { xs: 17, sm: 7, md: 5 } }}>
       {/* <Box sx={{ my: 4 }}>
         <Typography variant="h6" gutterBottom>
           Research Images ({images.length})

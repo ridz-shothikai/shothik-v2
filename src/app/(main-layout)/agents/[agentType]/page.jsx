@@ -1,5 +1,5 @@
 "use client";
-import {  useState } from "react";
+import { useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Box from "@mui/material/Box";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
@@ -13,25 +13,26 @@ import ResearchPageSkeletonLoader from "../../../../components/research/ui/Resea
 import { FooterCta } from "../../../../components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
 // import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
 // import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
-const PresentationAgentPage = dynamic(() =>
-  import("../../../../components/presentation/PresentationAgentPage"), {
-    loading: () => <ResearchPageSkeletonLoader/>,
+const PresentationAgentPage = dynamic(
+  () => import("../../../../components/presentation/PresentationAgentPage"),
+  {
+    loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
-  }
+  },
 );
 const SheetAgentPage = dynamic(
   () => import("../../../../components/sheet/SheetAgentPage"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
-  }
+  },
 );
 const ResearchAgentPage = dynamic(
   () => import("../../../../components/research/ResearchAgentPage"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
-  }
+  },
 );
 
 export default function SpecificAgentPage() {
@@ -113,14 +114,16 @@ export default function SpecificAgentPage() {
 
         {/* join the beta list footer cta for research only now */}
         {!isSimulating && simulationStatus === "completed" && (
-          <Box sx={{
-            position: "absolute",
-            bottom:0,
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center"
-          }}>
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <FooterCta
               isMobile={isMobile}
               showModal={showModal}

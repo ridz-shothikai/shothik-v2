@@ -42,7 +42,7 @@ function captureElementAsImageFromIframe(elementPath, selectionData) {
     onclone: (clonedDoc, element) => {
       // Remove our custom selection classes from the clone
       const elementsWithSelection = clonedDoc.querySelectorAll(
-        ".element-hovered, .element-selected"
+        ".element-hovered, .element-selected",
       );
       elementsWithSelection.forEach((el) => {
         el.classList.remove("element-hovered", "element-selected");
@@ -110,7 +110,7 @@ function captureElementAsImageFromIframe(elementPath, selectionData) {
 function applyComputedStylesToClone(
   originalElement,
   clonedElement,
-  iframeWindow
+  iframeWindow,
 ) {
   const computedStyle = iframeWindow.getComputedStyle(originalElement);
 
@@ -183,7 +183,7 @@ function applyComputedStylesToClone(
       applyComputedStylesToClone(
         originalChildren[i],
         clonedChildren[i],
-        iframeWindow
+        iframeWindow,
       );
     }
   }
@@ -215,7 +215,7 @@ function applyAllComputedStyles(originalElement, clonedElement, iframeWindow) {
       applyAllComputedStyles(
         originalChildren[i],
         clonedChildren[i],
-        iframeWindow
+        iframeWindow,
       );
     }
   }
@@ -323,7 +323,7 @@ function createImagePreview(imageData, selectionData) {
             <div class="info">
               <strong>Element Type:</strong> ${selectionData.elementType}<br>
               <strong>Dimensions:</strong> ${Math.round(
-                selectionData.boundingRect.width
+                selectionData.boundingRect.width,
               )}px × ${Math.round(selectionData.boundingRect.height)}px<br>
               <strong>Element Path:</strong> ${selectionData.elementPath}<br>
               <strong>Text Content:</strong> ${selectionData.textContent
@@ -363,7 +363,7 @@ function captureElementAsSVG(elementPath, selectionData) {
                  color: ${computedStyle.color};
                  background-color: ${getElementBackground(
                    targetElement,
-                   iframeWindow
+                   iframeWindow,
                  )};
                  padding: ${computedStyle.padding};
                  margin: 0;

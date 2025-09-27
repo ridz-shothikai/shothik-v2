@@ -502,8 +502,8 @@ function RephraseSentences(props) {
     rephraseMode,
   } = props;
 
-  if (!open) return null;
   const theme = useTheme();
+  if (!open) return null;
   const dark = theme.palette.mode === "dark";
 
   // Styled Tooltip

@@ -201,43 +201,43 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
     severity: "success", // 'success', 'error', 'warning', 'info'
   });
 
-    const [
-      registerUserForBetaList,
-      { isLoading: registerUserProcessing, isError: registerUserError },
-    ] = useRegisterUserToBetaListMutation();   
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
 
-    const handleEmailSubmit = async (email) => {
-      try {
-        const result = await registerUserForBetaList({ email }).unwrap();
+  const handleEmailSubmit = async (email) => {
+    try {
+      const result = await registerUserForBetaList({ email }).unwrap();
 
-        console.log(result, "result");
+      console.log(result, "result");
 
-        // Success toast
-        setToast({
-          open: true,
-          message: "Successfully registered for beta! We'll be in touch soon.",
-          severity: "success",
-        });
+      // Success toast
+      setToast({
+        open: true,
+        message: "Successfully registered for beta! We'll be in touch soon.",
+        severity: "success",
+      });
 
-        // Close the modal
-        setShowModal(false);
-      } catch (error) {
-        // Error toast
-        setToast({
-          open: true,
-          message:
-            error?.data?.message || "Registration failed. Please try again.",
-          severity: "error",
-        });
-      }
-    };
+      // Close the modal
+      setShowModal(false);
+    } catch (error) {
+      // Error toast
+      setToast({
+        open: true,
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
+        severity: "error",
+      });
+    }
+  };
 
-    const handleCloseToast = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
-      setToast((prev) => ({ ...prev, open: false }));
-    };
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToast((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>

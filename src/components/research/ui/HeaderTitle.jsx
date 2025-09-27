@@ -63,7 +63,6 @@ export default function HeaderTitleWithDownload({
 
     return md;
   };
-  
 
   // Utility to make a filename-safe string
   const safeFilename = (str) =>
@@ -126,7 +125,7 @@ export default function HeaderTitleWithDownload({
           jsPDF,
         });
         throw new Error(
-          "Missing PDF generation libraries. Make sure 'marked', 'dompurify', and 'jspdf' are installed."
+          "Missing PDF generation libraries. Make sure 'marked', 'dompurify', and 'jspdf' are installed.",
         );
       }
 
@@ -230,7 +229,7 @@ export default function HeaderTitleWithDownload({
         fontSize = 12,
         fontStyle = "normal",
         color = "#000000",
-        url = null
+        url = null,
       ) => {
         pdf.setFontSize(fontSize);
         pdf.setFont("helvetica", fontStyle);
@@ -313,10 +312,10 @@ export default function HeaderTitleWithDownload({
               // Build full line: bullet + text
               const beforeLink = textContent.substring(
                 0,
-                textContent.indexOf(linkText)
+                textContent.indexOf(linkText),
               );
               const afterLink = textContent.substring(
-                textContent.indexOf(linkText) + linkText.length
+                textContent.indexOf(linkText) + linkText.length,
               );
               const fullLine = `• ${beforeLink}${linkText}${afterLink}`;
 
@@ -358,7 +357,7 @@ export default function HeaderTitleWithDownload({
                 const linkUrl = link.getAttribute("href");
                 const beforeLink = remainingText.substring(
                   0,
-                  remainingText.indexOf(linkText)
+                  remainingText.indexOf(linkText),
                 );
 
                 if (beforeLink) {
@@ -366,14 +365,14 @@ export default function HeaderTitleWithDownload({
                     processedText + beforeLink,
                     12,
                     "normal",
-                    "#000000"
+                    "#000000",
                   );
                 }
 
                 addTextToPdf(linkText, 12, "normal", "#0066cc", linkUrl);
 
                 remainingText = remainingText.substring(
-                  remainingText.indexOf(linkText) + linkText.length
+                  remainingText.indexOf(linkText) + linkText.length,
                 );
                 processedText = "";
               });
@@ -429,7 +428,7 @@ export default function HeaderTitleWithDownload({
             }
             return NodeFilter.FILTER_SKIP;
           },
-        }
+        },
       );
 
       let node;
@@ -463,7 +462,7 @@ export default function HeaderTitleWithDownload({
       console.error("PDF generation failed:", err);
       try {
         const ok = window.confirm(
-          "PDF generation failed. Would you like to download the raw Markdown instead?"
+          "PDF generation failed. Would you like to download the raw Markdown instead?",
         );
         if (ok) downloadMarkdown();
       } catch (e) {
@@ -482,7 +481,7 @@ export default function HeaderTitleWithDownload({
         gap: 4,
         padding: 1,
         position: "relative",
-        bgcolor: theme.palette.mode === "dark" && "#161C24"
+        bgcolor: theme.palette.mode === "dark" && "#161C24",
       }}
     >
       <Typography
@@ -504,7 +503,7 @@ export default function HeaderTitleWithDownload({
       >
         {getTruncatedTitle(
           query || researchItem?.query || "Untitled",
-          titleCharCount
+          titleCharCount,
         )}
       </Typography>
 

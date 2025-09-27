@@ -22,13 +22,14 @@ export default function Main({ children }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const containerWidth = pathName === "/" || pathName === '/paraphrase' ? "100%" : "xl"
+  const containerWidth =
+    pathName === "/" || pathName === "/paraphrase" ? "100%" : "xl";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       dispatch(loadSettingsFromLocalStorage());
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box

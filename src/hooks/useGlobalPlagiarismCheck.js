@@ -20,23 +20,20 @@ const useGlobalPlagiarismCheck = (text, language = "en") => {
   const textHashRef = useRef(null);
 
   // Handle subscription updates
-  const handleUpdate = useCallback(
-    (update) => {
-      setState((prev) => ({
-        ...prev,
-        ...update,
-        error: update.error || null,
-      }));
+  const handleUpdate = useCallback((update) => {
+    setState((prev) => ({
+      ...prev,
+      ...update,
+      error: update.error || null,
+    }));
 
-      // Show error notification
-      if (update.error) {
-        enqueueSnackbar(`Plagiarism check error: ${update.error}`, {
-          variant: "error",
-        });
-      }
-    },
-    []
-  );
+    // Show error notification
+    if (update.error) {
+      enqueueSnackbar(`Plagiarism check error: ${update.error}`, {
+        variant: "error",
+      });
+    }
+  }, []);
 
   // Manual trigger function
   const triggerCheck = useCallback(
@@ -64,7 +61,7 @@ const useGlobalPlagiarismCheck = (text, language = "en") => {
         console.error("Plagiarism check failed:", error);
       }
     },
-    [text, language, accessToken]
+    [text, language, accessToken],
   );
 
   // Effect for managing subscription
@@ -91,7 +88,7 @@ const useGlobalPlagiarismCheck = (text, language = "en") => {
     // Subscribe to updates for this text
     unsubscribeRef.current = plagiarismManager.subscribe(
       textHash,
-      handleUpdate
+      handleUpdate,
     );
 
     // Check if we have cached results

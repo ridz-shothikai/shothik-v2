@@ -1,11 +1,17 @@
 "use client";
 
-import { Box, Container, Grid, styled, Typography, useTheme } from "@mui/material";
-import {motion} from "framer-motion";
+import {
+  Box,
+  Container,
+  Grid,
+  styled,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { motion } from "framer-motion";
 import { Brain, FileText, Globe, Shield } from "lucide-react";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
-
 
 const BenefitIconContainer = styled(Box)(({ theme }) => ({
   width: "64px",
@@ -36,7 +42,6 @@ const BenefitCard = styled(Box)({
     transform: "scale(1.05)",
   },
 });
-
 
 const benefits = [
   {
@@ -78,7 +83,7 @@ export default function KeyBenefits() {
   const isDarkMode = theme.palette.mode === "dark";
 
   const { componentRef } = useComponentTracking(
-    trackingList.WHY_STUDENT_CHOOSE_SECTION
+    trackingList.WHY_STUDENT_CHOOSE_SECTION,
   );
 
   return (
@@ -127,7 +132,7 @@ export default function KeyBenefits() {
               }}
             >
               Built specifically for academic writing with features that generic
-              paraphrasing tools simply don't offer.
+              paraphrasing tools simply don&apos;t offer.
             </Typography>
           </Box>
 
@@ -143,7 +148,10 @@ export default function KeyBenefits() {
                 >
                   <BenefitCard onClick={() => handleBenefitClick(benefit.id)}>
                     <BenefitIconContainer>
-                      <benefit.icon size={32} color={theme.palette.success.main} />
+                      <benefit.icon
+                        size={32}
+                        color={theme.palette.success.main}
+                      />
                     </BenefitIconContainer>
 
                     <Typography
@@ -151,7 +159,9 @@ export default function KeyBenefits() {
                       sx={{
                         fontSize: "1.125rem",
                         fontWeight: 700,
-                        color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
+                        color: isDarkMode
+                          ? theme.palette.text.primary
+                          : "#111827", // gray-900
                         mb: 1,
                       }}
                     >
@@ -160,7 +170,9 @@ export default function KeyBenefits() {
 
                     <Typography
                       sx={{
-                        color: isDarkMode ? theme.palette.text.secondary : "#4b5563", // gray-600
+                        color: isDarkMode
+                          ? theme.palette.text.secondary
+                          : "#4b5563", // gray-600
                         fontSize: "0.875rem",
                         lineHeight: 1.6,
                         mb: 1.5,

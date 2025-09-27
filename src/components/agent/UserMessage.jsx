@@ -16,21 +16,21 @@ export default function UserMessage({ message }) {
       }}
     >
       <Paper
-        variant='outlined'
+        variant="outlined"
         sx={{
           p: 1.5,
           borderRadius: "15px 15px 0 15px",
           maxWidth: "70%",
         }}
       >
-        <Typography variant='body1'>{message.message}</Typography>
+        <Typography variant="body1">{message.message}</Typography>
       </Paper>
       <Stack
         mt={1}
-        justifyContent='flex-end'
-        flexDirection='row'
-        flexWrap='wrap'
-        alignItems='center'
+        justifyContent="flex-end"
+        flexDirection="row"
+        flexWrap="wrap"
+        alignItems="center"
         gap={1}
       >
         {message.files

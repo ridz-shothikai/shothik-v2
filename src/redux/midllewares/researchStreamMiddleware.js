@@ -22,7 +22,7 @@ const createDebouncer = (delay) => {
       setTimeout(() => {
         fn();
         timeouts.delete(key);
-      }, delay)
+      }, delay),
     );
   };
 };
@@ -96,7 +96,7 @@ export const researchStreamMiddleware = (store) => {
     if (newResearchCore.streamEvents.length > 50) {
       console.warn(
         "[Middleware] Large number of stream events detected:",
-        newResearchCore.streamEvents.length
+        newResearchCore.streamEvents.length,
       );
 
       // Auto-clear old events if too many accumulate
@@ -143,7 +143,7 @@ export const researchPerformanceMiddleware = (store) => (next) => (action) => {
   if (duration > 100) {
     // >100ms is considered slow
     console.warn(
-      `[Performance] Slow action: ${action.type} took ${duration.toFixed(2)}ms`
+      `[Performance] Slow action: ${action.type} took ${duration.toFixed(2)}ms`,
     );
   }
 
@@ -157,7 +157,7 @@ export const researchPerformanceMiddleware = (store) => (next) => (action) => {
       if (eventMemory > 1024 * 100) {
         // >100KB
         console.warn(
-          `[Performance] Large stream events size: ${eventMemory} bytes`
+          `[Performance] Large stream events size: ${eventMemory} bytes`,
         );
       }
     }

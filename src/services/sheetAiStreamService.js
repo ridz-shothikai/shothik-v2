@@ -17,7 +17,7 @@ class SheetAiStreamService {
     chatId,
     prompt,
     userEmail,
-    callbacks = {}
+    callbacks = {},
   ) {
     // Prevent multiple concurrent streams
     if (this.isStreaming) {
@@ -50,7 +50,7 @@ class SheetAiStreamService {
             userEmail,
           }),
           signal: this.abortController.signal,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -116,7 +116,7 @@ class SheetAiStreamService {
               "Error processing line:",
               error,
               "Line:",
-              trimmedLine
+              trimmedLine,
             );
           }
         }
@@ -306,7 +306,7 @@ class SheetAiStreamService {
         this.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1);
 
       console.log(
-        `Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`
+        `Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`,
       );
 
       setTimeout(() => {
@@ -346,7 +346,7 @@ class SheetAiStreamService {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -371,7 +371,7 @@ class SheetAiStreamService {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
 
       return await response.json();

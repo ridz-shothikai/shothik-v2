@@ -34,7 +34,7 @@ export default function NavList({ data, layout, onCloseNav }) {
           color: !isLight ? "primary.light" : "primary.main",
           backgroundColor: alpha(
             theme.palette.primary.main,
-            theme.palette.action.selectedOpacity
+            theme.palette.action.selectedOpacity,
           ),
         };
 
@@ -92,8 +92,8 @@ export default function NavList({ data, layout, onCloseNav }) {
                 style={{
                   display: `${layout === "mini" ? "block" : "none"}`,
                 }}
-              />
-              {" "}Detector
+              />{" "}
+              Detector
             </>
           ) : (
             title

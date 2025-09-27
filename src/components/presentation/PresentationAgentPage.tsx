@@ -95,7 +95,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     console.log(
       "[PresentationAgentPage] Initializing socket connection",
       "presentaton id ->",
-      currentPresentationId
+      currentPresentationId,
     );
 
     const token = localStorage.getItem("accessToken");
@@ -108,7 +108,7 @@ export default function PresentationAgentPage({ specificAgent }) {
         reconnection: true,
         reconnectionDelay: 1000,
         reconnectionAttempts: 5,
-      }
+      },
     );
 
     socketInstance.on("connect", () => {
@@ -119,14 +119,14 @@ export default function PresentationAgentPage({ specificAgent }) {
       if (currentPresentationId) {
         console.log(
           "[SOCKET] Reconnecting to presentation:",
-          currentPresentationId
+          currentPresentationId,
         );
         socketInstance.emit("joinPresentation", currentPresentationId);
 
         // If we don't have data or we're in a loading state, fetch current state
         if (!dataFetched || isLoading) {
           console.log(
-            "[SOCKET] Fetching current presentation state after reconnection"
+            "[SOCKET] Fetching current presentation state after reconnection",
           );
           setIsLoading(true); // Starting the data polling again to start the streaming
           fetchPresentationData();
@@ -160,16 +160,20 @@ export default function PresentationAgentPage({ specificAgent }) {
           //   slides,
           //   status
           // );
-          console.log(status, presentationId, "status from presentation update");
+          console.log(
+            status,
+            presentationId,
+            "status from presentation update",
+          );
           // server is responding => allow polling now
           setAwaitingAck(false);
           dispatch(
-            setPresentationState(prev => ({
-               ...prev,
-               logs: logs ?? prev.logs,
-               slides: slides ?? prev.slides,
-               status: status ?? prev.status,
-             }))
+            setPresentationState((prev) => ({
+              ...prev,
+              logs: logs ?? prev.logs,
+              slides: slides ?? prev.slides,
+              status: status ?? prev.status,
+            })),
           );
 
           // dispatch(
@@ -195,10 +199,10 @@ export default function PresentationAgentPage({ specificAgent }) {
         } else {
           console.log(
             "[SOCKET] Ignoring update for different presentation:",
-            presentationId
+            presentationId,
           );
         }
-      }
+      },
     );
 
     socketInstance.on("joinedPresentation", (data) => {
@@ -230,7 +234,7 @@ export default function PresentationAgentPage({ specificAgent }) {
           presentationBlueprint: null,
           title: "Generating",
           totalSlides: 0,
-        })
+        }),
       );
 
       if (ackTimeoutRef.current) clearTimeout(ackTimeoutRef.current);
@@ -241,7 +245,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     if (urlPresentationId && urlPresentationId !== currentPresentationId) {
       console.log(
         "[PresentationAgentPage] New presentation ID detected:",
-        urlPresentationId
+        urlPresentationId,
       );
 
       dispatch(
@@ -254,7 +258,7 @@ export default function PresentationAgentPage({ specificAgent }) {
           presentationBlueprint: null,
           title: "Generating...",
           totalSlides: 0,
-        })
+        }),
       );
       setChatHistory([]);
       setDataFetched(false);
@@ -263,7 +267,7 @@ export default function PresentationAgentPage({ specificAgent }) {
       if (socket && isSocketConnected && currentPresentationId) {
         console.log(
           "[SOCKET] Leaving previous presentation room:",
-          currentPresentationId
+          currentPresentationId,
         );
         socket.emit("leavePresentation", currentPresentationId);
       }
@@ -273,7 +277,7 @@ export default function PresentationAgentPage({ specificAgent }) {
       if (socket && isSocketConnected) {
         console.log(
           "[SOCKET] Joining new presentation room:",
-          urlPresentationId
+          urlPresentationId,
         );
         socket.emit("joinPresentation", urlPresentationId);
       }
@@ -323,7 +327,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     if (currentPresentationId && !dataFetched) {
       console.log(
         "[PresentationAgentPage] Fetching initial data for:",
-        currentPresentationId
+        currentPresentationId,
       );
       fetchPresentationData();
     }
@@ -356,8 +360,7 @@ export default function PresentationAgentPage({ specificAgent }) {
 
     // console.log(!awaitingAck, status, !isSocketConnected, "should start polling");
 
-    const shouldStartPolling =
-      !awaitingAck && status === "processing"; 
+    const shouldStartPolling = !awaitingAck && status === "processing";
 
     if (shouldStartPolling) {
       // Prevent starting a new poller if one is already running
@@ -365,13 +368,13 @@ export default function PresentationAgentPage({ specificAgent }) {
 
       console.log(
         "[PresentationAgentPage] Starting polling for:",
-        currentPresentationId
+        currentPresentationId,
       );
 
       pollingIntervalRef.current = setInterval(() => {
         console.log(
           "[PresentationAgentPage] Polling for updates:",
-          currentPresentationId
+          currentPresentationId,
         );
         fetchPresentationData();
       }, 3000);
@@ -420,14 +423,14 @@ export default function PresentationAgentPage({ specificAgent }) {
           {
             headers,
             cache: "no-cache",
-          }
+          },
         ),
         fetch(
           `${baseUrl}/presentation/slides/${currentPresentationId}?t=${Date.now()}`,
           {
             headers,
             cache: "no-cache",
-          }
+          },
         ),
       ]);
 
@@ -458,7 +461,8 @@ export default function PresentationAgentPage({ specificAgent }) {
           const prevSlidesLen = presentationState.slides?.length ?? 0;
           const nextLogsLen = logsData?.data?.length ?? prevLogsLen;
           const nextSlidesLen = slidesData?.data?.length ?? prevSlidesLen;
-          const hasNewData = nextLogsLen !== prevLogsLen || nextSlidesLen !== prevSlidesLen;
+          const hasNewData =
+            nextLogsLen !== prevLogsLen || nextSlidesLen !== prevSlidesLen;
 
           let newStatus = presentationState.status;
           if (presentationState.status === "processing") {
@@ -509,7 +513,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     } catch (error) {
       console.error(
         "[PresentationAgentPage] Error fetching presentation data:",
-        error
+        error,
       );
       setDataFetched(true);
       // Consider not redirecting immediately on a transient fetch error
@@ -520,7 +524,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   const handleSend = async (promptText) => {
     const prompt = promptText || inputValue;
     if (!prompt.trim() || isLoading) return;
-    
+
     const optimisticMessage = {
       id: `temp-${Date.now()}`,
       role: "user",
@@ -528,28 +532,28 @@ export default function PresentationAgentPage({ specificAgent }) {
       timestamp: new Date().toISOString(),
       isOptimistic: true,
     };
-    
+
     // setChatHistory([]);
     setChatHistory((prev) => [...prev, optimisticMessage]);
     // Add to local state immediately
     setOptimisticMessages((prev) => [...prev, optimisticMessage]);
     setInputValue("");
-    
+
     setIsLoading(true);
-    
+
     // Reset status to processing to ensure polling starts
     dispatch(
       setPresentationState({
         ...presentationState,
         status: "processing",
-      })
+      }),
     );
 
     // block polling until the server has had a moment to flip state
     setAwaitingAck(true);
     if (ackTimeoutRef.current) clearTimeout(ackTimeoutRef.current);
     ackTimeoutRef.current = setTimeout(() => setAwaitingAck(false), 5000); // 5s fallback
-    
+
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
       const token = localStorage.getItem("accessToken");
@@ -564,10 +568,10 @@ export default function PresentationAgentPage({ specificAgent }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ user_query: prompt }),
-        }
+        },
       );
 
-      if(response.ok) {
+      if (response.ok) {
         setAwaitingAck(false);
       }
 
@@ -594,7 +598,7 @@ export default function PresentationAgentPage({ specificAgent }) {
 
       // Remove the optimistic message
       setOptimisticMessages((prev) =>
-        prev.filter((msg) => msg.id !== optimisticMessage.id)
+        prev.filter((msg) => msg.id !== optimisticMessage.id),
       );
 
       // Reset loading state
@@ -605,7 +609,7 @@ export default function PresentationAgentPage({ specificAgent }) {
         setPresentationState({
           ...presentationState,
           status: status || "idle",
-        })
+        }),
       );
 
       // Show error notification

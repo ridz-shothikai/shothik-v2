@@ -181,7 +181,7 @@ export default function SlidePreviewNavbar({
       if (result.success) {
         showSnackbar(
           "Presentation exported successfully as images!",
-          "success"
+          "success",
         );
       } else {
         showSnackbar(result.error || "Export failed", "error");
@@ -307,7 +307,7 @@ export default function SlidePreviewNavbar({
       console.error("Link generation error:", error);
       showSnackbar(
         error.data?.error || "Failed to generate share link",
-        "error"
+        "error",
       );
     }
   };
@@ -326,7 +326,7 @@ export default function SlidePreviewNavbar({
   const handleSocialShare = (platform) => {
     const encodedUrl = encodeURIComponent(shareLink);
     const title = encodeURIComponent(
-      `Check out this presentation: ${slidesData?.title || "Slides"}`
+      `Check out this presentation: ${slidesData?.title || "Slides"}`,
     );
 
     const socialUrls = {
@@ -363,7 +363,7 @@ export default function SlidePreviewNavbar({
       console.error("Error updating share settings:", error);
       showSnackbar(
         error.data?.error || "Failed to update share settings",
-        "error"
+        "error",
       );
       setShareSettingsState((prev) => ({
         ...prev,
@@ -461,7 +461,10 @@ export default function SlidePreviewNavbar({
               variant="contained"
               startIcon={!isMobile ? <PlayArrow /> : undefined}
               onClick={openPresentation}
-              disabled={(!slidesData?.data || slidesData.data.length === 0) && !slidesData}
+              disabled={
+                (!slidesData?.data || slidesData.data.length === 0) &&
+                !slidesData
+              }
               sx={{
                 backgroundColor: "#1976d2",
                 color: "white",
@@ -850,7 +853,7 @@ export default function SlidePreviewNavbar({
                         onChange={(e) =>
                           handleShareSettingChange(
                             "requireSignIn",
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                         color="primary"

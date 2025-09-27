@@ -31,7 +31,7 @@ const BottomBar = ({
 
   return (
     <WordCounter
-      toolName='translator'
+      toolName="translator"
       userInput={userInput}
       userPackage={userPackage}
       isLoading={isLoading}
@@ -53,22 +53,22 @@ const BottomBar = ({
       //   ) : null
       // }
     >
-      <Stack direction='row' alignItems='center'>
+      <Stack direction="row" alignItems="center">
         {outputContend && (
           <>
-            <Tooltip title='Export' placement='top' arrow>
+            <Tooltip title="Export" placement="top" arrow>
               <IconButton
                 onClick={handleDownload}
-                aria-label='download'
+                aria-label="download"
                 size={isMobile ? "small" : "large"}
               >
                 <VerticalAlignBottom sx={{ fontWeight: 600 }} />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Copy Full Text' placement='top' arrow>
+            <Tooltip title="Copy Full Text" placement="top" arrow>
               <IconButton
                 onClick={handleCopy}
-                aria-label='copy'
+                aria-label="copy"
                 size={isMobile ? "small" : "large"}
               >
                 <ContentCopy />

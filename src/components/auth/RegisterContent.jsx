@@ -29,12 +29,12 @@ export default function RegisterContent() {
         }}
       >
         <AuthRegisterForm country={location} loading={loading} />
-        <AuthWithSocial title='up' loading={loading} setLoading={setLoading} />
+        <AuthWithSocial title="up" loading={loading} setLoading={setLoading} />
       </Box>
 
-      <Stack direction='row' justifyContent='center' spacing={0.5}>
+      <Stack direction="row" justifyContent="center" spacing={0.5}>
         <Typography
-          variant='body2'
+          variant="body2"
           sx={{
             fontSize: "0.875rem",
             lineHeight: "1.25rem",
@@ -49,7 +49,7 @@ export default function RegisterContent() {
             dispatch(setShowRegisterModal(false));
             dispatch(setShowLoginModal(true));
           }}
-          variant='body2'
+          variant="body2"
           sx={{
             fontSize: "0.875rem",
             lineHeight: "1.25rem",

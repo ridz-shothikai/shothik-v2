@@ -10,7 +10,7 @@ import AnalyticsLoader from "../components/analytics/AnalyticsProvider";
 export default function Providers({ children }) {
   return (
     <Provider store={store}>
-      <AnalyticsLoader/>
+      <AnalyticsLoader />
       <MUIProvider>
         <NotificationProvider>
           <GoogleOAuthProvider

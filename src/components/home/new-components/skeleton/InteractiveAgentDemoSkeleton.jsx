@@ -1,7 +1,6 @@
 import { Box, Grid, Skeleton, Stack } from "@mui/material";
 
 export default function AgentLiveSkeleton({ agents = 3 }) {
-
   return (
     <Box sx={{ py: 8, px: 3, maxWidth: 1200, mx: "auto" }}>
       {/* Page title */}

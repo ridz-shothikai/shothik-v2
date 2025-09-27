@@ -7,7 +7,7 @@ export class QueueStatusService {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       return await response.json();
     } catch (error) {
@@ -39,7 +39,7 @@ export class QueueStatusService {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        }
+        },
       );
       return await response.json();
     } catch (error) {
@@ -58,7 +58,7 @@ export class QueueStatusService {
       (jobStatus.status === "active" || jobStatus.status === "waiting")
     );
   }
- 
+
   static isJobFailed(jobStatus) {
     return jobStatus && jobStatus.status === "failed";
   }

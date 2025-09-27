@@ -19,11 +19,11 @@ import TopNavigations from "./TopNavigations";
 
 const modes = [
   {
-    icon: <FormatListBulleted fontSize='small' />,
+    icon: <FormatListBulleted fontSize="small" />,
     name: "Key Sentences",
   },
   {
-    icon: <FormatTextdirectionLToRRounded fontSize='small' />,
+    icon: <FormatTextdirectionLToRRounded fontSize="small" />,
     name: "Paragraph",
   },
 ];

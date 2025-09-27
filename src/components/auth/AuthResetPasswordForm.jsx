@@ -8,9 +8,7 @@ import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useForgotPasswordMutation } from "../../redux/api/auth/authApi";
-import {
-  setShowLoginModal,
-} from "../../redux/slice/auth";
+import { setShowLoginModal } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
 
@@ -56,7 +54,7 @@ export default function AuthResetPasswordForm() {
       if (result?.data?.success) {
         dispatch(setShowLoginModal(false));
         enqueueSnackbar(
-          "Reset password link sent to your email. Please check."
+          "Reset password link sent to your email. Please check.",
         );
       }
 
@@ -81,16 +79,15 @@ export default function AuthResetPasswordForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <RHFTextField name="email" label="Email address" />
-      {
-        errorMessage &&
+      {errorMessage && (
         <Typography
           variant="body2"
           color="error"
-          sx={{ mt: 1, minHeight: '1.5em' }} // Added minHeight to reserve space
+          sx={{ mt: 1, minHeight: "1.5em" }} // Added minHeight to reserve space
         >
           {errorMessage}
         </Typography>
-      }
+      )}
 
       <Button
         fullWidth

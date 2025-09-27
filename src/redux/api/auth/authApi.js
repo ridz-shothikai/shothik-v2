@@ -225,10 +225,8 @@ export const authApi = authApiSlice.injectEndpoints({
           method: "POST",
           body: email,
         };
-      }
+      },
     }),
-
-
   }),
 });
 

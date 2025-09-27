@@ -52,8 +52,8 @@ export default function AboutTeam() {
         viewport={{ once: true }}
       >
         <Typography
-          component='p'
-          variant='overline'
+          component="p"
+          variant="overline"
           sx={{ color: "text.disabled" }}
         >
           DREAM TEAM
@@ -66,7 +66,7 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
       >
-        <Typography variant='h2' sx={{ my: 2 }}>
+        <Typography variant="h2" sx={{ my: 2 }}>
           Great team is the key
         </Typography>
       </motion.div>
@@ -92,7 +92,7 @@ export default function AboutTeam() {
       <Box sx={{ position: "relative", mt: 0 }}>
         <CarouselArrows
           filled
-          shape='rounded'
+          shape="rounded"
           onNext={handleNext}
           onPrevious={handlePrev}
           sx={{ zIndex: -1 }}
@@ -158,11 +158,11 @@ function MemberCard({ member, isFirst }) {
         width={250}
       />
 
-      <Typography variant='subtitle1' sx={{ mt: 4, mb: 0.5 }}>
+      <Typography variant="subtitle1" sx={{ mt: 4, mb: 0.5 }}>
         {name}
       </Typography>
 
-      <Typography variant='body2' sx={{ color: "text.secondary" }}>
+      <Typography variant="body2" sx={{ color: "text.secondary" }}>
         {designation}
       </Typography>
 
@@ -175,9 +175,9 @@ function MemberCard({ member, isFirst }) {
           }}
         >
           <a
-            href='https://calendar.google.com/calendar/appointments/schedules/AcZssZ1-0YrraZrcWyTUUrowfsWSDMKPOj57Lt8u9X-NcjC2Oz522EPBGzsD4SjjpkUzwHJOMePNPnbw?gv=true'
-            target='_blank'
-            rel='noopener noreferrer'
+            href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1-0YrraZrcWyTUUrowfsWSDMKPOj57Lt8u9X-NcjC2Oz522EPBGzsD4SjjpkUzwHJOMePNPnbw?gv=true"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               width: "200px",
               padding: "8px 16px",
@@ -200,9 +200,9 @@ function MemberCard({ member, isFirst }) {
       )}
 
       <Stack
-        direction='row'
-        alignItems='center'
-        justifyContent='center'
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
         sx={{
           position: "absolute",
           bottom: 5,
@@ -217,8 +217,8 @@ function MemberCard({ member, isFirst }) {
             <IconButton
               key={index}
               href={link}
-              target='_blank'
-              rel='noopener noreferrer'
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {Icon ? <Icon.icon sx={{ color: Icon.color }} /> : null}
             </IconButton>

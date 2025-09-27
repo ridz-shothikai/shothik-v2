@@ -11,9 +11,9 @@ const ViewMoreButton = () => {
       onClick={() => {
         router.push("/b2b");
       }}
-      variant='contained'
-      color='primary'
-      size='small'
+      variant="contained"
+      color="primary"
+      size="small"
       sx={{
         fontSize: ".9rem",
         fontWeight: "normal",

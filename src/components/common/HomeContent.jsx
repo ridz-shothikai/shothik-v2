@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React from "react";
 
 import HomeHeroSection from "../home/HomeHeroSection";
 import AgenticHeroSection from "../home/new-components/AgenticHeroSection";
@@ -12,8 +12,8 @@ import KeyBenefits from "../home/new-components/KeyBenefits";
 
 import Journey from "../home/new-components/Journey";
 import LandingPageAnalyticsProvider from "../analytics/LandingPageAnalyticsProvider";
-import ModalProvider from "../home/ModelProvider"
-import ErrorBoundary from  "../common/ErrorBoundary";
+import ModalProvider from "../home/ModelProvider";
+import ErrorBoundary from "../common/ErrorBoundary";
 import { Suspense } from "react";
 import ClaritySectionSkeleton from "../home/new-components/skeleton/ClaritySectionSkeleton";
 import TryAgentSkeleton from "../home/new-components/skeleton/InteractiveAgentDemoSkeleton";
@@ -27,23 +27,23 @@ import dynamic from "next/dynamic";
 const ClaritySection = dynamic(
   () => import("../home/new-components/ClaritySection"),
   {
-    loading: () => <ClaritySectionSkeleton/>,
+    loading: () => <ClaritySectionSkeleton />,
     ssr: false, // Disable SSR for client-only components
-  }
+  },
 );
 const InteractiveAgentDemo = dynamic(
   () => import("../home/new-components/InteractiveAgentDemo"),
   {
     loading: () => <TryAgentSkeleton />,
     ssr: false, // Disable SSR for client-only components
-  }
+  },
 );
 const FounderVideoSection = dynamic(
   () => import("../home/new-components/FounderVideoSection"),
   {
     loading: () => <FounderVideoSectionSkeleton />,
     ssr: false, // Disable SSR for client-only components
-  }
+  },
 );
 
 export default function HomeContent() {

@@ -32,7 +32,7 @@ export default function SharedSlidesPage() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [authError, setAuthError] = useState("");
 
-  const {accessToken} = useSelector((state) => state.auth);
+  const { accessToken } = useSelector((state) => state.auth);
 
   // Fetch shared presentation data
   const {
@@ -44,7 +44,7 @@ export default function SharedSlidesPage() {
     { shareLink, password, accessToken },
     {
       skip: !shareLink,
-    }
+    },
   );
 
   // console.log(sharedData, "Shared Data");
@@ -80,7 +80,7 @@ export default function SharedSlidesPage() {
         setAuthError("This share link has expired.");
       } else {
         setAuthError(
-          sharedError.data.error || "Error loading shared presentation"
+          sharedError.data.error || "Error loading shared presentation",
         );
       }
     }

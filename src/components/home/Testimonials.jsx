@@ -56,7 +56,7 @@ export default function Testimonials() {
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        textAlign='center'
+        textAlign="center"
         sx={{
           mb: { xs: 6, md: 8 },
           fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem", lg: "3rem" },
@@ -72,7 +72,7 @@ export default function Testimonials() {
         <br />
         New Heights with{" "}
         <span
-          className='highlight'
+          className="highlight"
           style={{
             background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
             backgroundClip: "text",
@@ -140,8 +140,8 @@ export default function Testimonials() {
             >
               <Box>
                 <Typography
-                  variant='body1'
-                  color='text.secondary'
+                  variant="body1"
+                  color="text.secondary"
                   sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
                 >
                   {
@@ -152,8 +152,8 @@ export default function Testimonials() {
                   }
                 </Typography>
                 <Typography
-                  variant='body1'
-                  color='text.secondary'
+                  variant="body1"
+                  color="text.secondary"
                   sx={{ transition: "all 0.5s ease-in-out" }}
                 >
                   {
@@ -168,8 +168,8 @@ export default function Testimonials() {
           </Box>
 
           <Typography
-            variant='h6'
-            color='text.secondary'
+            variant="h6"
+            color="text.secondary"
             sx={{ mb: 2, fontWeight: 500, transition: "all 0.5s ease-in-out" }}
           >
             {
@@ -179,8 +179,8 @@ export default function Testimonials() {
             }
           </Typography>
           <Typography
-            variant='body2'
-            color='text.secondary'
+            variant="body2"
+            color="text.secondary"
             sx={{ transition: "all 0.5s ease-in-out" }}
           >
             {
@@ -233,15 +233,15 @@ export default function Testimonials() {
             >
               <Box>
                 <Typography
-                  variant='subtitle1'
-                  color='text.secondary'
+                  variant="subtitle1"
+                  color="text.secondary"
                   sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
                 >
                   {testimonials[activeSlide].name}
                 </Typography>
                 <Typography
-                  variant='body2'
-                  color='text.secondary'
+                  variant="body2"
+                  color="text.secondary"
                   sx={{ transition: "all 0.5s ease-in-out" }}
                 >
                   {testimonials[activeSlide].title}
@@ -250,7 +250,7 @@ export default function Testimonials() {
               <Rating
                 value={testimonials[activeSlide].rating}
                 readOnly
-                size='small'
+                size="small"
                 sx={{
                   position: "absolute",
                   top: 0,
@@ -265,7 +265,7 @@ export default function Testimonials() {
           </Box>
 
           <Typography
-            color='text.secondary'
+            color="text.secondary"
             sx={{
               mb: 2,
               fontSize: { xs: 18, sm: 24, md: 24 },
@@ -276,7 +276,7 @@ export default function Testimonials() {
             {testimonials[activeSlide].headline}
           </Typography>
           <Typography
-            variant='body2'
+            variant="body2"
             sx={{
               fontSize: { xs: 18, sm: 16, md: 16 },
               color: "text.secondary",
@@ -330,15 +330,15 @@ export default function Testimonials() {
             >
               <Box>
                 <Typography
-                  variant='body1'
-                  color='text.secondary'
+                  variant="body1"
+                  color="text.secondary"
                   sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
                 >
                   {testimonials[(activeSlide + 1) % testimonials.length].name}
                 </Typography>
                 <Typography
-                  variant='body2'
-                  color='text.secondary'
+                  variant="body2"
+                  color="text.secondary"
                   sx={{ transition: "all 0.5s ease-in-out" }}
                 >
                   {testimonials[(activeSlide + 1) % testimonials.length].title}
@@ -348,15 +348,15 @@ export default function Testimonials() {
           </Box>
 
           <Typography
-            variant='h6'
-            color='text.secondary'
+            variant="h6"
+            color="text.secondary"
             sx={{ mb: 2, fontWeight: 500, transition: "all 0.5s ease-in-out" }}
           >
             {testimonials[(activeSlide + 1) % testimonials.length].headline}
           </Typography>
           <Typography
-            variant='body2'
-            color='text.secondary'
+            variant="body2"
+            color="text.secondary"
             sx={{ transition: "all 0.5s ease-in-out" }}
           >
             {testimonials[(activeSlide + 1) % testimonials.length].content}

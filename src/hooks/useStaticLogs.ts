@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 export const useStaticLogs = (
   realLogs: any[],
   isLoading: boolean,
-  status: string
+  status: string,
 ) => {
   const [visibleLogs, setVisibleLogs] = useState<any[]>([]);
   const sessionStatusRef = useRef<string>("processing");

@@ -1,9 +1,5 @@
 "use client";
 
-export default function ResearchAgentPageProvider({children}) {
-  return (
-    <>
-     {children} 
-    </>
-  )
+export default function ResearchAgentPageProvider({ children }) {
+  return <>{children}</>;
 }

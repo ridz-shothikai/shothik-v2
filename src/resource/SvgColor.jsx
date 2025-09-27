@@ -5,8 +5,8 @@ import { forwardRef } from "react";
 
 const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
   <Box
-    component='span'
-    className='svg-color'
+    component="span"
+    className="svg-color"
     ref={ref}
     sx={{
       width: 24,
@@ -20,5 +20,7 @@ const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
     {...other}
   />
 ));
+
+SvgColor.displayName = "SvgColor";
 
 export default SvgColor;

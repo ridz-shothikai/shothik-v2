@@ -59,7 +59,7 @@ const BottomContend = ({
         error.message || error.data.message || "Something went wrong",
         {
           variant: "error",
-        }
+        },
       );
     } finally {
       setErrorChecking(false);
@@ -75,31 +75,31 @@ const BottomContend = ({
     <>
       <WordCounter
         handleClearInput={handleClear}
-        btnText='Fix Grammar'
+        btnText="Fix Grammar"
         isLoading={isLoading}
         userInput={userInput}
         userPackage={userPackage}
         handleSubmit={handleSubmit}
-        toolName='grammar'
+        toolName="grammar"
         sticky={530}
         ExtraCounter={
           userInput ? (
-            <Stack direction='row' spacing={1} alignItems='center'>
+            <Stack direction="row" spacing={1} alignItems="center">
               <StickyNote2Rounded sx={{ color: "text.secondary" }} />
               <Typography
                 sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                variant='subtitle2'
+                variant="subtitle2"
               >
                 Errors:{" "}
                 {errorChecking ? (
-                  <CircularProgress color='error.main' size={18} />
+                  <CircularProgress color="error.main" size={18} />
                 ) : (
                   <Box sx={{ color: "error.main" }}>
                     <Typography
                       sx={{
                         fontWeight: 600,
                       }}
-                      component='span'
+                      component="span"
                     >
                       {errors.length}
                     </Typography>
@@ -112,10 +112,10 @@ const BottomContend = ({
           ) : null
         }
       >
-        <Stack direction='row' spacing={1} alignItems='center'>
+        <Stack direction="row" spacing={1} alignItems="center">
           {outputContend && (
             <>
-              <Tooltip title='Export' placement='top' arrow>
+              <Tooltip title="Export" placement="top" arrow>
                 <IconButton
                   onClick={handleDownload}
                   sx={{
@@ -127,13 +127,13 @@ const BottomContend = ({
                       boxShadow: "none",
                     },
                   }}
-                  aria-label='download'
-                  size='large'
+                  aria-label="download"
+                  size="large"
                 >
                   <VerticalAlignBottom sx={{ fontWeight: 600 }} />
                 </IconButton>
               </Tooltip>
-              <Tooltip title='Copy Full Text' placement='top' arrow>
+              <Tooltip title="Copy Full Text" placement="top" arrow>
                 <IconButton
                   onClick={handleCopy}
                   sx={{
@@ -145,8 +145,8 @@ const BottomContend = ({
                       boxShadow: "none",
                     },
                   }}
-                  aria-label='copy'
-                  size='large'
+                  aria-label="copy"
+                  size="large"
                 >
                   <ContentCopy />
                 </IconButton>
@@ -157,7 +157,7 @@ const BottomContend = ({
       </WordCounter>
       {/* error  */}
       {errors?.length ? (
-        <Stack direction='row' alignItems='center' spacing={1} mb={1}>
+        <Stack direction="row" alignItems="center" spacing={1} mb={1}>
           {errors?.map((text) => (
             <span
               key={text}

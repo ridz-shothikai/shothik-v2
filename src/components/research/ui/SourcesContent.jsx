@@ -28,7 +28,7 @@ export default function SourcesContent({ sources }) {
   // Remove duplicates based on URL
   const uniqueSources = sources.filter(
     (source, index, self) =>
-      index === self.findIndex((s) => s.url === source.url)
+      index === self.findIndex((s) => s.url === source.url),
   );
 
   return (
@@ -36,7 +36,7 @@ export default function SourcesContent({ sources }) {
       sx={{
         px: 2,
         py: 3,
-        mb: { xs: 17, sm: 7 , md: 5},
+        mb: { xs: 17, sm: 7, md: 5 },
       }}
     >
       <Grid container spacing={1}>
@@ -70,7 +70,7 @@ export default function SourcesContent({ sources }) {
                   const displayUrl = source.resolved_url || source.url;
                   const hostname = new URL(displayUrl).hostname.replace(
                     "www.",
-                    ""
+                    "",
                   );
                   return (
                     <Typography

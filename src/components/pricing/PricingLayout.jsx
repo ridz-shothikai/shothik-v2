@@ -100,8 +100,8 @@ export default function PricingLayout({ children, TitleContend }) {
                     location === "bangladesh"
                       ? "bkash"
                       : location === "india"
-                      ? "razor"
-                      : "stripe"
+                        ? "razor"
+                        : "stripe"
                   }
                   country={location}
                 />
@@ -121,8 +121,8 @@ export default function PricingLayout({ children, TitleContend }) {
                   location === "bangladesh"
                     ? "bkash"
                     : location === "india"
-                    ? "razor"
-                    : "stripe"
+                      ? "razor"
+                      : "stripe"
                 }
                 user={user}
               />

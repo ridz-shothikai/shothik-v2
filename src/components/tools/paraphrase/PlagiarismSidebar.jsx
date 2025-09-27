@@ -1,6 +1,5 @@
-
 // PlagiarismSidebar.jsx
-import React from 'react';
+import React from "react";
 import { Box, IconButton } from "@mui/material";
 import {
   Close,
@@ -12,15 +11,15 @@ import {
 } from "@mui/icons-material";
 
 import PlagiarismTab from "./actions/PlagiarismTab";
-import HistoryTab        from "./actions/HistoryTab";   // to come
-import ToneTab           from "./actions/ToneTab";      // to come
-import CompareTab        from "./actions/CompareTab";   // to come
+import HistoryTab from "./actions/HistoryTab"; // to come
+import ToneTab from "./actions/ToneTab"; // to come
+import CompareTab from "./actions/CompareTab"; // to come
 
 const tabs = [
-  { id: "plagiarism", icon: <Gavel />,       component: PlagiarismTab },
-  { id: "history",    icon: <History />,     component: HistoryTab },
-  { id: "tone",       icon: <SentimentSatisfiedAlt />, component: ToneTab },
-  { id: "compare",    icon: <Compare />, component: CompareTab },
+  { id: "plagiarism", icon: <Gavel />, component: PlagiarismTab },
+  { id: "history", icon: <History />, component: HistoryTab },
+  { id: "tone", icon: <SentimentSatisfiedAlt />, component: ToneTab },
+  { id: "compare", icon: <Compare />, component: CompareTab },
 ];
 
 const PlagiarismSidebar = ({
@@ -76,13 +75,20 @@ const PlagiarismSidebar = ({
           {tabs.map((t) => (
             <Box
               key={t.id}
-              onClick={disableActions && t.id !== "history" ? null : () => setActive(t.id)}
+              onClick={
+                disableActions && t.id !== "history"
+                  ? null
+                  : () => setActive(t.id)
+              }
               sx={{
                 flex: 1,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                cursor: disableActions && t.id !== "history" ? "not-allowed" : "pointer",
+                cursor:
+                  disableActions && t.id !== "history"
+                    ? "not-allowed"
+                    : "pointer",
               }}
             >
               <IconButton

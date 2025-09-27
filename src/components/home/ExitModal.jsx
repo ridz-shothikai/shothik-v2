@@ -2,66 +2,64 @@
 
 import { useEffect, useState } from "react";
 import {
-    Dialog,
-    DialogContent,
-    Typography,
-    Button,
-    IconButton,
-    Box,
-    Stack,
-    useTheme
-  } from '@mui/material';
-  import { Close } from '@mui/icons-material';
-  import { styled } from '@mui/material/styles';
+  Dialog,
+  DialogContent,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Stack,
+  useTheme,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 import { useComponentTracking } from "../../hooks/useComponentTracking";
 import { trackingList } from "../../libs/trackingList";
-import {useExitIntent} from "../../hooks/useExitIntent"
+import { useExitIntent } from "../../hooks/useExitIntent";
 
-  
 const StyledDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialog-paper': {
-      borderRadius: '16px',
-      maxWidth: '448px',
-      width: '100%',
-      margin: theme.spacing(2),
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-    },
-    '& .MuiBackdrop-root': {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    }
-  }));
-  
-  const ClaimButton = styled(Button)(({ theme }) => ({
-    backgroundColor: '#059669',
-    color: 'white',
-    padding: '12px 24px',
-    borderRadius: '8px',
-    fontWeight: 600,
-    textTransform: 'none',
-    fontSize: '16px',
-    '&:hover': {
-      backgroundColor: '#047857',
-    },
-  }));
-  
-  const DeclineButton = styled(Button)(({ theme }) => ({
-    color: '#6b7280',
-    padding: '8px 24px',
-    textTransform: 'none',
-    fontSize: '16px',
-    '&:hover': {
-      color: '#374151',
-      backgroundColor: 'transparent',
-    },
-  }));
+  "& .MuiDialog-paper": {
+    borderRadius: "16px",
+    maxWidth: "448px",
+    width: "100%",
+    margin: theme.spacing(2),
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+  },
+  "& .MuiBackdrop-root": {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+}));
 
+const ClaimButton = styled(Button)(({ theme }) => ({
+  backgroundColor: "#059669",
+  color: "white",
+  padding: "12px 24px",
+  borderRadius: "8px",
+  fontWeight: 600,
+  textTransform: "none",
+  fontSize: "16px",
+  "&:hover": {
+    backgroundColor: "#047857",
+  },
+}));
 
-export default function ExitModal({setOpen}) {
+const DeclineButton = styled(Button)(({ theme }) => ({
+  color: "#6b7280",
+  padding: "8px 24px",
+  textTransform: "none",
+  fontSize: "16px",
+  "&:hover": {
+    color: "#374151",
+    backgroundColor: "transparent",
+  },
+}));
+
+export default function ExitModal({ setOpen }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
   const [showExitIntent, setShowExitIntent] = useState(false);
   const { componentRef, trackClick } = useComponentTracking(
-    trackingList.EXIT_INTENT_MODAL
+    trackingList.EXIT_INTENT_MODAL,
   );
 
   // Exit intent for modal
@@ -203,7 +201,7 @@ export default function ExitModal({setOpen}) {
                   lineHeight: 1.2,
                 }}
               >
-                Wait! Don't Leave Yet
+                Wait! Don&apos;t Leave Yet
               </Typography>
 
               <Typography
@@ -234,7 +232,7 @@ export default function ExitModal({setOpen}) {
                   onClick={handleClose}
                   variant="text"
                 >
-                  No thanks, I'll struggle with my writing
+                  No thanks, I&apos;ll struggle with my writing
                 </DeclineButton>
               </Stack>
             </Stack>

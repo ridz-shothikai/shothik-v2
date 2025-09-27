@@ -25,9 +25,9 @@ const initialState = {
 };
 
 const researchSlice = createSlice({
-    name: 'research',
-    initialState,
-    reducers: {
-        setResearchToken
-    }
-})
+  name: "research",
+  initialState,
+  reducers: {
+    setResearchToken,
+  },
+});

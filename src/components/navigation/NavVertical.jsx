@@ -17,8 +17,6 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const { user, accessToken } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
 
-  
-
   return (
     <Box
       component="nav"
@@ -50,8 +48,15 @@ export default function NavVertical({ openNav, onCloseNav }) {
           },
         }}
       >
-        <Box sx={{display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between"}}>
-          <Box sx={{ bgcolor: "background.paper", height: 1}}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ bgcolor: "background.paper", height: 1 }}>
             <Stack
               spacing={3}
               sx={{
@@ -72,14 +77,9 @@ export default function NavVertical({ openNav, onCloseNav }) {
 
             <Box sx={{ flexGrow: 1 }} />
           </Box>
-            <Box sx={{ mt: 8}}>
-              {
-                !accessToken ?
-                <UserInfo/>
-                :
-                <NavigantionIcons/>
-              }
-            </Box>
+          <Box sx={{ mt: 8 }}>
+            {!accessToken ? <UserInfo /> : <NavigantionIcons />}
+          </Box>
         </Box>
       </Drawer>
     </Box>

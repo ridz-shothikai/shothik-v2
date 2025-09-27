@@ -82,8 +82,8 @@ export const HeroSection = () => {
           }}
         >
           <Stack
-            direction='column'
-            justifyContent='center'
+            direction="column"
+            justifyContent="center"
             gap={2}
             sx={{
               px: { xs: 2, sm: 4 },
@@ -117,7 +117,7 @@ export const HeroSection = () => {
             >
               {item.description}
             </Typography>
-            <Stack direction='row' alignItems='center' flexWrap='wrap' gap={2}>
+            <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
               {item.buttons.map((button, buttonIndex) => (
                 <Link
                   key={buttonIndex}

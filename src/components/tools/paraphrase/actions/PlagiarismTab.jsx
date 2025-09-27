@@ -8,28 +8,32 @@ import {
   IconButton,
   CircularProgress,
   Button,
-  Chip
+  Chip,
 } from "@mui/material";
 import { ExpandMore, Refresh, Cached } from "@mui/icons-material";
 import useGlobalPlagiarismCheck from "../../../../hooks/useGlobalPlagiarismCheck";
 
 const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
   const { demo } = useSelector((s) => s.settings);
-  
+
   const {
     loading,
     score: realScore,
     results: realResults,
     error,
     fromCache,
-    manualRefresh
+    manualRefresh,
   } = useGlobalPlagiarismCheck(text);
 
   // Determine which score and results to display
-  const displayScore = [true, "plagiarism_low", "plagiarism_high"].includes(demo)
+  const displayScore = [true, "plagiarism_low", "plagiarism_high"].includes(
+    demo,
+  )
     ? propScore
     : realScore;
-  const displayResults = [true, "plagiarism_low", "plagiarism_high"].includes(demo)
+  const displayResults = [true, "plagiarism_low", "plagiarism_high"].includes(
+    demo,
+  )
     ? propResults
     : realResults;
 
@@ -37,13 +41,20 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
 
   return (
     <Box sx={{ px: 2, py: 1 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
         <Typography variant="h6" fontWeight="bold">
           Plagiarism Checker
         </Typography>
-        
+
         {!isDemo && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {/* {fromCache && (
               <Chip 
                 icon={<Cached />} 
@@ -53,8 +64,8 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
                 variant="outlined"
               />
             )} */}
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={manualRefresh}
               disabled={loading || !text?.trim()}
               title="Refresh check"
@@ -64,29 +75,35 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
           </Box>
         )}
       </Box>
-      
+
       <Divider sx={{ mb: 2 }} />
 
       <Paper
         variant="outlined"
         sx={{
-          bgcolor: loading ? "grey.100" : error ? "error.light" : "success.light",
+          bgcolor: loading
+            ? "grey.100"
+            : error
+              ? "error.light"
+              : "success.light",
           p: 2,
           mb: 2,
           textAlign: "center",
           minHeight: 100,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center'
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
         }}
       >
         {loading ? (
-          <Box sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-            alignItems: "center"
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
             <CircularProgress size={24} sx={{ mb: 1 }} />
             <Typography variant="caption" color="text.secondary">
               Checking plagiarism...
@@ -100,9 +117,9 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
             <Typography variant="caption" color="error">
               {error}
             </Typography>
-            <Button 
-              size="small" 
-              onClick={manualRefresh} 
+            <Button
+              size="small"
+              onClick={manualRefresh}
               sx={{ mt: 1 }}
               variant="outlined"
               color="error"

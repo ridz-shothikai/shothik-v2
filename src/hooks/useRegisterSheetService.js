@@ -37,7 +37,7 @@ const useSheetAIToken = () => {
           body: JSON.stringify({
             email: user?.email,
           }),
-        }
+        },
       );
 
       if (!response.ok) {

@@ -1,32 +1,28 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
+  Avatar,
   Box,
-  Typography,
+  Button,
   Card,
   CardContent,
-  Avatar,
-  Button,
   Container,
   Grid,
-  Chip,
-  useTheme,
+  Typography,
   useMediaQuery,
-  Snackbar,
-  Alert,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
 import {
-  Star,
-  GraduationCap,
-  Award,
-  TrendingUp,
-  Building,
   ArrowRight,
+  Award,
+  Building,
+  GraduationCap,
+  Star,
+  TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import EmailModal from "../EmailCollectModal";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
@@ -156,9 +152,12 @@ export default function JobsTestimonialsSection() {
 
   const [showModal, setShowModal] = useState(false);
 
-  const { componentRef, trackClick } = useComponentTracking(trackingList.REAL_RESULT, {
-    viewThreshold: 0.3,
-  });  
+  const { componentRef, trackClick } = useComponentTracking(
+    trackingList.REAL_RESULT,
+    {
+      viewThreshold: 0.3,
+    },
+  );
 
   const [toast, setToast] = useState({
     open: false,
@@ -166,51 +165,53 @@ export default function JobsTestimonialsSection() {
     severity: "success", // 'success', 'error', 'warning', 'info'
   });
 
-    const [
-      registerUserForBetaList,
-      { isLoading: registerUserProcessing, isError: registerUserError },
-    ] = useRegisterUserToBetaListMutation();  
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
 
-    const handleEmailSubmit = async (email) => {
-      try {
-        const result = await registerUserForBetaList({ email }).unwrap();
+  const handleEmailSubmit = async (email) => {
+    try {
+      const result = await registerUserForBetaList({ email }).unwrap();
 
-        console.log(result, "result");
+      console.log(result, "result");
 
-        // Success toast
-        setToast({
-          open: true,
-          message: "Successfully registered for beta! We'll be in touch soon.",
-          severity: "success",
-        });
+      // Success toast
+      setToast({
+        open: true,
+        message: "Successfully registered for beta! We'll be in touch soon.",
+        severity: "success",
+      });
 
-        // Close the modal
-        setShowModal(false);
-      } catch (error) {
-        // Error toast
-        setToast({
-          open: true,
-          message:
-            error?.data?.message || "Registration failed. Please try again.",
-          severity: "error",
-        });
-      }
-    };
+      // Close the modal
+      setShowModal(false);
+    } catch (error) {
+      // Error toast
+      setToast({
+        open: true,
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
+        severity: "error",
+      });
+    }
+  };
 
-    const handleCloseToast = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
-      setToast((prev) => ({ ...prev, open: false }));
-    };
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToast((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>
       <StyledSection
         ref={componentRef}
-        sx={{
-          // bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
-        }}
+        sx={
+          {
+            // bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
+          }
+        }
       >
         <Container maxWidth="xl">
           {/* Jobs-style Header */}
@@ -353,7 +354,7 @@ export default function JobsTestimonialsSection() {
                           fontStyle: "italic",
                         }}
                       >
-                        "{story.story}"
+                        &quot;{story.story}&quot;
                       </Typography>
 
                       {/* Career Transition */}
@@ -425,7 +426,7 @@ export default function JobsTestimonialsSection() {
             </Box>
           </motion.div>
         </Container>
-      </StyledSection>       
+      </StyledSection>
     </>
   );
 }

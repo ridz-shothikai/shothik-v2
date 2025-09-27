@@ -19,9 +19,9 @@ const CTAImage = () => {
             ? "/home/cta-dark.png"
             : "/home/cta-light.png"
         }
-        alt='Sample illustration'
-        layout='fill'
-        objectFit='contain'
+        alt="Sample illustration"
+        layout="fill"
+        objectFit="contain"
         style={{ borderRadius: "10px" }}
       />
     </div>

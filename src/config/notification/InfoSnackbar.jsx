@@ -20,8 +20,8 @@ export default function InfoSnackbar({ open, onClose, message }) {
     >
       <Alert
         onClose={handleClose}
-        severity='info'
-        variant='outlined'
+        severity="info"
+        variant="outlined"
         sx={{
           width: "100%",
           zIndex: 9999,

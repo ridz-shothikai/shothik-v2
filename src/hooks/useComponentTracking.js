@@ -24,7 +24,7 @@ export const useComponentTracking = (componentName, trackingConfig = {}) => {
           });
         }
       },
-      { threshold: trackingConfig.viewThreshold || 0.5 }
+      { threshold: trackingConfig.viewThreshold || 0.5 },
     );
 
     observer.observe(componentRef.current);
@@ -49,13 +49,13 @@ export const useComponentTracking = (componentName, trackingConfig = {}) => {
         ...additionalData,
       });
     },
-    [componentName, trackEvent, isLoaded, consent]
+    [componentName, trackEvent, isLoaded, consent],
   );
 
   // Track form interactions
   const trackFormInteraction = useCallback(
     (action, fieldName, value = null) => {
-      if(!isLoaded || !consent) return;
+      if (!isLoaded || !consent) return;
 
       trackEvent("form_interaction", {
         component_name: componentName,
@@ -64,7 +64,7 @@ export const useComponentTracking = (componentName, trackingConfig = {}) => {
         field_value: value ? String(value).length : null, // Don't send actual values for privacy
       });
     },
-    [componentName, trackEvent, isLoaded, consent]
+    [componentName, trackEvent, isLoaded, consent],
   );
 
   // Track conversion events
@@ -77,13 +77,13 @@ export const useComponentTracking = (componentName, trackingConfig = {}) => {
         timestamp: Date.now(),
       });
     },
-    [componentName, trackEvent]
+    [componentName, trackEvent],
   );
 
   return {
     componentRef,
     trackClick,
     trackFormInteraction,
-    trackConversion
+    trackConversion,
   };
-}
+};

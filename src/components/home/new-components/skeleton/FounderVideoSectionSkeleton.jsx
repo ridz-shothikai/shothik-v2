@@ -1,7 +1,6 @@
 import { Box, Grid, Skeleton, Stack, Paper } from "@mui/material";
 
 export default function FounderVideoSectionSkeleton() {
-
   return (
     <Box
       component="section"
@@ -11,7 +10,7 @@ export default function FounderVideoSectionSkeleton() {
         py: { xs: 4, md: 8 },
         width: "100%",
         maxWidth: "1400px",
-        mx: "auto"
+        mx: "auto",
       }}
     >
       <Grid container spacing={6} alignItems="center">

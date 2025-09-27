@@ -1,29 +1,28 @@
-
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import Image from 'next/image';
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import Image from "next/image";
 import {
   Box,
   Typography,
   TextField,
   Button,
   CircularProgress,
-  Alert
+  Alert,
 } from "@mui/material";
 
 const FeedbackTab = () => {
   // grab user & token from your auth slice
   const { user, accessToken } = useSelector((state) => state.auth);
 
-  const [feedback, setFeedback] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState(null);
-  const [success, setSuccess]   = useState(null);
+  const [feedback, setFeedback] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleSubmit = async () => {
     // simple client-side validation
     if (!feedback.trim()) {
-      setError('Please write some feedback before submitting.');
+      setError("Please write some feedback before submitting.");
       return;
     }
 
@@ -34,7 +33,8 @@ const FeedbackTab = () => {
     try {
       const res = await fetch(
         `${
-          process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api"}/feedback`,
+          process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api"
+        }/feedback`,
         {
           method: "POST",
           headers: {
@@ -42,17 +42,17 @@ const FeedbackTab = () => {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ message: feedback }),
-        }
+        },
       );
 
       if (!res.ok) {
         const data = await res.json();
         // server might return { error: '...' }
-        throw new Error(data.error || 'Failed to submit feedback.');
+        throw new Error(data.error || "Failed to submit feedback.");
       }
 
-      setSuccess('Thank you for your feedback!');
-      setFeedback('');
+      setSuccess("Thank you for your feedback!");
+      setFeedback("");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -102,10 +102,10 @@ const FeedbackTab = () => {
         disabled={loading}
         startIcon={loading ? <CircularProgress size={20} /> : null}
       >
-        {loading ? 'Submitting...' : 'Submit'}
+        {loading ? "Submitting..." : "Submit"}
       </Button>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
         <Image
           src="/moscot.png"
           alt="moscot"
@@ -119,4 +119,3 @@ const FeedbackTab = () => {
 };
 
 export default FeedbackTab;
-

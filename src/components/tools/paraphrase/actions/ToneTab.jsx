@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import {
   Box,
   Typography,
@@ -7,105 +7,108 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  useTheme
-} from '@mui/material'
+  useTheme,
+} from "@mui/material";
 
 const redirectPrefix = "p-v2";
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
+  process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+  "/" +
+  redirectPrefix +
+  "/api";
 
 const METRICS = [
-  { key: 'casualFormal',       labels: ['Casual',     'Formal']   },
-  { key: 'unfriendlyFriendly', labels: ['Unfriendly','Friendly'] },
-  { key: 'wordyConcise',       labels: ['Wordy',      'Concise']  },
-  { key: 'complexSimple',      labels: ['Complex',    'Simple']   },
-]
+  { key: "casualFormal", labels: ["Casual", "Formal"] },
+  { key: "unfriendlyFriendly", labels: ["Unfriendly", "Friendly"] },
+  { key: "wordyConcise", labels: ["Wordy", "Concise"] },
+  { key: "complexSimple", labels: ["Complex", "Simple"] },
+];
 
 const ToneTab = ({ text, plainOutput }) => {
-  const theme = useTheme()
-  const { accessToken } = useSelector((state) => state.auth)
+  const theme = useTheme();
+  const { accessToken } = useSelector((state) => state.auth);
 
-  const originalText = text
-  const paraphrasedText = plainOutput
+  const originalText = text;
+  const paraphrasedText = plainOutput;
 
-  const [scores, setScores] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [scores, setScores] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!originalText || !paraphrasedText) return
+    if (!originalText || !paraphrasedText) return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     async function fetchScores() {
       try {
-        console.log('Fetching tone scores', { originalText, paraphrasedText })
+        console.log("Fetching tone scores", { originalText, paraphrasedText });
         const res = await fetch(`${API_BASE}/tone/check`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ originalText, paraphrasedText }),
-        })
+        });
         if (!res.ok) {
-          throw new Error(`API returned status ${res.status}`)
+          throw new Error(`API returned status ${res.status}`);
         }
-        const data = await res.json()
-        console.log('Tone scores data:', data)
-        setScores(data)
+        const data = await res.json();
+        console.log("Tone scores data:", data);
+        setScores(data);
       } catch (err) {
-        console.error('Error fetching tone scores', err)
-        setError(err.message)
+        console.error("Error fetching tone scores", err);
+        setError(err.message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchScores()
-  }, [originalText, paraphrasedText, accessToken])
+    fetchScores();
+  }, [originalText, paraphrasedText, accessToken]);
 
   return (
     <Box
       sx={{
-        width: '100%',
+        width: "100%",
         px: { xs: 1, sm: 2, md: 3 },
         py: { xs: 1, sm: 2 },
       }}
     >
       {/* Header */}
-      <Typography sx={{ fontSize: 14, fontWeight: 'bold', mb: 1 }}>
+      <Typography sx={{ fontSize: 14, fontWeight: "bold", mb: 1 }}>
         Tone
       </Typography>
 
       {/* Legend */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           gap: 2,
           mb: 2,
-          flexWrap: 'wrap',
+          flexWrap: "wrap",
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Box
             sx={{
               width: 8,
               height: 8,
-              borderRadius: '50%',
+              borderRadius: "50%",
               bgcolor: theme.palette.grey[700],
             }}
           />
           <Typography sx={{ fontSize: 14 }}>Original</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Box
             sx={{
               width: 8,
               height: 8,
-              borderRadius: '50%',
+              borderRadius: "50%",
               bgcolor: theme.palette.success.main,
             }}
           />
@@ -115,7 +118,7 @@ const ToneTab = ({ text, plainOutput }) => {
 
       {/* Loading */}
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={24} />
         </Box>
       )}
@@ -132,8 +135,14 @@ const ToneTab = ({ text, plainOutput }) => {
         <Stack spacing={2}>
           {METRICS.map(({ key, labels }) => {
             // Expect scores in range 0–100
-            const origScore = Math.max(0, Math.min(100, Number(scores.original?.[key] ?? 0)))
-            const paraScore = Math.max(0, Math.min(100, Number(scores.paraphrased?.[key] ?? 0)))
+            const origScore = Math.max(
+              0,
+              Math.min(100, Number(scores.original?.[key] ?? 0)),
+            );
+            const paraScore = Math.max(
+              0,
+              Math.min(100, Number(scores.paraphrased?.[key] ?? 0)),
+            );
 
             return (
               <Card key={key} variant="outlined" sx={{ borderRadius: 2 }}>
@@ -142,19 +151,19 @@ const ToneTab = ({ text, plainOutput }) => {
                     {/* Original bar */}
                     <Box
                       sx={{
-                        position: 'relative',
+                        position: "relative",
                         height: 8,
-                        borderRadius: '4px',
+                        borderRadius: "4px",
                         bgcolor: theme.palette.grey[200],
-                        overflow: 'hidden',
+                        overflow: "hidden",
                       }}
                     >
                       <Box
                         sx={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 0,
                           left: 0,
-                          height: '100%',
+                          height: "100%",
                           width: `${origScore}%`,
                           bgcolor: theme.palette.grey[700],
                         }}
@@ -163,26 +172,28 @@ const ToneTab = ({ text, plainOutput }) => {
                     {/* Paraphrased bar */}
                     <Box
                       sx={{
-                        position: 'relative',
+                        position: "relative",
                         height: 8,
-                        borderRadius: '4px',
+                        borderRadius: "4px",
                         bgcolor: theme.palette.success.lighter,
-                        overflow: 'hidden',
+                        overflow: "hidden",
                       }}
                     >
                       <Box
                         sx={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: 0,
                           left: 0,
-                          height: '100%',
+                          height: "100%",
                           width: `${paraScore}%`,
                           bgcolor: theme.palette.success.main,
                         }}
                       />
                     </Box>
                     {/* Labels */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
                       <Typography noWrap sx={{ fontSize: 12 }}>
                         {labels[0]}
                       </Typography>
@@ -193,13 +204,12 @@ const ToneTab = ({ text, plainOutput }) => {
                   </Stack>
                 </CardContent>
               </Card>
-            )
+            );
           })}
         </Stack>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default ToneTab
-
+export default ToneTab;

@@ -36,7 +36,7 @@ export default function AgentMessage({ message, handleSideView }) {
 
   return (
     <Box>
-      <Stack direction='row' gap={2} alignItems='center'>
+      <Stack direction="row" gap={2} alignItems="center">
         <SmartToyIcon sx={{ color: "#00A76F", fontSize: 30 }} />
         <Typography fontWeight={600}>Shothik AI Agent</Typography>
       </Stack>
@@ -56,7 +56,7 @@ export default function AgentMessage({ message, handleSideView }) {
       {data.slice(1, data.length).map((item, index, arr) => (
         <Stack sx={{ position: "relative" }} key={index}>
           <Box sx={{ position: "absolute", left: 0, top: 10, zIndex: 20 }}>
-            <CheckCircle fontSize='small' sx={{ color: "primary.main" }} />
+            <CheckCircle fontSize="small" sx={{ color: "primary.main" }} />
           </Box>
           <Box
             sx={{

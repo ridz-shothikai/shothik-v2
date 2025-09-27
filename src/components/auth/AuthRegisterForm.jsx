@@ -72,7 +72,7 @@ export default function AuthRegisterForm({ country, loading }) {
       .max(20, "Password must not exceed 20 characters")
       .notOneOf(
         commonPasswords,
-        "This password is too common. Please choose a stronger one."
+        "This password is too common. Please choose a stronger one.",
       )
       .required("Password is required"),
   });
@@ -125,26 +125,26 @@ export default function AuthRegisterForm({ country, loading }) {
       <Stack spacing={2.5}>
         {/* After submit error */}
         {!!errors.afterSubmit && (
-          <Alert severity='error'>{errors.afterSubmit.message}</Alert>
+          <Alert severity="error">{errors.afterSubmit.message}</Alert>
         )}
         {/* Server error */}
-        {isError && <Alert severity='error'>{error?.data?.message}</Alert>}
+        {isError && <Alert severity="error">{error?.data?.message}</Alert>}
 
         {/* Form fields */}
-        <RHFTextField name='firstName' label='First name' size='small' />
-        <RHFTextField name='lastName' label='Last name' size='small' />
-        <RHFTextField name='email' label='Email address' size='small' />
+        <RHFTextField name="firstName" label="First name" size="small" />
+        <RHFTextField name="lastName" label="Last name" size="small" />
+        <RHFTextField name="email" label="Email address" size="small" />
         <RHFTextField
-          name='password'
-          label='Password'
-          size='small'
+          name="password"
+          label="Password"
+          size="small"
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end'>
+              <InputAdornment position="end">
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
-                  edge='end'
+                  edge="end"
                 >
                   {showPassword ? (
                     <RemoveRedEyeRounded />
@@ -161,13 +161,13 @@ export default function AuthRegisterForm({ country, loading }) {
         <Stack spacing={1.5}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {methods.watch("password").length >= 6 ? (
-              <Image src='/green_tick.svg' width={20} height={20} alt='Valid' />
+              <Image src="/green_tick.svg" width={20} height={20} alt="Valid" />
             ) : (
               <Image
-                src='/gray_tick.svg'
+                src="/gray_tick.svg"
                 width={20}
                 height={20}
-                alt='Invalid'
+                alt="Invalid"
               />
             )}
             <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
@@ -179,9 +179,9 @@ export default function AuthRegisterForm({ country, loading }) {
         {/* Submit button */}
         <Button
           fullWidth
-          size='large'
-          type='submit'
-          variant='contained'
+          size="large"
+          type="submit"
+          variant="contained"
           loading={isLoading || loading}
         >
           Create account --

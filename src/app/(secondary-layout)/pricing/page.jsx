@@ -15,20 +15,21 @@ export default function PricingPage() {
       TitleContend={
         <>
           <Typography
-            variant='h3'
-            align='center'
+            variant="h3"
+            align="center"
             sx={{ color: "error.contrastText" }}
           >
             Our pricing plan made simple.
           </Typography>
 
           <Typography
-            align='center'
+            align="center"
             sx={{ color: "error.contrastText", maxWidth: "sm" }}
           >
             Discover the right plan for your needs and take advantage of
-            Shothik.ai's powerful tools. Whether you're just getting started or
-            need advanced features for your business, we've got you covered.
+            Shothik.ai&apos;s powerful tools. Whether you&apos;re just getting
+            started or need advanced features for your business, we&apos;ve got
+            you covered.
           </Typography>
         </>
       }

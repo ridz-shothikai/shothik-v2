@@ -17,7 +17,7 @@ export default function ComingSoon() {
     >
       <Box>
         <Typography
-          variant='h2'
+          variant="h2"
           sx={{
             background: "linear-gradient(135deg, #00A76F 0%, #0B4D42 100%)",
             WebkitBackgroundClip: "text",
@@ -34,17 +34,17 @@ export default function ComingSoon() {
       </Box>
 
       <VideoImage
-        lightImage='/home/hero/hero-light.webp'
-        darkImage='/home/hero/hero-dark.webp'
+        lightImage="/home/hero/hero-light.webp"
+        darkImage="/home/hero/hero-dark.webp"
         height={400}
         width={400}
       />
 
       <Stack
         spacing={1}
-        alignItems='center'
-        justifyContent='center'
-        direction='row'
+        alignItems="center"
+        justifyContent="center"
+        direction="row"
       >
         {_socials.map((social) => (
           <IconButton

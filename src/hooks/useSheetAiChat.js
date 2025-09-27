@@ -9,32 +9,35 @@ export const useSheetAiChat = () => {
   const createChat = useCallback(async (name, userEmail) => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/sheet/chat/create`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'X-SheetAi-Token': localStorage.getItem('sheet-token'),
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URI}/sheet/chat/create`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "X-SheetAi-Token": localStorage.getItem("sheet-token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, userEmail }),
         },
-        body: JSON.stringify({ name, userEmail })
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
-        setChats(prev => [...prev, result.data]);
+        setChats((prev) => [...prev, result.data]);
         return result.data;
       } else {
         throw new Error(result.error);
       }
     } catch (error) {
-      console.error('Failed to create chat:', error);
+      console.error("Failed to create chat:", error);
       setError(error);
       throw error;
     } finally {
@@ -45,16 +48,16 @@ export const useSheetAiChat = () => {
   const getMyChats = useCallback(async (userEmail) => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch('/api/sheet/chat/my-chats', {
-        method: 'GET',
+      const response = await fetch("/api/sheet/chat/my-chats", {
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          'X-SheetAi-Token': localStorage.getItem('sheet-token'),
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "X-SheetAi-Token": localStorage.getItem("sheet-token"),
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userEmail })
+        body: JSON.stringify({ userEmail }),
       });
 
       if (!response.ok) {
@@ -62,7 +65,7 @@ export const useSheetAiChat = () => {
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         setChats(result.data);
         return result.data;
@@ -70,7 +73,7 @@ export const useSheetAiChat = () => {
         throw new Error(result.error);
       }
     } catch (error) {
-      console.error('Failed to get chats:', error);
+      console.error("Failed to get chats:", error);
       setError(error);
       throw error;
     } finally {
@@ -81,13 +84,13 @@ export const useSheetAiChat = () => {
   const deleteChat = useCallback(async (chatId) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`/api/sheet/chat/${chatId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
       });
 
       if (!response.ok) {
@@ -95,15 +98,15 @@ export const useSheetAiChat = () => {
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
-        setChats(prev => prev.filter(chat => chat.id !== chatId));
+        setChats((prev) => prev.filter((chat) => chat.id !== chatId));
         return result.data;
       } else {
         throw new Error(result.error);
       }
     } catch (error) {
-      console.error('Failed to delete chat:', error);
+      console.error("Failed to delete chat:", error);
       setError(error);
       throw error;
     } finally {
@@ -117,6 +120,6 @@ export const useSheetAiChat = () => {
     error,
     createChat,
     getMyChats,
-    deleteChat
+    deleteChat,
   };
 };

@@ -72,8 +72,8 @@ const ImageGrid = ({ images, showAll = false }) => {
           }}
         >
           <Box>
-            <Typography variant='h6'>Search Images</Typography>
-            <Typography variant='body2' color='text.secondary'>
+            <Typography variant="h6">Search Images</Typography>
+            <Typography variant="body2" color="text.secondary">
               {selectedImage + 1} of {images.length}
             </Typography>
           </Box>
@@ -81,8 +81,8 @@ const ImageGrid = ({ images, showAll = false }) => {
           <IconButton
             onClick={() => setIsOpen(false)}
             disabled={false}
-            color='text.secondary'
-            aria-label='Close'
+            color="text.secondary"
+            aria-label="Close"
             sx={{
               position: "absolute",
               top: 8,
@@ -90,7 +90,7 @@ const ImageGrid = ({ images, showAll = false }) => {
               p: 0.5,
             }}
           >
-            <Close size='small' />
+            <Close size="small" />
           </IconButton>
         </Box>
 
@@ -122,7 +122,7 @@ const ImageGrid = ({ images, showAll = false }) => {
           }}
           onClick={() =>
             setSelectedImage((prev) =>
-              prev === 0 ? images.length - 1 : prev - 1
+              prev === 0 ? images.length - 1 : prev - 1,
             )
           }
         >
@@ -138,7 +138,7 @@ const ImageGrid = ({ images, showAll = false }) => {
           }}
           onClick={() =>
             setSelectedImage((prev) =>
-              prev === images.length - 1 ? 0 : prev + 1
+              prev === images.length - 1 ? 0 : prev + 1,
             )
           }
         >
@@ -156,7 +156,7 @@ const ImageGrid = ({ images, showAll = false }) => {
               p: 2,
             }}
           >
-            <Typography variant='body2'>
+            <Typography variant="body2">
               {images[selectedImage].description}
             </Typography>
           </Box>
@@ -218,7 +218,7 @@ const ImageGrid = ({ images, showAll = false }) => {
                 }}
               >
                 <Typography
-                  variant='caption'
+                  variant="caption"
                   sx={{
                     color: "white",
                     display: "-webkit-box",
@@ -242,7 +242,7 @@ const ImageGrid = ({ images, showAll = false }) => {
                   backgroundColor: "rgba(0, 0, 0, 0.6)",
                 }}
               >
-                <Typography variant='caption' sx={{ color: "white" }}>
+                <Typography variant="caption" sx={{ color: "white" }}>
                   +{images.length - (isDesktop ? 5 : 3)}
                 </Typography>
               </Box>
@@ -253,7 +253,7 @@ const ImageGrid = ({ images, showAll = false }) => {
 
       {/* Modal Dialog for Image Viewer (Desktop) */}
       {isDesktop ? (
-        <Dialog open={isOpen} onClose={() => setIsOpen(false)} maxWidth='lg'>
+        <Dialog open={isOpen} onClose={() => setIsOpen(false)} maxWidth="lg">
           <DialogContent sx={{ p: 0, borderRadius: 0 }}>
             <ImageViewer selectedImage={selectedImage} images={images} />
           </DialogContent>
@@ -302,17 +302,17 @@ const WebSearch = ({ data }) => {
           expandIcon={<ExpandMore sx={{ color: "text.secondary" }} />}
         >
           <Stack
-            direction='row'
-            alignItems='center'
-            justifyContent='space-between'
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
             sx={{ width: "100%" }}
           >
-            <Stack direction='row' alignItems='center' spacing={0.5}>
-              <Language fontSize='small' sx={{ color: "text.secondary" }} />
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Language fontSize="small" sx={{ color: "text.secondary" }} />
               <Typography sx={{ fontWeight: 500 }}>Sources Found</Typography>
             </Stack>
             <Chip
-              icon={<SearchIcon fontSize='small' sx={{ color: "inherit" }} />}
+              icon={<SearchIcon fontSize="small" sx={{ color: "inherit" }} />}
               label={`${data?.results?.length} Results`}
               sx={{
                 bgcolor: "rgba(73, 149, 87, 0.04)",
@@ -329,7 +329,7 @@ const WebSearch = ({ data }) => {
         >
           {/* Query badges */}
           <Stack
-            direction='row'
+            direction="row"
             spacing={1}
             sx={{
               overflowX: "auto",
@@ -344,16 +344,16 @@ const WebSearch = ({ data }) => {
               <Chip
                 key={i}
                 sx={{ paddingX: 0.5 }}
-                icon={<SearchIcon sx={{ mt: 0.3 }} fontSize='small' />}
+                icon={<SearchIcon sx={{ mt: 0.3 }} fontSize="small" />}
                 label={query}
-                variant='outlined'
+                variant="outlined"
               />
             ))}
           </Stack>
 
           {/* Horizontal scrolling results */}
           <Stack
-            direction='row'
+            direction="row"
             spacing={2}
             sx={{
               overflowX: "auto",
@@ -386,12 +386,12 @@ const WebSearch = ({ data }) => {
                 >
                   <CardContent>
                     {/* Header */}
-                    <Box display='flex' alignItems='center' gap={2.5} mb={2}>
+                    <Box display="flex" alignItems="center" gap={2.5} mb={2}>
                       <Avatar
                         src={`https://www.google.com/s2/favicons?sz=128&domain=${
                           new URL(result.url).hostname
                         }`}
-                        alt=''
+                        alt=""
                         sx={{
                           width: 40,
                           height: 40,
@@ -411,19 +411,19 @@ const WebSearch = ({ data }) => {
                             WebkitBoxOrient: "vertical",
                             overflow: "hidden",
                           }}
-                          variant='subtitle2'
+                          variant="subtitle2"
                         >
                           {result.title}
                         </Typography>
                         <Link
                           href={result.url}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          variant='caption'
-                          color='text.secondary'
-                          underline='hover'
-                          display='flex'
-                          alignItems='center'
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          variant="caption"
+                          color="text.secondary"
+                          underline="hover"
+                          display="flex"
+                          alignItems="center"
                           gap={0.5}
                         >
                           {new URL(result.url).hostname}
@@ -434,8 +434,8 @@ const WebSearch = ({ data }) => {
 
                     {/* Content */}
                     <Typography
-                      variant='body2'
-                      color='text.secondary'
+                      variant="body2"
+                      color="text.secondary"
                       sx={{
                         display: "-webkit-box",
                         WebkitLineClamp: 3,
@@ -452,17 +452,17 @@ const WebSearch = ({ data }) => {
                       <>
                         <Divider />
                         <Box
-                          display='flex'
-                          alignItems='center'
+                          display="flex"
+                          alignItems="center"
                           gap={1.5}
                           mt={2}
                         >
                           <CalendarToday
                             sx={{ fontSize: 14, color: "text.secondary" }}
                           />
-                          <Typography variant='caption' color='text.secondary'>
+                          <Typography variant="caption" color="text.secondary">
                             {new Date(
-                              result.published_date
+                              result.published_date,
                             ).toLocaleDateString()}
                           </Typography>
                         </Box>

@@ -120,8 +120,8 @@ export default function MainHeader() {
                     ? "Upgrade"
                     : "Upgrade Plan"
                   : isMobile
-                  ? "Premium"
-                  : "Upgrade To Premium"}
+                    ? "Premium"
+                    : "Upgrade To Premium"}
               </Button>
             </Link>
           )
@@ -168,7 +168,8 @@ export default function MainHeader() {
           height: 1,
           px: { lg: 5 },
           bgcolor: theme.palette.background.default,
-          borderBottom: pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
+          borderBottom:
+            pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
         }}
       >
         {renderContent}

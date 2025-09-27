@@ -26,7 +26,7 @@ export default function ThemeProvider({ children }) {
       shadows: shadows(themeMode),
       customShadows: customShadows(themeMode),
     }),
-    [themeMode]
+    [themeMode],
   );
 
   const theme = createTheme(themeOptions);

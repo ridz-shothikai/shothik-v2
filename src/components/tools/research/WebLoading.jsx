@@ -30,8 +30,8 @@ export default function WebLoadingState() {
       >
         <AccordionSummary
           expandIcon={<ExpandMore sx={{ color: "text.secondary" }} />}
-          aria-controls='panel-search-content'
-          id='panel-search-header'
+          aria-controls="panel-search-content"
+          id="panel-search-header"
           sx={{
             p: 2,
             backgroundColor: "background.paper",
@@ -44,7 +44,7 @@ export default function WebLoadingState() {
           </Box>
           <Box sx={{ ml: 2 }}>
             <Typography
-              variant='subtitle1'
+              variant="subtitle1"
               sx={{ fontWeight: "medium", textAlign: "left" }}
             >
               Running Web Search
@@ -79,7 +79,7 @@ export default function WebLoadingState() {
           sx={{ p: 2, bgcolor: "background.paper", borderRadius: "5px" }}
         >
           <Stack
-            direction='row'
+            direction="row"
             spacing={2}
             sx={{
               overflowX: "auto",
@@ -107,43 +107,43 @@ export default function WebLoadingState() {
               >
                 <CardContent>
                   <Stack gap={1}>
-                    <Stack direction='row' spacing={1}>
+                    <Stack direction="row" spacing={1}>
                       <Skeleton
-                        variant='circular'
+                        variant="circular"
                         width={40}
                         height={40}
-                        animation='wave'
+                        animation="wave"
                         sx={{ animationDuration: "0.8s" }}
                       />
                       <Stack>
                         <Skeleton
-                          variant='text'
-                          width='auto'
+                          variant="text"
+                          width="auto"
                           height={10}
-                          animation='wave'
+                          animation="wave"
                           sx={{ animationDuration: "0.8s" }}
                         />
                         <Skeleton
-                          variant='text'
-                          width='auto'
+                          variant="text"
+                          width="auto"
                           height={10}
-                          animation='wave'
+                          animation="wave"
                           sx={{ animationDuration: "0.8s" }}
                         />
                       </Stack>
                     </Stack>
                     <Skeleton
-                      variant='rounded'
-                      width='100%'
+                      variant="rounded"
+                      width="100%"
                       height={20}
-                      animation='wave'
+                      animation="wave"
                       sx={{ animationDuration: "0.8s" }}
                     />
                     <Skeleton
-                      variant='rounded'
-                      width='100%'
+                      variant="rounded"
+                      width="100%"
                       height={20}
-                      animation='wave'
+                      animation="wave"
                       sx={{ animationDuration: "0.8s" }}
                     />
                   </Stack>

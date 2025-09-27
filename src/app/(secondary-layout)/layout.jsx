@@ -15,9 +15,9 @@ import { useSelector } from "react-redux";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const {accessToken} = useSelector((state) => state.auth);
+  const { accessToken } = useSelector((state) => state.auth);
   useGetUserQuery(undefined, {
-    skip: !accessToken
+    skip: !accessToken,
   });
   useGetUserLimitQuery();
 
@@ -29,14 +29,14 @@ export default function SecondaryLayout({ children }) {
 
   return (
     <ProgressProvider
-      height='3px'
-      color='#00AB55'
+      height="3px"
+      color="#00AB55"
       options={{ showSpinner: false }}
       shallowRouting
     >
       <SecondaryHeader />
 
-      <Box component='main' sx={{ minHeight: "calc(100vh - 100px)" }}>
+      <Box component="main" sx={{ minHeight: "calc(100vh - 100px)" }}>
         {children}
       </Box>
 

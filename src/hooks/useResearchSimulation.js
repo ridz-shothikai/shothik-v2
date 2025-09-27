@@ -40,7 +40,7 @@ export const useResearchSimulation = () => {
               chatId: simulationId, // Use r_id as chat ID for simulation
             }),
             signal: abortControllerRef.current.signal,
-          }
+          },
         );
 
         if (!response.ok) {
@@ -89,7 +89,7 @@ export const useResearchSimulation = () => {
                           timestamp:
                             result.createdAt || new Date().toISOString(),
                           _id: result._id || `sim-${Date.now()}`,
-                        })
+                        }),
                       );
 
                       setIsSimulationCompleted(true);
@@ -100,7 +100,7 @@ export const useResearchSimulation = () => {
                 } catch (parseError) {
                   console.error(
                     "Failed to parse simulation stream event:",
-                    parseError
+                    parseError,
                   );
                 }
               }
@@ -114,7 +114,7 @@ export const useResearchSimulation = () => {
         }
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Cleanup effect

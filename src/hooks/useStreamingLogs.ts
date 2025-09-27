@@ -1,13 +1,15 @@
 // hooks/useStreamingLogs.ts
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 // Storage key for tracking animated logs
-const ANIMATED_LOGS_KEY = 'streamingLogs_animated';
+const ANIMATED_LOGS_KEY = "streamingLogs_animated";
 
 // Get animated logs from storage
 const getAnimatedLogs = (): Set<string> => {
   try {
-    const stored = JSON.parse(sessionStorage.getItem(ANIMATED_LOGS_KEY) || '[]');
+    const stored = JSON.parse(
+      sessionStorage.getItem(ANIMATED_LOGS_KEY) || "[]",
+    );
     return new Set(stored);
   } catch {
     return new Set();
@@ -25,12 +27,12 @@ const saveAnimatedLogs = (animatedSet: Set<string>) => {
 
 // Generate unique ID for a log - now handles objects safely
 const generateLogId = (log: any, index: number): string => {
-  const contentSlice = typeof log.parsed_output === 'string'
-    ? log.parsed_output.slice(0, 50)
-    : JSON.stringify(log.parsed_output).slice(0, 50);
+  const contentSlice =
+    typeof log.parsed_output === "string"
+      ? log.parsed_output.slice(0, 50)
+      : JSON.stringify(log.parsed_output).slice(0, 50);
   return `${log.agent_name}_${log.timestamp}_${index}_${contentSlice}`;
 };
-
 
 export const useStreamingLogs = (
   realLogs: any[],
@@ -70,7 +72,7 @@ export const useStreamingLogs = (
     ) {
       console.log(
         "Forcing completion of animation for log:",
-        currentAnimationRef.current.logIndex
+        currentAnimationRef.current.logIndex,
       );
       currentAnimationRef.current.forceComplete();
       currentAnimationRef.current = { logIndex: -1, forceComplete: null };
@@ -107,7 +109,7 @@ export const useStreamingLogs = (
     (logIndex: number, forceComplete: () => void) => {
       currentAnimationRef.current = { logIndex, forceComplete };
     },
-    []
+    [],
   );
 
   const unregisterAnimationCallback = useCallback((logIndex: number) => {
@@ -193,7 +195,7 @@ export const useStreamingLogs = (
       clearTypingTimeout,
       markLogAsAnimated,
       unregisterAnimationCallback,
-    ]
+    ],
   );
 
   const determineSessionStatus = useCallback(
@@ -211,7 +213,7 @@ export const useStreamingLogs = (
 
       return "processing";
     },
-    [isLoading]
+    [isLoading],
   );
 
   useEffect(() => {
@@ -279,8 +281,8 @@ export const useStreamingLogs = (
       })
       .filter(
         (log) =>
-          log.agent_name !== "browser_agent" && 
-          log.agent_name !== "vibe_estimator_agent"
+          log.agent_name !== "browser_agent" &&
+          log.agent_name !== "vibe_estimator_agent",
       )
       .map((log, index) => ({
         ...log,
@@ -295,7 +297,7 @@ export const useStreamingLogs = (
     if (hasNewLogs || hasStatusChange) {
       if (hasNewLogs && isTypingRef.current) {
         console.log(
-          "New logs detected, forcing completion of current animation"
+          "New logs detected, forcing completion of current animation",
         );
         forceCompleteCurrentAnimation();
       }
@@ -406,9 +408,9 @@ export const useStreamingLogs = (
     //   saveAnimatedLogs(animatedLogsRef.current);
     // }
 
-    if(status === 'completed' || status === 'failed') {
-        animatedLogsRef.current.clear();
-        saveAnimatedLogs(animatedLogsRef.current);
+    if (status === "completed" || status === "failed") {
+      animatedLogsRef.current.clear();
+      saveAnimatedLogs(animatedLogsRef.current);
     }
   }, [status]);
 
@@ -469,29 +471,31 @@ export const useStreamingLogs = (
 
 // Agent name formatting utility (unchanged)
 export const formatAgentName = (agentName: string): string => {
-  if (!agentName || typeof agentName !== 'string') {
-    return 'AI Assistant';
+  if (!agentName || typeof agentName !== "string") {
+    return "AI Assistant";
   }
 
   const agentNames = {
-    'presentation_spec_extractor_agent': 'Spec Extractor',
-    'vibe_estimator_agent': 'Vibe Estimator', 
-    'planning_agent': 'Planning Agent',
-    'keyword_research_agent': 'Keyword Research',
-    'content_synthesizer_agent': 'Content Synthesizer',
-    'slide_generator_agent': 'Slide Generator',
-    'search_query': 'Search Query',
-    'browser_agent': 'Browser Agent',
-    'validation_agent': 'Validation Agent',
-    'quality_checker_agent': 'Quality Checker',
-    'unknown_agent': 'AI Assistant'
+    presentation_spec_extractor_agent: "Spec Extractor",
+    vibe_estimator_agent: "Vibe Estimator",
+    planning_agent: "Planning Agent",
+    keyword_research_agent: "Keyword Research",
+    content_synthesizer_agent: "Content Synthesizer",
+    slide_generator_agent: "Slide Generator",
+    search_query: "Search Query",
+    browser_agent: "Browser Agent",
+    validation_agent: "Validation Agent",
+    quality_checker_agent: "Quality Checker",
+    unknown_agent: "AI Assistant",
   };
-  
-  const formatted = agentNames[agentName] || 
-         agentName.replace(/_/g, ' ')
-                  .replace(/\b\w/g, l => l.toUpperCase())
-                  .replace(' Agent', '');
-                  
+
+  const formatted =
+    agentNames[agentName] ||
+    agentName
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase())
+      .replace(" Agent", "");
+
   return formatted;
 };
 

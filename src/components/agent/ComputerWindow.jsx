@@ -60,11 +60,11 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
     >
       <Stack
         mb={0.5}
-        direction='row'
-        justifyContent='space-between'
-        alignItems='center'
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
       >
-        <Stack direction='row' alignItems='center' gap={1}>
+        <Stack direction="row" alignItems="center" gap={1}>
           <IconButton
             disableRipple
             sx={{
@@ -97,8 +97,8 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
           width: "fit-content",
           color: dark ? "primary.lighter" : "primary.darker",
         }}
-        direction='row'
-        alignItems='center'
+        direction="row"
+        alignItems="center"
         gap={0.5}
         mb={1}
       >
@@ -144,8 +144,8 @@ const ComputerWindow = ({ computerLogs, closeWindow, taskProgress }) => {
         </Typography>
         {computerLogs?.type === "tool" ? (
           <Editor
-            height='93.5%'
-            defaultLanguage='markdown'
+            height="93.5%"
+            defaultLanguage="markdown"
             value={computerLogs?.data?.result}
             beforeMount={handleEditorWillMount}
             theme={dark ? "vs-dark" : "mint-light-theme"}

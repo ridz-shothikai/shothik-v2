@@ -18,7 +18,7 @@ export default function ContactPage() {
       <Container sx={{ py: 10 }}>
         <Box
           gap={10}
-          display='grid'
+          display="grid"
           gridTemplateColumns={{
             xs: "repeat(1, 1fr)",
             md: "repeat(2, 1fr)",
@@ -27,10 +27,10 @@ export default function ContactPage() {
           <ContactForm />
 
           <Image
-            src='/location.png'
+            src="/location.png"
             height={400}
             width={400}
-            alt='Location'
+            alt="Location"
             style={{
               borderRadius: "10px",
               width: "100%",

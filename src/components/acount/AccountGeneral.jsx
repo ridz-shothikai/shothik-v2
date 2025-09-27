@@ -37,8 +37,8 @@ export const Label = ({
 }) => {
   return (
     <Stack
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       gap={0.5}
       sx={{
         backgroundColor: color,
@@ -55,21 +55,21 @@ export const Label = ({
   );
 };
 
-export default function AccountGeneral({user}) {
+export default function AccountGeneral({ user }) {
   const enqueueSnackbar = useSnackbar();
   const [updateProfile] = useUpdateProfileMutation();
   const [uploadImage] = useUploadImageMutation();
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
 
-  console.log(user, "account general")
+  console.log(user, "account general");
 
   const UpdateUserSchema = Yup.object().shape({
     name: Yup.string()
       .trim()
       .matches(
         /^[a-zA-Z\s'-]+$/,
-        "Name can only contain alphabetic characters, spaces, hyphens, and apostrophes."
+        "Name can only contain alphabetic characters, spaces, hyphens, and apostrophes.",
       )
       .min(3, "Name must be at least 2 characters")
       .max(50, "Name must not exceed 50 characters")
@@ -82,9 +82,9 @@ export default function AccountGeneral({user}) {
     state: Yup.string(),
     city: Yup.string(),
     zipCode: Yup.string()
-     .trim()
-     .nullable()
-     .matches(/^\d*$/, "Zip code must be numerical"),
+      .trim()
+      .nullable()
+      .matches(/^\d*$/, "Zip code must be numerical"),
   });
 
   const defaultValues = {
@@ -125,7 +125,6 @@ export default function AccountGeneral({user}) {
       });
     }
   }, [user, reset]);
-  
 
   const onSubmit = async (data) => {
     try {

@@ -1,5 +1,5 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import {baseQuery} from "../config";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQuery } from "../config";
 
 export const presentationApiSlice = createApi({
   reducerPath: "presentationApi",
@@ -54,7 +54,7 @@ export const presentationApiSlice = createApi({
             `Appending file ${index}:`,
             file.name,
             file.type,
-            file.size
+            file.size,
           );
           formData.append("files", file);
         });
@@ -97,5 +97,5 @@ export const {
   useFetchLogsQuery,
   useFetchSlidesQuery,
   useFetchAllPresentationsQuery,
-  useUploadPresentationFilesMutation
+  useUploadPresentationFilesMutation,
 } = presentationApiSlice;

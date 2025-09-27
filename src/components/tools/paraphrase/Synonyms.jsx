@@ -14,7 +14,7 @@ export default function Synonyms({
   return (
     <Popper
       anchorEl={anchorEl}
-      placement='bottom-start'
+      placement="bottom-start"
       ref={ref}
       open={open}
       onClose={handleClose}
@@ -51,7 +51,7 @@ export default function Synonyms({
               >
                 <ListItemText sx={{}} primary={`${synonym}`} />
                 <ChevronRight
-                  className='arrow-icon'
+                  className="arrow-icon"
                   sx={{ display: "none", color: "text.secondary" }}
                 />
               </ListItemButton>

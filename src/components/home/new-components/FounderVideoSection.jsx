@@ -29,7 +29,7 @@ export default function FounderVideoSection() {
     trackingList.BUSINESS_SECTION,
     {
       viewThreshold: 0.3,
-    }
+    },
   );
 
   // const videoRef = useRef(null);
@@ -73,7 +73,7 @@ export default function FounderVideoSection() {
     setIsPlaying(!isPlaying);
     trackFeatureClick(
       isPlaying ? "video_paused" : "video_played",
-      "founder_section"
+      "founder_section",
     );
   };
 
@@ -469,7 +469,7 @@ export default function FounderVideoSection() {
                       mb: { xs: 2, sm: 4 },
                     }}
                   >
-                    "Every Student Deserves{" "}
+                    &quot;Every Student Deserves{" "}
                     <Box
                       component="span"
                       sx={{
@@ -479,7 +479,7 @@ export default function FounderVideoSection() {
                     >
                       AI That Understands
                     </Box>
-                    Their Domain"
+                    Their Domain&quot;
                   </Typography>
 
                   <Typography
@@ -493,8 +493,8 @@ export default function FounderVideoSection() {
                   >
                     As a former PhD student who struggled with domain-specific
                     writing, I built Shothik AI to solve the problem every
-                    academic faces: generic tools that don't understand your
-                    field.
+                    academic faces: generic tools that don&apos;t understand
+                    your field.
                   </Typography>
                 </Box>
 

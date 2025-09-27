@@ -22,10 +22,10 @@ const Summarize = () => {
         <SummarizeContend />
       </ErrorBoundary>
       <ToolsSepecigFaq
-        tag='All you need to know about Summarize feature'
+        tag="All you need to know about Summarize feature"
         data={summarizeFaq}
       />
-      <ToolsCTA toolType='summarize' />
+      <ToolsCTA toolType="summarize" />
       <HomeAdvertisement />
     </Container>
   );

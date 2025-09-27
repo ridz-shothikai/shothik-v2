@@ -27,7 +27,7 @@ const TopNavigation = ({
 }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleTabClick = (event, tab) => {
     const isLocked = !/pro_plan|unlimited/.test(userPackage) && tab === "Raven";
@@ -52,9 +52,9 @@ const TopNavigation = ({
 
   return (
     <Stack
-      direction='row'
-      alignItems='center'
-      justifyContent='space-between'
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
       sx={{
         borderBottom: "1px solid",
         borderBottomColor: "divider",
@@ -63,7 +63,7 @@ const TopNavigation = ({
     >
       <Tabs
         value={model}
-        textColor='primary'
+        textColor="primary"
         sx={{
           "& .MuiTabs-indicator": {
             display: "none",
@@ -77,7 +77,7 @@ const TopNavigation = ({
             <Tab
               key={tab}
               value={tab}
-              color='#00A76F'
+              color="#00A76F"
               sx={{
                 color: "text.secondary",
                 "&.Mui-selected": {
@@ -85,7 +85,7 @@ const TopNavigation = ({
                 },
               }}
               label={
-                <Tooltip title='Model' arrow placement='top'>
+                <Tooltip title="Model" arrow placement="top">
                   {tab}
                 </Tooltip>
               }
@@ -100,16 +100,14 @@ const TopNavigation = ({
 
       <Slider
         style={{ width: "150px" }}
-        aria-label='Length'
+        aria-label="Length"
         getAriaValueText={(value) => LENGTH[value]}
-        value={Object.keys(LENGTH).find(
-          (key) => LENGTH[key] === currentLength
-        )}
+        value={Object.keys(LENGTH).find((key) => LENGTH[key] === currentLength)}
         marks
         step={20}
         min={20}
         max={80}
-        valueLabelDisplay='on'
+        valueLabelDisplay="on"
         valueLabelFormat={currentLength}
         onChange={(_, value) => setCurrentLength(LENGTH[value])}
         sx={{
@@ -151,19 +149,21 @@ const TopNavigation = ({
           },
         }}
       >
-        
-        <Typography variant='body2' sx={{ mt: 1, mb: 2, color: 'text.secondary' }}>
+        <Typography
+          variant="body2"
+          sx={{ mt: 1, mb: 2, color: "text.secondary" }}
+        >
           Unlock advanced features and enhance your humanize experience.
         </Typography>
         <Button
           data-umami-event="Nav: Upgrade To Premium"
-          variant='contained'
-          color='success'
-          size='small'
+          variant="contained"
+          color="success"
+          size="small"
           startIcon={<Diamond />}
           sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-          onClick={e => {
-            router.push("/pricing?redirect=/humanize-gpt")
+          onClick={(e) => {
+            router.push("/pricing?redirect=/humanize-gpt");
           }}
         >
           Upgrade To Premium

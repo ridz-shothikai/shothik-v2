@@ -1,19 +1,18 @@
 "use client";
 
-import React from "react";
+import {
+  AccountBalance,
+  CheckCircle,
+  Public,
+  ViewInAr,
+} from "@mui/icons-material";
 import {
   Box,
-  Typography,
   Container,
-  useTheme,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import {
-  CheckCircle,
-  ViewInAr,
-  AccountBalance,
-  Public,
-} from "@mui/icons-material";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
@@ -60,9 +59,7 @@ const JourneyTimeline = () => {
   const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { componentRef } = useComponentTracking(
-    trackingList.JOURNEY_SECTION
-  );
+  const { componentRef } = useComponentTracking(trackingList.JOURNEY_SECTION);
 
   return (
     <Box
@@ -111,8 +108,9 @@ const JourneyTimeline = () => {
                 fontWeight: 400,
               }}
             >
-              From startup to industry leader, see how we've grown to become the
-              trusted AI platform for financial institutions worldwide.
+              From startup to industry leader, see how we&apos;ve grown to
+              become the trusted AI platform for financial institutions
+              worldwide.
             </Typography>
           </Box>
         </motion.div>

@@ -26,7 +26,11 @@ const toolsSlice = createSlice({
   },
 });
 
-export const { setShowAlert, setAlertMessage, setAgentHistoryMenu, setIsNavVertical } =
-  toolsSlice.actions;
+export const {
+  setShowAlert,
+  setAlertMessage,
+  setAgentHistoryMenu,
+  setIsNavVertical,
+} = toolsSlice.actions;
 
 export default toolsSlice.reducer;

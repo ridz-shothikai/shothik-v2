@@ -21,13 +21,11 @@ const RenderLanguages = ({
   const [filterTerm, setFilterTerm] = useState("");
 
   const filtered = languages.filter((lang) =>
-    lang.name.toLowerCase().includes(filterTerm.toLowerCase())
+    lang.name.toLowerCase().includes(filterTerm.toLowerCase()),
   );
 
   return (
-    <Box
-      id="language_menu"
-    >
+    <Box id="language_menu">
       {/* Sticky search bar with secondary‐colored icon */}
       <FormControl
         variant="outlined"
@@ -48,7 +46,7 @@ const RenderLanguages = ({
           endAdornment={
             <InputAdornment
               position="end"
-              sx={{ color: "text.secondary" }}  // ensure the icon uses theme.secondary
+              sx={{ color: "text.secondary" }} // ensure the icon uses theme.secondary
             >
               <Search />
             </InputAdornment>
@@ -79,7 +77,7 @@ const RenderLanguages = ({
             const isSelected = lang.name === selectedLanguage;
             return (
               <Box
-                key={`${lang.name}-${index}`}  // append index to guarantee uniqueness
+                key={`${lang.name}-${index}`} // append index to guarantee uniqueness
                 onClick={() => {
                   handleLanguageMenu(lang.name);
                   handleClose();
@@ -91,9 +89,7 @@ const RenderLanguages = ({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  backgroundColor: isSelected
-                    ? "success.light"
-                    : "transparent",
+                  backgroundColor: isSelected ? "success.light" : "transparent",
                   "&:hover": {
                     backgroundColor: isSelected
                       ? "success.light"
@@ -182,4 +178,4 @@ const LanguageMenus = ({
     </>
   );
 };
-export default LanguageMenus
+export default LanguageMenus;

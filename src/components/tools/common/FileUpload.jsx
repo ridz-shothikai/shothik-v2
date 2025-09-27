@@ -58,7 +58,7 @@ function FileUpload({ isMobile, setInput }) {
         let plainText = result.value.replace(/<\/p>/g, "\n\n"); // Replace closing paragraph tags with two newlines
         plainText = plainText.replace(/<br\s*\/?>/g, "\n"); // Replace break tags with one newline
         plainText = plainText.replace(/<p[^>]*>/g, "\n"); // Replace opening paragraph tags (with attributes) with one newline
-        plainText = plainText.replace(/<[^>]*>/g, ''); // Strip any remaining HTML tags
+        plainText = plainText.replace(/<[^>]*>/g, ""); // Strip any remaining HTML tags
 
         setInput(plainText.trim()); // Trim leading/trailing whitespace
       } catch (error) {
@@ -69,14 +69,14 @@ function FileUpload({ isMobile, setInput }) {
   };
 
   return (
-    <Tooltip title='Browse documents (DOCX, PDF).' arrow placement='top'>
+    <Tooltip title="Browse documents (DOCX, PDF)." arrow placement="top">
       <Button
         role={undefined}
-        component='label'
+        component="label"
         tabIndex={-1}
         size={isMobile ? "small" : "large"}
         variant={"outlined"}
-        color='success'
+        color="success"
         startIcon={
           isProcessing ? (
             <CircularProgress
@@ -94,7 +94,7 @@ function FileUpload({ isMobile, setInput }) {
       >
         Upload {isMobile ? "Doc" : "Document"}
         <Box
-          component='input'
+          component="input"
           sx={{
             clip: "rect(0 0 0 0)",
             clipPath: "inset(50%)",
@@ -108,8 +108,8 @@ function FileUpload({ isMobile, setInput }) {
           }}
           ref={inputRef}
           onChange={handleFileChange}
-          type='file'
-          accept='application/pdf, .docx'
+          type="file"
+          accept="application/pdf, .docx"
         />
       </Button>
     </Tooltip>

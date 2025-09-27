@@ -9,8 +9,8 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <Stack sx={{ height: "100vh" }} alignItems='center' justifyContent='center'>
-      <Typography variant='h3' sx={{ animation: "fadeIn 1s ease-in-out" }}>
+    <Stack sx={{ height: "100vh" }} alignItems="center" justifyContent="center">
+      <Typography variant="h3" sx={{ animation: "fadeIn 1s ease-in-out" }}>
         Sorry, page not found!
       </Typography>
 
@@ -23,7 +23,7 @@ export default function NotFound() {
 
       <PageNotFoundIllustration sx={{ height: 260, my: { xs: 5, sm: 10 } }} />
 
-      <Button component='a' href='/' size='large' variant='contained'>
+      <Button component="a" href="/" size="large" variant="contained">
         Go to Home
       </Button>
     </Stack>

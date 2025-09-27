@@ -3,21 +3,21 @@ import { createSlice } from "@reduxjs/toolkit";
 // Helper function to create event hash for deduplication
 const createEventHash = (event) => {
   if (!event) return null;
-  return `${event.step || 'unknown'}-${event.message || ''}-${event.timestamp || Date.now()}`;
+  return `${event.step || "unknown"}-${event.message || ""}-${event.timestamp || Date.now()}`;
 };
 
 // Helper function to check if event should be added
 const shouldAddEvent = (currentEvents, newEvent) => {
   if (!newEvent) return false;
-  
+
   const newEventHash = createEventHash(newEvent);
   if (!newEventHash) return false;
-  
+
   // Check if we already have this exact event
-  const isDuplicate = currentEvents.some(event => 
-    createEventHash(event) === newEventHash
+  const isDuplicate = currentEvents.some(
+    (event) => createEventHash(event) === newEventHash,
   );
-  
+
   return !isDuplicate;
 };
 
@@ -119,7 +119,7 @@ export const researchCoreSlice = createSlice({
 
       // Check for duplicates by ID
       const existingIndex = state.researches.findIndex(
-        (r) => r._id === research._id
+        (r) => r._id === research._id,
       );
       if (existingIndex >= 0) {
         // Update existing research instead of adding duplicate
@@ -171,7 +171,7 @@ export const researchCoreSlice = createSlice({
     setResearchSelectedTab: (state, action) => {
       const { researchId, selectedTab } = action.payload;
       const researchToUpdate = state.researches.find(
-        (research) => research._id === researchId
+        (research) => research._id === researchId,
       );
       if (researchToUpdate) {
         researchToUpdate.selectedTab = selectedTab;
@@ -199,7 +199,7 @@ export const researchCoreSlice = createSlice({
       state.simulationStatus = action.payload; //
     },
     setIsSimulating: (state, action) => {
-      state.isSimulating = action.payload
+      state.isSimulating = action.payload;
     },
     forceAddStreamEvent: (state, action) => {
       const eventWithMetadata = {
@@ -236,16 +236,16 @@ export const {
   setUserPrompt,
   forceAddStreamEvent,
   setSimulationStatus,
-  setIsSimulating
+  setIsSimulating,
 } = researchCoreSlice.actions;
 
 export const researchCoreState = (state) => {
-    if(!state || !state.researchCore) {
-        console.warn("researchCore state is undefined");
-        return initialState;
-    }
+  if (!state || !state.researchCore) {
+    console.warn("researchCore state is undefined");
+    return initialState;
+  }
 
-    return state.researchCore;
-}
+  return state.researchCore;
+};
 
 export default researchCoreSlice.reducer;

@@ -10,14 +10,14 @@ import {
 export default function ToolsSepecigFaq({ tag, data }) {
   return (
     <Box>
-      <Typography variant='h3' align='center'>
+      <Typography variant="h3" align="center">
         Frequently Asked Questions
       </Typography>
 
       <Typography
-        variant='body1'
-        align='center'
-        color='text.secondary'
+        variant="body1"
+        align="center"
+        color="text.secondary"
         sx={{ mb: 5 }}
       >
         {tag}
@@ -34,13 +34,13 @@ export default function ToolsSepecigFaq({ tag, data }) {
                 },
               }}
             >
-              <Typography variant='subtitle1'>{faq.question}</Typography>
+              <Typography variant="subtitle1">{faq.question}</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Typography
-                component='div'
-                variant='body1'
-                color='text.secondary'
+                component="div"
+                variant="body1"
+                color="text.secondary"
               >
                 {faq.answer}
               </Typography>

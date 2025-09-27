@@ -72,7 +72,7 @@ export default function MultipleFileUpload({
           status: "error",
           progress: 0,
           error: "Please log in to upload files",
-        }))
+        })),
       );
       return;
     }
@@ -150,12 +150,12 @@ export default function MultipleFileUpload({
     status,
     progress,
     downloadUrl = null,
-    error = null
+    error = null,
   ) => {
     setFiles((fs) =>
       fs.map((f, i) =>
-        i === idx ? { ...f, status, progress, downloadUrl, error } : f
-      )
+        i === idx ? { ...f, status, progress, downloadUrl, error } : f,
+      ),
     );
   };
 
@@ -248,10 +248,10 @@ export default function MultipleFileUpload({
                       f.error
                         ? f.error
                         : f.status === "success"
-                        ? "Completed"
-                        : f.status === "uploading"
-                        ? "Uploading…"
-                        : ""
+                          ? "Completed"
+                          : f.status === "uploading"
+                            ? "Uploading…"
+                            : ""
                     }
                     secondaryTypographyProps={
                       f.error ? { color: "error.main" } : {}

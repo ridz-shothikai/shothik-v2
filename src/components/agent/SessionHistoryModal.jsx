@@ -16,7 +16,7 @@ const SessionHistoryModal = ({
 
   const histories = data?.data;
   return (
-    <Drawer anchor='right' open={open} onClose={() => setOpen(false)}>
+    <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
       <Box
         sx={{
           width: isMobile ? "300px" : "400px",
@@ -25,8 +25,8 @@ const SessionHistoryModal = ({
         }}
       >
         <Stack
-          justifyContent='center'
-          alignItems='center'
+          justifyContent="center"
+          alignItems="center"
           sx={{
             borderBottom: "1px solid",
             borderColor: "divider",
@@ -50,8 +50,8 @@ const SessionHistoryModal = ({
           ) : histories && histories.length ? (
             histories.map((history) => (
               <Stack
-                flexDirection='row'
-                alignItems='center'
+                flexDirection="row"
+                alignItems="center"
                 onClick={() => {
                   setSessionHistoryId(history._id);
                   setOpen(false);
@@ -69,7 +69,7 @@ const SessionHistoryModal = ({
                   width: "100%",
                 }}
               >
-                <Task sx={{ color: "primary.main" }} fontSize='small' />
+                <Task sx={{ color: "primary.main" }} fontSize="small" />
                 <Typography
                   sx={{
                     textOverflow: "ellipsis",
@@ -83,9 +83,9 @@ const SessionHistoryModal = ({
             ))
           ) : (
             <Stack
-              flexDirection='row'
-              alignItems='center'
-              justifyContent='center'
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="center"
               gap={1}
               sx={{ height: "calc(100vh - 100px)" }}
             >

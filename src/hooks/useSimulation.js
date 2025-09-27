@@ -5,7 +5,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { getSimulationPrompt, isValidSimulation, SIMULATION_CONFIG } from "../libs/simulationHelper";
+import {
+  getSimulationPrompt,
+  isValidSimulation,
+  SIMULATION_CONFIG,
+} from "../libs/simulationHelper";
 
 // Simulation detection and execution
 export const useSimulation = (
@@ -17,7 +21,6 @@ export const useSimulation = (
   s_id,
   agent_type,
 ) => {
-
   const [simulationState, setSimulationState] = useState({
     isSimulation: false,
     hasRun: false,

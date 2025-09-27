@@ -3,19 +3,19 @@ import axios from "axios";
 
 // Action to mark scripts as loaded (called by AnalyticsLoader component)
 export const markScriptsLoaded = createAsyncThunk(
-    'analytics/markLoaded',
-    async () => {
-      // Scripts are already loaded by Next.js Script components
-      return { scriptsLoaded: true };
-    }
-  );
+  "analytics/markLoaded",
+  async () => {
+    // Scripts are already loaded by Next.js Script components
+    return { scriptsLoaded: true };
+  },
+);
 
 export const initializeAnalytics = createAsyncThunk(
   "analytics/initialize",
   async ({ consent }) => {
     if (!consent) throw new Error("Consent required");
     return { isLoaded: true, consent };
-  }
+  },
 );
 
 const analyticsSlice = createSlice({
@@ -90,7 +90,6 @@ export const {
 } = analyticsSlice.actions;
 
 export default analyticsSlice.reducer;
-
 
 // Helper function to fire events to external services
 const fireToExternalServices = async (event) => {
@@ -168,7 +167,7 @@ const fireToExternalServices = async (event) => {
   // Zoho Webhook
   // ------------------------
   // IMPORTANT: This needs to be handled and reviewed on ZOHO platform how they want the data.
-  // console.log("Sending to Zoho:", JSON.stringify(event, null, 2)); 
+  // console.log("Sending to Zoho:", JSON.stringify(event, null, 2));
   // await fetch("/api/zoho-webhook", {
   //   method: "POST",
   //   headers: {

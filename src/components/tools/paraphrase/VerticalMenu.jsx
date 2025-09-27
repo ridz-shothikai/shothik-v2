@@ -44,12 +44,22 @@ const VerticalMenu = ({
           {
             id: 1,
             source: "Example Source 1",
-            matches: [{ text: "This is a highly plagiarized sentence.", original: "This is a highly plagiarized sentence." }],
+            matches: [
+              {
+                text: "This is a highly plagiarized sentence.",
+                original: "This is a highly plagiarized sentence.",
+              },
+            ],
           },
           {
             id: 2,
             source: "Example Source 2",
-            matches: [{ text: "Another copied phrase.", original: "Another copied phrase." }],
+            matches: [
+              {
+                text: "Another copied phrase.",
+                original: "Another copied phrase.",
+              },
+            ],
           },
         ],
       };

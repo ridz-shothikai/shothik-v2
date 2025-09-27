@@ -54,7 +54,7 @@ export const ProjectSection = ({ slug }) => {
           return (
             <Stack
               key={index}
-              direction='column'
+              direction="column"
               gap={2}
               sx={{ textAlign: "justify" }}
             >
@@ -62,7 +62,7 @@ export const ProjectSection = ({ slug }) => {
                 <Typography
                   sx={{ fontSize: 20, fontWeight: 500 }}
                   key={pIndex}
-                  variant='body1'
+                  variant="body1"
                 >
                   {paragraph}
                 </Typography>
@@ -73,7 +73,7 @@ export const ProjectSection = ({ slug }) => {
                     // Remove any pre-existing numbering or bullet prefixes
                     const cleanedItem = item.replace(
                       /^(?:\s*(?:\d+\.|•))\s*/,
-                      ""
+                      "",
                     );
 
                     // Split text at "-" and make first part bold if it exists
@@ -81,7 +81,7 @@ export const ProjectSection = ({ slug }) => {
                     const formattedText =
                       parts.length > 1 ? (
                         <>
-                          <Typography component='span'>{parts[0]}</Typography> –{" "}
+                          <Typography component="span">{parts[0]}</Typography> –{" "}
                           {parts[1]}
                         </>
                       ) : (

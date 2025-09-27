@@ -12,7 +12,14 @@ import { Grid, useTheme } from "@mui/system";
 import { AttachFile, Close } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useUploadPresentationFilesMutation } from "../../redux/api/presentation/presentationApi";
-import { Alert, Card, CardContent, Chip, Snackbar, Tooltip } from "@mui/material";
+import {
+  Alert,
+  Card,
+  CardContent,
+  Chip,
+  Snackbar,
+  Tooltip,
+} from "@mui/material";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -55,7 +62,7 @@ export default function InputArea({
 
     console.log(
       "Selected files:",
-      files.map((f) => ({ name: f.name, type: f.type, size: f.size }))
+      files.map((f) => ({ name: f.name, type: f.type, size: f.size })),
     );
 
     // Check file type and size
@@ -74,7 +81,7 @@ export default function InputArea({
         invalidFiles.push(`${file.name} (invalid type: ${file.type})`);
       } else if (file.size > maxSize) {
         invalidFiles.push(
-          `${file.name} (too large: ${(file.size / 1024 / 1024).toFixed(2)}MB)`
+          `${file.name} (too large: ${(file.size / 1024 / 1024).toFixed(2)}MB)`,
         );
       }
     }
@@ -152,7 +159,7 @@ export default function InputArea({
     const nameWithoutExt = filename.substring(0, filename.lastIndexOf("."));
     const truncatedName = nameWithoutExt.substring(
       0,
-      maxLength - extension.length - 4
+      maxLength - extension.length - 4,
     );
     return `${truncatedName}...${extension}`;
   };
@@ -181,24 +188,23 @@ export default function InputArea({
         <Box
           sx={{
             bgcolor:
-            theme.palette.mode === "dark"
-            ? theme.palette.background.default
-            : "#f8f9fa",
+              theme.palette.mode === "dark"
+                ? theme.palette.background.default
+                : "#f8f9fa",
             borderRadius: 4,
             p: 3,
             border: "1px solid #e0e0e0",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            position: "relative"
+            position: "relative",
           }}
-          >
-
+        >
           {/* uploaded files preview STARTS */}
           {uploadedFiles?.length > 0 && (
-            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 }}}>
+            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 } }}>
               {uploadedFiles?.map((file, index) => {
                 const extension = getFileExtension(file.filename);
                 const truncatedName = truncateFilename(file.filename);
-  
+
                 return (
                   <Grid
                     item
@@ -221,7 +227,7 @@ export default function InputArea({
                           borderColor: PRIMARY_GREEN,
                           transform: "translateY(-2px)",
                         },
-                        maxWidth: "120px"
+                        maxWidth: "120px",
                       }}
                     >
                       <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
@@ -247,7 +253,7 @@ export default function InputArea({
                         >
                           <Close fontSize="small" />
                         </IconButton>
-  
+
                         {/* File icon and info */}
                         <Box
                           sx={{
@@ -274,7 +280,7 @@ export default function InputArea({
                             </Tooltip>
                           </Box>
                         </Box>
-  
+
                         {/* File extension chip */}
                         <Box
                           sx={{

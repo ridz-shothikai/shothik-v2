@@ -2,13 +2,9 @@
 
 import { TextField } from "@mui/material";
 
-const NameField = ({
-  value,
-  onChange,
-  placeholder = "Your project name",
-}) => {
+const NameField = ({ value, onChange, placeholder = "Your project name" }) => {
   return (
-    <div className="bg-card shadow rounded-full border">
+    <div className="bg-card rounded-full border shadow">
       <TextField
         value={value}
         onChange={(e) => onChange(e.target.value)}

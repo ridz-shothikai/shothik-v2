@@ -3,7 +3,7 @@ import NavList from "./NavList";
 
 function NavSectionMini({ data, user }) {
   return (
-    <Stack alignItems='center'>
+    <Stack alignItems="center">
       {data.map((group, index) => {
         if (group.roles && !group.roles.includes(user?.package)) {
           return null;
@@ -11,11 +11,11 @@ function NavSectionMini({ data, user }) {
         return (
           <List key={index} disablePadding sx={{ px: 2 }}>
             {group.items.map((list) => (
-              <NavList key={list.title + list.path} data={list} layout='mini' />
+              <NavList key={list.title + list.path} data={list} layout="mini" />
             ))}
 
             {data.length - 1 !== index && (
-              <Stack alignItems='center'>
+              <Stack alignItems="center">
                 <Box
                   sx={{
                     width: 24,

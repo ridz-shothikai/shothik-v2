@@ -74,10 +74,10 @@ const AiDetector = () => {
     setOutputContend({
       ...data,
       aiSentences: data.sentences.filter(
-        (sentence) => sentence.highlight_sentence_for_ai
+        (sentence) => sentence.highlight_sentence_for_ai,
       ),
       humanSentences: data.sentences.filter(
-        (sentence) => !sentence.highlight_sentence_for_ai
+        (sentence) => !sentence.highlight_sentence_for_ai,
       ),
     });
     setEnableEdit(false);
@@ -106,10 +106,10 @@ const AiDetector = () => {
       setOutputContend({
         ...data,
         aiSentences: data.sentences.filter(
-          (sentence) => sentence.highlight_sentence_for_ai
+          (sentence) => sentence.highlight_sentence_for_ai,
         ),
         humanSentences: data.sentences.filter(
-          (sentence) => !sentence.highlight_sentence_for_ai
+          (sentence) => !sentence.highlight_sentence_for_ai,
         ),
       });
       setEnableEdit(false);
@@ -184,7 +184,7 @@ const AiDetector = () => {
                         style={{
                           backgroundColor: getColorByPerplexity(
                             item.highlight_sentence_for_ai,
-                            item.perplexity
+                            item.perplexity,
                           ),
                         }}
                       >
@@ -277,11 +277,11 @@ function UsesLimit({ userLimit }) {
   };
 
   return (
-    <Stack sx={{ padding: 2 }} alignItems='flex-end'>
+    <Stack sx={{ padding: 2 }} alignItems="flex-end">
       <Box sx={{ width: { xs: 220, sm: 250 } }}>
         <LinearProgress
           sx={{ height: 6 }}
-          variant='determinate'
+          variant="determinate"
           value={progressPercentage()}
         />
         <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>

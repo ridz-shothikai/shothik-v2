@@ -31,7 +31,7 @@ function SlidePreview({ src }) {
     <Box sx={{ height: "100%", overflow: "hidden" }} ref={containerRef}>
       <iframe
         src={src}
-        referrerPolicy='origin'
+        referrerPolicy="origin"
         style={{
           width: `${width}px`,
           height: `${height}px`,

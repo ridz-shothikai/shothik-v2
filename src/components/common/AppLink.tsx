@@ -1,6 +1,6 @@
-import NextLink from 'next/link';
-import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link';
-import { forwardRef } from 'react';
+import NextLink from "next/link";
+import MuiLink, { LinkProps as MuiLinkProps } from "@mui/material/Link";
+import { forwardRef } from "react";
 
 type AppLinkProps = MuiLinkProps & {
   href: string;
@@ -35,6 +35,6 @@ const AppLink = forwardRef<HTMLAnchorElement, AppLinkProps>((props, ref) => {
   );
 });
 
-AppLink.displayName = 'AppLink';
+AppLink.displayName = "AppLink";
 
 export default AppLink;

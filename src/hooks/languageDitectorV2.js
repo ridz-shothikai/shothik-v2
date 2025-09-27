@@ -13,7 +13,7 @@ import { languages } from "../_mock/tools/languages";
  *  - earlyConfidence: fraction (0..1) required to short-circuit (default 0.66)
  *  - minProcessedChars: minimum characters to inspect before allowing early-exit (default 300)
  *  - minAbsoluteCount: minimum absolute matches required to allow early-exit (default 20)
- * 
+ *
  * Explanations:
  *  - The default minProcessedChars = 300 is conservative: it prevents premature short-circuits on very short inputs while still allowing big inputs to exit early. You can lower it (e.g., 100) to be more aggressive or raise it if you want more certainty.
  *  - earlyConfidence = 0.66 means the leader must make up at least 66% of processed chars to short-circuit. Adjust if you want stricter/looser early exits.
@@ -153,7 +153,7 @@ export const detectLanguageV2 = (input, options = {}) => {
   if (langFrequency.size === 0) return "Auto Detect";
 
   const mostFrequentLanguage = [...langFrequency.entries()].reduce((a, b) =>
-    a[1] > b[1] ? a : b
+    a[1] > b[1] ? a : b,
   )[0];
 
   // Final Spanish override: if English was chosen but Spanish evidence exists, prefer Spanish

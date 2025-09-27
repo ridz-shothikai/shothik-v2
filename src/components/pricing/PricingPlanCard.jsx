@@ -61,7 +61,7 @@ export default function PricingPlanCard({
         flexDirection: "column",
         justifyContent: "space-between",
         gap: 0,
-        maxWidth: {xs: "450px", md: "550px"},
+        maxWidth: { xs: "450px", md: "550px" },
         marginInline: "auto",
         ...sx,
       }}
@@ -109,23 +109,23 @@ export default function PricingPlanCard({
             ""
           )
         ) : null}
-        <Stack spacing={1} direction='row'>
+        <Stack spacing={1} direction="row">
           {price !== undefined ? (
             <>
-              <Typography variant='h3' fontWeight={700}>
-                <Typography variant='h3' component='sup' fontWeight={700}>
+              <Typography variant="h3" fontWeight={700}>
+                <Typography variant="h3" component="sup" fontWeight={700}>
                   {country === "bangladesh"
                     ? "৳"
                     : country === "india"
-                    ? "₹"
-                    : "$"}
+                      ? "₹"
+                      : "$"}
                 </Typography>
                 {/dev|test/.test(modeResult?.data?.appMode)
                   ? modePrice
                   : yearly
-                  ? priceYearly
-                  : price}
-                <Typography component='sub' color='text.secondary'>
+                    ? priceYearly
+                    : price}
+                <Typography component="sub" color="text.secondary">
                   {yearly ? "/ year" : "/ month"}
                 </Typography>
               </Typography>
@@ -133,13 +133,13 @@ export default function PricingPlanCard({
           ) : (
             <>
               <Skeleton
-                variant='rectangular'
+                variant="rectangular"
                 width={24}
                 height={24}
                 sx={{ borderRadius: 1 }}
               />
               <Skeleton
-                variant='rectangular'
+                variant="rectangular"
                 width={64}
                 height={24}
                 sx={{ borderRadius: 1 }}
@@ -149,16 +149,16 @@ export default function PricingPlanCard({
         </Stack>
 
         <Typography
-          variant='h4'
+          variant="h4"
           sx={{
             color:
               subscription === "free"
                 ? "#637381"
                 : subscription === "value_plan"
-                ? "#00A76F"
-                : subscription === "pro_plan"
-                ? "#8E33FF"
-                : "#FFAB00",
+                  ? "#00A76F"
+                  : subscription === "pro_plan"
+                    ? "#8E33FF"
+                    : "#FFAB00",
             textTransform: "capitalize",
             mt: { xs: 1, md: 0 },
           }}
@@ -167,14 +167,14 @@ export default function PricingPlanCard({
             ? "Free Plan"
             : caption || (
                 <Skeleton
-                  variant='text'
+                  variant="text"
                   sx={{ width: 0.25, color: "#637381" }}
                 />
               )}
           {subscription === "free" && (
             <Typography
-              component='sub'
-              variant='subtitle2'
+              component="sub"
+              variant="subtitle2"
               sx={{ color: "#00A76F", textTransform: "capitalize", ml: 1 }}
             >
               Forever
@@ -183,19 +183,19 @@ export default function PricingPlanCard({
         </Typography>
 
         {subscription === "free" && (
-          <Typography variant='body2' sx={{ color: "#637381" }}>
+          <Typography variant="body2" sx={{ color: "#637381" }}>
             Features you’ll love
           </Typography>
         )}
 
         <Stack spacing={2.25} sx={{ p: 0, my: 3 }}>
-          <Stack component='ul' spacing={2}>
+          <Stack component="ul" spacing={2}>
             {(lists || Array.from({ length: 5 })).map((item, index) => (
               <Stack
                 key={index}
-                component='li'
-                direction='row'
-                alignItems='flex-start'
+                component="li"
+                direction="row"
+                alignItems="flex-start"
                 spacing={1}
                 sx={{
                   typography: "body2",
@@ -204,24 +204,24 @@ export default function PricingPlanCard({
               >
                 {subscription === "free" ? (
                   <Image
-                    src='/black_tick.png'
+                    src="/black_tick.png"
                     width={24}
                     height={24}
-                    alt='pricing_check_mark'
+                    alt="pricing_check_mark"
                   />
                 ) : (
                   <Image
-                    src='/green_tick.svg'
+                    src="/green_tick.svg"
                     width={24}
                     height={24}
-                    alt='pricing_check_mark'
+                    alt="pricing_check_mark"
                   />
                 )}
-                <Typography variant='body2' sx={{ color: "text.primary" }}>
+                <Typography variant="body2" sx={{ color: "text.primary" }}>
                   {item?.title ? (
                     item.title
                   ) : (
-                    <Skeleton variant='text' sx={{ width: 200 }} />
+                    <Skeleton variant="text" sx={{ width: 200 }} />
                   )}
                 </Typography>
               </Stack>

@@ -25,7 +25,7 @@ export default function ChatContainer({
             key={index}
             message={message}
           />
-        )
+        ),
       )}
 
       <div ref={messageBottomRef} />

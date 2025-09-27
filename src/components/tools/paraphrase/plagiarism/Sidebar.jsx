@@ -1,20 +1,19 @@
-
 // components/plagiarism/Sidebar.jsx
-import React from 'react';
+import React from "react";
 import { Box, IconButton, Typography, Divider, Paper } from "@mui/material";
 import { Close, History, Gavel, ExpandMore } from "@mui/icons-material";
 
 const sampleResults = [
   { percent: 50, source: "ms.z-library.sk" },
   { percent: 40, source: "ms.z-library.sk" },
-  { percent: 10, source: "ms.z-library.sk" }
+  { percent: 10, source: "ms.z-library.sk" },
 ];
 
 const PlagiarismSidebar = ({
   open,
   onClose,
   score = 100,
-  results = sampleResults
+  results = sampleResults,
 }) => {
   if (!open) return null;
 
@@ -22,26 +21,26 @@ const PlagiarismSidebar = ({
     <Box
       sx={{
         width: 300,
-        height: '100%',
-        borderLeft: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        boxSizing: 'border-box',
-        overflowY: 'auto',
+        height: "100%",
+        borderLeft: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper",
+        boxSizing: "border-box",
+        overflowY: "auto",
       }}
     >
       {/* Top Nav */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           px: 2,
           pt: 2,
-          pb: 1
+          pb: 1,
         }}
       >
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
           <Gavel fontSize="small" color="action" />
           <History fontSize="small" color="action" />
         </Box>
@@ -64,7 +63,7 @@ const PlagiarismSidebar = ({
             bgcolor: "#e8f5e9",
             p: 2,
             mb: 2,
-            textAlign: "center"
+            textAlign: "center",
           }}
         >
           <Typography variant="h2">{score}%</Typography>
@@ -86,7 +85,7 @@ const PlagiarismSidebar = ({
               borderColor: "divider",
               borderRadius: 1,
               p: 1,
-              mb: 1
+              mb: 1,
             }}
           >
             <Typography variant="body2" sx={{ width: "20%" }}>
@@ -109,4 +108,3 @@ const PlagiarismSidebar = ({
 };
 
 export default PlagiarismSidebar;
-

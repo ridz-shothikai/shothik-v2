@@ -21,8 +21,8 @@ export default function AboutVision() {
           viewport={{ once: true }}
         >
           <Image
-            alt='about-vision'
-            src='/secondary/vision_banner.jpg'
+            alt="about-vision"
+            src="/secondary/vision_banner.jpg"
             height={500}
             width={500}
             style={{
@@ -33,10 +33,10 @@ export default function AboutVision() {
         </motion.div>
 
         <Stack
-          direction='row'
-          flexWrap='wrap'
-          alignItems='center'
-          justifyContent='center'
+          direction="row"
+          flexWrap="wrap"
+          alignItems="center"
+          justifyContent="center"
           spacing={3}
           sx={{
             bottom: { xs: 24, md: 40 },
@@ -70,7 +70,7 @@ export default function AboutVision() {
         viewport={{ once: true }}
       >
         <Typography
-          variant='h3'
+          variant="h3"
           sx={{ textAlign: "center", maxWidth: 800, mx: "auto" }}
         >
           Our vision is to revolutionize writing with powerful AI-driven

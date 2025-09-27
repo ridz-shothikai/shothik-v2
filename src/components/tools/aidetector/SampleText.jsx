@@ -74,7 +74,7 @@ function SampleTextForMobile({ setOpen, isMini }) {
         }}
       >
         <Box sx={{ width: 24, height: 24 }}>
-          <img src='/tools/sample.svg' alt='sample' />
+          <img src="/tools/sample.svg" alt="sample" />
         </Box>
         <Typography>Sample Text</Typography>
       </Card>
@@ -204,7 +204,7 @@ function SampleText({
     return (
       <>
         <Dialog
-          maxWidth='xs'
+          maxWidth="xs"
           fullWidth
           open={isDrawer}
           onClose={() => setOpen(false)}

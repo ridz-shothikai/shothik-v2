@@ -17,7 +17,7 @@ import Logo from "../../resource/assets/Logo";
 export default function Footer() {
   const simpleFooter = (
     <Box
-      component='footer'
+      component="footer"
       sx={{
         py: 5,
         bgcolor: "background.default",
@@ -27,7 +27,7 @@ export default function Footer() {
       }}
     >
       <Box
-        component='footer'
+        component="footer"
         sx={{
           bgcolor: "background.default",
           display: { xs: "flex", sm: "flex", md: "block" },
@@ -54,13 +54,13 @@ export default function Footer() {
                 justifyContent: "flex-start",
               }}
             >
-              <Link href='/terms' color='inherit'>
+              <Link href="/terms" color="inherit">
                 Terms of Service
               </Link>
-              <Link href='/privacy' color='inherit'>
+              <Link href="/privacy" color="inherit">
                 Privacy Policy
               </Link>
-              <Link href='/copyright' color='inherit'>
+              <Link href="/copyright" color="inherit">
                 Copyright, Community Guidelines
               </Link>
             </Stack>
@@ -72,22 +72,22 @@ export default function Footer() {
         </Container>
       </Box>
       <Typography
-        variant='caption'
-        component='div'
+        variant="caption"
+        component="div"
         sx={{
           display: "flex",
           alignItems: "flex-start",
           justifyContent: "center",
         }}
       >
-        Developed by  <Link href='/?utm_source=internal'>Shothik AI</Link>
+        Developed by  <Link href="/?utm_source=internal">Shothik AI</Link>
       </Typography>
     </Box>
   );
 
   const mainFooter = (
     <Box
-      component='footer'
+      component="footer"
       sx={{
         position: "relative",
         bgcolor: "background.default",
@@ -110,8 +110,8 @@ export default function Footer() {
                   sx={{ width: "100%" }}
                 >
                   <Typography
-                    component='div'
-                    variant='overline'
+                    component="div"
+                    variant="overline"
                     sx={{ fontSize: 14 }}
                   >
                     {list.headline}
@@ -122,7 +122,7 @@ export default function Footer() {
                       key={link.name}
                       component={NextLink}
                       href={link.href}
-                      color='inherit'
+                      color="inherit"
                     >
                       {link.name.split("\n").map((line, index) => (
                         <Fragment key={index}>
@@ -151,18 +151,18 @@ export default function Footer() {
                   sm: "center",
                   md: "space-between",
                 }}
-                alignItems='center'
+                alignItems="center"
               >
                 <Box>
                   <Typography
-                    variant='overline'
+                    variant="overline"
                     fontSize={14}
                     textAlign={{ xs: "center", sm: "center", md: "left" }}
                   >
                     Get to Know Us
                   </Typography>
                   <Stack
-                    direction='row'
+                    direction="row"
                     justifyContent={{
                       xs: "center",
                       sm: "center",
@@ -174,7 +174,7 @@ export default function Footer() {
                       <IconButton
                         key={Social.name}
                         component={NextLink}
-                        target='_blank'
+                        target="_blank"
                         href={Social.path}
                       >
                         <Social.icon sx={{ color: Social.color }} />

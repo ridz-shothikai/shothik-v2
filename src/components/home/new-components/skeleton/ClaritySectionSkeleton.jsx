@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Grid, Skeleton, Stack } from "@mui/material";
 
 export default function StepsSkeleton({ count = 6 }) {
-
   return (
     <Box sx={{ py: 8, px: 2, maxWidth: 1200, mx: "auto" }}>
       {/* header skeletons (title / subtitle / short description) */}

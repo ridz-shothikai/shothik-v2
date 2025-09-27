@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 
 // If needed, extract these later into separate functions
 const SettingApplier = () => {
-
   const settings = useSelector((state) => state.settings);
   console.log("Current settings:", settings);
 

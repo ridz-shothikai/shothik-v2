@@ -1,4 +1,3 @@
-
 // src/components/tools/paraphrase/ModeNavigation.jsx
 import React from "react";
 import {
@@ -27,18 +26,18 @@ const ModeNavigation = ({
   setShowMessage,
 }) => {
   const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));        // <600px
+  const isXs = useMediaQuery(theme.breakpoints.down("sm")); // <600px
   const isSm = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600–900px
 
   // determine how many tabs to show before collapsing
   const visibleCount = isXs ? 2 : isSm ? 4 : 6;
 
   const initialModes = modes.slice(0, visibleCount);
-  const extraModes   = modes.slice(visibleCount);
+  const extraModes = modes.slice(visibleCount);
 
   // handle the “extra” selected mode
   const [extraMode, setExtraMode] = React.useState(() =>
-    initialModes.some((m) => m.value === selectedMode) ? null : selectedMode
+    initialModes.some((m) => m.value === selectedMode) ? null : selectedMode,
   );
 
   // menu state for “More”
@@ -75,7 +74,6 @@ const ModeNavigation = ({
       justifyContent="space-between"
       sx={{ px: 2, pt: 1 }}
       spacing={2}
-      
     >
       {/* Modes */}
       <Box
@@ -100,7 +98,7 @@ const ModeNavigation = ({
           variant="standard"
           sx={{
             flexWrap: "nowrap",
-            overflowX: "auto",      // allow horizontal scroll inside Tabs
+            overflowX: "auto", // allow horizontal scroll inside Tabs
             "& .MuiTabs-flexContainer": {
               gap: {
                 xs: 0.5,
@@ -135,13 +133,14 @@ const ModeNavigation = ({
         </Tabs>
 
         {/* “More” button with matching gap */}
-        <Box
-          id="mode_more_section"
-          sx={{ flexShrink: 0 }}
-        >
-          <Button id="mode_x_button" onClick={()=>{
-            handleMoreClose();
-        }} sx={{opacity:0, zIndex: -99, width:0, height: 0}}></Button>
+        <Box id="mode_more_section" sx={{ flexShrink: 0 }}>
+          <Button
+            id="mode_x_button"
+            onClick={() => {
+              handleMoreClose();
+            }}
+            sx={{ opacity: 0, zIndex: -99, width: 0, height: 0 }}
+          ></Button>
 
           <Button
             id="mode_more"
@@ -161,10 +160,7 @@ const ModeNavigation = ({
             MenuListProps={{ "aria-labelledby": "mode_more" }}
           >
             {extraModes.map((mode) => (
-              <MenuItem
-                key={mode.value}
-                onClick={() => changeMode(mode.value)}
-              >
+              <MenuItem key={mode.value} onClick={() => changeMode(mode.value)}>
                 {!mode.package.includes(userPackage || "free") && (
                   <Lock sx={{ width: 12, height: 12, mr: 0.5 }} />
                 )}
@@ -181,7 +177,7 @@ const ModeNavigation = ({
           aria-label="Synonyms"
           getAriaValueText={(v) => SYNONYMS[v]}
           value={Object.keys(SYNONYMS).find(
-            (k) => SYNONYMS[k] === selectedSynonyms
+            (k) => SYNONYMS[k] === selectedSynonyms,
           )}
           marks
           step={20}
@@ -208,4 +204,3 @@ const ModeNavigation = ({
 };
 
 export default ModeNavigation;
-

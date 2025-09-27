@@ -96,7 +96,7 @@ export default function TabsPanel({
   const uniqueSourcesCount = sources
     ? sources.filter(
         (source, index, self) =>
-          index === self.findIndex((s) => s.url === source.url)
+          index === self.findIndex((s) => s.url === source.url),
       ).length
     : 0;
 
@@ -132,7 +132,7 @@ export default function TabsPanel({
                   src={getIconSrc(
                     "/agents/ans",
                     "/agents/ans-active.svg",
-                    selectedTab === 0
+                    selectedTab === 0,
                   )}
                   alt="Research"
                   fill
@@ -152,7 +152,7 @@ export default function TabsPanel({
                   src={getIconSrc(
                     "/agents/img",
                     "/agents/img-active.svg",
-                    selectedTab === 1
+                    selectedTab === 1,
                   )}
                   alt="Images"
                   fill
@@ -184,7 +184,7 @@ export default function TabsPanel({
                   src={getIconSrc(
                     "/agents/sources",
                     "/agents/sources-active.svg",
-                    selectedTab === 2
+                    selectedTab === 2,
                   )}
                   alt="Sources"
                   fill

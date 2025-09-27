@@ -4,7 +4,6 @@ import { Box, Button, Container, styled, Typography } from "@mui/material";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-
 const GuaranteeSection = styled(Box)({
   backgroundColor: "#111827", // gray-900
   borderRadius: "16px",
@@ -61,8 +60,9 @@ export default function Guarantee() {
                 fontWeight: 400,
               }}
             >
-              If your improved paper doesn't meet your expectations, we'll
-              revise it free or refund your credits. No questions asked.
+              If your improved paper doesn&apos;t meet your expectations,
+              we&apos;ll revise it free or refund your credits. No questions
+              asked.
             </Typography>
 
             <Button

@@ -18,17 +18,17 @@ const BottomCard = () => {
             borderRadius: 2,
           }}
         >
-          <Typography variant='h5' gutterBottom>
+          <Typography variant="h5" gutterBottom>
             Shothik AI for Writing Solutions
           </Typography>
-          <Typography variant='body2'>
+          <Typography variant="body2">
             Unleash the power of advanced AI tools — streamline your content
             creation, perfect grammar, and generate high-quality summaries with
             ease, all while scaling your projects effortlessly.
           </Typography>
-          <Link href='/paraphrase'>
+          <Link href="/paraphrase">
             <Button
-              variant='outlined'
+              variant="outlined"
               sx={{
                 color: "white",
                 borderColor: "white",
@@ -50,10 +50,10 @@ const BottomCard = () => {
             borderRadius: 2,
           }}
         >
-          <Typography variant='h5' gutterBottom>
+          <Typography variant="h5" gutterBottom>
             {user?.email ? "Explore the features" : "Get started for free"}
           </Typography>
-          <Typography variant='body2'>
+          <Typography variant="body2">
             {user?.email
               ? "Welcome back! Explore the full range of Shothik AI's advanced tools to elevate your writing even further. Take your content creation to the next level with AI-powered paraphrasing, grammar refinement, and more!"
               : "Sign up and explore all the advanced tools of Shothik AI to enhance your writing."}
@@ -66,8 +66,8 @@ const BottomCard = () => {
                 dispatch(setShowLoginModal(true));
               }
             }}
-            variant='contained'
-            color='primary'
+            variant="contained"
+            color="primary"
             sx={{ textTransform: "none", mt: 1 }}
           >
             {user?.email ? "Explore" : "Get started"}

@@ -31,7 +31,7 @@ export default function AccountSettings() {
       icon: (
         <AccountCircleRounded
           sx={{ color: "text.secondary" }}
-          fontSize='small'
+          fontSize="small"
         />
       ),
       component: <AccountGeneral user={user} />,
@@ -40,7 +40,7 @@ export default function AccountSettings() {
       value: "billing",
       label: "Billing",
       icon: (
-        <ReceiptRounded sx={{ color: "text.secondary" }} fontSize='small' />
+        <ReceiptRounded sx={{ color: "text.secondary" }} fontSize="small" />
       ),
       component: <AccountBilling user={user} />,
     },
@@ -54,7 +54,7 @@ export default function AccountSettings() {
   return (
     <Box sx={{ px: 2 }}>
       <Breadcrumb
-        heading='Account'
+        heading="Account"
         activeLast={currentTab}
         links={[
           { name: "Account" },
@@ -80,7 +80,7 @@ export default function AccountSettings() {
             <Box key={tab.value} sx={{ my: 5 }}>
               {tab.component}
             </Box>
-          )
+          ),
       )}
     </Box>
   );

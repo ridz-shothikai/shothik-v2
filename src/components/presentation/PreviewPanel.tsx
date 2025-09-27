@@ -136,8 +136,7 @@ export default function PreviewPanel({
                         color: isDark ? "text.secondary" : "#666",
                       }}
                     >
-                      {
-                        !hasReplay &&
+                      {!hasReplay && (
                         <AppLink
                           href={`/slides?project_id=${presentationId}`}
                           newTab
@@ -148,7 +147,7 @@ export default function PreviewPanel({
                         >
                           View & Export
                         </AppLink>
-                      }
+                      )}
                     </Typography>
                   )}
                 </Box>

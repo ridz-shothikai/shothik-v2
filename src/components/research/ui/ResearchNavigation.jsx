@@ -5,7 +5,7 @@ import { Tab } from "@mui/icons-material";
 
 export default function ResearchNavigation() {
   const { researches, activeResearchIndex } = useSelector(
-    (state) => state.researchCore
+    (state) => state.researchCore,
   );
   const dispatch = useDispatch();
 
@@ -43,9 +43,14 @@ export default function ResearchNavigation() {
           //     key={research._id || `research-${index}`}
           //     label={`Research ${index + 1}`}
           //   />
-          <p key={index + 1} style={{
-            marginInline: "10px"
-          }}>{index + 1}</p>
+          <p
+            key={index + 1}
+            style={{
+              marginInline: "10px",
+            }}
+          >
+            {index + 1}
+          </p>
         ))}
       </Tabs>
     </Box>

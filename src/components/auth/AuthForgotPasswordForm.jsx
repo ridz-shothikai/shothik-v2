@@ -56,7 +56,7 @@ export default function AuthForgotPasswordForm() {
       .max(20, "Password must not exceed 20 characters")
       .notOneOf(
         commonPasswords,
-        "This password is too common. Please choose a stronger one."
+        "This password is too common. Please choose a stronger one.",
       )
       .required("Password is required"),
   });
@@ -111,21 +111,21 @@ export default function AuthForgotPasswordForm() {
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={2.5}>
         {!!errors.afterSubmit && (
-          <Alert severity='error'>{errors.afterSubmit.message}</Alert>
+          <Alert severity="error">{errors.afterSubmit.message}</Alert>
         )}
 
-        {isError && <Alert severity='error'>{error?.data?.message}</Alert>}
+        {isError && <Alert severity="error">{error?.data?.message}</Alert>}
         <RHFTextField
-          name='password'
-          label='Password'
-          size='small'
+          name="password"
+          label="Password"
+          size="small"
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
-              <InputAdornment position='end'>
+              <InputAdornment position="end">
                 <IconButton
                   onClick={() => setShowPassword(!showPassword)}
-                  edge='end'
+                  edge="end"
                 >
                   {showPassword ? (
                     <RemoveRedEyeRounded />
@@ -141,11 +141,11 @@ export default function AuthForgotPasswordForm() {
         <Stack spacing={1.5}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {password.length >= 6 ? (
-              <Image alt='valid' src='/green_tick.svg' width={20} height={20} />
+              <Image alt="valid" src="/green_tick.svg" width={20} height={20} />
             ) : (
               <Image
-                alt='invalid'
-                src='/gray_tick.svg'
+                alt="invalid"
+                src="/gray_tick.svg"
                 width={20}
                 height={20}
               />
@@ -158,10 +158,10 @@ export default function AuthForgotPasswordForm() {
 
         <Button
           fullWidth
-          color='inherit'
-          size='large'
-          type='submit'
-          variant='contained'
+          color="inherit"
+          size="large"
+          type="submit"
+          variant="contained"
           loading={isLoading}
           sx={{
             height: "44px",

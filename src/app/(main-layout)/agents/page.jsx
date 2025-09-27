@@ -1,9 +1,9 @@
-'use client';
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import { AgentContextProvider } from '../../../../components/agents/shared/AgentContextProvider';
-import AgentLandingPage from '../../../../components/agents/AgentLandingPage';
-import AgentTutorialOverlay from '../../../../components/agents/shared/AgentTutorialOverlay';
+"use client";
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import { AgentContextProvider } from "../../../../components/agents/shared/AgentContextProvider";
+import AgentLandingPage from "../../../../components/agents/AgentLandingPage";
+import AgentTutorialOverlay from "../../../../components/agents/shared/AgentTutorialOverlay";
 
 export default function AgentsPage() {
   // const [tutorialOpen, setTutorialOpen] = useState(false);
@@ -16,9 +16,9 @@ export default function AgentsPage() {
 
   return (
     <AgentContextProvider>
-        <AgentLandingPage />
-        {/* Tutorial Overlay. For now not needed */}
-        {/* <AgentTutorialOverlay open={tutorialOpen} onClose={() => setTutorialOpen(false)} /> */}
+      <AgentLandingPage />
+      {/* Tutorial Overlay. For now not needed */}
+      {/* <AgentTutorialOverlay open={tutorialOpen} onClose={() => setTutorialOpen(false)} /> */}
     </AgentContextProvider>
   );
-} 
+}

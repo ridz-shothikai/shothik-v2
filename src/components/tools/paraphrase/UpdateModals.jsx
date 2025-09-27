@@ -31,7 +31,7 @@ export function MessageTemplate({
       <Box sx={{ mb: 4 }}>
         <Typography
           gutterBottom
-          variant='subtitle1'
+          variant="subtitle1"
           sx={{
             overflow: "hidden",
             textAlign: "start",
@@ -85,7 +85,7 @@ export function MessageTemplate({
       >
         <Box sx={{ flex: 1 }}>
           <Typography
-            variant='subtitle1'
+            variant="subtitle1"
             sx={{
               fontWeight: 700,
               color: (theme) =>
@@ -121,13 +121,13 @@ export function MessageTemplate({
               },
             }}
           >
-            <Image src='/fromTo.svg' alt='arrow' width={100} height={100} />
+            <Image src="/fromTo.svg" alt="arrow" width={100} height={100} />
           </Box>
         </Box>
 
         <Box sx={{ flex: 1 }}>
           <Typography
-            variant='subtitle1'
+            variant="subtitle1"
             sx={{
               fontWeight: 700,
               color: (theme) =>
@@ -146,9 +146,9 @@ export function MessageTemplate({
 export function FormalMessage() {
   return (
     <MessageTemplate
-      title='Formal Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Delighted individuals gathered to witness the parade, offering applause as colorful floats and musical groups advanced.'
+      title="Formal Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Delighted individuals gathered to witness the parade, offering applause as colorful floats and musical groups advanced."
       chipLabels={[
         "Rephrasing for Formality",
         "Rewriting for Objectivity",
@@ -163,10 +163,10 @@ export function FormalMessage() {
 export function AcademicMessage() {
   return (
     <MessageTemplate
-      title='Academic Mode Uses'
-      mode='Academic'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Enthusiastic attendees assembled for the event, expressing approval as vivid floats and musical ensembles proceeded.'
+      title="Academic Mode Uses"
+      mode="Academic"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Enthusiastic attendees assembled for the event, expressing approval as vivid floats and musical ensembles proceeded."
       chipLabels={[
         "Rephrasing for Academic Tone",
         "Rewriting for Clarity",
@@ -181,9 +181,9 @@ export function AcademicMessage() {
 export function NewsMessage() {
   return (
     <MessageTemplate
-      title='News Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Excited crowds gathered for the parade, cheering while multicolored floats and energetic bands moved past.'
+      title="News Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Excited crowds gathered for the parade, cheering while multicolored floats and energetic bands moved past."
       chipLabels={[
         "Rephrasing for Newsworthiness",
         "Rewriting for Objectivity",
@@ -197,9 +197,9 @@ export function NewsMessage() {
 export function SimpleMessage() {
   return (
     <MessageTemplate
-      title='Simple Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Happy people watched the parade, clapping as bright floats and bands went by.'
+      title="Simple Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Happy people watched the parade, clapping as bright floats and bands went by."
       chipLabels={[
         "Writing for Clarity",
         "Rewriting for Simplicity",
@@ -214,9 +214,9 @@ export function SimpleMessage() {
 export function CreativeMessage() {
   return (
     <MessageTemplate
-      title='Creative Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Radiant crowds filled the streets, celebrating each colorful float and every band’s rhythmic performance.'
+      title="Creative Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Radiant crowds filled the streets, celebrating each colorful float and every band’s rhythmic performance."
       chipLabels={[
         "Writing for Clarity",
         "Rewriting for Creativity",
@@ -231,9 +231,9 @@ export function CreativeMessage() {
 export function ShortMessage() {
   return (
     <MessageTemplate
-      title='Short Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Crowds cheered as floats and bands paraded through the streets with joy.'
+      title="Short Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Crowds cheered as floats and bands paraded through the streets with joy."
       chipLabels={[
         "Writing for Clarity",
         "Rewriting for Brevity",
@@ -248,9 +248,9 @@ export function ShortMessage() {
 export function LongMessage() {
   return (
     <MessageTemplate
-      title='Long Mode Uses'
-      inputText='Joyful crowds gathered for the parade, cheering as floats and bands passed.'
-      paraphrasedText='Joyful and excited crowds thronged the streets for the grand parade, eagerly cheering as brightly decorated floats rolled by and spirited bands performed lively music, creating an atmosphere of celebration and unity.'
+      title="Long Mode Uses"
+      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
+      paraphrasedText="Joyful and excited crowds thronged the streets for the grand parade, eagerly cheering as brightly decorated floats rolled by and spirited bands performed lively music, creating an atmosphere of celebration and unity."
       chipLabels={[
         "Writing for Clarity",
         "Rewriting for Detail",

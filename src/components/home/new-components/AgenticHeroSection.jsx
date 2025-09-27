@@ -28,7 +28,7 @@ const StyledChip = styled(Chip)(({ theme }) => ({
 
 const AgenticHeroSection = () => {
   const { componentRef } = useComponentTracking(
-    trackingList.STOP_WORKING_SECTION
+    trackingList.STOP_WORKING_SECTION,
   );
 
   const theme = useTheme();
@@ -127,9 +127,10 @@ const AgenticHeroSection = () => {
               maxWidth: { xs: "500px", sm: "100%" },
             }}
           >
-            Tell our agents what you need. They'll research 100+ papers, apply
-            to dozens of programs, make professional calls, and hire experts for
-            you. Stop spending weeks on tasks that should take minutes.
+            Tell our agents what you need. They&apos;ll research 100+ papers,
+            apply to dozens of programs, make professional calls, and hire
+            experts for you. Stop spending weeks on tasks that should take
+            minutes.
           </Typography>
         </Box>
       </Box>

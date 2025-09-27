@@ -9,14 +9,14 @@ export default function AccountBilling({ user }) {
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
 
-  if(!user) return null;
+  if (!user) return null;
 
   return (
     <Grid2 container spacing={3}>
       <Grid2 size={{ xs: 12, md: 5, lg: 4 }}>
         <Card sx={{ p: 2 }}>
           <Typography
-            variant='overline'
+            variant="overline"
             sx={{ mb: 3, display: "block", color: "text.secondary" }}
           >
             Your Plan
@@ -33,7 +33,7 @@ export default function AccountBilling({ user }) {
               }}
             >
               <Typography
-                color='primary'
+                color="primary"
                 sx={{
                   fontSize: 20,
                   textTransform: "capitalize",
@@ -44,15 +44,15 @@ export default function AccountBilling({ user }) {
               </Typography>
               {user?.package !== "unlimited" ? (
                 <Box>
-                  <Link href='/pricing'>
+                  <Link href="/pricing">
                     <Button
-                      color='primary'
-                      size='small'
-                      variant='contained'
-                      rel='noopener'
+                      color="primary"
+                      size="small"
+                      variant="contained"
+                      rel="noopener"
                       startIcon={
                         <SvgColor
-                          src='/navbar/diamond.svg'
+                          src="/navbar/diamond.svg"
                           sx={{
                             width: { xs: 16, md: 20 },
                             height: { xs: 16, md: 20 },
@@ -67,13 +67,13 @@ export default function AccountBilling({ user }) {
               ) : null}
             </Box>
           ) : null}
-          <Typography textAlign='center'>
+          <Typography textAlign="center">
             Check out{" "}
             <Typography
-              color='primary'
+              color="primary"
               sx={{ textDecoration: "none" }}
               component={Link}
-              href='/pricing'
+              href="/pricing"
             >
               our plans
             </Typography>{" "}
@@ -85,7 +85,7 @@ export default function AccountBilling({ user }) {
         {data?.length ? (
           <Card sx={{ p: 2 }}>
             <Typography
-              variant='overline'
+              variant="overline"
               sx={{ mb: 3, display: "block", color: "text.secondary" }}
             >
               Invoice History
@@ -100,9 +100,9 @@ export default function AccountBilling({ user }) {
                 key={invoice._id}
               >
                 <Stack
-                  direction='row'
-                  justifyContent='space-between'
-                  alignItems='center'
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
                   sx={{
                     px: 2,
                     py: 1,
@@ -132,32 +132,32 @@ export default function AccountBilling({ user }) {
                   </Typography>
                 </Stack>
                 <Stack
-                  direction='row'
-                  justifyContent='space-between'
+                  direction="row"
+                  justifyContent="space-between"
                   sx={{ px: 2, py: 1 }}
                 >
                   <Box>
                     <Typography>
                       Payment date:{" "}
-                      <Typography fontWeight={500} component='span'>
+                      <Typography fontWeight={500} component="span">
                         {new Date(invoice._date).toLocaleDateString()}
                       </Typography>{" "}
                     </Typography>
                     <Typography>
                       Expired date:{" "}
-                      <Typography fontWeight={500} component='span'>
+                      <Typography fontWeight={500} component="span">
                         {new Date(invoice.validTil).toLocaleDateString()}
                       </Typography>{" "}
                     </Typography>
                   </Box>
                   <Box>
-                    <Typography fontWeight={500} textAlign='center'>
+                    <Typography fontWeight={500} textAlign="center">
                       {invoice.amount}
                       {invoice.paymentMethod === "bkash"
                         ? "৳"
                         : invoice.paymentMethod === "razorpay"
-                        ? "₹"
-                        : "$"}
+                          ? "₹"
+                          : "$"}
                     </Typography>
                     {/* <Button variant='text'>Download</Button> */}
                   </Box>

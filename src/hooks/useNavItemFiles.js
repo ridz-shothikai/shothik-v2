@@ -8,12 +8,12 @@ const useNavItemFiles = (selectedNavItem) => {
 
   const getCurrentFiles = useCallback(
     () => filesByNavItem[selectedNavItem]?.files || [],
-    [filesByNavItem, selectedNavItem]
+    [filesByNavItem, selectedNavItem],
   );
 
   const getCurrentUrls = useCallback(
     () => filesByNavItem[selectedNavItem]?.urls || [],
-    [filesByNavItem, selectedNavItem]
+    [filesByNavItem, selectedNavItem],
   );
 
   const addFiles = useCallback(
@@ -26,7 +26,7 @@ const useNavItemFiles = (selectedNavItem) => {
         },
       }));
     },
-    [selectedNavItem]
+    [selectedNavItem],
   );
 
   const removeFile = useCallback(
@@ -44,7 +44,7 @@ const useNavItemFiles = (selectedNavItem) => {
         };
       });
     },
-    [selectedNavItem]
+    [selectedNavItem],
   );
 
   const clearCurrentNavItem = useCallback(() => {

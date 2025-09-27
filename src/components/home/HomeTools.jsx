@@ -154,7 +154,7 @@ export default function HomeTools() {
                   </Box>
                 </Card>
               </Grid2>
-            ) : null
+            ) : null,
           )}
         </Grid2>
         <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>

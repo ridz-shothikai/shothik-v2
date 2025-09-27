@@ -67,7 +67,7 @@ export async function POST(request) {
         validateStatus: function (status) {
           return status >= 200 && status < 500; // Don't throw on 4xx errors
         },
-      }
+      },
     );
 
     console.log("Zoho Response Status:", zohoResponse.status);
@@ -82,7 +82,7 @@ export async function POST(request) {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (error) {
     console.error("=== WEBHOOK ERROR ===");
@@ -116,7 +116,7 @@ export async function POST(request) {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }

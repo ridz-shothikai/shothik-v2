@@ -43,7 +43,7 @@ export default function TaskProgress({ taskProgress }) {
       >
         {expanded ? (
           <>
-            <Typography variant='subtitle1' fontWeight='bold' mb={1}>
+            <Typography variant="subtitle1" fontWeight="bold" mb={1}>
               Task progress
             </Typography>
             <List dense>
@@ -54,7 +54,7 @@ export default function TaskProgress({ taskProgress }) {
                       color={
                         task?.status === "success" ? "success" : "disabled"
                       }
-                      fontSize='small'
+                      fontSize="small"
                     />
                   </ListItemIcon>
                   <ListItemText
@@ -76,17 +76,17 @@ export default function TaskProgress({ taskProgress }) {
                 bottom: 10,
               }}
               onClick={toggleExpanded}
-              color='inherit'
-              size='small'
+              color="inherit"
+              size="small"
             >
               {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
           </>
         ) : (
           <Stack
-            direction='row'
-            alignItems='center'
-            justifyContent='space-between'
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
           >
             <Typography
               sx={{
@@ -94,15 +94,15 @@ export default function TaskProgress({ taskProgress }) {
                 overflow: "hidden",
                 whiteSpace: "nowrap",
               }}
-              variant='body2'
+              variant="body2"
             >
               {taskProgress[taskProgress.length - 1]?.name}
             </Typography>
-            <Stack direction='row' alignItems='center' gap={1}>
-              <Typography variant='caption'>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <Typography variant="caption">
                 {taskDone.length}/{taskProgress.length}
               </Typography>
-              <IconButton onClick={toggleExpanded} color='inherit' size='small'>
+              <IconButton onClick={toggleExpanded} color="inherit" size="small">
                 {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </IconButton>
             </Stack>

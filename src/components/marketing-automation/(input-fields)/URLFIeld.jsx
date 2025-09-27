@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  TextField,
-  Autocomplete,
-} from "@mui/material";
+import { TextField, Autocomplete } from "@mui/material";
 
 // URL Input Component (similar to LocationSelect)
 const UrlField = ({
@@ -29,7 +26,7 @@ const UrlField = ({
 
     // Check if input already has a protocol
     const hasProtocol = URL_PREFIXES.some((prefix) =>
-      lowerValue.startsWith(prefix.toLowerCase())
+      lowerValue.startsWith(prefix.toLowerCase()),
     );
 
     // Generate prefix suggestions if no protocol
@@ -83,7 +80,7 @@ const UrlField = ({
   };
 
   return (
-    <div className="bg-card shadow rounded-full border">
+    <div className="bg-card rounded-full border shadow">
       <Autocomplete
         className="px-4"
         freeSolo

@@ -1,14 +1,19 @@
+import { Button } from "@mui/material";
 import { useComponentTracking } from "../../hooks/useComponentTracking";
 
-const TrackedButton = forwardRef(({
-    children,
-    onClick,
-    trackingName,
-    conversionType,
-    conversionValue,
-    additionalTrackingData = {},
-    ...props // Props of button
-  }, ref) => {
+const TrackedButton = forwardRef(
+  (
+    {
+      children,
+      onClick,
+      trackingName,
+      conversionType,
+      conversionValue,
+      additionalTrackingData = {},
+      ...props // Props of button
+    },
+    ref,
+  ) => {
     const { trackClick, trackConversion } = useComponentTracking("button");
 
     const handleClick = (event) => {
@@ -34,6 +39,7 @@ const TrackedButton = forwardRef(({
         {children}
       </Button>
     );
-  });
+  },
+);
 
-  export default TrackedButton;
+export default TrackedButton;

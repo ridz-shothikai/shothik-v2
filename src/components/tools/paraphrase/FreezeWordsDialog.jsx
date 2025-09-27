@@ -43,7 +43,7 @@ export default function FreezeWordsDialog({
   // Separate user-added from protected words for better management
   const [userFrozenWords, setUserFrozenWords] = useState(new Set(frozenWords));
   const [userFrozenPhrases, setUserFrozenPhrases] = useState(
-    new Set(frozenPhrases)
+    new Set(frozenPhrases),
   );
 
   const protectedWordsSet = new Set(protectedSingleWords);

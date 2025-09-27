@@ -30,12 +30,12 @@ export default function AboutWhat() {
         paddingBottom: 10,
       }}
     >
-      <Grid2 container spacing={3} justifyContent='center' alignItems='center'>
+      <Grid2 container spacing={3} justifyContent="center" alignItems="center">
         <Grid2
           size={{ xs: 12, md: 6, lg: 7 }}
           sx={{ pr: { md: 7 }, display: { xs: "none", md: "block" } }}
         >
-          <Grid2 container spacing={3} alignItems='flex-end'>
+          <Grid2 container spacing={3} alignItems="flex-end">
             <Grid2 size={{ xs: 6 }}>
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
@@ -44,8 +44,8 @@ export default function AboutWhat() {
                 viewport={{ once: true }}
               >
                 <Image
-                  alt='our office 1'
-                  src='/secondary/what_1.jpg'
+                  alt="our office 1"
+                  src="/secondary/what_1.jpg"
                   height={400}
                   width={400}
                   style={{
@@ -63,8 +63,8 @@ export default function AboutWhat() {
                 viewport={{ once: true }}
               >
                 <Image
-                  alt='our office 2'
-                  src='/secondary/what_2.jpg'
+                  alt="our office 2"
+                  src="/secondary/what_2.jpg"
                   height={300}
                   width={400}
                   style={{ borderRadius: "20px" }}
@@ -80,7 +80,7 @@ export default function AboutWhat() {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <Typography variant='h2' sx={{ mb: 3 }}>
+            <Typography variant="h2" sx={{ mb: 3 }}>
               What is Shothik AI?
             </Typography>
             <Typography sx={{ color: "text.secondary" }}>
@@ -115,14 +115,14 @@ function ProgressItem({ progress }) {
   return (
     <Box sx={{ mt: 3 }}>
       <Box sx={{ mb: 1.5, display: "flex", alignItems: "center" }}>
-        <Typography variant='subtitle2'>{label}&nbsp;-&nbsp;</Typography>
-        <Typography variant='body2' sx={{ color: "text.secondary" }}>
+        <Typography variant="subtitle2">{label}&nbsp;-&nbsp;</Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           {value}%
         </Typography>
       </Box>
 
       <LinearProgress
-        variant='determinate'
+        variant="determinate"
         value={value}
         sx={{
           "& .MuiLinearProgress-bar": { bgcolor: "success.main" },

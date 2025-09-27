@@ -25,11 +25,11 @@ const AcademicSearch = ({ data }) => {
   return (
     <Card>
       <CardContent>
-        <Stack direction='row' alignItems='center' spacing={0.5}>
+        <Stack direction="row" alignItems="center" spacing={0.5}>
           <Box>
             <IconButton
-              color='text.secondary'
-              aria-label='Book'
+              color="text.secondary"
+              aria-label="Book"
               sx={{ bgcolor: "rgba(73, 149, 87, 0.04)" }}
             >
               <MenuBook sx={{ fontSize: 22 }} />
@@ -45,7 +45,7 @@ const AcademicSearch = ({ data }) => {
           </Box>
         </Stack>
         <Stack
-          direction='row'
+          direction="row"
           spacing={2}
           sx={{
             overflowX: "auto",
@@ -80,7 +80,7 @@ const AcademicSearch = ({ data }) => {
                 <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
                   <Stack spacing={1}>
                     <Typography
-                      variant='h5'
+                      variant="h5"
                       sx={{
                         display: "-webkit-box",
                         WebkitLineClamp: 1,
@@ -116,7 +116,7 @@ const AcademicSearch = ({ data }) => {
                         <Chip
                           icon={<CalendarToday sx={{ fontSize: 17 }} />}
                           label={new Date(
-                            paper.publishedDate
+                            paper.publishedDate,
                           ).toLocaleDateString()}
                           sx={{
                             borderRadius: "7px",
@@ -130,7 +130,7 @@ const AcademicSearch = ({ data }) => {
 
                     <Box>
                       <Typography
-                        variant='body2'
+                        variant="body2"
                         sx={{
                           display: "-webkit-box",
                           WebkitLineClamp: 4,
@@ -144,7 +144,7 @@ const AcademicSearch = ({ data }) => {
 
                     <Box sx={{ display: "flex", gap: 2 }}>
                       <Button
-                        variant='outlined'
+                        variant="outlined"
                         onClick={() => window.open(paper.url, "_blank")}
                         sx={{ flexGrow: 1 }}
                       >
@@ -154,11 +154,11 @@ const AcademicSearch = ({ data }) => {
 
                       {paper.url.includes("arxiv.org") && (
                         <Button
-                          variant='outlined'
+                          variant="outlined"
                           onClick={() =>
                             window.open(
                               paper.url.replace("abs", "pdf"),
-                              "_blank"
+                              "_blank",
                             )
                           }
                           sx={{

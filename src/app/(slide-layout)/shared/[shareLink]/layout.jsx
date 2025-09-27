@@ -4,10 +4,8 @@ export default function SlideShareLayout({ children }) {
   return (
     <>
       <PresentationProvider>
-        <div style={{ margin: 0, padding: 0 }}>
-          {children}
-        </div>
+        <div style={{ margin: 0, padding: 0 }}>{children}</div>
       </PresentationProvider>
     </>
-  )
+  );
 }

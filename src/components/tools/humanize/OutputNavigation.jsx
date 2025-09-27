@@ -43,9 +43,9 @@ const OutputNavigation = ({
           disabled={!showIndex}
           onClick={() => setShowIndex((prev) => prev - 1)}
           variant={isMobile ? "text" : "outlined"}
-          startIcon={!isMobile && <ChevronLeft className='icon' />}
+          startIcon={!isMobile && <ChevronLeft className="icon" />}
         >
-          {isMobile ? <ChevronLeft className='icon' /> : "Previous"}
+          {isMobile ? <ChevronLeft className="icon" /> : "Previous"}
         </Button>
 
         <Typography sx={{ textWrap: "nowrap" }}>
@@ -57,13 +57,13 @@ const OutputNavigation = ({
           disabled={showIndex === outputs - 1}
           onClick={() => setShowIndex((prev) => prev + 1)}
           variant={isMobile ? "text" : "outlined"}
-          endIcon={!isMobile && <ChevronRight className='icon' />}
+          endIcon={!isMobile && <ChevronRight className="icon" />}
         >
-          {isMobile ? <ChevronRight className='icon' /> : "Next"}
+          {isMobile ? <ChevronRight className="icon" /> : "Next"}
         </Button>
       </Box>
 
-      <Tooltip title='Export' placement='top' arrow>
+      <Tooltip title="Export" placement="top" arrow>
         <IconButton
           onClick={handleDownload}
           sx={{
@@ -71,8 +71,8 @@ const OutputNavigation = ({
             color: "primary.main",
             p: 1,
           }}
-          aria-label='download'
-          size='large'
+          aria-label="download"
+          size="large"
         >
           <VerticalAlignBottom sx={{ fontWeight: 600 }} />
         </IconButton>

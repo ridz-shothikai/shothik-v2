@@ -96,9 +96,7 @@ export default function FeaturesSection() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { componentRef } = useComponentTracking(
-    trackingList.FEATURE_SECTION
-  );  
+  const { componentRef } = useComponentTracking(trackingList.FEATURE_SECTION);
 
   return (
     <Box
@@ -107,7 +105,9 @@ export default function FeaturesSection() {
       sx={{
         pt: { xs: 4, sm: 6, xl: 8 },
         pb: { xs: 8, sm: 12, xl: 15 },
-        backgroundColor: isDarkMode ? theme.palette.background.default : "#f8fafc", // gray-50
+        backgroundColor: isDarkMode
+          ? theme.palette.background.default
+          : "#f8fafc", // gray-50
       }}
     >
       <Container maxWidth="lg">
@@ -184,7 +184,7 @@ export default function FeaturesSection() {
                         // border: "1px solid #e5e7eb", // gray-200
                         borderRadius: "24px",
                         // boxShadow:
-                          // "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
+                        // "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
                         boxShadow: isDarkMode
                           ? "0 12px 24px -4px rgba(0, 0, 0, 0.3)"
                           : "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
@@ -202,13 +202,19 @@ export default function FeaturesSection() {
                             width: 48,
                             height: 48,
                             borderRadius: "8px",
-                            backgroundColor: isDarkMode ? theme.palette.action.hover : feature.bgColor,
+                            backgroundColor: isDarkMode
+                              ? theme.palette.action.hover
+                              : feature.bgColor,
                             mb: 3,
                           }}
                         >
                           <IconComponent
                             size={24}
-                            style={{ color: isDarkMode ? theme.palette.text.primary : feature.color }}
+                            style={{
+                              color: isDarkMode
+                                ? theme.palette.text.primary
+                                : feature.color,
+                            }}
                           />
                         </Box>
 
@@ -219,7 +225,9 @@ export default function FeaturesSection() {
                           sx={{
                             fontSize: { xs: "1.125rem", sm: "1.25rem" },
                             fontWeight: 700,
-                            color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
+                            color: isDarkMode
+                              ? theme.palette.text.primary
+                              : "#111827", // gray-900
                             mb: 2,
                             lineHeight: 1.3,
                           }}
@@ -231,7 +239,9 @@ export default function FeaturesSection() {
                         <Typography
                           variant="body1"
                           sx={{
-                            color: isDarkMode ? theme.palette.text.secondary : "#6b7280", // gray-500
+                            color: isDarkMode
+                              ? theme.palette.text.secondary
+                              : "#6b7280", // gray-500
                             lineHeight: 1.6,
                             fontSize: { xs: "0.875rem", sm: "1rem" },
                           }}

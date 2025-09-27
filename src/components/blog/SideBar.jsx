@@ -44,7 +44,7 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
       <Box sx={{ width: 250 }}>
         {isMobile ? (
           <>
-            <Button variant='contained' size='large' onClick={handleOpen}>
+            <Button variant="contained" size="large" onClick={handleOpen}>
               Popular Topics
               <ArrowRight sx={{ ml: 1 }} />
             </Button>
@@ -91,7 +91,7 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
                   <Close />
                 </IconButton>
                 <Box sx={{ width: "100%" }}>
-                  <Typography variant='h6' gutterBottom>
+                  <Typography variant="h6" gutterBottom>
                     All topics
                   </Typography>
                   <div>
@@ -163,14 +163,14 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
               <div>
                 {isLoading ? (
                   <>
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
-                    <Skeleton variant='text' width='100%' height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton variant="text" width="100%" height={20} />
                   </>
                 ) : !categories?.data?.length ? (
                   <Box>

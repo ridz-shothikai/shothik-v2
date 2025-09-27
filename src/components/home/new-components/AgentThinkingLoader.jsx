@@ -29,7 +29,7 @@ const AgentThinkingLoader = ({
     width: "100%",
     maxWidth: "100%",
     overflow: "hidden",
-    mt: {xs: 2, lg: 3}
+    mt: { xs: 2, lg: 3 },
   };
 
   const mascotContainerStyles = {
@@ -129,7 +129,11 @@ const AgentThinkingLoader = ({
             ease: "easeInOut",
           }}
         >
-          <Image src={mascotImage} alt="AI thinking" style={mascotImageStyles} />
+          <Image
+            src={mascotImage}
+            alt="AI thinking"
+            style={mascotImageStyles}
+          />
         </motion.div>
 
         {/* Thinking bubbles */}

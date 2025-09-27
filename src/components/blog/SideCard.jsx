@@ -19,7 +19,7 @@ export default function SideCard() {
             : "Explore All Features and Enhance Your Experience with Shothik AI"
           : "Sign up for free to access all features"}
       </Typography>
-      <Typography color='text.secondary' sx={{ mb: 2, fontSize: "12px" }}>
+      <Typography color="text.secondary" sx={{ mb: 2, fontSize: "12px" }}>
         {(!user?.email || user?.package === "free") &&
           "Unlock the full potential of Shothik AI."}{" "}
         Experience AI-powered paraphrasing, human-like content generation,
@@ -34,8 +34,8 @@ export default function SideCard() {
             dispatch(setShowLoginModal(true));
           }
         }}
-        variant='contained'
-        color='primary'
+        variant="contained"
+        color="primary"
         fullWidth
         sx={{ textTransform: "none" }}
       >

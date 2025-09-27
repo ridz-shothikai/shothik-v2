@@ -183,7 +183,7 @@ const ResearchContend = () => {
               initial={{ x: -30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              variant='h4'
+              variant="h4"
               sx={{
                 textAlign: "center",
                 mb: 2,
@@ -232,7 +232,7 @@ const ResearchContend = () => {
                 isLoading={isLoading}
                 data={message}
               />
-            ) : null
+            ) : null,
           )}
           {suggestedQuestions.length ? (
             <Suggestion

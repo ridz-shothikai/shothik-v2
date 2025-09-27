@@ -1,36 +1,36 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Send,
-  Sparkles,
-  FileText,
-  ChevronRight,
-  Bot,
-  Sheet,
-  BrainCog,
-} from "lucide-react";
-import {
+  Alert,
   Box,
   Button,
-  TextField,
-  Typography,
   Container,
   Grid,
   Paper,
-  useTheme,
-  useMediaQuery,
   Snackbar,
-  Alert,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import AgentThinkingLoader from "./AgentThinkingLoader";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Bot,
+  BrainCog,
+  ChevronRight,
+  FileText,
+  Send,
+  Sheet,
+  Sparkles,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useComponentTracking } from "../../../hooks/useComponentTracking";
 import { trackingList } from "../../../libs/trackingList";
-import { useRouter } from "next/navigation";
-import EmailModal from "../EmailCollectModal";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
+import EmailModal from "../EmailCollectModal";
+import AgentThinkingLoader from "./AgentThinkingLoader";
 
 // Styled components to match Tailwind styles
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -338,7 +338,7 @@ const mockAnalytics = {
 
 export default function InteractiveAgentDemo() {
   const { componentRef, trackClick } = useComponentTracking(
-    trackingList.LIVE_AGENT
+    trackingList.LIVE_AGENT,
   );
 
   const theme = useTheme();
@@ -383,7 +383,7 @@ export default function InteractiveAgentDemo() {
     mockAnalytics.trackAgentInteraction(
       selectedAgent.id,
       "demo_started",
-      userInput.length
+      userInput.length,
     );
 
     const simulationId = selectedAgent.chatId[userChatId];
@@ -446,14 +446,6 @@ export default function InteractiveAgentDemo() {
       }
 
       return;
-
-      setShowResults(true);
-
-      mockAnalytics.trackAgentInteraction(
-        selectedAgent.id,
-        "demo_completed",
-        data.result.length
-      );
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -463,14 +455,14 @@ export default function InteractiveAgentDemo() {
       mockAnalytics.trackError(
         "agent_demo_error",
         errorMessage,
-        selectedAgent.id
+        selectedAgent.id,
       );
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const useExample = (example, index) => {
+  const handleExample = (example, index) => {
     setUserInput(example);
     mockAnalytics.trackFeatureClick("example_used", "agent_demo");
     if (inputRef.current) {
@@ -486,7 +478,7 @@ export default function InteractiveAgentDemo() {
     setError("");
     mockAnalytics.trackFeatureClick(
       `agent_${agent.id}_selected`,
-      "agent_selector"
+      "agent_selector",
     );
   };
 
@@ -713,7 +705,7 @@ export default function InteractiveAgentDemo() {
                           >
                             <ExampleButton
                               fullWidth={true}
-                              onClick={() => useExample(example, index)}
+                              onClick={() => handleExample(example, index)}
                             >
                               <Typography
                                 sx={{
@@ -722,7 +714,7 @@ export default function InteractiveAgentDemo() {
                                   color: isDarkMode ? "#FFF" : "inherit",
                                 }}
                               >
-                                "{example}"
+                                &quot;{example}&quot;
                               </Typography>
                             </ExampleButton>
                           </motion.div>
@@ -844,7 +836,7 @@ export default function InteractiveAgentDemo() {
                       </Box>
 
                       <StyledButton
-                        data-umami-event={`Try New Agent: ${selectedAgent?.name || ''}`}
+                        data-umami-event={`Try New Agent: ${selectedAgent?.name || ""}`}
                         fullWidth={true}
                         variant="contained"
                         onClick={() => handleSubmit()}

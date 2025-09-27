@@ -20,7 +20,7 @@ const SavePointsDropdown = ({
   const isDarkMode = theme.palette.mode === "dark";
 
   const [selectedValue, setSelectedValue] = useState(
-    activeSavePointId || "current"
+    activeSavePointId || "current",
   );
 
   const handleChange = (event) => {
@@ -87,7 +87,7 @@ const SavePointsDropdown = ({
               ? null
               : savePoints.find((sp) => sp.id === value);
           const status = savePoint?.generations.find(
-            (g) => g.id === savePoint.activeGenerationId
+            (g) => g.id === savePoint.activeGenerationId,
           )?.status;
 
           return (
@@ -123,7 +123,7 @@ const SavePointsDropdown = ({
 
         {savePoints.map((sp) => {
           const activeGen = sp.generations.find(
-            (g) => g.id === sp.activeGenerationId
+            (g) => g.id === sp.activeGenerationId,
           );
           return (
             <MenuItem key={sp.id} value={sp.id}>

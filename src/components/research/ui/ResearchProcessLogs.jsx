@@ -49,7 +49,7 @@ const defaultFormatTime = (ts) => {
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true
+      hour12: true,
     });
   } catch {
     return String(ts);
@@ -76,7 +76,7 @@ const aggregateFromEvents = (events = []) => {
     if (ev?.data?.sources_count) {
       summary.totalSources = Math.max(
         summary.totalSources,
-        ev.data.sources_count
+        ev.data.sources_count,
       );
     }
     if (ev?.data?.search_query && Array.isArray(ev.data.search_query)) {
@@ -88,7 +88,7 @@ const aggregateFromEvents = (events = []) => {
     if (ev?.data?.research_loops) {
       summary.researchLoops = Math.max(
         summary.researchLoops,
-        ev.data.research_loops
+        ev.data.research_loops,
       );
     }
   });
@@ -215,7 +215,7 @@ const ProcessTimelineItem = ({ ev, isLast, isActive }) => {
                     <Stack
                       direction="row"
                       spacing={1}
-                      sx={{ mt: 1, flexWrap: "wrap", gap:1 }}
+                      sx={{ mt: 1, flexWrap: "wrap", gap: 1 }}
                     >
                       {ev.data.search_query.slice(0, 3).map((q, i) => (
                         <Chip

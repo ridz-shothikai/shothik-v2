@@ -30,14 +30,14 @@ export const useChat = () => {
         throw error;
       }
     },
-    [createChat, dispatch]
+    [createChat, dispatch],
   );
 
   const selectChat = useCallback(
     (chatId) => {
       dispatch(setCurrentChat(chatId));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const updateCurrentChatName = useCallback(
@@ -52,7 +52,7 @@ export const useChat = () => {
         throw error;
       }
     },
-    [currentChatId, updateChatName, dispatch]
+    [currentChatId, updateChatName, dispatch],
   );
 
   const deleteCurrentChat = useCallback(async () => {

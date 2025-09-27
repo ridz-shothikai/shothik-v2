@@ -44,7 +44,7 @@ export const useConnectionState = () => {
     sessionStorage.setItem("currentResearchJobId", jobId);
     sessionStorage.setItem(
       "researchConnectionMetadata",
-      JSON.stringify(metadata)
+      JSON.stringify(metadata),
     );
   }, []);
 

@@ -27,14 +27,14 @@ export const StatsSection = () => {
           paddingRight: { md: 2 },
         }}
       >
-        <Stack direction='column' justifyContent='center' gap={1}>
+        <Stack direction="column" justifyContent="center" gap={1}>
           <Typography
             component={motion.p}
             initial={{ x: -20, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            variant='h3'
+            variant="h3"
           >
             Powering Smarter, Safer & More Efficient Business Operations
           </Typography>
@@ -44,12 +44,13 @@ export const StatsSection = () => {
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
-            variant='body1'
+            variant="body1"
           >
-            At Shothik.ai, we don't just offer solutions—we transform businesses
-            with AI-driven efficiency, security, and innovation. Whether it's
-            travel, fashion, trade, or healthcare, we ensure seamless
-            automation, data-driven decision-making, and operational excellence.
+            At Shothik.ai, we don&apos;t just offer solutions—we transform
+            businesses with AI-driven efficiency, security, and innovation.
+            Whether it&apos;s travel, fashion, trade, or healthcare, we ensure
+            seamless automation, data-driven decision-making, and operational
+            excellence.
           </Typography>
           <Box
             component={motion.p}
@@ -58,12 +59,12 @@ export const StatsSection = () => {
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
           >
-            <Link href='#services'>
+            <Link href="#services">
               <Button
-                variant='contained'
+                variant="contained"
                 sx={{ backgroundColor: "primary.darker" }}
                 endIcon={<ArrowForward />}
-                size='large'
+                size="large"
               >
                 Services
               </Button>
@@ -90,10 +91,10 @@ export const StatsSection = () => {
                 py: { xs: 2, md: 0 },
               }}
             >
-              <Typography variant='h3' align='center'>
+              <Typography variant="h3" align="center">
                 {stat.value}
               </Typography>
-              <Typography variant='body2' align='center'>
+              <Typography variant="body2" align="center">
                 {stat.label}
               </Typography>
             </Grid2>
@@ -119,11 +120,11 @@ export const StatsSection = () => {
           }}
         >
           <Image
-            src='/b2b/image1.png'
-            alt='Business solutions'
+            src="/b2b/image1.png"
+            alt="Business solutions"
             width={450}
             height={450}
-            objectFit='cover'
+            objectFit="cover"
             style={{ width: "100%", height: "100%" }}
           />
         </Stack>

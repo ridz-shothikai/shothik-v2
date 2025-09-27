@@ -79,7 +79,7 @@ export default function SecondaryHeader() {
     >
       <Toolbar sx={{ height: 1 }}>
         <Container
-          maxWidth= "100%"
+          maxWidth="100%"
           sx={{
             display: "flex",
             alignItems: "center",
@@ -88,7 +88,7 @@ export default function SecondaryHeader() {
         >
           <Logo />
 
-          <Stack component='nav' direction='row' spacing={1}>
+          <Stack component="nav" direction="row" spacing={1}>
             {isDesktop ? (
               <>
                 {navConfig?.map((link) => (
@@ -125,7 +125,7 @@ export default function SecondaryHeader() {
                           fontSize: 14,
                           textAlign: "center",
                         }}
-                        variant='subtitle2'
+                        variant="subtitle2"
                       >
                         {link.title}
                       </Typography>

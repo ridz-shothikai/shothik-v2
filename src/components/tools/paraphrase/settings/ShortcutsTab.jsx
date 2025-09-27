@@ -1,6 +1,5 @@
-
 // ShortcutsTab.jsx
-import React from 'react';
+import React from "react";
 import { Box, Typography, Divider } from "@mui/material";
 
 const ShortcutsTab = () => {
@@ -46,9 +45,7 @@ const ShortcutsTab = () => {
             borderColor: "divider",
           }}
         >
-          <Typography variant="body2">
-            {row.action}
-          </Typography>
+          <Typography variant="body2">{row.action}</Typography>
           <Typography variant="body2" sx={{ fontFamily: "Monospace" }}>
             {row.shortcut}
           </Typography>
@@ -70,9 +67,7 @@ const ShortcutsTab = () => {
           py: 1,
         }}
       >
-        <Typography variant="body2">
-          Auto center
-        </Typography>
+        <Typography variant="body2">Auto center</Typography>
         <Typography variant="body2" sx={{ fontFamily: "Monospace" }}>
           Ctrl + |
         </Typography>
@@ -82,4 +77,3 @@ const ShortcutsTab = () => {
 };
 
 export default ShortcutsTab;
-

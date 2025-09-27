@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Menu } from "@mui/icons-material";
 import {
   Box,
@@ -57,7 +58,7 @@ export default function SecondaryNavForMobile({ data }) {
             <Logo />
           </Box>
 
-          <List component='nav' disablePadding>
+          <List component="nav" disablePadding>
             {data.map((link) => (
               <ListItemButton
                 key={link.path}
@@ -97,7 +98,7 @@ export default function SecondaryNavForMobile({ data }) {
                     }}
                   >
                     <link.icon />
-                    <Typography variant='subtitle2'>{link.title}</Typography>
+                    <Typography variant="subtitle2">{link.title}</Typography>
                   </Box>
                 </ListItemText>
               </ListItemButton>

@@ -2,7 +2,7 @@
 
 import { Box, Typography } from "@mui/material";
 /**
- * @param {text: String} 
+ * @param {text: String}
  */
 
 import { memo } from "react";
@@ -37,5 +37,7 @@ const TypingAnimation = memo(({ text = "Thinking..." }) => (
     </Typography>
   </Box>
 ));
+
+TypingAnimation.displayName = "TypingAnimation";
 
 export default TypingAnimation;

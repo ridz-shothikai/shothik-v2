@@ -37,7 +37,7 @@ ChartJS.register(
   BarElement,
   Tooltip,
   Legend,
-  Title
+  Title,
 );
 
 const RenderMarkdown = ({ content }) => {
@@ -147,7 +147,7 @@ const RenderMarkdown = ({ content }) => {
     table(children) {
       return (
         <TableContainer key={this.elementId} component={Paper} sx={{ my: 2 }}>
-          <Table size='small'>{children}</Table>
+          <Table size="small">{children}</Table>
         </TableContainer>
       );
     },
@@ -166,7 +166,7 @@ const RenderMarkdown = ({ content }) => {
 
     tableCell(children, { header }) {
       return header ? (
-        <TableCell key={this.elementId} component='th' scope='col'>
+        <TableCell key={this.elementId} component="th" scope="col">
           <strong>{children}</strong>
         </TableCell>
       ) : (

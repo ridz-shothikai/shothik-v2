@@ -1,26 +1,27 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import EditIcon from "@mui/icons-material/Edit";
+import ErrorIcon from "@mui/icons-material/Error";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import ImageIcon from "@mui/icons-material/Image";
+import PsychologyIcon from "@mui/icons-material/Psychology";
+import QueryBuilderIcon from "@mui/icons-material/QueryBuilder";
+import SearchIcon from "@mui/icons-material/Search";
+import SourceIcon from "@mui/icons-material/Source";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import {
+  Alert,
+  Badge,
   Box,
-  Typography,
-  Paper,
-  LinearProgress,
-  Chip,
+  Button,
   Card,
   CardContent,
-  Grid,
-  Badge,
+  Chip,
   Divider,
-  Alert,
+  Grid,
+  LinearProgress,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import SearchIcon from "@mui/icons-material/Search";
-import PsychologyIcon from "@mui/icons-material/Psychology";
-import EditIcon from "@mui/icons-material/Edit";
-import ImageIcon from "@mui/icons-material/Image";
-import SourceIcon from "@mui/icons-material/Source";
-import QueryBuilderIcon from "@mui/icons-material/QueryBuilder";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 const stepIcons = {
   queued: <HourglassEmptyIcon />,
@@ -218,7 +219,13 @@ export default function StreamingIndicator({
   }
 
   return (
-    <Card sx={{ mb:{xs: 19, sm: 12, xl: 3}, bgcolor: "#f8f9fa", border: "1px solid #e9ecef" }}>
+    <Card
+      sx={{
+        mb: { xs: 19, sm: 12, xl: 3 },
+        bgcolor: "#f8f9fa",
+        border: "1px solid #e9ecef",
+      }}
+    >
       <CardContent>
         {/* Main Status Header */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -242,8 +249,8 @@ export default function StreamingIndicator({
               isPolling
                 ? "Reconnecting..."
                 : isCompleted
-                ? "Completed"
-                : "In Progress"
+                  ? "Completed"
+                  : "In Progress"
             }
             color={isPolling ? "warning" : isCompleted ? "success" : "primary"}
             variant="outlined"

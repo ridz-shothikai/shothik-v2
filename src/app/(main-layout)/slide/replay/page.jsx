@@ -38,7 +38,7 @@ export default function SlideReplay() {
 
   const [simulationCompleted, setSimulationCompleted] = useState(false);
 
-   const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handlePreviewOpen = () => setPreviewOpen(true);
   const handlePreviewClose = () => setPreviewOpen(false);
@@ -50,14 +50,14 @@ export default function SlideReplay() {
       setSlideDataLoading,
       setTitle,
       setTotalSlides,
-      id
+      id,
     );
     runLogsSimulation(
       setLogsData,
       setLogsStatus,
       setLogsLoading,
       id,
-      setSimulationCompleted
+      setSimulationCompleted,
     );
   }, []);
 
@@ -256,7 +256,7 @@ async function runSlideSimulation(
   setSlideDataLoading,
   setTitle,
   setTotalSlides,
-  slideId
+  slideId,
 ) {
   const abortController = new AbortController();
 
@@ -273,7 +273,7 @@ async function runSlideSimulation(
           Accept: "text/event-stream",
         },
         signal: abortController.signal,
-      }
+      },
     );
 
     if (!response.ok) {
@@ -310,16 +310,16 @@ async function runSlideSimulation(
           }
 
           if (data.total_slides) {
-            setTotalSlides(data?.total_slides)
+            setTotalSlides(data?.total_slides);
           }
 
-            if (data.status === "completed") {
-              // Watch for completion
-              setStatus("completed");
-              setSlideDataLoading(false);
-              abortController.abort();
-              return; // Stop reading
-            }
+          if (data.status === "completed") {
+            // Watch for completion
+            setStatus("completed");
+            setSlideDataLoading(false);
+            abortController.abort();
+            return; // Stop reading
+          }
         } catch (err) {
           console.log("JSON parse error", err);
         }
@@ -338,7 +338,7 @@ async function runLogsSimulation(
   setLogsStatus,
   setLogsLoading,
   slideId,
-  setSimulationCompleted
+  setSimulationCompleted,
 ) {
   const abortController = new AbortController();
 
@@ -355,7 +355,7 @@ async function runLogsSimulation(
           Accept: "text/event-stream",
         },
         signal: abortController.signal,
-      }
+      },
     );
 
     if (!response.ok) {

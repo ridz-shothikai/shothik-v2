@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -53,10 +52,22 @@ const SuggestionCard = ({
   return (
     <Card
       variant="outlined"
-      sx={{ mb: 2, borderRadius: "14px", border: "1px solid", borderColor: theme.palette.divider, overflow: "visible" }}
+      sx={{
+        mb: 2,
+        borderRadius: "14px",
+        border: "1px solid",
+        borderColor: theme.palette.divider,
+        overflow: "visible",
+      }}
     >
       <CardContent sx={{ pb: 0 }}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Typography variant="subtitle2" color="text.secondary">
             {label}
           </Typography>
@@ -86,15 +97,28 @@ const SuggestionCard = ({
       </CardContent>
       <CardActions sx={{ justifyContent: "space-between" }}>
         <Box>
-          <IconButton size="small" onClick={() => handleRefresh(idx)} disabled={loading}>
+          <IconButton
+            size="small"
+            onClick={() => handleRefresh(idx)}
+            disabled={loading}
+          >
             <Refresh fontSize="small" />
           </IconButton>
-          <IconButton size="small" onClick={() => handleReplay(idx)} disabled={history.length === 0}>
+          <IconButton
+            size="small"
+            onClick={() => handleReplay(idx)}
+            disabled={history.length === 0}
+          >
             <Replay fontSize="small" />
           </IconButton>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Button size="small" variant={selected ? "contained" : "outlined"} onClick={onSelect} disabled={loading}>
+          <Button
+            size="small"
+            variant={selected ? "contained" : "outlined"}
+            onClick={onSelect}
+            disabled={loading}
+          >
             {selected ? "Selected" : "Select"}
           </Button>
           <IconButton size="small" onClick={onCopy} disabled={loading}>
@@ -127,7 +151,10 @@ const CompareTab = ({
   const initialStep = allowedSteps.includes(selectedSynonymLevel)
     ? selectedSynonymLevel
     : minStep;
-  const sliderMarks = allowedSteps.map((value) => ({ value, label: SYNONYMS[value] }));
+  const sliderMarks = allowedSteps.map((value) => ({
+    value,
+    label: SYNONYMS[value],
+  }));
 
   const [suggestions, setSuggestions] = useState(
     modes.map((mode) => ({
@@ -139,11 +166,14 @@ const CompareTab = ({
       sliderValue: initialStep,
       history: [],
       historyIndex: -1,
-    }))
+    })),
   );
   const redirectPrefix = "p-v2";
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/" + redirectPrefix + "/api";
+    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+    "/" +
+    redirectPrefix +
+    "/api";
 
   const getSynonymLabel = (step) => SYNONYMS[step] ?? SYNONYMS[minStep];
 
@@ -152,11 +182,21 @@ const CompareTab = ({
       prev.map((item, i) => {
         if (i !== idx) return item;
         const newHistory = recordHistory
-          ? [...item.history, { plain: item.plain, sliderValue: item.sliderValue }]
+          ? [
+              ...item.history,
+              { plain: item.plain, sliderValue: item.sliderValue },
+            ]
           : item.history;
-        const newIndex = recordHistory ? newHistory.length - 1 : item.historyIndex;
-        return { ...item, loading: true, history: newHistory, historyIndex: newIndex };
-      })
+        const newIndex = recordHistory
+          ? newHistory.length - 1
+          : item.historyIndex;
+        return {
+          ...item,
+          loading: true,
+          history: newHistory,
+          historyIndex: newIndex,
+        };
+      }),
     );
 
     const card = suggestions[idx];
@@ -171,10 +211,16 @@ const CompareTab = ({
 
     fetch(`${API_BASE}/paraphrase-single-mode`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...(accessToken && { Authorization: `Bearer ${accessToken}` }) },
+      headers: {
+        "Content-Type": "application/json",
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      },
       body: JSON.stringify(payload),
     })
-      .then((res) => { if (!res.ok) throw new Error(`Status ${res.status}`); return res.json(); })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         setSuggestions((prev) =>
           prev.map((item, i) =>
@@ -184,13 +230,17 @@ const CompareTab = ({
                   plain: data.plain.replace(/[{}]/g, ""), // removing curly braces from output/preserved frozen words
                   loading: false,
                 }
-              : item
-          )
+              : item,
+          ),
         );
       })
       .catch((error) => {
         setSuggestions((prev) =>
-          prev.map((item, i) => (i === idx ? { ...item, plain: "Upgrade plan", loading: false } : item))
+          prev.map((item, i) =>
+            i === idx
+              ? { ...item, plain: "Upgrade plan", loading: false }
+              : item,
+          ),
         );
         // enqueueSnackbar(`Mode "${card.mode}" error: Limited acce`, { variant: "error" });
       });
@@ -198,13 +248,15 @@ const CompareTab = ({
 
   const handleLocalSliderChange = (idx, value) => {
     setSuggestions((prev) =>
-      prev.map((item, i) => (i === idx ? { ...item, sliderValue: value } : item))
+      prev.map((item, i) =>
+        i === idx ? { ...item, sliderValue: value } : item,
+      ),
     );
   };
 
   useEffect(() => {
-    if(!sentence) return;
-    
+    if (!sentence) return;
+
     setSuggestions(
       modes.map((mode) => ({
         label: mode.value,
@@ -215,13 +267,15 @@ const CompareTab = ({
         sliderValue: initialStep,
         history: [],
         historyIndex: -1,
-      }))
+      })),
     );
     allowedSteps.forEach((_, idx) => requestCardUpdate(idx, initialStep));
   }, [sentence]);
 
-  const handleSliderChange = (idx, value) => requestCardUpdate(idx, value, true);
-  const handleRefresh = (idx) => requestCardUpdate(idx, suggestions[idx].sliderValue, true);
+  const handleSliderChange = (idx, value) =>
+    requestCardUpdate(idx, value, true);
+  const handleRefresh = (idx) =>
+    requestCardUpdate(idx, suggestions[idx].sliderValue, true);
   const handleReplay = (idx) => {
     setSuggestions((prev) =>
       prev.map((item, i) => {
@@ -229,17 +283,25 @@ const CompareTab = ({
         const hist = item.history;
         if (!hist.length) return item;
         const len = hist.length;
-        const currentIndex = item.historyIndex >= 0 ? item.historyIndex : len - 1;
+        const currentIndex =
+          item.historyIndex >= 0 ? item.historyIndex : len - 1;
         const entry = hist[currentIndex];
         const nextIndex = (currentIndex - 1 + len) % len;
-        return { ...item, plain: entry.plain, sliderValue: entry.sliderValue, historyIndex: nextIndex };
-      })
+        return {
+          ...item,
+          plain: entry.plain,
+          sliderValue: entry.sliderValue,
+          historyIndex: nextIndex,
+        };
+      }),
     );
   };
 
   const handleSelect = (plainText, mode) => {
     const newOutput = [...outputText];
-    newOutput[highlightSentence] = plainText.split(/\s+/).map((w) => ({ word: w, type: "none", synonyms: [] }));
+    newOutput[highlightSentence] = plainText
+      .split(/\s+/)
+      .map((w) => ({ word: w, type: "none", synonyms: [] }));
     setOutputText(newOutput);
     setSelectedMode(mode);
     enqueueSnackbar("Sentence replaced", { variant: "success" });
@@ -247,25 +309,57 @@ const CompareTab = ({
 
   return (
     <Box id="compare_tab" sx={{ px: 2, py: 1 }}>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>Compare Modes</Typography>
+      <Typography variant="h6" fontWeight="bold" gutterBottom>
+        Compare Modes
+      </Typography>
       <Divider sx={{ mb: 2 }} />
 
       {/* Original Sentence Card */}
       <Card
         variant="outlined"
-        sx={{ mb: 2, borderRadius: "14px", border: "1px solid", borderColor: theme.palette.divider, backgroundColor: "#919EAB0D" }}
+        sx={{
+          mb: 2,
+          borderRadius: "14px",
+          border: "1px solid",
+          borderColor: theme.palette.divider,
+          backgroundColor: "#919EAB0D",
+        }}
       >
         <CardContent>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>Original Sentence</Typography>
-          <Typography variant="body2" sx={{ fontSize: "14px" }}>{sentence}</Typography>
+          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+            Original Sentence
+          </Typography>
+          <Typography variant="body2" sx={{ fontSize: "14px" }}>
+            {sentence}
+          </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: "space-between" }}>
-          <IconButton size="small" onClick={() => { navigator.clipboard.writeText(sentence); enqueueSnackbar("Copied to clipboard", { variant: "success" }); }}>
+          <IconButton
+            size="small"
+            onClick={() => {
+              navigator.clipboard.writeText(sentence);
+              enqueueSnackbar("Copied to clipboard", { variant: "success" });
+            }}
+          >
             <ContentCopy fontSize="small" />
           </IconButton>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Button size="small" variant={selectedMode === "OriginalSentence" ? "contained" : "outlined"} onClick={() => handleSelect(sentence, "Original Sentence")}>{selectedMode === "Original Sentence" ? "Selected" : "Select"}</Button>
-            <IconButton size="small" onClick={() => { navigator.clipboard.writeText(sentence); enqueueSnackbar("Copied to clipboard", { variant: "success" }); }}>
+            <Button
+              size="small"
+              variant={
+                selectedMode === "OriginalSentence" ? "contained" : "outlined"
+              }
+              onClick={() => handleSelect(sentence, "Original Sentence")}
+            >
+              {selectedMode === "Original Sentence" ? "Selected" : "Select"}
+            </Button>
+            <IconButton
+              size="small"
+              onClick={() => {
+                navigator.clipboard.writeText(sentence);
+                enqueueSnackbar("Copied to clipboard", { variant: "success" });
+              }}
+            >
               <ContentCopy fontSize="small" />
             </IconButton>
           </Box>
@@ -296,4 +390,3 @@ const CompareTab = ({
 };
 
 export default CompareTab;
-

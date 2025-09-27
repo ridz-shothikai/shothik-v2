@@ -26,7 +26,7 @@ export default function ForgetPasswordModal() {
       <Modal
         open={showForgotPasswordModal}
         onClose={handleClose}
-        aria-labelledby='forgot-password-title'
+        aria-labelledby="forgot-password-title"
         sx={{ zIndex: 9999 }}
       >
         <Box
@@ -51,10 +51,10 @@ export default function ForgetPasswordModal() {
           </IconButton>
 
           {/* Modal Content */}
-          <Stack alignItems='center' spacing={2}>
+          <Stack alignItems="center" spacing={2}>
             <PasswordIcon sx={{ mb: 2, height: 96 }} />
 
-            <Typography id='forgot-password-title' variant='h4' paragraph>
+            <Typography id="forgot-password-title" variant="h4" paragraph>
               Forgot your password?
             </Typography>
 
@@ -67,13 +67,13 @@ export default function ForgetPasswordModal() {
 
             <Link
               component={NextLink}
-              href='#'
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 handleClose();
               }}
-              color='inherit'
-              variant='subtitle2'
+              color="inherit"
+              variant="subtitle2"
               sx={{
                 mt: 3,
                 mx: "auto",
@@ -82,7 +82,7 @@ export default function ForgetPasswordModal() {
                 cursor: "pointer",
               }}
             >
-              <ChevronLeft fontSize='small' />
+              <ChevronLeft fontSize="small" />
               Return to sign in
             </Link>
           </Stack>

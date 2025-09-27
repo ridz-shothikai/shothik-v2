@@ -10,14 +10,14 @@ const UserMessage = ({ message }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       gap={1}
       mb={1}
     >
       <IconButton
-        color='text.secondary'
-        aria-label='User'
+        color="text.secondary"
+        aria-label="User"
         sx={{
           bgcolor: "rgba(73, 149, 87, 0.04)",
           borderRadius: "5px",
