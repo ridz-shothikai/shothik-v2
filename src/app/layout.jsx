@@ -1,10 +1,9 @@
-
 import Analytics from "../analysers/Analytics";
+import SettingApplier from "../components/appliers/SettingApplier";
 import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
 import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
-import SettingApplier from "../components/appliers/SettingApplier";
 import "./globals.css";
 
 export const metadata = {
@@ -24,6 +23,11 @@ export default function RootLayout({ children }) {
           defer
           src="https://cloud.umami.is/script.js"
           data-website-id="503cfbe2-6b94-4fa0-8259-3353fa792769"
+        ></script>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="a19fecea-d6b0-4093-9074-26531c827bfe"
         ></script>
       </head>
       <body suppressHydrationWarning>
