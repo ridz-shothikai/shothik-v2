@@ -93,7 +93,7 @@ const RootForm = () => {
               {isSubmitting ? "Processing..." : "Continue"}
             </Button>
             {isSubmitting && (
-              <div className="bg-muted h-1.5 w-20 flex-1 overflow-hidden rounded-full">
+              <div className="bg-muted h-2 w-20 flex-1 overflow-hidden rounded-full">
                 <div
                   className="bg-primary h-full rounded-full transition-all duration-30"
                   style={{ width: `${progress}%` }}

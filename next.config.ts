@@ -67,6 +67,7 @@ const nextConfig: NextConfig = {
       }),
     );
 
+    // Alias `@` to `src` directory
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "src"),
