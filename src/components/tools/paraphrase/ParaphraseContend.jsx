@@ -6,15 +6,12 @@ import {
   Card,
   Divider,
   Grid2,
+  IconButton,
   Paper,
   Stack,
   Typography,
-  IconButton,
 } from "@mui/material";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import Onboarding from "./Onboarding";
-import FreezeWordsDialog from "./FreezeWordsDialog";
-import FileHistorySidebar from "./FileHistorySidebar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -33,20 +30,21 @@ import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
 import WordCounter from "../common/WordCounter";
 import LanguageMenu from "../grammar/LanguageMenu";
+import FileHistorySidebar from "./FileHistorySidebar";
 import ModeNavigation from "./ModeNavigation";
 import ModeNavigationForMobile from "./ModeNavigationForMobile";
+import Onboarding from "./Onboarding";
 import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseOutput from "./ParaphraseOutput";
 import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
-import { protectedPhrases, protectedSingleWords } from "./extentions";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
 // Define the punctuation marks that require specific spacing rules.
 // This constant can be easily updated if more punctuation types need to be included.
-const PUNCTUATION_FOR_SPACING = '[.,;?!:]';
+const PUNCTUATION_FOR_SPACING = "[.,;?!:]";
 
 /**
  * Normalizes punctuation spacing in a given text string according to standard English conventions.
@@ -69,7 +67,7 @@ function normalizePunctuationSpacing(text) {
   // Step 1: Normalize all whitespace to single spaces and trim leading/trailing spaces.
   // This ensures a clean base for subsequent punctuation adjustments.
   // Example: "  Hello   world.  " -> "Hello world."
-  formattedText = formattedText.replace(/\s+/g, ' ').trim();
+  formattedText = formattedText.replace(/\s+/g, " ").trim();
 
   // Step 2: Remove any space immediately preceding a punctuation mark.
   // The regex `\\s+(${PUNCTUATION_FOR_SPACING}+)` matches one or more spaces
@@ -77,7 +75,10 @@ function normalizePunctuationSpacing(text) {
   // ensures only the punctuation marks are kept, effectively removing the preceding spaces.
   // Example: "Hello . World" -> "Hello. World"
   // Example: "Is this ? " -> "Is this?"
-  formattedText = formattedText.replace(new RegExp(`\\s+(${PUNCTUATION_FOR_SPACING}+)`, 'g'), '$1');
+  formattedText = formattedText.replace(
+    new RegExp(`\\s+(${PUNCTUATION_FOR_SPACING}+)`, "g"),
+    "$1",
+  );
 
   // Step 3: Ensure a single space immediately follows a punctuation mark,
   // unless it's already followed by a space or is at the end of the string.
@@ -86,7 +87,10 @@ function normalizePunctuationSpacing(text) {
   // We then replace it with the punctuation marks followed by a single space (`$1 `).
   // Example: "Hello.World" -> "Hello. World"
   // Example: "End!" -> "End! " (if not at the very end of the string)
-  formattedText = formattedText.replace(new RegExp(`(${PUNCTUATION_FOR_SPACING}+)(?!\\s|$)`, 'g'), '$1 ');
+  formattedText = formattedText.replace(
+    new RegExp(`(${PUNCTUATION_FOR_SPACING}+)(?!\\s|$)`, "g"),
+    "$1 ",
+  );
 
   return formattedText;
 }
@@ -101,9 +105,11 @@ const initialFrozenWords = new Set();
 const initialFrozenPhrase = new Set();
 
 const ParaphraseContend = () => {
-  const { paraphraseQuotations, automaticStartParaphrasing } = useSelector(
-    (state) => state.settings.paraphraseOptions
-  );
+  const {
+    paraphraseQuotations,
+    automaticStartParaphrasing,
+    useYellowHighlight,
+  } = useSelector((state) => state.settings.paraphraseOptions);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
   useEffect(() => {
@@ -131,8 +137,8 @@ const ParaphraseContend = () => {
       language && language.startsWith("English")
         ? "English"
         : language
-        ? language
-        : "English"
+          ? language
+          : "English"
     ];
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
@@ -189,7 +195,7 @@ const ParaphraseContend = () => {
       const plainText = extractPlainText(result);
       setOutputContend(plainText);
       setOutputWordCount(
-        plainText.split(/\s+/).filter((w) => w.length > 0).length
+        plainText.split(/\s+/).filter((w) => w.length > 0).length,
       );
     } else {
       setOutputContend("");
@@ -254,7 +260,7 @@ const ParaphraseContend = () => {
       // update word count, etc…
       setOutputContend(accumulatedText);
       setOutputWordCount(
-        accumulatedText.split(/\s+/).filter((w) => w.length > 0).length
+        accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
       );
 
       // rebuild `result` with blank lines preserved
@@ -316,7 +322,7 @@ const ParaphraseContend = () => {
           "targetIdx: ",
           targetIdx,
           "backendIndex: ",
-          backendIndex
+          backendIndex,
         );
         return updated;
       });
@@ -352,7 +358,7 @@ const ParaphraseContend = () => {
           return prev;
         }
 
-        if(Array.isArray(analysis) && analysis?.length > 0) {
+        if (Array.isArray(analysis) && analysis?.length > 0) {
           updated[targetIdx] = analysis?.map((item) => ({
             ...item,
             // word: item.word,
@@ -360,7 +366,6 @@ const ParaphraseContend = () => {
           }));
           return updated;
         }
-
       });
     });
   }, [language, eventId]);
@@ -596,7 +601,7 @@ const ParaphraseContend = () => {
 
     if (words.length <= wordLimit) {
       const quotedPhrases = [...finalText.matchAll(/"[^"]+"/g)].map(
-        (m) => m[0]
+        (m) => m[0],
       );
       for (const phrase of quotedPhrases) {
         frozenPhrases.add(phrase.trim());
@@ -766,7 +771,7 @@ const ParaphraseContend = () => {
 
     // Filter out any words that are already in the frozen set.
     const availableWords = uniqueWords.filter(
-      (word) => !frozenWords.set.has(word)
+      (word) => !frozenWords.set.has(word),
     );
 
     // Select up to 5 random words for recommendation
@@ -932,6 +937,7 @@ const ParaphraseContend = () => {
                   frozenPhrases={frozenPhrases}
                   frozenWords={frozenWords}
                   user={user}
+                  useYellowHighlight={useYellowHighlight}
                 />
 
                 {!userInput ? (
@@ -961,7 +967,7 @@ const ParaphraseContend = () => {
                       words.forEach((w) => frozenWords.add(w.toLowerCase())),
                     onAddPhrases: (phrases) =>
                       phrases.forEach((p) =>
-                        frozenPhrases.add(p.toLowerCase())
+                        frozenPhrases.add(p.toLowerCase()),
                       ),
                     onRemoveWord: (w) => frozenWords.remove(w),
                     onRemovePhrase: (p) => frozenPhrases.remove(p),

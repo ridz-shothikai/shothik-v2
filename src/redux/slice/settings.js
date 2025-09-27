@@ -6,10 +6,18 @@ const getInitialState = () => ({
   open: false,
   demo: false,
   paraphraseOptions: {
-    paraphraseQuotations: true,      // <<< new
-    avoidContractions:      false,
-    preferActiveVoice:      false,
+    paraphraseQuotations: true, // <<< new
+    avoidContractions: false,
+    preferActiveVoice: false,
     automaticStartParaphrasing: false,
+  },
+  interfaceOptions: {
+    useYellowHighlight: false, // New setting for yellow highlight
+    showTooltips: false,
+    showLegend: false,
+    showChangedWords: false,
+    showStructuralChanges: false,
+    showLongestUnchangedWords: false,
   },
 });
 
@@ -23,7 +31,17 @@ const settingsSlice = createSlice({
         state.paraphraseOptions[key] = !state.paraphraseOptions[key];
         localStorage.setItem(
           "paraphraseOptions",
-          JSON.stringify(state.paraphraseOptions)
+          JSON.stringify(state.paraphraseOptions),
+        );
+      }
+    },
+    toggleInterfaceOption(state, action) {
+      const key = action.payload;
+      if (state.interfaceOptions.hasOwnProperty(key)) {
+        state.interfaceOptions[key] = !state.interfaceOptions[key];
+        localStorage.setItem(
+          "interfaceOptions",
+          JSON.stringify(state.interfaceOptions),
         );
       }
     },
@@ -52,9 +70,14 @@ const settingsSlice = createSlice({
       state.themeMode = localStorage.getItem("themeMode") || "light";
       state.open = localStorage.getItem("open") === "true";
 
-      const storedOptions = localStorage.getItem("paraphraseOptions");
-      if (storedOptions) {
-        state.paraphraseOptions = JSON.parse(storedOptions);
+      const storedParaphraseOptions = localStorage.getItem("paraphraseOptions");
+      if (storedParaphraseOptions) {
+        state.paraphraseOptions = JSON.parse(storedParaphraseOptions);
+      }
+
+      const storedInterfaceOptions = localStorage.getItem("interfaceOptions");
+      if (storedInterfaceOptions) {
+        state.interfaceOptions = JSON.parse(storedInterfaceOptions);
       }
     },
 
@@ -72,7 +95,8 @@ export const {
   toggleThemeMode,
   toggleThemeLayout,
   loadSettingsFromLocalStorage,
-  toggleParaphraseOption
+  toggleParaphraseOption,
+  toggleInterfaceOption,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

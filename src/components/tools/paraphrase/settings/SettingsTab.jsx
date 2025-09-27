@@ -1,31 +1,53 @@
-
 // SettingsTab.jsx
-import React from 'react';
-import { Box, Typography, Divider, Checkbox, IconButton } from "@mui/material";
 import { Info as InfoIcon } from "@mui/icons-material";
-import { useSelector, useDispatch } from "react-redux";
-import { toggleParaphraseOption } from "../../../../redux/slice/settings";
+import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  toggleInterfaceOption,
+  toggleParaphraseOption,
+} from "../../../../redux/slice/settings";
 
 const SettingsTab = () => {
-
   const dispatch = useDispatch();
-  const { paraphraseOptions } = useSelector(
-    (state) => state.settings
+  const { paraphraseOptions, interfaceOptions } = useSelector(
+    (state) => state.settings,
   );
   const paraphraseOptionsMeta = [
-     { key: "paraphraseQuotations",     label: "Paraphrase quotations",        info: false },
-     { key: "avoidContractions",        label: "Avoid contractions",           info: true  },
+    {
+      key: "paraphraseQuotations",
+      label: "Paraphrase quotations",
+      info: false,
+    },
+    { key: "avoidContractions", label: "Avoid contractions", info: true },
     //  { key: "preferActiveVoice",        label: "Prefer active voice",         info: true  },
-     { key: "automaticStartParaphrasing", label: "Automatic start paraphrasing", info: false },
-   ];
+    {
+      key: "automaticStartParaphrasing",
+      label: "Automatic start paraphrasing",
+      info: false,
+    },
+  ];
 
-  const interfaceOptions = [
-    { label: "Use yellow highlight", checked: true },
-    { label: "Show tooltips" },
-    { label: "Show legend" },
-    { label: "Show changed words", highlight: "warning.main" },
-    { label: "Show Structural changes" },
-    { label: "Show longest unchanged words", highlight: "info.main" },
+  const interfaceOptionsMeta = [
+    { key: "useYellowHighlight", label: "Use yellow highlight", info: false },
+    { key: "showTooltips", label: "Show tooltips", info: false },
+    { key: "showLegend", label: "Show legend", info: false },
+    {
+      key: "showChangedWords",
+      label: "Show changed words",
+      highlight: "warning.main",
+      info: false,
+    },
+    {
+      key: "showStructuralChanges",
+      label: "Show Structural changes",
+      info: false,
+    },
+    {
+      key: "showLongestUnchangedWords",
+      label: "Show longest unchanged words",
+      highlight: "info.main",
+      info: false,
+    },
   ];
 
   return (
@@ -38,7 +60,7 @@ const SettingsTab = () => {
       <Typography variant="subtitle2" gutterBottom>
         Paraphrase
       </Typography>
-     {paraphraseOptionsMeta.map(({ key, label, info }) => (
+      {paraphraseOptionsMeta.map(({ key, label, info }) => (
         <Box key={key} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
           <Checkbox
             size="small"
@@ -54,22 +76,31 @@ const SettingsTab = () => {
             </IconButton>
           )}
         </Box>
-     ))}
+      ))}
       <Divider sx={{ my: 2 }} />
 
       {/* Interface Section */}
       <Typography variant="subtitle2" gutterBottom>
         Interface
       </Typography>
-      {interfaceOptions.map((opt, i) => (
-        <Box key={i} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Checkbox size="small" defaultChecked={!!opt.checked} />
+      {interfaceOptionsMeta.map(({ key, label, info, highlight }) => (
+        <Box key={key} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+          <Checkbox
+            size="small"
+            checked={interfaceOptions[key] || false}
+            onChange={() => dispatch(toggleInterfaceOption(key))}
+          />
           <Typography
             variant="body2"
-            sx={opt.highlight ? { color: opt.highlight } : {}}
+            sx={highlight ? { color: highlight, ml: 1 } : { ml: 1 }}
           >
-            {opt.label}
+            {label}
           </Typography>
+          {info && (
+            <IconButton size="small" sx={{ ml: "auto" }}>
+              <InfoIcon fontSize="small" color="action" />
+            </IconButton>
+          )}
         </Box>
       ))}
     </Box>

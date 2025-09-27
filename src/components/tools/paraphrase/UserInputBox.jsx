@@ -34,7 +34,7 @@ const PlainTextPaste = Extension.create({
               const transaction = tr.insertText(
                 plainText,
                 selection.from,
-                selection.to
+                selection.to,
               );
               view.dispatch(transaction);
 
@@ -120,7 +120,8 @@ function UserInputBox({
   frozenPhrases,
   user,
 }) {
-  const { demo } = useSelector((state) => state.settings);
+  const { demo, interfaceOptions } = useSelector((state) => state.settings);
+  const { useYellowHighlight } = interfaceOptions;
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
   const [selectedWord, setSelectedWord] = useState("");
@@ -134,19 +135,20 @@ function UserInputBox({
   const [initialDoc, setInitialDoc] = useState(
     editorContent
       ? defaultMarkdownParser.parse(editorContent).toJSON()
-      : undefined
+      : undefined,
   );
 
   const editor = useEditor(
     {
       extensions: [
         StarterKit,
-        PlainTextPaste, 
+        PlainTextPaste,
         Placeholder.configure({ placeholder: "Enter your text here..." }),
         CombinedHighlighting.configure({
           limit: wordLimit,
           frozenWords: frozenWords.set,
           frozenPhrases: frozenPhrases.set,
+          useYellowHighlight: useYellowHighlight,
         }),
         HardBreak,
         Link.configure({
@@ -191,7 +193,7 @@ function UserInputBox({
         setUserInput(plainText); // Pass plain text to the parent component
       },
     },
-    [editorKey]
+    [editorKey],
   ); // Recreate editor when key changes
 
   const clearSelection = () => {
@@ -220,10 +222,10 @@ function UserInputBox({
     isInternalUpdate.current = false;
   }, [userInput, editor, isDemoMode]);
 
-  // Force editor recreation when frozen words/phrases change or demo mode changes
+  // Force editor recreation when frozen words/phrases, demo mode, or yellow highlight changes
   useEffect(() => {
     setEditorKey((prev) => prev + 1);
-  }, [frozenWords.set, frozenPhrases.set, isDemoMode]);
+  }, [frozenWords.set, frozenPhrases.set, isDemoMode, useYellowHighlight]);
 
   // Auto-select the demo word when in demo mode
   useEffect(() => {

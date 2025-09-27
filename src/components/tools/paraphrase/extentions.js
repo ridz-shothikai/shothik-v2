@@ -1,15 +1,22 @@
-
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
-
-
-function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
+function processDecorations(
+  doc,
+  { limit, frozenWords, frozenPhrases, useYellowHighlight },
+) {
   const decorations = [];
   const sentenceMap = new Map();
   const decoratedPositions = new Set();
   let wordCount = 0;
+
+  // === 0. Yellow Highlight (if enabled) ===
+  if (useYellowHighlight) {
+    decorations.push(
+      Decoration.inline(0, doc.content.size, { class: "yellow-highlight" }),
+    );
+  }
 
   // === 1. Word Limit Highlighting ===
   doc.descendants((node, pos) => {
@@ -23,7 +30,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
         const from = pos + match.index;
         const to = from + match[0].length;
         decorations.push(
-          Decoration.inline(from, to, { class: "word-limit-exceeded" })
+          Decoration.inline(from, to, { class: "word-limit-exceeded" }),
         );
       }
     }
@@ -41,12 +48,13 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
 
   // const fullText = fullTextMap.map(c => c.char).join("").toLowerCase();
 
-  const fullText = fullTextMap.map(c => c.char).join("");
+  const fullText = fullTextMap.map((c) => c.char).join("");
 
   // === 3. Highlight Frozen Phrases (spanning-safe and prioritized) ===
-  const sortedPhrases = Array.from(frozenPhrases || []).sort((a, b) => b.length - a.length);
+  const sortedPhrases = Array.from(frozenPhrases || []).sort(
+    (a, b) => b.length - a.length,
+  );
   for (const phrase of sortedPhrases) {
-
     const phraseEscaped = phrase.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(phraseEscaped, "gi");
 
@@ -58,13 +66,17 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
       const from = fullTextMap[startIndex]?.from;
       const to = fullTextMap[endIndex - 1]?.from + 1;
 
-      if (from != null && to != null && !isOverlapping(from, to, decoratedPositions)) {
+      if (
+        from != null &&
+        to != null &&
+        !isOverlapping(from, to, decoratedPositions)
+      ) {
         markDecorated(from, to, decoratedPositions);
         decorations.push(
           Decoration.inline(from, to, {
             class: "frozen-word",
             "data-frozen-phrase": "true",
-          })
+          }),
         );
       }
     }
@@ -84,7 +96,7 @@ function processDecorations(doc, { limit, frozenWords, frozenPhrases }) {
         if (!isOverlapping(from, to, decoratedPositions)) {
           markDecorated(from, to, decoratedPositions);
           decorations.push(
-            Decoration.inline(from, to, { class: "frozen-word" })
+            Decoration.inline(from, to, { class: "frozen-word" }),
           );
         }
       }
@@ -154,6 +166,7 @@ export const CombinedHighlighting = Extension.create({
       limit: 100,
       frozenWords: new Set(),
       frozenPhrases: new Set(),
+      useYellowHighlight: false, // New option
     };
   },
 
@@ -219,7 +232,7 @@ export const wordSentenceDecorator = (data, activeSentenceIndexes = []) => {
                 "data-sentence-index": sIndex,
                 "data-word-index": wIndex,
                 style: `color:${getColorStyle(wordObj.type)}; cursor:pointer;`,
-              })
+              }),
             );
 
             pos = to;
@@ -230,7 +243,7 @@ export const wordSentenceDecorator = (data, activeSentenceIndexes = []) => {
               nodeName: "span",
               class: "sentence-span",
               "data-sentence-index": sIndex,
-            })
+            }),
           );
         });
 
