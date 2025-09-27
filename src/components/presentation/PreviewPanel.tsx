@@ -12,6 +12,7 @@ import {
 import SlidePreview from "./SlidePreview";
 import { Chart, registerables } from "chart.js";
 import AppLink from "../common/AppLink";
+import { usePathname, useSearchParams } from "next/navigation";
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -35,6 +36,12 @@ export default function PreviewPanel({
 }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const fullUrl = pathname + "?" + searchParams.toString();
+  const hasReplay = fullUrl.includes("replay");
 
   const [previewTab, setPreviewTab] = useState("preview");
   const [slideTabs, setSlideTabs] = useState({});
@@ -129,16 +136,19 @@ export default function PreviewPanel({
                         color: isDark ? "text.secondary" : "#666",
                       }}
                     >
-                      <AppLink
-                        href={`/slides?project_id=${presentationId}`}
-                        newTab
-                        underline="hover"
-                        color="primary"
-                        fontSize="14px"
-                        whiteSpace="nowrap"
-                      >
-                        View & Export
-                      </AppLink>
+                      {
+                        !hasReplay &&
+                        <AppLink
+                          href={`/slides?project_id=${presentationId}`}
+                          newTab
+                          underline="hover"
+                          color="primary"
+                          fontSize="14px"
+                          whiteSpace="nowrap"
+                        >
+                          View & Export
+                        </AppLink>
+                      }
                     </Typography>
                   )}
                 </Box>
