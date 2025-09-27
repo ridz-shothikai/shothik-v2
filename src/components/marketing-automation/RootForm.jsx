@@ -42,15 +42,13 @@ const RootForm = () => {
     // Redirect after 3 seconds
     setTimeout(() => {
       const processId = generateProcessId();
-      router.push(`/marketing-automation/${processId}/process`);
+      router.push(`/marketing-automation/projects/${processId}/process`);
     }, 3000);
   };
 
   const generateProcessId = () => {
     return `abc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
-
-  console.log("User from Redux:", user);
 
   return (
     <>
@@ -88,7 +86,9 @@ const RootForm = () => {
               className="!h-10 !min-w-24"
               variant="contained"
               type="submit"
-              disabled={isSubmitting}
+              disabled={
+                isSubmitting || !url || !selectedLocation?.value || !projectName
+              }
             >
               {isSubmitting ? "Processing..." : "Continue"}
             </Button>
