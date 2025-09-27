@@ -844,6 +844,7 @@ export default function InteractiveAgentDemo() {
                       </Box>
 
                       <StyledButton
+                        data-umami-event={`Try New Agent: ${selectedAgent?.name || ''}`}
                         fullWidth={true}
                         variant="contained"
                         onClick={() => handleSubmit()}
@@ -988,6 +989,7 @@ export default function InteractiveAgentDemo() {
             }}
           >
             <Button
+              data-umami-event="Get early access"
               variant="contained"
               size="large"
               onClick={() => {

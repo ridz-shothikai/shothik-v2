@@ -42,14 +42,19 @@ export async function generateMetadata() {
 const Paraphrase = () => {
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 12, xs: 10 }, maxWidth: '100% !important' }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: { md: 12, xs: 10 },
+        maxWidth: "100% !important",
+      }}
     >
       <ParaphraseContend />
       <ToolsSepecigFaq
-        tag='All you need to know about Paraphrase feature'
+        tag="All you need to know about Paraphrase feature"
         data={paraphraseFaq}
       />
-      <ToolsCTA toolType='paraphrase' />
+      <ToolsCTA toolType="paraphrase" />
       <HomeAdvertisement />
       <div hidden>
         <h1>Instantly Paraphrase & Humanize AI Text with Shothik AI</h1>

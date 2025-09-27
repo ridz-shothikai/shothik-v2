@@ -27,8 +27,8 @@ const navConfig = [
         title: "Paraphrase",
         path: PATH_TOOLS.paraphrase,
         icon: ICONS.paraphrase,
-        id:"paraphrase_nav_item",
-        id:"paraphrase_nav_item",
+        id: "paraphrase_nav_item",
+        id: "paraphrase_nav_item",
         iconColor: "#FF595E",
       },
       {
@@ -69,9 +69,9 @@ const navConfig = [
       },
       {
         title: "Marketing Automation",
-        path: "/",
+        path: "/marketing-automation",
         icon: ICONS.marketing_automation,
-        iconColor: "#1976D2",
+        iconColor: "#1877F2",
       },
     ],
   },

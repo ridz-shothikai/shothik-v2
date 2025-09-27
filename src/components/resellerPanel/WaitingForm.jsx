@@ -116,6 +116,7 @@ export default function WaitlistForm({ userType }) {
             }}
           />
           <Button
+            data-umami-event="Form: Join the waitlist"
             variant='contained'
             size='large'
             type='submit'

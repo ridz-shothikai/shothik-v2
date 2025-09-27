@@ -190,6 +190,7 @@ export default function AccountPopover({ accessToken, user }) {
 
         {!user?.email && (
           <MenuItem
+            data-umami-event="Nav: Login / Sign up"
             onClick={() => {
               handleClosePopover();
               dispatch(setShowRegisterModal(false));

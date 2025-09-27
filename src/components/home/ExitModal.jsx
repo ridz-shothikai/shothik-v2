@@ -220,6 +220,7 @@ export default function ExitModal({setOpen}) {
 
               <Stack spacing={1.5} sx={{ mt: 2 }}>
                 <ClaimButton
+                  data-umami-event="Claim Free Paper Review"
                   fullWidth
                   onClick={handleClaimFree}
                   variant="contained"
@@ -227,7 +228,12 @@ export default function ExitModal({setOpen}) {
                   Claim Free Paper Review
                 </ClaimButton>
 
-                <DeclineButton fullWidth onClick={handleClose} variant="text">
+                <DeclineButton
+                  data-umami-event="No thanks, I'll struggle with my writing"
+                  fullWidth
+                  onClick={handleClose}
+                  variant="text"
+                >
                   No thanks, I'll struggle with my writing
                 </DeclineButton>
               </Stack>

@@ -153,6 +153,7 @@ export default function ClaritSectionV2({
             sx={{ mt: 3 }}
           >
             <Button
+              data-umami-event="Get early access"
               variant="contained"
               color="success"
               onClick={() => onCTAClick("get-started")}
@@ -160,7 +161,7 @@ export default function ClaritSectionV2({
             >
               Get early access
             </Button>
-            <Button variant="outlined" onClick={() => onCTAClick("features")}>
+            <Button data-umami-event="View features" variant="outlined" onClick={() => onCTAClick("features")}>
               View features
             </Button>
           </Stack>

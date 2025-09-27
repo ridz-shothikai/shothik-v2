@@ -141,6 +141,7 @@ export default function CTASection() {
                 <Box sx={{ position: "relative", mb: 3 }}>
                   {/* Enhanced CTA Button */}
                   <Button
+                    data-umami-event="Start Writing Better Papers Now"
                     variant="contained"
                     onClick={() => {
                       setShowModal(true);

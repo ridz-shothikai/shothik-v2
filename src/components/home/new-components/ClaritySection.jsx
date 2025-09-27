@@ -400,6 +400,7 @@ export default function ClaritySection() {
             sx={{ width: "100%", display: "flex", justifyContent: "center" }}
           >
             <Button
+              data-umami-event="Get early access"
               variant="contained"
               size="large"
               onClick={() => {

@@ -440,6 +440,7 @@ export default function AgentShowcase() {
                       </Box>
                     </Box>
                     <Button
+                      data-umami-event={`Watch Agent Work: ${currentAgent.name}`}
                       onClick={() => handlePlayDemo(currentAgent.id)}
                       sx={{
                         bgcolor: "rgba(255, 255, 255, 0.2)",
@@ -537,7 +538,9 @@ export default function AgentShowcase() {
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
-                          color: isDarkMode ? theme.palette.text.primary : theme.palette.text.primary,
+                          color: isDarkMode
+                            ? theme.palette.text.primary
+                            : theme.palette.text.primary,
                         }}
                       >
                         <Code sx={{ color: "#10b981" }} />
@@ -545,15 +548,21 @@ export default function AgentShowcase() {
                       </Typography>
                       <Paper
                         sx={{
-                          bgcolor: isDarkMode ? theme.palette.grey[800] : "#f8fafc",
+                          bgcolor: isDarkMode
+                            ? theme.palette.grey[800]
+                            : "#f8fafc",
                           p: 3,
-                          border: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#e2e8f0"}`,
+                          border: `1px solid ${
+                            isDarkMode ? theme.palette.grey[700] : "#e2e8f0"
+                          }`,
                           borderRadius: 1.5,
                         }}
                       >
                         <Typography
                           sx={{
-                            color: isDarkMode ? theme.palette.grey[300] : "#334155",
+                            color: isDarkMode
+                              ? theme.palette.grey[300]
+                              : "#334155",
                             fontStyle: "italic",
                             lineHeight: 1.6,
                           }}
@@ -572,7 +581,9 @@ export default function AgentShowcase() {
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
-                          color: isDarkMode ? theme.palette.text.primary : theme.palette.text.primary,
+                          color: isDarkMode
+                            ? theme.palette.text.primary
+                            : theme.palette.text.primary,
                         }}
                       >
                         <AutoAwesome sx={{ color: "#a855f7" }} />
@@ -580,9 +591,13 @@ export default function AgentShowcase() {
                       </Typography>
                       <Paper
                         sx={{
-                          bgcolor: isDarkMode ? theme.palette.grey[800] : "#ecfdf5",
+                          bgcolor: isDarkMode
+                            ? theme.palette.grey[800]
+                            : "#ecfdf5",
                           p: 3,
-                          border: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#bbf7d0"}`,
+                          border: `1px solid ${
+                            isDarkMode ? theme.palette.grey[700] : "#bbf7d0"
+                          }`,
                           borderRadius: 1.5,
                         }}
                       >
@@ -614,7 +629,12 @@ export default function AgentShowcase() {
                           </Fade>
                         ) : (
                           <Typography
-                            sx={{ color: isDarkMode ? theme.palette.grey[300] : "#334155", lineHeight: 1.6 }}
+                            sx={{
+                              color: isDarkMode
+                                ? theme.palette.grey[300]
+                                : "#334155",
+                              lineHeight: 1.6,
+                            }}
                           >
                             {currentAgent.output}
                           </Typography>
@@ -636,7 +656,9 @@ export default function AgentShowcase() {
                               display: "flex",
                               alignItems: "center",
                               gap: 1,
-                              color: isDarkMode ? theme.palette.grey[400] : "#475569",
+                              color: isDarkMode
+                                ? theme.palette.grey[400]
+                                : "#475569",
                             }}
                           >
                             <CheckCircle
@@ -649,7 +671,9 @@ export default function AgentShowcase() {
                             <Typography
                               variant="body2"
                               sx={{
-                                color: isDarkMode ? theme.palette.grey[300] : "text.secondary",
+                                color: isDarkMode
+                                  ? theme.palette.grey[300]
+                                  : "text.secondary",
                               }}
                             >
                               {capability}
@@ -661,8 +685,17 @@ export default function AgentShowcase() {
                   </Box>
 
                   {/* CTA */}
-                  <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${isDarkMode ? theme.palette.grey[700] : "#e2e8f0"}` }}>
+                  <Box
+                    sx={{
+                      mt: 4,
+                      pt: 3,
+                      borderTop: `1px solid ${
+                        isDarkMode ? theme.palette.grey[700] : "#e2e8f0"
+                      }`,
+                    }}
+                  >
                     <GradientButton
+                      data-umami-event={`Try Now Agent: ${currentAgent.name}`}
                       gradient={currentAgent.gradient}
                       fullWidth
                       sx={{
@@ -678,7 +711,7 @@ export default function AgentShowcase() {
                         // tracking
                         trackClick(trackingList.CTA_BUTTON, {
                           button_text: "Try now",
-                          position: "agent_show_case_section"
+                          position: "agent_show_case_section",
                         });
                       }}
                     >
@@ -703,11 +736,18 @@ export default function AgentShowcase() {
               >
                 Ready to Command the Future?
               </Typography>
-              <Typography variant="h6" sx={{ color: isDarkMode ? theme.palette.grey[400] : "#64748b", mb: 4 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: isDarkMode ? theme.palette.grey[400] : "#64748b",
+                  mb: 4,
+                }}
+              >
                 Leave it to us. Stop working for your tools. Make them work for
                 you.
               </Typography>
               <GradientButton
+                data-umami-event="Command Your AI Writing Team"
                 gradient="#059669, #0d9488"
                 sx={{
                   color: "white",
@@ -740,7 +780,7 @@ export default function AgentShowcase() {
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
-      
+
       {/* Toast notification */}
       <Snackbar
         open={toast.open}
@@ -756,7 +796,7 @@ export default function AgentShowcase() {
         >
           {toast.message}
         </Alert>
-      </Snackbar>      
+      </Snackbar>
     </>
   );
 }
