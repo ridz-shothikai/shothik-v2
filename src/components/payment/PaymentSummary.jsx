@@ -208,7 +208,7 @@ export default function PaymentSummary({
         sx={{ mt: 5, mb: 3 }}
         onClick={(e) => {
           onSubmit(e);
-          trackEvent("click", "payment", `${type}-checkout`, billtopaid);
+          trackEvent("click", "payment", `submit-checkout`, billtopaid);
         }}
         disabled={isSubmitting || billtopaid < 0}
       >
