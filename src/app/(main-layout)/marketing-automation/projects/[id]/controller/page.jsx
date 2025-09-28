@@ -30,7 +30,7 @@ const ProjectControllerPage = async ({ params }) => {
             />
           </div>
         </div>
-        <ControllerClientSection />
+        <ControllerClientSection project={project} />
       </div>
     </main>
   );

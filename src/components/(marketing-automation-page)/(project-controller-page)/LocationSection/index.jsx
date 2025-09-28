@@ -2,14 +2,24 @@
 
 import { Autocomplete, Chip, CircularProgress, TextField } from "@mui/material";
 import { debounce } from "lodash";
+import { CircleAlert } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
-const LocationField = ({
-  value = [],
-  onChange,
-  placeholder = "Search for cities, states, or countries",
-  apiKey,
-}) => {
+const SectionHeader = ({
+  iconSrc = "/images/marketing-automation/star-icon.png",
+  title,
+}) => (
+  <div className="flex items-center gap-2">
+    <div className="flex size-8 items-center justify-center rounded-full shadow">
+      <Image src={iconSrc} alt={"icon"} width={20} height={20} />
+    </div>
+    <strong className="text-muted-foreground">{title}</strong>
+    <CircleAlert className="text-muted-foreground size-4" />
+  </div>
+);
+
+const LocationSection = ({ locations, onLocationChange, apiKey }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -149,90 +159,99 @@ const LocationField = ({
   };
 
   return (
-    <div className="relative">
-      <Autocomplete
-        multiple
-        options={options}
-        getOptionLabel={(option) => option.label || ""}
-        loading={loading}
-        value={value}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue, reason) => {
-          if (reason !== "reset") {
-            setInputValue(newInputValue);
-          }
-        }}
-        onChange={(event, newValue) => {
-          onChange?.(newValue);
-        }}
-        filterOptions={(x) => x}
-        renderOption={(props, option) => (
-          <li
-            {...props}
-            key={option.value}
-            className="hover:bg-muted flex cursor-pointer items-center gap-3 border-b px-2 py-1 last:border-b-0"
-          >
-            <div className="flex flex-1 items-center gap-2">
-              <span className="flex-shrink-0 text-gray-400">
-                {getLocationIcon(option.types)}
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium">
-                  {option.name}
-                </div>
-                <div className="text-muted-foreground truncate text-xs">
-                  {option.label}
+    <label className="space-y-2">
+      <SectionHeader title="Cities and Countries to Advertise" />
+      <div className="relative">
+        <Autocomplete
+          multiple
+          options={options}
+          getOptionLabel={(option) => option.label || ""}
+          loading={loading}
+          value={locations}
+          inputValue={inputValue}
+          onInputChange={(event, newInputValue, reason) => {
+            if (reason !== "reset") {
+              setInputValue(newInputValue);
+            }
+          }}
+          onChange={(event, newValue) => {
+            onLocationChange?.(newValue);
+          }}
+          filterOptions={(x) => x}
+          renderOption={(props, option) => (
+            <li
+              {...props}
+              key={option.value}
+              className="hover:bg-muted flex cursor-pointer items-center gap-3 border-b px-2 py-1 last:border-b-0"
+            >
+              <div className="flex flex-1 items-center gap-2">
+                <span className="flex-shrink-0 text-gray-400">
+                  {getLocationIcon(option.types)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium">
+                    {option.name}
+                  </div>
+                  <div className="text-muted-foreground truncate text-xs">
+                    {option.label}
+                  </div>
                 </div>
               </div>
-            </div>
-          </li>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={placeholder}
-            variant="outlined"
-            size="small"
-            error={!!error}
-            helperText={error}
-            InputProps={{
-              ...params.InputProps,
-              className: "px-2 py-1",
-              endAdornment: (
-                <div className="flex items-center">
-                  {loading && <CircularProgress color="inherit" size={16} />}
-                  {params.InputProps.endAdornment}
-                </div>
-              ),
-            }}
-          />
-        )}
-        renderTags={(selected, getTagProps) =>
-          selected.map((option, index) => (
-            <Chip
-              {...getTagProps({ index })}
-              key={option.value}
-              label={option.name}
+            </li>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder="Search for cities, states, or countries"
+              variant="outlined"
               size="small"
-              className="m-1"
+              error={!!error}
+              helperText={error}
+              InputProps={{
+                ...params.InputProps,
+                className: "px-2 py-1",
+                endAdornment: (
+                  <div className="flex items-center">
+                    {loading && <CircularProgress color="inherit" size={16} />}
+                    {params.InputProps.endAdornment}
+                  </div>
+                ),
+              }}
             />
-          ))
-        }
-        isOptionEqualToValue={(option, val) => option?.value === val?.value}
-        noOptionsText={
-          inputValue.length < 2
-            ? "Type at least 2 characters to search"
-            : loading
-              ? "Searching..."
-              : "No locations found"
-        }
-        PopperProps={{
-          className: "shadow-lg border rounded-lg bg-white",
-          placement: "bottom-start",
-        }}
-      />
-    </div>
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option.value}
+                label={option.name}
+                size="small"
+                className="m-1"
+              />
+            ))
+          }
+          isOptionEqualToValue={(option, val) => option?.value === val?.value}
+          noOptionsText={
+            inputValue.length < 2
+              ? "Type at least 2 characters to search"
+              : loading
+                ? "Searching..."
+                : "No locations found"
+          }
+          // PopperProps={{
+          //   className: "shadow-lg border rounded-lg bg-white",
+          //   placement: "bottom-start",
+          // }}
+          slotProps={{
+            popper: {
+              className: "shadow-lg border rounded-lg bg-white",
+              placement: "bottom-start",
+            },
+          }}
+        />
+      </div>
+    </label>
   );
 };
 
-export default LocationField;
+export default LocationSection;

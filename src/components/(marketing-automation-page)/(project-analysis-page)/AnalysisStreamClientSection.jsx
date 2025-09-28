@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const image = "/images/marketing-automation/demo-product.png";
 
@@ -119,6 +119,9 @@ const AnalysisStreamClientSection = ({ project }) => {
   const [visibleSections, setVisibleSections] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
 
+  // SCROLL ref
+  const scrollRef = useRef(null);
+
   useEffect(() => {
     // Simulate processing with progress updates
     const progressInterval = setInterval(() => {
@@ -149,6 +152,13 @@ const AnalysisStreamClientSection = ({ project }) => {
       clearInterval(sectionInterval);
     };
   }, []);
+
+  // Auto scroll effect
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [visibleSections, progress, showCompletion]);
 
   return (
     <div>
@@ -243,6 +253,9 @@ const AnalysisStreamClientSection = ({ project }) => {
             </div>
           </div>
         )}
+
+        {/* Scroll Target */}
+        <div ref={scrollRef} />
       </div>
     </div>
   );
