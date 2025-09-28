@@ -42,7 +42,7 @@ const RootForm = () => {
     // Redirect after 3 seconds
     setTimeout(() => {
       const processId = generateProcessId();
-      router.push(`/marketing-automation/projects/${processId}/process`);
+      router.push(`/marketing-automation/projects/${processId}/analysis`);
     }, 3000);
   };
 

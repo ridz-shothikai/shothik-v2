@@ -82,9 +82,11 @@ const LocationField = ({
         renderOption={(props, option) => (
           <li
             {...props}
+            key={option?.value}
             className="hover:bg-muted flex cursor-pointer items-center gap-2 px-2 py-1"
           >
             <span
+              key={option?.value}
               className={`flag-icon flag-icon-${option.flag} h-5 w-5 rounded-sm`}
             ></span>
             <span>{option.label}</span>
