@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const gptModel = [
@@ -168,11 +169,17 @@ const SampleTextForLarge = ({
               mt: 3,
             }}
           >
-            <img src="/tools/language.svg" alt="language" />
+            <Image
+              src="/tools/language.svg"
+              alt="language"
+              width={100}
+              height={100}
+              className="max-w-4!"
+            />
             <Typography fontWeight={600}>Supported languages:</Typography>
           </Box>
           <Typography sx={{ mt: 0.5, mb: 1 }}>
-            English, French and 100+
+            English, Bangla, Hindi and 100+ more
           </Typography>
           {/* <Typography
             fontSize={15}
