@@ -708,12 +708,32 @@ const ParaphraseContend = () => {
   useEffect(() => {
     console.log(automaticStartParaphrasing);
     // only auto-start if the setting is ON
-    if (!automaticStartParaphrasing) return;
-
-    if (userInputValue && !processing.loading) {
-      handleSubmit(userInputValue);
+    if (!automaticStartParaphrasing) {
+      if (result.length > 0) {
+        enqueueSnackbar("Click Rephrase to view the updated result.", {
+          variant: "info",
+        });
+      }
+      return; // Early return if not auto paraphrasing
     }
-  }, [userInputValue, automaticStartParaphrasing]);
+
+    // Trigger paraphrase if language changes and there is user input
+    if (language && userInputValue) {
+      if (!processing.loading) {
+        handleSubmit(userInputValue);
+      } else {
+        enqueueSnackbar("Please wait while paraphrasing is in progress...", {
+          variant: "info",
+        });
+      }
+    }
+  }, [
+    userInputValue,
+    automaticStartParaphrasing,
+    language,
+    selectedMode,
+    selectedSynonyms,
+  ]); // All the dependencies that should trigger re-paraphrasing are listed here.
 
   function extractPlainText(array) {
     // Check if input is an array
