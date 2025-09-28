@@ -40,6 +40,7 @@ import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
+import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
 // Define the punctuation marks that require specific spacing rules.
@@ -161,6 +162,14 @@ const ParaphraseContend = () => {
     success: false,
   });
   const [paraphraseRequestCounter, setParaphraseRequestCounter] = useState(0);
+
+  // Dispatch userInput to Redux
+  useEffect(() => {
+    dispatch(
+      setParaphraseValues({ type: "input", values: { text: userInput } }),
+    );
+  }, [userInput, dispatch]);
+
   useEffect(() => {
     if (!userInput) return;
     let timer;
@@ -200,8 +209,11 @@ const ParaphraseContend = () => {
     } else {
       setOutputContend("");
       setOutputWordCount(0);
+      dispatch(
+        setParaphraseValues({ type: "output", values: { text: "", data: [] } }),
+      ); // Clear output in Redux
     }
-  }, [result]);
+  }, [result, dispatch]); // Add dispatch to dependency array
 
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
@@ -257,6 +269,8 @@ const ParaphraseContend = () => {
       // accumulate raw Markdown
       accumulatedText += data.replace(/[{}]/g, "");
 
+      // console.log("Accumulated Text (before normalization):", accumulatedText);
+
       // update word count, etc…
       setOutputContend(accumulatedText);
       setOutputWordCount(
@@ -287,6 +301,12 @@ const ParaphraseContend = () => {
         }
       });
       setResult(newResult);
+      dispatch(
+        setParaphraseValues({
+          type: "output",
+          values: { text: accumulatedText },
+        }),
+      );
       console.log("new plain result:", newResult);
     });
 
@@ -573,6 +593,10 @@ const ParaphraseContend = () => {
       setUserInput("");
       frozenWords.reset(initialFrozenWords);
       frozenPhrases.reset(initialFrozenPhrase);
+      dispatch(setParaphraseValues({ type: "input", values: { text: "" } }));
+      dispatch(
+        setParaphraseValues({ type: "output", values: { text: "", data: [] } }),
+      );
     }
     setResult([]);
     setOutputHistory([]);

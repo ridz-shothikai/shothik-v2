@@ -1,33 +1,292 @@
-// src/components/tools/paraphrase/EditableOutput.jsx
+// src/components/tools/paraphrase/EditableOutputWithStructural.jsx
 "use client";
 
 import { Extension, Node } from "@tiptap/core";
+import HardBreak from "@tiptap/extension-hard-break";
 import { defaultMarkdownParser } from "@tiptap/pm/markdown";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { diffWordsWithSpace } from "diff";
 import { Plugin, TextSelection } from "prosemirror-state";
-import { useEffect } from "react";
-
-import HardBreak from "@tiptap/extension-hard-break";
+import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
-// ─── 1. Color helper ───────────────────────────────────────────────────────
-function getColorStyle(type, dark = false, showChangedWords) {
-  if (!showChangedWords) return "inherit"; // Controlled by settings options on the parpahrase settings
 
-  const adjVerb = dark ? "#ef5c47" : "#d95645";
-  const noun = dark ? "#b6bdbd" : "#530a78";
-  const phrase = dark ? "#b6bdbd" : "#051780";
-  const freeze = "#006ACC";
+/* ============================================================
+   Utilities: sentence splitting, token normalization,
+   structural annotation (existing), and diff-based longest-unchanged
+   ============================================================ */
 
-  if (/NP/.test(type)) return adjVerb;
-  if (/VP/.test(type)) return noun;
-  if (/PP|CP|AdvP|AdjP/.test(type)) return phrase;
-  if (/freeze/.test(type)) return freeze;
-  return "inherit";
+// naive sentence splitter (keeps punctuation)
+function splitSentencesFromText(text) {
+  if (!text) return [];
+  const re = /([^.!?]+[.!?]?)/g;
+  const matches = text.match(re);
+  if (!matches) return [text];
+  return matches.map((s) => s.trim()).filter(Boolean);
 }
 
-// ─── 2. CursorWatcher extension ────────────────────────────────────────────
+// normalize words: lowercase and remove basic punctuation
+function tokenizeWords(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[.,;:?!()"\u201c\u201d\u2018\u2019]/g, "")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+// compute simple word overlap ratio
+function wordOverlapRatio(aStr, bStr) {
+  const a = new Set(tokenizeWords(aStr));
+  const b = new Set(tokenizeWords(bStr));
+  if (a.size === 0 || b.size === 0) return 0;
+  let common = 0;
+  for (const w of a) if (b.has(w)) common++;
+  return common / Math.min(a.size, b.size);
+}
+
+/* ====== annotateStructuralChanges (keeps our previous heuristic + structured compare) ====== */
+function annotateStructuralChanges({
+  outputData,
+  inputTokens = null,
+  inputText = null,
+  sentenceOverlapThreshold = 0.65,
+}) {
+  if (!outputData) return [];
+
+  const cloned = outputData.map((sentence) =>
+    sentence.map((w) => ({ ...w, structuralChange: false })),
+  );
+
+  // Mode A: structured comparison if inputTokens available
+  if (Array.isArray(inputTokens) && inputTokens.length > 0) {
+    for (let sIdx = 0; sIdx < cloned.length; sIdx++) {
+      const outSentence = cloned[sIdx] || [];
+      const inSentence = inputTokens[sIdx] || [];
+
+      if (!inSentence || inSentence.length === 0) {
+        outSentence.forEach((token) => (token.structuralChange = true));
+        continue;
+      }
+
+      const maxLen = Math.max(outSentence.length, inSentence.length);
+      for (let wIdx = 0; wIdx < maxLen; wIdx++) {
+        const o = outSentence[wIdx];
+        const i = inSentence[wIdx];
+        if (!o) continue;
+        if (!i) {
+          o.structuralChange = true;
+          continue;
+        }
+        if ((i.type || "") !== (o.type || "")) {
+          o.structuralChange = true;
+        } else {
+          o.structuralChange = false;
+        }
+      }
+    }
+
+    return cloned;
+  }
+
+  // Mode B: heuristics using inputText only
+  const inputSentences = inputText ? splitSentencesFromText(inputText) : [];
+  const outputSentencesStr = cloned.map((s) =>
+    s
+      .map((w) => w.word)
+      .join(" ")
+      .trim(),
+  );
+
+  for (let sIdx = 0; sIdx < cloned.length; sIdx++) {
+    const outSentStr = outputSentencesStr[sIdx] || "";
+    if (!outSentStr) continue;
+
+    let bestIdx = -1;
+    let bestScore = 0;
+    for (let i = 0; i < inputSentences.length; i++) {
+      const score = wordOverlapRatio(outSentStr, inputSentences[i]);
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    }
+
+    const markStructural = bestScore < sentenceOverlapThreshold;
+    if (markStructural) {
+      cloned[sIdx].forEach((t) => (t.structuralChange = true));
+      continue;
+    }
+
+    const matchedInput = inputSentences[bestIdx] || "";
+    const matchedWordsSet = new Set(tokenizeWords(matchedInput));
+    for (const token of cloned[sIdx]) {
+      const tokenWords = tokenizeWords(token.word);
+      if (tokenWords.length === 0) continue;
+      const common = tokenWords.filter((w) => matchedWordsSet.has(w)).length;
+      const tokenOverlap = common / tokenWords.length;
+      if (tokenOverlap < 0.4) token.structuralChange = true;
+      else token.structuralChange = false;
+    }
+  }
+
+  return cloned;
+}
+
+/* ============================================================
+   DIFF-based longest-unchanged helpers (minLen = 7)
+   ============================================================ */
+
+function normalizeTokenSurface(s) {
+  if (!s) return "";
+  return String(s)
+    .toLowerCase()
+    .replace(/[“”"’'.,;:?!()[\]{}<>]/g, "")
+    .trim();
+}
+
+function tokenSurfaceArray(sentenceTokens) {
+  return (sentenceTokens || []).map((t) => normalizeTokenSurface(t.word));
+}
+
+// Expand output tokens into a per-word list with token index mapping.
+// Example: token: "energetic musical groups" -> ["energetic","musical","groups"] each mapped to same token index.
+function buildWordToTokenMap(outSentence) {
+  const arr = []; // { w, tokenIdx }
+  for (let tokenIdx = 0; tokenIdx < (outSentence || []).length; tokenIdx++) {
+    const token = outSentence[tokenIdx];
+    const surface = normalizeTokenSurface(token.word);
+    const words = surface.length ? surface.split(/\s+/).filter(Boolean) : [];
+    for (const w of words) arr.push({ w, tokenIdx });
+  }
+  return arr;
+}
+
+// Try to find the contiguous sequence of segmentWords inside the expanded word array.
+// Returns range of token indices [startTokenIdx, endTokenIdx] inclusive, or null.
+function findTokenRangeForSegment(outSentence, segmentWords) {
+  if (!segmentWords || segmentWords.length === 0) return null;
+  const map = buildWordToTokenMap(outSentence);
+  const L = segmentWords.length;
+  if (map.length < L) return null;
+
+  for (let i = 0; i + L <= map.length; i++) {
+    let ok = true;
+    for (let k = 0; k < L; k++) {
+      if (map[i + k].w !== segmentWords[k]) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) {
+      const startTokenIdx = map[i].tokenIdx;
+      const endTokenIdx = map[i + L - 1].tokenIdx;
+      return [startTokenIdx, endTokenIdx];
+    }
+  }
+  return null;
+}
+
+/**
+ * Mark unchangedLongest using diffWordsWithSpace.
+ * minLenWords defaults to 7 can be chnaged.
+ */
+function markLongestUnchangedUsingDiff({
+  outputData,
+  inputTokens = null,
+  inputText = null,
+  minLenWords = 7,
+}) {
+  if (!outputData) return outputData;
+  const cloned = outputData.map((s) =>
+    s.map((t) => ({ ...t, unchangedLongest: false })),
+  );
+
+  const inputSentencesText = inputText ? splitSentencesFromText(inputText) : [];
+
+  for (let sIdx = 0; sIdx < cloned.length; sIdx++) {
+    const outSentence = cloned[sIdx];
+    const outStr = outSentence
+      .map((t) => t.word)
+      .join(" ")
+      .trim();
+
+    // pick input sentence string to compare with
+    let inStr = null;
+    if (inputTokens && inputTokens[sIdx]) {
+      inStr = inputTokens[sIdx]
+        .map((t) => t.word)
+        .join(" ")
+        .trim();
+    } else if (inputTokens) {
+      // best-match input sentence by overlap
+      let bestIdx = -1,
+        bestScore = 0;
+      for (let i = 0; i < inputTokens.length; i++) {
+        const score = wordOverlapRatio(
+          outStr,
+          inputTokens[i].map((t) => t.word).join(" "),
+        );
+        if (score > bestScore) {
+          bestScore = score;
+          bestIdx = i;
+        }
+      }
+      if (bestIdx !== -1)
+        inStr = inputTokens[bestIdx]
+          .map((t) => t.word)
+          .join(" ")
+          .trim();
+    } else if (inputText && inputSentencesText.length > 0) {
+      let bestIdx = -1,
+        bestScore = 0;
+      for (let i = 0; i < inputSentencesText.length; i++) {
+        const score = wordOverlapRatio(outStr, inputSentencesText[i]);
+        if (score > bestScore) {
+          bestScore = score;
+          bestIdx = i;
+        }
+      }
+      if (bestIdx !== -1) inStr = inputSentencesText[bestIdx];
+    }
+
+    if (!inStr || !inStr.length) continue;
+
+    // diff the two sentence strings
+    const changes = diffWordsWithSpace(inStr, outStr);
+
+    // collect unchanged segments that have >= minLenWords words
+    for (const seg of changes) {
+      if (seg.added || seg.removed) continue; // changed segment, skip
+      const segNorm = normalizeTokenSurface(seg.value);
+      const segWords = segNorm.length
+        ? segNorm.split(/\s+/).filter(Boolean)
+        : [];
+      if (segWords.length < minLenWords) continue;
+
+      // find token range in output sentence corresponding to this unchanged segment
+      const tokenRange = findTokenRangeForSegment(outSentence, segWords);
+      if (!tokenRange) {
+        // sometimes diff segments include different spacing/word forms; try approximate match:
+        // attempt to find the first occurrence of the first 3 words sequence as a fallback if segWords large
+        // (but keep it simple - skip if not found)
+        continue;
+      }
+      const [startTokenIdx, endTokenIdx] = tokenRange;
+      for (let ti = startTokenIdx; ti <= endTokenIdx; ti++) {
+        const token = outSentence[ti];
+        if (token) token.unchangedLongest = true;
+      }
+    }
+  }
+
+  return cloned;
+}
+
+/* ============================================================
+   TipTap nodes & CursorWatcher
+   ============================================================ */
+
 const CursorWatcher = Extension.create({
   name: "cursorWatcher",
   addProseMirrorPlugins() {
@@ -37,7 +296,6 @@ const CursorWatcher = Extension.create({
           decorations(state) {
             const { from, empty } = state.selection;
             if (!empty) return null;
-
             const decos = [];
             state.doc.descendants((node, pos) => {
               if (node.type.name === "sentenceNode") {
@@ -45,9 +303,7 @@ const CursorWatcher = Extension.create({
                 const end = pos + node.nodeSize;
                 if (from >= start && from <= end) {
                   decos.push(
-                    Decoration.node(start, end, {
-                      class: "active-sentence",
-                    }),
+                    Decoration.node(start, end, { class: "active-sentence" }),
                   );
                 }
               }
@@ -60,13 +316,12 @@ const CursorWatcher = Extension.create({
   },
 });
 
-// ─── 3. WordNode & SentenceNode ───────────────────────────────────────────
 const WordNode = Node.create({
   name: "wordNode",
   group: "inline",
   inline: true,
   content: "text*",
-  priority: 50, // Lower priority than default nodes
+  priority: 50,
   addAttributes() {
     return {
       "data-sentence-index": { default: null },
@@ -88,8 +343,8 @@ const SentenceNode = Node.create({
   name: "sentenceNode",
   group: "inline",
   inline: true,
-  content: "wordNode* text*", // Allow both wordNode and regular text
-  priority: 50, // Lower priority than default nodes
+  content: "wordNode* text*",
+  priority: 50,
   addAttributes() {
     return {
       "data-sentence-index": { default: null },
@@ -104,7 +359,6 @@ const SentenceNode = Node.create({
   },
 });
 
-// ─── 4. EnterHandler extension ─────────────────────────────────────────────
 const EnterHandler = Extension.create({
   name: "enterHandler",
   addKeyboardShortcuts() {
@@ -114,7 +368,6 @@ const EnterHandler = Extension.create({
         const { tr, selection, doc, schema } = state;
         const from = selection.from;
 
-        // find max existing sentence index
         let maxIndex = 0;
         doc.descendants((node) => {
           if (node.type.name === "sentenceNode") {
@@ -124,7 +377,6 @@ const EnterHandler = Extension.create({
         });
         const nextIndex = maxIndex + 1;
 
-        // build a single-word sentenceNode
         const wordNode = schema.nodes.wordNode.create(
           {
             "data-sentence-index": nextIndex,
@@ -142,7 +394,6 @@ const EnterHandler = Extension.create({
         const paragraph = schema.nodes.paragraph.create({}, [sentenceNode]);
         const newTr = tr.insert(from, paragraph);
 
-        // move cursor inside new word
         const resolved = newTr.doc.resolve(from + paragraph.nodeSize - 1);
         const sel = TextSelection.near(resolved);
         view.dispatch(newTr.setSelection(sel).scrollIntoView());
@@ -152,54 +403,40 @@ const EnterHandler = Extension.create({
   },
 });
 
-// ─── 5. Enhanced Markdown parsing helper ───────────────────────────────────
+/* ============================================================
+   Markdown parsing helpers
+   ============================================================ */
 
 function parseMarkdownText(text) {
   const marks = [];
   let core = text;
   let trailing = "";
-
-  // 1. Detach trailing punctuation (one of . , ; ? !)
   const punctMatch = core.match(/^(.*?)([.,;?!])$/);
   if (punctMatch) {
     core = punctMatch[1];
     trailing = punctMatch[2];
   }
-
-  // 2. Check for bold (** or __)
   let m;
   if ((m = core.match(/^(\*\*|__)([\s\S]+?)\1$/))) {
     marks.push({ type: "bold" });
     core = m[2];
-  }
-  // 3. Check for strikethrough ~~text~~
-  else if ((m = core.match(/^~~([\s\S]+?)~~$/))) {
+  } else if ((m = core.match(/^~~([\s\S]+?)~~$/))) {
     marks.push({ type: "strike" });
     core = m[1];
-  }
-  // 4. Check for italic (* or _), but only if not already bold
-  else if ((m = core.match(/^(\*|_)([\s\S]+?)\1$/))) {
+  } else if ((m = core.match(/^(\*|_)([\s\S]+?)\1$/))) {
     marks.push({ type: "italic" });
     core = m[2];
-  }
-  // 5. Check for inline code `text`
-  else if ((m = core.match(/^`([\s\S]+?)`$/))) {
+  } else if ((m = core.match(/^`([\s\S]+?)`$/))) {
     marks.push({ type: "code" });
     core = m[1];
   }
-
-  // 6. Reattach punctuation to the processed text
   const processedText = core + trailing;
-
   return { text: processedText, marks };
 }
 
-// ─── 6. Helper to detect and process heading sentences ────────────────────
 function processHeadingSentence(sentence, sIdx) {
-  // Check if sentence starts with heading markers
   const firstWord = sentence[0]?.word || "";
   const headingMatch = firstWord.match(/^(#{1,6})$/);
-
   if (headingMatch && sentence.length > 1) {
     const level = headingMatch[1].length;
     const headingText = sentence
@@ -207,62 +444,73 @@ function processHeadingSentence(sentence, sIdx) {
       .map((w) => w.word)
       .join(" ")
       .trim();
-
     return {
       type: "heading",
       attrs: { level },
-      content: [
-        {
-          type: "text",
-          text: headingText,
-        },
-      ],
+      content: [{ type: "text", text: headingText }],
     };
   }
-
   return null;
 }
-
-// ─── 7. Helper to process newline sentences ───────────────────────────────
 function isNewlineSentence(sentence) {
   return sentence.length === 1 && /^\n+$/.test(sentence[0].word);
 }
 
-// ─── 8. formatContent: JSON ⇄ ProseMirror document ─────────────────────────
-// Updated formatContent function to better handle paragraph structure
+/* ============================================================
+   Token style helper (colors, structural underline, longest-unchanged highlight)
+   ============================================================ */
 
-function formatContent(data, showChangedWords) {
-  if (!data) {
-    return { type: "doc", content: [] };
+function getColorStyle(
+  type,
+  dark = false,
+  showChangedWords,
+  structuralChange,
+  showStructural,
+  unchangedLongest,
+  showLongest,
+) {
+  // priority: unchangedLongest (subtle highlight) > structural underline > type coloring
+  if (unchangedLongest && showLongest) {
+    return `background-color: rgba(40,167,69,0.12); border-radius: 3px; font-weight: 600;`;
   }
+
+  if (structuralChange && showStructural) {
+    // green underline for structural changes
+    return `text-decoration: underline; text-decoration-color: #28a745; text-decoration-thickness: 2px; color: inherit;`;
+  }
+
+  if (!showChangedWords) return "inherit";
+
+  const adjVerb = dark ? "#ef5c47" : "#d95645";
+  const noun = dark ? "#b6bdbd" : "#530a78";
+  const phrase = dark ? "#b6bdbd" : "#051780";
+  const freeze = "#006ACC";
+
+  if (/NP/.test(type)) return `color:${noun}`;
+  if (/VP/.test(type)) return `color:${adjVerb}`;
+  if (/PP|CP|AdvP|AdjP/.test(type)) return `color:${phrase}`;
+  if (/freeze/.test(type)) return `color:${freeze}`;
+  return "inherit";
+}
+
+/* ============================================================
+   formatContent: build ProseMirror doc from token data
+   (expects data to be array-of-sentences-of-wordObjs)
+   ============================================================ */
+
+function formatContent(data, showChangedWords, showStructural, showLongest) {
+  if (!data) return { type: "doc", content: [] };
 
   if (typeof data === "string") {
     try {
       const parsed = defaultMarkdownParser.parse(data);
-      if (parsed) {
-        const jsonDoc = parsed.toJSON();
-        console.log("Parsed markdown JSON:", JSON.stringify(jsonDoc, null, 2));
-        return jsonDoc;
-      }
-    } catch (error) {
-      console.warn(
-        "Failed to parse markdown, falling back to plain text:",
-        error,
-      );
+      if (parsed) return parsed.toJSON();
+    } catch (e) {
+      console.warn("Failed to parse markdown, falling back to plain text:", e);
     }
     return {
       type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: [
-            {
-              type: "text",
-              text: data,
-            },
-          ],
-        },
-      ],
+      content: [{ type: "paragraph", content: [{ type: "text", text: data }] }],
     };
   }
 
@@ -273,9 +521,7 @@ function formatContent(data, showChangedWords) {
   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
     const sentence = sentences[sIdx];
 
-    // Check if this is a newline sentence (paragraph break)
     if (isNewlineSentence(sentence)) {
-      // If we have accumulated sentences, add them as a paragraph
       if (currentParagraphSentences.length > 0) {
         docContent.push({
           type: "paragraph",
@@ -283,19 +529,12 @@ function formatContent(data, showChangedWords) {
         });
         currentParagraphSentences = [];
       }
-
-      // Add the line break
-      docContent.push({
-        type: "paragraph",
-        content: [{ type: "hardBreak" }],
-      });
+      docContent.push({ type: "paragraph", content: [{ type: "hardBreak" }] });
       continue;
     }
 
-    // Check if this sentence is a heading
     const headingNode = processHeadingSentence(sentence, sIdx);
     if (headingNode) {
-      // Flush any accumulated sentences before adding heading
       if (currentParagraphSentences.length > 0) {
         docContent.push({
           type: "paragraph",
@@ -303,25 +542,28 @@ function formatContent(data, showChangedWords) {
         });
         currentParagraphSentences = [];
       }
-
       docContent.push(headingNode);
       continue;
     }
 
-    // Process as regular sentence
     const sentenceNode = {
       type: "sentenceNode",
-      attrs: {
-        "data-sentence-index": sIdx,
-        class: "sentence-span",
-      },
+      attrs: { "data-sentence-index": sIdx, class: "sentence-span" },
       content: sentence.map((wObj, wIdx) => {
         const raw = wObj.word;
         const { text: processedText, marks } = parseMarkdownText(raw);
-
-        // Better spacing logic - don't add space before punctuation or at start
         const prefix =
           (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " ";
+
+        const style = getColorStyle(
+          wObj.type,
+          false,
+          showChangedWords,
+          !!wObj.structuralChange,
+          showStructural,
+          !!wObj.unchangedLongest,
+          showLongest,
+        );
 
         return {
           type: "wordNode",
@@ -330,7 +572,7 @@ function formatContent(data, showChangedWords) {
             "data-word-index": wIdx,
             "data-type": wObj.type,
             class: "word-span",
-            style: `color:${getColorStyle(wObj.type, false, showChangedWords)};cursor:pointer`,
+            style: `${style}; cursor:pointer`,
           },
           content: [
             {
@@ -343,157 +585,130 @@ function formatContent(data, showChangedWords) {
       }),
     };
 
-    // Add sentence to current paragraph
     currentParagraphSentences.push(sentenceNode);
   }
 
-  // Add any remaining sentences as the final paragraph
   if (currentParagraphSentences.length > 0) {
-    docContent.push({
-      type: "paragraph",
-      content: currentParagraphSentences,
-    });
+    docContent.push({ type: "paragraph", content: currentParagraphSentences });
   }
 
-  return {
-    type: "doc",
-    content: docContent,
-  };
+  return { type: "doc", content: docContent };
 }
-// function formatContent(data) {
-//   // empty
-//   if (!data) {
-//     return { type: "doc", content: [] }
-//   }
 
-//   // Markdown string?
-//   if (typeof data === "string") {
-//     try {
-//       const parsed = defaultMarkdownParser.parse(data)
-//       if (parsed) {
-//         const jsonDoc = parsed.toJSON()
-//         console.log("Parsed markdown JSON:", JSON.stringify(jsonDoc, null, 2))
-//         return jsonDoc
-//       }
-//     } catch (error) {
-//       console.warn("Failed to parse markdown, falling back to plain text:", error)
-//     }
-//     // Fallback: treat as plain text in a paragraph
-//     return {
-//       type: "doc",
-//       content: [{
-//         type: "paragraph",
-//         content: [{
-//           type: "text",
-//           text: data
-//         }]
-//       }]
-//     }
-//   }
+/* ============================================================
+   Main component: EditableOutput
+   Props:
+     - data (output token array: array of sentences)
+     - inputTokens (optional structured original)
+     - setSynonymsOptions, setSentence, setAnchorEl, highlightSentence, setHighlightSentence
+   ============================================================ */
+const _annotateCache = new Map(); // simple in-memory cache for annotateStructuralChanges + diff
 
-//   // assume `data` is Array< Array<WordObj> >
-//   const sentences = Array.isArray(data[0]) ? data : [data]
-//   const docContent = []
+// console.log(_annotateCache, "cache data");
 
-//   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
-//     const sentence = sentences[sIdx]
-
-//     if (isNewlineSentence(sentence)) {
-//       // emit a hardBreak node wrapped in a paragraph
-//       docContent.push({
-//         type: "paragraph",
-//         content: [
-//           { type: "hardBreak" }
-//         ],
-//       })
-//       continue
-//     }
-//     // Check if this sentence is a heading
-//     const headingNode = processHeadingSentence(sentence, sIdx)
-//     if (headingNode) {
-//       docContent.push(headingNode)
-//       continue
-//     }
-
-//     // Process as regular sentence with word nodes
-//     const sentenceNode = {
-//       type: "sentenceNode",
-//       attrs: {
-//         "data-sentence-index": sIdx + 1,
-//         class: "sentence-span",
-//       },
-//       content: sentence.map((wObj, wIdx) => {
-//         const raw = wObj.word
-
-//         // Enhanced markdown parsing for individual words
-//         const { text: processedText, marks } = parseMarkdownText(raw)
-
-//         // spacing logic
-//         const prefix =
-//           (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " "
-
-//         return {
-//           type: "wordNode",
-//           attrs: {
-//             "data-sentence-index": sIdx + 1,
-//             "data-word-index": wIdx + 1,
-//             "data-type": wObj.type,
-//             class: "word-span",
-//             style: `color:${getColorStyle(wObj.type)};cursor:pointer`,
-//           },
-//           content: [
-//             {
-//               type: "text",
-//               text: prefix + processedText,
-//               ...(marks.length ? { marks } : {}),
-//             },
-//           ],
-//         }
-//       }),
-//     }
-
-//     // Wrap sentence in paragraph
-//     docContent.push({
-//       type: "paragraph",
-//       content: [sentenceNode],
-//     })
-//   }
-
-//   return {
-//     type: "doc",
-//     content: docContent,
-//   }
-// }
-
-// ─── 9. EditableOutput component ───────────────────────────────────────────
 export default function EditableOutput({
   data,
+  inputTokens = null,
   setSynonymsOptions,
   setSentence,
   setAnchorEl,
   highlightSentence,
   setHighlightSentence,
 }) {
-  const { showChangedWords } = useSelector(
-    (state) => state.settings.interfaceOptions,
-  );
+  // read toggles from Redux (ensure these keys exist in your store)
+  const { showChangedWords, showStructuralChanges, showLongestUnchangedWords } =
+    useSelector((state) => state.settings.interfaceOptions);
+  const paraphraseIO = useSelector((state) => state.inputOutput.paraphrase); // { input: { text }, output: { text } }
+  // place this near the top of the module (module-scope cache)
+
+  // Only run diff-based (expensive) annotation when paraphrase result completes
+  // AND showLongestUnchangedWords is true. Use a small in-memory cache to avoid recompute.
+  const annotatedData = useMemo(() => {
+    // normalize outputData shape
+    const outputData = Array.isArray(data && data[0]) ? data : [data];
+
+    // 1) Always run structural annotation (cheap)
+    const structurallyAnnotated = annotateStructuralChanges({
+      outputData,
+      inputTokens,
+      inputText: paraphraseIO?.input?.text || null,
+      sentenceOverlapThreshold: 0.65,
+    });
+
+    // If toggle is off, return structural result but ensure unchangedLongest flags are false
+    if (!showLongestUnchangedWords) {
+      return structurallyAnnotated.map((s) =>
+        s.map((t) => ({ ...t, unchangedLongest: false })),
+      );
+    }
+
+    // Ensure paraphrase result is present (we need input text to compute diff)
+    const inputText = paraphraseIO?.input?.text || null;
+    const outputText = paraphraseIO?.output?.text || null;
+    // You can tweak this condition if you have a paraphraseIO.status flag instead
+    if (!inputText || !outputText) {
+      // paraphrase not ready — skip expensive diff, return structural only
+      return structurallyAnnotated.map((s) =>
+        s.map((t) => ({ ...t, unchangedLongest: false })),
+      );
+    }
+
+    // Build a cache key to avoid recomputation on toggles or re-renders
+    const minLenWords = 7; // keep in sync with your diff-min setting or make it from Redux
+    const cacheKey = `${inputText}|||${outputText}|||${minLenWords}`;
+
+    if (_annotateCache.has(cacheKey)) {
+      // console.log("Cache hit for annotateStructuralChanges");
+      return _annotateCache.get(cacheKey);
+    }
+
+    // 2) Run diff-based longest-unchanged annotation (expensive)
+    const withLongest = markLongestUnchangedUsingDiff({
+      outputData: structurallyAnnotated,
+      inputTokens,
+      inputText,
+      minLenWords,
+    });
+
+    // console.log(withLongest, "withLongest");
+
+    // store in cache (simple LRU not necessary unless you expect many unique texts)
+    _annotateCache.set(cacheKey, withLongest);
+    // console.log(_annotateCache, "cache data after setting");
+
+    // Optional: limit cache size to avoid uncontrolled memory growth
+    const MAX_CACHE = 200;
+    if (_annotateCache.size > MAX_CACHE) {
+      // delete oldest entry (Map preserves insertion order)
+      const firstKey = _annotateCache.keys().next().value;
+      _annotateCache.delete(firstKey);
+    }
+
+    return withLongest;
+
+    // dependencies: recompute when any input changes or when toggles change
+    // include paraphraseIO input/output and toggle
+  }, [
+    data,
+    inputTokens,
+    paraphraseIO?.input?.text,
+    paraphraseIO?.output?.text,
+    showLongestUnchangedWords,
+  ]);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         enter: false,
-        // Enable all text formatting features
         bold: true,
         italic: true,
         strike: true,
         code: true,
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
-          HTMLAttributes: {
-            class: "heading-node",
-          },
+          HTMLAttributes: { class: "heading-node" },
         },
       }),
-      // Add custom nodes AFTER StarterKit to avoid conflicts
       HardBreak,
       SentenceNode,
       WordNode,
@@ -501,16 +716,28 @@ export default function EditableOutput({
       EnterHandler,
     ],
     editable: true,
-    immediatelyRender: false, // avoid SSR hydration warnings
+    immediatelyRender: false,
   });
 
-  // load (or reload) `data` into the editor whenever it changes
   useEffect(() => {
     if (!editor) return;
-    editor.commands.setContent(formatContent(data, showChangedWords));
-  }, [editor, data, showChangedWords]);
+    editor.commands.setContent(
+      formatContent(
+        annotatedData,
+        showChangedWords,
+        showStructuralChanges,
+        showLongestUnchangedWords,
+      ),
+    );
+  }, [
+    editor,
+    annotatedData,
+    showChangedWords,
+    showStructuralChanges,
+    showLongestUnchangedWords,
+  ]);
 
-  // click-to-synonyms
+  // click-to-synonyms (uses annotatedData)
   useEffect(() => {
     if (!editor) return;
     const dom = editor.view.dom;
@@ -519,7 +746,8 @@ export default function EditableOutput({
       if (!el) return;
       const sI = Number(el.getAttribute("data-sentence-index"));
       const wI = Number(el.getAttribute("data-word-index"));
-      const wObj = data[sI]?.[wI];
+      const wObj =
+        annotatedData[sI]?.[wI] || (data && data[sI] && data[sI][wI]);
       if (!wObj) return;
 
       setAnchorEl(el);
@@ -530,11 +758,19 @@ export default function EditableOutput({
         showRephraseNav: true,
       });
       setHighlightSentence(sI);
-      setSentence(data[sI].map((w) => w.word).join(" "));
+      setSentence((data[sI] || []).map((w) => w.word).join(" "));
     };
     dom.addEventListener("click", onClick);
     return () => dom.removeEventListener("click", onClick);
-  }, [editor, data]);
+  }, [
+    editor,
+    annotatedData,
+    data,
+    setAnchorEl,
+    setSynonymsOptions,
+    setSentence,
+    setHighlightSentence,
+  ]);
 
   if (!editor) return null;
   return <EditorContent editor={editor} />;
