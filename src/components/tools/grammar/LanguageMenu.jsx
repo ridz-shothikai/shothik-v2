@@ -4,7 +4,7 @@ import {
   ExpandMoreOutlined,
   KeyboardArrowUpOutlined,
 } from "@mui/icons-material";
-import { Button, Tabs, Tab, Box, useTheme } from "@mui/material";
+import { Box, Button, Tab, Tabs, useTheme } from "@mui/material";
 import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
@@ -53,7 +53,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
           sx={{
             textTransform: "none",
             width: "100%",
-            justifyContent: "space-between",
+            justifyContent: "start",
             color:
               theme.palette.mode === "dark" ? "common.white" : "text.primary",
             bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
@@ -83,7 +83,6 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         variant="standard"
         textColor="primary"
         sx={{
-          flex: 1,
           minHeight: 48,
           "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
           "& .MuiTabs-indicator": { display: "none" },
@@ -124,13 +123,13 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
           />
         ))}
       </Tabs>
-      <Button
+      {/* <Button
         id="language_x_button"
         onClick={() => {
           handleClose();
         }}
         sx={{ opacity: 0, zIndex: -99, width: 0, height: 0 }}
-      ></Button>
+      ></Button> */}
 
       <Button
         onClick={handleOpen}
@@ -138,7 +137,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         endIcon={
           showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
         }
-        sx={{ color: "text.secondary", ml: 1 }}
+        sx={{ color: "text.secondary", ml: 5 }}
         id="language_all_button"
       >
         All
