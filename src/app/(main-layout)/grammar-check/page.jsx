@@ -22,7 +22,7 @@ const Grammar = () => {
         <GrammarContend />
       </ErrorBoundary>
       <ToolsSepecigFaq
-        tag="All you need to know about Grammar Checker feature"
+        tag="All you need to know about Grammar Fix feature"
         data={grammarfaq}
       />
       <ToolsCTA toolType="grammar" />

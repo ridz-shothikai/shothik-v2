@@ -40,7 +40,7 @@ export default function MainHeader() {
       "/paraphrase": "Paraphrase",
       "/humanize-gpt": "Humanize GPT",
       "/ai-detector": "AI Detector",
-      "/grammar-check": "Grammar Checker",
+      "/grammar-check": "Grammar Fix",
       "/summarize": "Summarize",
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",

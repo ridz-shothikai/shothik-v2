@@ -12,7 +12,7 @@ export async function generateMetadata() {
       "Shothik",
       "Shothik AI",
       "AI writing tool",
-      "Grammar checker",
+      "Grammar Fix",
       "Sentence rephrasing",
       "Natural language generation",
       "Writing assistant",

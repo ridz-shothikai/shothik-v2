@@ -69,9 +69,9 @@ export const toolsCta = {
     description: (
       <>
         <p>
-          Grammar Checker is an advanced writing tool that helps you identify
-          and correct grammatical errors, spelling mistakes, punctuation issues,
-          and style improvements in your text. It uses AI-powered algorithms to
+          Grammar Fix is an advanced writing tool that helps you identify and
+          correct grammatical errors, spelling mistakes, punctuation issues, and
+          style improvements in your text. It uses AI-powered algorithms to
           provide comprehensive writing suggestions while maintaining your
           original message and tone.
         </p>
