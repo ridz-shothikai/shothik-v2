@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@mui/material";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import AdGoalSection from "./AdGoalSection";
 import AdPreviewSection from "./AdPreviewSection";
@@ -11,12 +13,23 @@ import LocationSection from "./LocationSection";
 import TabsAndMediaSection from "./TabsAndMediaSection";
 import TopPerformingAdSets from "./TopPerformingAdSets";
 
-const ControllerClientSection = ({ project }) => {
+const ControllerClientSections = ({ project }) => {
+  const formatDateTime = (date) => {
+    if (!date) return "";
+    const d = date instanceof Date ? date : new Date(date);
+    return d.toISOString().slice(0, 16);
+  };
+
+  const now = new Date();
+  const plus30Days = new Date();
+  plus30Days.setDate(now.getDate() + 30);
+
   const [campaignData, setCampaignData] = useState({
     selectedGoal: "sales",
-    startDateTime: "",
-    endDateTime: "",
+    startDateTime: formatDateTime(now),
+    endDateTime: formatDateTime(plus30Days),
     locations: [],
+    tab: "ad-sets",
     budget: 100,
     adSetCount: 5,
     selectedAdSet: 1,
@@ -66,6 +79,8 @@ const ControllerClientSection = ({ project }) => {
         />
 
         <TabsAndMediaSection
+          tab={campaignData.tab}
+          onTabChange={(tab) => updateCampaignData({ tab })}
           adSetCount={campaignData.adSetCount}
           mediasCount={campaignData.medias.length}
         />
@@ -89,8 +104,18 @@ const ControllerClientSection = ({ project }) => {
           />
         </div>
       </div>
+
+      <div className="flex items-center justify-center gap-4">
+        <Button size="large" variant="outlined">
+          A/B Testing
+        </Button>
+        <Button className="gap-2" size="large" variant="contained">
+          Publish Ads
+          <ArrowRight className="size-6" />
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default ControllerClientSection;
+export default ControllerClientSections;

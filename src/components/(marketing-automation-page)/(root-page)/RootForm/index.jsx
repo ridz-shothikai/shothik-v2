@@ -4,17 +4,13 @@ import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import LocationField from "./(input-fields)/LocationField";
-import NameField from "./(input-fields)/NameField";
-import UrlFiled from "./(input-fields)/URLFIeld";
+import UrlInputField from "./UrlInputField";
 
 const RootForm = () => {
   const user = useSelector((state) => state.auth.user);
   const router = useRouter();
 
   const [url, setUrl] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [projectName, setProjectName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -55,26 +51,10 @@ const RootForm = () => {
       <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
         <label className="block w-full space-y-1">
           <div>Website URL</div>
-          <UrlFiled
+          <UrlInputField
             value={url}
             onChange={setUrl}
             placeholder="http://yourstore/product/service"
-          />
-        </label>
-        <label className="block w-full space-y-1">
-          <div>Primary target location</div>
-          <LocationField
-            value={selectedLocation}
-            onChange={setSelectedLocation}
-            placeholder="Select country, state, or city"
-          />
-        </label>
-        <label className="block w-full space-y-1">
-          <div>Project name</div>
-          <NameField
-            value={projectName}
-            onChange={setProjectName}
-            placeholder="Your project name"
           />
         </label>
 
@@ -86,9 +66,7 @@ const RootForm = () => {
               className="!h-10 !min-w-24"
               variant="contained"
               type="submit"
-              disabled={
-                isSubmitting || !url || !selectedLocation?.value || !projectName
-              }
+              disabled={isSubmitting || !url}
             >
               {isSubmitting ? "Processing..." : "Continue"}
             </Button>

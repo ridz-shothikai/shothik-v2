@@ -13,7 +13,7 @@ const CampaignOverview = ({ selectedGoal, startDateTime, endDateTime }) => (
           {new Date(startDateTime).toLocaleTimeString()}
         </span>
       )}{" "}
-      -{" "}
+      {startDateTime && endDateTime && <span>to</span>}
       {endDateTime && (
         <span>
           End: {new Date(endDateTime).toLocaleDateString("en-CA")}{" "}

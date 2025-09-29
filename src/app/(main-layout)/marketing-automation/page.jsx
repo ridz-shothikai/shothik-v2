@@ -1,5 +1,5 @@
+import RootForm from "@/components/(marketing-automation-page)/(root-page)/RootForm";
 import Image from "next/image";
-import RootForm from "../../../components/(marketing-automation-page)/RootForm/RootForm";
 
 const MarketingAutomationPage = () => {
   return (
@@ -14,14 +14,12 @@ const MarketingAutomationPage = () => {
                 product URL (not limited to the homepage)!
               </p>
             </div>
-            <>
-              <RootForm />
-            </>
+            <RootForm />
           </div>
           <div className="relative hidden self-stretch lg:col-span-2 lg:block">
             <Image
               className="absolute inset-0 h-full w-full object-contain"
-              src="/images/marketing-automation/social-icons.svg"
+              src="/images/marketing-automation/social-icons.png"
               alt="Marketing Automation"
               width={400}
               height={400}

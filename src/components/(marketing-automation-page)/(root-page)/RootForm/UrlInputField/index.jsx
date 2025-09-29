@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { TextField, Autocomplete } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
+import { useState } from "react";
 
 // URL Input Component (similar to LocationSelect)
-const UrlField = ({
+const UrlInputField = ({
   value,
   onChange,
   placeholder = "http://yourstore/product/service",
@@ -110,4 +110,4 @@ const UrlField = ({
   );
 };
 
-export default UrlField;
+export default UrlInputField;

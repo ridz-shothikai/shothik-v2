@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-const image = "/images/marketing-automation/demo-product.png";
+const image = "/images/marketing-automation/demo-product-banner.png";
 
 const analysis = [
   {
@@ -113,7 +113,7 @@ const analysis = [
   },
 ];
 
-const AnalysisStreamClientSection = ({ project }) => {
+const AnalysisClientSections = ({ project }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const [progress, setProgress] = useState(0);
   const [visibleSections, setVisibleSections] = useState(0);
@@ -261,4 +261,4 @@ const AnalysisStreamClientSection = ({ project }) => {
   );
 };
 
-export default AnalysisStreamClientSection;
+export default AnalysisClientSections;
