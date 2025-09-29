@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
   Box,
-  IconButton,
   Button,
-  Typography,
-  Skeleton,
+  CircularProgress,
+  Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Skeleton,
   Tooltip,
-  CircularProgress,
-  Drawer,
+  Typography,
   useTheme,
 } from "@mui/material";
-import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function FileHistorySidebar() {
@@ -125,16 +125,20 @@ export default function FileHistorySidebar() {
               : "none",
         }}
       >
-        <IconButton
-          id="file_history_view_button"
-          size="small"
-          onClick={handleBookClick}
-        >
-          <MenuBookOutlinedIcon />
-        </IconButton>
-        <IconButton size="small" onClick={handleAddClick}>
-          <AddOutlinedIcon />
-        </IconButton>
+        <Tooltip title="Saved document" placement="right">
+          <IconButton
+            id="file_history_view_button"
+            size="small"
+            onClick={handleBookClick}
+          >
+            <MenuBookOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Add new document" placement="right">
+          <IconButton size="small" onClick={handleAddClick}>
+            <AddOutlinedIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <Drawer
