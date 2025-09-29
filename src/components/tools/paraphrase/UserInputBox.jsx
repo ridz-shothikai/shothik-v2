@@ -104,6 +104,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
+import useSnackbar from "../../../hooks/useSnackbar";
 import "./editor.css";
 import { CombinedHighlighting } from "./extentions";
 
@@ -138,6 +139,7 @@ function UserInputBox({
       : undefined,
   );
   const allowDoubleClickSelection = useRef(false);
+  const enqueueSnackbar = useSnackbar();
 
   const editor = useEditor(
     {
@@ -365,6 +367,11 @@ function UserInputBox({
     } else {
       frozenWords.toggle(key);
     }
+
+    enqueueSnackbar("Word frozen successfully.", {
+      variant: "success",
+    });
+
     clearSelection();
   };
 
