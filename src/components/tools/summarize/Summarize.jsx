@@ -4,10 +4,11 @@ import {
   FormatTextdirectionLToRRounded,
 } from "@mui/icons-material";
 import { Card, Grid2, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useDebounce from "../../../hooks/useDebounce";
 import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
@@ -46,6 +47,17 @@ const SummarizeContend = () => {
   const dispatch = useDispatch();
   const loadingText = useLoadingText(isLoading);
   const sampleText = trySamples.summarize.English;
+
+  const debouncedSelectedMode = useDebounce(selectedMode, 500);
+  const debouncedCurrentLength = useDebounce(currentLength, 500);
+  const debouncedUserInput = useDebounce(userInput, 1000);
+
+  useEffect(() => {
+    if (userInput) {
+      // Only auto-summarize if there is existing user input
+      handleSubmit();
+    }
+  }, [debouncedSelectedMode, debouncedCurrentLength]); // Trigger only on mode or length changes. Don't change it unless buisiness requirement
 
   async function fetchWithStreaming(payload) {
     try {
@@ -89,9 +101,9 @@ const SummarizeContend = () => {
       setOutputContend("");
 
       const payload = {
-        text: userInput,
-        mode: selectedMode,
-        length: currentLength.toLowerCase(),
+        text: debouncedUserInput,
+        mode: debouncedSelectedMode,
+        length: debouncedCurrentLength.toLowerCase(),
       };
 
       await fetchWithStreaming(payload);
