@@ -1,20 +1,21 @@
 // src/components/tools/paraphrase/ModeNavigation.jsx
-import React from "react";
+import { ExpandMore, Lock } from "@mui/icons-material";
 import {
-  Slider,
   Box,
-  Stack,
-  Tabs,
-  Tab,
   Button,
   Menu,
   MenuItem,
+  Slider,
+  Stack,
+  Tab,
+  Tabs,
   Typography,
-  useTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { Lock, ExpandMore } from "@mui/icons-material";
+import React from "react";
 import { modes } from "../../../_mock/tools/paraphrase";
+import useSnackbar from "../../../hooks/useSnackbar";
 
 const ModeNavigation = ({
   selectedMode,
@@ -24,10 +25,12 @@ const ModeNavigation = ({
   setSelectedSynonyms,
   SYNONYMS,
   setShowMessage,
+  isLoading,
 }) => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm")); // <600px
   const isSm = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600–900px
+  const enqueueSnackbar = useSnackbar();
 
   // determine how many tabs to show before collapsing
   const visibleCount = isXs ? 2 : isSm ? 4 : 6;
@@ -48,6 +51,12 @@ const ModeNavigation = ({
 
   // unified mode-change logic
   const changeMode = (value) => {
+    if (isLoading) {
+      enqueueSnackbar("Wait until the current process is complete", {
+        variant: "info",
+      });
+      return;
+    } // Disable if loading
     const modeObj = modes.find((m) => m.value === value);
     const isValid = modeObj.package.includes(userPackage || "free");
     if (isValid) {
@@ -96,6 +105,7 @@ const ModeNavigation = ({
           value={selectedMode}
           onChange={(_, v) => changeMode(v)}
           variant="standard"
+          disabled={isLoading}
           sx={{
             flexWrap: "nowrap",
             overflowX: "auto", // allow horizontal scroll inside Tabs
@@ -149,6 +159,7 @@ const ModeNavigation = ({
             onClick={handleMoreClick}
             sx={{ textTransform: "none", color: "text.secondary" }}
             endIcon={<ExpandMore />}
+            disabled={isLoading}
           >
             More
           </Button>

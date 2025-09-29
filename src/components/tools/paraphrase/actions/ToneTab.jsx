@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import {
   Box,
-  Typography,
-  Stack,
   Card,
   CardContent,
   CircularProgress,
+  Stack,
+  Typography,
   useTheme,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const redirectPrefix = "p-v2";
 const API_BASE =
@@ -16,6 +16,7 @@ const API_BASE =
   "/" +
   redirectPrefix +
   "/api";
+// const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
 const METRICS = [
   { key: "casualFormal", labels: ["Casual", "Formal"] },

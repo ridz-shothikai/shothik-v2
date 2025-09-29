@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import { modes } from "../../../_mock/tools/paraphrase";
 import SvgColor from "../../../resource/SvgColor";
 
@@ -19,6 +19,7 @@ const ModeModal = ({
   selectedMode,
   userPackage,
   setSelectedMode,
+  isLoading,
 }) => {
   const [showAlert, setShowAlert] = useState(false);
 
@@ -80,6 +81,7 @@ const ModeModal = ({
                     selectedMode === mode.value ? "primary.lighter" : "unset",
                 }}
                 onClick={() => {
+                  if (isLoading) return; // Disable click if loading
                   if (mode.package.includes(userPackage || "free")) {
                     setSelectedMode(mode.value);
                     handleClose();

@@ -24,7 +24,6 @@ import useResponsive from "../../../hooks/useResponsive";
 import useSetState from "../../../hooks/useSetState";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
-import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
@@ -40,6 +39,7 @@ import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
+import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
@@ -217,6 +217,8 @@ const ParaphraseContend = () => {
 
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
+    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
+    // path: "/socket.io",
     const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
       path: "/p-v2/socket.io",
       transports: ["websocket"],
@@ -870,7 +872,7 @@ const ParaphraseContend = () => {
           }}
         >
           <LanguageMenu
-            isLoading={isLoading}
+            isLoading={isLoading || processing.loading}
             setLanguage={setLanguage}
             language={language}
           />
@@ -941,6 +943,7 @@ const ParaphraseContend = () => {
                 setSelectedSynonyms={setSelectedSynonyms}
                 SYNONYMS={SYNONYMS}
                 setShowMessage={setShowMessage}
+                isLoading={processing.loading}
               />
             ) : (
               <ModeNavigationForMobile
@@ -949,6 +952,7 @@ const ParaphraseContend = () => {
                 initialFrozenWords={initialFrozenWords}
                 frozenWords={frozenWords}
                 userPackage={user?.package}
+                isLoading={processing.loading}
               />
             )}
 

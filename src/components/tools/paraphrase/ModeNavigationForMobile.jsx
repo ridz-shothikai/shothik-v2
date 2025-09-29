@@ -10,6 +10,7 @@ const ModeNavigationForMobile = ({
   userPackage,
   initialFrozenWords,
   frozenWords,
+  isLoading,
 }) => {
   const [showFreezeModal, setShowFreezeModal] = useState(false);
   const [showMoModeModal, setShowModeModal] = useState(false);
@@ -27,6 +28,7 @@ const ModeNavigationForMobile = ({
         size="medium"
         color="primary"
         onClick={() => setShowModeModal(true)}
+        disabled={isLoading}
         sx={{
           textTransform: "none",
           mr: 2,
@@ -52,6 +54,7 @@ const ModeNavigationForMobile = ({
         setSelectedMode={setSelectedMode}
         showModeModal={showMoModeModal}
         userPackage={userPackage}
+        isLoading={isLoading}
       />
 
       <MobileFreezeModal

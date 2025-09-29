@@ -55,7 +55,7 @@ function annotateStructuralChanges({
   if (!outputData) return [];
 
   const cloned = outputData.map((sentence) =>
-    sentence.map((w) => ({ ...w, structuralChange: false })),
+    sentence?.map((w) => ({ ...w, structuralChange: false })),
   );
 
   // Mode A: structured comparison if inputTokens available

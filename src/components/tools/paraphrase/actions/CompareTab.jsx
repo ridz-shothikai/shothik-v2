@@ -1,23 +1,23 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import useSnackbar from "../../../../hooks/useSnackbar";
 import { modes } from "../../../../_mock/tools/paraphrase";
+import useSnackbar from "../../../../hooks/useSnackbar";
 
+import { ContentCopy, Refresh, Replay } from "@mui/icons-material";
 import {
   Box,
-  Typography,
-  Divider,
-  Card,
-  CardContent,
-  CardActions,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
   IconButton,
-  Slider,
-  useTheme,
   Skeleton,
+  Slider,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import { ContentCopy, Refresh, Replay } from "@mui/icons-material";
 
 const SYNONYMS = {
   20: "Basic",
@@ -174,6 +174,7 @@ const CompareTab = ({
     "/" +
     redirectPrefix +
     "/api";
+  // const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
 
   const getSynonymLabel = (step) => SYNONYMS[step] ?? SYNONYMS[minStep];
 
