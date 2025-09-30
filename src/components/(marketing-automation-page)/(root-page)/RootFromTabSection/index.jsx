@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import Image from "next/image";
 import UrlInputField from "./UrlInputField";
 
-const RootFromTabSection = ({ onSubmit, url, setUrl, isSubmitting }) => {
+const RootFromTabSection = ({ onSubmit, error, url, setUrl, isSubmitting }) => {
   return (
     <main className="bg-card relative flex min-h-[calc(100vh-100px)] flex-col p-6">
       <div className="mx-auto flex w-full max-w-5xl flex-grow flex-col">
