@@ -163,6 +163,8 @@ const ParaphraseContend = () => {
   });
   const [paraphraseRequestCounter, setParaphraseRequestCounter] = useState(0);
 
+  const hasOutput = result.length > 0 && outputContend.trim().length > 0; // Checking if we have actual output content
+
   // Dispatch userInput to Redux
   useEffect(() => {
     dispatch(
@@ -986,6 +988,9 @@ const ParaphraseContend = () => {
                   frozenWords={frozenWords}
                   user={user}
                   useYellowHighlight={useYellowHighlight}
+                  highlightSentence={highlightSentence}
+                  language={language}
+                  hasOutput={hasOutput}
                 />
 
                 {!userInput ? (
@@ -1144,7 +1149,7 @@ const ParaphraseContend = () => {
                         outputHistoryIndex={outputHistoryIndex}
                         outputWordCount={outputWordCount}
                         proccessing={processing}
-                        sentenceCount={result.length}
+                        sentenceCount={result.length - 1}
                         setHighlightSentence={setHighlightSentence}
                         setOutputHistoryIndex={setOutputHistoryIndex}
                       />

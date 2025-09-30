@@ -8,7 +8,7 @@ import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { diffWordsWithSpace } from "diff";
-import { Plugin, TextSelection } from "prosemirror-state";
+import { Plugin, PluginKey, TextSelection } from "prosemirror-state";
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 
@@ -696,28 +696,86 @@ export default function EditableOutput({
     showLongestUnchangedWords,
   ]);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        enter: false,
-        bold: true,
-        italic: true,
-        strike: true,
-        code: true,
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-          HTMLAttributes: { class: "heading-node" },
+  const SentenceHighlighter = useMemo(
+    () =>
+      Extension.create({
+        name: "sentenceHighlighter",
+
+        addProseMirrorPlugins() {
+          return [
+            new Plugin({
+              key: new PluginKey("sentenceHighlighter"),
+              props: {
+                decorations: (state) => {
+                  const decos = [];
+                  const { highlightSentence } = this.options;
+
+                  state.doc.descendants((node, pos) => {
+                    if (node.type.name === "sentenceNode") {
+                      const sentenceIndex = parseInt(
+                        node.attrs["data-sentence-index"],
+                        10,
+                      );
+
+                      if (
+                        !isNaN(sentenceIndex) &&
+                        sentenceIndex === highlightSentence
+                      ) {
+                        const start = pos;
+                        const end = pos + node.nodeSize;
+                        decos.push(
+                          Decoration.node(start, end, {
+                            class: "highlighted-sentence",
+                          }),
+                        );
+                      }
+                    }
+                  });
+
+                  return DecorationSet.create(state.doc, decos);
+                },
+              },
+            }),
+          ];
+        },
+
+        addOptions() {
+          return {
+            highlightSentence: 0,
+          };
         },
       }),
-      HardBreak,
-      SentenceNode,
-      WordNode,
-      CursorWatcher,
-      EnterHandler,
-    ],
-    editable: true,
-    immediatelyRender: false,
-  });
+    [],
+  );
+
+  const editor = useEditor(
+    {
+      extensions: [
+        StarterKit.configure({
+          enter: false,
+          bold: true,
+          italic: true,
+          strike: true,
+          code: true,
+          heading: {
+            levels: [1, 2, 3, 4, 5, 6],
+            HTMLAttributes: { class: "heading-node" },
+          },
+        }),
+        HardBreak,
+        SentenceNode,
+        WordNode,
+        CursorWatcher,
+        EnterHandler,
+        SentenceHighlighter.configure({
+          highlightSentence: highlightSentence,
+        }),
+      ],
+      editable: true,
+      immediatelyRender: false,
+    },
+    [highlightSentence],
+  );
 
   useEffect(() => {
     if (!editor) return;

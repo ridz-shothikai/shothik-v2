@@ -106,3 +106,16 @@
 .yellow-highlight {
   background-color: #f9f4e2; /*Light background color*/
 }
+
+/* For highlighting sentences */
+.highlighted-sentence {
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+  background-color: #faf5e5 !important;
+  padding: 2px 0;
+}
+
+.active-sentence {
+  border-radius: 4px;
+  background-color: rgba(33, 150, 243, 0.1);
+}

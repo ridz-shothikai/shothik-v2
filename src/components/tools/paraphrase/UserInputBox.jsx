@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 // Custom extension to handle plain text paste
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
 
 const PlainTextPaste = Extension.create({
   name: "plainTextPaste",
@@ -46,6 +47,121 @@ const PlainTextPaste = Extension.create({
         },
       }),
     ];
+  },
+});
+
+// SENTENCE highlighter
+const InputSentenceHighlighter = Extension.create({
+  name: "inputSentenceHighlighter",
+
+  addProseMirrorPlugins() {
+    const { highlightSentence, language, hasOutput } = this.options;
+
+    return [
+      new Plugin({
+        key: new PluginKey("inputSentenceHighlighter"),
+        props: {
+          decorations(state) {
+            if (!hasOutput) return DecorationSet.empty;
+            const decos = [];
+            const text = state.doc.textContent;
+
+            if (!text || highlightSentence < 0) return DecorationSet.empty;
+
+            // Split into sentences based on language - match the backend logic
+            const sentenceSeparator =
+              language === "Bangla"
+                ? /(?:৤\s+|\.\r?\n+)/
+                : /(?:\.\s+|\.\r?\n+)/;
+
+            // Split and track positions
+            const parts = text.split(sentenceSeparator);
+            const sentences = parts.filter((s) => s.trim().length > 0);
+
+            if (highlightSentence >= sentences.length) {
+              return DecorationSet.empty;
+            }
+
+            // Find the target sentence text
+            const targetSentence = sentences[highlightSentence];
+            if (!targetSentence) return DecorationSet.empty;
+
+            // Build array of sentence positions in original text
+            let searchPos = 0;
+            const sentencePositions = [];
+
+            for (let i = 0; i < sentences.length; i++) {
+              const sentence = sentences[i];
+              const foundAt = text.indexOf(sentence, searchPos);
+              if (foundAt !== -1) {
+                sentencePositions.push({
+                  start: foundAt,
+                  end: foundAt + sentence.length,
+                  text: sentence,
+                });
+                searchPos = foundAt + sentence.length;
+              }
+            }
+
+            const targetPos = sentencePositions[highlightSentence];
+            if (!targetPos) return DecorationSet.empty;
+
+            // Convert text offsets to ProseMirror positions
+            let textOffset = 0;
+            let startPos = null;
+            let endPos = null;
+
+            state.doc.descendants((node, pos) => {
+              if (startPos !== null && endPos !== null) return false;
+
+              if (node.isText && node.text) {
+                const nodeStart = textOffset;
+                const nodeEnd = textOffset + node.text.length;
+
+                // Check if sentence start is in this text node
+                if (
+                  startPos === null &&
+                  targetPos.start >= nodeStart &&
+                  targetPos.start < nodeEnd
+                ) {
+                  startPos = pos + (targetPos.start - nodeStart);
+                }
+
+                // Check if sentence end is in this text node
+                if (
+                  startPos !== null &&
+                  endPos === null &&
+                  targetPos.end > nodeStart &&
+                  targetPos.end <= nodeEnd
+                ) {
+                  endPos = pos + (targetPos.end - nodeStart);
+                }
+
+                textOffset += node.text.length;
+              }
+            });
+
+            if (startPos !== null && endPos !== null && startPos < endPos) {
+              decos.push(
+                Decoration.inline(startPos, endPos, {
+                  class: "highlighted-sentence",
+                }),
+              );
+            }
+
+            return DecorationSet.create(state.doc, decos);
+          },
+        },
+      }),
+    ];
+  },
+
+  addOptions() {
+    return {
+      highlightSentence: 0,
+      language: "English (US)",
+      hasOutput: false,
+    };
   },
 });
 
@@ -120,6 +236,9 @@ function UserInputBox({
   frozenWords,
   frozenPhrases,
   user,
+  highlightSentence = 0,
+  language = "English (US)",
+  hasOutput = false,
 }) {
   const { demo, interfaceOptions } = useSelector((state) => state.settings);
   const { useYellowHighlight } = interfaceOptions;
@@ -152,6 +271,11 @@ function UserInputBox({
           frozenWords: frozenWords.set,
           frozenPhrases: frozenPhrases.set,
           useYellowHighlight: useYellowHighlight,
+        }),
+        InputSentenceHighlighter.configure({
+          highlightSentence: highlightSentence,
+          language: language,
+          hasOutput: hasOutput || false,
         }),
         HardBreak,
         Link.configure({
@@ -201,7 +325,7 @@ function UserInputBox({
         setUserInput(plainText); // Pass plain text to the parent component
       },
     },
-    [editorKey],
+    [editorKey, highlightSentence, language, hasOutput],
   ); // Recreate editor when key changes
 
   const clearSelection = () => {
