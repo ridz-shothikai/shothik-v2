@@ -9,7 +9,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { diffWordsWithSpace } from "diff";
 import { Plugin, PluginKey, TextSelection } from "prosemirror-state";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 /* ============================================================
@@ -141,7 +141,7 @@ function normalizeTokenSurface(s) {
   if (!s) return "";
   return String(s)
     .toLowerCase()
-    .replace(/[“”"’'.,;:?!()[\]{}<>]/g, "")
+    .replace(/[""''.,;:?!()[\]{}<>]/g, "")
     .trim();
 }
 
@@ -150,7 +150,6 @@ function tokenSurfaceArray(sentenceTokens) {
 }
 
 // Expand output tokens into a per-word list with token index mapping.
-// Example: token: "energetic musical groups" -> ["energetic","musical","groups"] each mapped to same token index.
 function buildWordToTokenMap(outSentence) {
   const arr = []; // { w, tokenIdx }
   for (let tokenIdx = 0; tokenIdx < (outSentence || []).length; tokenIdx++) {
@@ -163,7 +162,6 @@ function buildWordToTokenMap(outSentence) {
 }
 
 // Try to find the contiguous sequence of segmentWords inside the expanded word array.
-// Returns range of token indices [startTokenIdx, endTokenIdx] inclusive, or null.
 function findTokenRangeForSegment(outSentence, segmentWords) {
   if (!segmentWords || segmentWords.length === 0) return null;
   const map = buildWordToTokenMap(outSentence);
@@ -189,7 +187,6 @@ function findTokenRangeForSegment(outSentence, segmentWords) {
 
 /**
  * Mark unchangedLongest using diffWordsWithSpace.
- * minLenWords defaults to 7 can be chnaged.
  */
 function markLongestUnchangedUsingDiff({
   outputData,
@@ -267,9 +264,6 @@ function markLongestUnchangedUsingDiff({
       // find token range in output sentence corresponding to this unchanged segment
       const tokenRange = findTokenRangeForSegment(outSentence, segWords);
       if (!tokenRange) {
-        // sometimes diff segments include different spacing/word forms; try approximate match:
-        // attempt to find the first occurrence of the first 3 words sequence as a fallback if segWords large
-        // (but keep it simple - skip if not found)
         continue;
       }
       const [startTokenIdx, endTokenIdx] = tokenRange;
@@ -495,7 +489,6 @@ function getColorStyle(
 
 /* ============================================================
    formatContent: build ProseMirror doc from token data
-   (expects data to be array-of-sentences-of-wordObjs)
    ============================================================ */
 
 function formatContent(data, showChangedWords, showStructural, showLongest) {
@@ -597,14 +590,8 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
 
 /* ============================================================
    Main component: EditableOutput
-   Props:
-     - data (output token array: array of sentences)
-     - inputTokens (optional structured original)
-     - setSynonymsOptions, setSentence, setAnchorEl, highlightSentence, setHighlightSentence
    ============================================================ */
-const _annotateCache = new Map(); // simple in-memory cache for annotateStructuralChanges + diff
-
-// console.log(_annotateCache, "cache data");
+const _annotateCache = new Map();
 
 export default function EditableOutput({
   data,
@@ -615,19 +602,16 @@ export default function EditableOutput({
   highlightSentence,
   setHighlightSentence,
 }) {
-  // read toggles from Redux (ensure these keys exist in your store)
   const { showChangedWords, showStructuralChanges, showLongestUnchangedWords } =
     useSelector((state) => state.settings.interfaceOptions);
-  const paraphraseIO = useSelector((state) => state.inputOutput.paraphrase); // { input: { text }, output: { text } }
-  // place this near the top of the module (module-scope cache)
+  const paraphraseIO = useSelector((state) => state.inputOutput.paraphrase);
 
-  // Only run diff-based (expensive) annotation when paraphrase result completes
-  // AND showLongestUnchangedWords is true. Use a small in-memory cache to avoid recompute.
+  // Create a virtual anchor element for positioning
+  const [virtualAnchor, setVirtualAnchor] = useState(null);
+
   const annotatedData = useMemo(() => {
-    // normalize outputData shape
     const outputData = Array.isArray(data && data[0]) ? data : [data];
 
-    // 1) Always run structural annotation (cheap)
     const structurallyAnnotated = annotateStructuralChanges({
       outputData,
       inputTokens,
@@ -635,34 +619,28 @@ export default function EditableOutput({
       sentenceOverlapThreshold: 0.65,
     });
 
-    // If toggle is off, return structural result but ensure unchangedLongest flags are false
     if (!showLongestUnchangedWords) {
       return structurallyAnnotated.map((s) =>
         s.map((t) => ({ ...t, unchangedLongest: false })),
       );
     }
 
-    // Ensure paraphrase result is present (we need input text to compute diff)
     const inputText = paraphraseIO?.input?.text || null;
     const outputText = paraphraseIO?.output?.text || null;
-    // You can tweak this condition if you have a paraphraseIO.status flag instead
+
     if (!inputText || !outputText) {
-      // paraphrase not ready — skip expensive diff, return structural only
       return structurallyAnnotated.map((s) =>
         s.map((t) => ({ ...t, unchangedLongest: false })),
       );
     }
 
-    // Build a cache key to avoid recomputation on toggles or re-renders
-    const minLenWords = 7; // keep in sync with your diff-min setting or make it from Redux
+    const minLenWords = 7;
     const cacheKey = `${inputText}|||${outputText}|||${minLenWords}`;
 
     if (_annotateCache.has(cacheKey)) {
-      // console.log("Cache hit for annotateStructuralChanges");
       return _annotateCache.get(cacheKey);
     }
 
-    // 2) Run diff-based longest-unchanged annotation (expensive)
     const withLongest = markLongestUnchangedUsingDiff({
       outputData: structurallyAnnotated,
       inputTokens,
@@ -670,24 +648,15 @@ export default function EditableOutput({
       minLenWords,
     });
 
-    // console.log(withLongest, "withLongest");
-
-    // store in cache (simple LRU not necessary unless you expect many unique texts)
     _annotateCache.set(cacheKey, withLongest);
-    // console.log(_annotateCache, "cache data after setting");
 
-    // Optional: limit cache size to avoid uncontrolled memory growth
     const MAX_CACHE = 200;
     if (_annotateCache.size > MAX_CACHE) {
-      // delete oldest entry (Map preserves insertion order)
       const firstKey = _annotateCache.keys().next().value;
       _annotateCache.delete(firstKey);
     }
 
     return withLongest;
-
-    // dependencies: recompute when any input changes or when toggles change
-    // include paraphraseIO input/output and toggle
   }, [
     data,
     inputTokens,
@@ -700,7 +669,6 @@ export default function EditableOutput({
     () =>
       Extension.create({
         name: "sentenceHighlighter",
-
         addProseMirrorPlugins() {
           return [
             new Plugin({
@@ -726,6 +694,7 @@ export default function EditableOutput({
                         decos.push(
                           Decoration.node(start, end, {
                             class: "highlighted-sentence",
+                            style: "pointer-events: auto;",
                           }),
                         );
                       }
@@ -738,7 +707,6 @@ export default function EditableOutput({
             }),
           ];
         },
-
         addOptions() {
           return {
             highlightSentence: 0,
@@ -795,20 +763,42 @@ export default function EditableOutput({
     showLongestUnchangedWords,
   ]);
 
-  // click-to-synonyms (uses annotatedData)
+  // Enhanced click handler with virtual anchor
   useEffect(() => {
     if (!editor) return;
     const dom = editor.view.dom;
+
     const onClick = (e) => {
       const el = e.target.closest(".word-span");
       if (!el) return;
+
       const sI = Number(el.getAttribute("data-sentence-index"));
       const wI = Number(el.getAttribute("data-word-index"));
       const wObj =
         annotatedData[sI]?.[wI] || (data && data[sI] && data[sI][wI]);
       if (!wObj) return;
 
-      setAnchorEl(el);
+      // Create a virtual anchor that tracks the mouse position
+      const rect = el.getBoundingClientRect();
+      const virtualAnchorEl = {
+        getBoundingClientRect: () => ({
+          top: rect.top,
+          left: rect.left,
+          bottom: rect.bottom,
+          right: rect.right,
+          width: rect.width,
+          height: rect.height,
+          x: rect.left,
+          y: rect.top,
+        }),
+        clientWidth: rect.width,
+        clientHeight: rect.height,
+      };
+
+      // Set both the actual element and virtual anchor
+      setAnchorEl(virtualAnchorEl);
+      setVirtualAnchor(virtualAnchorEl);
+
       setSynonymsOptions({
         synonyms: wObj.synonyms || [],
         sentenceIndex: sI,
@@ -818,6 +808,7 @@ export default function EditableOutput({
       setHighlightSentence(sI);
       setSentence((data[sI] || []).map((w) => w.word).join(" "));
     };
+
     dom.addEventListener("click", onClick);
     return () => dom.removeEventListener("click", onClick);
   }, [

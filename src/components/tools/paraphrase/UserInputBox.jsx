@@ -482,6 +482,7 @@ function UserInputBox({
   }, [isDemoMode, editor]);
 
   const normalize = (text) => text.toLowerCase().trim();
+
   const handleToggleFreeze = () => {
     const key = normalize(selectedWord);
     const isPhrase = key.includes(" ");
