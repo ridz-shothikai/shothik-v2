@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Close } from "@mui/icons-material";
 import {
+  Box,
+  Button,
   Dialog,
   DialogContent,
-  Typography,
-  Button,
   IconButton,
-  Box,
   Stack,
+  Typography,
   useTheme,
 } from "@mui/material";
-import { Close } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
 import { useComponentTracking } from "../../hooks/useComponentTracking";
-import { trackingList } from "../../libs/trackingList";
 import { useExitIntent } from "../../hooks/useExitIntent";
+import { trackingList } from "../../libs/trackingList";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {
@@ -130,7 +130,7 @@ export default function ExitModal({ setOpen }) {
     };
 
     // Add event listeners
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    // window.addEventListener("beforeunload", handleBeforeUnload);
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("popstate", handlePopState);
@@ -140,7 +140,7 @@ export default function ExitModal({ setOpen }) {
 
     // Cleanup
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // window.removeEventListener("beforeunload", handleBeforeUnload);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("popstate", handlePopState);
