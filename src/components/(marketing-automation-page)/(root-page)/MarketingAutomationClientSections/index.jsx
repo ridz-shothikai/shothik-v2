@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import AnalysisSteamTabSection from "../AnalysisSteamTabSection";
+import AnalysisStreamTabSection from "../AnalysisStreamTabSection";
 import { demo } from "../data";
 import RootFromTabSection from "../RootFromTabSection";
 
 const MarketingAutomationClientSections = () => {
-  const [tab, setTab] = useState("steam");
+  const [tab, setTab] = useState("form");
   const [url, setUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -14,8 +14,6 @@ const MarketingAutomationClientSections = () => {
   const [screenshot, setScreenshot] = useState("");
   const [currentStep, setCurrentStep] = useState("");
   const [error, setError] = useState(null);
-
-  // Step-wise data renderers
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,8 +49,7 @@ const MarketingAutomationClientSections = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Streaming শুরু হলে tab shift করো
-      setTab("steam");
+      setTab("stream");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -166,10 +163,11 @@ const MarketingAutomationClientSections = () => {
           error={error}
         />
       )}
-      {tab === "steam" && (
-        <AnalysisSteamTabSection
+      {tab === "stream" && (
+        <AnalysisStreamTabSection
           url={url}
           streamData={streamData}
+          screenshot={screenshot}
           currentStep={currentStep}
           isSubmitting={isSubmitting}
           progress={progress}

@@ -2,13 +2,7 @@ import { Button } from "@mui/material";
 import Image from "next/image";
 import UrlInputField from "./UrlInputField";
 
-const RootFromTabSection = ({
-  onSubmit,
-  url,
-  setUrl,
-  isSubmitting,
-  progress,
-}) => {
+const RootFromTabSection = ({ onSubmit, url, setUrl, isSubmitting }) => {
   return (
     <main className="bg-card relative flex min-h-[calc(100vh-100px)] flex-col p-6">
       <div className="mx-auto flex w-full max-w-5xl flex-grow flex-col">
@@ -29,6 +23,29 @@ const RootFromTabSection = ({
                   onChange={setUrl}
                   placeholder="http://yourstore/product/service"
                 />
+                {error && (
+                  <div className="border-destructive border/50 bg-destructive/5 mt-4 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <svg
+                        className="text-destructive mt-0.5 mr-3 h-5 w-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div>
+                        <h3 className="text-destructive text-sm font-medium">
+                          Error occurred
+                        </h3>
+                        <p className="text-destructive mt-1 text-sm">{error}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </label>
 
               <div className="flex items-center justify-between">
@@ -41,14 +58,6 @@ const RootFromTabSection = ({
                   >
                     {isSubmitting ? "Processing..." : "Continue"}
                   </Button>
-                  {isSubmitting && (
-                    <div className="bg-muted h-2 w-20 flex-1 overflow-hidden rounded-full">
-                      <div
-                        className="bg-primary h-full rounded-full transition-all duration-300"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
             </form>

@@ -276,7 +276,7 @@ const renderStepData = (step, data) => {
   }
 };
 
-const AnalysisSteamTabSection = ({
+const AnalysisStreamTabSection = ({
   url,
   streamData,
   currentStep,
@@ -374,7 +374,7 @@ const AnalysisSteamTabSection = ({
                               />
                             </div>
                           ) : (
-                            <div className="bg-muted-foreground/50 aspect-video size-fit h-60 max-h-60 animate-pulse rounded-lg" />
+                            <div className="bg-muted aspect-video size-fit h-60 max-h-60 animate-pulse rounded-lg" />
                           )}
                         </div>
                       </div>
@@ -479,4 +479,4 @@ const AnalysisSteamTabSection = ({
   );
 };
 
-export default AnalysisSteamTabSection;
+export default AnalysisStreamTabSection;
