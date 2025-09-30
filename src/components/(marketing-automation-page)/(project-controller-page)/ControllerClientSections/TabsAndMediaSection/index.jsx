@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Box, Button, Dialog, DialogContent, Tab, Tabs } from "@mui/material";
+import { Button, Dialog, DialogContent } from "@mui/material";
 import {
   AlignVerticalDistributeCenter,
   ChartNoAxesCombined,
@@ -8,11 +8,11 @@ import {
   UserCheck,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
-const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
+const TabsAndMediaSection = ({ tab, onTabChange, adSetCount }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeMediaTab, setActiveMediaTab] = useState(0);
   const [mediaItems, setMediaItems] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -44,9 +44,7 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
   };
 
   const handleGenerateImages = async () => {
-    // Mock API call for image generation
     try {
-      // Replace with your actual API call
       const generatedImages = await generateImagesAPI();
 
       const newGeneratedItems = generatedImages.map((img, index) => ({
@@ -69,7 +67,7 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
 
   const filteredMediaItems = (section) => {
     switch (section) {
-      case "all":
+      case "all-images":
         return mediaItems.filter((item) => item.type === "image");
       case "uploaded-images":
         return mediaItems.filter(
@@ -108,23 +106,12 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
     <>
       <div className="flex flex-col items-center justify-between gap-2 lg:flex-row">
         <div className="flex h-12 w-full items-center justify-between gap-4 rounded-full border p-1 lg:w-auto">
-          <div
+          <button
             className={cn(
-              "flex h-full cursor-pointer items-center gap-2 rounded-full px-2",
-              {
-                "bg-muted-foreground/15": tab === "performance-forecast",
-              },
-            )}
-            onClick={() => onTabChange("performance-forecast")}
-          >
-            <ChartNoAxesCombined />
-            <span>Performance Forecast</span>
-          </div>
-          <div
-            className={cn(
-              "flex h-full cursor-pointer items-center gap-2 rounded-full px-2",
+              "flex h-full cursor-pointer items-center justify-center gap-2 rounded-full px-4",
               {
                 "bg-muted-foreground/15": tab === "ad-sets",
+                "hover:bg-muted": tab !== "ad-sets",
               },
             )}
             onClick={() => onTabChange("ad-sets")}
@@ -134,7 +121,20 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
             <span className="flex size-6 items-center justify-center rounded-full bg-green-950 text-white">
               {adSetCount}
             </span>
-          </div>
+          </button>
+          <button
+            className={cn(
+              "flex h-full cursor-pointer items-center justify-center gap-2 rounded-full px-4",
+              {
+                "bg-muted-foreground/15": tab === "performance-forecast",
+                "hover:bg-muted": tab !== "performance-forecast",
+              },
+            )}
+            onClick={() => onTabChange("performance-forecast")}
+          >
+            <ChartNoAxesCombined />
+            <span>Performance Forecast</span>
+          </button>
         </div>
         <Button
           size="large"
@@ -145,7 +145,7 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
           <AlignVerticalDistributeCenter />
           <span>images/videos</span>
           <span className="flex size-6 items-center justify-center rounded-full bg-white font-light text-black">
-            {mediasCount}
+            {mediaItems.length}
           </span>
         </Button>
       </div>
@@ -156,15 +156,9 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
         onClose={() => setModalOpen(false)}
         maxWidth="lg"
         fullWidth
-        sx={{
-          "& .MuiDialog-paper": {
-            borderRadius: "12px",
-            minHeight: "80vh",
-          },
-        }}
       >
-        <DialogContent className="flex flex-col p-0">
-          <div className="mt-4 mb-4 text-end">
+        <DialogContent className="flex flex-col p-0 !py-4">
+          <div className="py-4 text-end">
             <button
               className="top-4 right-4 cursor-pointer"
               onClick={() => setModalOpen(false)}
@@ -173,7 +167,7 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
             </button>
           </div>
           {/* Upload Section */}
-          <div className="space-y-4 border-b">
+          <div className="mb-6 space-y-4">
             <div>
               <input
                 type="file"
@@ -206,7 +200,7 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
 
             <div>
               <Button
-                variant="contained"
+                variant="outlined"
                 onClick={handleGenerateImages}
                 className="w-full justify-start gap-2"
               >
@@ -216,31 +210,13 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
             </div>
           </div>
 
-          {/* Media Tabs */}
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={activeMediaTab}
-              onChange={(_, newValue) => setActiveMediaTab(newValue)}
-              variant="fullWidth"
-            >
-              <Tab label="All Images" />
-              <Tab label="Imported Images" />
-              <Tab label="Generated Images" />
-              <Tab label="Videos" />
-            </Tabs>
-          </Box>
-
-          {/* Media Grid */}
-          <div className="flex-1 overflow-auto p-4">
-            {filteredMediaItems().length === 0 ? (
-              <div className="flex h-32 items-center justify-center text-gray-500">
-                No media files found
-              </div>
-            ) : (
+          <div className="space-y-2">
+            <div className="space-y-2 py-2">
+              <p className="font-semibold">AI Images</p>
               <div className="flex overflow-x-auto">
-                {filteredMediaItems().map((item) => (
+                {filteredMediaItems("generated-images").map((item) => (
                   <div
-                    className="group aspect-square shrink-0 basis-1/2 overflow-hidden rounded-lg p-2 sm:basis-1/4 md:basis-1/6"
+                    className="group aspect-square shrink-0 basis-1/2 overflow-hidden rounded-lg p-2 first:ps-0 last:pe-0 sm:basis-1/4 md:basis-1/6"
                     key={item.id}
                   >
                     <div className="relative size-full border">
@@ -251,10 +227,12 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
                           controls
                         />
                       ) : (
-                        <img
+                        <Image
                           src={item.url}
                           alt={item.name}
                           className="h-full w-full object-cover"
+                          width={100}
+                          height={100}
                         />
                       )}
 
@@ -276,13 +254,97 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-
-          <div>
+            </div>
+            <hr />
             <div className="space-y-2 py-2">
-              <p>All Images</p>
-              <div></div>
+              <p className="font-semibold">Images</p>
+              <div className="flex overflow-x-auto">
+                {filteredMediaItems("uploaded-images").map((item) => (
+                  <div
+                    className="group aspect-square shrink-0 basis-1/2 overflow-hidden rounded-lg p-2 first:ps-0 last:pe-0 sm:basis-1/4 md:basis-1/6"
+                    key={item.id}
+                  >
+                    <div className="relative size-full border">
+                      {item.type === "video" ? (
+                        <video
+                          src={item.url}
+                          className="h-full w-full object-cover"
+                          controls
+                        />
+                      ) : (
+                        <Image
+                          src={item.url}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                          width={100}
+                          height={100}
+                        />
+                      )}
+
+                      {/* Remove Button */}
+                      <button
+                        onClick={() => handleRemoveMedia(item.id)}
+                        className="absolute top-1 right-1 flex size-4 cursor-pointer items-center justify-center rounded-full bg-black/25 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <X className="size-3" />
+                      </button>
+
+                      {/* Badge for generated images */}
+                      {item.source === "generated" && (
+                        <div className="bg-primary absolute top-1 left-1 flex size-4 items-center justify-center rounded-full text-xs text-white">
+                          <Sparkles className="size-3" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <hr />
+
+            <div className="space-y-2 py-2">
+              <p className="font-semibold">Videos</p>
+              <div className="flex overflow-x-auto">
+                {filteredMediaItems("videos").map((item) => (
+                  <div
+                    className="group aspect-square shrink-0 basis-1/2 overflow-hidden rounded-lg p-2 first:ps-0 last:pe-0 sm:basis-1/4 md:basis-1/6"
+                    key={item.id}
+                  >
+                    <div className="relative size-full border">
+                      {item.type === "video" ? (
+                        <video
+                          src={item.url}
+                          className="h-full w-full object-cover"
+                          controls
+                        />
+                      ) : (
+                        <Image
+                          src={item.url}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                          width={100}
+                          height={100}
+                        />
+                      )}
+
+                      {/* Remove Button */}
+                      <button
+                        onClick={() => handleRemoveMedia(item.id)}
+                        className="absolute top-1 right-1 flex size-4 cursor-pointer items-center justify-center rounded-full bg-black/25 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <X className="size-3" />
+                      </button>
+
+                      {/* Badge for generated images */}
+                      {item.source === "generated" && (
+                        <div className="bg-primary absolute top-1 left-1 flex size-4 items-center justify-center rounded-full text-xs text-white">
+                          <Sparkles className="size-3" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -305,7 +367,6 @@ const TabsAndMediaSection = ({ tab, onTabChange, adSetCount, mediasCount }) => {
                 "&:hover": { backgroundColor: "#059669" },
               }}
               onClick={() => {
-                // Handle save and assign logic here
                 console.log("Save & Assign clicked");
                 setModalOpen(false);
               }}

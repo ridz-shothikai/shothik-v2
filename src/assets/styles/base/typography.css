@@ -29,6 +29,7 @@ h6 {
   @apply text-lg font-bold;
 }
 
-th, strong {
+th,
+strong {
   @apply font-semibold;
 }

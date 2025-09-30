@@ -1,24 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
-  Paper,
-  Skeleton,
-  Tabs,
-  Tab,
   Badge,
+  Box,
   Button,
-  Card,
-  CardContent,
+  Tab,
+  Tabs,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Image from "next/image";
-import ResearchProcessLogs from "./ResearchProcessLogs";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
+import ResearchProcessLogs from "./ResearchProcessLogs";
 
 // Styled components matching the real components
 const StyledTabs = styled(Tabs)(({ theme }) => ({

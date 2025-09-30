@@ -45,14 +45,14 @@ const AdPreviewSection = ({ project, selectedPlatform, onPlatformChange }) => {
         {/* Arrow Navigation */}
         <button
           onClick={handlePrevious}
-          className="bg-card/80 hover:bg-card absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-full p-2 shadow-md transition-all"
+          className="bg-card/80 hover:bg-card absolute top-1/2 left-2 z-10 -translate-y-1/2 cursor-pointer rounded-full p-2 shadow-md transition-all"
         >
           <ChevronLeft className="size-5" />
         </button>
 
         <button
           onClick={handleNext}
-          className="bg-card/80 hover:bg-card absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-full p-2 shadow-md transition-all"
+          className="bg-card/80 hover:bg-card absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-full p-2 shadow-md transition-all"
         >
           <ChevronRight className="size-5" />
         </button>
@@ -115,7 +115,7 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       </div>
       <p className="mt-4 line-clamp-2 text-sm">{post?.text}</p>
     </div>
-    <div className="relative flex-1 overflow-hidden">
+    <div className="group relative flex-1 overflow-hidden">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -127,7 +127,7 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>
@@ -216,7 +216,7 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
     </div>
 
     {/* Instagram Content */}
-    <div className="relative flex-1 overflow-hidden">
+    <div className="group relative flex-1 overflow-hidden">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -228,7 +228,7 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>
@@ -274,7 +274,7 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
 const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
   <div className="relative mx-auto flex aspect-[9/16] w-80 flex-col overflow-hidden bg-black text-white">
     {/* TikTok Content */}
-    <div className="relative flex-1">
+    <div className="group relative flex-1">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -286,7 +286,7 @@ const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>

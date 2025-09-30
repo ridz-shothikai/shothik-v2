@@ -1,6 +1,6 @@
 import AnalysisClientSections from "@/components/(marketing-automation-page)/(project-analysis-page)/AnalysisClientSections";
 import TitleAndUrlSection from "@/components/(marketing-automation-page)/(project-analysis-page)/TitleAndUrlSection";
-import PageHeader from "@/components/(marketing-automation-page)/PageHeader/PageHeader";
+import PageHeader from "@/components/(marketing-automation-page)/PageHeader";
 
 const project = {
   name: "Project 1",

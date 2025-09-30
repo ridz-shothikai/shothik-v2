@@ -41,6 +41,89 @@ const ControllerClientSections = ({ project }) => {
     setCampaignData((prev) => ({ ...prev, ...updates }));
   };
 
+  // File upload handler
+  const handleFileUpload = (event) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newMedias = Array.from(files).map((file) => {
+      const type = file.type.startsWith("image/") ? "image" : "video";
+      return {
+        id: Math.random().toString(36).substr(2, 9),
+        type,
+        source: "uploaded",
+        url: URL.createObjectURL(file),
+        name: file.name,
+      };
+    });
+
+    updateCampaignData({
+      medias: [...campaignData.medias, ...newMedias],
+    });
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Generate images handler
+  const handleGenerateImages = async () => {
+    try {
+      const generatedImages = await generateImagesAPI();
+
+      const newMedias = generatedImages.map((img, index) => ({
+        id: `generated-${Date.now()}-${index}`,
+        type: "image",
+        source: "generated",
+        url: img.url,
+        name: `Generated Image ${index + 1}`,
+      }));
+
+      updateCampaignData({
+        medias: [...campaignData.medias, ...newMedias],
+      });
+    } catch (error) {
+      console.error("Error generating images:", error);
+    }
+  };
+
+  // Remove media handler
+  const handleRemoveMedia = (id) => {
+    updateCampaignData({
+      medias: campaignData.medias.filter((item) => item.id !== id),
+    });
+  };
+
+  // Mock generate API
+  const generateImagesAPI = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return [
+      { url: "/images/marketing-automation/demo-product.png" },
+      { url: "/images/marketing-automation/demo-product.png" },
+      { url: "/images/marketing-automation/demo-product.png" },
+    ];
+  };
+
+  const filteredMediaItems = (section) => {
+    switch (section) {
+      case "all-images":
+        return mediaItems.filter((item) => item.type === "image");
+      case "uploaded-images":
+        return mediaItems.filter(
+          (item) => item.type === "image" && item.source === "uploaded",
+        );
+      case "generated-images":
+        return mediaItems.filter(
+          (item) => item.type === "image" && item.source === "generated",
+        );
+      case "videos":
+        return mediaItems.filter((item) => item.type === "video");
+      default:
+        return mediaItems;
+    }
+  };
+
   return (
     <div className="mb-6 space-y-6 lg:mb-10 lg:space-y-10">
       <div className="mx-auto max-w-4xl space-y-6">
