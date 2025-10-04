@@ -6,9 +6,10 @@ const icon = (name) => (
 );
 
 const ICONS = {
+  paraphrase: icon("paraphrase"),
   humanize: icon("bypass-svgrepo-com"),
   ai_detector: icon("ai_detector_icon"),
-  paraphrase: icon("paraphrase"),
+  plagiarism_checker: icon("plagiarism_checker"),
   summarize: icon("summarize"),
   grammar: icon("grammar"),
   translator: icon("translator"),
@@ -41,6 +42,12 @@ const navConfig = [
         title: "AI Detector",
         path: PATH_TOOLS.ai_detector,
         icon: ICONS.ai_detector,
+        iconColor: "#f29b18",
+      },
+      {
+        title: "Plagiarism Checker",
+        path: PATH_TOOLS.plagiarism_checker,
+        icon: ICONS.plagiarism_checker,
         iconColor: "#f29b18",
       },
       {

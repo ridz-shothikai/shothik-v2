@@ -202,7 +202,8 @@ class PlagiarismRequestManager {
     const results = Array.isArray(data.matches)
       ? data.matches.map((m) => ({
           percent: Math.round(m.score * 100),
-          source: m.author || "Unknown",
+          source: m?.author || "Unknown",
+          chunkText: m?.chunkText || "",
         }))
       : [];
 

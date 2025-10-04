@@ -8,42 +8,15 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import useGlobalPlagiarismCheck from "../../../../hooks/useGlobalPlagiarismCheck";
 
-const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
-  const { demo } = useSelector((s) => s.settings);
-
-  const {
-    loading,
-    score: realScore,
-    results: realResults,
-    error,
-    fromCache,
-    triggerCheck,
-    manualRefresh,
-  } = useGlobalPlagiarismCheck(text);
-
-  // Auto-trigger check
-  useEffect(() => {
-    triggerCheck(false);
-  }, [text]);
-
-  // Determine which score and results to display
-  const displayScore = [true, "plagiarism_low", "plagiarism_high"].includes(
-    demo,
-  )
-    ? propScore
-    : realScore;
-  const displayResults = [true, "plagiarism_low", "plagiarism_high"].includes(
-    demo,
-  )
-    ? propResults
-    : realResults;
-
-  const isDemo = [true, "plagiarism_low", "plagiarism_high"].includes(demo);
-
+const PlagiarismResult = ({
+  text: inputText,
+  score,
+  results,
+  loading,
+  error,
+  manualRefresh,
+}) => {
   return (
     <Box sx={{ px: 2, py: 1 }}>
       <Box
@@ -58,9 +31,8 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
           Plagiarism Checker
         </Typography>
 
-        {!isDemo && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {/* {fromCache && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {/* {fromCache && (
               <Chip 
                 icon={<Cached />} 
                 label="Cached" 
@@ -69,16 +41,15 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
                 variant="outlined"
               />
             )} */}
-            <IconButton
-              size="small"
-              onClick={manualRefresh}
-              disabled={loading || !text?.trim()}
-              title="Refresh check"
-            >
-              <Refresh fontSize="small" />
-            </IconButton>
-          </Box>
-        )}
+          <IconButton
+            size="small"
+            onClick={manualRefresh}
+            disabled={loading || !inputText?.trim()}
+            title="Refresh check"
+          >
+            <Refresh fontSize="small" />
+          </IconButton>
+        </Box>
       </Box>
 
       <Divider sx={{ mb: 2 }} />
@@ -135,7 +106,7 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
         ) : (
           <>
             <Typography id="plagiarism_score" variant="h2">
-              {displayScore != null ? `${displayScore}%` : "--"}
+              {score != null ? `${score}%` : "--"}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Plagiarism
@@ -146,10 +117,10 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
 
       <Box id="plagiarism_results">
         <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-          Results ({displayResults.length})
+          Results ({results.length})
         </Typography>
 
-        {displayResults.map((r, i) => (
+        {results.map((r, i) => (
           <Box
             key={i}
             sx={{
@@ -178,7 +149,7 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
           </Box>
         ))}
 
-        {!loading && !error && displayResults.length === 0 && (
+        {!loading && !error && results.length === 0 && (
           <Typography variant="body2" color="text.secondary">
             No matches found.
           </Typography>
@@ -188,4 +159,4 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
   );
 };
 
-export default PlagiarismTab;
+export default PlagiarismResult;

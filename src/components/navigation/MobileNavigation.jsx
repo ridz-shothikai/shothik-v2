@@ -24,6 +24,12 @@ const links = [
     iconSrc: "/navbar/ai_detector_icon.svg",
   },
   {
+    title: "Plagiarism Checker",
+    link: "/plagiarism-checker",
+    iconColor: "#6A4C93",
+    iconSrc: "/navbar/ai_detector_icon.svg",
+  },
+  {
     title: "Grammar",
     link: "/grammar-check",
     iconColor: "#8AC926",
@@ -49,7 +55,7 @@ const links = [
   },
   {
     title: "Marketing Automation",
-    link: "/",
+    link: "/marketing-automation",
     iconColor: "#1976D2",
     iconSrc: "/navbar/marketing-automation.svg",
   },

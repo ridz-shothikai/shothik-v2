@@ -56,12 +56,14 @@ export const PATH_TOOLS = {
   paraphrase: "/paraphrase",
   humanize: "/humanize-gpt",
   ai_detector: "/ai-detector",
+  plagiarism_checker: "/plagiarism-checker",
   upgrade: "/payment/?subscription=RdEZI2hnuOuSgbk9KeT0&tenure=monthly",
   summarize: "/summarize",
   grammar: "/grammar-check",
   translator: "/translator",
   agents: "/agents",
   bangla_grammar: "/bangla-grammar-check",
+  marketing_automation: "/marketing-automation",
   get: (name) => `/${name.toLowerCase().replaceAll(" ", "-")}`,
 };
 

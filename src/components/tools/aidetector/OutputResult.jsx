@@ -13,7 +13,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const humanColorName = {
   humanLow: "#10b91d4d",
@@ -65,8 +65,6 @@ export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
 
     return colorName.humanLow;
   }
-
-  return "inherit";
 };
 
 const OutputResult = ({ handleOpen, outputContend }) => {

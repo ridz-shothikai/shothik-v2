@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import plagiarismManager from "../services/PlagiarismRequestManager";
 import useSnackbar from "./useSnackbar";
@@ -119,21 +119,21 @@ const useGlobalPlagiarismCheck = (text, language = "en") => {
   }, []);
 
   // Auto-trigger check (for demo mode or non-demo)
-  useEffect(() => {
-    // In demo mode, don't make real API calls
-    if ([true, "plagiarism_low", "plagiarism_high"].includes(demo)) {
-      return;
-    }
+  // useEffect(() => {
+  //   // In demo mode, don't make real API calls
+  //   if ([true, "plagiarism_low", "plagiarism_high"].includes(demo)) {
+  //     return;
+  //   }
 
-    if (text?.trim() && accessToken) {
-      // Call the manager directly to avoid dependency on triggerCheck
-      plagiarismManager
-        .checkPlagiarism(text, accessToken, language)
-        .catch((error) => {
-          console.error("Plagiarism check failed:", error);
-        });
-    }
-  }, [text, demo, accessToken, language]);
+  //   if (text?.trim() && accessToken) {
+  //     // Call the manager directly to avoid dependency on triggerCheck
+  //     plagiarismManager
+  //       .checkPlagiarism(text, accessToken, language)
+  //       .catch((error) => {
+  //         console.error("Plagiarism check failed:", error);
+  //       });
+  //   }
+  // }, [text, demo, accessToken, language]);
 
   return {
     loading: state.loading,
