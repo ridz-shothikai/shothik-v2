@@ -163,7 +163,7 @@ const Step23Component = ({ stepData }) => {
             <div className="leading-relaxed">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-inside [&_ul]:list-inside"
+                className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-inside [&_ol]:list-none [&_ul]:list-inside [&_ul]:list-none"
               >
                 {stepData?.marketAnalysis?.currentMarket || ""}
               </ReactMarkdown>
@@ -185,7 +185,7 @@ const Step24Component = ({ stepData }) => {
         <div className="leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-inside [&_ul]:list-inside"
+            className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-none [&_ul]:list-none"
           >
             {String(stepData?.regionalStrategy || "")}
           </ReactMarkdown>
@@ -205,7 +205,7 @@ const Step25Component = ({ stepData }) => {
         <div className="text-foreground">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-inside [&_ul]:list-inside"
+            className="prose prose-sm [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground text-foreground max-w-none [&_ol]:list-none [&_ul]:list-none"
           >
             {stepData?.communityAnalysis || ""}
           </ReactMarkdown>
@@ -225,7 +225,7 @@ const Step3Component = ({ stepData }) => {
         <div className="text-foreground overflow-y-auto leading-relaxed">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            className="prose prose-sm text-foreground [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground max-w-none space-y-2 [&_ol]:list-inside [&_ul]:list-inside"
+            className="prose prose-sm text-foreground [&_h3]:text-foreground [&_p]:text-foreground [&_strong]:text-foreground max-w-none space-y-2 [&_ol]:list-none [&_ul]:list-none"
           >
             {stepData?.finalAnalysis || ""}
           </ReactMarkdown>
