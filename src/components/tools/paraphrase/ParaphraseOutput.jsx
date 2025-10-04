@@ -184,7 +184,10 @@ const ParaphraseOutput = ({
       const url =
         process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
         "/p-v2/api" +
-        "/paraphrase-with-variantV2";
+        "/paraphrase-with-variantV2"; // prod
+      // const url =
+      //   process.env.NEXT_PUBLIC_PARAPHRASE_API_URI +
+      //   "/paraphrase-with-variantV2"; // local
       const token = localStorage.getItem("accessToken");
       const payload = {
         text: sentence,
