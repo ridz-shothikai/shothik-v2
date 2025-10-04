@@ -15,20 +15,27 @@ const SectionHeader = ({
   </div>
 );
 
-const DateTimeField = ({ label, value, onChange, min }) => (
-  <label className="space-y-2">
-    <SectionHeader title={label} showIcon />
-    <TextField
-      type="datetime-local"
-      value={value}
-      onChange={onChange}
-      fullWidth
-      size="small"
-      InputLabelProps={{ shrink: true }}
-      inputProps={{ min }}
-    />
-  </label>
-);
+const DateTimeField = ({ label, value, onChange, min }) => {
+  const hasError = !value; // required field check
+
+  return (
+    <label className="block space-y-2">
+      <SectionHeader title={label} />
+      <TextField
+        type="datetime-local"
+        value={value}
+        onChange={onChange}
+        fullWidth
+        size="small"
+        required
+        InputLabelProps={{ shrink: true }}
+        inputProps={{ min }}
+        error={hasError}
+        helperText={hasError ? "This field is required" : ""}
+      />
+    </label>
+  );
+};
 
 const DateTimeSection = ({
   startDateTime,

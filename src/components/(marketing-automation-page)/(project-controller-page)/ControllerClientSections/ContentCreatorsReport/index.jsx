@@ -18,11 +18,13 @@ const ContentCreatorsReport = () => {
         {metrics.map((metric, index) => (
           <div
             key={metric.label}
-            className="flex justify-center border-s px-4 py-6 first:justify-start first:border-s-0 first:ps-0 last:justify-end"
+            className="flex flex-col justify-center border-s px-2 py-6 first:justify-start first:border-s-0 first:ps-0 last:justify-end"
           >
-            <div className="space-y-2">
-              <strong className="inline-block">{metric.label}</strong>
-              <div className="text-sm">{metric.value}</div>
+            <div className="flex h-full flex-col space-y-2">
+              <strong className="inline-block leading-none">
+                {metric.label}
+              </strong>
+              <div className="mt-auto text-sm">{metric.value}</div>
             </div>
           </div>
         ))}

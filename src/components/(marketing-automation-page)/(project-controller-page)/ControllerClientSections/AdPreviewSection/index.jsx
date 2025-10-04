@@ -23,7 +23,7 @@ const AdPreviewSection = ({ project, selectedPlatform, onPlatformChange }) => {
     name: "Classic Chronograph Wristwatch",
     url: "www.example.com/product/123",
     type: "image",
-    image: "/images/marketing-automation/facebook/demo-product.png",
+    image: "/images/marketing-automation/demo-product.png",
     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente eaque unde atque incidunt quod nesciunt dignissimos excepturi dolor deserunt! Exercitationem possimus, ipsam ut provident recusandae inventore fuga corporis consequatur mollitia!",
   };
 
@@ -45,14 +45,14 @@ const AdPreviewSection = ({ project, selectedPlatform, onPlatformChange }) => {
         {/* Arrow Navigation */}
         <button
           onClick={handlePrevious}
-          className="absolute top-1/2 left-2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-md transition-all hover:bg-white"
+          className="bg-card/80 hover:bg-card absolute top-1/2 left-2 z-10 -translate-y-1/2 cursor-pointer rounded-full p-2 shadow-md transition-all"
         >
           <ChevronLeft className="size-5" />
         </button>
 
         <button
           onClick={handleNext}
-          className="absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-md transition-all hover:bg-white"
+          className="bg-card/80 hover:bg-card absolute top-1/2 right-2 z-10 -translate-y-1/2 cursor-pointer rounded-full p-2 shadow-md transition-all"
         >
           <ChevronRight className="size-5" />
         </button>
@@ -95,12 +95,12 @@ const AdPreviewSection = ({ project, selectedPlatform, onPlatformChange }) => {
 export default AdPreviewSection;
 
 const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
-  <div className="mx-auto flex aspect-[9/16] w-80 flex-col space-y-2 rounded-xl bg-white">
+  <div className="bg-card text-card-foreground mx-auto flex aspect-[9/16] w-80 flex-col space-y-2 rounded-xl">
     <div className="p-4">
       <div className="flex items-center gap-2">
         <div className="flex size-8 items-center justify-center rounded-full border">
           <Image
-            src={"/images/marketing-automation/facebook/user.png"}
+            src={"/images/marketing-automation/user.png"}
             alt="User avatar"
             width={20}
             height={20}
@@ -115,7 +115,7 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       </div>
       <p className="mt-4 line-clamp-2 text-sm">{post?.text}</p>
     </div>
-    <div className="relative flex-1 overflow-hidden">
+    <div className="group relative flex-1 overflow-hidden">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -127,7 +127,7 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>
@@ -147,7 +147,7 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
     {/* Facebook Reactions and Comments */}
     <div className="space-y-2 px-4 py-2">
       {/* Reaction Summary */}
-      <div className="flex items-center justify-between text-xs text-gray-600">
+      <div className="text-muted-foreground flex items-center justify-between text-xs">
         <div className="flex items-center gap-1">
           <div className="flex -space-x-1">
             <div className="flex size-4 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
@@ -169,17 +169,17 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       </div>
 
       {/* Action Buttons */}
-      <div className="border-t border-b border-gray-200 py-1">
+      <div className="border-t border-b py-1">
         <div className="flex items-center justify-around">
-          <button className="flex items-center gap-1 rounded px-3 py-2 text-gray-600 hover:bg-gray-50">
+          <button className="text-muted-foreground flex items-center gap-1 rounded px-3 py-2">
             <Heart className="size-4" />
             <span className="text-sm font-medium">Like</span>
           </button>
-          <button className="flex items-center gap-1 rounded px-3 py-2 text-gray-600 hover:bg-gray-50">
+          <button className="text-muted-foreground flex items-center gap-1 rounded px-3 py-2">
             <MessageCircle className="size-4" />
             <span className="text-sm font-medium">Comment</span>
           </button>
-          <button className="flex items-center gap-1 rounded px-3 py-2 text-gray-600 hover:bg-gray-50">
+          <button className="text-muted-foreground flex items-center gap-1 rounded px-3 py-2">
             <Share className="size-4" />
             <span className="text-sm font-medium">Share</span>
           </button>
@@ -190,14 +190,14 @@ const AdFaceBookPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
 );
 
 const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
-  <div className="mx-auto flex aspect-[9/16] w-80 flex-col bg-black text-white">
+  <div className="bg-card text-card-foreground mx-auto flex aspect-[9/16] w-80 flex-col">
     {/* Instagram Header */}
-    <div className="flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent p-3">
+    <div className="from-card/50 flex items-center justify-between bg-gradient-to-b to-transparent p-3">
       <div className="flex items-center gap-2">
         <div className="flex size-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-0.5">
           <div className="flex size-full items-center justify-center rounded-full bg-black">
             <Image
-              src={"/images/marketing-automation/facebook/user.png"}
+              src={"/images/marketing-automation/user.png"}
               alt="User avatar"
               width={20}
               height={20}
@@ -212,11 +212,11 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
           </div>
         </div>
       </div>
-      <div className="text-white">⋯</div>
+      <div>⋯</div>
     </div>
 
     {/* Instagram Content */}
-    <div className="relative flex-1 overflow-hidden">
+    <div className="group relative flex-1 overflow-hidden">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -228,7 +228,7 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>
@@ -251,16 +251,21 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
           <span className="font-semibold">john_doe</span>{" "}
           {post?.text?.slice(0, 100)}...
         </div>
-        <div className="mt-1 text-xs text-gray-400">View all comments</div>
+        <div className="text-muted-foreground/80 mt-1 text-xs">
+          View all comments
+        </div>
       </div>
 
       {/* Instagram CTA */}
-      <div className="rounded-lg border border-gray-600 p-3">
-        <div className="text-xs text-gray-400">{post?.url}</div>
-        <div className="text-sm font-bold">{post?.name}</div>
-        <button className="mt-2 rounded bg-blue-500 px-4 py-1 text-sm font-semibold text-white">
+      <div className="border-muted-foreground rounded-lg border p-3">
+        <div className="text-muted-foreground/80 text-xs">{post?.url}</div>
+        <div className="mb-1 text-sm font-bold">{post?.name}</div>
+        <a
+          href={post?.url}
+          className="mt-2 rounded bg-blue-500 px-4 py-1 text-sm font-semibold text-white"
+        >
           Shop Now
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -269,7 +274,7 @@ const AdInstagramPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
 const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
   <div className="relative mx-auto flex aspect-[9/16] w-80 flex-col overflow-hidden bg-black text-white">
     {/* TikTok Content */}
-    <div className="relative flex-1">
+    <div className="group relative flex-1">
       {post?.type === "image" && post?.image && (
         <Image
           className="size-full object-cover"
@@ -281,7 +286,7 @@ const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       )}
       <div
         onClick={() => setOpenMediaModal(true)}
-        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white"
+        className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/25 text-white opacity-0 transition-all duration-300 group-hover:opacity-100"
       >
         <RefreshCcw strokeWidth={1.5} className="size-16" />
       </div>
@@ -293,7 +298,7 @@ const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
         <div className="size-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 p-0.5">
           <div className="flex size-full items-center justify-center rounded-full bg-black">
             <Image
-              src={"/images/marketing-automation/facebook/user.png"}
+              src={"/images/marketing-automation/user.png"}
               alt="User avatar"
               width={32}
               height={32}
@@ -341,10 +346,13 @@ const AdTikTokPreview = ({ post, openMediaModal, setOpenMediaModal }) => (
       {/* TikTok CTA */}
       <div className="mt-2 rounded-lg bg-white/20 p-2 backdrop-blur">
         <div className="text-xs opacity-80">{post?.url}</div>
-        <div className="text-sm font-bold">{post?.name}</div>
-        <button className="mt-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-black">
+        <div className="mb-1 text-sm font-bold">{post?.name}</div>
+        <a
+          href={post?.url}
+          className="mt-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-black"
+        >
           Shop Now
-        </button>
+        </a>
       </div>
     </div>
   </div>

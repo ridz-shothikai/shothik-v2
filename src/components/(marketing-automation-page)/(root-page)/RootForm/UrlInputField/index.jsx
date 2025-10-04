@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { TextField, Autocomplete } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
+import { useState } from "react";
 
 // URL Input Component (similar to LocationSelect)
-const UrlField = ({
+const UrlInputField = ({
   value,
   onChange,
   placeholder = "http://yourstore/product/service",
@@ -51,12 +51,19 @@ const UrlField = ({
   };
 
   const handleInputChange = (event, newValue) => {
-    if (newValue && !URL_REGEX.test(newValue)) return;
+    if (!newValue) {
+      onChange("");
+      setOptions([]);
+      setOpen(false);
+      return;
+    }
 
-    onChange(newValue);
+    // Allow paste but clean invalid chars
+    const cleaned = newValue.replace(/[^a-zA-Z0-9.:/_-]/g, "");
+    onChange(cleaned);
 
-    if (newValue.trim().length > 0) {
-      const newOptions = generateSuggestions(newValue);
+    if (cleaned.trim().length > 0) {
+      const newOptions = generateSuggestions(cleaned);
       setOptions(newOptions);
       setOpen(newOptions.length > 0);
     } else {
@@ -110,4 +117,4 @@ const UrlField = ({
   );
 };
 
-export default UrlField;
+export default UrlInputField;
