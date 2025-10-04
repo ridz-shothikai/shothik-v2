@@ -31,7 +31,7 @@ const MarketingAutomationClientSections = () => {
 
     try {
       const response = await fetch(
-        "http://163.172.181.252:3011/api/project/add_project",
+        "https://api-qa.shothik.ai/meta_automation/project/add_project",
         {
           method: "POST",
           headers: {
