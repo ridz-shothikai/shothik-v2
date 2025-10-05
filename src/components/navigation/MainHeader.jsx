@@ -40,6 +40,7 @@ export default function MainHeader() {
       "/paraphrase": "Paraphrase",
       "/humanize-gpt": "Humanize GPT",
       "/ai-detector": "AI Detector",
+      "/plagiarism-checker": "Plagiarism Checker",
       "/grammar-check": "Grammar Fix",
       "/summarize": "Summarize",
       "/translator": "Translate",

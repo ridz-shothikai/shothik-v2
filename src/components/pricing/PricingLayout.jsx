@@ -7,7 +7,6 @@ import useResponsive from "../../hooks/useResponsive";
 import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
 import PricingPlanCard from "./PricingPlanCard";
 import PricingSlider from "./PricingSlider";
-import PricingTable from "./PricingTable";
 import PricingPlanCardSkeleton from "./pricingPlanCardSkeleton";
 
 export default function PricingLayout({ children, TitleContend }) {

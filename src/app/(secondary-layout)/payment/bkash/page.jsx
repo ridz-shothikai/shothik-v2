@@ -1,5 +1,4 @@
 import { Box, Container, Typography } from "@mui/material";
-import React from "react";
 import BkashPyament from "../../../../components/payment/BkashPayment";
 
 export async function generateMetadata() {

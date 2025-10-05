@@ -1,4 +1,4 @@
-import { DeleteRounded, AcUnit } from "@mui/icons-material";
+import { AcUnit, DeleteRounded } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
-import useStickyBottom from "../../../hooks/useStickyBottom";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
@@ -26,6 +25,7 @@ function WordCounter({
   userPackage,
   handleSubmit,
   btnText,
+  btnDisabled = false,
   ExtraBtn = null,
   ExtraCounter = null,
   btnIcon = null,
@@ -70,6 +70,7 @@ function WordCounter({
       ExtraBtn={ExtraBtn}
       ExtraCounter={ExtraCounter}
       btnIcon={btnIcon}
+      btnDisabled={btnDisabled}
       dontDisable={dontDisable}
       sx={sx}
       freeze_modal={freeze_modal}
@@ -93,6 +94,7 @@ const Contend = ({
   ExtraBtn = null,
   ExtraCounter = null,
   btnIcon = null,
+  btnDisabled = false,
   sx = {},
   freeze_modal = false,
   freeze_props = {},
@@ -132,6 +134,7 @@ const Contend = ({
           freeze_props={freeze_props}
         />
       ) : null}
+
       <Stack
         direction="row"
         spacing={2}
@@ -198,13 +201,14 @@ const Contend = ({
         </Stack>
         {ExtraCounter}
       </Stack>
+
       <Stack
         sx={{
           flexDirection: "row",
           gap: 2,
           flex: 1,
           justifyContent: {
-            md: "center",
+            md: children ? "center" : "flex-end",
             xs: "flex-end",
           },
         }}
@@ -229,7 +233,7 @@ const Contend = ({
           onClick={() => handleSubmit()}
           variant="contained"
           loading={isLoading}
-          disabled={!dontDisable ? wordCount > wordLimit : false}
+          disabled={!dontDisable ? wordCount > wordLimit : btnDisabled || false}
           sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
           startIcon={btnIcon}
         >
@@ -238,20 +242,22 @@ const Contend = ({
         {ExtraBtn}
       </Stack>
 
-      <Stack
-        sx={{
-          flexDirection: "row",
-          gap: 2,
-          flex: {
-            md: 1,
-          },
-          justifyContent: {
-            md: "flex-end",
-          },
-        }}
-      >
-        {children}
-      </Stack>
+      {children && (
+        <Stack
+          sx={{
+            flexDirection: "row",
+            gap: 2,
+            flex: {
+              md: 1,
+            },
+            justifyContent: {
+              md: "flex-end",
+            },
+          }}
+        >
+          {children}
+        </Stack>
+      )}
     </Stack>
   );
 };
