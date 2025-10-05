@@ -1,24 +1,23 @@
 "use client";
 
+import CloseIcon from "@mui/icons-material/Close";
+import ImageIcon from "@mui/icons-material/Image";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   Box,
-  Typography,
-  Paper,
-  Grid,
   Card,
-  CardMedia,
   CardContent,
+  CardMedia,
   Chip,
-  IconButton,
   Dialog,
   DialogContent,
   DialogTitle,
+  Grid,
+  IconButton,
   Link,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import ImageIcon from "@mui/icons-material/Image";
-import CloseIcon from "@mui/icons-material/Close";
 
 const ImageCard = ({ image, onClick }) => (
   <Card
@@ -40,6 +39,8 @@ const ImageCard = ({ image, onClick }) => (
       sx={{
         objectFit: "cover",
         backgroundColor: "#f5f5f5",
+        maxHeight: "200px",
+        objectPosition: "center center",
       }}
       onError={(e) => {
         e.target.src = "/placeholder-image.png"; // Add a placeholder image
@@ -202,7 +203,27 @@ export default function ImagesContent({ images }) {
   }
 
   return (
-    <Box sx={{ px: 2, py: 3, mb: { xs: 17, sm: 7, md: 5 } }}>
+    <Box
+      sx={{
+        px: 2,
+        py: 3,
+        mb: { xs: 17, sm: 7, md: 5 },
+        minHeight: {
+          xs: "calc(100dvh - 180px)",
+          sm: "calc(100dvh - 200px)",
+          md: "calc(100dvh - 230px)",
+          lg: "calc(100dvh - 250px)",
+          xl: "calc(100dvh - 270px)",
+        },
+        maxHeight: {
+          xs: "calc(100dvh - 155px)",
+          sm: "calc(100dvh - 170px)",
+          md: "calc(100dvh - 200px)",
+          lg: "calc(100dvh - 220px)",
+          xl: "calc(100dvh - 220px)",
+        },
+      }}
+    >
       {/* <Box sx={{ my: 4 }}>
         <Typography variant="h6" gutterBottom>
           Research Images ({images.length})

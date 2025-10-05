@@ -1,21 +1,18 @@
 "use client";
 
 import { Box, useMediaQuery, useTheme } from "@mui/material";
-import HeaderTitle from "./ui/HeaderTitle";
-import TabsPanel from "./ui/TabPanel";
-import ResearchDataArea from "./ui/ResearchDataArea";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useChat } from "../../hooks/useChat";
+import { useResearchHistory } from "../../hooks/useResearchHistory";
+import { useResearchSimulation } from "../../hooks/useResearchSimulation";
+import { useResearchStream } from "../../hooks/useResearchStream";
 import {
   clearResearchChatState,
   researchChatState,
   setCurrentChat,
 } from "../../redux/slice/researchChatSlice";
-import { useSearchParams } from "next/navigation";
-import { useResearchHistory } from "../../hooks/useResearchHistory";
-import { useResearchStream } from "../../hooks/useResearchStream";
-import { useResearchSimulation } from "../../hooks/useResearchSimulation";
 import {
   researchCoreState,
   resetResearchCore,
@@ -24,8 +21,11 @@ import {
   setSimulationStatus,
 } from "../../redux/slice/researchCoreSlice";
 import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
+import HeaderTitle from "./ui/HeaderTitle";
+import ResearchDataArea from "./ui/ResearchDataArea";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";
 import ResearchStreamingShell from "./ui/ResearchStreamingShell";
+import TabsPanel from "./ui/TabPanel";
 
 export default function ResearchAgentPage({
   loadingResearchHistory,
@@ -33,6 +33,7 @@ export default function ResearchAgentPage({
 }) {
   const theme = useTheme();
   const scrollRef = useRef(null);
+  const researchRefs = useRef({}); // Ref to store individual research item DOM elements
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
   const [isSimulationCompleted, setIsSimulationCompleted] = useState(false);
@@ -237,7 +238,10 @@ export default function ResearchAgentPage({
       >
         {researchCore?.researches.length > 0 &&
           researchCore?.researches?.map((research, idx) => (
-            <Box key={research._id}>
+            <Box
+              key={research._id}
+              ref={(el) => (researchRefs.current[research._id] = el)} // Assign ref to each research item
+            >
               <Box
                 sx={{
                   position: "sticky",
@@ -256,14 +260,21 @@ export default function ResearchAgentPage({
                   selectedTab={research.selectedTab}
                   sources={research.sources}
                   images={research.images}
-                  onTabChange={(newValue) =>
+                  onTabChange={(newValue) => {
                     dispatch(
                       setResearchSelectedTab({
                         researchId: research._id,
                         selectedTab: newValue,
                       }),
-                    )
-                  }
+                    );
+                    // Scroll to the research item when its tab is clicked
+                    if (researchRefs.current[research._id]) {
+                      researchRefs.current[research._id].scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }
+                  }}
                 />
               </Box>
 
