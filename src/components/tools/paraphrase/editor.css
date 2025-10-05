@@ -10,6 +10,7 @@
 /* Remove margins from all paragraph elements */
 .ProseMirror p {
   margin: 0;
+  margin-bottom: 1.5em !important;
   margin-block-start: 0;
   margin-block-end: 0;
 }

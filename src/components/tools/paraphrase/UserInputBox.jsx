@@ -13,6 +13,9 @@ import { useSelector } from "react-redux";
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
+import MarkdownIt from "markdown-it";
+import { DOMParser as ProseMirrorDOMParser } from "prosemirror-model";
+const md = new MarkdownIt();
 
 const PlainTextPaste = Extension.create({
   name: "plainTextPaste",
@@ -22,27 +25,70 @@ const PlainTextPaste = Extension.create({
       new Plugin({
         key: new PluginKey("plainTextPaste"),
         props: {
-          handlePaste: (view, event, slice) => {
-            // Get the plain text from clipboard
-            const plainText = event.clipboardData?.getData("text/plain");
+          handlePaste: (view, event) => {
+            try {
+              const clipboard = event.clipboardData || window.clipboardData;
+              if (!clipboard) return false;
 
-            if (plainText) {
-              // Prevent default paste behavior
+              let plain = clipboard.getData("text/plain") || "";
+              if (!plain) return false;
+
               event.preventDefault();
 
-              // Insert plain text at current cursor position
-              const { tr, selection } = view.state;
-              const transaction = tr.insertText(
-                plainText,
-                selection.from,
-                selection.to,
+              // normalize newlines
+              plain = plain.replace(/\r\n/g, "\n");
+
+              // heuristic: looks like markdown if contains headings, lists, code fences, links, etc.
+              const looksLikeMd =
+                /(^#{1,6}\s)|(^\s*[-*+]\s)|(```)|(^>\s)|\[(.*?)\]\((.*?)\)|(^\d+\.\s)/m.test(
+                  plain,
+                );
+
+              if (looksLikeMd) {
+                // Option A: Render markdown to HTML, then extract text content to remove raw markdown tokens
+                // This keeps the "no markdown shown" UX but preserves structure (paragraph breaks).
+                const html = md.render(plain);
+                const tmp = document.createElement("div");
+                tmp.innerHTML = html;
+                const textOnly = tmp.textContent || tmp.innerText || plain;
+
+                // Convert paragraphs and single-line breaks into HTML paragraphs/BRs
+                const normalizedHtml = textOnly
+                  .split(/\n{2,}/)
+                  .map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+                  .join("");
+
+                const container = document.createElement("div");
+                container.innerHTML = normalizedHtml;
+
+                const slice = ProseMirrorDOMParser.fromSchema(
+                  view.state.schema,
+                ).parseSlice(container);
+                view.dispatch(
+                  view.state.tr.replaceSelection(slice).scrollIntoView(),
+                );
+                return true;
+              }
+
+              // fallback: plain text normalization -> paragraphs
+              const normalizedHtml = plain
+                .split(/\n{2,}/)
+                .map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+                .join("");
+
+              const container = document.createElement("div");
+              container.innerHTML = normalizedHtml;
+              const slice = ProseMirrorDOMParser.fromSchema(
+                view.state.schema,
+              ).parseSlice(container);
+              view.dispatch(
+                view.state.tr.replaceSelection(slice).scrollIntoView(),
               );
-              view.dispatch(transaction);
-
-              return true; // Indicates we handled the paste
+              return true;
+            } catch (err) {
+              // fallback: let default handling happen
+              return false;
             }
-
-            return false; // Let other handlers process non-text pastes
           },
         },
       }),
@@ -64,89 +110,125 @@ const InputSentenceHighlighter = Extension.create({
           decorations(state) {
             if (!hasOutput) return DecorationSet.empty;
             const decos = [];
-            const text = state.doc.textContent;
 
-            if (!text || highlightSentence < 0) return DecorationSet.empty;
+            if (highlightSentence < 0) return DecorationSet.empty;
 
-            // Split into sentences based on language - match the backend logic
-            const sentenceSeparator =
-              language === "Bangla"
-                ? /(?:৤\s+|\.\r?\n+)/
-                : /(?:\.\s+|\.\r?\n+)/;
-
-            // Split and track positions
-            const parts = text.split(sentenceSeparator);
-            const sentences = parts.filter((s) => s.trim().length > 0);
-
-            if (highlightSentence >= sentences.length) {
-              return DecorationSet.empty;
-            }
-
-            // Find the target sentence text
-            const targetSentence = sentences[highlightSentence];
-            if (!targetSentence) return DecorationSet.empty;
-
-            // Build array of sentence positions in original text
-            let searchPos = 0;
-            const sentencePositions = [];
-
-            for (let i = 0; i < sentences.length; i++) {
-              const sentence = sentences[i];
-              const foundAt = text.indexOf(sentence, searchPos);
-              if (foundAt !== -1) {
-                sentencePositions.push({
-                  start: foundAt,
-                  end: foundAt + sentence.length,
-                  text: sentence,
-                });
-                searchPos = foundAt + sentence.length;
-              }
-            }
-
-            const targetPos = sentencePositions[highlightSentence];
-            if (!targetPos) return DecorationSet.empty;
-
-            // Convert text offsets to ProseMirror positions
-            let textOffset = 0;
-            let startPos = null;
-            let endPos = null;
+            // Build a map of text content with position tracking
+            // Track paragraph boundaries explicitly
+            const paragraphs = [];
+            let currentParagraph = null;
 
             state.doc.descendants((node, pos) => {
-              if (startPos !== null && endPos !== null) return false;
-
-              if (node.isText && node.text) {
-                const nodeStart = textOffset;
-                const nodeEnd = textOffset + node.text.length;
-
-                // Check if sentence start is in this text node
-                if (
-                  startPos === null &&
-                  targetPos.start >= nodeStart &&
-                  targetPos.start < nodeEnd
-                ) {
-                  startPos = pos + (targetPos.start - nodeStart);
+              if (node.type.name === "paragraph") {
+                // Start a new paragraph
+                if (currentParagraph) {
+                  paragraphs.push(currentParagraph);
                 }
-
-                // Check if sentence end is in this text node
-                if (
-                  startPos !== null &&
-                  endPos === null &&
-                  targetPos.end > nodeStart &&
-                  targetPos.end <= nodeEnd
-                ) {
-                  endPos = pos + (targetPos.end - nodeStart);
-                }
-
-                textOffset += node.text.length;
+                currentParagraph = {
+                  segments: [],
+                  start: pos,
+                  end: pos + node.nodeSize,
+                };
+              } else if (node.isText && node.text && currentParagraph) {
+                // Add text to current paragraph
+                currentParagraph.segments.push({
+                  text: node.text,
+                  pmStart: pos,
+                  pmEnd: pos + node.text.length,
+                });
               }
             });
 
-            if (startPos !== null && endPos !== null && startPos < endPos) {
-              decos.push(
-                Decoration.inline(startPos, endPos, {
-                  class: "highlighted-sentence",
-                }),
-              );
+            // Don't forget the last paragraph
+            if (currentParagraph) {
+              paragraphs.push(currentParagraph);
+            }
+
+            // Now process sentences within each paragraph
+            const allSentences = [];
+
+            for (const para of paragraphs) {
+              if (para.segments.length === 0) continue;
+
+              // Reconstruct paragraph text
+              const paraText = para.segments.map((seg) => seg.text).join("");
+
+              // Split into sentences based on language
+              const sentenceSeparator =
+                language === "Bangla"
+                  ? /(?:।\s*)/ // Simplified for Bangla
+                  : /(?:\.\s*)/; // Simplified for English
+
+              const parts = paraText.split(sentenceSeparator);
+
+              let currentPos = 0;
+              for (let i = 0; i < parts.length; i++) {
+                const part = parts[i];
+                if (!part.trim()) continue;
+
+                // Find the actual sentence text including the separator
+                let sentenceText = part;
+                // Add back the separator if not the last part
+                if (i < parts.length - 1) {
+                  sentenceText += language === "Bangla" ? "।" : ".";
+                }
+
+                // Find PM positions for this sentence within the paragraph
+                const startInPara = currentPos;
+                const endInPara = currentPos + sentenceText.length;
+
+                // Map to ProseMirror positions
+                let pmStart = null;
+                let pmEnd = null;
+                let accumPos = 0;
+
+                for (const seg of para.segments) {
+                  const segStart = accumPos;
+                  const segEnd = accumPos + seg.text.length;
+
+                  // Find start position
+                  if (
+                    pmStart === null &&
+                    startInPara >= segStart &&
+                    startInPara < segEnd
+                  ) {
+                    pmStart = seg.pmStart + (startInPara - segStart);
+                  }
+
+                  // Find end position
+                  if (
+                    pmEnd === null &&
+                    endInPara > segStart &&
+                    endInPara <= segEnd
+                  ) {
+                    pmEnd = seg.pmStart + (endInPara - segStart);
+                  }
+
+                  accumPos += seg.text.length;
+                }
+
+                if (pmStart !== null && pmEnd !== null) {
+                  allSentences.push({
+                    text: sentenceText.trim(),
+                    pmStart,
+                    pmEnd,
+                  });
+                }
+
+                currentPos += sentenceText.length;
+              }
+            }
+
+            // Now highlight the target sentence
+            if (highlightSentence < allSentences.length) {
+              const target = allSentences[highlightSentence];
+              if (target && target.pmStart < target.pmEnd) {
+                decos.push(
+                  Decoration.inline(target.pmStart, target.pmEnd, {
+                    class: "highlighted-sentence",
+                  }),
+                );
+              }
             }
 
             return DecorationSet.create(state.doc, decos);
@@ -321,8 +403,11 @@ function UserInputBox({
         }
 
         isInternalUpdate.current = true;
-        const plainText = editor.getText(); // Extracts plain text content
-        setUserInput(plainText); // Pass plain text to the parent component
+        // const plainText = editor.getText(); // Extracts plain text content
+        // const plainText = customMarkdownSerializer.serialize(editor.state.doc); // Extracts plain text content
+        const plainText = customMarkdownSerializer.serialize(editor.state.doc); // Extracts plain text content
+        // setUserInput(plainText); // Pass plain text to the parent component
+        setUserInput(plainText);
       },
     },
     [editorKey, highlightSentence, language, hasOutput],

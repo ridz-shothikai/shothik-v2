@@ -494,6 +494,8 @@ function getColorStyle(
 function formatContent(data, showChangedWords, showStructural, showLongest) {
   if (!data) return { type: "doc", content: [] };
 
+  console.log("Formatting content with data:", data);
+
   if (typeof data === "string") {
     try {
       const parsed = defaultMarkdownParser.parse(data);
@@ -507,9 +509,10 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
     };
   }
 
-  const sentences = Array.isArray(data[0]) ? data : [data];
+  const sentences = Array.isArray(data && data[0]) ? data : [data];
   const docContent = [];
   let currentParagraphSentences = [];
+  let actualSentenceIndex = 0; // New counter for non-newline sentences
 
   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
     const sentence = sentences[sIdx];
@@ -522,11 +525,11 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         });
         currentParagraphSentences = [];
       }
-      docContent.push({ type: "paragraph", content: [{ type: "hardBreak" }] });
+      // Do not increment actualSentenceIndex for newline sentences
       continue;
     }
 
-    const headingNode = processHeadingSentence(sentence, sIdx);
+    const headingNode = processHeadingSentence(sentence, actualSentenceIndex);
     if (headingNode) {
       if (currentParagraphSentences.length > 0) {
         docContent.push({
@@ -536,17 +539,23 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         currentParagraphSentences = [];
       }
       docContent.push(headingNode);
+      actualSentenceIndex++; // Increment for heading sentences
       continue;
     }
 
     const sentenceNode = {
       type: "sentenceNode",
-      attrs: { "data-sentence-index": sIdx, class: "sentence-span" },
+      attrs: {
+        "data-sentence-index": actualSentenceIndex,
+        class: "sentence-span",
+      },
       content: sentence.map((wObj, wIdx) => {
         const raw = wObj.word;
         const { text: processedText, marks } = parseMarkdownText(raw);
         const prefix =
-          (sIdx === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw) ? "" : " ";
+          (actualSentenceIndex === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw)
+            ? ""
+            : " ";
 
         const style = getColorStyle(
           wObj.type,
@@ -561,7 +570,7 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         return {
           type: "wordNode",
           attrs: {
-            "data-sentence-index": sIdx,
+            "data-sentence-index": actualSentenceIndex,
             "data-word-index": wIdx,
             "data-type": wObj.type,
             class: "word-span",
@@ -579,6 +588,7 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
     };
 
     currentParagraphSentences.push(sentenceNode);
+    actualSentenceIndex++; // Increment for regular sentences
   }
 
   if (currentParagraphSentences.length > 0) {
