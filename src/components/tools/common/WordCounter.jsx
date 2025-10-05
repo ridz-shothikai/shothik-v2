@@ -70,6 +70,7 @@ function WordCounter({
       ExtraBtn={ExtraBtn}
       ExtraCounter={ExtraCounter}
       btnIcon={btnIcon}
+      btnDisabled={btnDisabled}
       dontDisable={dontDisable}
       sx={sx}
       freeze_modal={freeze_modal}
@@ -93,6 +94,7 @@ const Contend = ({
   ExtraBtn = null,
   ExtraCounter = null,
   btnIcon = null,
+  btnDisabled = false,
   sx = {},
   freeze_modal = false,
   freeze_props = {},

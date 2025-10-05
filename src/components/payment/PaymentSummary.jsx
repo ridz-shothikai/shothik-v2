@@ -21,6 +21,7 @@ export default function PaymentSummary({
   isSubmitting,
   setTotalBill,
   country,
+  type = "subscription",
 }) {
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
