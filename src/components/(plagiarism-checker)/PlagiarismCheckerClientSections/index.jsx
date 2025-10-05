@@ -6,7 +6,6 @@ import useGlobalPlagiarismCheck from "@/hooks/useGlobalPlagiarismCheck";
 import useLoadingText from "@/hooks/useLoadingText";
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
-import { cn } from "@/lib/utils";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
 import { ExpandMore, Refresh } from "@mui/icons-material";
@@ -44,14 +43,8 @@ const PlagiarismCheckerClientSections = () => {
   const share_id = params.get("share_id");
   const dispatch = useDispatch();
 
-  //   const { data: userLimit, refetch } = useGetUsesLimitQuery({
-  //     service: "plagiarism-checker",
-  //   });
-
   const { loading, score, results, error, triggerCheck, manualRefresh } =
     useGlobalPlagiarismCheck(inputText);
-
-  console.log("results", results);
 
   const loadingText = useLoadingText(isLoading);
 
@@ -62,16 +55,13 @@ const PlagiarismCheckerClientSections = () => {
 
   async function handleSubmit() {
     try {
-      if (!enableScan) {
-        return;
-      }
+      if (!enableScan) return;
 
       trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
       triggerCheck(false);
       setEnableScan(false);
-      //   refetch();
     } catch (err) {
       const error = err?.data;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
@@ -87,18 +77,11 @@ const PlagiarismCheckerClientSections = () => {
     }
   }
 
-  const isShowResult = results?.length > 0 || !!score || loading;
-
   return (
     <div className="flex min-h-[calc(100vh-100px)] flex-col items-center justify-center">
       <div className="my-2 flex w-full flex-col gap-4 md:flex-row">
         {/* Input Section */}
-        <div
-          className={cn({
-            "w-full md:mx-auto md:w-1/2": !isShowResult,
-            "md:w-full md:flex-1": isShowResult,
-          })}
-        >
+        <div className="md:w-full md:flex-1">
           <div className="relative flex h-[400px] flex-col rounded-xl border shadow-sm md:h-[600px]">
             <div className="flex-1">
               <TextField
@@ -118,9 +101,7 @@ const PlagiarismCheckerClientSections = () => {
                   flexGrow: 1,
                   "& .MuiOutlinedInput-root": {
                     height: "100%",
-                    "& fieldset": {
-                      border: "none",
-                    },
+                    "& fieldset": { border: "none" },
                     "& textarea": {
                       height: "100% !important",
                       resize: "none",
@@ -158,97 +139,106 @@ const PlagiarismCheckerClientSections = () => {
           </div>
         </div>
 
-        {/* Results Section */}
-        {isShowResult && (
-          <div className="flex-1 px-3 py-2">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Plagiarism Checker</h2>
-              <IconButton
-                size="small"
-                onClick={manualRefresh}
-                disabled={loading || !inputText?.trim()}
-                title="Refresh check"
-              >
-                <Refresh fontSize="small" />
-              </IconButton>
-            </div>
-
-            <div
-              className={`mb-3 flex min-h-[100px] flex-col items-center justify-center rounded-md border p-4 text-center ${
-                loading
-                  ? "bg-muted"
-                  : error
-                    ? "bg-destructive/20"
-                    : "bg-success/20"
-              }`}
+        {/* Results Section - Always Visible */}
+        <div className="flex-1 px-3 py-2">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Plagiarism Checker</h2>
+            <IconButton
+              size="small"
+              onClick={manualRefresh}
+              disabled={loading || !inputText?.trim()}
+              title="Refresh check"
             >
-              {loading ? (
-                <div className="flex flex-col items-center gap-1">
-                  <CircularProgress size={24} className="mb-1" />
-                  <span className="text-muted-foreground text-xs">
-                    Checking plagiarism...
-                  </span>
-                </div>
-              ) : error ? (
-                <>
-                  <p className="text-destructive text-2xl font-bold">Error</p>
-                  <p className="text-destructive text-xs">{error}</p>
-                  <Button
-                    size="small"
-                    onClick={manualRefresh}
-                    variant="outlined"
-                    color="error"
-                    sx={{ mt: 1 }}
-                  >
-                    Retry
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <p className="text-4xl font-bold">
-                    {score != null ? `${score}%` : "--"}
-                  </p>
-                  <span className="text-muted-foreground text-xs">
-                    Plagiarism
-                  </span>
-                </>
-              )}
-            </div>
-
-            <div>
-              <p className="text-muted-foreground mb-2 text-sm">
-                Results ({results.length})
-              </p>
-
-              {results.map((r, i) => (
-                <Accordion key={i} className="rounded border shadow-sm">
-                  <AccordionSummary
-                    expandIcon={<ExpandMore fontSize="small" />}
-                    className="flex items-center"
-                  >
-                    <div className="flex w-full items-center gap-2">
-                      <span className="w-1/5 text-sm">{r?.percent}%</span>
-                      <span className="flex-1 text-center text-sm">
-                        {r?.source}
-                      </span>
-                    </div>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography variant="body2" className="text-sm">
-                      {r?.chunkText}
-                    </Typography>
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-
-              {!loading && !error && results.length === 0 && (
-                <p className="text-muted-foreground text-sm">
-                  No matches found.
-                </p>
-              )}
-            </div>
+              <Refresh fontSize="small" />
+            </IconButton>
           </div>
-        )}
+
+          {/* Status / Score Box */}
+          <div
+            className={`mb-3 flex min-h-[100px] flex-col items-center justify-center rounded-md border p-4 text-center ${
+              loading
+                ? "bg-muted"
+                : error
+                  ? "bg-destructive/20"
+                  : results?.length || score
+                    ? "bg-success/20"
+                    : "bg-muted/30"
+            }`}
+          >
+            {loading ? (
+              <div className="flex flex-col items-center gap-1">
+                <CircularProgress size={24} className="mb-1" />
+                <span className="text-muted-foreground text-xs">
+                  Checking plagiarism...
+                </span>
+              </div>
+            ) : error ? (
+              <>
+                <p className="text-destructive text-2xl font-bold">Error</p>
+                <p className="text-destructive text-xs">{error}</p>
+                <Button
+                  size="small"
+                  onClick={manualRefresh}
+                  variant="outlined"
+                  color="error"
+                  sx={{ mt: 1 }}
+                >
+                  Retry
+                </Button>
+              </>
+            ) : results?.length || score ? (
+              <>
+                <p className="text-4xl font-bold">
+                  {score != null ? `${score}%` : "--"}
+                </p>
+                <span className="text-muted-foreground text-xs">
+                  Plagiarism
+                </span>
+              </>
+            ) : (
+              <span className="text-muted-foreground text-sm">
+                No scan performed yet. Enter text and click <b>Scan</b> to see
+                results.
+              </span>
+            )}
+          </div>
+
+          {/* Results List */}
+          <div>
+            <p className="text-muted-foreground mb-2 text-sm">
+              Results ({results?.length || 0})
+            </p>
+
+            {results?.map((r, i) => (
+              <Accordion key={i} className="rounded border shadow-sm">
+                <AccordionSummary
+                  expandIcon={<ExpandMore fontSize="small" />}
+                  className="flex items-center"
+                >
+                  <div className="flex w-full items-center gap-2">
+                    <span className="w-1/5 text-sm">{r?.percent}%</span>
+                    <span className="flex-1 text-center text-sm">
+                      {r?.source}
+                    </span>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography variant="body2" className="text-sm">
+                    {r?.chunkText}
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+
+            {!loading && !error && results?.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                {inputText
+                  ? "No matches found."
+                  : "Results will appear here after you scan your text."}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
