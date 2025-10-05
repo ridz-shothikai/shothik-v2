@@ -292,12 +292,24 @@ const Accortion = ({ colorList, data, title, children }) => {
       sx={{
         paddingX: 2,
         paddingY: 1,
+        maxHeight: { xs: "200px", md: "174px" },
+        overflowY: "auto",
         "&:not(:last-child)": {
           borderBottom: "1px solid #E0E0E0",
         },
       }}
     >
-      <Typography fontWeight={600} fontSize={18}>
+      <Typography
+        fontWeight={600}
+        fontSize={18}
+        // sx={{
+        //   position: "sticky",
+        //   top: 0,
+        //   backgroundColor: "#fff",
+        //   height: "30px",
+        //   width: "100%"
+        // }}
+      >
         {title}
       </Typography>
       {children}
