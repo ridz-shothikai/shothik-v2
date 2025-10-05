@@ -1,5 +1,4 @@
 "use client";
-import HardBreak from "@tiptap/extension-hard-break";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import {
@@ -345,7 +344,9 @@ function UserInputBox({
   const editor = useEditor(
     {
       extensions: [
-        StarterKit,
+        StarterKit.configure({
+          hardBreak: false, // This cause userInput disappearing
+        }),
         PlainTextPaste,
         Placeholder.configure({ placeholder: "Enter your text here..." }),
         CombinedHighlighting.configure({
@@ -359,12 +360,20 @@ function UserInputBox({
           language: language,
           hasOutput: hasOutput || false,
         }),
-        HardBreak,
+        // HardBreak,
         Link.configure({
           openOnClick: true,
           linkOnPaste: true,
         }),
         Underline,
+        Extension.create({
+          name: "disableShiftEnter",
+          addKeyboardShortcuts() {
+            return {
+              "Shift-Enter": () => true, // Return true to prevent default behavior
+            };
+          },
+        }),
       ],
       content: editorContent,
       // content: initialDoc,
@@ -407,6 +416,7 @@ function UserInputBox({
         // const plainText = customMarkdownSerializer.serialize(editor.state.doc); // Extracts plain text content
         const plainText = customMarkdownSerializer.serialize(editor.state.doc); // Extracts plain text content
         // setUserInput(plainText); // Pass plain text to the parent component
+        // console.log(editor.getJSON().content, "JSON DATA");
         setUserInput(plainText);
       },
     },

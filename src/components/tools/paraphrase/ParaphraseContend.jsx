@@ -592,8 +592,24 @@ const ParaphraseContend = () => {
   //   // });
   // }, [language, eventId]);
 
+  // const handleClear = (_, action = "all") => {
+  //   if (action === "all") {
+  //     setUserInput("");
+  //     frozenWords.reset(initialFrozenWords);
+  //     frozenPhrases.reset(initialFrozenPhrase);
+  //     dispatch(setParaphraseValues({ type: "input", values: { text: "" } }));
+  //     dispatch(
+  //       setParaphraseValues({ type: "output", values: { text: "", data: [] } }),
+  //     );
+  //   }
+  //   setResult([]);
+  //   setOutputHistory([]);
+  //   setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on clear
+  // };
+
   const handleClear = (_, action = "all") => {
     if (action === "all") {
+      // Clear everything including input
       setUserInput("");
       frozenWords.reset(initialFrozenWords);
       frozenPhrases.reset(initialFrozenPhrase);
@@ -601,10 +617,17 @@ const ParaphraseContend = () => {
       dispatch(
         setParaphraseValues({ type: "output", values: { text: "", data: [] } }),
       );
+      setResult([]);
+      setOutputHistory([]);
+    } else if (action === "output") {
+      // Only clear output, preserve input
+      setResult([]);
+      setOutputHistory([]);
+      dispatch(
+        setParaphraseValues({ type: "output", values: { text: "", data: [] } }),
+      );
     }
-    setResult([]);
-    setOutputHistory([]);
-    setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on clear
+    setParaphraseRequestCounter((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -652,6 +675,10 @@ const ParaphraseContend = () => {
       setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on new request
       // use the full raw Markdown string for payload
       const textToParaphrase = value || userInput;
+
+      console.log("=== Sending to Backend ===");
+      console.log("Text:", textToParaphrase);
+      console.log("========================");
 
       // but enforce word-limit on a plain-text version
       // strip common markdown tokens for counting
@@ -1030,7 +1057,7 @@ const ParaphraseContend = () => {
                     },
                   }}
                   btnText={outputContend ? "Rephrase" : "Paraphrase"}
-                  handleClearInput={handleClear}
+                  handleClearInput={() => handleClear("", "all")}
                   handleSubmit={handleSubmit}
                   isLoading={isLoading}
                   userInput={userInput}
@@ -1142,7 +1169,7 @@ const ParaphraseContend = () => {
                       setEventId={setEventId}
                     /> */}
                       <OutputBotomNavigation
-                        handleClear={handleClear}
+                        handleClear={() => handleClear("", "output")}
                         highlightSentence={highlightSentence}
                         outputContend={outputContend}
                         outputHistory={outputHistory}
