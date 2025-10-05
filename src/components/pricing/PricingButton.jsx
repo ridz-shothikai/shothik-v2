@@ -47,14 +47,14 @@ export default function PricingButton({
           fullWidth
           size="large"
           variant={outline ? "outlined" : "contained"}
-          // disabled={
-          //   !yearly_plan_available && yearly
-          //     ? true
-          //     : subscription === "free" ||
-          //       (/pro_plan|unlimited/.test(user?.package) &&
-          //         /pro_plan|value_plan/.test(subscription)) ||
-          //       user?.package === subscription
-          // }
+          disabled={
+            !yearly_plan_available && yearly
+              ? true
+              : subscription === "free" ||
+                (/pro_plan|unlimited/.test(user?.package) &&
+                  /pro_plan|value_plan/.test(subscription)) ||
+                user?.package === subscription
+          }
         >
           {user?.package === subscription
             ? "current plan"
