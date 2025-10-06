@@ -1,6 +1,6 @@
 export const languages = [
   { name: "English", code: "en", range: [0x0041, 0x007a] },
-  { name: "Bengali", code: "bn", range: [0x0980, 0x09ff] },
+  { name: "Bangla", code: "bn", range: [0x0980, 0x09ff] },
   { name: "Hindi", code: "hi", range: [0x0900, 0x097f] },
   { name: "Arabic", code: "ar", range: [0x0600, 0x06ff] },
   { name: "Russian", code: "ru", range: [0x0400, 0x04ff] },
