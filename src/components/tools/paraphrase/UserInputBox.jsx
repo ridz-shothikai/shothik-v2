@@ -320,6 +320,8 @@ function UserInputBox({
   highlightSentence = 0,
   language = "English (US)",
   hasOutput = false,
+  onFreezeWord,
+  onFreezePhrase,
 }) {
   const { demo, interfaceOptions } = useSelector((state) => state.settings);
   const { useYellowHighlight } = interfaceOptions;
@@ -581,17 +583,14 @@ function UserInputBox({
   const handleToggleFreeze = () => {
     const key = normalize(selectedWord);
     const isPhrase = key.includes(" ");
-
-    // Get editor content and normalize for counting
     const editorText = editor.getText();
 
-    // Function to count occurrences with better handling
+    // Function to count occurrences
     const countOccurrences = (text, searchTerm, isPhrase) => {
       const normalizedText = text.toLowerCase();
       const normalizedSearch = searchTerm.toLowerCase();
 
       if (isPhrase) {
-        // For phrases, count exact matches
         let count = 0;
         let position = 0;
         while (
@@ -602,8 +601,6 @@ function UserInputBox({
         }
         return count;
       } else {
-        // For single words, use word boundaries to avoid partial matches
-        // This regex handles punctuation and whitespace correctly
         const escapedTerm = normalizedSearch.replace(
           /[.*+?^${}()|[\]\\]/g,
           "\\$&",
@@ -615,27 +612,34 @@ function UserInputBox({
     };
 
     const occurrences = countOccurrences(editorText, key, isPhrase);
-
-    // Determine if we're freezing or unfreezing
     const currentlyFrozen = isFrozen();
 
-    // Toggle the freeze state
-    if (isPhrase) {
-      frozenPhrases.toggle(key);
+    if (currentlyFrozen) {
+      // Unfreezing
+      if (isPhrase) {
+        frozenPhrases.toggle(key);
+      } else {
+        frozenWords.toggle(key);
+      }
+
+      const message =
+        occurrences > 1
+          ? `Unfrozen all ${occurrences} instances`
+          : "Unfrozen successfully";
+
+      enqueueSnackbar(message, {
+        variant: "success",
+      });
     } else {
-      frozenWords.toggle(key);
+      // Freezing - use confirmation handlers
+      if (isPhrase && onFreezePhrase) {
+        // The parent handler will show confirmation if needed
+        // and will handle the snackbar message
+        onFreezePhrase(key);
+      } else if (!isPhrase && onFreezeWord) {
+        onFreezeWord(key);
+      }
     }
-
-    // Show appropriate message
-    const action = currentlyFrozen ? "Unfrozen" : "Frozen";
-    const message =
-      occurrences > 1
-        ? `${action} all ${occurrences} instances`
-        : `${action} successfully`;
-
-    enqueueSnackbar(message, {
-      variant: "success",
-    });
 
     clearSelection();
   };

@@ -4,6 +4,10 @@ import {
   Box,
   Button,
   Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid2,
   IconButton,
@@ -164,6 +168,113 @@ const ParaphraseContend = () => {
   const [paraphraseRequestCounter, setParaphraseRequestCounter] = useState(0);
 
   const hasOutput = result.length > 0 && outputContend.trim().length > 0; // Checking if we have actual output content
+  const [confirmationDialog, setConfirmationDialog] = useState({
+    open: false,
+    word: "",
+    count: 0,
+    action: null, // Will store the function to execute on confirm
+  }); // this is for freezing word confirmation
+
+  // Helper function to count word occurrences in text
+  const countWordOccurrences = (text, word) => {
+    if (!text || !word) return 0;
+
+    const lowerText = text.toLowerCase();
+    const lowerWord = word.toLowerCase();
+
+    // Using word boundaries to match whole words only
+    const regex = new RegExp(
+      `\\b${lowerWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+      "gi",
+    );
+    const matches = lowerText.match(regex);
+
+    return matches ? matches.length : 0;
+  };
+
+  // Modified function to handle freezing with confirmation
+  const handleFreezeWord = (word) => {
+    console.log("handleFreezeWord called with word:", word);
+    console.log("Current userInput:", userInput);
+    const count = countWordOccurrences(userInput, word);
+
+    console.log("Word:", word, "Count:", count);
+
+    if (count > 1) {
+      console.log(
+        "Opening confirmation dialog for word:",
+        word,
+        "count:",
+        count,
+      );
+      // Show confirmation dialog
+      setConfirmationDialog({
+        open: true,
+        word: word,
+        count: count,
+        action: () => {
+          frozenWords.add(word.toLowerCase());
+          setConfirmationDialog({
+            open: false,
+            word: "",
+            count: 0,
+            action: null,
+          });
+
+          setTimeout(() => {
+            frozenWords.add(word.toLowerCase());
+            enqueueSnackbar(`Frozen all ${count} instances successfully`, {
+              variant: "success",
+            });
+          }, 100);
+        },
+      });
+    } else {
+      console.log("Directly freezing word (count <= 1):", word);
+      // Directly freeze if only one occurrence
+      frozenWords.add(word.toLowerCase());
+      enqueueSnackbar("Frozen successfully", { variant: "success" });
+    }
+  };
+
+  // Similar function for phrases
+  const handleFreezePhrase = (phrase) => {
+    console.log("handleFreezePhrase called with phrase:", phrase);
+    console.log("Current userInput:", userInput);
+    const count = countWordOccurrences(userInput, phrase);
+
+    console.log("Phrase:", phrase, "Count:", count);
+
+    if (count > 1) {
+      console.log(
+        "Opening confirmation dialog for phrase:",
+        phrase,
+        "count:",
+        count,
+      );
+      setConfirmationDialog({
+        open: true,
+        word: phrase,
+        count: count,
+        action: () => {
+          frozenPhrases.add(phrase.toLowerCase());
+          setConfirmationDialog({
+            open: false,
+            word: "",
+            count: 0,
+            action: null,
+          });
+        },
+      });
+    } else {
+      console.log("Directly freezing phrase (count <= 1):", phrase);
+      frozenPhrases.add(phrase.toLowerCase());
+    }
+  };
+
+  useEffect(() => {
+    console.log("Confirmation dialog state:", confirmationDialog);
+  }, [confirmationDialog]);
 
   // Dispatch userInput to Redux
   useEffect(() => {
@@ -1018,6 +1129,8 @@ const ParaphraseContend = () => {
                   highlightSentence={highlightSentence}
                   language={language}
                   hasOutput={hasOutput}
+                  onFreezeWord={handleFreezeWord}
+                  onFreezePhrase={handleFreezePhrase}
                 />
 
                 {!userInput ? (
@@ -1044,11 +1157,9 @@ const ParaphraseContend = () => {
                     frozenWords: Array.from(frozenWords.set),
                     frozenPhrases: Array.from(frozenPhrases.set),
                     onAddWords: (words) =>
-                      words.forEach((w) => frozenWords.add(w.toLowerCase())),
+                      words.forEach((w) => handleFreezeWord(w)),
                     onAddPhrases: (phrases) =>
-                      phrases.forEach((p) =>
-                        frozenPhrases.add(p.toLowerCase()),
-                      ),
+                      phrases.forEach((p) => handleFreezePhrase(p)),
                     onRemoveWord: (w) => frozenWords.remove(w),
                     onRemovePhrase: (p) => frozenPhrases.remove(p),
                     onClearAll: () => {
@@ -1260,6 +1371,54 @@ const ParaphraseContend = () => {
         selectedMode={selectedMode}
         shouldShowButton={false}
       />
+
+      <Dialog
+        open={confirmationDialog.open}
+        onClose={() =>
+          setConfirmationDialog({
+            open: false,
+            word: "",
+            count: 0,
+            action: null,
+          })
+        }
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Freeze Multiple Occurrences?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            The word/phrase appears{" "}
+            <strong>{confirmationDialog.count} times</strong> in your text.
+          </Typography>
+          <Typography sx={{ mt: 2 }}>
+            Freezing this will prevent all {confirmationDialog.count}{" "}
+            occurrences from being paraphrased. Do you want to continue?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setConfirmationDialog({
+                open: false,
+                word: "",
+                count: 0,
+                action: null,
+              })
+            }
+            color="inherit"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmationDialog.action}
+            variant="contained"
+            color="primary"
+          >
+            Freeze All {confirmationDialog.count}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
