@@ -77,7 +77,7 @@ const MobileNavigation = () => {
       <Tabs
         sx={{ mt: -1, paddingX: 2, justifyContent: "center" }}
         onChange={(e, newValue) => push(newValue)}
-        scrollButtons={false}
+        scrollButtons={true}
         value={validPath}
       >
         {links.map((tab) => (
