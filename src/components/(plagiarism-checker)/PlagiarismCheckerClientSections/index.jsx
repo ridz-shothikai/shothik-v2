@@ -78,11 +78,11 @@ const PlagiarismCheckerClientSections = () => {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-100px)] flex-col items-center justify-center">
-      <div className="my-2 flex w-full flex-col gap-4 md:flex-row">
+    <div className="flex flex-col items-center justify-center md:min-h-[calc(100vh-100px)]">
+      <div className="flex w-full flex-col gap-4 px-4 py-4 md:flex-row">
         {/* Input Section */}
         <div className="md:w-full md:flex-1">
-          <div className="relative flex h-[400px] flex-col rounded-xl border shadow-sm md:h-[600px]">
+          <div className="bg-card relative flex h-[400px] flex-col rounded-xl border shadow-sm md:h-[600px]">
             <div className="flex-1">
               <TextField
                 name="input"
