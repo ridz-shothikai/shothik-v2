@@ -718,7 +718,7 @@ const ParaphraseContend = () => {
   //   setParaphraseRequestCounter((prev) => prev + 1); // Increment counter on clear
   // };
 
-  const handleClear = (_, action = "all") => {
+  function handleClear(_, action = "all") {
     if (action === "all") {
       // Clear everything including input
       setUserInput("");
@@ -739,7 +739,7 @@ const ParaphraseContend = () => {
       );
     }
     setParaphraseRequestCounter((prev) => prev + 1);
-  };
+  }
 
   useEffect(() => {
     // If user *wants* to paraphrase quotations, we need to *un*-freeze any
@@ -855,6 +855,7 @@ const ParaphraseContend = () => {
         enqueueSnackbar("Click Rephrase to view the updated result.", {
           variant: "info",
         });
+        handleClear("", "output"); // Clear only output, keep input and frozen words
       }
       return; // Early return if not auto paraphrasing
     }
@@ -867,6 +868,7 @@ const ParaphraseContend = () => {
         enqueueSnackbar("Please wait while paraphrasing is in progress...", {
           variant: "info",
         });
+        handleClear("", "output"); // Clear only output, keep input and frozen words
       }
     }
   }, [
