@@ -38,6 +38,7 @@ export const toolsApiSlice = createApi({
     paraphrased: builder.mutation({
       query: (payload) => ({
         url: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/p-v2/api/paraphraseV2`,
+        // url: `http://localhost:3050/api/paraphraseV2`,
         // url: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/paraphraseV2`,
         method: "POST",
         body: payload,

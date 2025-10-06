@@ -339,6 +339,7 @@ const ParaphraseContend = () => {
   useEffect(() => {
     // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
     // path: "/socket.io",
+
     const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
       path: "/p-v2/socket.io",
       transports: ["websocket"],
@@ -347,6 +348,15 @@ const ParaphraseContend = () => {
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
     });
+
+    // const socket = io("http://localhost:3050", {
+    //   path: "/socket.io",
+    //   transports: ["websocket"],
+    //   auth: { token: accessToken },
+    //   reconnection: true,
+    //   reconnectionAttempts: 5,
+    //   reconnectionDelay: 2000,
+    // });
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
@@ -812,7 +822,12 @@ const ParaphraseContend = () => {
       }
       // now build your payload using the untouched Markdown
       const randomNumber = Math.floor(Math.random() * 1e10);
-      setEventId(`${socketId}-${randomNumber}`);
+      const newEventId = `${socketId}-${randomNumber}`;
+      setEventId(newEventId);
+      console.log("EventId:", eventId, socketId);
+
+      // if (!eventId) return;
+
       const freeze = [
         ...(frozenWords?.values || []),
         ...(frozenPhrases?.values || []),
@@ -826,7 +841,7 @@ const ParaphraseContend = () => {
         mode: selectedMode ? selectedMode.toLowerCase() : "standard",
         synonym: selectedSynonyms ? selectedSynonyms.toLowerCase() : "basic",
         socketId,
-        eventId,
+        eventId: eventId || newEventId,
       };
 
       await paraphrased(payload).unwrap();
