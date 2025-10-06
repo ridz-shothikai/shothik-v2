@@ -1,5 +1,5 @@
 "use client";
-import { Box, Card, Grid2, TextField } from "@mui/material";
+import { Box, Button, Card, Grid2, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
@@ -185,7 +185,7 @@ const GrammarContend = () => {
       <Grid2 container spacing={2}>
         <Grid2
           sx={{
-            height: { xs: 400, sm: 480 },
+            height: { xs: "auto", sm: 480 },
             overflowY: "auto",
             position: "relative",
           }}
@@ -198,6 +198,8 @@ const GrammarContend = () => {
             onInput={handleInput}
             dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
             sx={{
+              overflowY: "auto",
+              maxHeight: { xs: 360, sm: "auto" },
               minHeight: isMobile ? 360 : 456,
               padding: "16.5px 14px",
               border: (theme) => `1px solid ${theme.palette.divider}`,
@@ -219,6 +221,17 @@ const GrammarContend = () => {
               },
             }}
           />
+          {isMobile && (
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              loading={isLoading}
+              disabled={!userInput || isLoading}
+              sx={{ mt: 2, width: "fit-content" }}
+            >
+              {loadingText ? loadingText : "Fix Grammar"}
+            </Button>
+          )}
           {!userInput ? (
             <UserActionInput
               setUserInput={setUserInput}
@@ -230,13 +243,13 @@ const GrammarContend = () => {
         </Grid2>
         {isMobile && !userInput ? null : (
           <Grid2
-            sx={{ height: { xs: 400, sm: 480 }, overflowY: "auto" }}
+            sx={{ height: { xs: "auto", sm: 480 }, overflowY: "auto" }}
             size={{ xs: 12, md: 6 }}
           >
             <TextField
               name="input"
               variant="outlined"
-              rows={isMobile ? 15 : 19}
+              rows={isMobile ? 10 : 18}
               fullWidth
               multiline
               placeholder="Corrected output"
@@ -245,6 +258,9 @@ const GrammarContend = () => {
               sx={{
                 flexGrow: 1,
                 color: "text.primary",
+                // overflowY: "auto",
+                // maxHeight: { xs: 460, sm: "auto" },
+                // // minHeight: isMobile ? 360 : 456,
                 "& .MuiOutlinedInput-root": {
                   "& .MuiOutlinedInput-notchedOutline": {
                     borderColor: "divider",
@@ -256,8 +272,8 @@ const GrammarContend = () => {
                     borderColor: "divider",
                   },
                   "& .MuiInputBase-input.Mui-disabled": {
-                    color: "inherit",
-                    WebkitTextFillColor: "inherit",
+                    color: "#242426", // Changed from "inherit"
+                    WebkitTextFillColor: "#242426", // Changed from "inherit"
                     opacity: 1,
                   },
                   color: "text.primary",
@@ -279,6 +295,7 @@ const GrammarContend = () => {
         setErrors={setErrors}
         errorChecking={errorChecking}
         setErrorChecking={setErrorChecking}
+        isMobile={isMobile}
       />
     </Card>
   );

@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import useResponsive from "../../../hooks/useResponsive";
 import useWordLimit from "../../../hooks/useWordLimit";
 import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
@@ -32,6 +31,7 @@ function WordCounter({
   sx = {},
   dontDisable = false,
   sticky = 635,
+  isMobile = false,
 }) {
   // if (false) {
   //   const { ref, style } = useStickyBottom(sticky);
@@ -75,6 +75,7 @@ function WordCounter({
       sx={sx}
       freeze_modal={freeze_modal}
       freeze_props={freeze_props}
+      isMobile={isMobile}
     >
       {children}
     </Contend>
@@ -99,9 +100,10 @@ const Contend = ({
   freeze_modal = false,
   freeze_props = {},
   dontDisable = false,
+  isMobile,
 }) => {
   const [wordCount, setWordCount] = useState(0);
-  const isMobile = useResponsive("down", "sm");
+  // const isMobile = useResponsive("down", "sm"); // This is now passed as a prop
   const { wordLimit } = useWordLimit(toolName);
 
   useEffect(() => {
@@ -229,16 +231,20 @@ const Contend = ({
             </Button>
           </Link>
         )}
-        <Button
-          onClick={() => handleSubmit()}
-          variant="contained"
-          loading={isLoading}
-          disabled={!dontDisable ? wordCount > wordLimit : btnDisabled || false}
-          sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-          startIcon={btnIcon}
-        >
-          {btnText}
-        </Button>
+        {!isMobile && (
+          <Button
+            onClick={() => handleSubmit()}
+            variant="contained"
+            loading={isLoading}
+            disabled={
+              !dontDisable ? wordCount > wordLimit : btnDisabled || false
+            }
+            sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
+            startIcon={btnIcon}
+          >
+            {btnText}
+          </Button>
+        )}
         {ExtraBtn}
       </Stack>
 

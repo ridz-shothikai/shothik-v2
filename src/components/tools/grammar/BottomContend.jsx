@@ -28,6 +28,7 @@ const BottomContend = ({
   errors,
   setErrors,
   errorChecking,
+  isMobile,
 }) => {
   // const [errorChecking, setErrorChecking] = useState(false);
   // const [spellChecker] = useSpellCheckerMutation();
@@ -81,6 +82,7 @@ const BottomContend = ({
         handleSubmit={handleSubmit}
         toolName="grammar"
         sticky={530}
+        isMobile={isMobile}
         ExtraCounter={
           userInput ? (
             <Stack direction="row" spacing={1} alignItems="center">
