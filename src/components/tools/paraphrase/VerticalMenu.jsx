@@ -1,20 +1,19 @@
 "use client";
-import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { Box, IconButton, Tooltip, Typography, Drawer } from "@mui/material";
 import {
-  Gavel,
-  SentimentSatisfiedAlt,
   Compare,
+  Gavel,
   History,
-  Settings,
   Keyboard,
-  Diamond,
+  SentimentSatisfiedAlt,
+  Settings,
 } from "@mui/icons-material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
+import { Box, Drawer, IconButton, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import PlagiarismSidebar from "./PlagiarismSidebar";
 import SettingsSidebar from "./settings/SettingsSidebar";
-import { useSelector } from "react-redux";
 
 const ICON_SIZE = "1.5rem";
 

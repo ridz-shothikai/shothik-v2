@@ -1,19 +1,20 @@
 // PlagiarismSidebar.jsx
-import React from "react";
-import { Box, IconButton } from "@mui/material";
 import {
   Close,
+  Compare,
   Gavel,
   History,
-  EmojiEmotions,
-  Compare,
   SentimentSatisfiedAlt,
 } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
+import React from "react";
+import { useSelector } from "react-redux";
 
-import PlagiarismTab from "./actions/PlagiarismTab";
-import HistoryTab from "./actions/HistoryTab"; // to come
-import ToneTab from "./actions/ToneTab"; // to come
 import CompareTab from "./actions/CompareTab"; // to come
+import HistoryTab from "./actions/HistoryTab"; // to come
+import PlagiarismTab from "./actions/PlagiarismTab";
+import ToneTab from "./actions/ToneTab"; // to come
+import UpgradePrompt from "./UpgradePrompt";
 
 const tabs = [
   { id: "plagiarism", icon: <Gavel />, component: PlagiarismTab },
@@ -42,6 +43,12 @@ const PlagiarismSidebar = ({
   selectedSynonymLevel,
   disableActions,
 }) => {
+  const { user } = useSelector((state) => state.auth);
+  const paidUser =
+    user?.package === "pro_plan" ||
+    user?.package === "value_plan" ||
+    user?.package === "unlimited";
+
   if (!open) return null;
 
   const ActiveTab = tabs.find((t) => t.id === active)?.component;
@@ -125,22 +132,26 @@ const PlagiarismSidebar = ({
       </Box>
 
       {/* active tab content */}
-      {ActiveTab && (
-        <ActiveTab
-          selectedMode={selectedMode}
-          setSelectedMode={setSelectedMode}
-          score={score}
-          results={results}
-          outputText={outputText}
-          setOutputText={setOutputText}
-          text={text}
-          freezeWords={freezeWords}
-          selectedLang={selectedLang}
-          sentence={sentence}
-          highlightSentence={highlightSentence}
-          plainOutput={plainOutput}
-          selectedSynonymLevel={selectedSynonymLevel}
-        />
+      {!paidUser ? (
+        <UpgradePrompt onClose={onClose} />
+      ) : (
+        ActiveTab && (
+          <ActiveTab
+            selectedMode={selectedMode}
+            setSelectedMode={setSelectedMode}
+            score={score}
+            results={results}
+            outputText={outputText}
+            setOutputText={setOutputText}
+            text={text}
+            freezeWords={freezeWords}
+            selectedLang={selectedLang}
+            sentence={sentence}
+            highlightSentence={highlightSentence}
+            plainOutput={plainOutput}
+            selectedSynonymLevel={selectedSynonymLevel}
+          />
+        )
       )}
     </Box>
   );
