@@ -343,6 +343,11 @@ function UserInputBox({
   const allowDoubleClickSelection = useRef(false);
   const enqueueSnackbar = useSnackbar();
 
+  const isDragging = useRef(false);
+  const selectionTimeout = useRef(null);
+  const touchStartTime = useRef(null);
+  const editorMounted = useRef(false);
+
   const editor = useEditor(
     {
       extensions: [
@@ -380,33 +385,55 @@ function UserInputBox({
       content: editorContent,
       // content: initialDoc,
       immediatelyRender: false,
+
+      onCreate: ({ editor }) => {
+        editorMounted.current = true;
+      },
+
+      onDestroy: () => {
+        editorMounted.current = false;
+      },
+
       onSelectionUpdate: ({ editor }) => {
-        if (!allowDoubleClickSelection.current) {
-          // ignore selection updates from drag/keyboard/etc.
+        // Don't show popover while user is still dragging
+        if (isDragging.current || !editorMounted.current) {
           return;
         }
 
-        const { from, to } = editor.state.selection;
-        const selectedText = editor.state.doc.textBetween(from, to, " ").trim();
-
-        if (selectedText && from !== to) {
-          setSelectedWord(selectedText);
-
-          setTimeout(() => {
-            const { view } = editor;
-            const start = view.coordsAtPos(from);
-
-            setPopoverPosition({
-              top: start.bottom + window.scrollY,
-              left: start.left + window.scrollX,
-            });
-
-            setAnchorEl(document.body);
-          }, 10);
-        } else {
-          clearSelection();
+        // Clear any pending timeout
+        if (selectionTimeout.current) {
+          clearTimeout(selectionTimeout.current);
         }
+
+        // Delay popover appearance to ensure selection is finalized
+        selectionTimeout.current = setTimeout(() => {
+          const { from, to } = editor.state.selection;
+          const selectedText = editor.state.doc
+            .textBetween(from, to, " ")
+            .trim();
+
+          if (selectedText && from !== to) {
+            setSelectedWord(selectedText);
+
+            setTimeout(() => {
+              const { view } = editor;
+              if (view && view.coordsAtPos) {
+                const start = view.coordsAtPos(from);
+
+                setPopoverPosition({
+                  top: start.bottom + window.scrollY + 5,
+                  left: start.left + window.scrollX,
+                });
+
+                setAnchorEl(document.body);
+              }
+            }, 10);
+          } else {
+            clearSelection();
+          }
+        }, 100);
       },
+
       onUpdate: ({ editor }) => {
         // Don't trigger setUserInput when in demo mode
         if (isDemoMode) {
@@ -428,93 +455,78 @@ function UserInputBox({
   const clearSelection = () => {
     setAnchorEl(null);
     setSelectedWord("");
+    if (selectionTimeout.current) {
+      clearTimeout(selectionTimeout.current);
+    }
   };
 
   useEffect(() => {
     return () => editor?.destroy();
   }, [editor]);
 
-  // This effect handles double-click selection
+  // This effect handles drag-click-touch event selection
   useEffect(() => {
-    if (!editor) return;
-
-    // single handler ref so we can remove it later
-    const doubleClickHandler = (ev) => {
-      try {
-        // Use click detail (2 = double click). pointerup/click appear earlier than dblclick.
-        if (!ev || ev.detail !== 2) return;
-
-        // Read selection from the editor state (ProseMirror selection)
-        const sel = editor.state.selection;
-        const { from, to } = sel;
-
-        // If there's no selection, nothing to do
-        if (!from || !to || from === to) {
-          // As a fallback, try the browser selection (rare)
-          const s = window.getSelection?.().toString?.().trim();
-          if (!s) return;
-        }
-
-        // Get the selected text
-        const selectedText = editor.state.doc.textBetween(from, to, " ").trim();
-        if (!selectedText) return;
-
-        // Save the selected word (for Freeze/unfreeze logic)
-        setSelectedWord(selectedText);
-
-        // Compute coordinates using the editor view (safe to access here because handler runs after view exists)
-        // Wrap coordsAtPos in try/catch in case view is not ready for some reason.
-        try {
-          const start = editor.view.coordsAtPos(from);
-
-          setPopoverPosition({
-            top: start.bottom + window.scrollY,
-            left: start.left + window.scrollX,
-          });
-
-          // Use an element truthy for MUI Popover open; we use document.body as you did.
-          setAnchorEl(document.body);
-        } catch (err) {
-          // If coords can't be computed, just open without position fallback
-          setPopoverPosition({ top: 0, left: 0 });
-          setAnchorEl(document.body);
-        }
-      } catch (err) {
-        // swallow errors — don't break UI
-        // console.error('doubleClickHandler error', err);
-      }
-    };
-
-    const tryAttachNow = () => {
-      try {
-        const dom = editor.view.dom;
-        // Use 'click' (check detail) — more reliable timing than dblclick for selection
-        dom.addEventListener("click", doubleClickHandler);
-        return () => dom.removeEventListener("click", doubleClickHandler);
-      } catch (err) {
-        return null;
-      }
-    };
-
-    let cleanupAttach = tryAttachNow();
-
-    let cleanupCreateOff = null;
-    if (!cleanupAttach && typeof editor.on === "function") {
-      const onCreate = () => {
-        const cleanupNow = tryAttachNow();
-        if (cleanupNow) cleanupAttach = cleanupNow;
-      };
-      editor.on("create", onCreate);
-      cleanupCreateOff = () => {
-        try {
-          if (typeof editor.off === "function") editor.off("create", onCreate);
-        } catch (e) {}
-      };
+    if (!editor || !editor.view || !editorMounted.current) {
+      return;
     }
 
+    // Use optional chaining to safely check for view.dom
+    const editorElement = editor?.view?.dom;
+
+    if (!editorElement) {
+      return;
+    }
+
+    const handleMouseDown = () => {
+      isDragging.current = true;
+      if (selectionTimeout.current) {
+        clearTimeout(selectionTimeout.current);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setTimeout(() => {
+        isDragging.current = false;
+      }, 150);
+    };
+
+    const handleTouchStart = () => {
+      isDragging.current = true;
+      touchStartTime.current = Date.now();
+      if (selectionTimeout.current) {
+        clearTimeout(selectionTimeout.current);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setTimeout(() => {
+        isDragging.current = false;
+      }, 150);
+    };
+
+    const handleContextMenu = (e) => {
+      if (touchStartTime.current && Date.now() - touchStartTime.current > 500) {
+        e.preventDefault();
+      }
+    };
+
+    editorElement.addEventListener("mousedown", handleMouseDown);
+    editorElement.addEventListener("mouseup", handleMouseUp);
+    editorElement.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    editorElement.addEventListener("touchend", handleTouchEnd);
+    editorElement.addEventListener("contextmenu", handleContextMenu);
+
     return () => {
-      if (cleanupAttach) cleanupAttach();
-      if (cleanupCreateOff) cleanupCreateOff();
+      editorElement.removeEventListener("mousedown", handleMouseDown);
+      editorElement.removeEventListener("mouseup", handleMouseUp);
+      editorElement.removeEventListener("touchstart", handleTouchStart);
+      editorElement.removeEventListener("touchend", handleTouchEnd);
+      editorElement.removeEventListener("contextmenu", handleContextMenu);
+      if (selectionTimeout.current) {
+        clearTimeout(selectionTimeout.current);
+      }
     };
   }, [editor]);
 
