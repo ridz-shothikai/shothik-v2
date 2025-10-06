@@ -12,10 +12,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import useSnackbar from "../../../hooks/useSnackbar";
-import { useSpellCheckerMutation } from "../../../redux/api/tools/toolsApi";
 import WordCounter from "../common/WordCounter";
 import { downloadFile } from "../common/downloadfile";
 
@@ -29,9 +27,10 @@ const BottomContend = ({
   language,
   errors,
   setErrors,
+  errorChecking,
 }) => {
-  const [errorChecking, setErrorChecking] = useState(false);
-  const [spellChecker] = useSpellCheckerMutation();
+  // const [errorChecking, setErrorChecking] = useState(false);
+  // const [spellChecker] = useSpellCheckerMutation();
 
   const enqueueSnackbar = useSnackbar();
   const text = useDebounce(userInput);
@@ -46,30 +45,30 @@ const BottomContend = ({
     enqueueSnackbar("Text Downloaded");
   };
 
-  const handleCheckSpelling = async () => {
-    try {
-      setErrorChecking(true);
-      const payload = { content: userInput, language };
-      const res = await spellChecker(payload).unwrap();
-      const data = res?.result || [];
-      setErrors(data);
-    } catch (error) {
-      // console.log(error);
-      enqueueSnackbar(
-        error.message || error.data.message || "Something went wrong",
-        {
-          variant: "error",
-        },
-      );
-    } finally {
-      setErrorChecking(false);
-    }
-  };
+  // const handleCheckSpelling = async () => {
+  //   try {
+  //     setErrorChecking(true);
+  //     const payload = { content: userInput, language };
+  //     const res = await spellChecker(payload).unwrap();
+  //     const data = res?.result || [];
+  //     setErrors(data);
+  //   } catch (error) {
+  //     // console.log(error);
+  //     enqueueSnackbar(
+  //       error.message || error.data.message || "Something went wrong",
+  //       {
+  //         variant: "error",
+  //       },
+  //     );
+  //   } finally {
+  //     setErrorChecking(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (!text) return;
-    handleCheckSpelling(text);
-  }, [text]);
+  // useEffect(() => {
+  //   if (!text) return;
+  //   handleCheckSpelling(text);
+  // }, [text]);
 
   return (
     <>

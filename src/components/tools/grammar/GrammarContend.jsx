@@ -1,13 +1,15 @@
 "use client";
-import { Card, Grid2, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Card, Grid2, TextField } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
+import useDebounce from "../../../hooks/useDebounce";
 import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
+import { useSpellCheckerMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
@@ -22,20 +24,75 @@ const GrammarContend = () => {
   const [userInput, setUserInput] = useState("");
   const isMobile = useResponsive("down", "sm");
   const [errors, setErrors] = useState([]);
+  const [errorChecking, setErrorChecking] = useState(false);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const loadingText = useLoadingText(isLoading);
   const sampleText =
     trySamples.grammar[language.startsWith("English") ? "English" : language];
+  const editorRef = useRef(null);
+
+  const [spellChecker] = useSpellCheckerMutation();
 
   useEffect(() => {
     if (!userInput) return;
     const language = detectLanguage(userInput);
+    console.log(language);
     setLanguage(language);
   }, [userInput]);
 
+  const handleCheckSpelling = async () => {
+    try {
+      setErrorChecking(true);
+      const payload = { content: userInput, language };
+      const res = await spellChecker(payload).unwrap();
+      const data = res?.result || [];
+      setErrors(data);
+      console.log(data);
+    } catch (error) {
+      enqueueSnackbar(
+        error.message || error.data.message || "Something went wrong",
+        {
+          variant: "error",
+        },
+      );
+    } finally {
+      setErrorChecking(false);
+    }
+  };
+
+  const text = useDebounce(userInput);
+
+  useEffect(() => {
+    if (!text) return;
+    handleCheckSpelling(text);
+  }, [text]);
+
+  // Highlight errors in the text
+  const getHighlightedText = () => {
+    if (!userInput || errors.length === 0) {
+      return userInput;
+    }
+
+    let highlightedText = userInput;
+    const errorWords = errors.map((error) => error.word || error.text || error);
+
+    // Create regex pattern for all error words
+    errorWords.forEach((word) => {
+      if (word) {
+        const regex = new RegExp(`\\b${word}\\b`, "gi");
+        highlightedText = highlightedText.replace(
+          regex,
+          `<span style="background-color: #fff59d; padding: 2px 0;">${word}</span>`,
+        );
+      }
+    });
+
+    return highlightedText;
+  };
+
   function handleInput(e) {
-    const value = e.target.value;
+    const value = e.target.innerText || e.target.value;
     setUserInput(value);
   }
 
@@ -44,6 +101,9 @@ const GrammarContend = () => {
     setOutputContend("");
     setErrors([]);
     setLanguage("English");
+    if (editorRef.current) {
+      editorRef.current.innerText = "";
+    }
   }
 
   async function fetchWithStreaming(payload) {
@@ -78,12 +138,12 @@ const GrammarContend = () => {
       throw error;
     }
   }
+
   async function handleSubmit() {
     try {
       setIsLoading(true);
       setOutputContend("");
 
-      //track event
       trackEvent("click", "grammar", "grammar_fixed_click", 1);
 
       const payload = {
@@ -131,30 +191,31 @@ const GrammarContend = () => {
           }}
           size={{ xs: 12, md: 6 }}
         >
-          <TextField
-            name="input"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={isMobile ? 15 : 19}
-            placeholder="Input your text here..."
-            value={userInput}
-            onChange={handleInput}
+          <Box
+            ref={editorRef}
+            contentEditable
+            suppressContentEditableWarning
+            onInput={handleInput}
+            dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
             sx={{
-              flexGrow: 1,
-              "& .MuiOutlinedInput-root": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                  borderRadius: "0 8px 8px 8px",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                  borderRadius: "0 8px 8px 8px",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                  borderRadius: "0 8px 8px 8px",
-                },
+              minHeight: isMobile ? 360 : 456,
+              padding: "16.5px 14px",
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+              borderRadius: "0 8px 8px 8px",
+              outline: "none",
+              fontFamily: "inherit",
+              fontSize: "1rem",
+              lineHeight: 1.5,
+              color: "text.primary",
+              backgroundColor: "background.paper",
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
+              "&:focus": {
+                borderColor: "divider",
+              },
+              "&:empty:before": {
+                content: '"Input your text here..."',
+                color: "text.disabled",
               },
             }}
           />
@@ -215,6 +276,8 @@ const GrammarContend = () => {
         language={language}
         errors={errors}
         setErrors={setErrors}
+        errorChecking={errorChecking}
+        setErrorChecking={setErrorChecking}
       />
     </Card>
   );
