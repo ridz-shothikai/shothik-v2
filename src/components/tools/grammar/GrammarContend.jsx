@@ -224,6 +224,7 @@ const GrammarContend = () => {
               setUserInput={setUserInput}
               isMobile={isMobile}
               sampleText={sampleText}
+              disableTrySample={!sampleText}
             />
           ) : null}
         </Grid2>

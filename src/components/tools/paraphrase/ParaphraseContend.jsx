@@ -137,14 +137,21 @@ const ParaphraseContend = () => {
   const frozenPhrases = useSetState(initialFrozenPhrase);
   const [recommendedFreezeWords, setRecommendedFreezeWords] = useState([]);
   const [language, setLanguage] = useState("English (US)");
-  const sampleText =
-    trySamples.paraphrase[
-      language && language.startsWith("English")
-        ? "English"
-        : language
-          ? language
-          : "English"
-    ];
+  // const sampleText =
+  //   trySamples.paraphrase[
+  //     language && language.startsWith("English")
+  //       ? "English"
+  //       : language
+  //         ? language
+  //         : "English"
+  //   ];
+  const sampleText = useMemo(() => {
+    const langKey =
+      language && language.startsWith("English") ? "English" : language;
+    return trySamples.paraphrase[langKey] || null;
+  }, [language]);
+
+  const hasSampleText = Boolean(sampleText); // To conditionally show the Try Sample button
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
   const [userInput, setUserInput] = useState("");
@@ -1151,6 +1158,7 @@ const ParaphraseContend = () => {
                     ]
                       .filter(Boolean)
                       .join(", ")}
+                    disableTrySample={!hasSampleText}
                   />
                 ) : null}
                 <WordCounter

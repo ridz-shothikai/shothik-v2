@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Stack, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
@@ -38,8 +38,15 @@ const HumanizedContend = () => {
   const [language, setLanguage] = useState("English (US)");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
-  const sampleText =
-    trySamples.humanize[language.startsWith("English") ? "English" : language];
+  // const sampleText =
+  //   trySamples.humanize[language.startsWith("English") ? "English" : language];
+
+  const sampleText = useMemo(() => {
+    const langkey =
+      language && language.startsWith("English") ? "English" : language;
+    return trySamples.humanize[langkey] || null;
+  }, [language]);
+  const hasSampleText = Boolean(sampleText);
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const loadingText = useLoadingText(isLoading);
@@ -175,6 +182,7 @@ const HumanizedContend = () => {
             setUserInput={setUserInput}
             isMobile={isMobile}
             sampleText={sampleText}
+            disableTrySample={!hasSampleText}
           />
         ) : (
           <InputBottom
