@@ -7,7 +7,7 @@
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { saveAs } from "file-saver";
 // jsPDF was present previously; keep import in case other code expects it
-import jsPDF from "jspdf";
+import pdfMake from "pdfmake/build/pdfmake";
 
 /* ---------------------------
    Text / Markdown helpers
@@ -82,56 +82,6 @@ function arrayBufferToBase64(buffer) {
     binary += String.fromCharCode.apply(null, chunk);
   }
   return btoa(binary);
-}
-
-/**
- * loadPDFMake()
- * Load pdfmake and vfs_fonts.js (from cdnjs) and wait until both scripts are ready.
- * Returns window.pdfMake.
- */
-async function loadPDFMake() {
-  if (window.pdfMake && window.pdfMake.vfs) return window.pdfMake;
-
-  // Insert scripts if not present
-  const addScript = (src) =>
-    new Promise((resolve, reject) => {
-      // if a script with same src already loaded, just wait for window.pdfMake
-      const existing = Array.from(document.getElementsByTagName("script")).find(
-        (s) => s.src && s.src.includes(src),
-      );
-      if (existing) {
-        existing.onload ? (existing.onload = () => resolve()) : resolve();
-        existing.onerror ? (existing.onerror = (e) => reject(e)) : null;
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = src;
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = (e) => reject(e);
-      document.head.appendChild(script);
-    });
-
-  try {
-    // pdfmake and vfs (vfs contains Roboto mapping by default)
-    await Promise.all([
-      addScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js",
-      ),
-      addScript(
-        "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js",
-      ),
-    ]);
-    // tiny delay to ensure pdfMake initialises
-    await new Promise((r) => setTimeout(r, 10));
-    if (!window.pdfMake) throw new Error("pdfMake failed to initialize");
-    window.pdfMake.vfs = window.pdfMake.vfs || {};
-    window.pdfMake.fonts = window.pdfMake.fonts || {};
-    return window.pdfMake;
-  } catch (err) {
-    console.error("Failed to load pdfMake or vfs_fonts.js:", err);
-    throw err;
-  }
 }
 
 /**
@@ -266,8 +216,6 @@ function containsBengaliText(text) {
 const downloadAsPdf = async (outputContent, filename) => {
   try {
     console.log("Using PDFMake for PDF generation (Bengali/English aware)");
-
-    const pdfMake = await loadPDFMake();
 
     // Debug: before injecting anything
     console.log("pdfMake.fonts keys before:", Object.keys(pdfMake.fonts || {}));
