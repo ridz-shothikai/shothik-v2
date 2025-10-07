@@ -12,11 +12,21 @@ import pdfMake from "pdfmake/build/pdfmake";
 /* ---------------------------
    Text / Markdown helpers
    --------------------------- */
+// const parseMarkdownText = (text) => {
+//   // Split on double newlines into paragraphs, preserve single-line breaks inside paragraphs by converting them to spaces
+//   const paragraphs = text.split(/\n\s*\n/);
+//   return paragraphs
+//     .map((paragraph) => paragraph.trim().replace(/\n/g, " "))
+//     .filter((p) => p.length > 0);
+// };
+
+// Previous 👆.
+
 const parseMarkdownText = (text) => {
-  // Split on double newlines into paragraphs, preserve single-line breaks inside paragraphs by converting them to spaces
-  const paragraphs = text.split(/\n\s*\n/);
+  // Split on ANY newline into paragraphs (including single line breaks)
+  const paragraphs = text.split(/\n+/);
   return paragraphs
-    .map((paragraph) => paragraph.trim().replace(/\n/g, " "))
+    .map((paragraph) => paragraph.trim())
     .filter((p) => p.length > 0);
 };
 
@@ -44,8 +54,8 @@ const downloadAsTxt = (outputContent, filename) => {
 };
 
 const downloadAsDocx = (outputContent, filename) => {
-  const plainText = markdownToPlainText(outputContent);
-  const paragraphs = parseMarkdownText(plainText);
+  // const plainText = markdownToPlainText(outputContent);
+  const paragraphs = parseMarkdownText(outputContent);
 
   const documentChildren = paragraphs.map(
     (paragraphText) =>
@@ -322,6 +332,7 @@ export const downloadFile = async (
   toolName,
   format = "docx",
 ) => {
+  // console.log(outputContent, "output contend");
   const now = new Date();
   const formattedDate = `${
     now.getMonth() + 1

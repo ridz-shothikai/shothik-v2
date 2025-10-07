@@ -1,6 +1,5 @@
 import { ContentCopy, VerticalAlignBottom } from "@mui/icons-material";
-import { Button, IconButton, Stack, Tooltip } from "@mui/material";
-import React from "react";
+import { IconButton, Stack, Tooltip } from "@mui/material";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import WordCounter from "../common/WordCounter";
@@ -24,8 +23,8 @@ const BottomBar = ({
     enqueueSnackbar("Copied to clipboard");
   }
 
-  const handleDownload = () => {
-    downloadFile(outputContend, "translation");
+  const handleDownload = async () => {
+    await downloadFile(outputContend, "translation");
     enqueueSnackbar("Text Downloaded");
   };
 
