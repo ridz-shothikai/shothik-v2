@@ -263,7 +263,7 @@ const GrammarContend = () => {
               multiline
               placeholder="Corrected output"
               value={loadingText ? loadingText : outputContend}
-              disabled
+              disabled={loadingText}
               sx={{
                 flexGrow: 1,
                 color: "text.primary",
@@ -281,9 +281,12 @@ const GrammarContend = () => {
                     borderColor: "divider",
                   },
                   "& .MuiInputBase-input.Mui-disabled": {
-                    color: "#242426", // Changed from "inherit"
-                    WebkitTextFillColor: "#242426", // Changed from "inherit"
+                    // color: "#242426", // Changed from "inherit"
+                    // WebkitTextFillColor: "#242426", // Changed from "inherit"
                     opacity: 1,
+                    "&::placeholder": {
+                      color: "#A0A0A0",
+                    },
                   },
                   color: "text.primary",
                 },
