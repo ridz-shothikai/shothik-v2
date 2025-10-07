@@ -159,14 +159,14 @@ const AiDetector = () => {
               <TextField
                 name="input"
                 variant="outlined"
-                rows={isMobile ? 13 : 18}
+                rows={isMobile ? 13 : 22}
                 fullWidth
                 multiline
                 placeholder="Enter your text here..."
                 value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 sx={{
-                  flexGrow: 1,
+                  // flexGrow: 1,
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
                       border: "none",
