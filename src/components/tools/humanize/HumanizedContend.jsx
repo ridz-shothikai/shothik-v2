@@ -1,6 +1,15 @@
 "use client";
 
-import { Card, Stack, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CircularProgress,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
@@ -58,6 +67,7 @@ const HumanizedContend = () => {
   const [scores, setScores] = useState([]);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
+  const router = useRouter();
   // const theme = useTheme();
 
   function handleClear() {
@@ -67,11 +77,18 @@ const HumanizedContend = () => {
     setOutputContent([]);
   }
 
-  const handleAiDetectors = () => {
+  const handleAiDetectors = (text) => {
+    if (!text) return;
+
     setLoadingAi(true);
-    setTimeout(() => {
-      setLoadingAi(false);
-    }, 1000);
+    // setTimeout(() => {
+    //   setLoadingAi(false);
+    // }, 1000);
+
+    // console.log("content", text);
+    sessionStorage.setItem("ai-detect-content", JSON.stringify(text));
+    router.push("/ai-detector");
+    setLoadingAi(false);
   };
 
   const handleSubmit = async () => {
@@ -257,6 +274,29 @@ const HumanizedContend = () => {
 
         {showShalowAlert ? <AlertDialogMessage /> : null}
       </Card>
+
+      {outputContent.length ? (
+        <Button
+          variant="soft"
+          size={isMobile ? "small" : "large"}
+          color="warning"
+          onClick={() => handleAiDetectors(outputContent[showIndex]?.text)}
+          disabled={loadingAi}
+          sx={{
+            border: { sm: "none", xs: "2px solid" },
+            borderColor: "primary.warning",
+            borderRadius: "5px",
+            "&:hover": {
+              borderColor: "primary.dark",
+            },
+            mt: 2,
+            maxWidth: "130px",
+          }}
+        >
+          {loadingAi && <CircularProgress size={16} color="inherit" />}
+          Detect AI
+        </Button>
+      ) : null}
     </Stack>
   );
 };

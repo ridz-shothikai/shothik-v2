@@ -1,4 +1,3 @@
-import { SaveAsOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetUsesLimitQuery } from "../../../redux/api/tools/toolsApi";
 import SvgColor from "../../../resource/SvgColor";
 
@@ -57,10 +56,9 @@ const Navigations = ({
   return (
     <Stack
       direction={{ xs: "column", sm: "row" }}
-      alignItems="center"
       justifyContent="space-between"
       spacing={{ xs: 2, sm: 0 }}
-      sx={{ my: 2 }}
+      sx={{ my: 2, alignItems: { xs: "start", sm: "center" } }}
     >
       <Stack
         direction="row"

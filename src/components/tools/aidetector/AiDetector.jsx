@@ -64,8 +64,11 @@ const AiDetector = () => {
   const { data: userLimit, refetch } = useGetUsesLimitQuery({
     service: "ai-detector",
   });
+  const sessionContent = JSON.parse(
+    sessionStorage.getItem("ai-detect-content"),
+  );
 
-  console.log(outputContend, "output contend");
+  // console.log(sessionContent, "output contend");
 
   useEffect(() => {
     if (!shareContend) return;
@@ -88,7 +91,8 @@ const AiDetector = () => {
     setUserInput("");
     setEnableEdit(true);
   }
-  async function handleSubmit() {
+  // inputData -> only used when we want to pass input data from other component|function
+  async function handleSubmit(inputData = null) {
     try {
       // handle edit;
       if (!enableEdit) {
@@ -100,9 +104,11 @@ const AiDetector = () => {
       trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
-      const res = await scanAidetector({ text: userInput }).unwrap();
+      const res = await scanAidetector({
+        text: inputData ? inputData : userInput,
+      }).unwrap();
       const data = res?.result;
-      if (!data) throw { message: "Something went wrong" };
+      if (!data) throw { message: "Something went wrong" }; // TODO: Instead of throwing error need to show error status. useSnackbar has to used to show toast bar
       setOutputContend({
         ...data,
         aiSentences: data.sentences.filter(
@@ -114,6 +120,10 @@ const AiDetector = () => {
       });
       setEnableEdit(false);
       refetch();
+      // If we have generated output based on session content then we need to clear the session storage
+      if (sessionContent) {
+        sessionStorage.removeItem("ai-detect-content");
+      }
     } catch (err) {
       const error = err?.data;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
@@ -136,6 +146,22 @@ const AiDetector = () => {
       setOpenSampleDrawer(false);
     }
   }
+
+  // This use effect is a connection to other features that checks on session storage for "ai-detect-content", if we find it then we set it to user input and call the handleSubmit function to process it.
+  // Once we call this and get the output result we remove it from the session storage
+
+  // console.log(sessionContent);
+  useEffect(() => {
+    if (sessionContent) {
+      setUserInput(sessionContent);
+      handleSubmit(sessionContent); // passing the content to handleSubmit function so that we don't have to wait for the next useEffect cycle to get the updated userInput value
+      sessionStorage.removeItem("ai-detect-content");
+    }
+
+    return () => {
+      sessionStorage.removeItem("ai-detect-content");
+    };
+  }, [sessionContent]); // no need to include handle submit
 
   if (isContendLoading) {
     return <LoadingScreen />;
