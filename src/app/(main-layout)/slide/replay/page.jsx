@@ -4,15 +4,13 @@ import {
   Box,
   Dialog,
   DialogContent,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CustomSlideshowIcon } from "../../../../components/presentation/PresentationAgentPage";
 import ChatArea from "../../../../components/presentation/ChatArea";
 import PreviewPanel from "../../../../components/presentation/PreviewPanel";
-import { useSearchParams } from "next/navigation";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -69,8 +67,7 @@ export default function SlideReplay() {
       sx={{
         height: {
           xs: "90dvh",
-          lg: "80dvh",
-          xl: "90dvh",
+          lg: "calc(100dvh - 70px)",
         },
         bgcolor: theme.palette.background.default,
         color: theme.palette.text.primary,
@@ -90,51 +87,6 @@ export default function SlideReplay() {
       >
         {isMobile ? (
           <>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                p: 2,
-                border: "1px solid #e0e0e0",
-                cursor: "pointer",
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.grey[900]
-                    : "#e6f7ee",
-              }}
-              onClick={handlePreviewOpen}
-            >
-              <CustomSlideshowIcon
-                sx={{ color: PRIMARY_GREEN, fontSize: 30 }}
-              />
-              <Typography
-                variant="h6"
-                sx={{
-                  ml: 0.5,
-                }}
-              >
-                Preview Slides
-              </Typography>
-              {slides.length > 0 && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    fontSize: {
-                      xs: "0.75rem",
-                      sm: "0.875rem",
-                      md: "1rem",
-                      lg: "1.1rem",
-                      xl: "1.2rem",
-                    },
-                    mt: "3px",
-                  }}
-                >
-                  {slides.length} slide{slides.length > 1 ? "s" : ""} available
-                </Typography>
-              )}
-            </Box>
             <Box
               sx={{
                 flex: 1,
@@ -158,6 +110,9 @@ export default function SlideReplay() {
                 simulationCompleted={simulationCompleted}
                 setShowModal={setShowModal}
                 showModal={showModal}
+                // these are for preview panel on mobile devices
+                handlePreviewOpen={handlePreviewOpen}
+                slides={slides}
               />
             </Box>
             <Dialog

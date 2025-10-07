@@ -1,21 +1,11 @@
 "use client";
 
 // components/ChatArea.tsx
-import React, {
-  useEffect,
-  useRef,
-  memo,
-  useCallback,
-  useState,
-  useMemo,
-} from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
+import PaletteIcon from "@mui/icons-material/Palette";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
-import PaletteIcon from "@mui/icons-material/Palette";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 import {
   Card,
   CardContent,
@@ -26,17 +16,20 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import InteractiveChatMessage from "../../../components/agents/shared/InteractiveChatMessage";
-import InputArea from "./InputAreas";
+import useResponsive from "../../hooks/useResponsive";
 import {
-  useStreamingLogs,
   formatAgentName,
   formatTimestamp,
+  useStreamingLogs,
 } from "../../hooks/useStreamingLogs";
-import { useStaticLogs } from "../../hooks/useStaticLogs";
 import TypingAnimation from "../common/TypingAnimation";
 import { FooterCta } from "../sheet/SheetAgentPage";
-import useResponsive from "../../hooks/useResponsive";
+import { CustomSlideshowIcon } from "../ui/CustomSlideshowIcon";
+import InputArea from "./InputAreas";
 
 const PRIMARY_GREEN = "#07B37A";
 const USER_MESSAGE_COLOR = "#1976d2";
@@ -1517,9 +1510,13 @@ export default function ChatArea({
   simulationCompleted,
   setShowModal,
   showModal,
+
+  // these are for preview panel on mobile devices
+  handlePreviewOpen = () => {}, // onclick handler to open the preview panel
+  slides = [], // slides data to show on the preview panel
 }) {
   const theme = useTheme();
-  const isMobile = useResponsive("down", "sm");
+  const isMobile = useResponsive("down", "lg");
 
   const {
     processedLogs,
@@ -1733,24 +1730,81 @@ export default function ChatArea({
           sx={{
             borderTop: `1px solid ${theme.palette.divider}`,
             bgcolor: theme.palette.background.paper,
-            flexShrink: 0,
-            maxHeight: "300px",
+            maxHeight: isMobile ? "400px" : "300px",
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
           }}
         >
-          {!hideInputField && (
-            <InputArea
-              currentAgentType={currentAgentType}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-              onSend={onSend}
-              isLoading={isLoading}
-              setUploadedFiles={setUploadedFiles}
-              setFileUrls={setFileUrls}
-              uploadedFiles={uploadedFiles}
-              fileUrls={fileUrls}
-            />
+          {/* 
+            1. For mobile the preview view panel will be close to chat input box.
+            2. For simulation we don't show the input box.
+            3. For simulation the preview will be available after the simulation is completed.
+           */}
+          {/* on mobile preview panel */}
+          {isMobile && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                p: 2,
+                border: "1px solid #e0e0e0",
+                cursor: "pointer",
+                // bgcolor: "#fafafa",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.grey[900]
+                    : "#e6f7ee",
+              }}
+              onClick={handlePreviewOpen}
+            >
+              <CustomSlideshowIcon sx={{ color: "#07B37A", fontSize: 30 }} />
+              <Typography
+                variant="h6"
+                sx={{
+                  ml: 0.5,
+                }}
+              >
+                Preview Slides
+              </Typography>
+              {slides.length > 0 && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    fontSize: {
+                      xs: "0.75rem",
+                      sm: "0.875rem",
+                      md: "1rem",
+                      lg: "1.1rem",
+                      xl: "1.2rem",
+                    },
+                    mt: "3px",
+                  }}
+                >
+                  {slides.length} slide{slides.length > 1 ? "s" : ""} available
+                </Typography>
+              )}
+            </Box>
           )}
+          {/* chat input box */}
+          <Box sx={{}}>
+            {!hideInputField && (
+              <InputArea
+                currentAgentType={currentAgentType}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onSend={onSend}
+                isLoading={isLoading}
+                setUploadedFiles={setUploadedFiles}
+                setFileUrls={setFileUrls}
+                uploadedFiles={uploadedFiles}
+                fileUrls={fileUrls}
+              />
+            )}
+          </Box>
         </Box>
       </Box>
 

@@ -1,28 +1,27 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Box from "@mui/material/Box";
-import AgentHeader from "./AgentHeader";
-import ChatArea from "./ChatArea";
-import PreviewPanel from "./PreviewPanel";
-import { useSelector, useDispatch } from "react-redux";
 import {
-  setPresentationState,
-  selectPresentation,
-} from "../../redux/slice/presentationSlice";
-import io from "socket.io-client";
-import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
-import {
+  Alert,
   Button,
   Dialog,
   DialogContent,
-  IconButton,
+  Snackbar,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Snackbar, Alert } from "@mui/material";
+import Box from "@mui/material/Box";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import io from "socket.io-client";
+import { useAgentContext } from "../../../components/agents/shared/AgentContextProvider";
+import {
+  selectPresentation,
+  setPresentationState,
+} from "../../redux/slice/presentationSlice";
+import ChatArea from "./ChatArea";
+import PreviewPanel from "./PreviewPanel";
 
 const PRIMARY_GREEN = "#07B37A";
 const PHASES_ORDER = [
@@ -686,8 +685,7 @@ export default function PresentationAgentPage({ specificAgent }) {
       sx={{
         height: {
           xs: "90dvh", // height for mobile screens (extra-small)
-          lg: "80dvh", // height for desktop screens (large)
-          xl: "90dvh", // height for extra-large screens
+          lg: "calc(100dvh - 70px)",
         },
         // bgcolor: "white",
         // color: "#333",
@@ -719,52 +717,6 @@ export default function PresentationAgentPage({ specificAgent }) {
           <>
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                p: 2,
-                border: "1px solid #e0e0e0",
-                cursor: "pointer",
-                // bgcolor: "#fafafa",
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.grey[900]
-                    : "#e6f7ee",
-              }}
-              onClick={handlePreviewOpen}
-            >
-              <CustomSlideshowIcon
-                sx={{ color: PRIMARY_GREEN, fontSize: 30 }}
-              />
-              <Typography
-                variant="h6"
-                sx={{
-                  ml: 0.5,
-                }}
-              >
-                Preview Slides
-              </Typography>
-              {slides.length > 0 && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    fontSize: {
-                      xs: "0.75rem",
-                      sm: "0.875rem",
-                      md: "1rem",
-                      lg: "1.1rem",
-                      xl: "1.2rem",
-                    },
-                    mt: "3px",
-                  }}
-                >
-                  {slides.length} slide{slides.length > 1 ? "s" : ""} available
-                </Typography>
-              )}
-            </Box>
-            <Box
-              sx={{
                 flex: 1,
                 overflow: "hidden",
                 display: "flex",
@@ -794,6 +746,9 @@ export default function PresentationAgentPage({ specificAgent }) {
                 simulationCompleted={false}
                 showModal={showModal}
                 setShowModal={setShowModal}
+                // these are for preview panel on mobile devices
+                handlePreviewOpen={handlePreviewOpen}
+                slides={slides}
               />
             </Box>
             <Dialog
@@ -805,22 +760,6 @@ export default function PresentationAgentPage({ specificAgent }) {
                 sx: { height: "80vh", maxHeight: "80vh", position: "relative" },
               }}
             >
-              {/* custom closing button on top of the dialog */}
-              {/* <IconButton
-                aria-label="close"
-                onClick={handlePreviewClose}
-                sx={{
-                  position: "absolute",
-                  right: 4,
-                  top: 4,
-                  color: '#000000',
-                  padding: 1,
-                  zIndex: 12
-                }}
-              >
-                <CustomCloseIcon sx={{ fontSize: 24 }} />
-              </IconButton> */}
-              {/* <DialogContent sx={{ px: 0, pb: 0, pt: 2, overflow: "hidden" }}> */}
               <DialogContent sx={{ p: 0, overflow: "hidden" }}>
                 <PreviewPanel
                   currentAgentType="presentation"
@@ -940,31 +879,3 @@ export default function PresentationAgentPage({ specificAgent }) {
     </Box>
   );
 }
-
-export const CustomSlideshowIcon = ({ sx, ...props }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-    {...props}
-    style={{ ...sx }}
-  >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" />
-  </svg>
-);
-
-const CustomCloseIcon = ({ sx, ...props }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-    {...props}
-    style={{ ...sx }}
-  >
-    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-    <path d="M0 0h24v24H0z" fill="none" />
-  </svg>
-);

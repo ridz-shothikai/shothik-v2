@@ -57,7 +57,7 @@ export default function Main({ children }) {
         maxWidth={containerWidth}
         overflow="hidden"
         disableGutters
-        sx={{ minHeight: "calc(100vh - 90px)" }}
+        sx={{ minHeight: "calc(100vh - 70px)" }}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {pathName.startsWith("/paraphrase") ? (
