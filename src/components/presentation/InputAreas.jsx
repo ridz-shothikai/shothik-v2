@@ -1,17 +1,6 @@
 // components/InputArea.jsx
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
+import { Close } from "@mui/icons-material";
 import SendIcon from "@mui/icons-material/Send";
-import MicIcon from "@mui/icons-material/Mic";
-import PersonIcon from "@mui/icons-material/Person";
-import { Grid, useTheme } from "@mui/system";
-import { AttachFile, Close } from "@mui/icons-material";
-import { useSelector } from "react-redux";
-import { useUploadPresentationFilesMutation } from "../../redux/api/presentation/presentationApi";
 import {
   Alert,
   Card,
@@ -20,6 +9,14 @@ import {
   Snackbar,
   Tooltip,
 } from "@mui/material";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { Grid, useTheme } from "@mui/system";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useUploadPresentationFilesMutation } from "../../redux/api/presentation/presentationApi";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -331,12 +328,12 @@ export default function InputArea({
               sx={{
                 "& .MuiOutlinedInput-root": {
                   bgcolor: "transparent",
-                  color: "#333",
+                  color: isDarkMode ? "#fff" : "#333",
                   fontSize: "1rem",
                   border: "none",
                   "& fieldset": { border: "none" },
-                  "& input": { color: "#333" },
-                  "& textarea": { color: "#333" },
+                  "& input": { color: isDarkMode ? "#fff" : "#333" },
+                  "& textarea": { color: isDarkMode ? "#fff" : "#333" },
                 },
                 "& .MuiOutlinedInput-input::placeholder": {
                   color: "#999",
