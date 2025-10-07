@@ -154,7 +154,8 @@ const Translator = () => {
       <Grid2 container spacing={2}>
         <Grid2
           sx={{
-            height: { xs: 400, sm: 480 },
+            minHeight: { xs: 400, sm: 480 },
+            // maxHeight: { xs: 400, sm: 480 },
             overflowY: "auto",
             position: "relative",
           }}
@@ -184,6 +185,18 @@ const Translator = () => {
               },
             }}
           />
+          {isMobile && (
+            <BottomBar
+              handleClear={handleClear}
+              handleHumanize={handleHumanize}
+              handleSubmit={handleSubmit}
+              isHumanizing={isHumanizing}
+              isLoading={isLoading}
+              outputContend={outputContend}
+              userInput={userInput}
+              userPackage={user?.package}
+            />
+          )}
           {!userInput ? (
             <UserActionInput
               setUserInput={setUserInput}
@@ -232,16 +245,18 @@ const Translator = () => {
         )}
       </Grid2>
 
-      <BottomBar
-        handleClear={handleClear}
-        handleHumanize={handleHumanize}
-        handleSubmit={handleSubmit}
-        isHumanizing={isHumanizing}
-        isLoading={isLoading}
-        outputContend={outputContend}
-        userInput={userInput}
-        userPackage={user?.package}
-      />
+      {!isMobile && (
+        <BottomBar
+          handleClear={handleClear}
+          handleHumanize={handleHumanize}
+          handleSubmit={handleSubmit}
+          isHumanizing={isHumanizing}
+          isLoading={isLoading}
+          outputContend={outputContend}
+          userInput={userInput}
+          userPackage={user?.package}
+        />
+      )}
     </Card>
   );
 };

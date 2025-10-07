@@ -182,6 +182,17 @@ const SummarizeContend = () => {
               },
             }}
           />
+          {isMobile && (
+            <BottomBar
+              handleClear={handleClear}
+              handleSubmit={handleSubmit}
+              isLoading={isLoading}
+              outputContend={outputContend}
+              userInput={userInput}
+              userPackage={user?.package}
+              isMobile={isMobile}
+            />
+          )}
           {!userInput ? (
             <UserActionInput
               setUserInput={setUserInput}
@@ -192,7 +203,7 @@ const SummarizeContend = () => {
         </Grid2>
         {!userInput && isMobile ? null : (
           <Grid2
-            sx={{ height: "100%", overflowY: "auto" }}
+            sx={{ height: "100%", overflowY: "auto", pb: { xs: 2, md: 0 } }}
             size={{ xs: 12, md: 6 }}
           >
             <TextField
@@ -230,14 +241,17 @@ const SummarizeContend = () => {
           </Grid2>
         )}
       </Grid2>
-      <BottomBar
-        handleClear={handleClear}
-        handleSubmit={handleSubmit}
-        isLoading={isLoading}
-        outputContend={outputContend}
-        userInput={userInput}
-        userPackage={user?.package}
-      />
+      {!isMobile && (
+        <BottomBar
+          handleClear={handleClear}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          outputContend={outputContend}
+          userInput={userInput}
+          userPackage={user?.package}
+          isMobile={isMobile}
+        />
+      )}
     </Card>
   );
 };

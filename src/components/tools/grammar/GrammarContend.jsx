@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Card, Grid2, TextField } from "@mui/material";
+import { Box, Card, Grid2, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
@@ -222,15 +222,20 @@ const GrammarContend = () => {
             }}
           />
           {isMobile && (
-            <Button
-              onClick={handleSubmit}
-              variant="contained"
-              loading={isLoading}
-              disabled={!userInput || isLoading}
-              sx={{ mt: 2, width: "fit-content" }}
-            >
-              {loadingText ? loadingText : "Fix Grammar"}
-            </Button>
+            <BottomContend
+              handleClear={handleClear}
+              handleSubmit={handleSubmit}
+              isLoading={isLoading}
+              outputContend={outputContend}
+              userInput={userInput}
+              userPackage={user?.package}
+              language={language}
+              errors={errors}
+              setErrors={setErrors}
+              errorChecking={errorChecking}
+              setErrorChecking={setErrorChecking}
+              isMobile={isMobile}
+            />
           )}
           {!userInput ? (
             <UserActionInput
@@ -243,7 +248,11 @@ const GrammarContend = () => {
         </Grid2>
         {isMobile && !userInput ? null : (
           <Grid2
-            sx={{ height: { xs: "auto", sm: 480 }, overflowY: "auto" }}
+            sx={{
+              height: { xs: "auto", sm: 480 },
+              overflowY: "auto",
+              pb: { xs: 2, md: 0 },
+            }}
             size={{ xs: 12, md: 6 }}
           >
             <TextField
@@ -283,20 +292,22 @@ const GrammarContend = () => {
           </Grid2>
         )}
       </Grid2>
-      <BottomContend
-        handleClear={handleClear}
-        handleSubmit={handleSubmit}
-        isLoading={isLoading}
-        outputContend={outputContend}
-        userInput={userInput}
-        userPackage={user?.package}
-        language={language}
-        errors={errors}
-        setErrors={setErrors}
-        errorChecking={errorChecking}
-        setErrorChecking={setErrorChecking}
-        isMobile={isMobile}
-      />
+      {!isMobile && (
+        <BottomContend
+          handleClear={handleClear}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          outputContend={outputContend}
+          userInput={userInput}
+          userPackage={user?.package}
+          language={language}
+          errors={errors}
+          setErrors={setErrors}
+          errorChecking={errorChecking}
+          setErrorChecking={setErrorChecking}
+          isMobile={isMobile}
+        />
+      )}
     </Card>
   );
 };

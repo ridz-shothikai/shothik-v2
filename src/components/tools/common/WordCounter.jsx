@@ -231,20 +231,21 @@ const Contend = ({
             </Button>
           </Link>
         )}
-        {!isMobile && (
-          <Button
-            onClick={() => handleSubmit()}
-            variant="contained"
-            loading={isLoading}
-            disabled={
-              !dontDisable ? wordCount > wordLimit : btnDisabled || false
-            }
-            sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-            startIcon={btnIcon}
-          >
-            {btnText}
-          </Button>
-        )}
+        <Button
+          onClick={() => handleSubmit()}
+          variant="contained"
+          loading={isLoading}
+          disabled={!dontDisable ? wordCount > wordLimit : btnDisabled || false}
+          sx={{
+            py: { md: 0 },
+            px: { md: 2 },
+            height: { md: 40 },
+            whiteSpace: "nowrap",
+          }}
+          startIcon={btnIcon}
+        >
+          {btnText}
+        </Button>
         {ExtraBtn}
       </Stack>
 
