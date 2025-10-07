@@ -175,7 +175,11 @@ const ONBOARDING_STEPS = [
 ];
 
 const suggestedTopics = {
-  slides: [],
+  slides: [
+    "Create a professional business presentation about Digital Marketing",
+    "Create an academic presentation about AI in Education",
+    "Create a presentation on Bangladesh Software Industry",
+  ],
   sheets: [
     "Compare pricing of top 10 gyms in a sheet",
     "List top 5 Italian restaurants with ratings",
