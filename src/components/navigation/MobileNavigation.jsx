@@ -27,7 +27,7 @@ const links = [
     title: "Plagiarism Checker",
     link: "/plagiarism-checker",
     iconColor: "#6A4C93",
-    iconSrc: "/navbar/ai_detector_icon.svg",
+    iconSrc: "/navbar/plagiarism_checker.svg",
   },
   {
     title: "Grammar",
