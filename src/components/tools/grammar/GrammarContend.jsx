@@ -83,7 +83,7 @@ const GrammarContend = () => {
         const regex = new RegExp(`\\b${word}\\b`, "gi");
         highlightedText = highlightedText.replace(
           regex,
-          `<span style="background-color: #fff59d; padding: 2px 0;">${word}</span>`,
+          `<span style="background-color: #f5c33b4d; padding: 2px 0;">${word}</span>`,
         );
       }
     });
@@ -153,7 +153,7 @@ const GrammarContend = () => {
         synonym: "Basic",
       };
       await fetchWithStreaming(payload);
-      setErrors([]);
+      // setErrors([]);
     } catch (error) {
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));
