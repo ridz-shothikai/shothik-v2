@@ -12,7 +12,7 @@ const links = [
     iconSrc: "/navbar/paraphrase.svg",
   },
   {
-    title: "Humanize",
+    title: "Humanize GPT",
     link: "/humanize-gpt",
     iconColor: "#FF595E",
     iconSrc: "/navbar/bypass-svgrepo-com.svg",
@@ -30,7 +30,7 @@ const links = [
     iconSrc: "/navbar/plagiarism_checker.svg",
   },
   {
-    title: "Grammar",
+    title: "Grammar Fix",
     link: "/grammar-check",
     iconColor: "#8AC926",
     iconSrc: "/navbar/grammar.svg",
