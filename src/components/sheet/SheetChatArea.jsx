@@ -1,5 +1,12 @@
 import PersonIcon from "@mui/icons-material/Person";
-import { Alert, Box, CircularProgress, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -226,10 +233,11 @@ const getStepMessage = (step, data) => {
 
 // Main SheetChatArea component
 export default function SheetChatArea({
-  isLoadings,
   currentAgentType,
   theme,
-  isMobile,
+  // isMobile,
+  // these are for preview panel on mobile devices
+  handlePreviewOpen,
 }) {
   const dev_mode = process.env.NODE_ENV === "development";
   const dispatch = useDispatch();
@@ -254,6 +262,8 @@ export default function SheetChatArea({
     message: "",
     severity: "info",
   });
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [showModal, setShowModal] = useState(false);
   const [simulationCompleted, setSimulationCompleted] = useState(false);
@@ -1380,38 +1390,84 @@ export default function SheetChatArea({
             }}
           ></Box>
         )}
-        {!isSimulationMode && (
-          <Box
-            sx={{
-              borderTop: "1px solid #e0e0e0",
-              bgcolor: "white",
-              flexShrink: 0,
-            }}
-          >
-            <InputArea
-              currentAgentType={currentAgentType}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-              onSend={handleMessage}
-              isLoading={isLoading || sheetState.status === "generating"}
-              disabled={
-                !isInitialized ||
-                isLoading ||
-                !sheetAiToken ||
-                sheetState.status === "generating"
-              }
-              placeholder={
-                !isInitialized
-                  ? "Initializing..."
-                  : !sheetAiToken
-                    ? "Authentication required..."
-                    : isLoading || sheetState.status === "generating"
-                      ? "Generating sheet..."
-                      : "Describe the spreadsheet you want to create..."
-              }
-            />
-          </Box>
-        )}
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          {isMobile && (
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                alignItems: "start",
+                gap: "8px",
+                p: 2,
+                border: `1px solid ${theme.palette.divider}`,
+                cursor: "pointer",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.action.hover
+                    : "#e6f7ee",
+              }}
+              onClick={handlePreviewOpen}
+            >
+              <CustomTableChartIcon
+                sx={{ color: theme.palette.primary.main, fontSize: 40 }}
+              />
+              <Box>
+                <Typography variant="h6" sx={{ ml: 0.5 }}>
+                  Preview Sheet Data
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ ml: 0.5 }}
+                >
+                  Click to open
+                </Typography>
+              </Box>
+            </Box>
+          )}
+          {!isSimulationMode && (
+            <Box
+              sx={{
+                borderTop: "1px solid #e0e0e0",
+                bgcolor: "white",
+                flexShrink: 0,
+                width: "100%",
+              }}
+            >
+              <InputArea
+                currentAgentType={currentAgentType}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                onSend={handleMessage}
+                isLoading={isLoading || sheetState.status === "generating"}
+                disabled={
+                  !isInitialized ||
+                  isLoading ||
+                  !sheetAiToken ||
+                  sheetState.status === "generating"
+                }
+                placeholder={
+                  !isInitialized
+                    ? "Initializing..."
+                    : !sheetAiToken
+                      ? "Authentication required..."
+                      : isLoading || sheetState.status === "generating"
+                        ? "Generating sheet..."
+                        : "Describe the spreadsheet you want to create..."
+                }
+              />
+            </Box>
+          )}
+        </Box>
         {/* for simulation only */}
       </Box>
 
@@ -1454,3 +1510,17 @@ export default function SheetChatArea({
     </>
   );
 }
+
+const CustomTableChartIcon = ({ sx, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="24"
+    viewBox="0 0 24 24"
+    width="24"
+    {...props}
+    style={{ ...sx }}
+  >
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm9 0h-5v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v2h4v-2zm0-4h-4v2h4V9zm0-4h-4v2h4V5z" />
+  </svg>
+);

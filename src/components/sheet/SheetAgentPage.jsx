@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle, Person } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -13,12 +14,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useRegisterUserToBetaListMutation } from "../../redux/api/auth/authApi";
+import EmailModal from "../home/EmailCollectModal";
 import SheetChatArea from "./SheetChatArea";
 import SheetDataArea from "./SheetDataArea";
-import { useEffect, useState } from "react";
-import { CheckCircle, Person, Refresh } from "@mui/icons-material";
-import EmailModal from "../home/EmailCollectModal";
-import { useRegisterUserToBetaListMutation } from "../../redux/api/auth/authApi";
 
 export default function SheetAgentPage({ specificAgent, sheetId }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,8 +51,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
       sx={{
         height: {
           xs: "90dvh",
-          lg: "80dvh",
-          xl: "90dvh",
+          lg: "calc(100dvh - 70px)",
         },
         bgcolor: theme.palette.background.default,
         color: theme.palette.text.primary,
@@ -74,28 +73,6 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
           <>
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                p: 2,
-                border: `1px solid ${theme.palette.divider}`,
-                cursor: "pointer",
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.action.hover
-                    : "#e6f7ee",
-              }}
-              onClick={handlePreviewOpen}
-            >
-              <CustomTableChartIcon
-                sx={{ color: theme.palette.primary.main, fontSize: 30 }}
-              />
-              <Typography variant="h6" sx={{ ml: 0.5 }}>
-                Preview Sheet Data
-              </Typography>
-            </Box>
-            <Box
-              sx={{
                 flex: 1,
                 overflow: "hidden",
                 display: "flex",
@@ -104,8 +81,10 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
             >
               <SheetChatArea
                 currentAgentType={specificAgent}
-                isLoading={isLoading}
+                // isLoading={isLoading}
                 theme={theme}
+                // for mobile preview panel
+                handlePreviewOpen={handlePreviewOpen}
               />
             </Box>
             <Dialog
@@ -179,20 +158,6 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
     </Box>
   );
 }
-
-const CustomTableChartIcon = ({ sx, ...props }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    height="24"
-    viewBox="0 0 24 24"
-    width="24"
-    {...props}
-    style={{ ...sx }}
-  >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm9 0h-5v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v2h4v-2zm0-4h-4v2h4V9zm0-4h-4v2h4V5z" />
-  </svg>
-);
 
 export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
   const [toast, setToast] = useState({
