@@ -29,6 +29,11 @@ const Translator = () => {
     toLang: "English",
   });
 
+  const handleLanguageChange = (newLangState) => {
+    setOutputContend(""); // Clear output when language changes
+    setTranslateLang(newLangState);
+  };
+
   function handleInput(e) {
     const value = e.target.value;
     setUserInput(value);
@@ -148,7 +153,7 @@ const Translator = () => {
         userInput={userInput}
         reverseText={reverseText}
         translateLang={translateLang}
-        setTranslateLang={setTranslateLang}
+        setTranslateLang={handleLanguageChange}
       />
 
       <Grid2 container spacing={2}>
