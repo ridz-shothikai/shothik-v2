@@ -137,6 +137,7 @@ const PlagiarismSidebar = ({
       ) : (
         ActiveTab && (
           <ActiveTab
+            onClose={onClose}
             selectedMode={selectedMode}
             setSelectedMode={setSelectedMode}
             score={score}

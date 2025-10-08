@@ -3,33 +3,34 @@ import {
   ChevronRight,
   ContentCopy,
   DeleteRounded,
+  ExpandMore,
   GppMaybe,
   History,
   KeyboardArrowDown,
   KeyboardArrowUp,
   VerticalAlignBottom,
-  ExpandMore,
 } from "@mui/icons-material";
 import {
   Box,
+  Button,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Modal,
   Stack,
   Tooltip,
   Typography,
-  Modal,
-  Button,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
 } from "@mui/material";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
+import { setActiveHistory } from "../../../redux/slice/paraphraseHistorySlice";
 import WordIcon from "../../../resource/assets/WordIcon";
 import { downloadFile } from "../common/downloadfile";
-import { loadTTFAsArrayBuffer } from "../../../utils/fontLoader";
 
 const OutputBotomNavigation = ({
   setHighlightSentence,
@@ -48,6 +49,8 @@ const OutputBotomNavigation = ({
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
   const [formatMenuAnchor, setFormatMenuAnchor] = useState(null);
 
+  const dispatch = useDispatch();
+
   const handleDownloadClick = () => {
     setDownloadModalOpen(true);
   };
@@ -63,6 +66,16 @@ const OutputBotomNavigation = ({
 
   const handleFormatMenuClose = () => {
     setFormatMenuAnchor(null);
+  };
+
+  const { activeHistory, activeHistoryIndex, histories, historyGroups } =
+    useSelector((state) => state.paraphraseHistory);
+
+  const setActiveHistoryByIndex = (index) => {
+    const history = histories[index];
+    if (history) {
+      dispatch(setActiveHistory(history));
+    }
   };
 
   const handleDownloadFormat = async (format) => {
@@ -196,10 +209,12 @@ const OutputBotomNavigation = ({
               <Tooltip title="Previous history" arrow placement="top">
                 <IconButton
                   size="small"
-                  onClick={() => setOutputHistoryIndex((prev) => prev + 1)}
+                  onClick={() =>
+                    setActiveHistoryByIndex(activeHistoryIndex + 1)
+                  }
                   disabled={
-                    !outputHistory.length ||
-                    outputHistoryIndex === outputHistory.length - 1
+                    !histories.length ||
+                    activeHistoryIndex === histories.length - 1
                   }
                   color="primary"
                   aria-label="delete"
@@ -213,7 +228,7 @@ const OutputBotomNavigation = ({
               </Tooltip>
 
               <IconButton
-                color="text.secondary"
+                color={activeHistory?._id ? "text.primary" : "text.secondary"}
                 aria-label="History"
                 size="small"
                 sx={{
@@ -226,8 +241,11 @@ const OutputBotomNavigation = ({
 
               <Tooltip title="Next history" arrow placement="top">
                 <IconButton
-                  onClick={() => setOutputHistoryIndex((prev) => prev - 1)}
-                  disabled={outputHistoryIndex === 0}
+                  size="small"
+                  onClick={() =>
+                    setActiveHistoryByIndex(activeHistoryIndex - 1)
+                  }
+                  disabled={!histories.length || activeHistoryIndex < 1}
                   sx={{
                     bgcolor: "rgba(73, 149, 87, 0.04)",
                     borderRadius: "5px",
@@ -299,6 +317,60 @@ const OutputBotomNavigation = ({
           </Tooltip>
         </Stack>
       </Stack>
+
+      {!!isMobile && (
+        <div className="flex items-center justify-center">
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Tooltip title="Previous history" arrow placement="top">
+              <IconButton
+                size="small"
+                onClick={() => setActiveHistoryByIndex(activeHistoryIndex + 1)}
+                disabled={
+                  !histories.length ||
+                  activeHistoryIndex === histories.length - 1
+                }
+                color="primary"
+                aria-label="delete"
+                sx={{
+                  bgcolor: "rgba(73, 149, 87, 0.04)",
+                  borderRadius: "5px",
+                }}
+              >
+                <ChevronLeft />
+              </IconButton>
+            </Tooltip>
+
+            <IconButton
+              color={activeHistory?._id ? "text.primary" : "text.secondary"}
+              aria-label="History"
+              size="small"
+              sx={{
+                bgcolor: "rgba(73, 149, 87, 0.04)",
+                borderRadius: "5px",
+              }}
+            >
+              <History />
+            </IconButton>
+
+            <Tooltip title="Next history" arrow placement="top">
+              <IconButton
+                size="small"
+                onClick={() => setActiveHistoryByIndex(activeHistoryIndex - 1)}
+                disabled={!histories.length || activeHistoryIndex < 1}
+                sx={{
+                  bgcolor: "rgba(73, 149, 87, 0.04)",
+                  borderRadius: "5px",
+                  mr: 0.5,
+                }}
+                aria-label="delete"
+                color="primary"
+              >
+                <ChevronRight />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </div>
+      )}
 
       {/* Download Modal */}
       <Modal

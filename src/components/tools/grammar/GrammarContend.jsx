@@ -69,7 +69,7 @@ const GrammarContend = () => {
   }, [text]);
 
   // Highlight errors in the text
-  const getHighlightedText = () => {
+  function getHighlightedText(userInput, errors) {
     if (!userInput || errors.length === 0) {
       return userInput;
     }
@@ -77,19 +77,21 @@ const GrammarContend = () => {
     let highlightedText = userInput;
     const errorWords = errors.map((error) => error.word || error.text || error);
 
-    // Create regex pattern for all error words
     errorWords.forEach((word) => {
       if (word) {
-        const regex = new RegExp(`\\b${word}\\b`, "gi");
+        // Escape regex special chars
+        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedWord, "gu");
+
         highlightedText = highlightedText.replace(
           regex,
-          `<span style="background-color: #fff59d; padding: 2px 0;">${word}</span>`,
+          `<span style="background-color: #f5c33b4d; padding: 2px 0;">${word}</span>`,
         );
       }
     });
 
     return highlightedText;
-  };
+  }
 
   function handleInput(e) {
     const value = e.target.innerText || e.target.value;
@@ -153,7 +155,7 @@ const GrammarContend = () => {
         synonym: "Basic",
       };
       await fetchWithStreaming(payload);
-      setErrors([]);
+      // setErrors([]);
     } catch (error) {
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));
@@ -196,7 +198,9 @@ const GrammarContend = () => {
             contentEditable
             suppressContentEditableWarning
             onInput={handleInput}
-            dangerouslySetInnerHTML={{ __html: getHighlightedText() }}
+            dangerouslySetInnerHTML={{
+              __html: getHighlightedText(userInput, errors),
+            }}
             sx={{
               overflowY: "auto",
               maxHeight: { xs: 360, sm: "auto" },
