@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Card, Stack, TextField, Typography } from "@mui/material";
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -81,14 +74,9 @@ const HumanizedContend = () => {
     if (!text) return;
 
     setLoadingAi(true);
-    // setTimeout(() => {
-    //   setLoadingAi(false);
-    // }, 1000);
 
-    // console.log("content", text);
     sessionStorage.setItem("ai-detect-content", JSON.stringify(text));
     router.push("/ai-detector");
-    setLoadingAi(false);
   };
 
   const handleSubmit = async () => {
@@ -139,164 +127,161 @@ const HumanizedContend = () => {
   };
 
   return (
-    <Stack>
-      <LanguageMenu
-        isLoading={isLoading}
-        setLanguage={setLanguage}
-        language={language}
-      />
-
-      <Card
+    <Stack sx={{ pt: 2 }}>
+      <Box
         sx={{
-          position: "relative",
-          height: 420,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "visible",
-          borderRadius: "0 12px 12px 12px",
-          border: (theme) => `1px solid ${theme.palette.divider}`,
+          width: "50%",
         }}
       >
-        <TopNavigation
-          model={model}
-          setModel={setModel}
-          setShalowAlert={setShalowAlert}
-          userPackage={user?.package}
-          LENGTH={LENGTH}
-          currentLength={currentLength}
-          setCurrentLength={setCurrentLength}
+        <LanguageMenu
+          isLoading={isLoading}
+          setLanguage={setLanguage}
+          language={language}
         />
-        <TextField
-          name="input"
-          variant="outlined"
-          rows={13}
-          fullWidth
-          multiline
-          placeholder="Enter your text here..."
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          disabled={showShalowAlert}
-          sx={{
-            flexGrow: 1,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                border: "none",
-              },
-              "& textarea": {
-                textAlign: "left",
-                whiteSpace: "normal",
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-              },
-            },
-            "& .MuiInputBase-root": {
-              paddingY: "4px",
-            },
-          }}
-        />
-        {!userInput ? (
-          <UserActionInput
-            setUserInput={setUserInput}
-            isMobile={isMobile}
-            sampleText={sampleText}
-            disableTrySample={!hasSampleText}
-          />
-        ) : (
-          <InputBottom
-            handleClear={handleClear}
+      </Box>
+
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
+          gap: 2,
+        }}
+      >
+        <Box>
+          <Card
+            sx={{
+              position: "relative",
+              height: 420,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "visible",
+              borderRadius: "0 12px 12px 12px",
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <TopNavigation
+              model={model}
+              setModel={setModel}
+              setShalowAlert={setShalowAlert}
+              userPackage={user?.package}
+              LENGTH={LENGTH}
+              currentLength={currentLength}
+              setCurrentLength={setCurrentLength}
+            />
+            <TextField
+              name="input"
+              variant="outlined"
+              rows={13}
+              fullWidth
+              multiline
+              placeholder="Enter your text here..."
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              disabled={showShalowAlert}
+              sx={{
+                flexGrow: 1,
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    border: "none",
+                  },
+                  "& textarea": {
+                    textAlign: "left",
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                  },
+                },
+                "& .MuiInputBase-root": {
+                  paddingY: "4px",
+                },
+              }}
+            />
+            {!userInput ? (
+              <UserActionInput
+                setUserInput={setUserInput}
+                isMobile={isMobile}
+                sampleText={sampleText}
+                disableTrySample={!hasSampleText}
+              />
+            ) : (
+              <InputBottom
+                handleClear={handleClear}
+                isLoading={isLoading}
+                isMobile={isMobile}
+                miniLabel={miniLabel}
+                userInput={userInput}
+                userPackage={user?.package}
+                setWordCount={setWordCount}
+              />
+            )}
+          </Card>
+
+          <Navigations
+            hasOutput={outputContent.length}
             isLoading={isLoading}
             isMobile={isMobile}
             miniLabel={miniLabel}
+            model={model}
             userInput={userInput}
+            wordCount={wordCount}
+            wordLimit={wordLimit}
+            handleAiDitectors={handleAiDetectors}
+            handleSubmit={handleSubmit}
+            loadingAi={loadingAi}
             userPackage={user?.package}
-            setWordCount={setWordCount}
+            update={update}
           />
-        )}
-      </Card>
 
-      <Navigations
-        hasOutput={outputContent.length}
-        isLoading={isLoading}
-        isMobile={isMobile}
-        miniLabel={miniLabel}
-        model={model}
-        userInput={userInput}
-        wordCount={wordCount}
-        wordLimit={wordLimit}
-        handleAiDitectors={handleAiDetectors}
-        handleSubmit={handleSubmit}
-        loadingAi={loadingAi}
-        userPackage={user?.package}
-        update={update}
-      />
+          {scores.length ? (
+            <HumanizeScrores
+              isMobile={isMobile}
+              loadingAi={loadingAi}
+              scores={scores}
+              showIndex={showIndex}
+            />
+          ) : null}
+        </Box>
 
-      {scores.length ? (
-        <HumanizeScrores
-          isMobile={isMobile}
-          loadingAi={loadingAi}
-          scores={scores}
-          showIndex={showIndex}
-        />
-      ) : null}
-
-      {outputContent.length ? (
-        <OutputNavigation
-          isMobile={isMobile}
-          outputs={outputContent.length}
-          selectedContend={outputContent[showIndex]?.text}
-          setShowIndex={setShowIndex}
-          showIndex={showIndex}
-        />
-      ) : null}
-
-      {/* output  */}
-      <Card
-        sx={{
-          height: 380,
-          overflowY: "auto",
-          padding: 2,
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        {outputContent[showIndex] ? (
-          <Typography
+        <Box>
+          {/* output  */}
+          <Card
             sx={{
-              whiteSpace: "pre-line",
+              height: 420,
+              overflowY: "auto",
+              padding: 2,
+              border: (theme) => `1px solid ${theme.palette.divider}`,
             }}
           >
-            {outputContent[showIndex].text}
-          </Typography>
-        ) : (
-          <Typography sx={{ color: "text.disabled" }}>
-            {loadingText ? loadingText : "Humanized Contend"}
-          </Typography>
-        )}
+            {outputContent[showIndex] ? (
+              <Typography
+                sx={{
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {outputContent[showIndex].text}
+              </Typography>
+            ) : (
+              <Typography sx={{ color: "text.disabled" }}>
+                {loadingText ? loadingText : "Humanized Contend"}
+              </Typography>
+            )}
 
-        {showShalowAlert ? <AlertDialogMessage /> : null}
-      </Card>
+            {showShalowAlert ? <AlertDialogMessage /> : null}
+          </Card>
 
-      {outputContent.length ? (
-        <Button
-          variant="soft"
-          size={isMobile ? "small" : "large"}
-          color="warning"
-          onClick={() => handleAiDetectors(outputContent[showIndex]?.text)}
-          disabled={loadingAi}
-          sx={{
-            border: { sm: "none", xs: "2px solid" },
-            borderColor: "primary.warning",
-            borderRadius: "5px",
-            "&:hover": {
-              borderColor: "primary.dark",
-            },
-            mt: 2,
-            maxWidth: "130px",
-          }}
-        >
-          {loadingAi && <CircularProgress size={16} color="inherit" />}
-          Detect AI
-        </Button>
-      ) : null}
+          {outputContent.length ? (
+            <OutputNavigation
+              isMobile={isMobile}
+              outputs={outputContent.length}
+              selectedContend={outputContent[showIndex]?.text}
+              setShowIndex={setShowIndex}
+              showIndex={showIndex}
+              handleAiDetectors={handleAiDetectors}
+              loadingAi={loadingAi}
+            />
+          ) : null}
+        </Box>
+      </Box>
     </Stack>
   );
 };

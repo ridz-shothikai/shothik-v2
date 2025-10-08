@@ -23,7 +23,11 @@ export default function Main({ children }) {
   const isDarkMode = theme.palette.mode === "dark";
 
   const containerWidth =
-    pathName === "/" || pathName === "/paraphrase" ? "100%" : "xl";
+    pathName === "/" || pathName === "/paraphrase"
+      ? "100%"
+      : pathName === "/humanize-gpt"
+        ? "100%"
+        : "xl";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
