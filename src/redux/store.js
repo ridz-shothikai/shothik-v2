@@ -1,29 +1,24 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApiSlice } from "./api/auth/authApiSlice";
 import { blogApiSlice } from "./api/blog/blogApiSlice";
-import { pricingApiSlice } from "./api/pricing/pricingApi";
-import { toolsApiSlice } from "./api/tools/toolsApi";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
+import { pricingApiSlice } from "./api/pricing/pricingApi";
+import { researchChatApi } from "./api/research/researchChatApi";
+import { researchCoreApi } from "./api/research/researchCoreApi";
 import { shareApiSlice } from "./api/share/shareApi";
+import { sheetApiSlice } from "./api/sheet/sheetApi";
+import { toolsApiSlice } from "./api/tools/toolsApi";
+import analyticsReducer from "./slice/analyticsSlice";
 import auth from "./slice/auth";
 import inputOutput from "./slice/inputOutput";
-import settings from "./slice/settings";
-import tools from "./slice/tools";
+import paraphraseHistoryReducer from "./slice/paraphraseHistorySlice";
 import presentationSlice from "./slice/presentationSlice";
-import sheetSlice from "./slice/sheetSlice";
-import { sheetApiSlice } from "./api/sheet/sheetApi";
-import analyticsReducer from "./slice/analyticsSlice";
 import researchChatReducer from "./slice/researchChatSlice";
 import researchCoreReducer from "./slice/researchCoreSlice";
 import researchUiSlice from "./slice/researchUiSlice";
-import { researchChatApi } from "./api/research/researchChatApi";
-import { researchCoreApi } from "./api/research/researchCoreApi";
-
-import {
-  researchErrorMiddleware,
-  researchPerformanceMiddleware,
-  researchStreamMiddleware,
-} from "./midllewares/researchStreamMiddleware";
+import settings from "./slice/settings";
+import sheetSlice from "./slice/sheetSlice";
+import tools from "./slice/tools";
 
 // Development vs Production configuration
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -65,6 +60,7 @@ const store = configureStore({
     researchChat: researchChatReducer,
     researchCore: researchCoreReducer,
     researchUi: researchUiSlice,
+    paraphraseHistory: paraphraseHistoryReducer,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,

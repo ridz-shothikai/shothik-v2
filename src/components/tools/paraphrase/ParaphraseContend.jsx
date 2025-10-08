@@ -45,6 +45,11 @@ import VerticalMenu from "./VerticalMenu";
 
 import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
+import {
+  setActiveHistory,
+  setHistories,
+  setHistoryGroups,
+} from "../../../redux/slice/paraphraseHistorySlice";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
 // Define the punctuation marks that require specific spacing rules.
@@ -123,12 +128,29 @@ const ParaphraseContend = () => {
       setShowDemo(true);
     }
   }, []);
-  const [selectedSynonyms, setSelectedSynonyms] = useState(SYNONYMS[20]);
+
+  const [activeHistoryDetails, setActiveHistoryDetails] = useState(null);
+
+  const [selectedSynonyms, setSelectedSynonymsState] = useState(SYNONYMS[20]);
+  const setSelectedSynonyms = (...args) => {
+    console.log("setSelectedSynonyms called with args:", args);
+    setActiveHistoryDetails(null);
+    dispatch(setActiveHistory({}));
+    return setSelectedSynonymsState(...args);
+  };
+
   const [showLanguageDetect, setShowLanguageDetect] = useState(false);
   const { accessToken } = useSelector((state) => state.auth);
   const [outputHistoryIndex, setOutputHistoryIndex] = useState(0);
   const [highlightSentence, setHighlightSentence] = useState(0);
-  const [selectedMode, setSelectedMode] = useState("Standard");
+  const [selectedMode, setSelectedModeState] = useState("Standard");
+  const setSelectedMode = (...args) => {
+    console.log("setSelectedMode called with args:", args);
+    setActiveHistoryDetails(null);
+    dispatch(setActiveHistory({}));
+    return setSelectedModeState(...args);
+  };
+
   const [outputWordCount, setOutputWordCount] = useState(0);
   const [outputHistory, setOutputHistory] = useState([]);
   const [outputContend, setOutputContend] = useState("");
@@ -136,7 +158,13 @@ const ParaphraseContend = () => {
   const frozenWords = useSetState(initialFrozenWords);
   const frozenPhrases = useSetState(initialFrozenPhrase);
   const [recommendedFreezeWords, setRecommendedFreezeWords] = useState([]);
-  const [language, setLanguage] = useState("English (US)");
+  const [language, setLanguageState] = useState("English (US)");
+  const setLanguage = (...args) => {
+    console.log("setLanguage called with args:", args);
+    setActiveHistoryDetails(null);
+    dispatch(setActiveHistory({}));
+    return setLanguageState(...args);
+  };
   // const sampleText =
   //   trySamples.paraphrase[
   //     language && language.startsWith("English")
@@ -154,13 +182,21 @@ const ParaphraseContend = () => {
   const hasSampleText = Boolean(sampleText); // To conditionally show the Try Sample button
   const [isLoading, setIsLoading] = useState(false);
   const { wordLimit } = useWordLimit("paraphrase");
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInputState] = useState("");
+  const setUserInput = (...args) => {
+    console.log("setUserInput called with args:", args);
+    setActiveHistoryDetails(null);
+    dispatch(setActiveHistory({}));
+    return setUserInputState(...args);
+  };
   const userInputValue = useDebounce(userInput, 800);
   const [socketId, setSocketId] = useState(null);
   const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
   const isMobile = useResponsive("down", "lg");
   const [result, setResult] = useState([]);
+  const [historyResult, setHistoryResult] = useState([]);
+
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const outputRef = useRef(null);
@@ -174,13 +210,17 @@ const ParaphraseContend = () => {
   });
   const [paraphraseRequestCounter, setParaphraseRequestCounter] = useState(0);
 
-  const hasOutput = result.length > 0 && outputContend.trim().length > 0; // Checking if we have actual output content
+  const hasOutput = result?.length > 0 && outputContend.trim()?.length > 0; // Checking if we have actual output content
   const [confirmationDialog, setConfirmationDialog] = useState({
     open: false,
     word: "",
     count: 0,
     action: null, // Will store the function to execute on confirm
   }); // this is for freezing word confirmation
+
+  const { activeHistory, histories } = useSelector(
+    (state) => state.paraphraseHistory,
+  );
 
   // Helper function to count word occurrences in text
   const countWordOccurrences = (text, word) => {
@@ -291,7 +331,10 @@ const ParaphraseContend = () => {
   }, [userInput, dispatch]);
 
   useEffect(() => {
+    if (!!activeHistory?._id) return;
+
     if (!userInput) return;
+
     let timer;
     const detectLang = detectLanguage(userInput);
     if (detectLang !== language) {
@@ -318,9 +361,78 @@ const ParaphraseContend = () => {
     }
   }, [outputHistoryIndex]);
 
+  const historyGroupsByPeriod = (histories) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const groups = histories.reduce((acc, entry) => {
+      const d = new Date(entry.timestamp);
+      const m = d.getMonth();
+      const y = d.getFullYear();
+      const monthName = d.toLocaleString("default", { month: "long" });
+      const key =
+        m === currentMonth && y === currentYear
+          ? "This Month"
+          : `${monthName} ${y}`;
+
+      if (!acc[key]) acc[key] = [];
+      acc[key].push({
+        _id: entry._id,
+        text: entry.text,
+        time: entry.timestamp,
+      });
+      return acc;
+    }, {});
+
+    const result = [];
+
+    if (groups["This Month"]) {
+      result.push({ period: "This Month", history: groups["This Month"] });
+      delete groups["This Month"];
+    }
+    Object.keys(groups)
+      .sort((a, b) => {
+        const [ma, ya] = a.split(" ");
+        const [mb, yb] = b.split(" ");
+        const da = new Date(`${ma} 1, ${ya}`);
+        const db = new Date(`${mb} 1, ${yb}`);
+        return db - da;
+      })
+      .forEach((key) => {
+        result.push({ period: key, history: groups[key] });
+      });
+
+    return result;
+  };
+
+  const fetchHistory = async () => {
+    const API_BASE =
+      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+
+    // const API_BASE = "http://localhost:3050/api";
+
+    try {
+      const res = await fetch(`${API_BASE}/history`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch history");
+      const data = await res.json();
+      dispatch(setHistories(data));
+      const groups = historyGroupsByPeriod(data);
+      dispatch(setHistoryGroups(groups));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Effect to update outputContend and outputWordCount when result changes
   useEffect(() => {
-    if (result.length > 0) {
+    if (result?.length > 0) {
       const plainText = extractPlainText(result);
       setOutputContend(plainText);
       setOutputWordCount(
@@ -335,10 +447,17 @@ const ParaphraseContend = () => {
     }
   }, [result, dispatch]); // Add dispatch to dependency array
 
+  // State to track completed events and reload history;
+  const [completedEvents, setCompletedEvents] = useState({
+    plain: false,
+    tagging: false,
+    synonyms: false,
+  });
+
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
-    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
-    // path: "/socket.io",
+    if (!!activeHistory?._id) return;
+    setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
     const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
       path: "/p-v2/socket.io",
@@ -390,6 +509,7 @@ const ParaphraseContend = () => {
       if (data === ":end:") {
         accumulatedText = "";
         setIsLoading(false);
+        setCompletedEvents((prev) => ({ ...prev, plain: true }));
         return;
       }
 
@@ -444,7 +564,11 @@ const ParaphraseContend = () => {
 
     // ─── 3) Tagging handler: map backend index to correct slot ─────────────────
     socket.on("paraphrase-tagging", (raw) => {
-      if (raw === ":end:") return;
+      if (raw === ":end:") {
+        // setIsLoading(false);
+        setCompletedEvents((prev) => ({ ...prev, tagging: true }));
+        return;
+      }
       console.log("paraphrase-tagging: ", raw);
       let parsed, backendIndex, eid;
       try {
@@ -484,8 +608,8 @@ const ParaphraseContend = () => {
     socket.on("paraphrase-synonyms", (raw) => {
       console.log("paraphrase-synonyms:", raw);
       if (raw === ":end:") {
-        console.log("Synonyms processing completed.");
         setProcessing({ success: true, loading: false });
+        setCompletedEvents((prev) => ({ ...prev, synonyms: true }));
         return;
       }
 
@@ -521,6 +645,26 @@ const ParaphraseContend = () => {
       });
     });
   }, [language, eventId]);
+
+  useEffect(() => {
+    console.log("completedEvents:", completedEvents);
+    if (completedEvents.plain && accessToken) {
+      console.log("✅ All socket events finished");
+
+      const timer = setTimeout(() => {
+        fetchHistory();
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [completedEvents, accessToken]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    fetchHistory();
+  }, [accessToken]);
+
   // useEffect(() => {
   //   const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
   //     transports: ["websocket"],
@@ -759,6 +903,8 @@ const ParaphraseContend = () => {
   }
 
   useEffect(() => {
+    if (!!activeHistory?._id) return;
+
     // If user *wants* to paraphrase quotations, we need to *un*-freeze any
     // previously frozen quoted phrases.
     if (paraphraseQuotations) {
@@ -794,6 +940,14 @@ const ParaphraseContend = () => {
       if (!value) {
         trackEvent("click", "paraphrase", "paraphrase_click", 1);
       }
+
+      if (!socketId) return;
+
+      // if (!!activeHistory?._id) return;
+
+      setActiveHistory({});
+      setActiveHistoryDetails(null);
+
       let payload;
 
       setIsLoading(true);
@@ -820,6 +974,7 @@ const ParaphraseContend = () => {
       if (wordCount > wordLimit) {
         throw { error: "LIMIT_REQUEST", message: "Words limit exceeded" };
       }
+
       // now build your payload using the untouched Markdown
       const randomNumber = Math.floor(Math.random() * 1e10);
       const newEventId = `${socketId}-${randomNumber}`;
@@ -870,10 +1025,11 @@ const ParaphraseContend = () => {
   };
 
   useEffect(() => {
-    console.log(automaticStartParaphrasing);
+    if (!!activeHistory?._id) return;
     // only auto-start if the setting is ON
+
     if (!automaticStartParaphrasing) {
-      if (result.length > 0) {
+      if (result?.length > 0) {
         enqueueSnackbar("Click Rephrase to view the updated result.", {
           variant: "info",
         });
@@ -885,6 +1041,7 @@ const ParaphraseContend = () => {
     // Trigger paraphrase if language changes and there is user input
     if (language && userInputValue) {
       if (!processing.loading) {
+        console.log("=== Auto-paraphrasing ===", activeHistory?._id);
         handleSubmit(userInputValue);
       } else {
         enqueueSnackbar("Please wait while paraphrasing is in progress...", {
@@ -894,12 +1051,183 @@ const ParaphraseContend = () => {
       }
     }
   }, [
-    userInputValue,
     automaticStartParaphrasing,
+    userInputValue,
     language,
     selectedMode,
     selectedSynonyms,
   ]); // All the dependencies that should trigger re-paraphrasing are listed here.
+
+  useEffect(() => {
+    const API_BASE =
+      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+
+    // const API_BASE = "http://localhost:3050/api";
+
+    const getHistoryDetails = async () => {
+      setIsLoading(true);
+
+      try {
+        const res = await fetch(`${API_BASE}/history/${activeHistory?._id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+          },
+        });
+        if (!res.ok) return console.error("Failed to fetch history details");
+        const data = await res.json();
+
+        console.log("History details:", data);
+
+        setActiveHistoryDetails(data);
+
+        const capitalize = (str) =>
+          typeof str === "string" && str.length > 0
+            ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+            : str;
+
+        if (data?.payload?.language) setLanguageState(data?.payload?.language);
+        if (data?.payload?.mode)
+          setSelectedModeState(capitalize(data.payload.mode));
+        if (data?.payload?.synonym)
+          setSelectedSynonymsState(capitalize(data.payload.synonym));
+        if (data?.payload?.text) setUserInputState(data?.payload?.text);
+        frozenWords.reset(data?.payload?.freeze?.split(",") || []);
+
+        if (data?.response) {
+          function mapBackendIndexToResultIndex(backendIndex, result) {
+            const sentenceSlots = [];
+            result.forEach((seg, idx) => {
+              if (!(seg.length === 1 && seg[0].type === "newline"))
+                sentenceSlots.push(idx);
+            });
+            return sentenceSlots[backendIndex] ?? -1;
+          }
+
+          if (data?.response?.plain) {
+            const accumulatedText = data?.response?.plain || "";
+
+            setOutputContend(accumulatedText);
+
+            const lines = accumulatedText.split(/\r?\n/);
+            const sentenceSeparator =
+              language === "Bangla"
+                ? /(?:।\s+|\.\r?\n+)/
+                : /(?:\.\s+|\.\r?\n+)/;
+
+            const newResult = [];
+            lines.forEach((line) => {
+              if (!line.trim()) {
+                newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
+              } else {
+                line
+                  .split(sentenceSeparator)
+                  .filter(Boolean)
+                  .forEach((sentence) => {
+                    const words = sentence
+                      .trim()
+                      .split(/\s+/)
+                      .map((w) => ({
+                        word: w,
+                        type: "none",
+                        synonyms: [],
+                      }));
+                    newResult.push(words);
+                  });
+              }
+            });
+            setResult(newResult);
+            dispatch(
+              setParaphraseValues({
+                type: "output",
+                values: { text: accumulatedText },
+              }),
+            );
+            console.log("new plain result:", newResult);
+          }
+
+          if (data?.response?.tagging) {
+            data?.response?.tagging?.forEach((item, index) => {
+              let parsed = item?.data || [];
+              let backendIndex = item?.index;
+              let eid;
+
+              setResult((prev) => {
+                const updated = [...prev];
+                const targetIdx = mapBackendIndexToResultIndex(
+                  backendIndex,
+                  prev,
+                );
+                if (targetIdx < 0) {
+                  console.warn("tagging: couldn't map index", backendIndex);
+                  return prev;
+                }
+
+                updated[targetIdx] = parsed.map((item) => ({
+                  ...item,
+                  // word: item.word, // preserves markdown tokens
+                  word: item.word.replace(/[{}]/g, ""),
+                }));
+                console.log(
+                  "updated[targetIdx]: ",
+                  updated[targetIdx],
+                  "targetIdx: ",
+                  targetIdx,
+                  "backendIndex: ",
+                  backendIndex,
+                );
+                return updated;
+              });
+            });
+          }
+
+          if (data?.response?.synonyms) {
+            data?.response?.synonyms?.forEach((item, index) => {
+              let parsed = item?.data || [];
+              let backendIndex = item?.index;
+              let eid;
+
+              setResult((prev) => {
+                const updated = [...prev];
+                const targetIdx = mapBackendIndexToResultIndex(
+                  backendIndex,
+                  prev,
+                );
+                if (targetIdx < 0) {
+                  console.warn("tagging: couldn't map index", backendIndex);
+                  return prev;
+                }
+
+                updated[targetIdx] = parsed.map((item) => ({
+                  ...item,
+                  // word: item.word, // preserves markdown tokens
+                  word: item.word.replace(/[{}]/g, ""),
+                }));
+                console.log(
+                  "updated[targetIdx]: ",
+                  updated[targetIdx],
+                  "targetIdx: ",
+                  targetIdx,
+                  "backendIndex: ",
+                  backendIndex,
+                );
+                return updated;
+              });
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!!activeHistory?._id) {
+      getHistoryDetails();
+    }
+  }, [activeHistory]);
 
   function extractPlainText(array) {
     // Check if input is an array
@@ -963,6 +1291,8 @@ const ParaphraseContend = () => {
 
   // This effect is to extract freeze recommendations from userQuery
   useEffect(() => {
+    // if (!!activeHistory?._id) return;
+
     if (!userInput) {
       setRecommendedFreezeWords([]);
       return;
@@ -1144,7 +1474,7 @@ const ParaphraseContend = () => {
               >
                 <UserInputBox
                   wordLimit={wordLimit}
-                  setUserInput={setUserInput}
+                  setUserInput={setUserInputState}
                   userInput={userInput}
                   frozenPhrases={frozenPhrases}
                   frozenWords={frozenWords}
@@ -1159,7 +1489,7 @@ const ParaphraseContend = () => {
 
                 {!userInput ? (
                   <UserActionInput
-                    setUserInput={setUserInput}
+                    setUserInput={setUserInputState}
                     isMobile={isMobile}
                     sampleText={sampleText}
                     paraphrase={true}
