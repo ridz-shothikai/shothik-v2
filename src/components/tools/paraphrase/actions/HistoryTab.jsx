@@ -147,8 +147,8 @@ const HistoryTab = ({ onClose }) => {
   useEffect(() => {
     if (!(historyGroups?.length > 0)) return;
     const init = {};
-    historyGroups.forEach((group) => {
-      init[group.period] = true;
+    historyGroups?.forEach((group) => {
+      init[group?.period] = true;
     });
     setExpandedGroups(init);
   }, [historyGroups]);
@@ -193,12 +193,12 @@ const HistoryTab = ({ onClose }) => {
       </div>
 
       {/* Period groups */}
-      {historyGroups.length === 0 ? (
+      {historyGroups?.length === 0 ? (
         <p className="text-muted-foreground px-2 text-sm">
           No history entries.
         </p>
       ) : (
-        historyGroups.map(({ period, history }) => (
+        historyGroups?.map(({ period, history }) => (
           <div key={period} className="mb-2">
             <div
               onClick={() => toggleGroup(period)}
@@ -221,7 +221,7 @@ const HistoryTab = ({ onClose }) => {
                 <div
                   key={i}
                   onClick={() => handleSetActiveHistory(entry)}
-                  className={`cursor-pointer px-2 pt-1 pb-1 transition-colors ${i < history.length - 1 ? "border-border border-b" : ""} ${entry?._id === activeHistory?._id ? "bg-primary/10" : "bg-transparent"} `}
+                  className={`cursor-pointer px-2 pt-1 pb-1 transition-colors ${i < history?.length - 1 ? "border-border border-b" : ""} ${entry?._id === activeHistory?._id ? "bg-primary/10" : "bg-transparent"} `}
                 >
                   <div className="mb-1 flex items-center justify-between">
                     <span className="text-muted-foreground text-xs">
@@ -244,10 +244,10 @@ const HistoryTab = ({ onClose }) => {
                     </IconButton>
                   </div>
                   <p className="text-sm">
-                    {expandedEntries[`${period}-${i}`]
-                      ? entry.text
-                      : truncateText(entry.text, 20)}
-                    {entry.text.split(" ").length > 20 && (
+                    {expandedEntries?.[`${period}-${i}`]
+                      ? entry?.text
+                      : truncateText(entry?.text, 20)}
+                    {entry?.text?.split(" ")?.length > 20 && (
                       <Button
                         size="small"
                         onClick={(e) => {
@@ -256,7 +256,7 @@ const HistoryTab = ({ onClose }) => {
                         }}
                         className="ml-1 normal-case"
                       >
-                        {expandedEntries[`${period}-${i}`]
+                        {expandedEntries?.[`${period}-${i}`]
                           ? "Read Less"
                           : "Read More"}
                       </Button>
@@ -273,9 +273,9 @@ const HistoryTab = ({ onClose }) => {
 
 // HELPER FUNCTION
 function truncateText(text, limit) {
-  const words = text.split(" ");
-  if (words.length > limit) {
-    return words.slice(0, limit).join(" ") + "...";
+  const words = text?.split(" ");
+  if (words?.length > limit) {
+    return words?.slice(0, limit).join(" ") + "...";
   }
   return text;
 }
