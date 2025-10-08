@@ -40,7 +40,7 @@ const HistoryTab = ({ onClose }) => {
           : `${monthName} ${y}`;
 
       if (!acc[key]) acc[key] = [];
-      acc[key].push({
+      acc?.[key]?.push({
         _id: entry._id,
         text: entry.text,
         time: entry.timestamp,
@@ -50,7 +50,7 @@ const HistoryTab = ({ onClose }) => {
 
     const result = [];
 
-    if (groups["This Month"]) {
+    if (groups?.["This Month"]) {
       result.push({ period: "This Month", history: groups["This Month"] });
       delete groups["This Month"];
     }
@@ -63,7 +63,7 @@ const HistoryTab = ({ onClose }) => {
         return db - da;
       })
       .forEach((key) => {
-        result.push({ period: key, history: groups[key] });
+        result.push({ period: key, history: groups?.[key] });
       });
 
     return result;
@@ -156,14 +156,14 @@ const HistoryTab = ({ onClose }) => {
   const toggleGroup = (period) => {
     setExpandedGroups((prev) => ({
       ...prev,
-      [period]: !prev[period],
+      [period]: !prev?.[period],
     }));
   };
 
   const toggleEntryExpansion = (period, index) => {
     setExpandedEntries((prev) => ({
       ...prev,
-      [`${period}-${index}`]: !prev[`${period}-${index}`],
+      [`${period}-${index}`]: !prev?.[`${period}-${index}`],
     }));
   };
 
@@ -205,7 +205,7 @@ const HistoryTab = ({ onClose }) => {
               className="mb-1 flex cursor-pointer items-center justify-between px-2"
             >
               <span className="text-muted-foreground text-sm">{period}</span>
-              {expandedGroups[period] ? (
+              {expandedGroups?.[period] ? (
                 <IconButton size="small" className="min-w-0 p-1">
                   <ExpandLess className="text-sm" />
                 </IconButton>
@@ -216,8 +216,8 @@ const HistoryTab = ({ onClose }) => {
               )}
             </div>
             <div className="border-border border-b" />
-            {expandedGroups[period] &&
-              history.map((entry, i) => (
+            {expandedGroups?.[period] &&
+              history?.map((entry, i) => (
                 <div
                   key={i}
                   onClick={() => handleSetActiveHistory(entry)}
