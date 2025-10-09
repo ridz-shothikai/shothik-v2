@@ -24,12 +24,12 @@ const HistoryTab = ({ onClose }) => {
 
   // const API_BASE = "http://localhost:3050/api";
 
-  const historyGroupsByPeriod = (histories) => {
+  const historyGroupsByPeriod = (histories = []) => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    const groups = histories.reduce((acc, entry) => {
+    const groups = histories?.reduce((acc, entry) => {
       const d = new Date(entry.timestamp);
       const m = d.getMonth();
       const y = d.getFullYear();
@@ -78,10 +78,11 @@ const HistoryTab = ({ onClose }) => {
           ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         },
       });
-      if (!res.ok) throw new Error("Failed to fetch history");
+      if (!res.ok) console.error("Failed to fetch history");
       const data = await res.json();
+      const groups = historyGroupsByPeriod(data || []);
+
       dispatch(setHistories(data));
-      const groups = historyGroupsByPeriod(data);
       dispatch(setHistoryGroups(groups));
     } catch (err) {
       console.error(err);
@@ -107,6 +108,34 @@ const HistoryTab = ({ onClose }) => {
     }
   };
 
+  // const handleDeleteEntry = async (entryId) => {
+  //   if (!window.confirm("Are you sure you want to delete this entry?")) return;
+  //   try {
+  //     const res = await fetch(`${API_BASE}/history/${entryId}`, {
+  //       method: "DELETE",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+  //       },
+  //     });
+  //     if (!res.ok) throw new Error("Failed to delete history entry");
+
+  //     const updatedHistories = histories?.filter(
+  //       (history) => history?._id !== entryId,
+  //     );
+  //     const groups = historyGroupsByPeriod(updatedHistories);
+
+  //     dispatch(setHistories(updatedHistories));
+  //     dispatch(setHistoryGroups(groups));
+
+  //     if (activeHistory && activeHistory._id === entryId) {
+  //       dispatch(setActiveHistory(null));
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
   const handleDeleteEntry = async (entryId) => {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
     try {
@@ -119,15 +148,10 @@ const HistoryTab = ({ onClose }) => {
       });
       if (!res.ok) throw new Error("Failed to delete history entry");
 
-      const updatedHistories = histories.filter(
-        (history) => history._id !== entryId,
-      );
-      dispatch(setHistories(updatedHistories));
-      const groups = historyGroupsByPeriod(updatedHistories);
-      dispatch(setHistoryGroups(groups));
+      await fetchHistory();
 
       if (activeHistory && activeHistory._id === entryId) {
-        dispatch(setActiveHistory(null));
+        dispatch(setActiveHistory({}));
       }
     } catch (err) {
       console.error(err);

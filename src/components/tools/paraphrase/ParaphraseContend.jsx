@@ -47,8 +47,12 @@ import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import {
   setActiveHistory,
+  setFileHistories,
+  setFileHistoriesMeta,
+  setFileHistoryGroups,
   setHistories,
   setHistoryGroups,
+  setIsFileHistoryLoading,
 } from "../../../redux/slice/paraphraseHistorySlice";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 
@@ -218,9 +222,12 @@ const ParaphraseContend = () => {
     action: null, // Will store the function to execute on confirm
   }); // this is for freezing word confirmation
 
-  const { activeHistory, histories } = useSelector(
-    (state) => state.paraphraseHistory,
-  );
+  const {
+    activeHistory,
+    isUpdatedHistory,
+    isUpdatedFileHistory,
+    fileHistories,
+  } = useSelector((state) => state.paraphraseHistory);
 
   // Helper function to count word occurrences in text
   const countWordOccurrences = (text, word) => {
@@ -361,12 +368,12 @@ const ParaphraseContend = () => {
     }
   }, [outputHistoryIndex]);
 
-  const historyGroupsByPeriod = (histories) => {
+  const historyGroupsByPeriod = (histories = []) => {
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    const groups = histories.reduce((acc, entry) => {
+    const groups = histories?.reduce((acc, entry) => {
       const d = new Date(entry.timestamp);
       const m = d.getMonth();
       const y = d.getFullYear();
@@ -377,7 +384,7 @@ const ParaphraseContend = () => {
           : `${monthName} ${y}`;
 
       if (!acc[key]) acc[key] = [];
-      acc[key].push({
+      acc?.[key]?.push({
         _id: entry._id,
         text: entry.text,
         time: entry.timestamp,
@@ -387,7 +394,7 @@ const ParaphraseContend = () => {
 
     const result = [];
 
-    if (groups["This Month"]) {
+    if (groups?.["This Month"]) {
       result.push({ period: "This Month", history: groups["This Month"] });
       delete groups["This Month"];
     }
@@ -400,7 +407,7 @@ const ParaphraseContend = () => {
         return db - da;
       })
       .forEach((key) => {
-        result.push({ period: key, history: groups[key] });
+        result.push({ period: key, history: groups?.[key] });
       });
 
     return result;
@@ -422,8 +429,9 @@ const ParaphraseContend = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch history");
       const data = await res.json();
+      const groups = historyGroupsByPeriod(data || []);
+
       dispatch(setHistories(data));
-      const groups = historyGroupsByPeriod(data);
       dispatch(setHistoryGroups(groups));
     } catch (err) {
       console.error(err);
@@ -664,6 +672,110 @@ const ParaphraseContend = () => {
 
     fetchHistory();
   }, [accessToken]);
+
+  // File History Processes
+
+  const fileHistoryGroupsByPeriod = (histories = []) => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const groups = histories?.reduce((acc, entry) => {
+      const d = new Date(entry?.timestamp);
+      const m = d.getMonth();
+      const y = d.getFullYear();
+      const monthName = d.toLocaleString("default", { month: "long" });
+      const key =
+        m === currentMonth && y === currentYear
+          ? "This Month"
+          : `${monthName} ${y}`;
+
+      if (!acc[key]) acc[key] = [];
+      acc?.[key]?.push({
+        ...(entry || {}),
+      });
+      return acc;
+    }, {});
+
+    const result = [];
+
+    if (groups?.["This Month"]) {
+      result.push({ period: "This Month", history: groups["This Month"] });
+      delete groups["This Month"];
+    }
+    Object.keys(groups)
+      .sort((a, b) => {
+        const [ma, ya] = a.split(" ");
+        const [mb, yb] = b.split(" ");
+        const da = new Date(`${ma} 1, ${ya}`);
+        const db = new Date(`${mb} 1, ${yb}`);
+        return db - da;
+      })
+      .forEach((key) => {
+        result.push({ period: key, history: groups?.[key] });
+      });
+
+    return result;
+  };
+
+  const fetchFileHistories = async ({
+    page = 1,
+    limit = 10,
+    reset = false,
+    search = "",
+  } = {}) => {
+    const API_BASE =
+      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+
+    // const API_BASE = "http://localhost:3050/api";
+    try {
+      if (!accessToken) return;
+      dispatch(setIsFileHistoryLoading(true));
+
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(search && { search: search.trim() }),
+      });
+
+      const res = await fetch(
+        `${API_BASE}/files/file-histories?${queryParams}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (!res.ok) console.error("Failed to fetch file history");
+
+      const { data = [], meta = {} } = await res.json();
+
+      if (reset) {
+        const groups = fileHistoryGroupsByPeriod(data || []);
+        dispatch(setFileHistories(data || []));
+        dispatch(setFileHistoryGroups(groups || []));
+        dispatch(setFileHistoriesMeta(meta || {}));
+      } else {
+        const allHistories = [...(fileHistories || []), ...(data || [])];
+        const groups = fileHistoryGroupsByPeriod(allHistories || []);
+        dispatch(setFileHistories(allHistories || []));
+        dispatch(setFileHistoryGroups(groups || []));
+        dispatch(setFileHistoriesMeta(meta || {}));
+      }
+    } catch (err) {
+      console.error("Error fetching file histories:", err);
+    } finally {
+      dispatch(setIsFileHistoryLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    fetchFileHistories({ reset: true });
+  }, [isUpdatedFileHistory, accessToken]);
 
   // useEffect(() => {
   //   const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
@@ -1341,7 +1453,7 @@ const ParaphraseContend = () => {
             // when collapsed you could toggle a class to shrink to e.g. 40px
           }}
         >
-          <FileHistorySidebar />
+          <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
         </Box>
       )}
 

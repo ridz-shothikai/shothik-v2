@@ -1,27 +1,28 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import {
+  Close as CloseIcon,
+  CloudUploadOutlined,
+  GetApp as DownloadIcon,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
-  Typography,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   LinearProgress,
   List,
   ListItem,
   ListItemText,
-  IconButton,
   Stack,
+  Typography,
 } from "@mui/material";
-import {
-  CloudUploadOutlined,
-  Close as CloseIcon,
-  GetApp as DownloadIcon,
-} from "@mui/icons-material";
+import { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleUpdateFileHistory } from "../../../redux/slice/paraphraseHistorySlice";
 import UpgradePopover from "./UpgradePopover";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
@@ -37,6 +38,8 @@ export default function MultipleFileUpload({
   shouldShowButton = true,
 }) {
   const { accessToken } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
@@ -140,6 +143,7 @@ export default function MultipleFileUpload({
       const url = URL.createObjectURL(blob);
 
       updateFileStatus(idx, "success", 100, url);
+      dispatch(toggleUpdateFileHistory());
     } catch (err) {
       updateFileStatus(idx, "error", 0, null, err.message);
     }
