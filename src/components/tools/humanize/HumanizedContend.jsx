@@ -1,22 +1,34 @@
 "use client";
 
-import { Box, Card, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  IconButton,
+  Stack,
+  SwipeableDrawer,
+  TextField,
+  Typography,
+} from "@mui/material";
 
+import { MoreVert } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
+import useDebounce from "../../../hooks/useDebounce";
 import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
+import { useGetAllHistoryQuery } from "../../../redux/api/humanizeHistory/humanizeHistory";
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
 import LanguageMenu from "../grammar/LanguageMenu";
 import AlertDialogMessage from "./AlertDialogMessage";
+import GPTsettings from "./GPTsettings";
 import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
 import Navigations from "./Navigations";
@@ -37,6 +49,14 @@ const HumanizedContend = () => {
   const [humanizeContend] = useHumanizeContendMutation();
   const miniLabel = useResponsive("between", "md", "xl");
   const { user } = useSelector((state) => state.auth);
+  const { automaticStartHumanize } = useSelector(
+    (state) => state.settings.humanizeOptions,
+  );
+
+  // Humanize history
+  const { data: allHumanizeHistory, refetch: refetchAllHumanizeHistory } =
+    useGetAllHistoryQuery();
+
   const [language, setLanguage] = useState("English (US)");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -62,6 +82,7 @@ const HumanizedContend = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   // const theme = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   function handleClear() {
     setUserInput("");
@@ -109,6 +130,9 @@ const HumanizedContend = () => {
       setOutputContent(data.output);
       setScores(scores);
       setUpdate((prev) => !prev);
+
+      // after we done generating humanized content we should refetch history to maintain fresh data
+      refetchAllHumanizeHistory();
     } catch (err) {
       const error = err?.data;
       const reg = /LIMIT_REQUEST|PACAKGE_EXPIRED|WORD_COUNT_LIMIT_REQUEST/;
@@ -126,161 +150,245 @@ const HumanizedContend = () => {
     }
   };
 
+  const debounceHumanizeProcess = useDebounce(userInput, 1000);
+
+  useEffect(() => {
+    if (!automaticStartHumanize) return;
+
+    if (userInput) {
+      handleSubmit();
+    }
+  }, [automaticStartHumanize, debounceHumanizeProcess]);
+
   return (
     <Stack sx={{ pt: 2 }}>
       <Box
         sx={{
-          width: "50%",
+          display: "flex",
+          width: "100%",
         }}
       >
-        <LanguageMenu
-          isLoading={isLoading}
-          setLanguage={setLanguage}
-          language={language}
-        />
-      </Box>
-
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Card
+        <Box
+          sx={{
+            width: "100%",
+          }}
+        >
+          <Box
             sx={{
-              position: "relative",
-              height: 420,
               display: "flex",
-              flexDirection: "column",
-              overflow: "visible",
-              borderRadius: "0 12px 12px 12px",
-              border: (theme) => `1px solid ${theme.palette.divider}`,
+              alignItems: "center",
             }}
           >
-            <TopNavigation
-              model={model}
-              setModel={setModel}
-              setShalowAlert={setShalowAlert}
-              userPackage={user?.package}
-              LENGTH={LENGTH}
-              currentLength={currentLength}
-              setCurrentLength={setCurrentLength}
-            />
-            <TextField
-              name="input"
-              variant="outlined"
-              rows={13}
-              fullWidth
-              multiline
-              placeholder="Enter your text here..."
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              disabled={showShalowAlert}
+            <Box
               sx={{
-                flexGrow: 1,
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    border: "none",
-                  },
-                  "& textarea": {
-                    textAlign: "left",
-                    whiteSpace: "normal",
-                    wordWrap: "break-word",
-                    overflowWrap: "break-word",
-                  },
-                },
-                "& .MuiInputBase-root": {
-                  paddingY: "4px",
-                },
+                width: { xs: "100%", md: "50%" },
               }}
-            />
-            {!userInput ? (
-              <UserActionInput
-                setUserInput={setUserInput}
-                isMobile={isMobile}
-                sampleText={sampleText}
-                disableTrySample={!hasSampleText}
+            >
+              <LanguageMenu
+                isLoading={isLoading}
+                setLanguage={setLanguage}
+                language={language}
               />
-            ) : (
-              <InputBottom
-                handleClear={handleClear}
+            </Box>
+
+            <Box
+              sx={{
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              <IconButton
+                size="small"
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+              >
+                <MoreVert fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
+              gap: 2,
+            }}
+          >
+            <Box>
+              <Card
+                sx={{
+                  position: "relative",
+                  height: 420,
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "visible",
+                  borderRadius: "0 12px 12px 12px",
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                }}
+              >
+                <TopNavigation
+                  model={model}
+                  setModel={setModel}
+                  setShalowAlert={setShalowAlert}
+                  userPackage={user?.package}
+                  LENGTH={LENGTH}
+                  currentLength={currentLength}
+                  setCurrentLength={setCurrentLength}
+                />
+                <TextField
+                  name="input"
+                  variant="outlined"
+                  rows={13}
+                  fullWidth
+                  multiline
+                  placeholder="Enter your text here..."
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  disabled={showShalowAlert}
+                  sx={{
+                    flexGrow: 1,
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        border: "none",
+                      },
+                      "& textarea": {
+                        textAlign: "left",
+                        whiteSpace: "normal",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                      },
+                    },
+                    "& .MuiInputBase-root": {
+                      paddingY: "4px",
+                    },
+                  }}
+                />
+                {!userInput ? (
+                  <UserActionInput
+                    setUserInput={setUserInput}
+                    isMobile={isMobile}
+                    sampleText={sampleText}
+                    disableTrySample={!hasSampleText}
+                  />
+                ) : (
+                  <InputBottom
+                    handleClear={handleClear}
+                    isLoading={isLoading}
+                    isMobile={isMobile}
+                    miniLabel={miniLabel}
+                    userInput={userInput}
+                    userPackage={user?.package}
+                    setWordCount={setWordCount}
+                  />
+                )}
+              </Card>
+
+              <Navigations
+                hasOutput={outputContent.length}
                 isLoading={isLoading}
                 isMobile={isMobile}
                 miniLabel={miniLabel}
+                model={model}
                 userInput={userInput}
+                wordCount={wordCount}
+                wordLimit={wordLimit}
+                handleAiDitectors={handleAiDetectors}
+                handleSubmit={handleSubmit}
+                loadingAi={loadingAi}
                 userPackage={user?.package}
-                setWordCount={setWordCount}
+                update={update}
               />
-            )}
-          </Card>
 
-          <Navigations
-            hasOutput={outputContent.length}
-            isLoading={isLoading}
-            isMobile={isMobile}
-            miniLabel={miniLabel}
-            model={model}
-            userInput={userInput}
-            wordCount={wordCount}
-            wordLimit={wordLimit}
-            handleAiDitectors={handleAiDetectors}
-            handleSubmit={handleSubmit}
-            loadingAi={loadingAi}
-            userPackage={user?.package}
-            update={update}
-          />
+              {scores.length ? (
+                <HumanizeScrores
+                  isMobile={isMobile}
+                  loadingAi={loadingAi}
+                  scores={scores}
+                  showIndex={showIndex}
+                />
+              ) : null}
+            </Box>
 
-          {scores.length ? (
-            <HumanizeScrores
-              isMobile={isMobile}
-              loadingAi={loadingAi}
-              scores={scores}
-              showIndex={showIndex}
-            />
-          ) : null}
-        </Box>
-
-        <Box>
-          {/* output  */}
-          <Card
-            sx={{
-              height: 420,
-              overflowY: "auto",
-              padding: 2,
-              border: (theme) => `1px solid ${theme.palette.divider}`,
-            }}
-          >
-            {outputContent[showIndex] ? (
-              <Typography
+            <Box>
+              {/* output  */}
+              <Card
                 sx={{
-                  whiteSpace: "pre-line",
+                  height: 420,
+                  overflowY: "auto",
+                  padding: 2,
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
                 }}
               >
-                {outputContent[showIndex].text}
-              </Typography>
-            ) : (
-              <Typography sx={{ color: "text.disabled" }}>
-                {loadingText ? loadingText : "Humanized Contend"}
-              </Typography>
-            )}
+                {outputContent[showIndex] ? (
+                  <Typography
+                    sx={{
+                      whiteSpace: "pre-line",
+                    }}
+                  >
+                    {outputContent[showIndex].text}
+                  </Typography>
+                ) : (
+                  <Typography sx={{ color: "text.disabled" }}>
+                    {loadingText ? loadingText : "Humanized Contend"}
+                  </Typography>
+                )}
 
-            {showShalowAlert ? <AlertDialogMessage /> : null}
-          </Card>
+                {showShalowAlert ? <AlertDialogMessage /> : null}
+              </Card>
 
-          {outputContent.length ? (
-            <OutputNavigation
-              isMobile={isMobile}
-              outputs={outputContent.length}
-              selectedContend={outputContent[showIndex]?.text}
-              setShowIndex={setShowIndex}
-              showIndex={showIndex}
-              handleAiDetectors={handleAiDetectors}
-              loadingAi={loadingAi}
-            />
-          ) : null}
+              {outputContent.length ? (
+                <OutputNavigation
+                  isMobile={isMobile}
+                  outputs={outputContent.length}
+                  selectedContend={outputContent[showIndex]?.text}
+                  setShowIndex={setShowIndex}
+                  showIndex={showIndex}
+                  handleAiDetectors={handleAiDetectors}
+                  loadingAi={loadingAi}
+                />
+              ) : null}
+            </Box>
+          </Box>
         </Box>
+
+        {/* GPT options (e.g: history, settings) */}
+        {/* This will be for DESKTOP */}
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            width: "min-content",
+            ml: 2,
+            display: { xs: "none", md: "block" },
+          }}
+        >
+          <GPTsettings
+            setHumanizeInput={setUserInput}
+            allHumanizeHistory={allHumanizeHistory?.data}
+            refetchHistory={refetchAllHumanizeHistory}
+          />
+        </Box>
+
+        {/* Mobile menu for options */}
+        <SwipeableDrawer
+          anchor="bottom"
+          open={mobileMenuOpen}
+          onOpen={() => setMobileMenuOpen(true)}
+          onClose={() => setMobileMenuOpen(false)}
+        >
+          <Box sx={{ px: 4, pt: 1, pb: 2 }}>
+            <Box
+              sx={{
+                flex: "0 0 auto",
+                width: "min-content",
+                ml: 2,
+              }}
+            >
+              <GPTsettings
+                setHumanizeInput={setUserInput}
+                allHumanizeHistory={allHumanizeHistory?.data}
+                refetchHistory={refetchAllHumanizeHistory}
+              />
+            </Box>
+          </Box>
+        </SwipeableDrawer>
       </Box>
     </Stack>
   );

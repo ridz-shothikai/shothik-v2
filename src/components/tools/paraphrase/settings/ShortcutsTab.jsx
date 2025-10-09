@@ -1,12 +1,29 @@
 // ShortcutsTab.jsx
-import React from "react";
-import { Box, Typography, Divider } from "@mui/material";
+import { Box, Divider, Typography } from "@mui/material";
 
-const ShortcutsTab = () => {
+const ShortcutsTab = ({
+  fromComp = "paraphrase", // This flag is to maintain different sesstings on same component. ENUM: [paraphrase, humanize, ai-detector, grammar-fix, translator]
+}) => {
   const rows = [
     { action: "Copy sentence", shortcut: "Alt + C" },
-    { action: "Paraphrase all text", shortcut: "Ctrl + Enter" },
-    { action: "Copy all paraphrased text", shortcut: "Ctrl + C" },
+    {
+      action:
+        fromComp === "paraphrase"
+          ? "Paraphrase all text"
+          : fromComp === "humanize"
+            ? "Humanize all text"
+            : "Apply auto changes",
+      shortcut: "Ctrl + Enter",
+    },
+    {
+      action:
+        fromComp === "paraphrase"
+          ? "Copy all paraphrased text"
+          : fromComp === "humanize"
+            ? "Copy all humanized text"
+            : "Copy all text",
+      shortcut: "Ctrl + C",
+    },
   ];
 
   return (

@@ -1,15 +1,16 @@
 // SettingsSidebar.jsx
-import React from "react";
-import { Box, Button, IconButton } from "@mui/material";
 import {
   Close,
-  Settings as SettingsIcon,
   ChatBubbleOutline as FeedbackIcon,
   Keyboard as KeyboardIcon,
+  Settings as SettingsIcon,
 } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
+import React from "react";
 
-import SettingsTab from "./SettingsTab";
+import GPTsettingsTab from "../../humanize/GPTsettingsTab";
 import FeedbackTab from "./FeedbackTab";
+import SettingsTab from "./SettingsTab";
 import ShortcutsTab from "./ShortcutsTab";
 
 const tabs = [
@@ -24,6 +25,7 @@ const SettingsSidebar = ({
   tab = "settings",
   setTab,
   mobile = false,
+  fromComp = "paraphrase", // This flag is to maintain different sesstings on same component. ENUM: [paraphrase, humanize, ai-detector, grammar-fix, translator]
 }) => {
   if (!open) return null;
 
@@ -104,9 +106,14 @@ const SettingsSidebar = ({
 
       {/* Tab Content */}
       <Box sx={{ px: 2 }}>
-        {tab === "settings" && <SettingsTab />}
+        {tab === "settings" && fromComp === "paraphrase" ? (
+          <SettingsTab />
+        ) : tab === "settings" && fromComp === "humanize" ? (
+          <GPTsettingsTab />
+        ) : null // default
+        }
         {tab === "feedback" && <FeedbackTab />}
-        {tab === "shortcuts" && <ShortcutsTab />}
+        {tab === "shortcuts" && <ShortcutsTab fromComp={fromComp} />}
       </Box>
     </Box>
   );

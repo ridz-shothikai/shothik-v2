@@ -1,7 +1,8 @@
 // HistoryTab.jsx
+import { historyGroupsByPeriod } from "@/utils/historyGroupsByPeriod";
 import { Delete, ExpandLess, ExpandMore, Refresh } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setActiveHistory,
@@ -24,52 +25,52 @@ const HistoryTab = ({ onClose }) => {
 
   // const API_BASE = "http://localhost:3050/api";
 
-  const historyGroupsByPeriod = (histories) => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+  // const historyGroupsByPeriod = (histories) => {
+  //   const now = new Date();
+  //   const currentMonth = now.getMonth();
+  //   const currentYear = now.getFullYear();
 
-    const groups = histories.reduce((acc, entry) => {
-      const d = new Date(entry.timestamp);
-      const m = d.getMonth();
-      const y = d.getFullYear();
-      const monthName = d.toLocaleString("default", { month: "long" });
-      const key =
-        m === currentMonth && y === currentYear
-          ? "This Month"
-          : `${monthName} ${y}`;
+  //   const groups = histories.reduce((acc, entry) => {
+  //     const d = new Date(entry.timestamp);
+  //     const m = d.getMonth();
+  //     const y = d.getFullYear();
+  //     const monthName = d.toLocaleString("default", { month: "long" });
+  //     const key =
+  //       m === currentMonth && y === currentYear
+  //         ? "This Month"
+  //         : `${monthName} ${y}`;
 
-      if (!acc[key]) acc[key] = [];
-      acc?.[key]?.push({
-        _id: entry._id,
-        text: entry.text,
-        time: entry.timestamp,
-      });
-      return acc;
-    }, {});
+  //     if (!acc[key]) acc[key] = [];
+  //     acc?.[key]?.push({
+  //       _id: entry._id,
+  //       text: entry.text,
+  //       time: entry.timestamp,
+  //     });
+  //     return acc;
+  //   }, {});
 
-    const result = [];
+  //   const result = [];
 
-    if (groups?.["This Month"]) {
-      result.push({ period: "This Month", history: groups["This Month"] });
-      delete groups["This Month"];
-    }
-    Object.keys(groups)
-      .sort((a, b) => {
-        const [ma, ya] = a.split(" ");
-        const [mb, yb] = b.split(" ");
-        const da = new Date(`${ma} 1, ${ya}`);
-        const db = new Date(`${mb} 1, ${yb}`);
-        return db - da;
-      })
-      .forEach((key) => {
-        result.push({ period: key, history: groups?.[key] });
-      });
+  //   if (groups?.["This Month"]) {
+  //     result.push({ period: "This Month", history: groups["This Month"] });
+  //     delete groups["This Month"];
+  //   }
+  //   Object.keys(groups)
+  //     .sort((a, b) => {
+  //       const [ma, ya] = a.split(" ");
+  //       const [mb, yb] = b.split(" ");
+  //       const da = new Date(`${ma} 1, ${ya}`);
+  //       const db = new Date(`${mb} 1, ${yb}`);
+  //       return db - da;
+  //     })
+  //     .forEach((key) => {
+  //       result.push({ period: key, history: groups?.[key] });
+  //     });
 
-    return result;
-  };
+  //   return result;
+  // };
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/history`, {
         method: "GET",
@@ -81,12 +82,12 @@ const HistoryTab = ({ onClose }) => {
       if (!res.ok) throw new Error("Failed to fetch history");
       const data = await res.json();
       dispatch(setHistories(data));
-      const groups = historyGroupsByPeriod(data);
+      const groups = historyGroupsByPeriod(data); // Use the utility function
       dispatch(setHistoryGroups(groups));
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [accessToken, dispatch, API_BASE]);
 
   const handleDeleteAll = async () => {
     if (!window.confirm("Are you sure you want to clear all history?")) return;
@@ -107,32 +108,37 @@ const HistoryTab = ({ onClose }) => {
     }
   };
 
-  const handleDeleteEntry = async (entryId) => {
-    if (!window.confirm("Are you sure you want to delete this entry?")) return;
-    try {
-      const res = await fetch(`${API_BASE}/history/${entryId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        },
-      });
-      if (!res.ok) throw new Error("Failed to delete history entry");
+  const handleDeleteEntry = useCallback(
+    async (entryId) => {
+      if (!window.confirm("Are you sure you want to delete this entry?"))
+        return;
 
-      const updatedHistories = histories.filter(
-        (history) => history._id !== entryId,
-      );
-      dispatch(setHistories(updatedHistories));
-      const groups = historyGroupsByPeriod(updatedHistories);
-      dispatch(setHistoryGroups(groups));
+      try {
+        const res = await fetch(`${API_BASE}/history/${entryId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+          },
+        });
+        if (!res.ok) throw new Error("Failed to delete history entry");
 
-      if (activeHistory && activeHistory._id === entryId) {
-        dispatch(setActiveHistory(null));
+        const updatedHistories = histories.filter(
+          (history) => history._id !== entryId,
+        );
+        dispatch(setHistories(updatedHistories));
+        const groups = historyGroupsByPeriod(updatedHistories);
+        dispatch(setHistoryGroups(groups));
+
+        if (activeHistory && activeHistory._id === entryId) {
+          dispatch(setActiveHistory(null));
+        }
+      } catch (err) {
+        console.error(err);
       }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+    },
+    [accessToken, histories, activeHistory, dispatch, API_BASE],
+  );
 
   const handleSetActiveHistory = (entry) => {
     dispatch(setActiveHistory(entry));
@@ -271,13 +277,13 @@ const HistoryTab = ({ onClose }) => {
   );
 };
 
+export default HistoryTab;
+
 // HELPER FUNCTION
-function truncateText(text, limit) {
+export function truncateText(text, limit) {
   const words = text?.split(" ");
   if (words?.length > limit) {
     return words?.slice(0, limit).join(" ") + "...";
   }
   return text;
 }
-
-export default HistoryTab;

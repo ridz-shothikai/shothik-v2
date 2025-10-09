@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApiSlice } from "./api/auth/authApiSlice";
 import { blogApiSlice } from "./api/blog/blogApiSlice";
+import { humanizeHistoryApiSlice } from "./api/humanizeHistory/humanizeHistory";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
 import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { researchChatApi } from "./api/research/researchChatApi";
@@ -67,6 +68,7 @@ const store = configureStore({
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,
     [toolsApiSlice.reducerPath]: toolsApiSlice.reducer,
     [presentationApiSlice.reducerPath]: presentationApiSlice.reducer,
+    [humanizeHistoryApiSlice.reducerPath]: humanizeHistoryApiSlice.reducer,
     [sheetApiSlice.reducerPath]: sheetApiSlice.reducer,
     [researchChatApi.reducerPath]: researchChatApi.reducer,
     [researchCoreApi.reducerPath]: researchCoreApi.reducer,
@@ -80,6 +82,7 @@ const store = configureStore({
       pricingApiSlice.middleware,
       toolsApiSlice.middleware,
       presentationApiSlice.middleware,
+      humanizeHistoryApiSlice.middleware,
       shareApiSlice.middleware,
       sheetApiSlice.middleware,
       researchChatApi.middleware,

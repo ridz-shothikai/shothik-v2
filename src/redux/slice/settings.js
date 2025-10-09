@@ -9,7 +9,7 @@ const getInitialState = () => ({
     paraphraseQuotations: true,
     avoidContractions: false,
     preferActiveVoice: false,
-    automaticStartParaphrasing: true,
+    automaticStartParaphrasing: false,
   },
   interfaceOptions: {
     useYellowHighlight: false,
@@ -18,6 +18,11 @@ const getInitialState = () => ({
     showChangedWords: true,
     showStructuralChanges: false,
     showLongestUnchangedWords: false,
+  },
+  humanizeOptions: {
+    humanizeQuotations: true,
+    avoidContractions: false,
+    automaticStartHumanize: false,
   },
 });
 
@@ -32,6 +37,16 @@ const settingsSlice = createSlice({
         localStorage.setItem(
           "paraphraseOptions",
           JSON.stringify(state.paraphraseOptions),
+        );
+      }
+    },
+    toggleHumanizeOption(state, action) {
+      const key = action.payload;
+      if (state.humanizeOptions.hasOwnProperty(key)) {
+        state.humanizeOptions[key] = !state.humanizeOptions[key];
+        localStorage.setItem(
+          "humanizeOptions",
+          JSON.stringify(state.humanizeOptions),
         );
       }
     },
@@ -79,6 +94,11 @@ const settingsSlice = createSlice({
       if (storedInterfaceOptions) {
         state.interfaceOptions = JSON.parse(storedInterfaceOptions);
       }
+
+      const storedHumanizeOptions = localStorage.getItem("humanizeOptions");
+      if (storedHumanizeOptions) {
+        state.humanizeOptions = JSON.parse(storedHumanizeOptions);
+      }
     },
 
     setDemo: (state, action) => {
@@ -97,6 +117,7 @@ export const {
   loadSettingsFromLocalStorage,
   toggleParaphraseOption,
   toggleInterfaceOption,
+  toggleHumanizeOption,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;
