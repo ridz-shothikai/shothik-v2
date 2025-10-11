@@ -1550,6 +1550,9 @@ const ParaphraseContend = () => {
                 SYNONYMS={SYNONYMS}
                 setShowMessage={setShowMessage}
                 isLoading={processing.loading}
+                accessToken={accessToken}
+                dispatch={dispatch}
+                setShowLoginModal={setShowLoginModal}
               />
             ) : (
               <ModeNavigationForMobile
