@@ -111,7 +111,9 @@ const OutputNavigation = ({
       <Button
         variant="contained"
         size={isMobile ? "small" : "large"}
-        onClick={() => handleAiDetectors(outputContent[showIndex]?.text)}
+        onClick={() => {
+          handleAiDetectors(selectedContend);
+        }}
         disabled={loadingAi}
         sx={{
           border: { sm: "none", xs: "2px solid" },
