@@ -23,7 +23,7 @@ function splitSentencesFromText(text) {
   const re = /([^.!?]+[.!?]?)/g;
   const matches = text.match(re);
   if (!matches) return [text];
-  return matches.map((s) => s.trim()).filter(Boolean);
+  return matches?.map((s) => s?.trim())?.filter(Boolean);
 }
 
 // normalize words: lowercase and remove basic punctuation
@@ -54,7 +54,7 @@ function annotateStructuralChanges({
 }) {
   if (!outputData) return [];
 
-  const cloned = outputData.map((sentence) =>
+  const cloned = outputData?.map((sentence) =>
     sentence?.map((w) => ({ ...w, structuralChange: false })),
   );
 
@@ -91,15 +91,15 @@ function annotateStructuralChanges({
 
   // Mode B: heuristics using inputText only
   const inputSentences = inputText ? splitSentencesFromText(inputText) : [];
-  const outputSentencesStr = cloned.map((s) =>
+  const outputSentencesStr = cloned?.map((s) =>
     s
-      .map((w) => w.word)
+      ?.map((w) => w?.word)
       .join(" ")
       .trim(),
   );
 
   for (let sIdx = 0; sIdx < cloned.length; sIdx++) {
-    const outSentStr = outputSentencesStr[sIdx] || "";
+    const outSentStr = outputSentencesStr?.[sIdx] || "";
     if (!outSentStr) continue;
 
     let bestIdx = -1;
@@ -146,7 +146,7 @@ function normalizeTokenSurface(s) {
 }
 
 function tokenSurfaceArray(sentenceTokens) {
-  return (sentenceTokens || []).map((t) => normalizeTokenSurface(t.word));
+  return (sentenceTokens || [])?.map((t) => normalizeTokenSurface(t?.word));
 }
 
 // Expand output tokens into a per-word list with token index mapping.
@@ -195,8 +195,8 @@ function markLongestUnchangedUsingDiff({
   minLenWords = 7,
 }) {
   if (!outputData) return outputData;
-  const cloned = outputData.map((s) =>
-    s.map((t) => ({ ...t, unchangedLongest: false })),
+  const cloned = outputData?.map((s) =>
+    s?.map((t) => ({ ...t, unchangedLongest: false })),
   );
 
   const inputSentencesText = inputText ? splitSentencesFromText(inputText) : [];
@@ -204,7 +204,7 @@ function markLongestUnchangedUsingDiff({
   for (let sIdx = 0; sIdx < cloned.length; sIdx++) {
     const outSentence = cloned[sIdx];
     const outStr = outSentence
-      .map((t) => t.word)
+      ?.map((t) => t?.word)
       .join(" ")
       .trim();
 
@@ -212,7 +212,7 @@ function markLongestUnchangedUsingDiff({
     let inStr = null;
     if (inputTokens && inputTokens[sIdx]) {
       inStr = inputTokens[sIdx]
-        .map((t) => t.word)
+        ?.map((t) => t.word)
         .join(" ")
         .trim();
     } else if (inputTokens) {
@@ -222,7 +222,7 @@ function markLongestUnchangedUsingDiff({
       for (let i = 0; i < inputTokens.length; i++) {
         const score = wordOverlapRatio(
           outStr,
-          inputTokens[i].map((t) => t.word).join(" "),
+          inputTokens[i]?.map((t) => t.word).join(" "),
         );
         if (score > bestScore) {
           bestScore = score;
@@ -231,7 +231,7 @@ function markLongestUnchangedUsingDiff({
       }
       if (bestIdx !== -1)
         inStr = inputTokens[bestIdx]
-          .map((t) => t.word)
+          ?.map((t) => t?.word)
           .join(" ")
           .trim();
     } else if (inputText && inputSentencesText.length > 0) {
@@ -434,8 +434,8 @@ function processHeadingSentence(sentence, sIdx) {
   if (headingMatch && sentence.length > 1) {
     const level = headingMatch[1].length;
     const headingText = sentence
-      .slice(1)
-      .map((w) => w.word)
+      ?.slice(1)
+      ?.map((w) => w?.word)
       .join(" ")
       .trim();
     return {
@@ -549,7 +549,7 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         "data-sentence-index": actualSentenceIndex,
         class: "sentence-span",
       },
-      content: sentence.map((wObj, wIdx) => {
+      content: sentence?.map((wObj, wIdx) => {
         const raw = wObj.word;
         const { text: processedText, marks } = parseMarkdownText(raw);
         const prefix =
@@ -630,8 +630,8 @@ export default function EditableOutput({
     });
 
     if (!showLongestUnchangedWords) {
-      return structurallyAnnotated.map((s) =>
-        s.map((t) => ({ ...t, unchangedLongest: false })),
+      return structurallyAnnotated?.map((s) =>
+        s?.map((t) => ({ ...t, unchangedLongest: false })),
       );
     }
 
@@ -639,8 +639,8 @@ export default function EditableOutput({
     const outputText = paraphraseIO?.output?.text || null;
 
     if (!inputText || !outputText) {
-      return structurallyAnnotated.map((s) =>
-        s.map((t) => ({ ...t, unchangedLongest: false })),
+      return structurallyAnnotated?.map((s) =>
+        s?.map((t) => ({ ...t, unchangedLongest: false })),
       );
     }
 
@@ -816,7 +816,7 @@ export default function EditableOutput({
         showRephraseNav: true,
       });
       setHighlightSentence(sI);
-      setSentence((data[sI] || []).map((w) => w.word).join(" "));
+      setSentence((data[sI] || [])?.map((w) => w.word).join(" "));
     };
 
     dom.addEventListener("click", onClick);

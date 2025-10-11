@@ -54,7 +54,7 @@ const PlainTextPaste = Extension.create({
                 // Convert paragraphs and single-line breaks into HTML paragraphs/BRs
                 const normalizedHtml = textOnly
                   .split(/\n{2,}/)
-                  .map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+                  ?.map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
                   .join("");
 
                 const container = document.createElement("div");
@@ -72,7 +72,7 @@ const PlainTextPaste = Extension.create({
               // fallback: plain text normalization -> paragraphs
               const normalizedHtml = plain
                 .split(/\n{2,}/)
-                .map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
+                ?.map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`)
                 .join("");
 
               const container = document.createElement("div");
@@ -150,7 +150,7 @@ const InputSentenceHighlighter = Extension.create({
               if (para.segments.length === 0) continue;
 
               // Reconstruct paragraph text
-              const paraText = para.segments.map((seg) => seg.text).join("");
+              const paraText = para.segments?.map((seg) => seg.text).join("");
 
               // Split into sentences based on language
               const sentenceSeparator =

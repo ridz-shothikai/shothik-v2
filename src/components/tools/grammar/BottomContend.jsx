@@ -102,7 +102,7 @@ const BottomContend = ({
                       }}
                       component="span"
                     >
-                      {errors.length}
+                      {errors?.length}
                     </Typography>
                     <Divider sx={{ mb: 0.3, backgroundColor: "error.main" }} />
                     <Divider sx={{ backgroundColor: "error.main" }} />
@@ -159,9 +159,9 @@ const BottomContend = ({
       {/* error  */}
       {errors?.length ? (
         <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-          {errors?.map((text) => (
+          {errors?.map(({ error }) => (
             <span
-              key={text}
+              key={error}
               style={{
                 margin: "5px",
                 border: "1px solid #b71d18",
@@ -171,7 +171,7 @@ const BottomContend = ({
                 color: "#b71d18",
               }}
             >
-              {text}
+              {error}
             </span>
           ))}
         </Stack>

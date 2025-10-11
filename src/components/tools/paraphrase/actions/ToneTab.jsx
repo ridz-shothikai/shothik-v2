@@ -134,7 +134,7 @@ const ToneTab = ({ text, plainOutput }) => {
       {/* Score Cards */}
       {scores && (
         <Stack spacing={2}>
-          {METRICS.map(({ key, labels }) => {
+          {METRICS?.map(({ key, labels }) => {
             // Expect scores in range 0–100
             const origScore = Math.max(
               0,

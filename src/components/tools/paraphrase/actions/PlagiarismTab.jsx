@@ -149,7 +149,7 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
           Results ({displayResults.length})
         </Typography>
 
-        {displayResults.map((r, i) => (
+        {displayResults?.map((r, i) => (
           <Box
             key={i}
             sx={{
