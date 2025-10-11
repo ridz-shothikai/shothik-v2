@@ -13,9 +13,9 @@ export default function GPTsettingSidebar({
   onClose,
   active,
   setActive,
-  setHumanizeInput,
   allHumanizeHistory,
   refetchHistory,
+  handleHistorySelect,
 }) {
   const { user } = useSelector((state) => state.auth);
 
@@ -102,10 +102,10 @@ export default function GPTsettingSidebar({
         ) : // Modified rendering logic
         active === "gpt-history" ? (
           <GPTHistoryTab
-            setHumanizeInput={setHumanizeInput}
             onClose={onClose}
             allHumanizeHistory={allHumanizeHistory}
             refetchHistory={refetchHistory}
+            handleHistorySelect={handleHistorySelect}
           />
         ) : // For future tabs, We would add more conditions or a generic renderer
         // For now, if it's not gpt-history, we'll just render a placeholder or nothing

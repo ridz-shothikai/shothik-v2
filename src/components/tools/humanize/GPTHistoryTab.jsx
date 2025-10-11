@@ -8,11 +8,15 @@ import { historyGroupsByPeriod } from "../../../utils/historyGroupsByPeriod";
 import { truncateText } from "../paraphrase/actions/HistoryTab";
 
 export default function GPTHistoryTab({
-  setHumanizeInput,
   onClose,
   allHumanizeHistory,
   refetchHistory,
+  handleHistorySelect,
 }) {
+  console.log(
+    "GPTHistoryTab received handleHistorySelect:",
+    typeof handleHistorySelect,
+  );
   const [expandedEntries, setExpandedEntries] = useState({});
   const [expandedGroups, setExpandedGroups] = useState({});
   const { accessToken } = useSelector((state) => state.auth);
@@ -34,6 +38,12 @@ export default function GPTHistoryTab({
       ...prev,
       [period]: !prev?.[period],
     }));
+  };
+
+  const onHistoryClick = (entry) => {
+    // console.log(entry, "ENTRY DATA");
+    handleHistorySelect(entry);
+    onClose();
   };
 
   // INFO: This effect is responsible for auto opening|expanding the curent month toggle to see the history data
@@ -104,10 +114,7 @@ export default function GPTHistoryTab({
               history?.map((entry, i) => (
                 <div
                   key={i}
-                  onClick={() => {
-                    setHumanizeInput(entry.text);
-                    onClose(); // close the settings drawer
-                  }}
+                  onClick={() => onHistoryClick(entry)}
                   // className={`cursor-pointer px-2 pt-1 pb-1 transition-colors ${i < history?.length - 1 ? "border-border border-b" : ""} ${entry?._id === activeHistory?._id ? "bg-primary/10" : "bg-transparent"} `}
                   className={`border-border cursor-pointer border-b px-2 pt-1 pb-1 transition-colors`}
                 >

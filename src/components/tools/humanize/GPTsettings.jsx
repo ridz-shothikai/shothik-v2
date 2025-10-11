@@ -7,10 +7,14 @@ import SettingsSidebar from "../paraphrase/settings/SettingsSidebar";
 import GPTsettingSidebar from "./GPTsettingSidebar";
 
 export default function GPTsettings({
-  setHumanizeInput,
+  handleHistorySelect,
   allHumanizeHistory,
   refetchHistory,
 }) {
+  console.log(
+    "GPTsettings received handleHistorySelect:",
+    typeof handleHistorySelect,
+  );
   const mobile = useResponsive("down", "lg");
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -45,7 +49,9 @@ export default function GPTsettings({
               id="gpt-history"
               title="History"
               icon={History}
-              onClick={() => setShowSidebar("gpt-history")}
+              onClick={() => {
+                setShowSidebar("gpt-history");
+              }}
               disabled={false}
               crown={true}
               mobile={mobile}
@@ -118,9 +124,9 @@ export default function GPTsettings({
             onClose={() => setShowSidebar((prev) => !prev)}
             active={showSidebar}
             setActive={setShowSidebar}
-            setHumanizeInput={setHumanizeInput}
             allHumanizeHistory={allHumanizeHistory}
             refetchHistory={refetchHistory}
+            handleHistorySelect={handleHistorySelect}
           />
         )}
 

@@ -31,6 +31,7 @@ export const historyGroupsByPeriod = (apiResponse) => {
       level: entry.level,
       wordCount: entry.wordCount,
       outputs: entry.outputs, // Include outputs array
+      language: entry.language,
     });
     return acc;
   }, {});

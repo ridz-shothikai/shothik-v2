@@ -12,7 +12,7 @@ import {
 
 import { MoreVert } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
 import { trackEvent } from "../../../analysers/eventTracker";
@@ -60,15 +60,6 @@ const HumanizedContend = () => {
   const [language, setLanguage] = useState("English (US)");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
-  // const sampleText =
-  //   trySamples.humanize[language.startsWith("English") ? "English" : language];
-
-  const sampleText = useMemo(() => {
-    const langkey =
-      language && language.startsWith("English") ? "English" : language;
-    return trySamples.humanize[langkey] || null;
-  }, [language]);
-  const hasSampleText = Boolean(sampleText);
   const [userInput, setUserInput] = useState("");
   const [wordCount, setWordCount] = useState(0);
   const loadingText = useLoadingText(isLoading);
@@ -78,17 +69,28 @@ const HumanizedContend = () => {
   const [update, setUpdate] = useState(false);
   const [model, setModel] = useState("Panda");
   const [scores, setScores] = useState([]);
+  const [isRestoredFromHistory, setIsRestoredFromHistory] = useState(false);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const router = useRouter();
-  // const theme = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Ref to track if we're currently restoring from history
+  const isRestoring = useRef(false);
+
+  const sampleText = useMemo(() => {
+    const langkey =
+      language && language.startsWith("English") ? "English" : language;
+    return trySamples.humanize[langkey] || null;
+  }, [language]);
+  const hasSampleText = Boolean(sampleText);
 
   function handleClear() {
     setUserInput("");
     setScores([]);
     setShowIndex(0);
     setOutputContent([]);
+    setIsRestoredFromHistory(false);
   }
 
   const handleAiDetectors = (text) => {
@@ -100,9 +102,91 @@ const HumanizedContend = () => {
     router.push("/ai-detector");
   };
 
+  /**
+   * Check if history entry parameters match current settings
+   */
+  const canRestoreFromHistory = (entry) => {
+    if (!entry || !entry.outputs || entry.outputs.length === 0) {
+      return false;
+    }
+
+    console.log(entry);
+
+    const modelMatches = entry.model?.toLowerCase() === model.toLowerCase();
+    const levelMatches = entry.level === currentLength;
+    const languageMatches = entry.language === language;
+
+    return modelMatches && levelMatches && languageMatches;
+  };
+
+  /**
+   * Handle history entry selection with smart restoration
+   */
+  const handleHistorySelect = (entry) => {
+    try {
+      // Set the restoring flag to prevent auto-humanize from triggering
+      isRestoring.current = true;
+
+      const canRestore = canRestoreFromHistory(entry);
+
+      if (canRestore) {
+        // Restore everything from history
+        setUserInput(entry.text);
+        setOutputContent(entry.outputs);
+        setScores(entry.outputs.map((output) => output.score));
+        setShowIndex(0);
+        setIsRestoredFromHistory(true);
+
+        // Show success feedback
+        enqueueSnackbar("Content restored from history", {
+          variant: "success",
+        });
+      } else {
+        // Parameters don't match - only set input and clear outputs
+        setUserInput(entry.text);
+        setOutputContent([]);
+        setScores([]);
+        setShowIndex(0);
+        setIsRestoredFromHistory(false);
+
+        // Inform user about parameter mismatch
+        const mismatchReasons = [];
+        if (entry.model?.toLowerCase() !== model.toLowerCase()) {
+          mismatchReasons.push(`model changed from ${entry.model} to ${model}`);
+        }
+        if (entry.level !== currentLength) {
+          mismatchReasons.push(
+            `level changed from ${entry.level} to ${currentLength}`,
+          );
+        }
+        if (entry.language !== language) {
+          mismatchReasons.push(
+            `language changed from ${entry.language} to ${language}`,
+          );
+        }
+
+        if (mismatchReasons.length > 0) {
+          enqueueSnackbar(
+            `Settings changed (${mismatchReasons.join(", ")}). Please regenerate.`,
+            { variant: "info" },
+          );
+        }
+      }
+
+      // Reset the flag after a short delay to allow state updates to complete
+      setTimeout(() => {
+        isRestoring.current = false;
+      }, 100);
+    } catch (error) {
+      console.error("Error restoring history:", error);
+      enqueueSnackbar("Failed to restore history entry", { variant: "error" });
+      isRestoring.current = false;
+    }
+  };
+
   const handleSubmit = async () => {
     try {
-      //track event
+      // Track event
       trackEvent("click", "humanize", "humanize_click", 1);
 
       setLoadingAi(true);
@@ -110,6 +194,8 @@ const HumanizedContend = () => {
       setOutputContent([]);
       setScores([]);
       setShowIndex(0);
+      setIsRestoredFromHistory(false);
+
       let text = userInput;
 
       const payload = {
@@ -118,6 +204,7 @@ const HumanizedContend = () => {
         level: currentLength,
         language,
       };
+
       const data = await humanizeContend(payload).unwrap();
 
       if (!data.output?.length) {
@@ -126,12 +213,13 @@ const HumanizedContend = () => {
           message: "No humanized content found",
         };
       }
+
       const scores = data.output.map((item) => item.score);
       setOutputContent(data.output);
       setScores(scores);
       setUpdate((prev) => !prev);
 
-      // after we done generating humanized content we should refetch history to maintain fresh data
+      // After generating humanized content, refetch history to maintain fresh data
       refetchAllHumanizeHistory();
     } catch (err) {
       const error = err?.data;
@@ -152,13 +240,33 @@ const HumanizedContend = () => {
 
   const debounceHumanizeProcess = useDebounce(userInput, 1000);
 
+  /**
+   * Auto-humanize effect with restoration protection
+   */
   useEffect(() => {
+    // Skip if automatic start is disabled
     if (!automaticStartHumanize) return;
 
+    // Skip if we're currently restoring from history
+    if (isRestoring.current) return;
+
+    // Skip if already have outputs (restored or generated)
+    if (outputContent.length > 0) return;
+
+    // Only trigger if there's user input
     if (userInput) {
       handleSubmit();
     }
   }, [automaticStartHumanize, debounceHumanizeProcess]);
+
+  /**
+   * Effect to clear "restored from history" indicator when settings change
+   */
+  useEffect(() => {
+    if (isRestoredFromHistory && outputContent.length > 0) {
+      setIsRestoredFromHistory(false);
+    }
+  }, [model, currentLength, language]);
 
   return (
     <Stack sx={{ pt: 2 }}>
@@ -308,19 +416,42 @@ const HumanizedContend = () => {
             </Box>
 
             <Box>
-              {/* output  */}
+              {/* output */}
               <Card
                 sx={{
                   height: 420,
                   overflowY: "auto",
                   padding: 2,
                   border: (theme) => `1px solid ${theme.palette.divider}`,
+                  position: "relative",
                 }}
               >
+                {/* Restored from history indicator */}
+                {/* {isRestoredFromHistory && outputContent.length > 0 && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      zIndex: 1,
+                    }}
+                  >
+                    <Chip
+                      label="📚 Restored from history"
+                      size="small"
+                      color="info"
+                      variant="outlined"
+                      sx={{ fontSize: "0.75rem" }}
+                    />
+                  </Box>
+                )} */}
+
                 {outputContent[showIndex] ? (
                   <Typography
                     sx={{
                       whiteSpace: "pre-line",
+                      // mt: isRestoredFromHistory ? 4 : 0,
+                      mt: 0,
                     }}
                   >
                     {outputContent[showIndex].text}
@@ -360,7 +491,7 @@ const HumanizedContend = () => {
           }}
         >
           <GPTsettings
-            setHumanizeInput={setUserInput}
+            handleHistorySelect={handleHistorySelect}
             allHumanizeHistory={allHumanizeHistory?.data}
             refetchHistory={refetchAllHumanizeHistory}
           />
@@ -382,7 +513,7 @@ const HumanizedContend = () => {
               }}
             >
               <GPTsettings
-                setHumanizeInput={setUserInput}
+                handleHistorySelect={handleHistorySelect}
                 allHumanizeHistory={allHumanizeHistory?.data}
                 refetchHistory={refetchAllHumanizeHistory}
               />
