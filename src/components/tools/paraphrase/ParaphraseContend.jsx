@@ -555,7 +555,7 @@ const ParaphraseContend = () => {
               const words = sentence
                 .trim()
                 .split(/\s+/)
-                .map((w) => ({ word: w, type: "none", synonyms: [] }));
+                ?.map((w) => ({ word: w, type: "none", synonyms: [] }));
               newResult.push(words);
             });
         }
@@ -595,7 +595,7 @@ const ParaphraseContend = () => {
           return prev;
         }
 
-        updated[targetIdx] = parsed.map((item) => ({
+        updated[targetIdx] = parsed?.map((item) => ({
           ...item,
           // word: item.word, // preserves markdown tokens
           word: item.word.replace(/[{}]/g, ""),
@@ -1037,7 +1037,7 @@ const ParaphraseContend = () => {
     const finalText = words.slice(0, wordLimit).join(" ");
 
     if (words.length <= wordLimit) {
-      const quotedPhrases = [...finalText.matchAll(/"[^"]+"/g)].map(
+      const quotedPhrases = [...finalText?.matchAll(/"[^"]+"/g)]?.map(
         (m) => m[0],
       );
       for (const phrase of quotedPhrases) {
@@ -1240,7 +1240,7 @@ const ParaphraseContend = () => {
                     const words = sentence
                       .trim()
                       .split(/\s+/)
-                      .map((w) => ({
+                      ?.map((w) => ({
                         word: w,
                         type: "none",
                         synonyms: [],
@@ -1276,7 +1276,7 @@ const ParaphraseContend = () => {
                   return prev;
                 }
 
-                updated[targetIdx] = parsed.map((item) => ({
+                updated[targetIdx] = parsed?.map((item) => ({
                   ...item,
                   // word: item.word, // preserves markdown tokens
                   word: item.word.replace(/[{}]/g, ""),
@@ -1311,7 +1311,7 @@ const ParaphraseContend = () => {
                   return prev;
                 }
 
-                updated[targetIdx] = parsed.map((item) => ({
+                updated[targetIdx] = parsed?.map((item) => ({
                   ...item,
                   // word: item.word, // preserves markdown tokens
                   word: item.word.replace(/[{}]/g, ""),

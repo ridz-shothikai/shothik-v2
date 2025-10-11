@@ -70,22 +70,21 @@ const GrammarContend = () => {
 
   // Highlight errors in the text
   function getHighlightedText(userInput, errors) {
-    if (!userInput || errors.length === 0) {
+    if (!userInput || errors?.length === 0) {
       return userInput;
     }
 
     let highlightedText = userInput;
-    const errorWords = errors.map((error) => error.word || error.text || error);
 
-    errorWords.forEach((word) => {
-      if (word) {
+    errors?.forEach(({ error }) => {
+      if (error) {
         // Escape regex special chars
-        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escapedWord = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const regex = new RegExp(escapedWord, "gu");
 
         highlightedText = highlightedText.replace(
           regex,
-          `<span style="background-color: #f5c33b4d; padding: 2px 0;">${word}</span>`,
+          `<span style="background-color: #f5c33b4d; padding: 2px 0; cursor: pointer;">${error}</span>`,
         );
       }
     });
@@ -155,7 +154,6 @@ const GrammarContend = () => {
         synonym: "Basic",
       };
       await fetchWithStreaming(payload);
-      // setErrors([]);
     } catch (error) {
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
         dispatch(setShowAlert(true));
