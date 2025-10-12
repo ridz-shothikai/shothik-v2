@@ -1,5 +1,5 @@
 // src/components/tools/paraphrase/ModeNavigation.jsx
-import { ExpandMore, Lock } from "@mui/icons-material";
+import { Diamond, ExpandMore, Lock } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -34,6 +34,23 @@ const ModeNavigation = ({
   const isXs = useMediaQuery(theme.breakpoints.down("sm")); // <600px
   const isSm = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600–900px
   const enqueueSnackbar = useSnackbar();
+
+  // Determine max allowed synonym value based on user package
+  const maxAllowedSynonymValue = React.useMemo(() => {
+    if (userPackage === "free") return 40; // Intermediate
+    if (userPackage === "value_plan") return 60; // Advance
+    return 80; // Pro or Unlimited (Expert)
+  }, [userPackage]);
+
+  // Adjust selectedSynonyms if it exceeds the allowed limit
+  React.useEffect(() => {
+    const currentSynonymValue = Object.keys(SYNONYMS).find(
+      (k) => SYNONYMS[k] === selectedSynonyms,
+    );
+    if (currentSynonymValue > maxAllowedSynonymValue) {
+      setSelectedSynonyms(SYNONYMS[maxAllowedSynonymValue]);
+    }
+  }, [maxAllowedSynonymValue, selectedSynonyms, setSelectedSynonyms, SYNONYMS]);
 
   // determine how many tabs to show before collapsing
   const visibleCount = isXs ? 2 : isSm ? 4 : 6;
@@ -85,6 +102,8 @@ const ModeNavigation = ({
   const displayedModes = extraMode
     ? [...initialModes, modes.find((m) => m.value === extraMode)]
     : initialModes;
+
+  console.log(userPackage, userPackage === "pro_plan", "user package");
 
   return (
     <Stack
@@ -192,34 +211,102 @@ const ModeNavigation = ({
         </Box>
       </Box>
 
-      {/* Synonyms slider (unchanged) */}
-      <Box sx={{ width: "150px" }}>
+      {/* Synonyms slider */}
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        sx={{ width: "150px" }}
+      >
         <Slider
           aria-label="Synonyms"
           getAriaValueText={(v) => SYNONYMS[v]}
-          value={Object.keys(SYNONYMS).find(
-            (k) => SYNONYMS[k] === selectedSynonyms,
+          value={Math.min(
+            Object.keys(SYNONYMS).find(
+              (k) => SYNONYMS[k] === selectedSynonyms,
+            ) || maxAllowedSynonymValue,
+            maxAllowedSynonymValue,
           )}
           marks
           step={20}
           min={20}
-          max={80}
-          valueLabelDisplay="on"
+          max={80} // Show all options
+          valueLabelDisplay="auto"
           valueLabelFormat={selectedSynonyms}
-          onChange={(_, v) => setSelectedSynonyms(SYNONYMS[v])}
+          onChange={(_, v) => {
+            const newValue = Number(v);
+            if (newValue <= maxAllowedSynonymValue) {
+              setSelectedSynonyms(SYNONYMS[newValue]);
+            } else {
+              enqueueSnackbar(
+                "Upgrade your plan to access higher synonym levels.",
+                {
+                  variant: "warning",
+                },
+              );
+              // Snap back to max allowed value if user tries to select a locked level
+              setSelectedSynonyms(SYNONYMS[maxAllowedSynonymValue]);
+            }
+          }}
           sx={{
             mt: { xs: 2, sm: 1 },
             width: "100%",
+            // "& .MuiSlider-rail": {
+            //   background: `linear-gradient(to right,
+            //     ${theme.palette.primary.main} 0%,
+            //     ${theme.palette.primary.main} ${(maxAllowedSynonymValue / 80) * 100}%,
+            //     ${theme.palette.action.disabledBackground} ${(maxAllowedSynonymValue / 80) * 100}%,
+            //     ${theme.palette.action.disabledBackground} 100%)`,
+            //   opacity: 0.38,
+            // },
+            // "& .MuiSlider-track": {
+            //   background: theme.palette.primary.main,
+            // },
+            "& .MuiSlider-mark": {
+              backgroundColor: (theme) => {
+                return theme.palette.background.paper;
+              },
+              "&[data-index]": {
+                "&:nth-of-type(n+5)": {
+                  backgroundColor:
+                    maxAllowedSynonymValue < 60
+                      ? theme.palette.action.disabled
+                      : theme.palette.background.paper,
+                },
+                "&:nth-of-type(n+6)": {
+                  backgroundColor:
+                    maxAllowedSynonymValue < 80
+                      ? theme.palette.action.disabled
+                      : theme.palette.background.paper,
+                },
+              },
+            },
             "& .MuiSlider-valueLabel": {
               zIndex: 1500,
-              fontSize: "10px",
+              fontSize: "12px",
+              borderRadius: "4px",
+              backgroundColor: "#212B36",
               padding: "2px 6px",
-              transform: "translateY(-15px)",
-              "&:before": { width: "6px", height: "6px", bottom: 0 },
+              top: "100%",
+              transform: "translateY(8px)",
+              "&.MuiSlider-valueLabelOpen": {
+                transform: "translateY(8px)",
+              },
+              "&:before": {
+                width: "6px",
+                height: "6px",
+                top: "-3px",
+                bottom: "auto",
+                left: "calc(50% - 3px)",
+                transform: "rotate(45deg)",
+              },
             },
           }}
         />
-      </Box>
+        {userPackage !== "unlimited" && userPackage !== "pro_plan" && (
+          <Diamond sx={{ color: "primary.main", width: 24, height: 24 }} />
+        )}
+      </Stack>
     </Stack>
   );
 };
