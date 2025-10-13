@@ -121,7 +121,7 @@ function annotateStructuralChanges({
     const matchedInput = inputSentences[bestIdx] || "";
     const matchedWordsSet = new Set(tokenizeWords(matchedInput));
     for (const token of cloned[sIdx]) {
-      const tokenWords = tokenizeWords(token.word);
+      const tokenWords = tokenizeWords(token?.word);
       if (tokenWords.length === 0) continue;
       const common = tokenWords.filter((w) => matchedWordsSet.has(w)).length;
       const tokenOverlap = common / tokenWords.length;
@@ -154,7 +154,7 @@ function buildWordToTokenMap(outSentence) {
   const arr = []; // { w, tokenIdx }
   for (let tokenIdx = 0; tokenIdx < (outSentence || []).length; tokenIdx++) {
     const token = outSentence[tokenIdx];
-    const surface = normalizeTokenSurface(token.word);
+    const surface = normalizeTokenSurface(token?.word);
     const words = surface.length ? surface.split(/\s+/).filter(Boolean) : [];
     for (const w of words) arr.push({ w, tokenIdx });
   }
@@ -212,7 +212,7 @@ function markLongestUnchangedUsingDiff({
     let inStr = null;
     if (inputTokens && inputTokens[sIdx]) {
       inStr = inputTokens[sIdx]
-        ?.map((t) => t.word)
+        ?.map((t) => t?.word)
         .join(" ")
         .trim();
     } else if (inputTokens) {
@@ -222,7 +222,7 @@ function markLongestUnchangedUsingDiff({
       for (let i = 0; i < inputTokens.length; i++) {
         const score = wordOverlapRatio(
           outStr,
-          inputTokens[i]?.map((t) => t.word).join(" "),
+          inputTokens[i]?.map((t) => t?.word).join(" "),
         );
         if (score > bestScore) {
           bestScore = score;
@@ -447,7 +447,7 @@ function processHeadingSentence(sentence, sIdx) {
   return null;
 }
 function isNewlineSentence(sentence) {
-  return sentence.length === 1 && /^\n+$/.test(sentence[0].word);
+  return sentence.length === 1 && /^\n+$/.test(sentence[0]?.word);
 }
 
 /* ============================================================
@@ -550,7 +550,7 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         class: "sentence-span",
       },
       content: sentence?.map((wObj, wIdx) => {
-        const raw = wObj.word;
+        const raw = wObj?.word;
         const { text: processedText, marks } = parseMarkdownText(raw);
         const prefix =
           (actualSentenceIndex === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw)
@@ -816,7 +816,7 @@ export default function EditableOutput({
         showRephraseNav: true,
       });
       setHighlightSentence(sI);
-      setSentence((data[sI] || [])?.map((w) => w.word).join(" "));
+      setSentence((data[sI] || [])?.map((w) => w?.word).join(" "));
     };
 
     dom.addEventListener("click", onClick);

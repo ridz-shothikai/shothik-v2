@@ -1,14 +1,12 @@
 import {
   ChevronLeft,
   ChevronRight,
-  ContentCopy,
   DeleteRounded,
   ExpandMore,
   GppMaybe,
   History,
   KeyboardArrowDown,
   KeyboardArrowUp,
-  VerticalAlignBottom,
 } from "@mui/icons-material";
 import {
   Box,
@@ -29,7 +27,6 @@ import { useDispatch, useSelector } from "react-redux";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { setActiveHistory } from "../../../redux/slice/paraphraseHistorySlice";
-import WordIcon from "../../../resource/assets/WordIcon";
 import { downloadFile } from "../common/downloadfile";
 
 const OutputBotomNavigation = ({
@@ -165,10 +162,6 @@ const OutputBotomNavigation = ({
               </IconButton>
             </Tooltip>
 
-            <Typography sx={{ fontWeight: 600 }}>
-              <b>{highlightSentence + 1}</b>/{sentenceCount}
-            </Typography>
-
             <Tooltip title="Next sentence" arrow placement="top">
               <IconButton
                 onClick={() => setHighlightSentence((prev) => prev + 1)}
@@ -184,11 +177,19 @@ const OutputBotomNavigation = ({
                 <KeyboardArrowDown />
               </IconButton>
             </Tooltip>
+
+            <Typography sx={{ fontWeight: 600 }}>
+              <b>{highlightSentence + 1}</b>/{sentenceCount} Sentences
+            </Typography>
           </Stack>
 
+          <span className="bg-primary h-1.5 w-1.5 rounded-full" />
+
           <Stack direction="row" alignItems="center" gap={0.5}>
-            <WordIcon />
-            <Typography sx={{ fontWeight: 600 }}>{outputWordCount}</Typography>
+            {/* <WordIcon /> */}
+            <Typography sx={{ fontWeight: 600 }}>
+              {outputWordCount} words
+            </Typography>
           </Stack>
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="end">
@@ -293,7 +294,13 @@ const OutputBotomNavigation = ({
               aria-label="download"
               size="large"
             >
-              <VerticalAlignBottom sx={{ fontWeight: 600 }} />
+              <Image
+                src={"/icons/download-text.svg"}
+                alt="copy"
+                width={24}
+                height={24}
+                priority={true}
+              />
             </IconButton>
           </Tooltip>
 
@@ -312,7 +319,13 @@ const OutputBotomNavigation = ({
               aria-label="download"
               size="large"
             >
-              <ContentCopy />
+              <Image
+                src={"/icons/copy.svg"}
+                alt="copy"
+                width={24}
+                height={24}
+                priority={true}
+              />
             </IconButton>
           </Tooltip>
         </Stack>

@@ -10,7 +10,6 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useWordLimit from "../../../hooks/useWordLimit";
-import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
 import FreezeWordsDialog from "../paraphrase/FreezeWordsDialog";
 function WordCounter({
@@ -151,7 +150,7 @@ const Contend = ({
         flex={1}
       >
         <Stack direction="row" spacing={1} alignItems="center">
-          <WordIcon />
+          {/* <WordIcon /> */}
           <Typography
             variant="subtitle2"
             sx={{

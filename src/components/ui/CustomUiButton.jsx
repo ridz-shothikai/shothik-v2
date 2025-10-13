@@ -7,6 +7,8 @@ export default function CustomUiButton({
   iconClassName,
   textLable,
   variant = "primary",
+  children,
+  onClick, // Add onClick prop
   ...props
 }) {
   const baseStyles =
@@ -21,6 +23,7 @@ export default function CustomUiButton({
   return (
     <button
       className={cn(baseStyles, variantStyles[variant], className)}
+      onClick={onClick} // Pass onClick to the button
       {...props}
     >
       {startIconSrc && (
@@ -34,6 +37,8 @@ export default function CustomUiButton({
       )}
 
       {textLable}
+
+      {children}
     </button>
   );
 }

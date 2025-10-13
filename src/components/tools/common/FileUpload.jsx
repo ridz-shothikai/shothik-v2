@@ -1,8 +1,8 @@
 "use client";
-import { UploadFileRounded } from "@mui/icons-material";
-import { Box, Button, CircularProgress, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import mammoth from "mammoth";
 import { useRef, useState } from "react";
+import CustomUiButton from "../../ui/CustomUiButton";
 import pdfToText from "./pdftotext";
 
 function FileUpload({ isMobile, setInput }) {
@@ -70,29 +70,14 @@ function FileUpload({ isMobile, setInput }) {
 
   return (
     <Tooltip title="Browse documents (DOCX, PDF)." arrow placement="top">
-      <Button
-        role={undefined}
-        component="label"
-        tabIndex={-1}
-        size={isMobile ? "small" : "large"}
-        variant={"outlined"}
-        color="success"
-        startIcon={
-          isProcessing ? (
-            <CircularProgress
-              size={isMobile ? 12 : 16}
-              sx={{ color: "gray" }}
-            />
-          ) : (
-            <UploadFileRounded />
-          )
-        }
-        sx={{
-          border: "2px solid",
-        }}
+      <CustomUiButton
+        textLable={`Upload ${isMobile ? "Doc" : "Document"}`}
+        startIconSrc={"/icons/cloud-download-up.svg"}
+        iconClassName={"w-5 h-5 lg:w-5 lg:h-5"}
+        className={"font-bold"}
         disabled={isProcessing}
+        onClick={() => inputRef.current.click()} // Add onClick handler
       >
-        Upload {isMobile ? "Doc" : "Document"}
         <Box
           component="input"
           sx={{
@@ -111,7 +96,7 @@ function FileUpload({ isMobile, setInput }) {
           type="file"
           accept="application/pdf, .docx"
         />
-      </Button>
+      </CustomUiButton>
     </Tooltip>
   );
 }

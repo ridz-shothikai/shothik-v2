@@ -1,6 +1,7 @@
 "use client";
 import { Box, Stack, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
+import useResponsive from "../../../hooks/useResponsive";
 import CustomUiButton from "../../ui/CustomUiButton";
 const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
 const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), {
@@ -25,6 +26,8 @@ const UserActionInput = ({
     setUserInput(clipboardText);
     if (extraAction) extraAction();
   }
+
+  const isSmallDevice = useResponsive("down", "sm");
 
   function handleSampleText() {
     if (!sampleText) return;
@@ -57,14 +60,14 @@ const UserActionInput = ({
         sx={{ width: "80%", mx: "auto" }}
       >
         <Stack
-          direction="row"
+          direction={isSmallDevice ? "column" : "row"}
           id="sample-paste-section"
           alignItems="center"
           justifyContent="center"
           flexWrap="wrap"
           rowGap={1.5}
           columnGap={2}
-          sx={{ width: "80%", mx: "auto" }}
+          sx={{ width: "100%", mx: "auto" }}
         >
           {!disableTrySample ? (
             // <Button
@@ -114,7 +117,7 @@ const UserActionInput = ({
             {!isMobile ? "Paste Text" : "Paste"}
           </Button> */}
           {!disableTrySample ? (
-            <span className="text-sm font-bold text-[#212B36] lowercase lg:text-base">
+            <span className="hidden text-sm font-bold text-[#212B36] lowercase sm:block lg:text-base">
               OR
             </span>
           ) : null}

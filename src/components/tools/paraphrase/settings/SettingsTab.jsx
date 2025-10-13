@@ -33,7 +33,8 @@ const SettingsTab = () => {
     // { key: "showLegend", label: "Show legend", info: false },
     {
       key: "showChangedWords",
-      label: "Show changed words",
+      label: "Show ",
+      highlightText: "changed words",
       highlight: "warning.main",
       info: false,
     },
@@ -44,7 +45,8 @@ const SettingsTab = () => {
     },
     {
       key: "showLongestUnchangedWords",
-      label: "Show longest unchanged words",
+      label: "Show ",
+      highlightText: "longest unchanged words",
       highlight: "info.main",
       info: false,
     },
@@ -83,26 +85,34 @@ const SettingsTab = () => {
       <Typography variant="subtitle2" gutterBottom>
         Interface
       </Typography>
-      {interfaceOptionsMeta.map(({ key, label, info, highlight }) => (
-        <Box key={key} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-          <Checkbox
-            size="small"
-            checked={interfaceOptions[key] || false}
-            onChange={() => dispatch(toggleInterfaceOption(key))}
-          />
-          <Typography
-            variant="body2"
-            sx={highlight ? { color: highlight, ml: 1 } : { ml: 1 }}
-          >
-            {label}
-          </Typography>
-          {info && (
-            <IconButton size="small" sx={{ ml: "auto" }}>
-              <InfoIcon fontSize="small" color="action" />
-            </IconButton>
-          )}
-        </Box>
-      ))}
+      {interfaceOptionsMeta.map(
+        ({ key, label, info, highlight, highlightText }) => (
+          <Box key={key} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <Checkbox
+              size="small"
+              checked={interfaceOptions[key] || false}
+              onChange={() => dispatch(toggleInterfaceOption(key))}
+            />
+            <Typography variant="body2" sx={{ ml: 1 }}>
+              {label}
+              {highlightText && (
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{ color: highlight }}
+                >
+                  {highlightText}
+                </Typography>
+              )}
+            </Typography>
+            {info && (
+              <IconButton size="small" sx={{ ml: "auto" }}>
+                <InfoIcon fontSize="small" color="action" />
+              </IconButton>
+            )}
+          </Box>
+        ),
+      )}
     </Box>
   );
 };
