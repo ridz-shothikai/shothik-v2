@@ -29,6 +29,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Download, Edit2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -247,12 +248,12 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
             size="small"
             onClick={handleBookClick}
           >
-            <MenuBookOutlinedIcon />
+            <Image src={"/icons/file.svg"} alt="file" width={24} height={24} />
           </IconButton>
         </Tooltip>
         <Tooltip title="Add new document" placement="right">
           <IconButton size="small" onClick={handleAddClick}>
-            <AddOutlinedIcon />
+            <AddOutlinedIcon sx={{ color: theme.palette.text.primary }} />
           </IconButton>
         </Tooltip>
       </Box>

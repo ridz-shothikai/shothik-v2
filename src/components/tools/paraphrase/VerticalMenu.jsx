@@ -1,17 +1,16 @@
 "use client";
-import {
-  Compare,
-  Gavel,
-  History,
-  Keyboard,
-  SentimentSatisfiedAlt,
-  Settings,
-} from "@mui/icons-material";
-import FeedbackIcon from "@mui/icons-material/Feedback";
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import compare from "../../../../public/icons/compare-modes.svg";
+import feedback from "../../../../public/icons/feedback.svg";
+import history from "../../../../public/icons/history.svg";
+import hotkeys from "../../../../public/icons/hotkeys.svg";
+import plagiarism from "../../../../public/icons/plagiarism.svg";
+import settings from "../../../../public/icons/settings.svg";
+import tone from "../../../../public/icons/tone.svg";
 import PlagiarismSidebar from "./PlagiarismSidebar";
 import SettingsSidebar from "./settings/SettingsSidebar";
 
@@ -77,7 +76,7 @@ const VerticalMenu = ({
   const ActionButton = ({
     id,
     title,
-    icon: Icon,
+    icon,
     onClick,
     disabled,
     crown = false,
@@ -95,15 +94,14 @@ const VerticalMenu = ({
           gap: theme.spacing(1),
           padding: theme.spacing(1),
         }
-      : { flexDirection: "column", gap: 0 };
+      : { flexDirection: "column", gap: 1 };
     return (
       <Box
         onClick={!disabled ? onClick : undefined}
         sx={{
           // full-width row on mobile, fixed circle otherwise
-          width: mobile ? "100%" : "5rem",
-          height: mobile ? "auto" : "5rem",
-          borderRadius: mobile ? theme.shape.borderRadius : "50%",
+          width: mobile ? "100%" : "3.9rem",
+          height: "auto",
           display: "flex",
           ...containerStyles,
           justifyContent: mobile ? "flex-start" : "center",
@@ -142,7 +140,14 @@ const VerticalMenu = ({
               color: theme.palette.text.primary,
             }}
           >
-            <Icon sx={{ fontSize: ICON_SIZE }} />
+            <Image
+              src={icon}
+              priority={true}
+              width={20}
+              height={20}
+              alt=""
+              className="h-5 w-5"
+            />
           </IconButton>
           {crown && (
             <Box
@@ -154,7 +159,7 @@ const VerticalMenu = ({
                 // mobile: bottom‐right; desktop: top‐right
                 ...(mobile
                   ? { bottom: 0, right: 0, transform: "translate(50%, 50%)" }
-                  : { bottom: 10, right: 15, transform: "none" }),
+                  : { bottom: "-6px", right: "10px", transform: "none" }),
                 width: 16,
                 height: 16,
                 pointerEvents: "none",
@@ -199,7 +204,10 @@ const VerticalMenu = ({
           px: mobile ? 2 : 0,
           display: "flex",
           flexDirection: "column",
+          gap: { xs: 3.5, lg: 5.5 },
           zIndex: 10,
+          position: "relative",
+          bottom: 0,
         }}
       >
         {/* Center icons */}
@@ -207,7 +215,7 @@ const VerticalMenu = ({
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 0,
+            gap: { xs: 2, lg: 3 },
             // left-align the full-width buttons on mobile
             alignItems: mobile ? "flex-start" : "center",
             width: mobile ? "100%" : "auto",
@@ -218,7 +226,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_plagiarism_button"
               title="Check Plagiarism"
-              icon={Gavel}
+              icon={plagiarism}
               onClick={() => setShowSidebar("plagiarism")}
               disabled={disableActions}
               crown={true}
@@ -229,7 +237,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_history_button"
               title="History"
-              icon={History}
+              icon={history}
               onClick={() => setShowSidebar("history")}
               disabled={false}
               crown={true}
@@ -240,7 +248,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_compare_button"
               title="Compare Modes"
-              icon={Compare}
+              icon={compare}
               onClick={() => setShowSidebar("compare")}
               disabled={disableActions}
               crown={true}
@@ -251,7 +259,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_tone_button"
               title="Tone"
-              icon={SentimentSatisfiedAlt}
+              icon={tone}
               onClick={() => setShowSidebar("tone")}
               disabled={disableActions}
               crown={true}
@@ -265,7 +273,7 @@ const VerticalMenu = ({
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 0,
+            gap: { xs: 2, lg: 3 },
             mt: 2,
             // same here: stretch full width and left-align
             alignItems: mobile ? "flex-start" : "center",
@@ -277,7 +285,7 @@ const VerticalMenu = ({
             <ActionButton
               title="Settings"
               id="paraphrase_settings_button"
-              icon={Settings}
+              icon={settings}
               onClick={() => setShowSidebar("settings")}
               disabled={false}
               mobile={mobile}
@@ -287,7 +295,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_feedback_button"
               title="Feedback"
-              icon={FeedbackIcon}
+              icon={feedback}
               onClick={() => setShowSidebar("feedback")}
               disabled={false}
               mobile={mobile}
@@ -297,7 +305,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_shortcuts_button"
               title="Hotkeys"
-              icon={Keyboard}
+              icon={hotkeys}
               onClick={() => setShowSidebar("shortcuts")}
               disabled={false}
               mobile={mobile}

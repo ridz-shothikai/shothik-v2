@@ -1,7 +1,7 @@
 "use client";
-import { ContentPaste, SaveAsOutlined } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
+import CustomUiButton from "../../ui/CustomUiButton";
 const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
 const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), {
   ssr: false,
@@ -42,7 +42,7 @@ const UserActionInput = ({
       sx={{
         width: "100%",
         position: "absolute",
-        bottom: { xs: 40, sm: 80 },
+        bottom: { xs: 40, sm: 80, lg: 30 },
         left: "0px",
         right: "0px",
       }}
@@ -59,7 +59,7 @@ const UserActionInput = ({
         <Stack
           direction="row"
           id="sample-paste-section"
-          alignItems="start"
+          alignItems="center"
           justifyContent="center"
           flexWrap="wrap"
           rowGap={1.5}
@@ -67,27 +67,36 @@ const UserActionInput = ({
           sx={{ width: "80%", mx: "auto" }}
         >
           {!disableTrySample ? (
-            <Button
-              color="warning"
-              size={isMobile ? "small" : "large"}
-              variant="soft"
+            // <Button
+            //   color="warning"
+            //   // size={isMobile ? "small" : "large"}
+            //   // variant="soft"
+            //   onClick={handleSampleText}
+            //   disabled={!sampleText}
+            //   startIcon={<SaveAsOutlined />}
+            //   sx={{
+            //     border: { sm: "none", xs: "2px solid" },
+            //     borderColor: "primary.warning",
+            //     borderRadius: "5px",
+            //     "&:hover": {
+            //       borderColor: "primary.dark",
+            //     },
+            //     px: 1.5,
+            //     py: 1.5,
+            //   }}
+            // >
+            //   {!isMobile ? "Try Sample Text" : "Try Sample"}
+            // </Button>
+            <CustomUiButton
               onClick={handleSampleText}
-              disabled={!sampleText}
-              startIcon={<SaveAsOutlined />}
-              sx={{
-                border: { sm: "none", xs: "2px solid" },
-                borderColor: "primary.warning",
-                borderRadius: "5px",
-                "&:hover": {
-                  borderColor: "primary.dark",
-                },
-              }}
-            >
-              {!isMobile ? "Try Sample Text" : "Try Sample"}
-            </Button>
+              textLable={"Try sample"}
+              startIconSrc={"/icons/sample.svg"}
+              iconClassName={"w-4 h-4 lg:w-4 lg:h-4"}
+              className={"font-bold"}
+            />
           ) : null}
 
-          <Button
+          {/* <Button
             size={isMobile ? "small" : "large"}
             variant="soft"
             color="secondary"
@@ -103,9 +112,21 @@ const UserActionInput = ({
             startIcon={<ContentPaste />}
           >
             {!isMobile ? "Paste Text" : "Paste"}
-          </Button>
+          </Button> */}
+          {!disableTrySample ? (
+            <span className="text-sm font-bold text-[#212B36] lowercase lg:text-base">
+              OR
+            </span>
+          ) : null}
+          <CustomUiButton
+            onClick={handlePaste}
+            textLable={"Paste text"}
+            startIconSrc={"/icons/paste.svg"}
+            iconClassName={"w-5 h-5 lg:w-5 lg:h-5"}
+            className={"font-bold"}
+          />
         </Stack>
-        {paraphrase ? (
+        {/* {paraphrase ? (
           <MultipleFileUpload
             isMobile={isMobile}
             setInput={() => {}}
@@ -115,21 +136,21 @@ const UserActionInput = ({
             selectedSynonymLevel={selectedSynonymLevel}
             selectedLang={selectedLang}
           />
-        ) : (
-          <Box id="upload_button">
-            <FileUpload isMobile={isMobile} setInput={handleFileData} />
-            <Typography
-              component="p"
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-                textAlign: "center",
-              }}
-            >
-              {isMobile ? "" : "Supported file"} formats: pdf,docx.
-            </Typography>
-          </Box>
-        )}
+        ) : ( */}
+        <Box id="upload_button">
+          <FileUpload isMobile={isMobile} setInput={handleFileData} />
+          <Typography
+            component="p"
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+              textAlign: "center",
+            }}
+          >
+            {isMobile ? "" : "Supported file"} formats: pdf,docx.
+          </Typography>
+        </Box>
+        {/* )} */}
       </Stack>
     </Box>
   );
