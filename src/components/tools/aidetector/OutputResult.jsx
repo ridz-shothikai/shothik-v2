@@ -1,8 +1,9 @@
 import {
+  CloudDownload,
   ExpandMoreOutlined,
   InfoOutlined,
   KeyboardArrowUpOutlined,
-  ShareOutlined,
+  Share,
 } from "@mui/icons-material";
 import {
   Box,
@@ -85,8 +86,39 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           borderBottomColor: "divider",
         }}
       >
-        <Button onClick={handleOpen} startIcon={<ShareOutlined />}>
+        <Button
+          onClick={handleOpen}
+          startIcon={<Share />}
+          sx={{
+            border: "1px solid rgba(145, 158, 171, 0.32)",
+            borderRadius: "9999px",
+            px: 2,
+            py: 1,
+            color: "#212B36",
+            transition: "all 300ms ease-in-out",
+            "&:hover": {
+              color: "primary.main",
+            },
+          }}
+        >
           Share
+        </Button>
+        <Button
+          onClick={handleOpen}
+          startIcon={<CloudDownload />}
+          sx={{
+            border: "1px solid rgba(145, 158, 171, 0.32)",
+            borderRadius: "9999px",
+            px: 2,
+            py: 1,
+            color: "#212B36",
+            transition: "all 300ms ease-in-out",
+            "&:hover": {
+              color: "primary.main",
+            },
+          }}
+        >
+          Download
         </Button>
       </Stack>
 
