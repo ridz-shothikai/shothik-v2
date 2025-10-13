@@ -15,6 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import useSnackbar from "../../../hooks/useSnackbar";
+import {
+  convertLogoToDataURL,
+  generateAiDetectorPDF,
+} from "./helpers/generateAiDetectorPdf";
 
 const humanColorName = {
   humanLow: "#10b91d4d",
@@ -69,6 +74,35 @@ export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
 };
 
 const OutputResult = ({ handleOpen, outputContend }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const enqueueSnackbar = useSnackbar();
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Convert logo to base64 (update the path to your actual logo path)
+      // If you don't have a logo or want to skip it, pass null as second parameter
+      let logoDataUrl = null;
+      try {
+        // Update this path to your actual logo location
+        logoDataUrl = await convertLogoToDataURL("/shothik_light_logo.png");
+      } catch (error) {
+        console.warn("Logo could not be loaded, proceeding without logo");
+      }
+
+      await generateAiDetectorPDF(outputContend, logoDataUrl);
+      enqueueSnackbar("PDF downloaded successfully", { variant: "success" });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      enqueueSnackbar("Failed to download PDF. Please try again.", {
+        variant: "error",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <Card
       sx={{
@@ -104,7 +138,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           Share
         </Button>
         <Button
-          onClick={handleOpen}
+          onClick={handleDownload}
+          disabled={isDownloading}
           startIcon={<CloudDownload />}
           sx={{
             border: "1px solid rgba(145, 158, 171, 0.32)",
@@ -116,9 +151,12 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             "&:hover": {
               color: "primary.main",
             },
+            "&:disabled": {
+              opacity: 0.6,
+            },
           }}
         >
-          Download
+          {isDownloading ? "Downloading..." : "Download"}
         </Button>
       </Stack>
 
@@ -331,17 +369,7 @@ const Accortion = ({ colorList, data, title, children }) => {
         },
       }}
     >
-      <Typography
-        fontWeight={600}
-        fontSize={18}
-        // sx={{
-        //   position: "sticky",
-        //   top: 0,
-        //   backgroundColor: "#fff",
-        //   height: "30px",
-        //   width: "100%"
-        // }}
-      >
+      <Typography fontWeight={600} fontSize={18}>
         {title}
       </Typography>
       {children}
