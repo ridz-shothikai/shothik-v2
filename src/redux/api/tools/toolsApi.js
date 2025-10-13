@@ -12,7 +12,7 @@ export const toolsApiSlice = createApi({
     spellChecker: builder.mutation({
       query: (payload) => {
         return {
-          url: "/bangla-speel-check",
+          url: "/grammar-check",
           method: "POST",
           body: payload,
         };

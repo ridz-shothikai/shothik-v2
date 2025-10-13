@@ -41,7 +41,7 @@ export default function MainHeader() {
       "/humanize-gpt": "Humanize GPT",
       "/ai-detector": "AI Detector",
       "/plagiarism-checker": "Plagiarism Checker",
-      "/grammar-check": "Grammar Fix",
+      "/grammar-checker": "Grammar Fix",
       "/summarize": "Summarize",
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",

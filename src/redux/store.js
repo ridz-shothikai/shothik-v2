@@ -11,6 +11,7 @@ import { sheetApiSlice } from "./api/sheet/sheetApi";
 import { toolsApiSlice } from "./api/tools/toolsApi";
 import analyticsReducer from "./slice/analyticsSlice";
 import auth from "./slice/auth";
+import grammarCheckerReducer from "./slice/grammar-checker-slice";
 import inputOutput from "./slice/inputOutput";
 import paraphraseHistoryReducer from "./slice/paraphraseHistorySlice";
 import presentationSlice from "./slice/presentationSlice";
@@ -62,6 +63,7 @@ const store = configureStore({
     researchCore: researchCoreReducer,
     researchUi: researchUiSlice,
     paraphraseHistory: paraphraseHistoryReducer,
+    grammar_checker: grammarCheckerReducer,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,

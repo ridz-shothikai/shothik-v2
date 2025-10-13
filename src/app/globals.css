@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
 
 @theme inline {
@@ -81,27 +83,6 @@
   --primary-foreground: var(--accent-foreground);
   --secondary: var(--accent);
   --secondary-foreground: var(--accent-foreground);
-}
-
-/* underline effect */
-@utility underline-effect {
-  transition:
-    background-size 0.5s,
-    background-position 0s 0.5s;
-  background-image: linear-gradient(var(--accent, currentColor) 0 0);
-  background-position: 0 100%;
-  background-size: 0 1px;
-  background-repeat: no-repeat;
-}
-
-@utility underline-effect-active {
-  transition:
-    background-size 0.5s,
-    background-position 0s 0.5s;
-  background-image: linear-gradient(var(--accent, currentColor) 0 0);
-  background-position: 100% 100%;
-  background-size: 100% 1px;
-  background-repeat: no-repeat;
 }
 
 /* Base Styles */

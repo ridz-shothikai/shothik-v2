@@ -23,7 +23,9 @@ export default function Main({ children }) {
   const isDarkMode = theme.palette.mode === "dark";
 
   const containerWidth =
-    pathName === "/" || pathName === "/paraphrase"
+    pathName === "/" ||
+    pathName === "/paraphrase" ||
+    pathName === "/grammar-checker"
       ? "100%"
       : pathName === "/humanize-gpt"
         ? "100%"

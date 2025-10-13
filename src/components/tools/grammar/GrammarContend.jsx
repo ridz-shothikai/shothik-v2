@@ -1,20 +1,62 @@
 "use client";
-import { Box, Card, Grid2, TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+
+import { grammarCheck } from "@/services/grammar-cheker.service";
+import { Box, Card, Grid2, MenuItem, Popover, Stack } from "@mui/material";
+import { Mark, mergeAttributes } from "@tiptap/core";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { trySamples } from "../../../_mock/trySamples";
-import { trackEvent } from "../../../analysers/eventTracker";
 import { detectLanguage } from "../../../hooks/languageDitector";
 import useDebounce from "../../../hooks/useDebounce";
-import useLoadingText from "../../../hooks/useLoadingText";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import { useSpellCheckerMutation } from "../../../redux/api/tools/toolsApi";
-import { setShowLoginModal } from "../../../redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
-import BottomContend from "./BottomContend";
 import LanguageMenu from "./LanguageMenu";
+
+// Custom Mark for Error Highlighting
+const ErrorMark = Mark.create({
+  name: "errorMark",
+
+  addAttributes() {
+    return {
+      error: {
+        default: null,
+      },
+      correct: {
+        default: null,
+      },
+      errorId: {
+        default: null,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: "span[data-error]",
+      },
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "span",
+      mergeAttributes(HTMLAttributes, {
+        "data-error": HTMLAttributes.error,
+        "data-correct": HTMLAttributes.correct,
+        "data-error-id": HTMLAttributes.errorId,
+        style:
+          "background-color: #f5c33b4d; padding: 2px 0; cursor: pointer; border-bottom: 2px solid #f5c33b;",
+      }),
+      0,
+    ];
+  },
+});
 
 const GrammarContend = () => {
   const { user, accessToken } = useSelector((state) => state.auth);
@@ -23,39 +65,64 @@ const GrammarContend = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
   const isMobile = useResponsive("down", "sm");
-  const [errors, setErrors] = useState([]);
+  const [issues, setIssues] = useState([]);
   const [errorChecking, setErrorChecking] = useState(false);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
-  const loadingText = useLoadingText(isLoading);
   const sampleText =
     trySamples.grammar[language.startsWith("English") ? "English" : language];
-  const editorRef = useRef(null);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedError, setSelectedError] = useState(null);
 
   const [spellChecker] = useSpellCheckerMutation();
 
+  // Initialize Tiptap Editor
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [StarterKit, ErrorMark],
+    content: "",
+    editorProps: {
+      attributes: {
+        style:
+          "outline: none; min-height: 456px; padding: 16.5px 14px; font-family: inherit; font-size: 1rem; line-height: 1.5;",
+      },
+      handleClickOn: (view, pos, node, nodePos, event) => {
+        const target = event.target;
+        if (target.hasAttribute("data-error")) {
+          const error = target.getAttribute("data-error");
+          const correct = target.getAttribute("data-correct");
+          const errorId = target.getAttribute("data-error-id");
+
+          setSelectedError({ error, correct, errorId, element: target });
+          setAnchorEl(target);
+          return true;
+        }
+        return false;
+      },
+    },
+    onUpdate: ({ editor }) => {
+      const text = editor.getText();
+      setUserInput(text);
+    },
+  });
+
   useEffect(() => {
     if (!userInput) return;
-    const language = detectLanguage(userInput);
-    console.log(language);
-    setLanguage(language);
+    const detectedLanguage = detectLanguage(userInput);
+    console.log(detectedLanguage);
+    setLanguage(detectedLanguage);
   }, [userInput]);
 
   const handleCheckSpelling = async () => {
     try {
       setErrorChecking(true);
-      const payload = { content: userInput, language };
-      const res = await spellChecker(payload).unwrap();
-      const data = res?.result || [];
-      setErrors(data);
-      console.log(data);
+      const data = await grammarCheck({ content: userInput });
+      const { issues } = data?.result || {};
+      setIssues(issues || []);
+      console.log(issues);
     } catch (error) {
-      enqueueSnackbar(
-        error.message || error.data.message || "Something went wrong",
-        {
-          variant: "error",
-        },
-      );
+      toast.error(error?.data?.message || "Something went wrong");
     } finally {
       setErrorChecking(false);
     }
@@ -68,103 +135,93 @@ const GrammarContend = () => {
     handleCheckSpelling(text);
   }, [text]);
 
-  // Highlight errors in the text
-  function getHighlightedText(userInput, errors) {
-    if (!userInput || errors?.length === 0) {
-      return userInput;
-    }
+  // Apply error highlighting to editor
+  useEffect(() => {
+    if (!editor || !userInput) return;
 
-    let highlightedText = userInput;
+    const { state } = editor;
+    let tr = state.tr;
 
-    errors?.forEach(({ error }) => {
-      if (error) {
-        // Escape regex special chars
-        const escapedWord = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const regex = new RegExp(escapedWord, "gu");
+    // Remove all existing error marks
+    tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
 
-        highlightedText = highlightedText.replace(
-          regex,
-          `<span style="background-color: #f5c33b4d; padding: 2px 0; cursor: pointer;">${error}</span>`,
-        );
-      }
+    // Apply new error marks
+    issues.forEach((errorObj, index) => {
+      const { error, correct } = errorObj;
+      if (!error) return;
+
+      const regex = new RegExp(
+        error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "g",
+      );
+
+      state.doc.descendants((node, pos) => {
+        if (!node.isText) return;
+
+        let match;
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+
+          tr = tr.addMark(
+            start,
+            end,
+            state.schema.marks.errorMark.create({
+              error,
+              correct,
+              errorId: `error-${index}-${start}`,
+            }),
+          );
+        }
+      });
     });
 
-    return highlightedText;
-  }
+    editor.view.dispatch(tr);
+  }, [issues, editor]);
 
-  function handleInput(e) {
-    const value = e.target.innerText || e.target.value;
-    setUserInput(value);
-  }
+  const handleAcceptCorrection = () => {
+    if (!selectedError || !editor) return;
+
+    const { error, correct } = selectedError;
+    const content = editor.getText();
+
+    // Find and replace the error with correction
+    const newContent = content.replace(
+      new RegExp(error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
+      correct,
+    );
+
+    editor.commands.setContent(newContent);
+
+    // Remove this error from errors array
+    setIssues((prev) => prev.filter((e) => e.error !== error));
+
+    handleClosePopover();
+  };
+
+  const handleIgnoreError = () => {
+    if (!selectedError) return;
+
+    const { error } = selectedError;
+
+    // Remove this error from errors array
+    setIssues((prev) => prev.filter((e) => e.error !== error));
+
+    handleClosePopover();
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+    setSelectedError(null);
+  };
 
   function handleClear() {
     setUserInput("");
     setOutputContend("");
-    setErrors([]);
+    setIssues([]);
     setLanguage("English");
-    if (editorRef.current) {
-      editorRef.current.innerText = "";
-    }
-  }
-
-  async function fetchWithStreaming(payload) {
-    try {
-      const url = process.env.NEXT_PUBLIC_API_URI + "/fix-grammar";
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw { message: error.message, error: error.error };
-      }
-
-      const stream = response.body;
-      const decoder = new TextDecoderStream();
-      const reader = stream.pipeThrough(decoder).getReader();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        setOutputContend((prev) => prev + value);
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async function handleSubmit() {
-    try {
-      setIsLoading(true);
-      setOutputContend("");
-
-      trackEvent("click", "grammar", "grammar_fixed_click", 1);
-
-      const payload = {
-        data: userInput,
-        language,
-        mode: "Fixed",
-        synonym: "Basic",
-      };
-      await fetchWithStreaming(payload);
-    } catch (error) {
-      if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
-        dispatch(setShowAlert(true));
-        dispatch(setAlertMessage(error?.message));
-      } else if (error?.error === "UNAUTHORIZED") {
-        dispatch(setShowLoginModal(true));
-      } else {
-        enqueueSnackbar(error?.message, { variant: "error" });
-      }
-    } finally {
-      setIsLoading(false);
+    if (editor) {
+      editor.commands.setContent("");
     }
   }
 
@@ -192,127 +249,91 @@ const GrammarContend = () => {
           size={{ xs: 12, md: 6 }}
         >
           <Box
-            ref={editorRef}
-            contentEditable
-            suppressContentEditableWarning
-            onInput={handleInput}
-            dangerouslySetInnerHTML={{
-              __html: getHighlightedText(userInput, errors),
-            }}
             sx={{
               overflowY: "auto",
               maxHeight: { xs: 360, sm: "auto" },
               minHeight: isMobile ? 360 : 456,
-              padding: "16.5px 14px",
               border: (theme) => `1px solid ${theme.palette.divider}`,
               borderRadius: "0 8px 8px 8px",
-              outline: "none",
-              fontFamily: "inherit",
-              fontSize: "1rem",
-              lineHeight: 1.5,
-              color: "text.primary",
               backgroundColor: "background.paper",
-              whiteSpace: "pre-wrap",
-              wordWrap: "break-word",
-              "&:focus": {
-                borderColor: "divider",
+              "& .ProseMirror": {
+                minHeight: isMobile ? 360 : 456,
+                "&:focus": {
+                  outline: "none",
+                },
+                "&.ProseMirror-focused": {
+                  outline: "none",
+                },
               },
-              "&:empty:before": {
+              "& .ProseMirror p.is-editor-empty:first-child::before": {
                 content: '"Input your text here..."',
                 color: "text.disabled",
+                float: "left",
+                height: 0,
+                pointerEvents: "none",
               },
             }}
-          />
-          {isMobile && (
-            <BottomContend
-              handleClear={handleClear}
-              handleSubmit={handleSubmit}
-              isLoading={isLoading}
-              outputContend={outputContend}
-              userInput={userInput}
-              userPackage={user?.package}
-              language={language}
-              errors={errors}
-              setErrors={setErrors}
-              errorChecking={errorChecking}
-              setErrorChecking={setErrorChecking}
-              isMobile={isMobile}
-            />
-          )}
+          >
+            <EditorContent editor={editor} />
+          </Box>
           {!userInput ? (
             <UserActionInput
-              setUserInput={setUserInput}
+              setUserInput={(text) => {
+                if (editor) {
+                  editor.commands.setContent(text);
+                }
+              }}
               isMobile={isMobile}
               sampleText={sampleText}
               disableTrySample={!sampleText}
             />
           ) : null}
         </Grid2>
-        {isMobile && !userInput ? null : (
-          <Grid2
-            sx={{
-              height: { xs: "auto", sm: 480 },
-              overflowY: "auto",
-              pb: { xs: 2, md: 0 },
-            }}
-            size={{ xs: 12, md: 6 }}
-          >
-            <TextField
-              name="input"
-              variant="outlined"
-              rows={isMobile ? 10 : 18}
-              fullWidth
-              multiline
-              placeholder="Corrected output"
-              value={loadingText ? loadingText : outputContend}
-              disabled={loadingText}
-              sx={{
-                flexGrow: 1,
-                color: "text.primary",
-                // overflowY: "auto",
-                // maxHeight: { xs: 460, sm: "auto" },
-                // // minHeight: isMobile ? 360 : 456,
-                "& .MuiOutlinedInput-root": {
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "& .MuiInputBase-input.Mui-disabled": {
-                    // color: "#242426", // Changed from "inherit"
-                    // WebkitTextFillColor: "#242426", // Changed from "inherit"
-                    opacity: 1,
-                    "&::placeholder": {
-                      color: "#A0A0A0",
-                    },
-                  },
-                  color: "text.primary",
-                },
-              }}
-            />
-          </Grid2>
-        )}
       </Grid2>
-      {!isMobile && (
-        <BottomContend
-          handleClear={handleClear}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          outputContend={outputContend}
-          userInput={userInput}
-          userPackage={user?.package}
-          language={language}
-          errors={errors}
-          setErrors={setErrors}
-          errorChecking={errorChecking}
-          setErrorChecking={setErrorChecking}
-          isMobile={isMobile}
-        />
-      )}
+
+      {/* Error Correction Popover */}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClosePopover}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Stack sx={{ minWidth: 200 }}>
+          {selectedError && (
+            <>
+              <MenuItem
+                onClick={handleAcceptCorrection}
+                sx={{
+                  color: "success.main",
+                  "&:hover": {
+                    backgroundColor: "success.lighter",
+                  },
+                }}
+              >
+                ✓ Accept: {selectedError.correct}
+              </MenuItem>
+              <MenuItem
+                onClick={handleIgnoreError}
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": {
+                    backgroundColor: "action.hover",
+                  },
+                }}
+              >
+                ✕ Ignore
+              </MenuItem>
+            </>
+          )}
+        </Stack>
+      </Popover>
     </Card>
   );
 };

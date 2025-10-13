@@ -2,7 +2,7 @@
 /paraphrase
 /humanize-gpt
 /ai-detector
-/grammar-check
+/grammar-checker
 /summarize
 /translator
 /research
