@@ -19,7 +19,7 @@ import useSnackbar from "../../../hooks/useSnackbar";
 import {
   convertLogoToDataURL,
   generateAiDetectorPDF,
-} from "./helpers/generateAiDetectorPdf";
+} from "./helpers/generateAiDetectorPDF";
 
 const humanColorName = {
   humanLow: "#10b91d4d",
@@ -220,13 +220,14 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               <Typography
                 color="inherit"
                 fontWeight={700}
-                fontSize={18}
+                fontSize={16}
                 sx={{
                   borderBottom: "1px solid",
                   borderBottomColor: "divider",
                   width: "fit-content",
                   display: "inline-block",
                   textWrap: "nowrap",
+                  textTransform: "uppercase",
                 }}
               >
                 highly confident

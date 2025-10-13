@@ -1810,6 +1810,7 @@ const ParaphraseContend = () => {
             width: "min-content",
             ml: 2,
             transition: "width 200ms",
+            mt: { lg: 7 },
           }}
         >
           <VerticalMenu

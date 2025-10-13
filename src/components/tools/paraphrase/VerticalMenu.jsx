@@ -107,9 +107,6 @@ const VerticalMenu = ({
           justifyContent: mobile ? "flex-start" : "center",
           cursor: disabled ? "not-allowed" : "pointer",
           transition: "background-color 0.2s",
-          "&:hover": {
-            bgcolor: disabled ? "transparent" : theme.palette.action.hover,
-          },
           userSelect: "none",
         }}
       >
@@ -135,6 +132,8 @@ const VerticalMenu = ({
               if (!disabled) onClick();
             }}
             disabled={disabled}
+            disableRipple
+            disableTouchRipple
             sx={{
               p: 0,
               color: theme.palette.text.primary,
@@ -226,7 +225,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_plagiarism_button"
               title="Check Plagiarism"
-              icon={plagiarism}
+              icon={history}
               onClick={() => setShowSidebar("plagiarism")}
               disabled={disableActions}
               crown={true}
@@ -237,7 +236,7 @@ const VerticalMenu = ({
             <ActionButton
               id="paraphrase_history_button"
               title="History"
-              icon={history}
+              icon={plagiarism}
               onClick={() => setShowSidebar("history")}
               disabled={false}
               crown={true}

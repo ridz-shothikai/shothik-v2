@@ -1,15 +1,13 @@
 // PlagiarismSidebar.jsx
-import {
-  Close,
-  Compare,
-  Gavel,
-  History,
-  SentimentSatisfiedAlt,
-} from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { Box, IconButton } from "@mui/material";
-import React from "react";
 import { useSelector } from "react-redux";
 
+import Image from "next/image";
+import compare from "../../../../public/icons/compare-modes.svg";
+import history from "../../../../public/icons/history.svg";
+import plagiarism from "../../../../public/icons/plagiarism.svg";
+import tone from "../../../../public/icons/tone.svg";
 import CompareTab from "./actions/CompareTab"; // to come
 import HistoryTab from "./actions/HistoryTab"; // to come
 import PlagiarismTab from "./actions/PlagiarismTab";
@@ -17,10 +15,10 @@ import ToneTab from "./actions/ToneTab"; // to come
 import UpgradePrompt from "./UpgradePrompt";
 
 const tabs = [
-  { id: "plagiarism", icon: <Gavel />, component: PlagiarismTab },
-  { id: "history", icon: <History />, component: HistoryTab },
-  { id: "tone", icon: <SentimentSatisfiedAlt />, component: ToneTab },
-  { id: "compare", icon: <Compare />, component: CompareTab },
+  { id: "plagiarism", iconSrc: history, component: PlagiarismTab },
+  { id: "history", iconSrc: plagiarism, component: HistoryTab },
+  { id: "compare", iconSrc: compare, component: CompareTab },
+  { id: "tone", iconSrc: tone, component: ToneTab },
 ];
 
 const PlagiarismSidebar = ({
@@ -106,7 +104,14 @@ const PlagiarismSidebar = ({
                   color: active === t.id ? "primary.main" : "text.secondary",
                 }}
               >
-                {React.cloneElement(t.icon, { fontSize: "inherit" })}
+                <Image
+                  src={t.iconSrc}
+                  priority={true}
+                  width={24}
+                  height={24}
+                  alt=""
+                  className="h-6 w-6"
+                />
               </IconButton>
               {active === t.id && (
                 <Box
