@@ -38,6 +38,22 @@ function FileUpload({ isMobile, setInput }) {
     return "";
   };
 
+  // HELPER FUNCTION
+  const sanitizeMarkdown = (text) => {
+    if (!text) return "";
+
+    return (
+      text
+        // Remove escaped markdown characters
+        .replace(/\\([*_\-#`~[\](){}])/g, "$1")
+        // Normalize multiple spaces to single space
+        .replace(/\s+/g, " ")
+        // Normalize newlines (keep paragraph breaks)
+        // .replace(/\n{3,}/g, "\n\n")
+        .trim()
+    );
+  };
+
   const convertPdfToHtml = async (pdfFile) => {
     try {
       let text = await pdfToText(pdfFile);
@@ -59,6 +75,9 @@ function FileUpload({ isMobile, setInput }) {
         plainText = plainText.replace(/<br\s*\/?>/g, "\n"); // Replace break tags with one newline
         plainText = plainText.replace(/<p[^>]*>/g, "\n"); // Replace opening paragraph tags (with attributes) with one newline
         plainText = plainText.replace(/<[^>]*>/g, ""); // Strip any remaining HTML tags
+
+        // Add sanitization here
+        plainText = sanitizeMarkdown(plainText);
 
         setInput(plainText.trim()); // Trim leading/trailing whitespace
       } catch (error) {

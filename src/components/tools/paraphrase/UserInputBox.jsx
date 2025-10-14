@@ -537,6 +537,12 @@ function UserInputBox({
       return;
     }
 
+    // Add sanitization before parsing
+    // const sanitizedInput = userInput
+    //   .replace(/\\([*_\-#`~[\](){}])/g, '$1') // Remove escaped markdown
+    //   .replace(/\s+/g, ' ') // Normalize spaces
+    //   .replace(/\n{3,}/g, '\n\n'); // Normalize excessive newlines
+
     // parse the Markdown into a ProseMirror node
     const doc = defaultMarkdownParser.parse(userInput);
 

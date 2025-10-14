@@ -169,6 +169,7 @@ const ParaphraseContend = () => {
     dispatch(setActiveHistory({}));
     return setLanguageState(...args);
   };
+  console.log(outputContend, "----------- OUTPUT CONTEND -----------");
   // const sampleText =
   //   trySamples.paraphrase[
   //     language && language.startsWith("English")
@@ -467,23 +468,23 @@ const ParaphraseContend = () => {
     if (!!activeHistory?._id) return;
     setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
-      path: "/p-v2/socket.io",
-      transports: ["websocket"],
-      auth: { token: accessToken },
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000,
-    });
-
-    // const socket = io("http://localhost:3050", {
-    //   path: "/socket.io",
+    // const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
+    //   path: "/p-v2/socket.io",
     //   transports: ["websocket"],
     //   auth: { token: accessToken },
     //   reconnection: true,
     //   reconnectionAttempts: 5,
     //   reconnectionDelay: 2000,
     // });
+
+    const socket = io("http://localhost:3050", {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { token: accessToken },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+    });
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
@@ -520,6 +521,8 @@ const ParaphraseContend = () => {
         setCompletedEvents((prev) => ({ ...prev, plain: true }));
         return;
       }
+
+      if (completedEvents.plain) return; // If we already got :end: from backend that means we have the data.
 
       // if this is the very first chunk of a brand-new run, wipe out old result:
       if (accumulatedText === "") {
@@ -577,6 +580,7 @@ const ParaphraseContend = () => {
         setCompletedEvents((prev) => ({ ...prev, tagging: true }));
         return;
       }
+      if(completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
       console.log("paraphrase-tagging: ", raw);
       let parsed, backendIndex, eid;
       try {
@@ -620,6 +624,8 @@ const ParaphraseContend = () => {
         setCompletedEvents((prev) => ({ ...prev, synonyms: true }));
         return;
       }
+
+      if(completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
 
       let analysis, backendIndex, eid;
       try {
