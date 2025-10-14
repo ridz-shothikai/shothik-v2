@@ -22,7 +22,7 @@ export async function POST() {
       }
     );
 
-    console.log(geolocationResponse, "response");
+    // console.log(geolocationResponse, "response");
 
     if (!geolocationResponse.ok) {
       throw new Error("Invalid response from geolocation API");
