@@ -10,6 +10,8 @@ const initialState = {
   selectedIssue: null,
   isCheckLoading: false,
   isHistoryLoading: false,
+  tabs: ["all", "grammar", "recommendation"],
+  selectedTab: "all",
 };
 
 const paraphraseHistorySlice = createSlice({
@@ -43,6 +45,9 @@ const paraphraseHistorySlice = createSlice({
     setIsHistoryLoading: (state, action) => {
       state.isHistoryLoading = action.payload;
     },
+    setSelectedTab: (state, action) => {
+      state.selectedTab = action.payload;
+    },
   },
 });
 
@@ -54,5 +59,8 @@ export const {
   setHistories,
   setIsCheckLoading,
   setIsHistoryLoading,
+  setSelectedHistory,
+  setSelectedIssue,
+  setSelectedTab,
 } = paraphraseHistorySlice.actions;
 export default paraphraseHistorySlice.reducer;
