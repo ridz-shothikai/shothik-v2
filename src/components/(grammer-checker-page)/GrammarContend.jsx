@@ -15,30 +15,24 @@ import {
 import { grammarCheck } from "@/services/grammar-checker.service";
 import { Popover } from "@mui/material";
 import { Mark, mergeAttributes } from "@tiptap/core";
-import TextAlign from "@tiptap/extension-text-align";
-import Underline from "@tiptap/extension-underline";
+import { Placeholder } from "@tiptap/extensions";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
   Bold,
+  Book,
   Check,
   ChevronsRight,
   Italic,
   List,
-  ListOrdered,
-  Redo,
+  Redo2,
   Trash2,
-  Underline as UnderlineIcon,
-  Undo,
+  Undo2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import UserActionInput from "../tools/common/UserActionInput";
+import InitialInputAction from "./InitialInputAction";
 import LanguageMenu from "./LanguageMenu";
 
 const IssueCard = ({
@@ -60,7 +54,7 @@ const IssueCard = ({
     return sentence.replace(
       regex,
       (match) =>
-        `<span class="text-red-500 line-through">${match}</span> - <span class="text-primary">${correct}</span>`,
+        `<span class="text-red-500 line-through">${match}</span> <span class="text-primary">${correct}</span>`,
     );
   };
 
@@ -193,187 +187,164 @@ const ErrorMark = Mark.create({
         "data-error-id": HTMLAttributes.errorId,
         "data-sentence": HTMLAttributes.sentence,
         "data-type": HTMLAttributes.type,
-        class: "error-highlight",
         style:
-          "border-bottom: 2px solid #EF4444; cursor: pointer; padding: 1px 2px; border-radius: 2px;",
+          "padding: 2px 0; cursor: pointer; border-bottom: 2px solid #FF5630;",
       }),
       0,
     ];
   },
 });
 
-// Toolbar Component
 const EditorToolbar = ({ editor }) => {
   if (!editor) return null;
 
-  const tools = [
-    {
-      icon: Bold,
-      action: () => editor.chain().focus().toggleBold().run(),
-      isActive: editor.isActive("bold"),
-      title: "Bold",
-    },
-    {
-      icon: Italic,
-      action: () => editor.chain().focus().toggleItalic().run(),
-      isActive: editor.isActive("italic"),
-      title: "Italic",
-    },
-    {
-      icon: UnderlineIcon,
-      action: () => editor.chain().focus().toggleUnderline().run(),
-      isActive: editor.isActive("underline"),
-      title: "Underline",
-    },
-    { type: "separator" },
-    {
-      icon: List,
-      action: () => editor.chain().focus().toggleBulletList().run(),
-      isActive: editor.isActive("bulletList"),
-      title: "Bullet List",
-    },
-    {
-      icon: ListOrdered,
-      action: () => editor.chain().focus().toggleOrderedList().run(),
-      isActive: editor.isActive("orderedList"),
-      title: "Numbered List",
-    },
-    { type: "separator" },
-    {
-      icon: AlignLeft,
-      action: () => editor.chain().focus().setTextAlign("left").run(),
-      isActive: editor.isActive({ textAlign: "left" }),
-      title: "Align Left",
-    },
-    {
-      icon: AlignCenter,
-      action: () => editor.chain().focus().setTextAlign("center").run(),
-      isActive: editor.isActive({ textAlign: "center" }),
-      title: "Align Center",
-    },
-    {
-      icon: AlignRight,
-      action: () => editor.chain().focus().setTextAlign("right").run(),
-      isActive: editor.isActive({ textAlign: "right" }),
-      title: "Align Right",
-    },
-    {
-      icon: AlignJustify,
-      action: () => editor.chain().focus().setTextAlign("justify").run(),
-      isActive: editor.isActive({ textAlign: "justify" }),
-      title: "Align Justify",
-    },
-    { type: "separator" },
-    {
-      icon: Undo,
-      action: () => editor.chain().focus().undo().run(),
-      disabled: !editor.can().undo(),
-      title: "Undo",
-    },
-    {
-      icon: Redo,
-      action: () => editor.chain().focus().redo().run(),
-      disabled: !editor.can().redo(),
-      title: "Redo",
-    },
-  ];
+  const buttonClass =
+    "flex items-center justify-center w-8 h-8 rounded hover:bg-gray-200 cursor-pointer transition-colors";
+  const activeClass = "bg-gray-300";
 
   return (
-    <div className="bg-card flex items-center gap-1 rounded-b-lg border-t p-2">
-      {tools.map((tool, index) => {
-        if (tool.type === "separator") {
-          return <div key={index} className="mx-1 h-6 w-px" />;
-        }
+    <div className="flex items-center gap-1 border-b border-gray-300 bg-gray-100 p-2">
+      <button
+        onClick={() => editor.chain().focus().undo().run()}
+        disabled={!editor.can().undo()}
+        className={cn(buttonClass, {
+          "cursor-not-allowed opacity-50": !editor.can().undo(),
+        })}
+        title="Undo"
+      >
+        <Undo2 className="size-4" />
+      </button>
 
-        const IconComponent = tool.icon;
-        return (
-          <button
-            key={index}
-            onClick={tool.action}
-            disabled={tool.disabled}
-            className={cn(
-              "hover:bg-card/50 rounded-md p-2 transition-colors",
-              tool.isActive && "bg-background text-primary",
-              tool.disabled && "cursor-not-allowed opacity-50",
-            )}
-            title={tool.title}
-          >
-            <IconComponent className="size-4" />
-          </button>
-        );
-      })}
+      <button
+        onClick={() => editor.chain().focus().redo().run()}
+        disabled={!editor.can().redo()}
+        className={cn(buttonClass, {
+          "cursor-not-allowed opacity-50": !editor.can().redo(),
+        })}
+        title="Redo"
+      >
+        <Redo2 className="size-4" />
+      </button>
+
+      <div className="mx-1 h-6 w-px bg-gray-300" />
+
+      <button
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        className={cn(buttonClass, {
+          [activeClass]: editor.isActive("bold"),
+        })}
+        title="Bold"
+      >
+        <Bold className="size-4" />
+      </button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        className={cn(buttonClass, {
+          [activeClass]: editor.isActive("italic"),
+        })}
+        title="Italic"
+      >
+        <Italic className="size-4" />
+      </button>
+
+      <div className="mx-1 h-6 w-px bg-gray-300" />
+
+      <button
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        className={cn(buttonClass, {
+          [activeClass]: editor.isActive("bulletList"),
+        })}
+        title="Bullet List"
+      >
+        <List className="size-4" />
+      </button>
     </div>
   );
 };
 
-const GrammarContend = () => {
+const GrammarContent = () => {
   const { user, accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
 
-  const { isCheckLoading, language, text, issues, selectedIssue, corrected } =
-    useSelector((state) => state.grammar_checker);
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const sampleText =
+  const { isCheckLoading, language, text, issues, selectedIssue } = useSelector(
+    (state) => state.grammar_checker,
+  );
+
+  const sample =
     trySamples.grammar[language.startsWith("English") ? "English" : language];
 
   const [anchorEl, setAnchorEl] = useState(null);
 
-  // Initialize Tiptap Editor with more extensions
+  // Initialize Tiptap Editor
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
-      Underline,
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
       ErrorMark,
+      Placeholder.configure({
+        placeholder: "Add text or upload document",
+        showOnlyWhenEditable: true,
+      }),
     ],
-    content: text || "",
+    content: "",
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none focus:outline-none p-4 min-h-[200px]",
+        class:
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none",
+        style:
+          "outline: none; min-height: 400px; padding: 16.5px 14px; font-family: inherit; font-size: 1rem; line-height: 1.5;",
+      },
+      handleClickOn: (view, pos, node, nodePos, event) => {
+        const target = event.target;
+        if (target.hasAttribute("data-error")) {
+          const error = target.getAttribute("data-error");
+          const correct = target.getAttribute("data-correct");
+          const sentence = target.getAttribute("data-sentence");
+          const type = target.getAttribute("data-type");
+          const errorId = target.getAttribute("data-error-id");
+
+          dispatch(
+            setSelectedIssue({
+              error,
+              correct,
+              sentence,
+              type,
+              errorId,
+            }),
+          );
+          setAnchorEl(target);
+          return true;
+        }
+        return false;
       },
     },
     onUpdate: ({ editor }) => {
-      const newText = editor.getText();
-      dispatch(setText(newText));
+      const text = editor.getText();
+      dispatch(setText(text));
     },
   });
 
-  function prepare(text) {
-    text = text.normalize("NFC").trim();
-    text = text.replace(/\u200B|\u200C|\u200D/g, "");
-    return text;
-  }
-
-  // Fix: Update editor content when text changes from outside
   useEffect(() => {
-    if (editor && text !== editor.getText()) {
-      editor.commands.setContent(text || "");
-    }
-  }, [text, editor]);
-
-  useEffect(() => {
-    if (!text || !prepare(text)) return;
+    if (!text) return;
     const lang = detectLanguage(text);
     dispatch(setLanguage(lang));
-  }, [text]);
+  }, [text, dispatch]);
 
   const handleGrammarChecking = async () => {
     try {
-      if (!text || !prepare(text) || !accessToken) return;
+      if (!text || !accessToken) return;
 
       dispatch(setIsCheckLoading(true));
-      const data = await grammarCheck({
-        content: prepare(text),
-        language: language,
-      });
+      const data = await grammarCheck({ content: text, language: language });
       const { issues } = data?.result || {};
       dispatch(setIssues(issues || []));
     } catch (error) {
-      console.error("Grammar Error:", error);
+      console.log(error, "Grammar Error");
       toast.error(error?.data?.message || "Something went wrong");
     } finally {
       dispatch(setIsCheckLoading(false));
@@ -384,98 +355,62 @@ const GrammarContend = () => {
 
   useEffect(() => {
     if (!debouncedText || isCheckLoading) return;
-    handleGrammarChecking(debouncedText);
+
+    handleGrammarChecking();
   }, [debouncedText]);
 
-  // Fix: Improved error highlighting with proper data passing
+  // Apply error highlighting to editor
   useEffect(() => {
-    if (!editor || !text || !issues.length) return;
+    if (!editor || !text) return;
 
     const { state } = editor;
     let tr = state.tr;
 
-    // Remove all existing error marks
     tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
 
-    // Apply new error marks
-    issues.forEach((issue, index) => {
-      const { error, correct, sentence, type } = issue;
+    issues.forEach((errorObj, index) => {
+      const { error, correct, sentence, type } = errorObj;
       if (!error) return;
 
-      const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(escapedError, "gi");
+      const regex = new RegExp(
+        error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "g",
+      );
 
       state.doc.descendants((node, pos) => {
         if (!node.isText) return;
 
-        const nodeText = node.text;
         let match;
-
-        while ((match = regex.exec(nodeText)) !== null) {
+        while ((match = regex.exec(node.text)) !== null) {
           const start = pos + match.index;
-          const end = start + match[0].length;
+          const end = start + error.length;
 
-          // Only mark if we haven't already marked this position
-          const existingMarks = state.doc.rangeHasMark(
+          tr = tr.addMark(
             start,
             end,
-            state.schema.marks.errorMark,
+            state.schema.marks.errorMark.create({
+              error,
+              correct,
+              sentence,
+              type,
+              errorId: `error-${index}-${start}`,
+            }),
           );
-          if (!existingMarks) {
-            tr = tr.addMark(
-              start,
-              end,
-              state.schema.marks.errorMark.create({
-                error: match[0],
-                correct,
-                sentence,
-                type,
-                errorId: `error-${index}-${start}`,
-              }),
-            );
-          }
         }
       });
     });
 
+    tr.setMeta("addToHistory", false);
+
     editor.view.dispatch(tr);
   }, [issues, editor, text]);
-
-  // Fix: Improved click handler for error marks
-  const handleEditorClick = (event) => {
-    const target = event.target;
-    if (
-      target.classList.contains("error-highlight") ||
-      target.hasAttribute("data-error")
-    ) {
-      const error = target.getAttribute("data-error");
-      const correct = target.getAttribute("data-correct");
-      const sentence = target.getAttribute("data-sentence");
-      const type = target.getAttribute("data-type");
-      const errorId = target.getAttribute("data-error-id");
-
-      dispatch(
-        setSelectedIssue({
-          error,
-          correct,
-          sentence,
-          type,
-          errorId,
-        }),
-      );
-      setAnchorEl(target);
-      event.preventDefault();
-      event.stopPropagation();
-    }
-  };
 
   const handleAcceptCorrection = (issue) => {
     if (!issue || !editor) return;
 
-    const { error, correct } = issue || {};
+    const { error, correct } = issue;
     const content = editor.getText();
 
-    // Find and replace the error with correction
     const newContent = content.replace(
       new RegExp(error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
       correct,
@@ -483,8 +418,13 @@ const GrammarContend = () => {
 
     editor.commands.setContent(newContent);
 
-    // Remove this error from errors array
-    dispatch(setIssues((prev) => prev.filter((e) => e.error !== error)));
+    dispatch(
+      setIssues(
+        issues.filter(
+          (e) => !(e.error === error && e.sentence === issue.sentence),
+        ),
+      ),
+    );
 
     handleClosePopover();
   };
@@ -502,7 +442,12 @@ const GrammarContend = () => {
   return (
     <>
       <div className="flex flex-col items-start gap-6 py-6 lg:flex-row">
-        <div className="flex w-full flex-1 flex-col md:min-h-[calc(100vh-120px)]">
+        <div className="rounded-md border p-4">
+          <button>
+            <Book className="size-20" />
+          </button>
+        </div>
+        <div className="flex w-full flex-1 flex-col md:min-h-[calc(100vh-140px)]">
           <div className="bg-card w-fit rounded-t-2xl border border-b-0">
             <LanguageMenu
               isLoading={isCheckLoading}
@@ -513,7 +458,6 @@ const GrammarContend = () => {
           <div className="relative flex h-full flex-1 flex-col">
             <div
               className={`border-border bg-card flex h-full flex-1 flex-col overflow-hidden rounded-tr-lg rounded-br-lg rounded-bl-lg border`}
-              onClick={handleEditorClick}
             >
               <style jsx global>{`
                 .ProseMirror {
@@ -543,17 +487,20 @@ const GrammarContend = () => {
             </div>
 
             {!text && (
-              <UserActionInput
-                setUserInput={(inputText) => {
-                  dispatch(setText(inputText));
-                  if (editor) {
-                    editor.commands.setContent(inputText);
-                  }
-                }}
-                isMobile={isMobile}
-                sampleText={sampleText}
-                disableTrySample={!sampleText}
-              />
+              <div className="absolute top-20 left-4">
+                <InitialInputAction
+                  isMobile={isMobile}
+                  setInput={(text) => {
+                    if (editor) {
+                      editor?.commands?.setContent(text);
+                    }
+                  }}
+                  sample={sample}
+                  isSample={true}
+                  isPaste={true}
+                  isDocument={true}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -594,7 +541,7 @@ const GrammarContend = () => {
                       issue={issue}
                       handleAccept={handleAcceptCorrection}
                       handleIgnore={handleIgnoreError}
-                      isCollapsed={selectedIssue?.error === issue.error}
+                      isCollapsed={issue?.error === selectedIssue?.error}
                       handleIsCollapsed={() =>
                         dispatch(setSelectedIssue(issue))
                       }
@@ -619,37 +566,32 @@ const GrammarContend = () => {
         </div>
       </div>
 
-      {/* Error Correction Popover */}
       <Popover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={handleClosePopover}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left",
+          horizontal: "center",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
-        }}
-        sx={{
-          "& .MuiPopover-paper": {
-            borderRadius: "12px",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-          },
+          horizontal: "center",
         }}
       >
         {selectedIssue && (
-          <IssueCard
-            issue={selectedIssue}
-            handleAccept={handleAcceptCorrection}
-            handleIgnore={handleIgnoreError}
-            isCollapsed={true}
-          />
+          <div>
+            <IssueCard
+              issue={selectedIssue}
+              handleAccept={handleAcceptCorrection}
+              handleIgnore={handleIgnoreError}
+              isCollapsed={true}
+            />
+          </div>
         )}
       </Popover>
     </>
   );
 };
 
-export default GrammarContend;
+export default GrammarContent;
