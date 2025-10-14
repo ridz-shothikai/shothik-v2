@@ -14,6 +14,7 @@ export default function PricingLayout({ children, TitleContend }) {
   const [isMonthly, setIsMonthly] = useState(false);
   const { data, isLoading } = useGetPricingPlansQuery();
   const { location } = useGeolocation();
+  console.log(location, "LOCATION DATA");
   const isMobile = useResponsive("down", "sm");
 
   useEffect(() => {

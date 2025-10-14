@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-export async function POST() {
-  const apiKey = process.env.GOOGLE_GEOLOCATION_KEY; // Server-side env var
+export async function POST(request: Request) {
+  const apiKey = process.env.GOOGLE_GEOLOCATION_KEY;
 
   if (!apiKey) {
     return NextResponse.json(
@@ -11,33 +11,21 @@ export async function POST() {
   }
 
   try {
-    const geolocationResponse = await fetch(
-      `https://www.googleapis.com/geolocation/v1/geolocate?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ considerIp: true }),
-      }
-    );
+    // Get coordinates from request body (sent from client)
+    const body = await request.json();
+    const { latitude, longitude } = body;
 
-    // console.log(geolocationResponse, "response");
-
-    if (!geolocationResponse.ok) {
-      throw new Error("Invalid response from geolocation API");
+    // If no coordinates provided, return error
+    if (!latitude || !longitude) {
+      return NextResponse.json(
+        { error: "Latitude and longitude are required" },
+        { status: 400 }
+      );
     }
 
-    const geolocationData = await geolocationResponse.json();
-
-    if (!geolocationData.location) {
-      throw new Error("Invalid response from geolocation API");
-    }
-
-    const { lat, lng } = geolocationData.location;
-
+    // Use Google Geocoding API to get detailed address
     const geocodingResponse = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
     );
 
     if (!geocodingResponse.ok) {
@@ -46,23 +34,52 @@ export async function POST() {
 
     const geocodingData = await geocodingResponse.json();
 
-    if (!geocodingData.results) {
-      throw new Error("Invalid response from geocoding API");
+    if (!geocodingData.results || geocodingData.results.length === 0) {
+      throw new Error("No results found for the given coordinates");
     }
 
-    const countryResult = geocodingData.results.find((result) =>
-      result.types.includes("country")
-    );
+    // Get the most detailed address (first result)
+    const detailedAddress = geocodingData.results[0];
 
-    if (!countryResult?.formatted_address) {
-      throw new Error("Country not found in geocoding response");
-    }
+    // Extract specific components
+    const addressComponents = detailedAddress.address_components;
 
-    const country = countryResult.formatted_address.toLowerCase();
+    const locationData = {
+      formattedAddress: detailedAddress.formatted_address,
+      latitude,
+      longitude,
+      // Extract specific address parts
+      street:
+        addressComponents.find((c) => c.types.includes("route"))?.long_name ||
+        null,
+      city:
+        addressComponents.find((c) => c.types.includes("locality"))
+          ?.long_name ||
+        addressComponents.find((c) =>
+          c.types.includes("administrative_area_level_2")
+        )?.long_name ||
+        null,
+      state:
+        addressComponents.find((c) =>
+          c.types.includes("administrative_area_level_1")
+        )?.long_name || null,
+      country:
+        addressComponents.find((c) => c.types.includes("country"))?.long_name ||
+        null,
+      countryCode:
+        addressComponents.find((c) => c.types.includes("country"))
+          ?.short_name || null,
+      postalCode:
+        addressComponents.find((c) => c.types.includes("postal_code"))
+          ?.long_name || null,
+    };
 
-    return NextResponse.json({ location: country });
+    return NextResponse.json({ location: locationData.country });
   } catch (error) {
     console.error("Geolocation error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
