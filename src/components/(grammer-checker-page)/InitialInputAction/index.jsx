@@ -60,7 +60,6 @@ const InitialInputAction = ({
   isPaste = false,
   isDocument = false,
   className,
-  isMobile,
 }) => {
   async function handlePaste() {
     const clipboardText = await navigator.clipboard.readText();
