@@ -53,7 +53,7 @@ const ModeNavigation = ({
   }, [maxAllowedSynonymValue, selectedSynonyms, setSelectedSynonyms, SYNONYMS]);
 
   // determine how many tabs to show before collapsing
-  const visibleCount = isXs ? 2 : isSm ? 4 : 6;
+  const visibleCount = isXs ? 2 : isSm ? 4 : 7;
 
   const initialModes = modes.slice(0, visibleCount);
   const extraModes = modes.slice(visibleCount);
@@ -110,7 +110,7 @@ const ModeNavigation = ({
       direction="row"
       alignItems="center"
       justifyContent="space-between"
-      sx={{ px: 2, pt: 1 }}
+      sx={{ pr: 2, pt: 1 }}
       spacing={2}
     >
       {/* Modes */}
@@ -139,17 +139,15 @@ const ModeNavigation = ({
             flexWrap: "nowrap",
             overflowX: "auto", // allow horizontal scroll inside Tabs
             "& .MuiTabs-flexContainer": {
-              gap: {
-                xs: 0.5,
-                sm: 1,
-                md: 2,
-                lg: 3,
-              },
+              gap: 0,
             },
             "& .MuiButtonBase-root": {
               minWidth: 0,
             },
             "& .MuiTabs-indicator": { display: "none" },
+            "& .MuiTab-root:not(:last-of-type)": {
+              mr: "0px !important",
+            },
           }}
           textColor="primary"
         >
@@ -157,6 +155,9 @@ const ModeNavigation = ({
             <Tab
               key={idx}
               value={mode.value}
+              sx={{
+                px: 2.5,
+              }}
               label={
                 <Stack direction="row" alignItems="center" spacing={0.5}>
                   {!mode.package.includes(userPackage || "free") && (
@@ -173,13 +174,13 @@ const ModeNavigation = ({
 
         {/* “More” button with matching gap */}
         <Box id="mode_more_section" sx={{ flexShrink: 0 }}>
-          <Button
+          {/* <Button
             id="mode_x_button"
             onClick={() => {
               handleMoreClose();
             }}
             sx={{ opacity: 0, zIndex: -99, width: 0, height: 0 }}
-          ></Button>
+          ></Button> */}
 
           <Button
             id="mode_more"

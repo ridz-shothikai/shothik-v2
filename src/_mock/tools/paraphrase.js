@@ -8,6 +8,10 @@ export const modes = [
     package: ["free", "value_plan", "pro_plan", "unlimited"],
   },
   {
+    value: "Humanize",
+    package: ["free", "value_plan", "pro_plan", "unlimited"],
+  },
+  {
     value: "Formal",
     package: ["value_plan", "pro_plan", "unlimited"],
   },

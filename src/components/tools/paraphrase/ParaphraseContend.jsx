@@ -55,6 +55,8 @@ import {
   setIsFileHistoryLoading,
 } from "../../../redux/slice/paraphraseHistorySlice";
 import MultipleFileUpload from "../common/MultipleFileUpload";
+import AutoFreezeSettings from "./AutoFreezeSettings";
+import AutoParaphraseSettings from "./AutoParaphraseSettings";
 
 // Define the punctuation marks that require specific spacing rules.
 // This constant can be easily updated if more punctuation types need to be included.
@@ -1482,7 +1484,8 @@ const ParaphraseContend = () => {
         {/* desktop: language tabs outside card; hide on mobile */}
         <Box
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "none", sm: "flex" },
+            alignItems: "center",
             width: "100%", // match card width
             flex: "0 0 auto",
             // padding: '0 20px'
@@ -1493,6 +1496,19 @@ const ParaphraseContend = () => {
             setLanguage={setLanguage}
             language={language}
           />
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: {
+                xs: 1,
+                lg: 2,
+              },
+            }}
+          >
+            <AutoFreezeSettings />
+            <AutoParaphraseSettings />
+          </Box>
         </Box>
 
         <Box
