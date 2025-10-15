@@ -47,7 +47,7 @@ export default function Main({ children }) {
             : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
-          px: 2,
+          // px: 2,
           pt: `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`,
           width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
           ...(isNavMini && {

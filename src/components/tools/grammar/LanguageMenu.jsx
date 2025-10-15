@@ -83,7 +83,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         variant="standard"
         textColor="primary"
         sx={{
-          minHeight: 48,
+          minHeight: 30,
           "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
           "& .MuiTabs-indicator": { display: "none" },
         }}
@@ -95,6 +95,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
             label={tab}
             disabled={isLoading}
             sx={{
+              px: { xs: 2, lg: 2.5 },
               "&.Mui-selected": {
                 backgroundColor:
                   theme.palette.mode === "dark" ? "grey.800" : "common.white",
@@ -106,7 +107,9 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
                   theme.palette.mode === "dark"
                     ? "common.white"
                     : "text.primary",
-                px: 2,
+              },
+              "&.MuiTab-root:not(:last-of-type)": {
+                mr: "0px !important",
               },
               "&.MuiTab-root": {
                 display: "inline-flex",
@@ -137,7 +140,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         endIcon={
           showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
         }
-        sx={{ color: "text.secondary", ml: 5 }}
+        sx={{ color: "text.secondary", ml: 2 }}
         id="language_all_button"
       >
         All

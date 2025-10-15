@@ -580,7 +580,7 @@ const ParaphraseContend = () => {
         setCompletedEvents((prev) => ({ ...prev, tagging: true }));
         return;
       }
-      if(completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
+      if (completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
       console.log("paraphrase-tagging: ", raw);
       let parsed, backendIndex, eid;
       try {
@@ -625,7 +625,7 @@ const ParaphraseContend = () => {
         return;
       }
 
-      if(completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
+      if (completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
 
       let analysis, backendIndex, eid;
       try {
@@ -1054,6 +1054,11 @@ const ParaphraseContend = () => {
 
   const handleSubmit = async (value) => {
     try {
+      setCompletedEvents({
+        plain: false,
+        tagging: false,
+        synonyms: false,
+      }); // For restarting flags.
       // track event
       if (!value) {
         trackEvent("click", "paraphrase", "paraphrase_click", 1);
