@@ -6,8 +6,9 @@ import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
 import WebLoadingState from "./WebLoading";
 import WebSearch from "./WebSearch";
+import ResearchContentWithReferences from "./ResearchContentWithReferences";
 
-const RenderPart = ({ data, group }) => {
+const RenderPart = ({ data, group, isLoading, userQuestion }) => {
   switch (data.type) {
     case "text":
       return (
@@ -25,10 +26,20 @@ const RenderPart = ({ data, group }) => {
               </Typography>
             </Stack>
             <Box>
-              <CopyButon text={data.content} />
+              <CopyButon text={typeof data.content === 'string' ? data.content : JSON.stringify(data.content)} />
             </Box>
           </Stack>
-          <MarkdownRenderer content={data.content} />
+          {data.sources && data.sources.length > 0 ? (
+            <ResearchContentWithReferences
+              content={data.content}
+              sources={data.sources}
+              isLastData={true}
+              isDataGenerating={isLoading}
+              title={userQuestion || "Research Results"}
+            />
+          ) : (
+            <MarkdownRenderer content={data.content} />
+          )}
         </Box>
       );
     case "tool-invocation": {
