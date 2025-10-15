@@ -62,7 +62,7 @@ export default function PaymentSummary({
 
   useEffect(() => {
     setTotalBill(billtopaid);
-  }, [monthly]);
+  }, [monthly, billtopaid]);
 
   if (isLoading)
     return (
