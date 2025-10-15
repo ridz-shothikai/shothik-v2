@@ -61,7 +61,7 @@ export default function PaymentSummary({
 
   useEffect(() => {
     setTotalBill(billtopaid);
-  }, [monthly]);
+  }, [monthly, billtopaid]);
 
   if (isLoading)
     return (
@@ -87,48 +87,48 @@ export default function PaymentSummary({
         width: { xs: "100%", sm: "500px" },
       }}
     >
-      <Typography variant='h6' sx={{ mb: 5 }}>
+      <Typography variant="h6" sx={{ mb: 5 }}>
         Summary
       </Typography>
 
       <Stack spacing={2.5}>
-        <Stack direction='row' justifyContent='space-between'>
-          <Typography variant='body2' sx={{ color: "text.secondary" }}>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Subscription
           </Typography>
 
-          <Label fontColor='error.dark' color='error.lighter'>
+          <Label fontColor="error.dark" color="error.lighter">
             {title}
           </Label>
         </Stack>
 
         <Stack
-          direction='row'
-          alignItems='center'
-          justifyContent='space-between'
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
         >
-          <Typography variant='body2' sx={{ color: "text.secondary" }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Billed by
           </Typography>
 
           <RadioGroup
             row
-            aria-labelledby='demo-controlled-radio-buttons-group'
-            name='controlled-radio-buttons-group'
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
             value={monthly}
             onChange={handleMonthly}
           >
             <FormControlLabel
-              value='monthly'
+              value="monthly"
               control={<Radio />}
-              label='Monthly'
+              label="Monthly"
             />
             {yearly_plan_available && (
               <FormControlLabel
                 style={{ marginRight: 0 }}
-                value='yearly'
+                value="yearly"
                 control={<Radio />}
-                label='Yearly'
+                label="Yearly"
               />
             )}
           </RadioGroup>
@@ -137,7 +137,7 @@ export default function PaymentSummary({
         {transection && (
           <Box>
             <Typography
-              variant='subtitle1'
+              variant="subtitle1"
               sx={{
                 color: "primary.main",
                 backgroundColor: "primary.lighter",
@@ -152,17 +152,17 @@ export default function PaymentSummary({
           </Box>
         )}
 
-        <Stack spacing={1} direction='row' justifyContent='flex-end'>
+        <Stack spacing={1} direction="row" justifyContent="flex-end">
           {price > 0 && (
-            <Typography variant='h5'>
+            <Typography variant="h5">
               {country === "bangladesh" ? "৳" : country === "india" ? "₹" : "$"}
             </Typography>
           )}
-          <Typography variant='h2'>{billtopaid}</Typography>
+          <Typography variant="h2">{billtopaid}</Typography>
 
           {price > 0 && (
             <Typography
-              component='span'
+              component="span"
               sx={{ mb: 1, alignSelf: "center", color: "text.secondary" }}
             >
               {monthly === "monthly" ? "/mo" : "/yr"}
@@ -173,17 +173,17 @@ export default function PaymentSummary({
         <Divider sx={{ borderStyle: "dashed" }} />
 
         {monthly !== "monthly" && (
-          <Typography variant='h6'>2 months free</Typography>
+          <Typography variant="h6">2 months free</Typography>
         )}
 
         <Stack
-          direction='row'
-          alignItems='center'
-          justifyContent='space-between'
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
         >
-          <Typography variant='h6'>Total Billed</Typography>
+          <Typography variant="h6">Total Billed</Typography>
 
-          <Typography variant='h6'>
+          <Typography variant="h6">
             {country === "bangladesh" ? "৳" : country === "india" ? "₹" : "$"}{" "}
             {billtopaid}
           </Typography>
@@ -193,8 +193,8 @@ export default function PaymentSummary({
       </Stack>
 
       <Typography
-        component='div'
-        variant='caption'
+        component="div"
+        variant="caption"
         sx={{ color: "text.secondary", mt: 1 }}
       >
         * Plus applicable taxes
@@ -202,9 +202,9 @@ export default function PaymentSummary({
 
       <Button
         fullWidth
-        size='large'
-        type='submit'
-        variant='contained'
+        size="large"
+        type="submit"
+        variant="contained"
         sx={{ mt: 5, mb: 3 }}
         onClick={(e) => {
           onSubmit(e);
@@ -215,10 +215,10 @@ export default function PaymentSummary({
         {isSubmitting ? "Please wait..." : "Upgrade My Plan"}
       </Button>
 
-      <Stack alignItems='center' spacing={1}>
-        <Stack direction='row' alignItems='center' spacing={1}>
+      <Stack alignItems="center" spacing={1}>
+        <Stack direction="row" alignItems="center" spacing={1}>
           <ShieldRounded sx={{ color: "primary.main" }} />
-          <Typography variant='subtitle2'>
+          <Typography variant="subtitle2">
             Secure{" "}
             {country === "bangladesh"
               ? "Bkash"
@@ -230,7 +230,7 @@ export default function PaymentSummary({
         </Stack>
 
         <Typography
-          variant='caption'
+          variant="caption"
           sx={{ color: "text.secondary", textAlign: "center" }}
         >
           This is a secure 128-bit SSL encrypted payment
