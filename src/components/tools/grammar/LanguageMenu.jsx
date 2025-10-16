@@ -20,7 +20,7 @@ const initLanguage = [
 const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   const [languageTabs, setLanguageTabs] = useState(initLanguage);
   const [anchorEl, setAnchorEl] = useState(null);
-  const isMobile = useResponsive("down", "sm");
+  const isMobile = useResponsive("down", "lg");
   const maxTabs = isMobile ? 3 : 5;
   const showMenu = Boolean(anchorEl);
   const theme = useTheme();

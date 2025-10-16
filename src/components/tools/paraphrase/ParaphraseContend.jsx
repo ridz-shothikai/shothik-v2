@@ -206,7 +206,7 @@ const ParaphraseContend = () => {
   const [socketId, setSocketId] = useState(null);
   const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
-  const isMobile = useResponsive("down", "lg");
+  const isMobile = useResponsive("down", "md");
   const [result, setResult] = useState([]);
   const [historyResult, setHistoryResult] = useState([]);
 
@@ -1745,7 +1745,7 @@ const ParaphraseContend = () => {
                 sx={{
                   height: {
                     xs: userInput ? "480px" : "150px",
-                    md: "450px",
+                    sm: "450px",
                     lg: "530px",
                   },
                   overflow: "hidden",
