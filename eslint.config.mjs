@@ -83,6 +83,10 @@ export default [
       "**/*.config.js",
       "**/*.config.mjs",
       "**/*.config.cjs",
+      "**/*.config.ts",
+      "**/*.config.tsx",
+      "**/*.config.mts",
+      "**/*.config.cts",
     ],
   },
 
