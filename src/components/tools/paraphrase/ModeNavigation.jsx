@@ -127,7 +127,8 @@ const ModeNavigation = ({
         <Tabs
           value={selectedMode}
           onChange={(_, v) => changeMode(v)}
-          variant="standard"
+          variant="scrollable"
+          scrollButtons={false}
           disabled={isLoading}
           sx={{
             flexWrap: "nowrap",
