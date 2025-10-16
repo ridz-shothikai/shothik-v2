@@ -110,6 +110,8 @@ const ModeNavigation = ({
       {/* Modes */}
       <Box
         sx={{
+          position: "relative",
+          zIndex: 1600,
           display: "flex",
           alignItems: "center",
           gap: { xs: 0.5, sm: 1, md: 2, lg: 3 },

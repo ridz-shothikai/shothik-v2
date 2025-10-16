@@ -23,7 +23,7 @@ export function MessageTemplate({
         },
         height: "100%",
         width: "100%",
-        padding: 2,
+        padding: { xs: "50px 10px 0 10px", lg: 2 },
         position: "absolute",
         top: 0,
         left: 0,
@@ -42,8 +42,8 @@ export function MessageTemplate({
         <Box
           sx={{
             position: "absolute",
-            bottom: { xs: 0, md: 0, lg: "-100px" },
-            right: { xs: "10%", md: "40%", lg: "-120px", xl: "-120px" },
+            bottom: "-100px",
+            right: { xs: "-100px", lg: "-120px", xl: "-120px" },
             transform: "translate(-50%, -50%)",
             display: "flex",
             alignItems: "center",
@@ -54,9 +54,8 @@ export function MessageTemplate({
         >
           <Box
             sx={{
-              display: { xs: "block", sm: "none", md: "none", lg: "block" },
               transform: {
-                xs: "scaleX(-1)",
+                xs: "none",
                 sm: "none",
                 md: "none",
                 xl: "scale(1.2)",
@@ -163,7 +162,10 @@ export function MessageTemplate({
                         ? ""
                         : chipBgColors[index] || "#e8f4ff",
                     borderRadius: "8px",
-                    fontSize: "14px",
+                    "& .MuiChip-label": {
+                      fontSize: { xs: "12px", lg: "14px" },
+                      fontWeight: 400,
+                    },
                     // px: 1,
                     // flex: "0 0 48%",
                     color: (theme) =>
@@ -180,8 +182,8 @@ export function MessageTemplate({
         <Box
           sx={{
             display: "flex",
-            gap: { xs: 2, sm: 0, md: 2 },
-            flexDirection: { sm: "column", md: "column", lg: "row" },
+            gap: { xs: 1.5, sm: 2 },
+            flexDirection: { xs: "column", sm: "row" },
             position: "relative",
           }}
         >

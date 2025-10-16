@@ -35,7 +35,6 @@ import WordCounter from "../common/WordCounter";
 import LanguageMenu from "../grammar/LanguageMenu";
 import FileHistorySidebar from "./FileHistorySidebar";
 import ModeNavigation from "./ModeNavigation";
-import ModeNavigationForMobile from "./ModeNavigationForMobile";
 import Onboarding from "./Onboarding";
 import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseOutput from "./ParaphraseOutput";
@@ -1598,7 +1597,12 @@ const ParaphraseContend = () => {
                 <MoreVert fontSize="small" />
               </IconButton>
             </Box>
-            {!isMobile ? (
+            {/* {!isMobile ? ( */}
+            <Box
+              sx={{
+                display: { xs: "none", lg: "block" },
+              }}
+            >
               <ModeNavigation
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -1612,19 +1616,24 @@ const ParaphraseContend = () => {
                 dispatch={dispatch}
                 setShowLoginModal={setShowLoginModal}
               />
-            ) : (
-              <ModeNavigationForMobile
+            </Box>
+            {/* ) : ( */}
+            {/* <ModeNavigationForMobile
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
                 initialFrozenWords={initialFrozenWords}
                 frozenWords={frozenWords}
                 userPackage={user?.package}
                 isLoading={processing.loading}
-              />
-            )}
+              /> */}
+            {/* )} */}
 
             <Divider
-              sx={{ borderBottom: "2px solid", borderColor: "divider" }}
+              sx={{
+                display: { xs: "none", lg: "block" },
+                borderBottom: "2px solid",
+                borderColor: "divider",
+              }}
             />
 
             <Grid2 container>
@@ -1636,14 +1645,16 @@ const ParaphraseContend = () => {
                     lg: "530px",
                   },
                   position: "relative",
-                  borderRight: { md: "2px solid" },
-                  borderRightColor: { md: "divider" },
+                  borderRight: { lg: "2px solid" },
+                  borderRightColor: { lg: "divider" },
+                  borderBottom: { xs: "2px solid", lg: "0px" },
+                  borderBottomColor: { xs: "divider", lg: "transparent" },
                   // padding: 2,
                   paddingBottom: 1,
                   display: "flex",
                   flexDirection: "column",
                 }}
-                size={{ xs: 12, md: 6 }}
+                size={{ xs: 12, lg: 6 }}
               >
                 <UserInputBox
                   wordLimit={wordLimit}
@@ -1729,11 +1740,11 @@ const ParaphraseContend = () => {
               </Grid2>
 
               <Grid2
-                size={{ xs: 12, md: 6 }}
+                size={{ xs: 12, lg: 6 }}
                 ref={outputRef}
                 sx={{
                   height: {
-                    xs: "400px",
+                    xs: "480px",
                     md: "450px",
                     lg: "530px",
                   },
@@ -1755,6 +1766,30 @@ const ParaphraseContend = () => {
                     <p>Paraphrased Text</p>
                   ) : null}
                 </div> */}
+                <Box
+                  sx={{
+                    display: {
+                      xs: "block",
+                      lg: "none",
+                      borderBottom: "1px solid",
+                      borderBottomColor: "#F4F6F8",
+                    },
+                  }}
+                >
+                  <ModeNavigation
+                    selectedMode={selectedMode}
+                    setSelectedMode={setSelectedMode}
+                    userPackage={user?.package}
+                    selectedSynonyms={selectedSynonyms}
+                    setSelectedSynonyms={setSelectedSynonyms}
+                    SYNONYMS={SYNONYMS}
+                    setShowMessage={setShowMessage}
+                    isLoading={processing.loading}
+                    accessToken={accessToken}
+                    dispatch={dispatch}
+                    setShowLoginModal={setShowLoginModal}
+                  />
+                </Box>
 
                 <ParaphraseOutput
                   data={result}
