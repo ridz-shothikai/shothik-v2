@@ -211,7 +211,7 @@ const ModeNavigation = ({
         direction="row"
         alignItems="center"
         spacing={1}
-        sx={{ width: "150px" }}
+        sx={{ width: "150px", position: "relative", zIndex: 1600 }}
       >
         <Slider
           aria-label="Synonyms"

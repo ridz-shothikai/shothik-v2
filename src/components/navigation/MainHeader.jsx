@@ -122,7 +122,7 @@ export default function MainHeader() {
                     : "Upgrade Plan"
                   : isMobile
                     ? "Premium"
-                    : "Upgrade To Premium"}
+                    : "Upgrade your plan"}
               </Button>
             </Link>
           )

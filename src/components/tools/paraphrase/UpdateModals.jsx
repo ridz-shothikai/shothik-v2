@@ -1,3 +1,5 @@
+import useResponsive from "@/hooks/useResponsive";
+import SvgColor from "@/resource/SvgColor";
 import { Button, Chip, Grid2, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Image from "next/image";
@@ -11,6 +13,7 @@ export function MessageTemplate({
   inputText,
   paraphrasedText,
 }) {
+  const isMd = useResponsive("up", "sm");
   return (
     <Box
       sx={{
@@ -27,11 +30,11 @@ export function MessageTemplate({
         right: 0,
         bottom: 0,
         backgroundColor: "background.paper",
-        zIndex: "-1",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 1000,
       }}
     >
       <Box sx={{ mb: { xs: 0.5, md: 1, lg: 1.5 }, position: "relative" }}>
@@ -40,7 +43,7 @@ export function MessageTemplate({
           sx={{
             position: "absolute",
             bottom: { xs: 0, md: 0, lg: "-100px" },
-            right: { xs: "10%", md: "40%", lg: "42%", xl: "-120px" },
+            right: { xs: "10%", md: "40%", lg: "-120px", xl: "-120px" },
             transform: "translate(-50%, -50%)",
             display: "flex",
             alignItems: "center",
@@ -56,7 +59,7 @@ export function MessageTemplate({
                 xs: "scaleX(-1)",
                 sm: "none",
                 md: "none",
-                lg: "scale(1.2)",
+                xl: "scale(1.2)",
               },
             }}
           >
@@ -93,7 +96,7 @@ export function MessageTemplate({
             variant="subtitle2"
             sx={{
               overflow: "hidden",
-              textAlign: "start",
+              textAlign: "center",
               fontSize: { xs: "12px", lg: "14px" },
               fontWeight: 400,
               color: "#858481",
@@ -109,6 +112,7 @@ export function MessageTemplate({
           p: { xs: 1.5, md: 2, lg: 3 },
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
           gap: { xs: 1, md: 2, lg: 2.5 },
           border: "1px solid #919EAB33",
           borderRadius: { xs: "8px", md: "12px", lg: "16px" },
@@ -146,7 +150,7 @@ export function MessageTemplate({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: { xs: 1, md: 1.5, lg: 2 },
-                maxWidth: "55%",
+                maxWidth: { xl: "65%" },
               }}
             >
               {chipLabels.map((label, index) => (
@@ -210,6 +214,7 @@ export function MessageTemplate({
             <Typography
               sx={{
                 color: "#858481",
+                fontSize: { xs: "12px", xl: "14px" },
               }}
             >
               {inputText}
@@ -245,17 +250,38 @@ export function MessageTemplate({
             <Typography
               sx={{
                 color: "#858481",
+                fontSize: { xs: "12px", xl: "14px" },
               }}
             >
               {paraphrasedText}
             </Typography>
           </Box>
         </Box>
+        {/* upgrade button */}
+        <Link href={"/pricing"}>
+          <Button
+            data-umami-event="Nav: Upgrade To Premium"
+            color="primary"
+            size={isMd ? "medium" : "small"}
+            variant="contained"
+            rel="noopener"
+            sx={{
+              maxWidth: "fit-content",
+            }}
+            startIcon={
+              <SvgColor
+                src="/navbar/diamond.svg"
+                sx={{
+                  width: { xs: 20, md: 24 },
+                  height: { xs: 20, md: 24 },
+                }}
+              />
+            }
+          >
+            Upgrade Plan
+          </Button>
+        </Link>
       </Box>
-
-      <Link href={"/"}>
-        <Button></Button>
-      </Link>
     </Box>
   );
 }
@@ -282,14 +308,15 @@ export function AcademicMessage() {
   return (
     <MessageTemplate
       title="Academic"
+      desc="Refining Research Writing for Academic Standards Goal"
       mode="Academic"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Enthusiastic attendees assembled for the event, expressing approval as vivid floats and musical ensembles proceeded."
+      inputText="“Pollution is a big problem that makes the environment worse and affects people's health.”"
+      paraphrasedText="“Environmental pollution poses a significant threat to ecological balance and public health.”"
       chipLabels={[
-        "Rephrasing for Academic Tone",
-        "Rewriting for Clarity",
-        "Avoiding Colloquialisms",
-        "Rewriting for Professionalism",
+        "Research Writing",
+        "Formal Tone",
+        "Thesis Preparation",
+        "Technical Accuracy",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
@@ -300,12 +327,14 @@ export function NewsMessage() {
   return (
     <MessageTemplate
       title="News"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Excited crowds gathered for the parade, cheering while multicolored floats and energetic bands moved past."
+      desc="Rewriting Articles with a Clear, Neutral, and Journalistic Tone"
+      inputText="“The company proudly launched an amazing new phone that’s going to change the market!”"
+      paraphrasedText="“The company has launched a new smartphone that it claims could impact the market.”"
       chipLabels={[
-        "Rephrasing for Newsworthiness",
-        "Rewriting for Objectivity",
-        "Rewriting for Journalistic Standards",
+        "Journalistic Writing",
+        "Media Editing",
+        "Fact Based Writing",
+        "Objective Writing",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
@@ -316,13 +345,14 @@ export function SimpleMessage() {
   return (
     <MessageTemplate
       title="Simple"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Happy people watched the parade, clapping as bright floats and bands went by."
+      desc="Making Complex Text Easy to Read and Understand"
+      inputText="“Photosynthesis is a biochemical process through which green plants synthesize organic compounds using light energy.”"
+      paraphrasedText="“Photosynthesis is the process plants use to make food from sunlight.”"
       chipLabels={[
-        "Writing for Clarity",
-        "Rewriting for Simplicity",
-        "Using Simple Language",
-        "Rewriting for Readability",
+        "Easy Language",
+        "Plain Writing",
+        "Readable Content",
+        "Simplified Text",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
@@ -333,13 +363,14 @@ export function CreativeMessage() {
   return (
     <MessageTemplate
       title="Creative"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Radiant crowds filled the streets, celebrating each colorful float and every band’s rhythmic performance."
+      desc="Transforming Ordinary Text into Engaging, Original, and Expressive Writing"
+      inputText="“This perfume smells nice and lasts a long time.”"
+      paraphrasedText="“This perfume wraps you in a lasting aura of elegance, leaving a scent that lingers beautifully throughout the day.”"
       chipLabels={[
-        "Writing for Clarity",
-        "Rewriting for Creativity",
-        "Using Engaging Language",
-        "Rewriting for Emotional Connection",
+        "Content Writing",
+        "Copy writing",
+        "Storytelling",
+        "Expressive Tone",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
@@ -350,13 +381,14 @@ export function ShortMessage() {
   return (
     <MessageTemplate
       title="Short"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Crowds cheered as floats and bands paraded through the streets with joy."
+      desc="Condensing Long Text into Clear, Concise Sentences"
+      inputText="“Our company is committed to providing high-quality products that meet customer expectations and ensure satisfaction.”"
+      paraphrasedText="“We deliver quality products that satisfy our customers.”"
       chipLabels={[
-        "Writing for Clarity",
-        "Rewriting for Brevity",
-        "Using Clear Language",
-        "Rewriting for Readability",
+        "Concise Writing",
+        "Content Editing",
+        "Summarized Writing",
+        "Social Media Copy",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
@@ -367,13 +399,14 @@ export function LongMessage() {
   return (
     <MessageTemplate
       title="Long"
-      inputText="Joyful crowds gathered for the parade, cheering as floats and bands passed."
-      paraphrasedText="Joyful and excited crowds thronged the streets for the grand parade, eagerly cheering as brightly decorated floats rolled by and spirited bands performed lively music, creating an atmosphere of celebration and unity."
+      desc="Expanding Short Text into Detailed, Well-Explained Sentences"
+      inputText="“Climate change is dangerous.”"
+      paraphrasedText="“Climate change poses a serious threat to the environment, affecting weather patterns, ecosystems, and human livelihoods across the globe.”"
       chipLabels={[
-        "Writing for Clarity",
-        "Rewriting for Detail",
-        "Avoiding Informal Tones",
-        "Rewriting for Professionalism",
+        "Expanded Writing",
+        "Detailed Content",
+        "Content Development",
+        "ElaboratedText",
       ]}
       chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
     />
