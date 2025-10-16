@@ -80,7 +80,8 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
       <Tabs
         value={language}
         onChange={(_, v) => setLanguage(v)}
-        variant="standard"
+        variant="scrollable"
+        scrollButtons={false}
         textColor="primary"
         sx={{
           minHeight: 30,
