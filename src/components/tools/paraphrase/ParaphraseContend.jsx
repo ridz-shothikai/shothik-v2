@@ -1632,7 +1632,7 @@ const ParaphraseContend = () => {
                 sx={{
                   height: {
                     xs: "400px",
-                    md: "calc(100vh - 340px)",
+                    md: "450px",
                     lg: "530px",
                   },
                   position: "relative",
