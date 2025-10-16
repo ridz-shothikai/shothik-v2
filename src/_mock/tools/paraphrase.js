@@ -9,7 +9,7 @@ export const modes = [
   },
   {
     value: "Humanize",
-    package: ["free", "value_plan", "pro_plan", "unlimited"],
+    package: ["value_plan", "pro_plan", "unlimited"],
   },
   {
     value: "Formal",
