@@ -5,6 +5,7 @@ import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { usePathname } from "next/navigation";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
 import Main from "../../components/layout/Main";
@@ -28,6 +29,8 @@ import LoadingScreen from "../../resource/LoadingScreen";
 export default function MainLayout({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);
   const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const pathname = usePathname();
+  const isSharedPage = pathname?.startsWith('/shared');
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const dispatch = useDispatch();
@@ -46,6 +49,7 @@ export default function MainLayout({ children }) {
     setIsLoadingPage(false);
   }, []);
 
+  // Only use Google One Tap login on non-shared pages
   useGoogleOneTapLogin({
     onSuccess: async (res) => {
       try {
@@ -75,7 +79,7 @@ export default function MainLayout({ children }) {
       console.error(err);
     },
     scope: "email profile",
-    disabled: isLoading || user?.email,
+    disabled: isLoading || user?.email || isSharedPage, // Disable on shared pages
   });
 
   if (isLoadingPage) return <LoadingScreen />;
