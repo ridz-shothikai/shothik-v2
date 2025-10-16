@@ -208,7 +208,7 @@ const GrammarContent = () => {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none",
+          "tiptap-content prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none text-foreground bg-transparent",
         style:
           "outline: none; min-height: 400px; padding: 16.5px 14px; font-family: inherit; font-size: 1rem; line-height: 1.5;",
       },
@@ -294,7 +294,7 @@ const GrammarContent = () => {
 
     tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
 
-    issues.forEach((errorObj, index) => {
+    issues?.forEach((errorObj, index) => {
       const { error, correct, sentence, type } = errorObj;
       if (!error) return;
 
@@ -538,7 +538,7 @@ const GrammarContent = () => {
                   .ProseMirror {
                     padding: 16px;
                     min-width: 100%;
-                    min-height: 200px;
+                    min-height: 360px;
                   }
                   .ProseMirror:focus {
                     outline: none;
