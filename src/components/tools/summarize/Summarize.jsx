@@ -24,6 +24,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const modes = [
   {
@@ -203,7 +204,7 @@ const SummarizeContent = () => {
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [outputContent, setOutputContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [userInput, setUserInput] = useState("Hello world!");
+  const [userInput, setUserInput] = useState("");
   const [keywords, setKeywords] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [isKeywordsLoading, setIsKeywordsLoading] = useState(false);
@@ -239,7 +240,7 @@ const SummarizeContent = () => {
     if (
       debouncedPlainText &&
       debouncedPlainText.trim() &&
-      debouncedPlainText.length > 10
+      debouncedPlainText?.length > 10
     ) {
       fetchKeywords({ text: debouncedPlainText });
     } else {
@@ -370,8 +371,8 @@ const SummarizeContent = () => {
     extractTextFromHTML,
   ]);
 
-  const handleInput = useCallback((htmlContent) => {
-    setUserInput(htmlContent);
+  const handleInput = useCallback((content) => {
+    setUserInput(content);
   }, []);
 
   const handleClear = useCallback(() => {
@@ -387,6 +388,7 @@ const SummarizeContent = () => {
         if (prev.includes(keyword)) {
           return prev.filter((kw) => kw !== keyword);
         } else if (prev.length >= 5) {
+          console.log("You can select up to 5 keywords.");
           enqueueSnackbar("You can select up to 5 keywords.", {
             variant: "warning",
           });
@@ -433,45 +435,68 @@ const SummarizeContent = () => {
                 highlightedKeywords={selectedKeywords}
               />
 
-              {userInput && (
-                <div className="p-4">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold">Select keywords (up to 5)</p>
-                  </div>
+              {plainTextInput && plainTextInput?.length > 10 && (
+                <div className="bg-muted p-4">
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold">
+                        Select keywords (up to 5)
+                      </p>
+                      <div
+                        className={cn("cursor-pointer", {
+                          hidden: !(keywords?.length > 0),
+                        })}
+                        onClick={() => setIsKeywordsOpen((prev) => !prev)}
+                      >
+                        {isKeywordsOpen ? (
+                          <ChevronUp className="size-4" />
+                        ) : (
+                          <ChevronDown className="size-4" />
+                        )}
+                      </div>
+                    </div>
 
-                  <div className="mt-3">
-                    {isKeywordsLoading && (
-                      <div className="text-primary">Loading keywords...</div>
-                    )}
-                    {!isKeywordsLoading &&
-                      keywords.length === 0 &&
-                      userInput && (
-                        <div className="text-muted-foreground">
-                          No keywords found
+                    <div className="mt-2">
+                      {isKeywordsLoading && (
+                        <div className="text-primary text-xs">
+                          Loading keywords...
                         </div>
                       )}
-                    {!isKeywordsLoading && keywords.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {keywords.map((kw, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            className={`shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-sm transition-all hover:shadow-md ${
-                              selectedKeywords.includes(kw)
-                                ? "border-primary bg-primary/10 text-primary font-medium"
-                                : "hover:border-primary/50 border-muted-foreground"
-                            }`}
-                            onClick={() => handleKeywordToggle(kw)}
-                            disabled={
-                              !selectedKeywords.includes(kw) &&
-                              selectedKeywords.length >= 5
-                            }
-                          >
-                            <span className="capitalize">{kw}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                      {!isKeywordsLoading &&
+                        keywords.length === 0 &&
+                        userInput && (
+                          <div className="text-muted-foreground text-xs">
+                            No keywords found
+                          </div>
+                        )}
+                      {!isKeywordsLoading && keywords?.length > 0 && (
+                        <div
+                          className={cn("flex max-h-29 flex-wrap gap-1", {
+                            "h-6.5 overflow-hidden": !isKeywordsOpen,
+                            "overflow-y-scroll": isKeywordsOpen,
+                          })}
+                        >
+                          {keywords.map((kw, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              className={`h-6 shrink-0 cursor-pointer rounded-full border px-3 text-xs transition-all hover:shadow-md ${
+                                selectedKeywords.includes(kw)
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "hover:border-primary/50 border-muted-foreground"
+                              }`}
+                              onClick={() => handleKeywordToggle(kw)}
+                              disabled={
+                                !selectedKeywords.includes(kw) &&
+                                selectedKeywords.length >= 5
+                              }
+                            >
+                              <span className="capitalize">{kw}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
