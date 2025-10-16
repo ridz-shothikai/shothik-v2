@@ -1727,25 +1727,25 @@ const ParaphraseContend = () => {
                   </Stack>
                 )}
               </Grid2>
-              {isMobile && !userInput ? null : (
-                <Grid2
-                  size={{ xs: 12, md: 6 }}
-                  ref={outputRef}
-                  sx={{
-                    height: {
-                      xs: "400px",
-                      md: "calc(100vh - 340px)",
-                      lg: "530px",
-                    },
-                    overflow: "hidden",
-                    borderTop: { xs: "2px solid", md: "none" },
-                    borderTopColor: { xs: "divider", md: undefined },
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
+
+              <Grid2
+                size={{ xs: 12, md: 6 }}
+                ref={outputRef}
+                sx={{
+                  height: {
+                    xs: "400px",
+                    md: "450px",
+                    lg: "530px",
+                  },
+                  overflow: "hidden",
+                  borderTop: { xs: "2px solid", md: "none" },
+                  borderTopColor: { xs: "divider", md: undefined },
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                   {isLoading ? (
                     <ViewInputInOutAsDemo
                       input={userInput}
@@ -1756,34 +1756,34 @@ const ParaphraseContend = () => {
                   ) : null}
                 </div> */}
 
-                  <ParaphraseOutput
-                    data={result}
-                    setData={setResult}
-                    synonymLevel={selectedSynonyms}
-                    dataModes={modes}
-                    userPackage={user?.package}
-                    selectedLang={language}
-                    highlightSentence={highlightSentence}
-                    setHighlightSentence={setHighlightSentence}
-                    setOutputHistory={setOutputHistory}
-                    input={userInput}
-                    freezeWords={[
-                      ...(frozenWords?.values || []),
-                      ...(frozenPhrases?.values || []),
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                    socketId={socketId}
-                    language={language}
-                    setProcessing={setProcessing}
-                    eventId={eventId}
-                    setEventId={setEventId}
-                    paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
-                  />
+                <ParaphraseOutput
+                  data={result}
+                  setData={setResult}
+                  synonymLevel={selectedSynonyms}
+                  dataModes={modes}
+                  userPackage={user?.package}
+                  selectedLang={language}
+                  highlightSentence={highlightSentence}
+                  setHighlightSentence={setHighlightSentence}
+                  setOutputHistory={setOutputHistory}
+                  input={userInput}
+                  freezeWords={[
+                    ...(frozenWords?.values || []),
+                    ...(frozenPhrases?.values || []),
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                  socketId={socketId}
+                  language={language}
+                  setProcessing={setProcessing}
+                  eventId={eventId}
+                  setEventId={setEventId}
+                  paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
+                />
 
-                  {result?.length ? (
-                    <>
-                      {/* <ParaphraseOutput
+                {result?.length ? (
+                  <>
+                    {/* <ParaphraseOutput
                       data={result}
                       setData={setResult}
                       synonymLevel={selectedSynonyms}
@@ -1807,27 +1807,26 @@ const ParaphraseContend = () => {
                       eventId={eventId}
                       setEventId={setEventId}
                     /> */}
-                      <OutputBotomNavigation
-                        handleClear={() => handleClear("", "output")}
-                        highlightSentence={highlightSentence}
-                        outputContend={outputContend}
-                        outputHistory={outputHistory}
-                        outputHistoryIndex={outputHistoryIndex}
-                        outputWordCount={outputWordCount}
-                        proccessing={processing}
-                        sentenceCount={result.length - 1}
-                        setHighlightSentence={setHighlightSentence}
-                        setOutputHistoryIndex={setOutputHistoryIndex}
-                      />
-                    </>
-                  ) : null}
+                    <OutputBotomNavigation
+                      handleClear={() => handleClear("", "output")}
+                      highlightSentence={highlightSentence}
+                      outputContend={outputContend}
+                      outputHistory={outputHistory}
+                      outputHistoryIndex={outputHistoryIndex}
+                      outputWordCount={outputWordCount}
+                      proccessing={processing}
+                      sentenceCount={result.length - 1}
+                      setHighlightSentence={setHighlightSentence}
+                      setOutputHistoryIndex={setOutputHistoryIndex}
+                    />
+                  </>
+                ) : null}
 
-                  {showMessage.show &&
-                  isModeLockedForUser(showMessage.Component, user?.package) ? (
-                    <UpdateComponent Component={showMessage.Component} />
-                  ) : null}
-                </Grid2>
-              )}
+                {showMessage.show &&
+                isModeLockedForUser(showMessage.Component, user?.package) ? (
+                  <UpdateComponent Component={showMessage.Component} />
+                ) : null}
+              </Grid2>
             </Grid2>
           </Card>
 
