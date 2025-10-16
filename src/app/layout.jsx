@@ -1,5 +1,6 @@
 import Analytics from "../analysers/Analytics";
 import SettingApplier from "../components/appliers/SettingApplier";
+import ToastApplier from "../components/appliers/ToastApplier";
 import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
 import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
@@ -41,7 +42,10 @@ export default function RootLayout({ children }) {
         </noscript>
 
         <Providers>
+          {/* Appliers */}
           <SettingApplier />
+          <ToastApplier />
+
           {children}
           {/* login modal  */}
           <LoginModal>

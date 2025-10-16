@@ -14,13 +14,29 @@ const compat = new FlatCompat({
 });
 
 export default [
+  // Next.js specific configuration
+  ...compat.config({
+    extends: ["next/core-web-vitals"],
+  }),
+
   // Apply to JavaScript and JSX files
   {
-    files: ["**/*.js", "**/*.jsx", "**/*.mjs", "**/*.cjs"],
+    files: [
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.mts",
+      "**/*.cts",
+    ],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
       globals: {
+        React: "writable",
+        JSX: "writable",
         ...globals.browser,
         ...globals.node,
         ...globals.es2021,
@@ -30,21 +46,30 @@ export default [
           jsx: true,
         },
       },
+      // parserOptions: {
+      //   project: "./tsconfig.json",
+      //   tsconfigRootDir: __dirname,
+      //   ecmaFeatures: { jsx: true },
+      // },
     },
     rules: {
+      /* Global Rules */
       all: "off",
-      /* Base Rules */
+
+      // /* Base Rules */
       // "no-undef": "error",
-      // "no-unused-vars": "warn",
+      // "no-unused-vars": "off",
       // "no-console": "warn",
 
-      /* Next.js Rules */
-      // "@next/next/no-img-element": "warn",
+      // /* TypeScript Rules */
+      // "@typescript-eslint/no-unused-vars": "off",
+      // "@typescript-eslint/no-explicit-any": "off",
+      // "@typescript-eslint/consistent-type-imports": "warn",
+
+      // /* Next.js Rules */
+      // "@next/next/no-img-element": "off",
     },
   },
-
-  // Next.js specific configuration
-  ...compat.extends("next/core-web-vitals"),
 
   // Files and directories to ignore during linting
   {

@@ -59,10 +59,10 @@ export const PATH_TOOLS = {
   plagiarism_checker: "/plagiarism-checker",
   upgrade: "/payment/?subscription=RdEZI2hnuOuSgbk9KeT0&tenure=monthly",
   summarize: "/summarize",
-  grammar: "/grammar-check",
+  grammar: "/grammar-checker",
   translator: "/translator",
   agents: "/agents",
-  bangla_grammar: "/bangla-grammar-check",
+  bangla_grammar: "/bangla-grammar-checker",
   marketing_automation: "/marketing-automation",
   get: (name) => `/${name.toLowerCase().replaceAll(" ", "-")}`,
 };
