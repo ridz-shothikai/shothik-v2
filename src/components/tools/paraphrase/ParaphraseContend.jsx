@@ -1744,7 +1744,7 @@ const ParaphraseContend = () => {
                 ref={outputRef}
                 sx={{
                   height: {
-                    xs: "480px",
+                    xs: userInput ? "480px" : "150px",
                     md: "450px",
                     lg: "530px",
                   },
