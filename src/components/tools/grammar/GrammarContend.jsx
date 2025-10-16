@@ -1,6 +1,6 @@
 "use client";
 
-import { grammarCheck } from "@/services/grammar-cheker.service";
+import { grammarCheck } from "@/services/grammar-checker.service";
 import { Box, Card, Grid2, MenuItem, Popover, Stack } from "@mui/material";
 import { Mark, mergeAttributes } from "@tiptap/core";
 import { EditorContent, useEditor } from "@tiptap/react";

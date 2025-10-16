@@ -120,6 +120,13 @@ const SYNONYMS = {
 const initialFrozenWords = new Set();
 const initialFrozenPhrase = new Set();
 
+// helper function to check if a mode is locked
+const isModeLockedForUser = (modeValue, userPackage) => {
+  const mode = modes.find((m) => m.value === modeValue);
+  if (!mode) return false;
+  return !mode.package.includes(userPackage || "free");
+};
+
 const ParaphraseContend = () => {
   const {
     paraphraseQuotations,
@@ -470,23 +477,23 @@ const ParaphraseContend = () => {
     if (!!activeHistory?._id) return;
     setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
-    // const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
-    //   path: "/p-v2/socket.io",
-    //   transports: ["websocket"],
-    //   auth: { token: accessToken },
-    //   reconnection: true,
-    //   reconnectionAttempts: 5,
-    //   reconnectionDelay: 2000,
-    // });
-
-    const socket = io("http://localhost:3050", {
-      path: "/socket.io",
+    const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
+      path: "/p-v2/socket.io",
       transports: ["websocket"],
       auth: { token: accessToken },
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
     });
+
+    // const socket = io("http://localhost:3050", {
+    //   path: "/socket.io",
+    //   transports: ["websocket"],
+    //   auth: { token: accessToken },
+    //   reconnection: true,
+    //   reconnectionAttempts: 5,
+    //   reconnectionDelay: 2000,
+    // });
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
@@ -1056,6 +1063,11 @@ const ParaphraseContend = () => {
 
   const handleSubmit = async (value) => {
     try {
+      // Clear any locked mode messages when starting a new paraphrase
+      if (showMessage.show) {
+        setShowMessage({ show: false, Component: null });
+      }
+
       setCompletedEvents({
         plain: false,
         tagging: false,
@@ -1153,14 +1165,32 @@ const ParaphraseContend = () => {
     if (!!activeHistory?._id) return;
     // only auto-start if the setting is ON
 
+    // Check if current mode is locked for user
+    const isLocked = isModeLockedForUser(selectedMode, user?.package);
+
+    // If mode is locked, show message and don't auto-paraphrase
+    if (isLocked) {
+      setShowMessage({ show: true, Component: selectedMode });
+      if (result?.length > 0) {
+        handleClear("", "output"); // Clear output if any
+      }
+      return;
+    }
+
+    // Clear message if mode is not locked
+    if (!isLocked && showMessage.show) {
+      setShowMessage({ show: false, Component: null });
+    }
+
+    // only auto-start if the setting is ON
     if (!automaticStartParaphrasing) {
       if (result?.length > 0) {
         enqueueSnackbar("Click Rephrase to view the updated result.", {
           variant: "info",
         });
-        handleClear("", "output"); // Clear only output, keep input and frozen words
+        handleClear("", "output");
       }
-      return; // Early return if not auto paraphrasing
+      return;
     }
 
     // Trigger paraphrase if language changes and there is user input
@@ -1172,7 +1202,7 @@ const ParaphraseContend = () => {
         enqueueSnackbar("Please wait while paraphrasing is in progress...", {
           variant: "info",
         });
-        handleClear("", "output"); // Clear only output, keep input and frozen words
+        handleClear("", "output");
       }
     }
   }, [
@@ -1181,6 +1211,7 @@ const ParaphraseContend = () => {
     language,
     selectedMode,
     selectedSynonyms,
+    user?.package,
   ]); // All the dependencies that should trigger re-paraphrasing are listed here.
 
   useEffect(() => {
@@ -1791,7 +1822,8 @@ const ParaphraseContend = () => {
                     </>
                   ) : null}
 
-                  {user?.package === "free" && showMessage.show ? (
+                  {showMessage.show &&
+                  isModeLockedForUser(showMessage.Component, user?.package) ? (
                     <UpdateComponent Component={showMessage.Component} />
                   ) : null}
                 </Grid2>

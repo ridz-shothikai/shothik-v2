@@ -84,12 +84,6 @@ const ModeNavigation = ({
       setShowMessage({ show: false, Component: null });
     } else {
       // If not valid, check if the user is not logged in
-      if (!accessToken) {
-        // enqueueSnackbar("Please log in to access this mode.", {
-        //   variant: "warning",
-        // });
-        dispatch(setShowLoginModal(true));
-      }
       setShowMessage({ show: true, Component: value });
     }
     if (extraModes.some((m) => m.value === value)) {
