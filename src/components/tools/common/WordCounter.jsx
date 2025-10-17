@@ -164,7 +164,13 @@ const Contend = ({
           >
             <b>{wordCount}</b> /{" "}
             {wordLimit === 9999 ? (
-              <Typography component="span" sx={{ color: "primary.main" }}>
+              <Typography
+                component="span"
+                sx={{
+                  color: "primary.main",
+                  fontSize: "14px",
+                }}
+              >
                 Unlimited
               </Typography>
             ) : (
@@ -174,7 +180,7 @@ const Contend = ({
                   component="span"
                   sx={{
                     color: "#242426",
-                    fontSize: { xs: "12px", lg: "14px" },
+                    fontSize: "14px",
                   }}
                 >
                   Words
@@ -198,8 +204,8 @@ const Contend = ({
               <Image
                 src={"/icons/delete.svg"}
                 alt="delete"
-                width={20}
-                height={20}
+                width={18}
+                height={18}
               />
             </IconButton>
           </Tooltip>
@@ -225,8 +231,8 @@ const Contend = ({
                         : "/icons/freeze.svg"
                     }
                     alt="freeze"
-                    width={20}
-                    height={20}
+                    width={18}
+                    height={18}
                   />
                 </IconButton>
               </Tooltip>

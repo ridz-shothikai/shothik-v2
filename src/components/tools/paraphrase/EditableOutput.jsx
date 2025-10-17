@@ -402,10 +402,12 @@ const EnterHandler = Extension.create({
    ============================================================ */
 
 function parseMarkdownText(text) {
+  console.log(text, "FROM PARSE MARKDOWN");
   const marks = [];
   let core = text;
   let trailing = "";
-  const punctMatch = core.match(/^(.*?)([.,;?!])$/);
+  if (!text) return { text, marks };
+  const punctMatch = core?.match(/^(.*?)([.,;?!])$/);
   if (punctMatch) {
     core = punctMatch[1];
     trailing = punctMatch[2];

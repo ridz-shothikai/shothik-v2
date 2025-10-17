@@ -137,7 +137,7 @@ const OutputBotomNavigation = ({
         flexWrap="wrap"
         rowGap={1}
         sx={{
-          paddingBottom: 1,
+          paddingBottom: { xs: 1, md: 2 },
           paddingX: 2,
           flexShrink: 0,
           minHeight: "auto",

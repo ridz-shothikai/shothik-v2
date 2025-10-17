@@ -588,7 +588,7 @@ const ParaphraseContend = () => {
         setCompletedEvents((prev) => ({ ...prev, tagging: true }));
         return;
       }
-      if (completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
+      // if (completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
       console.log("paraphrase-tagging: ", raw);
       let parsed, backendIndex, eid;
       try {
@@ -633,7 +633,7 @@ const ParaphraseContend = () => {
         return;
       }
 
-      if (completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
+      // if (completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
 
       let analysis, backendIndex, eid;
       try {
@@ -648,23 +648,27 @@ const ParaphraseContend = () => {
         return;
       }
 
-      setResult((prev) => {
-        const updated = [...prev];
-        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
-        if (targetIdx < 0) {
-          console.warn("synonyms: couldn't map index", backendIndex);
-          return prev;
-        }
+      console.log(result, "MAP RESULT");
 
-        if (Array.isArray(analysis) && analysis?.length > 0) {
-          updated[targetIdx] = analysis?.map((item) => ({
-            ...item,
-            // word: item.word,
-            word: item.word.replace(/[{}]/g, ""),
-          }));
-          return updated;
-        }
-      });
+      if (result.length) {
+        setResult((prev) => {
+          const updated = [...prev];
+          const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+          if (targetIdx < 0) {
+            console.warn("synonyms: couldn't map index", backendIndex);
+            return prev;
+          }
+
+          if (Array.isArray(analysis) && analysis?.length > 0) {
+            updated[targetIdx] = analysis?.map((item) => ({
+              ...item,
+              // word: item.word,
+              word: item.word.replace(/[{}]/g, ""),
+            }));
+            return updated;
+          }
+        });
+      }
     });
   }, [language, eventId]);
 
@@ -1714,7 +1718,7 @@ const ParaphraseContend = () => {
                   userPackage={user?.package}
                   toolName="paraphrase"
                   btnIcon={isMobile ? null : <InsertDriveFile />}
-                  sx={{ py: 0 }}
+                  sx={{ py: { md: 1 } }}
                   dontDisable={true}
                   sticky={320}
                   freeze_modal={true}
