@@ -177,7 +177,7 @@ const ParaphraseContend = () => {
     dispatch(setActiveHistory({}));
     return setLanguageState(...args);
   };
-  console.log(outputContend, "----------- OUTPUT CONTEND -----------");
+  // console.log(outputContend, "----------- OUTPUT CONTEND -----------");
   // const sampleText =
   //   trySamples.paraphrase[
   //     language && language.startsWith("English")
@@ -474,6 +474,8 @@ const ParaphraseContend = () => {
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
     if (!!activeHistory?._id) return;
+
+    // Reset completion flags
     setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
     const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
@@ -483,16 +485,15 @@ const ParaphraseContend = () => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
-    });
-
-    // const socket = io("http://localhost:3050", {
+    }); // prod
+    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
     //   path: "/socket.io",
     //   transports: ["websocket"],
     //   auth: { token: accessToken },
     //   reconnection: true,
     //   reconnectionAttempts: 5,
     //   reconnectionDelay: 2000,
-    // });
+    // }); // local
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
@@ -505,56 +506,57 @@ const ParaphraseContend = () => {
     });
 
     let accumulatedText = "";
+    // Track which indices have been processed to avoid duplicates
+    const processedIndices = {
+      tagging: new Set(),
+      synonyms: new Set(),
+    };
 
     function mapBackendIndexToResultIndex(backendIndex, result) {
       const sentenceSlots = [];
       result.forEach((seg, idx) => {
-        if (!(seg.length === 1 && seg[0].type === "newline"))
+        if (!(seg.length === 1 && seg[0].type === "newline")) {
           sentenceSlots.push(idx);
+        }
       });
       return sentenceSlots[backendIndex] ?? -1;
     }
 
-    const sentenceSeparator =
-      language === "Bangla"
-        ? /(?:।\s+|\.\r?\n+)/ // Bangla: either "। " or ".\n"
-        : /(?:\.\s+|\.\r?\n+)/;
-
-    // ─── 2) Plain handler: clear `result` on first chunk of each run ────────────
+    // ═══════════════════════════════════════════════════════════
+    // PLAIN TEXT HANDLER
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-plain", (data) => {
       console.log("paraphrase-plain:", data);
+
       if (data === ":end:") {
+        console.log("✅ Plain text streaming completed");
         accumulatedText = "";
         setIsLoading(false);
         setCompletedEvents((prev) => ({ ...prev, plain: true }));
         return;
       }
 
-      if (completedEvents.plain) return; // If we already got :end: from backend that means we have the data.
-
-      // if this is the very first chunk of a brand-new run, wipe out old result:
+      // First chunk - clear old results
       if (accumulatedText === "") {
+        console.log("🔄 Starting new paraphrase - clearing old results");
         setResult([]);
+        processedIndices.tagging.clear();
+        processedIndices.synonyms.clear();
       }
 
-      // accumulate raw Markdown
       accumulatedText += data.replace(/[{}]/g, "");
 
-      // console.log("Accumulated Text (before normalization):", accumulatedText);
-
-      // update word count, etc…
       setOutputContend(accumulatedText);
       setOutputWordCount(
         accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
       );
 
-      // rebuild `result` with blank lines preserved
-      // const lines = accumulatedText.split("\n");
-
+      // Rebuild result with proper sentence structure
       const lines = accumulatedText.split(/\r?\n/);
       const sentenceSeparator =
         language === "Bangla" ? /(?:।\s+|\.\r?\n+)/ : /(?:\.\s+|\.\r?\n+)/;
       const newResult = [];
+
       lines.forEach((line) => {
         if (!line.trim()) {
           newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
@@ -566,11 +568,12 @@ const ParaphraseContend = () => {
               const words = sentence
                 .trim()
                 .split(/\s+/)
-                ?.map((w) => ({ word: w, type: "none", synonyms: [] }));
+                .map((w) => ({ word: w, type: "none", synonyms: [] }));
               newResult.push(words);
             });
         }
       });
+
       setResult(newResult);
       dispatch(
         setParaphraseValues({
@@ -578,112 +581,187 @@ const ParaphraseContend = () => {
           values: { text: accumulatedText },
         }),
       );
-      console.log("new plain result:", newResult);
     });
 
-    // ─── 3) Tagging handler: map backend index to correct slot ─────────────────
+    // ═══════════════════════════════════════════════════════════
+    // TAGGING HANDLER - CRITICAL FIX
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-tagging", (raw) => {
       if (raw === ":end:") {
-        // setIsLoading(false);
+        console.log("✅ Tagging completed for all sentences");
         setCompletedEvents((prev) => ({ ...prev, tagging: true }));
         return;
       }
-      // if (completedEvents.tagging) return; // if we already got the :end: then we have the data from the backend
-      console.log("paraphrase-tagging: ", raw);
+
       let parsed, backendIndex, eid;
       try {
-        ({ index: backendIndex, eventId: eid, data: parsed } = JSON.parse(raw));
-        if (eid !== eventId) return;
+        const payload = JSON.parse(raw);
+        backendIndex = payload.index;
+        eid = payload.eventId;
+        parsed = payload.data;
+
+        if (eid !== eventId) {
+          console.warn(
+            "⚠️ EventId mismatch in tagging:",
+            eid,
+            "expected:",
+            eventId,
+          );
+          return;
+        }
+
+        // Prevent duplicate processing
+        if (processedIndices.tagging.has(backendIndex)) {
+          console.log(
+            `⏭️  Skipping duplicate tagging for index ${backendIndex}`,
+          );
+          return;
+        }
+        processedIndices.tagging.add(backendIndex);
       } catch (err) {
-        console.error("Error parsing paraphrase-tagging:", err);
+        console.error("❌ Error parsing paraphrase-tagging:", err);
         return;
       }
 
+      console.log(`📝 Processing tagging for backend index ${backendIndex}`);
+
       setResult((prev) => {
-        const updated = [...prev];
-        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
-        if (targetIdx < 0) {
-          console.warn("tagging: couldn't map index", backendIndex);
+        // Don't process if result is empty
+        if (!prev || prev.length === 0) {
+          console.warn("⚠️ Result array is empty, waiting for plain text...");
           return prev;
         }
 
-        updated[targetIdx] = parsed?.map((item) => ({
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+
+        if (targetIdx < 0) {
+          console.warn(
+            `⚠️ Tagging: couldn't map backend index ${backendIndex} (result length: ${prev.length})`,
+          );
+          return prev;
+        }
+
+        // Ensure we have valid data
+        if (!Array.isArray(parsed)) {
+          console.error("❌ Invalid tagging data format:", parsed);
+          return prev;
+        }
+
+        updated[targetIdx] = parsed.map((item) => ({
           ...item,
-          // word: item.word, // preserves markdown tokens
           word: item.word.replace(/[{}]/g, ""),
         }));
+
         console.log(
-          "updated[targetIdx]: ",
-          updated[targetIdx],
-          "targetIdx: ",
-          targetIdx,
-          "backendIndex: ",
-          backendIndex,
+          `✅ Tagging updated at result[${targetIdx}] for backend[${backendIndex}]`,
         );
+
         return updated;
       });
     });
 
-    // ─── 4) Synonyms handler: same index mapping ────────────────────────────────
+    // ═══════════════════════════════════════════════════════════
+    // SYNONYMS HANDLER - CRITICAL FIX
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-synonyms", (raw) => {
-      console.log("paraphrase-synonyms:", raw);
       if (raw === ":end:") {
+        console.log("✅ Synonyms completed for all sentences");
         setProcessing({ success: true, loading: false });
         setCompletedEvents((prev) => ({ ...prev, synonyms: true }));
         return;
       }
 
-      // if (completedEvents.synonyms) return; // If this is true then we already got the data from the backend.
-
       let analysis, backendIndex, eid;
       try {
-        ({
-          index: backendIndex,
-          eventId: eid,
-          data: analysis,
-        } = JSON.parse(raw));
-        if (eid !== eventId) return;
+        const payload = JSON.parse(raw);
+        backendIndex = payload.index;
+        eid = payload.eventId;
+        analysis = payload.data;
+
+        if (eid !== eventId) {
+          console.warn(
+            "⚠️ EventId mismatch in synonyms:",
+            eid,
+            "expected:",
+            eventId,
+          );
+          return;
+        }
+
+        // Prevent duplicate processing
+        if (processedIndices.synonyms.has(backendIndex)) {
+          console.log(
+            `⏭️  Skipping duplicate synonyms for index ${backendIndex}`,
+          );
+          return;
+        }
+        processedIndices.synonyms.add(backendIndex);
       } catch (err) {
-        console.error("Error parsing paraphrase-synonyms:", err);
+        console.error("❌ Error parsing paraphrase-synonyms:", err);
         return;
       }
 
-      console.log(result, "MAP RESULT");
+      console.log(`🔍 Processing synonyms for backend index ${backendIndex}`);
 
-      if (result.length) {
-        setResult((prev) => {
-          const updated = [...prev];
-          const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
-          if (targetIdx < 0) {
-            console.warn("synonyms: couldn't map index", backendIndex);
-            return prev;
-          }
+      setResult((prev) => {
+        // Critical: Check if result exists and has content
+        if (!prev || prev.length === 0) {
+          console.warn("⚠️ Result array is empty, waiting for plain text...");
+          return prev;
+        }
 
-          if (Array.isArray(analysis) && analysis?.length > 0) {
-            updated[targetIdx] = analysis?.map((item) => ({
-              ...item,
-              // word: item.word,
-              word: item.word.replace(/[{}]/g, ""),
-            }));
-            return updated;
-          }
-        });
-      }
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+
+        if (targetIdx < 0) {
+          console.warn(
+            `⚠️ Synonyms: couldn't map backend index ${backendIndex} (result length: ${prev.length})`,
+          );
+          return prev;
+        }
+
+        // Ensure we have valid data
+        if (!Array.isArray(analysis) || analysis.length === 0) {
+          console.error("❌ Invalid synonyms data format:", analysis);
+          return prev;
+        }
+
+        updated[targetIdx] = analysis.map((item) => ({
+          ...item,
+          word: item.word.replace(/[{}]/g, ""),
+        }));
+
+        console.log(
+          `✅ Synonyms updated at result[${targetIdx}] for backend[${backendIndex}]`,
+          `(${analysis.length} words)`,
+        );
+
+        return updated;
+      });
     });
-  }, [language, eventId]);
 
-  useEffect(() => {
-    console.log("completedEvents:", completedEvents);
-    if (completedEvents.plain && accessToken) {
-      console.log("✅ All socket events finished");
+    // return () => {
+    //   console.log("🔌 Disconnecting socket");
+    //   socket.off("paraphrase-plain");
+    //   socket.off("paraphrase-tagging");
+    //   socket.off("paraphrase-synonyms");
+    //   socket.disconnect();
+    // };
+  }, [language, eventId, accessToken]);
 
-      const timer = setTimeout(() => {
-        fetchHistory();
-      }, 500);
+  // useEffect(() => {
+  //   console.log("completedEvents:", completedEvents);
+  //   if (completedEvents.plain && accessToken) {
+  //     console.log("✅ All socket events finished");
 
-      return () => clearTimeout(timer);
-    }
-  }, [completedEvents, accessToken]);
+  //     const timer = setTimeout(() => {
+  //       fetchHistory();
+  //     }, 500);
+
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [completedEvents, accessToken]);
 
   useEffect(() => {
     if (!accessToken) return;
