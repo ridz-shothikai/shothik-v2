@@ -97,7 +97,25 @@ const ModeNavigation = ({
     ? [...initialModes, modes.find((m) => m.value === extraMode)]
     : initialModes;
 
-  console.log(userPackage, userPackage === "pro_plan", "user package");
+  // ensure extraMode stays in sync with selectedMode
+  React.useEffect(() => {
+    if (
+      !initialModes.some((m) => m.value === selectedMode) &&
+      extraModes.some((m) => m.value === selectedMode)
+    ) {
+      setExtraMode(selectedMode);
+    } else if (initialModes.some((m) => m.value === selectedMode)) {
+      setExtraMode(null);
+    }
+  }, [selectedMode, initialModes, extraModes]);
+
+  // guard Tabs value
+  const tabHasSelectedMode = displayedModes.some(
+    (m) => m.value === selectedMode,
+  );
+  const tabsValue = tabHasSelectedMode
+    ? selectedMode
+    : displayedModes[0]?.value || false;
 
   return (
     <Stack
@@ -127,7 +145,7 @@ const ModeNavigation = ({
         }}
       >
         <Tabs
-          value={selectedMode}
+          value={tabsValue}
           onChange={(_, v) => changeMode(v)}
           variant="scrollable"
           scrollButtons={false}
