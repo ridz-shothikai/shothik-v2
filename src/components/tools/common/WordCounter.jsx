@@ -1,4 +1,3 @@
-import { AcUnit, DeleteRounded } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -7,6 +6,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useWordLimit from "../../../hooks/useWordLimit";
@@ -156,6 +156,7 @@ const Contend = ({
             sx={{
               color: `${wordCount > wordLimit ? "error.main" : ""}`,
               whiteSpace: "nowrap",
+              fontSize: { xs: "12px", lg: "14px" },
             }}
           >
             <b>{wordCount}</b> /{" "}
@@ -164,7 +165,18 @@ const Contend = ({
                 Unlimited
               </Typography>
             ) : (
-              wordLimit
+              <>
+                {wordLimit}{" "}
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "#242426",
+                    fontSize: { xs: "12px", lg: "14px" },
+                  }}
+                >
+                  Words
+                </Typography>
+              </>
             )}
           </Typography>
 
@@ -179,7 +191,13 @@ const Contend = ({
               style={{ marginLeft: "-4px" }}
               disableRipple
             >
-              <DeleteRounded sx={{ color: "text.secondary" }} />
+              {/* <DeleteRounded sx={{ color: "text.secondary" }} /> */}
+              <Image
+                src={"/icons/delete.svg"}
+                alt="delete"
+                width={20}
+                height={20}
+              />
             </IconButton>
           </Tooltip>
           {freeze_modal ? (
@@ -192,10 +210,15 @@ const Contend = ({
                 color="inherit"
                 disabled={false}
                 onClick={() => set_show_freeze(true)}
-                style={{ marginLeft: "-4px" }}
+                style={{ marginLeft: "-12px" }}
                 disableRipple
               >
-                <AcUnit sx={{ color: "text.secondary" }} />
+                <Image
+                  src={"/icons/freeze.svg"}
+                  alt="delete"
+                  width={20}
+                  height={20}
+                />
               </IconButton>
             </Tooltip>
           ) : null}
