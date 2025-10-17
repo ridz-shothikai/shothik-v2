@@ -9,13 +9,7 @@ import { useState } from "react";
 import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
 
-const initLanguage = [
-  "English (US)",
-  "English (UK)",
-  "English (CA)",
-  "English (AU)",
-  "Bangla",
-];
+const initLanguage = ["English (US)", "French", "Spanish", "German", "Bangla"];
 
 const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   const [languageTabs, setLanguageTabs] = useState(initLanguage);

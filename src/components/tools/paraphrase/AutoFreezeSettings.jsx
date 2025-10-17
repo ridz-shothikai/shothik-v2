@@ -1,7 +1,8 @@
 "use client";
 
+import { toggleParaphraseOption } from "@/redux/slice/settings";
 import { Box, Stack, styled, Switch, Typography } from "@mui/material";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 // switch icon
 const AutoFreeze = styled(Switch)(({ theme }) => ({
@@ -58,12 +59,11 @@ const AutoFreeze = styled(Switch)(({ theme }) => ({
 }));
 
 export default function AutoFreezeSettings() {
-  const [isAutoFreezeEnabled, setIsAutoFreezeEnabled] = useState(false);
+  const dispatch = useDispatch();
+  const { paraphraseOptions } = useSelector((state) => state.settings);
 
-  const handleAutoFreezeToggle = (event) => {
-    const newValue = event.target.checked;
-    setIsAutoFreezeEnabled(newValue);
-    console.log("Auto freeze toggled to:", newValue);
+  const handleAutoFreezeToggle = () => {
+    dispatch(toggleParaphraseOption("autoFreeze"));
   };
   return (
     <Box>
@@ -79,7 +79,7 @@ export default function AutoFreezeSettings() {
           Auto Freeze
         </Typography>
         <AutoFreeze
-          checked={isAutoFreezeEnabled}
+          checked={paraphraseOptions.autoFreeze}
           onChange={handleAutoFreezeToggle}
           inputProps={{ "aria-label": "auto freeze" }}
         />

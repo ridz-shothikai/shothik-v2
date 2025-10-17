@@ -1,7 +1,8 @@
 "use client";
 
+import { toggleParaphraseOption } from "@/redux/slice/settings";
 import { Box, Stack, styled, Switch, Typography } from "@mui/material";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 // switch icon
 const AutoParaphrase = styled(Switch)(({ theme }) => ({
@@ -58,12 +59,12 @@ const AutoParaphrase = styled(Switch)(({ theme }) => ({
 }));
 
 export default function AutoParaphraseSettings() {
-  const [isAutoParaphraseEnabled, setIsAutoParaphraseEnabled] = useState(false);
+  const dispatch = useDispatch();
+  const { paraphraseOptions } = useSelector((state) => state.settings);
 
-  const handleAutoParaphraseToggle = (event) => {
-    const newValue = event.target.checked;
-    setIsAutoParaphraseEnabled(newValue);
-    console.log("Auto paraphrase toggled to:", newValue);
+  const handleAutoParaphraseToggle = () => {
+    dispatch(toggleParaphraseOption("automaticStartParaphrasing")); // "automaticStartParaphrasing" -> is the key to set auto paraphrasing true on redux
+    // console.log("Auto paraphrase toggled to:", newValue);
   };
   return (
     <Box>
@@ -79,7 +80,7 @@ export default function AutoParaphraseSettings() {
           Auto Paraphrase
         </Typography>
         <AutoParaphrase
-          checked={isAutoParaphraseEnabled}
+          checked={paraphraseOptions.automaticStartParaphrasing}
           onChange={handleAutoParaphraseToggle}
           inputProps={{ "aria-label": "auto paraphrase" }}
         />

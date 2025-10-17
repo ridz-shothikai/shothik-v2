@@ -7,9 +7,10 @@ const getInitialState = () => ({
   demo: false,
   paraphraseOptions: {
     paraphraseQuotations: true,
-    avoidContractions: false,
+    avoidContractions: true,
     preferActiveVoice: false,
     automaticStartParaphrasing: false,
+    autoFreeze: false,
   },
   interfaceOptions: {
     useYellowHighlight: false,
