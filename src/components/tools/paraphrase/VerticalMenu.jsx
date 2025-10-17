@@ -11,6 +11,7 @@ import hotkeys from "../../../../public/icons/hotkeys.svg";
 import plagiarism from "../../../../public/icons/plagiarism.svg";
 import settings from "../../../../public/icons/settings.svg";
 import tone from "../../../../public/icons/tone.svg";
+import FileHistorySidebar from "./FileHistorySidebar";
 import PlagiarismSidebar from "./PlagiarismSidebar";
 import SettingsSidebar from "./settings/SettingsSidebar";
 
@@ -29,6 +30,7 @@ const VerticalMenu = ({
   plainOutput,
   selectedSynonymLevel,
   mobile = false,
+  fetchFileHistories,
 }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const { demo } = useSelector((state) => state.settings);
@@ -279,7 +281,9 @@ const VerticalMenu = ({
             width: mobile ? "100%" : "auto",
           }}
         >
-          {" "}
+          {mobile && (
+            <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
+          )}
           <Box id="paraphrase_settings">
             <ActionButton
               title="Settings"

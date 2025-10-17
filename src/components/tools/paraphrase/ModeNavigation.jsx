@@ -153,7 +153,7 @@ const ModeNavigation = ({
               key={idx}
               value={mode.value}
               sx={{
-                px: 2.5,
+                px: { xs: 1.5, md: 2, xl: 2.5 },
               }}
               label={
                 <Stack direction="row" alignItems="center" spacing={0.5}>

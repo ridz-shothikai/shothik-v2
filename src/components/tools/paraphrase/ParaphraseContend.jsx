@@ -1891,6 +1891,7 @@ const ParaphraseContend = () => {
                 plainOutput={extractPlainText(result)}
                 selectedSynonymLevel={selectedSynonyms}
                 mobile={true}
+                fetchFileHistories={fetchFileHistories}
               />
             </Box>
           </SwipeableDrawer>
@@ -1923,6 +1924,7 @@ const ParaphraseContend = () => {
             highlightSentence={highlightSentence}
             setHighlightSentence={setHighlightSentence}
             selectedSynonymLevel={selectedSynonyms}
+            fetchFileHistories={fetchFileHistories}
           />
         </Box>
       )}

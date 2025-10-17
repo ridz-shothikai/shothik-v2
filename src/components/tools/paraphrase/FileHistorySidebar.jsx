@@ -232,7 +232,7 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
         sx={{
           bgcolor: theme.palette.background.paper,
           borderRadius: 2,
-          p: 1,
+          p: { xs: "3px", md: 1 },
           display: "flex",
           flexDirection: "column",
           gap: 1,
@@ -248,10 +248,32 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
             size="small"
             onClick={handleBookClick}
           >
-            <Image src={"/icons/file.svg"} alt="file" width={24} height={24} />
+            <Image
+              src={"/icons/file.svg"}
+              alt="file"
+              width={24}
+              height={24}
+              className="h-5 w-5 lg:h-6 lg:w-6"
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                display: { md: "none" },
+                ml: 2,
+                color: "#242426",
+              }}
+            >
+              Saved Files
+            </Typography>
           </IconButton>
         </Tooltip>
-        <Tooltip title="Add new document" placement="right">
+        <Tooltip
+          title="Add new document"
+          placement="right"
+          sx={{
+            display: { xs: "none", md: "block" },
+          }}
+        >
           <IconButton size="small" onClick={handleAddClick}>
             <AddOutlinedIcon sx={{ color: theme.palette.text.primary }} />
           </IconButton>

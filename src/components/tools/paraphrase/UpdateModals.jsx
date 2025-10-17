@@ -288,6 +288,24 @@ export function MessageTemplate({
   );
 }
 
+export function Humanize() {
+  return (
+    <MessageTemplate
+      title="Humanize"
+      desc="Transforming Ai Text into Human Writing"
+      inputText="“Hey, just wanted to check if you saw my last email about the proposal.”"
+      paraphrasedText="“I wanted to kindly follow up regarding my previous email about the proposal.”"
+      chipLabels={[
+        "Professional Writing",
+        "Email Writing",
+        "Corporate Tone",
+        "Professional Refinement",
+      ]}
+      chipBgColors={["#8E33FF14", "#00B8D914", "#22C55E14", "#FFAB0014"]}
+    />
+  );
+}
+
 export function FormalMessage() {
   return (
     <MessageTemplate
