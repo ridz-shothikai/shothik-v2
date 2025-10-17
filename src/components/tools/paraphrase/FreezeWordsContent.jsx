@@ -1,27 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import {
   Box,
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Button,
-  TextField,
-  Typography,
+  Chip,
+  Divider,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  IconButton,
-  Divider,
-  Chip,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import CloseIcon from "@mui/icons-material/Close";
-import { protectedSingleWords, protectedPhrases } from "./extentions";
+import { useEffect, useState } from "react";
+import { protectedPhrases, protectedSingleWords } from "./extentions";
 
-export default function FreezeWordsDialog({
+export default function FreezeWordsContent({
   close = () => {},
   freeze_props = {},
   readOnly = false,
@@ -160,19 +158,23 @@ export default function FreezeWordsDialog({
     userFrozenWords.size > 0 || userFrozenPhrases.size > 0;
 
   return (
-    <Dialog
-      open={true}
-      onClose={close}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{ sx: { height: { xs: "70vh", sm: "60vh" } } }}
+    <Box
+      sx={{
+        width: { xs: "90vw", sm: "300px", md: "500px", lg: "600px" },
+        maxHeight: "80vh",
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        borderRadius: 2,
+        p: 2,
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
-      <DialogTitle
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
       >
         <Typography variant="h6" component="div">
           Freeze Words
@@ -180,16 +182,12 @@ export default function FreezeWordsDialog({
         <IconButton aria-label="close" onClick={close} size="small">
           <CloseIcon />
         </IconButton>
-      </DialogTitle>
-      <DialogContent
-        dividers
-        sx={{
-          display: "flex",
-          gap: 2,
-          p: 2,
-          height: "100%",
-          boxSizing: "border-box",
-        }}
+      </Stack>
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={2}
+        flexGrow={1}
+        overflow="hidden"
       >
         {/* Left panel - Recommendations */}
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -266,6 +264,7 @@ export default function FreezeWordsDialog({
               borderColor: "divider",
               borderRadius: 1,
               p: 1,
+              maxHeight: { xs: "100px", md: "250px" },
             }}
           >
             {allFrozenWords.length > 0 ? (
@@ -339,7 +338,7 @@ export default function FreezeWordsDialog({
             </Button>
           )}
         </Box>
-      </DialogContent>
-    </Dialog>
+      </Stack>
+    </Box>
   );
 }

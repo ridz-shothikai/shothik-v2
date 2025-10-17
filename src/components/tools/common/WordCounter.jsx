@@ -1,17 +1,20 @@
 import {
   Box,
   Button,
+  ClickAwayListener,
   IconButton,
+  Paper,
+  Popper,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWordLimit from "../../../hooks/useWordLimit";
 import SvgColor from "../../../resource/SvgColor";
-import FreezeWordsDialog from "../paraphrase/FreezeWordsDialog";
+import FreezeWordsContent from "../paraphrase/FreezeWordsContent";
 function WordCounter({
   freeze_modal = false,
   freeze_props = {},
@@ -110,6 +113,16 @@ const Contend = ({
     setWordCount(words);
   }, [userInput]);
   const [show_freeze, set_show_freeze] = useState(false);
+  const anchorRef = useRef(null);
+
+  const handleToggleFreeze = () => {
+    set_show_freeze((prev) => !prev);
+  };
+
+  const handleCloseFreeze = () => {
+    set_show_freeze(false);
+  };
+
   if (!userInput) return <Box sx={{ height: 48 }} />;
   return (
     <Stack
@@ -126,16 +139,6 @@ const Contend = ({
       }}
       bgcolor="background.paper"
     >
-      {freeze_modal && show_freeze ? (
-        <FreezeWordsDialog
-          close={() => {
-            set_show_freeze(false);
-          }}
-          readOnly={isLoading}
-          freeze_props={freeze_props}
-        />
-      ) : null}
-
       <Stack
         direction="row"
         spacing={2}
@@ -201,26 +204,80 @@ const Contend = ({
             </IconButton>
           </Tooltip>
           {freeze_modal ? (
-            <Tooltip title="Freeze Words" placement="top" arrow>
-              <IconButton
-                id="show_freeze_button"
-                aria-label="freeze"
-                size={isMobile ? "small" : "large"}
-                variant={"outlined"}
-                color="inherit"
-                disabled={false}
-                onClick={() => set_show_freeze(true)}
-                style={{ marginLeft: "-12px" }}
-                disableRipple
+            <>
+              <Tooltip title="Freeze Words" placement="top" arrow>
+                <IconButton
+                  id="show_freeze_button"
+                  aria-label="freeze"
+                  size={isMobile ? "small" : "large"}
+                  variant={"outlined"}
+                  color="inherit"
+                  disabled={false}
+                  onClick={handleToggleFreeze}
+                  style={{ marginLeft: "-12px" }}
+                  disableRipple
+                  ref={anchorRef}
+                >
+                  <Image
+                    src={
+                      show_freeze
+                        ? "/icons/freeze-active.svg"
+                        : "/icons/freeze.svg"
+                    }
+                    alt="freeze"
+                    width={20}
+                    height={20}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Popper
+                open={show_freeze}
+                anchorEl={anchorRef.current}
+                placement="top-start"
+                disablePortal={false}
+                modifiers={[
+                  {
+                    name: "flip",
+                    enabled: true,
+                    options: {
+                      altBoundary: true,
+                      rootBoundary: "viewport",
+                      createPopper: {
+                        strategy: "fixed",
+                      },
+                    },
+                  },
+                  {
+                    name: "preventOverflow",
+                    enabled: true,
+                    options: {
+                      altAxis: true,
+                      altBoundary: true,
+                      tether: true,
+                      rootBoundary: "viewport",
+                      padding: 8,
+                    },
+                  },
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, 8], // Example: 0px horizontal skidding, 8px vertical distance from anchor
+                    },
+                  },
+                ]}
+                sx={{ zIndex: 1300 }}
               >
-                <Image
-                  src={"/icons/freeze.svg"}
-                  alt="delete"
-                  width={20}
-                  height={20}
-                />
-              </IconButton>
-            </Tooltip>
+                <ClickAwayListener onClickAway={handleCloseFreeze}>
+                  <Paper>
+                    <FreezeWordsContent
+                      close={handleCloseFreeze}
+                      readOnly={isLoading}
+                      freeze_props={freeze_props}
+                    />
+                  </Paper>
+                </ClickAwayListener>
+              </Popper>
+            </>
           ) : null}
         </Stack>
         {ExtraCounter}
