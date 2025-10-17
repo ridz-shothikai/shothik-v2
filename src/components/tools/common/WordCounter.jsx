@@ -321,7 +321,7 @@ const Contend = ({
             height: { md: 40 },
             whiteSpace: "nowrap",
           }}
-          startIcon={btnIcon}
+          // startIcon={btnIcon}
         >
           {btnText}
         </Button>
