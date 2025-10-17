@@ -1514,7 +1514,7 @@ const ParaphraseContend = () => {
         {/* desktop: language tabs outside card; hide on mobile */}
         <Box
           sx={{
-            display: { xs: "none", sm: "flex" },
+            display: { xs: "none", md: "flex" },
             alignItems: "center",
             width: "100%", // match card width
             flex: "0 0 auto",
@@ -1580,7 +1580,7 @@ const ParaphraseContend = () => {
             {/* mobile: selected language button in card header */}
             <Box
               sx={{
-                display: { xs: "flex", sm: "none" },
+                display: { xs: "flex", md: "none" },
                 borderBottom: 1,
                 borderColor: "divider",
                 px: 2,
@@ -1744,7 +1744,7 @@ const ParaphraseContend = () => {
                 ref={outputRef}
                 sx={{
                   height: {
-                    xs: userInput ? "480px" : "150px",
+                    xs: "480px",
                     sm: "450px",
                     lg: "530px",
                   },
