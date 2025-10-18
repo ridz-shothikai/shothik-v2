@@ -102,7 +102,7 @@ const TiptapEditor = ({
 
   // Update content when prop changes
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
+    if (editor && content !== editor.getText()) {
       editor.commands.setContent(content || "");
     }
   }, [content, editor]);
@@ -111,11 +111,13 @@ const TiptapEditor = ({
   useEffect(() => {
     if (!editor || !content) return;
 
+    // First, remove previous highlights
     editor.commands.unsetHighlight();
 
     const { state } = editor;
     let tr = state.tr;
 
+    // Remove all previous highlight marks
     tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.highlight);
 
     highlightedKeywords?.forEach((keyword) => {
@@ -124,15 +126,20 @@ const TiptapEditor = ({
       state.doc.descendants((node, pos) => {
         if (!node.isText) return;
 
-        const normalizedText = node.text
+        const originalText = node.text;
+
+        // Normalize text for matching (accents, case)
+        const normalizedText = originalText
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
+
         const normalizedKeyword = keyword
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
 
+        // Escape special regex characters
         const escapedKeyword = normalizedKeyword.replace(
           /[.*+?^${}()|[\]\\]/g,
           "\\$&",
@@ -142,8 +149,9 @@ const TiptapEditor = ({
         let match;
         while ((match = regex.exec(normalizedText)) !== null) {
           const start = pos + match.index;
-          const end = start + keyword.length;
+          const end = start + match[0].length; // <-- use matched substring length, not keyword.length
 
+          // Apply highlight mark
           tr.addMark(
             start,
             end,
@@ -155,8 +163,9 @@ const TiptapEditor = ({
       });
     });
 
+    // Dispatch transaction to update editor
     editor.view.dispatch(tr);
-  }, [editor, highlightedKeywords]);
+  }, [editor, highlightedKeywords, content]);
 
   if (!editor) return null;
 
@@ -291,8 +300,13 @@ const SummarizeContent = () => {
 
   const fetchWithStreaming = useCallback(
     async (payload) => {
+      if (!accessToken) return;
+
       try {
         const url = process.env.NEXT_PUBLIC_API_URI + "/summarize";
+        console.log("Streaming request to:", url);
+        console.log("payload", payload);
+
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -303,23 +317,30 @@ const SummarizeContent = () => {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw { message: error.message, error: error.error };
+          const errorText = await response.text();
+          console.error("Server returned error:", errorText);
+          return;
         }
 
-        const stream = response.body;
+        if (!response.body) {
+          console.error(
+            "No response body available — maybe CORS or server issue.",
+          );
+          return;
+        }
+
         const decoder = new TextDecoderStream();
-        const reader = stream.pipeThrough(decoder).getReader();
+        const reader = response.body.pipeThrough(decoder).getReader();
 
         let accumulatedText = "";
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          accumulatedText += value;
+          accumulatedText += value || "";
           setOutputContent(accumulatedText);
         }
       } catch (error) {
-        throw error;
+        console.error("Streaming fetch failed:", error);
       }
     },
     [accessToken],
@@ -333,6 +354,10 @@ const SummarizeContent = () => {
       return;
     }
 
+    if (!accessToken) {
+      return;
+    }
+
     try {
       trackEvent("click", "summarize", "summarize_click", 1);
       setIsLoading(true);
@@ -343,7 +368,10 @@ const SummarizeContent = () => {
         text: textContent,
         mode: debouncedSelectedMode,
         length: debouncedCurrentLength.toLowerCase(),
+        keywords: selectedKeywords || [],
       };
+
+      console.log("payload", payload);
 
       await fetchWithStreaming(payload);
     } catch (error) {
@@ -362,9 +390,11 @@ const SummarizeContent = () => {
       setIsLoading(false);
     }
   }, [
+    accessToken,
     userInput,
     debouncedSelectedMode,
     debouncedCurrentLength,
+    selectedKeywords,
     fetchWithStreaming,
     dispatch,
     enqueueSnackbar,
@@ -373,6 +403,10 @@ const SummarizeContent = () => {
 
   const handleInput = useCallback((content) => {
     setUserInput(content);
+  }, []);
+
+  const handleOutput = useCallback((content) => {
+    setOutputContent(content);
   }, []);
 
   const handleClear = useCallback(() => {
@@ -530,7 +564,7 @@ const SummarizeContent = () => {
                 <TiptapEditor
                   className="h-full"
                   content={isLoading ? `<p>${loadingText}</p>` : outputContent}
-                  onChange={null}
+                  onChange={handleOutput}
                   placeholder="Summarized text will appear here..."
                   readOnly={true}
                   highlightedKeywords={matchingKeywords}

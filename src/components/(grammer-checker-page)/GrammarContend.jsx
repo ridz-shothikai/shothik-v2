@@ -14,6 +14,8 @@ import {
   setIsSidebarOpen,
   setIssues,
   setLanguage,
+  setScore,
+  setScores,
   setSections,
   setSectionsGroups,
   setSelectedIssue,
@@ -158,6 +160,7 @@ const GrammarContent = () => {
     language,
     text,
     score,
+    scores,
     issues,
     selectedIssue,
     recommendations,
@@ -264,11 +267,17 @@ const GrammarContent = () => {
         language: language,
         ...(id && { id }),
       });
-      const { issues } = data?.result || {};
+      const { issues, scores } = data?.result || {};
+
       dispatch(setIssues(issues || []));
+
+      const avgScore =
+        (scores?.reduce((sum, item) => sum + Number(item?.score || 0), 0) ||
+          0) / (scores?.length || 1);
+
+      dispatch(setScore(avgScore || 0));
+      dispatch(setScores(scores || []));
     } catch (error) {
-      console.log(error, "Grammar Error");
-      // toast.error(error?.data?.message || "Something went wrong");
       enqueueSnackbar(error?.data?.message || "Something went wrong", {
         variant: "error",
       });
@@ -496,8 +505,6 @@ const GrammarContent = () => {
     await downloadFile(text, "grammar");
     // alert("Download triggered");
   };
-
-  console.log("selected", selectedTab);
 
   return (
     <>

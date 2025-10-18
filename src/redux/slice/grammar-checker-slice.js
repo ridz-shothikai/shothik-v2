@@ -16,6 +16,7 @@ const initialState = {
 
   // Issues & Recommendations
   score: 0,
+  scores: [],
 
   issues: [],
   selectedIssue: {},
@@ -78,6 +79,9 @@ const grammarCheckerSlice = createSlice({
     setScore: (state, action) => {
       state.score = action.payload;
     },
+    setScores: (state, action) => {
+      state.scores = action.payload;
+    },
 
     setIssues: (state, action) => {
       state.issues = action.payload;
@@ -128,6 +132,7 @@ export const {
 
   // 🧠 Issues & Recommendations
   setScore,
+  setScores,
 
   setIssues,
   setSelectedIssue,
