@@ -1,6 +1,6 @@
 import { Box, Slider, Stack, Tab, Tabs, Typography } from "@mui/material";
 
-const TopNavigations = ({
+const TopNavigation = ({
   selectedMode,
   setSelectedMode,
   modes,
@@ -86,4 +86,4 @@ const TopNavigations = ({
   );
 };
 
-export default TopNavigations;
+export default TopNavigation;

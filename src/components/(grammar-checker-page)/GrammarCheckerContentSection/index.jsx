@@ -141,8 +141,8 @@ const ErrorMark = Mark.create({
   },
 });
 
-const GrammarContent = () => {
-  const { user, accessToken } = useSelector((state) => state.auth);
+const GrammarCheckerContentSection = () => {
+  const { accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
   const router = useRouter();
@@ -276,7 +276,7 @@ const GrammarContent = () => {
           0) / (scores?.length || 1);
 
       dispatch(setScore(avgScore || 0));
-      dispatch(setScores(scores || []));
+      dispatch(setScores(Math.round(avgScore * 100) || []));
     } catch (error) {
       enqueueSnackbar(error?.data?.message || "Something went wrong", {
         variant: "error",
@@ -286,10 +286,12 @@ const GrammarContent = () => {
     }
   };
 
-  const debouncedText = useDebounce(text, 1000);
+  const debouncedText = useDebounce(text, 1500);
 
   useEffect(() => {
-    if (!debouncedText || !prepare(debouncedText) || isCheckLoading) return;
+    if (!debouncedText || !prepare(debouncedText)) {
+      handleClear();
+    }
 
     handleGrammarChecking();
   }, [debouncedText]);
@@ -918,4 +920,4 @@ const GrammarContent = () => {
   );
 };
 
-export default GrammarContent;
+export default GrammarCheckerContentSection;

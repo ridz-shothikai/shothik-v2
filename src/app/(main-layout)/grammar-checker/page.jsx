@@ -1,6 +1,6 @@
-import GrammarContend from "@/components/(grammer-checker-page)/GrammarContend";
+import GrammarCheckerContentSection from "@/components/(grammar-checker-page)/GrammarCheckerContentSection";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { Container } from "@mui/material";
-import ErrorBoundary from "../../../components/common/ErrorBoundary";
 
 export async function generateMetadata() {
   return {
@@ -20,7 +20,7 @@ const Grammar = () => {
       }}
     >
       <ErrorBoundary>
-        <GrammarContend />
+        <GrammarCheckerContentSection />
       </ErrorBoundary>
     </Container>
   );
