@@ -14,6 +14,8 @@ import {
   setIsSidebarOpen,
   setIssues,
   setLanguage,
+  setScore,
+  setScores,
   setSections,
   setSectionsGroups,
   setSelectedIssue,
@@ -139,8 +141,8 @@ const ErrorMark = Mark.create({
   },
 });
 
-const GrammarContent = () => {
-  const { user, accessToken } = useSelector((state) => state.auth);
+const GrammarCheckerContentSection = () => {
+  const { accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
   const router = useRouter();
@@ -158,6 +160,7 @@ const GrammarContent = () => {
     language,
     text,
     score,
+    scores,
     issues,
     selectedIssue,
     recommendations,
@@ -264,11 +267,17 @@ const GrammarContent = () => {
         language: language,
         ...(id && { id }),
       });
-      const { issues } = data?.result || {};
+      const { issues, scores } = data?.result || {};
+
       dispatch(setIssues(issues || []));
+
+      const avgScore =
+        (scores?.reduce((sum, item) => sum + Number(item?.score || 0), 0) ||
+          0) / (scores?.length || 1);
+
+      dispatch(setScore(avgScore || 0));
+      dispatch(setScores(Math.round(avgScore * 100) || []));
     } catch (error) {
-      console.log(error, "Grammar Error");
-      // toast.error(error?.data?.message || "Something went wrong");
       enqueueSnackbar(error?.data?.message || "Something went wrong", {
         variant: "error",
       });
@@ -277,10 +286,12 @@ const GrammarContent = () => {
     }
   };
 
-  const debouncedText = useDebounce(text, 1000);
+  const debouncedText = useDebounce(text, 1500);
 
   useEffect(() => {
-    if (!debouncedText || !prepare(debouncedText) || isCheckLoading) return;
+    if (!debouncedText || !prepare(debouncedText)) {
+      handleClear();
+    }
 
     handleGrammarChecking();
   }, [debouncedText]);
@@ -496,8 +507,6 @@ const GrammarContent = () => {
     await downloadFile(text, "grammar");
     // alert("Download triggered");
   };
-
-  console.log("selected", selectedTab);
 
   return (
     <>
@@ -911,4 +920,4 @@ const GrammarContent = () => {
   );
 };
 
-export default GrammarContent;
+export default GrammarCheckerContentSection;

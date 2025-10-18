@@ -1,21 +1,22 @@
 "use client";
+
+import { trySamples } from "@/_mock/trySamples";
+import { trackEvent } from "@/analysers/eventTracker";
+import UserActionInput from "@/components/tools/common/UserActionInput";
+import useDebounce from "@/hooks/useDebounce";
+import useLoadingText from "@/hooks/useLoadingText";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
+import { setShowLoginModal } from "@/redux/slice/auth";
+import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
 import {
   FormatListBulleted,
   FormatTextdirectionLToRRounded,
 } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { trySamples } from "../../../_mock/trySamples";
-import { trackEvent } from "../../../analysers/eventTracker";
-import useDebounce from "../../../hooks/useDebounce";
-import useLoadingText from "../../../hooks/useLoadingText";
-import useResponsive from "../../../hooks/useResponsive";
-import useSnackbar from "../../../hooks/useSnackbar";
-import { setShowLoginModal } from "../../../redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
-import UserActionInput from "../common/UserActionInput";
 import BottomBar from "./BottomBar";
-import TopNavigations from "./TopNavigations";
+import TopNavigation from "./TopNavigation";
 
 // Tiptap imports
 import { cn } from "@/lib/utils";
@@ -208,7 +209,7 @@ const TiptapEditor = ({
   );
 };
 
-const SummarizeContent = () => {
+const SummarizeContentSection = () => {
   const [selectedMode, setSelectedMode] = useState(modes[0].name);
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [outputContent, setOutputContent] = useState("");
@@ -448,7 +449,7 @@ const SummarizeContent = () => {
     <div>
       <div className="bg-card overflow-visible rounded-lg border px-4">
         {/* Top Navigation */}
-        <TopNavigations
+        <TopNavigation
           LENGTH={LENGTH}
           currentLength={currentLength}
           modes={modes}
@@ -590,4 +591,4 @@ const SummarizeContent = () => {
   );
 };
 
-export default SummarizeContent;
+export default SummarizeContentSection;

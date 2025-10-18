@@ -23,16 +23,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-function formatNumber(number) {
-  if (!number) return 0;
-  const length = number.toString().length;
-  if (length >= 4) {
-    return number.toLocaleString("en-US");
-  }
-  return number.toString();
-}
-
-const PlagiarismCheckerClientSections = () => {
+const PlagiarismCheckerContentSection = () => {
   const { user } = useSelector((state) => state.auth);
   const [enableScan, setEnableScan] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -269,4 +260,4 @@ const PlagiarismCheckerClientSections = () => {
 //   );
 // }
 
-export default PlagiarismCheckerClientSections;
+export default PlagiarismCheckerContentSection;
