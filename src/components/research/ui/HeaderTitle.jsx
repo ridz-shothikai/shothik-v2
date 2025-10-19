@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { SaveIcon } from "lucide-react";
 import NextImage from "next/image";
-import { ShareButton } from "../../share";
 
 // NOTE: This component expects a `researchItem` prop shaped like the sample data
 // you included. If you keep a different shape, adapt the helpers below.
@@ -74,10 +73,6 @@ export default function HeaderTitleWithDownload({
   const open = Boolean(anchorEl);
   const handleButtonClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
-  const handleShare = (shareResult) => {
-    console.log("Share created:", shareResult);
-  };
 
   // Raw markdown download using FileSaver API
   const downloadMarkdown = async () => {
@@ -729,69 +724,49 @@ export default function HeaderTitleWithDownload({
         )}
       </Typography>
 
-      {/* Share and Download buttons */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <ShareButton
-          shareData={{
-            title: query || researchItem?.query || "Research Results",
-            content: researchItem?.result || "",
-            sources: researchItem?.sources || [],
-            query: query || researchItem?.query || "",
-            metadata: {
-              createdAt: new Date().toISOString(),
-              contentType: 'research'
-            }
+      {/* Download button that opens a small menu */}
+      <Button
+        onClick={handleButtonClick}
+        aria-controls={open ? "download-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        sx={{
+          backgroundColor: "background.paper",
+          borderRadius: "6px",
+          width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+          height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+          minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+          minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
+          padding: { xs: "4px", lg: "8px", xl: "12px" },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          "&:hover": {
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? theme.palette.grey[800]
+                : theme.palette.grey[100],
+            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
+          },
+        }}
+      >
+        <NextImage
+          src={"/agents/edit.svg"}
+          alt={"Download"}
+          width={24}
+          height={24}
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            objectFit: "contain",
+            filter:
+              theme.palette.mode === "dark"
+                ? "invert(1) brightness(0.9)"
+                : "none",
           }}
-          contentType="research"
-          title="Share"
-          variant="icon"
-          size="small"
-          onShare={handleShare}
         />
-
-        <Button
-          onClick={handleButtonClick}
-          aria-controls={open ? "download-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? "true" : undefined}
-          sx={{
-            backgroundColor: "background.paper",
-            borderRadius: "6px",
-            width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-            padding: { xs: "4px", lg: "8px", xl: "12px" },
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            "&:hover": {
-              backgroundColor:
-                theme.palette.mode === "dark"
-                  ? theme.palette.grey[800]
-                  : theme.palette.grey[100],
-              boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-            },
-          }}
-        >
-          <NextImage
-            src={"/agents/edit.svg"}
-            alt={"Download"}
-            width={24}
-            height={24}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "contain",
-              filter:
-                theme.palette.mode === "dark"
-                  ? "invert(1) brightness(0.9)"
-                  : "none",
-            }}
-          />
-        </Button>
-      </Box>
+      </Button>
 
       <Menu
         id="download-menu"

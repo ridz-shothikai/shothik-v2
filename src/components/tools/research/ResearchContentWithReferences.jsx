@@ -12,7 +12,8 @@ const ResearchContentWithReferences = ({
   sources = [], 
   isLastData, 
   isDataGenerating,
-  title = "Research Results"
+  title = "Research Results",
+  agentId
 }) => {
   const theme = useTheme();
   const [selectedReference, setSelectedReference] = useState(null);
@@ -311,6 +312,7 @@ const ResearchContentWithReferences = ({
             sources={sources}
             title={title}
             onFeedback={handleFeedback}
+            agentId={agentId}
           />
         </Paper>
       </Box>

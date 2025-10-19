@@ -20,17 +20,21 @@ import {
   ContentCopy as CopyIcon,
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
+  Email as EmailIcon,
+  Public as PublicIcon,
 } from "@mui/icons-material";
 import { useState } from "react";
 import jsPDF from "jspdf";
-import { ShareButton } from "../../share";
+import ShareAgentModal from "../../share/ShareAgentModal";
 
-const CombinedActions = ({ content, sources, title, onFeedback }) => {
+const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
   const theme = useTheme();
   const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareModalDefaultTab, setShareModalDefaultTab] = useState(0);
 
   const handleShareClick = (event) => {
     setShareMenuAnchor(event.currentTarget);
@@ -61,19 +65,6 @@ const CombinedActions = ({ content, sources, title, onFeedback }) => {
     handleMenuClose();
   };
 
-  const handleCopyContent = async () => {
-    try {
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = content;
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      
-      await navigator.clipboard.writeText(textContent);
-      console.log("Content copied to clipboard");
-    } catch (err) {
-      console.error("Failed to copy content:", err);
-    }
-    handleMenuClose();
-  };
 
   // ===== LOAD SHOTHIK AI LOGO FROM FILE =====
   const loadShothikLogo = () => {
@@ -707,23 +698,6 @@ const CombinedActions = ({ content, sources, title, onFeedback }) => {
           </IconButton>
         </Tooltip>
 
-        <ShareButton
-          shareData={{
-            title: title,
-            content: content,
-            sources: sources,
-            query: title,
-            metadata: {
-              createdAt: new Date().toISOString(),
-              contentType: 'research'
-            }
-          }}
-          contentType="research"
-          title="Share"
-          variant="icon"
-          size="small"
-          onShare={handleShare}
-        />
       </Box>
 
       <Box
@@ -793,27 +767,6 @@ const CombinedActions = ({ content, sources, title, onFeedback }) => {
         </Tooltip>
       </Box>
       
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <Tooltip title="Copy content">
-          <IconButton
-            size="small"
-            onClick={handleCopyContent}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            <CopyIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Box>
 
       <Menu
         anchorEl={shareMenuAnchor}
@@ -828,18 +781,34 @@ const CombinedActions = ({ content, sources, title, onFeedback }) => {
           horizontal: "left",
         }}
       >
-        <MenuItem onClick={handleCopyLink}>
-          <ListItemIcon>
-            <LinkIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Copy Link</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleCopyContent}>
-          <ListItemIcon>
-            <CopyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Copy Content</ListItemText>
-        </MenuItem>
+        {agentId ? [
+            <MenuItem key="email" onClick={() => {
+              handleMenuClose();
+              setShareModalDefaultTab(0); // Private (Email) tab
+              setShareModalOpen(true);
+            }}>
+              <ListItemIcon>
+                <EmailIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Share via Email" 
+                secondary="Send to specific people"
+              />
+            </MenuItem>,
+            <MenuItem key="public" onClick={() => {
+              handleMenuClose();
+              setShareModalDefaultTab(1); // Public Link tab
+              setShareModalOpen(true);
+            }}>
+              <ListItemIcon>
+                <PublicIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Create Public Link" 
+                secondary="Anyone with link can view"
+              />
+            </MenuItem>
+          ] : []}
       </Menu>
 
       <Menu
@@ -862,6 +831,17 @@ const CombinedActions = ({ content, sources, title, onFeedback }) => {
           <ListItemText>Export as PDF</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/* Share Agent Modal */}
+      {agentId && (
+        <ShareAgentModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          agentId={agentId}
+          agentData={{ content, sources, title }}
+          defaultTab={shareModalDefaultTab}
+        />
+      )}
     </Box>
   );
 };

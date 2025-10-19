@@ -7,6 +7,7 @@ import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { researchChatApi } from "./api/research/researchChatApi";
 import { researchCoreApi } from "./api/research/researchCoreApi";
 import { shareApiSlice } from "./api/share/shareApi";
+import { shareAgentApiSlice } from "./api/shareAgent/shareAgentApi";
 import { sheetApiSlice } from "./api/sheet/sheetApi";
 import { toolsApiSlice } from "./api/tools/toolsApi";
 import analyticsReducer from "./slice/analyticsSlice";
@@ -63,6 +64,7 @@ const store = configureStore({
     researchUi: researchUiSlice,
     paraphraseHistory: paraphraseHistoryReducer,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
+    [shareAgentApiSlice.reducerPath]: shareAgentApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,
@@ -84,6 +86,7 @@ const store = configureStore({
       presentationApiSlice.middleware,
       humanizeHistoryApiSlice.middleware,
       shareApiSlice.middleware,
+      shareAgentApiSlice.middleware,
       sheetApiSlice.middleware,
       researchChatApi.middleware,
       researchCoreApi.middleware,
