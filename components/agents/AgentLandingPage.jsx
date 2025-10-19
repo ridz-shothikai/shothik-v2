@@ -29,6 +29,7 @@ import PaletteIcon from "@mui/icons-material/Palette";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import SchoolIcon from "@mui/icons-material/School";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -526,7 +527,7 @@ export default function AgentLandingPage() {
 
       const result = await uploadFilesForSlides(uploadData).unwrap();
 
-      // console.log("Upload successful:", result);
+      console.log("Upload successful:", result);
 
       if (result?.success) {
         // setUploadedFiles((prev) => [...prev, ...result.data]);
@@ -534,8 +535,8 @@ export default function AgentLandingPage() {
         //   ...prev,
         //   ...result.data.map((file) => file.signed_url),
         // ]);
-        const newUrls = result.data.map((file) => file.signed_url);
-        addFiles(result.data, newUrls);
+        const newUrls = result.uploads.map((file) => file.signed_url);
+        addFiles(result.uploads, newUrls);
         showToast(`${files.length} file(s) uploaded successfully`, "success");
       }
 
@@ -1072,7 +1073,15 @@ export default function AgentLandingPage() {
                   },
                 }}
               >
-                <SendIcon />
+                {isInitiatingPresentation ||
+                isInitiatingSheet ||
+                isInitiatingResearch ? (
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress color="primary" size={20} />
+                  </Box>
+                ) : (
+                  <SendIcon />
+                )}
               </IconButton>
 
               {/* for research only */}
