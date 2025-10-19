@@ -6,6 +6,9 @@ import {
   Paper,
   Typography,
   useMediaQuery,
+  Button,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -26,6 +29,103 @@ import { FooterCta } from "./SheetAgentPage";
 
 const USER_MESSAGE_COLOR = "#1976d2";
 const PRIMARY_GREEN = "#07B37A";
+
+// Enhanced New Chat Button Component with Interactive Features
+const NewChatButton = ({ onNewChat, theme }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+
+  const handleNewChat = () => {
+    onNewChat();
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+  const handleMouseDown = () => setIsPressed(true);
+  const handleMouseUp = () => setIsPressed(false);
+
+  return (
+    <Box sx={{ position: "relative", display: "inline-block" }}>
+      {/* Enhanced Trigger Button */}
+      <Tooltip 
+        title="Click to start a fresh conversation" 
+        placement="bottom"
+        arrow
+      >
+        <Button
+          onClick={() => {
+            console.log("New Chat button clicked - redirecting immediately");
+            handleNewChat();
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          sx={{
+            backgroundColor: "#1976d2",
+            color: "white",
+            borderRadius: "12px",
+            px: 2.5,
+            py: 1.2,
+            fontSize: "14px",
+            fontWeight: 700,
+            textTransform: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            minWidth: "auto",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            transform: isPressed ? "scale(0.95)" : "scale(1)",
+            boxShadow: isHovered 
+              ? "0 8px 25px rgba(25, 118, 210, 0.4)" 
+              : "0 4px 15px rgba(25, 118, 210, 0.2)",
+            "&:hover": {
+              backgroundColor: "#1565c0",
+              transform: "scale(1.05)",
+            },
+            "&:active": {
+              backgroundColor: "#0d47a1",
+              transform: "scale(0.95)",
+            },
+            "&:focus": {
+              outline: "2px solid rgba(25, 118, 210, 0.5)",
+              outlineOffset: "2px",
+            },
+          }}
+        >
+          {/* Enhanced Icon with Hover Animation */}
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              transition: "transform 0.3s ease",
+              transform: isHovered ? "rotate(5deg)" : "rotate(0deg)",
+            }}
+          >
+            <path
+              d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M14 2V8H20"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          New Chat
+        </Button>
+      </Tooltip>
+    </Box>
+  );
+};
 
 // Updated MessageBubble component
 const MessageBubble = ({
@@ -267,6 +367,7 @@ export default function SheetChatArea({
 
   const [showModal, setShowModal] = useState(false);
   const [simulationCompleted, setSimulationCompleted] = useState(false);
+  const [showNewChatWarning, setShowNewChatWarning] = useState(false);
   const s_id = searchParams.get("s_id"); // simulation id
 
   // Determine the actual chat ID to use
@@ -1256,6 +1357,40 @@ export default function SheetChatArea({
     dispatch(setSheetStatus("completed"));
   };
 
+  // Handle new chat creation - redirect to agents page
+  const handleNewChat = () => {
+    console.log("New Chat button clicked - starting redirect process");
+    
+    // Clear all current state
+    setMessages([]);
+    setError(null);
+    setShowNewChatWarning(false);
+    
+    // Reset Redux state
+    dispatch(setSheetData(null));
+    dispatch(setSheetStatus("idle"));
+    dispatch(setSheetTitle("Ready to Generate"));
+    dispatch(setActiveSheetIdForPolling(null));
+    
+    // Clear session storage
+    sessionStorage.removeItem("activeChatId");
+    sessionStorage.removeItem("initialSheetPrompt");
+    
+    // Show success message first
+    enqueueSnackbar("Redirecting to AI Sheets for a fresh start!", {
+      variant: "success",
+    });
+    
+    // Navigate to agents page with AI Sheets tab selected
+    try {
+      router.push("/agents?tab=sheets");
+      console.log("Router.push called for /agents?tab=sheets");
+    } catch (error) {
+      console.log("Router.push failed, trying window.location:", error);
+      window.location.href = "/agents?tab=sheets";
+    }
+  };
+
   useEffect(() => {
     if (toast.open) {
       const timer = setTimeout(() => {
@@ -1333,7 +1468,19 @@ export default function SheetChatArea({
             scrollbarColor: "#c1c1c1 transparent",
           }}
         >
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: 3, position: "relative" }}>
+            {/* New Chat Button - positioned in top-right corner as shown in screenshot */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                zIndex: 100,
+              }}
+            >
+              <NewChatButton onNewChat={handleNewChat} theme={theme} />
+            </Box>
+
             {messages.length === 0 && !isLoadingHistory ? (
               <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
