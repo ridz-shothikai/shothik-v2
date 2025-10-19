@@ -9,6 +9,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -34,6 +35,10 @@ const ModeNavigation = ({
   const isXs = useMediaQuery(theme.breakpoints.down("sm")); // <600px
   const isSm = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600–900px
   const enqueueSnackbar = useSnackbar();
+
+  // Tooltip text for tabs
+  const freezeTooltip =
+    "Law, Medical, and Engineering keywords are auto-frozen by Shothik.ai. Click to unfreeze.";
 
   // Determine max allowed synonym value based on user package
   const maxAllowedSynonymValue = React.useMemo(() => {
@@ -174,14 +179,43 @@ const ModeNavigation = ({
                 px: { xs: 1.5, md: 2, xl: 2.5 },
               }}
               label={
-                <Stack direction="row" alignItems="center" spacing={0.5}>
-                  {!mode.package.includes(userPackage || "free") && (
-                    <Lock sx={{ width: 12, height: 12 }} />
-                  )}
-                  <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
-                    {mode.value}
-                  </Typography>
-                </Stack>
+                <Tooltip
+                  title={freezeTooltip}
+                  arrow
+                  enterDelay={300}
+                  slotProps={{
+                    // Alternative approach for MUI v5.14+
+                    tooltip: {
+                      sx: {
+                        maxWidth: 190,
+                        width: 190,
+                        minHeight: 40,
+                        padding: "10px 12px",
+                        fontSize: 13,
+                        lineHeight: "1.2",
+                        backgroundColor: "#222",
+                      },
+                    },
+                    arrow: {
+                      sx: {
+                        color: "#222",
+                      },
+                    },
+                  }}
+                  // Add placement to ensure consistent arrow positioning
+                  placement="bottom"
+                >
+                  <span>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      {!mode.package.includes(userPackage || "free") && (
+                        <Lock sx={{ width: 12, height: 12 }} />
+                      )}
+                      <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
+                        {mode.value}
+                      </Typography>
+                    </Stack>
+                  </span>
+                </Tooltip>
               }
             />
           ))}
@@ -189,14 +223,6 @@ const ModeNavigation = ({
 
         {/* “More” button with matching gap */}
         <Box id="mode_more_section" sx={{ flexShrink: 0 }}>
-          {/* <Button
-            id="mode_x_button"
-            onClick={() => {
-              handleMoreClose();
-            }}
-            sx={{ opacity: 0, zIndex: -99, width: 0, height: 0 }}
-          ></Button> */}
-
           <Button
             id="mode_more"
             aria-controls={open ? "mode-more-menu" : undefined}
@@ -267,17 +293,6 @@ const ModeNavigation = ({
           sx={{
             mt: { xs: 2, sm: 1 },
             width: "100%",
-            // "& .MuiSlider-rail": {
-            //   background: `linear-gradient(to right,
-            //     ${theme.palette.primary.main} 0%,
-            //     ${theme.palette.primary.main} ${(maxAllowedSynonymValue / 80) * 100}%,
-            //     ${theme.palette.action.disabledBackground} ${(maxAllowedSynonymValue / 80) * 100}%,
-            //     ${theme.palette.action.disabledBackground} 100%)`,
-            //   opacity: 0.38,
-            // },
-            // "& .MuiSlider-track": {
-            //   background: theme.palette.primary.main,
-            // },
             "& .MuiSlider-mark": {
               backgroundColor: (theme) => {
                 return theme.palette.background.paper;
