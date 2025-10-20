@@ -18,6 +18,7 @@ import {
   setScores,
   setSections,
   setSectionsGroups,
+  setSectionsMeta,
   setSelectedIssue,
   setSelectedSection,
   setSelectedTab,
@@ -36,7 +37,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { ChevronsRight, ChevronUp, MoreVertical, Plus } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ActionMenu from "./ActionMenu";
 import ActionToolbar from "./ActionToolbar";
@@ -181,18 +182,18 @@ const GrammarCheckerContentSection = () => {
   const sample =
     trySamples.grammar[language.startsWith("English") ? "English" : language];
 
-  const id = searchParams.get("id");
+  const sectionId = searchParams.get("section");
 
-  const setId = (newId) => {
+  const setSectionId = (newId) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("id", newId);
+    params.set("section", newId);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   // Remove id
-  const removeId = () => {
+  const removeSectionId = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.delete("id");
+    params.delete("section");
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
@@ -257,36 +258,9 @@ const GrammarCheckerContentSection = () => {
     dispatch(setLanguage(lang));
   }, [text, dispatch]);
 
-  const handleGrammarChecking = async () => {
-    try {
-      if (!text || !prepare(text) || !accessToken) return;
-
-      dispatch(setIsCheckLoading(true));
-      const data = await grammarCheck({
-        content: text,
-        language: language,
-        ...(id && { id }),
-      });
-      const { issues, scores } = data?.result || {};
-
-      dispatch(setIssues(issues || []));
-
-      const avgScore =
-        (scores?.reduce((sum, item) => sum + Number(item?.score || 0), 0) ||
-          0) / (scores?.length || 1);
-
-      dispatch(setScore(avgScore || 0));
-      dispatch(setScores(Math.round(avgScore * 100) || []));
-    } catch (error) {
-      enqueueSnackbar(error?.data?.message || "Something went wrong", {
-        variant: "error",
-      });
-    } finally {
-      dispatch(setIsCheckLoading(false));
-    }
-  };
-
   const debouncedText = useDebounce(text, 1500);
+
+  const abortControllerRef = useRef(null);
 
   useEffect(() => {
     if (!debouncedText || !prepare(debouncedText)) {
@@ -294,8 +268,58 @@ const GrammarCheckerContentSection = () => {
       return;
     }
 
-    handleGrammarChecking();
-  }, [debouncedText]);
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new controller
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const fetchGrammar = async () => {
+      try {
+        dispatch(setIsCheckLoading(true));
+
+        const data = await grammarCheck(
+          { content: debouncedText, language },
+          controller.signal,
+        );
+
+        console.log("data", data);
+
+        const { issues, scores } = data?.result || {};
+        dispatch(setIssues(issues || []));
+
+        const avgScore =
+          (scores?.reduce((sum, item) => sum + Number(item?.score || 0), 0) ||
+            0) / (scores?.length || 1);
+
+        dispatch(setScore(Math.round(avgScore || 0) || 0));
+        dispatch(setScores(scores || []));
+
+        const { _id } = data?.section || {};
+
+        if ((_id && !sectionId) || (_id && sectionId && _id !== sectionId)) {
+          dispatch(setSelectedSection(data?.section || {}));
+          setSectionId(_id);
+        }
+      } catch (error) {
+        if (error.name === "CanceledError") return;
+        enqueueSnackbar(error?.data?.message || "Something went wrong", {
+          variant: "error",
+        });
+      } finally {
+        dispatch(setIsCheckLoading(false));
+      }
+    };
+
+    fetchGrammar();
+
+    return () => {
+      controller.abort();
+    };
+  }, [debouncedText, language, dispatch]);
 
   // Apply error highlighting to editor
   useEffect(() => {
@@ -440,6 +464,8 @@ const GrammarCheckerContentSection = () => {
   const handleClear = () => {
     if (editor) {
       editor.commands.clearContent();
+      setScore(0);
+      setScores([]);
       setText("");
       dispatch(setText(""));
       dispatch(setIssues([]));
@@ -449,56 +475,59 @@ const GrammarCheckerContentSection = () => {
 
   // Sections
   const handleNewSection = () => {
-    editor.commands.clearContent();
-    dispatch(setText(""));
-    dispatch(setIssues([]));
-    dispatch(setSelectedIssue({}));
+    handleClear();
     dispatch(setSelectedSection({}));
 
-    removeId();
+    removeSectionId();
     enqueueSnackbar("New chat opened!", {
       variant: "info",
     });
   };
 
   const handleSelectSection = (section) => {
-    setId(section?._id);
+    dispatch(setSelectedSection(section || {}));
+    setSectionId(section?._id);
   };
 
-  const fetchSections = async () => {
+  const fetchSections = async ({
+    page = 1,
+    limit = 10,
+    search = "",
+    reset = false,
+  } = {}) => {
     try {
-      const { data } = await fetchGrammarSections();
+      const { data, meta } = await fetchGrammarSections({
+        page,
+        limit,
+        search,
+      });
 
-      const groups = dataGroupsByPeriod(data || []);
-
-      dispatch(setSections(data));
-      dispatch(setSectionsGroups(groups));
+      if (reset) {
+        const groups = dataGroupsByPeriod(data || []);
+        dispatch(setSections(data || []));
+        dispatch(setSectionsGroups(groups || []));
+        dispatch(setSectionsMeta(meta || {}));
+      } else {
+        const allData = [...(sections || []), ...(data || [])];
+        const groups = dataGroupsByPeriod(allData || []);
+        dispatch(setSections(allData || []));
+        dispatch(setSectionsGroups(groups || []));
+        dispatch(setSectionsMeta(meta || {}));
+      }
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
-    if (!accessToken) return;
-
-    // fetchSections();
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (!accessToken) return;
-
-    // fetchSections({ reset: true });
-  }, [isUpdatedSections]);
-
-  useEffect(() => {
-    if (!id) {
+    if (!sectionId) {
       dispatch(setSelectedSection({}));
       return;
     }
 
     const setCurrentSection = async () => {
       try {
-        const { success, data } = await fetchGrammarSection(id);
+        const { success, data } = await fetchGrammarSection(sectionId);
 
         if (success) {
           dispatch(setSelectedSection(data || {}));
@@ -506,10 +535,10 @@ const GrammarCheckerContentSection = () => {
       } catch (err) {}
     };
 
-    if (selectedSection?._id !== id) {
+    if (selectedSection?._id !== sectionId) {
       setCurrentSection();
     }
-  }, [id]);
+  }, [sectionId]);
 
   useEffect(() => {
     if (!editor) return;
@@ -908,6 +937,9 @@ const GrammarCheckerContentSection = () => {
         fetchSections={fetchSections}
         handleNewSection={handleNewSection}
         handleSelectSection={handleSelectSection}
+        sectionId={sectionId}
+        setSectionId={setSectionId}
+        removeSectionId={removeSectionId}
       />
 
       <Popover

@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { setIsSectionbarOpen } from "@/redux/slice/grammar-checker-slice";
 import {
   deleteGrammarSection,
@@ -33,6 +34,9 @@ const GrammarSectionbar = ({
   fetchSections,
   handleNewSection,
   handleSelectSection,
+  sectionId,
+  setSectionId,
+  removeSectionId,
 }) => {
   const theme = useTheme();
   // const [isLoading, setIsLoading] = useState(false);
@@ -139,45 +143,14 @@ const GrammarSectionbar = ({
   // Download handler
   const handleDownload = async (id, title) => {};
 
-  // const handleDelete = async (id) => {
-  //   if (!window.confirm("Are you sure you want to delete this entry?")) return;
-  //   try {
-  //     const res = await fetch(`${API_BASE}/grammar/section-delete/${id}`, {
-  //       method: "DELETE",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-  //       },
-  //     });
-  //     if (!res.ok) throw new Error("Failed to delete history entry");
-  //     await fetchSections({ reset: true, search });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-  // const handleRename = async (id, title) => {
-  //   try {
-  //     const res = await fetch(`${API_BASE}/grammar/section-rename/${id}`, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-  //       },
-  //       body: JSON.stringify({ title }),
-  //     });
-  //     if (!res.ok) throw new Error("Failed to rename file");
-  //     await fetchSections({ reset: true, search });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
       await deleteGrammarSection(id);
+
+      if (sectionId === id) removeSectionId();
+
       await fetchSections({ reset: true, search });
     } catch (err) {
       console.error("Failed to delete section:", err);
@@ -293,7 +266,12 @@ const GrammarSectionbar = ({
                     <li
                       key={item._id}
                       onClick={() => handleSectionClick(item)}
-                      className="hover:bg-accent flex items-center py-2 transition-colors"
+                      className={cn(
+                        "hover:bg-accent flex items-center py-2 transition-colors",
+                        {
+                          "bg-primary/15": sectionId === item._id,
+                        },
+                      )}
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">
