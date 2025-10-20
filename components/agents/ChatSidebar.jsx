@@ -146,9 +146,9 @@ export default function ChatSidebar({
                       elevation={0}
                     >
                       <CardContent sx={{ p: 2 }}>
-                        <Typography noWrap fontWeight={600} title={chat.title}>
+                        {/* <Typography noWrap fontWeight={600} title={chat.title}>
                           {chat.title}
-                        </Typography>
+                        </Typography> */}
                         <Typography
                           variant="body2"
                           color="text.secondary"

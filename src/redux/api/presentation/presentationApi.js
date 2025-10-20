@@ -57,7 +57,7 @@ export const presentationApiSlice = createApi({
 
     // Fetch all presentations
     fetchAllPresentations: builder.query({
-      query: () => "/presentation/get-slides",
+      query: () => "/presentations",
       providesTags: ["presentation"],
     }),
 

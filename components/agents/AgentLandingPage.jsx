@@ -224,6 +224,8 @@ export default function AgentLandingPage() {
     skip: !accessToken,
   });
 
+  // console.log(slidesChats, "slides chat");
+
   const {
     data: researchData,
     isLoading: researchDataLoading,
@@ -615,7 +617,7 @@ export default function AgentLandingPage() {
         router={router}
         myChats={myChats}
         SlideDataLoading={SlideDataLoading}
-        slidesChats={slidesChats?.data}
+        slidesChats={slidesChats}
         SlideDataLoadingError={SlideDataLoadingError}
         researchData={researchData}
         researchDataLoading={researchDataLoading}
