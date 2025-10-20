@@ -1046,7 +1046,7 @@ export default function SheetDataArea() {
           </Tooltip>
 
           {/* Reorder Info */}
-          <Tooltip title="Drag the grip handles to reorder rows and columns">
+          {/* <Tooltip title="Drag the grip handles to reorder rows and columns">
             <Button
               variant="outlined"
               startIcon={<Reorder />}
@@ -1067,7 +1067,7 @@ export default function SheetDataArea() {
             >
               Reorder
             </Button>
-          </Tooltip>
+          </Tooltip> */}
 
           {/* View in New Window Button */}
           <Tooltip title="View generated sheet in new window">
