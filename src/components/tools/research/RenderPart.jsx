@@ -13,14 +13,14 @@ const RenderPart = ({ data, group }) => {
       return (
         <Box>
           <Stack
-            flexDirection='row'
-            justifyContent='space-between'
+            flexDirection="row"
+            justifyContent="space-between"
             mt={2}
             mb={1}
           >
-            <Stack flexDirection='row' alignItems='center' gap={1}>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
               <AutoAwesome sx={{ fontSize: 28, color: "primary.main" }} />
-              <Typography variant='body1' fontWeight={600} color='text.primary'>
+              <Typography variant="body1" fontWeight={600} color="text.primary">
                 Answer
               </Typography>
             </Stack>

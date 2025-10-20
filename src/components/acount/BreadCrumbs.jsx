@@ -2,16 +2,17 @@ import { Box, Breadcrumbs, Stack, Typography } from "@mui/material";
 
 export default function Breadcrumb({ links, heading, activeLast }) {
   return (
-    <Stack direction='row' alignItems='center'>
+    <Stack direction="row" alignItems="center">
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant='h5' gutterBottom>
+        <Typography variant="h5" gutterBottom>
           {heading}
         </Typography>
 
         {/* BREADCRUMBS */}
         <Breadcrumbs separator={<Separator />}>
-          {links.map((link) => (
+          {links.map((link, idx) => (
             <Typography
+              key={idx}
               sx={{
                 typography: "body2",
                 alignItems: "center",
@@ -37,7 +38,7 @@ export default function Breadcrumb({ links, heading, activeLast }) {
 export function Separator() {
   return (
     <Box
-      component='span'
+      component="span"
       sx={{
         width: 4,
         height: 4,

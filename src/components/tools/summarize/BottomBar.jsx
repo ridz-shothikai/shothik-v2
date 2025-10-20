@@ -36,25 +36,25 @@ const BottomBar = ({
   return (
     <WordCounter
       handleClearInput={handleClear}
-      btnText='Summarize'
+      btnText="Summarize"
       isLoading={isLoading}
       userInput={userInput}
       userPackage={userPackage}
       handleSubmit={handleSubmit}
-      toolName='summarize'
+      toolName="summarize"
       sticky={220}
     >
-      <Stack direction='row' spacing={1} alignItems='center'>
+      <Stack direction="row" spacing={1} alignItems="center">
         {outputContend && (
           <>
-            <Stack direction='row' spacing={1} alignItems='center'>
+            <Stack direction="row" spacing={1} alignItems="center">
               <StickyNote2Rounded sx={{ color: "text.secondary" }} />
-              <Typography variant='subtitle2'>
+              <Typography variant="subtitle2">
                 {countSentence(outputContend)} Sentence
               </Typography>
             </Stack>
 
-            <Tooltip title='Export' placement='top' arrow>
+            <Tooltip title="Export" placement="top" arrow>
               <IconButton
                 onClick={handleDownload}
                 sx={{
@@ -66,13 +66,13 @@ const BottomBar = ({
                     boxShadow: "none",
                   },
                 }}
-                aria-label='download'
-                size='large'
+                aria-label="download"
+                size="large"
               >
                 <VerticalAlignBottom sx={{ fontWeight: 600 }} />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Copy Full Text' placement='top' arrow>
+            <Tooltip title="Copy Full Text" placement="top" arrow>
               <IconButton
                 onClick={handleCopy}
                 sx={{
@@ -84,8 +84,8 @@ const BottomBar = ({
                     boxShadow: "none",
                   },
                 }}
-                aria-label='copy'
-                size='large'
+                aria-label="copy"
+                size="large"
               >
                 <ContentCopy />
               </IconButton>

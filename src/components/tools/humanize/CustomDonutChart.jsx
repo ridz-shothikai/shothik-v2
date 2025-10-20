@@ -45,12 +45,12 @@ const CustomDonutChart = ({ data, initialSize = 200 }) => {
         transform: isHovered ? "scale(1.1)" : "scale(1)",
       }}
     >
-      <svg width={chartSize} height={chartSize} viewBox='0 0 100 100'>
+      <svg width={chartSize} height={chartSize} viewBox="0 0 100 100">
         <text
-          x='50'
-          y='50'
-          textAnchor='middle'
-          dominantBaseline='middle'
+          x="50"
+          y="50"
+          textAnchor="middle"
+          dominantBaseline="middle"
           fontSize={isHovered ? "16" : "14"}
           fill={theme.palette.text.primary}
           style={{ transition: "font-size 0.3s ease" }}
@@ -66,10 +66,10 @@ const CustomDonutChart = ({ data, initialSize = 200 }) => {
           return (
             <circle
               key={index}
-              cx='50'
-              cy='50'
+              cx="50"
+              cy="50"
               r={RADIUS}
-              fill='none'
+              fill="none"
               stroke={index === 0 ? "#00AB55" : "#E8F5E9"}
               strokeWidth={isHovered ? "17" : "15"}
               strokeDasharray={`${strokeDasharray} ${CIRCUMFERENCE}`}

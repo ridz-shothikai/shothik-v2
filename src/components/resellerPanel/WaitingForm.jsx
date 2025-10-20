@@ -68,10 +68,10 @@ export default function WaitlistForm({ userType }) {
           }}
         >
           <RHFTextField
-            name='name'
-            placeholder='Full Name'
+            name="name"
+            placeholder="Full Name"
             startAdornment={
-              <InputAdornment position='start'>
+              <InputAdornment position="start">
                 <Box
                   sx={{
                     display: "flex",
@@ -92,10 +92,10 @@ export default function WaitlistForm({ userType }) {
             }}
           />
           <RHFTextField
-            name='email'
-            placeholder='Email'
+            name="email"
+            placeholder="Email"
             startAdornment={
-              <InputAdornment position='start'>
+              <InputAdornment position="start">
                 <Box
                   sx={{
                     display: "flex",
@@ -116,9 +116,10 @@ export default function WaitlistForm({ userType }) {
             }}
           />
           <Button
-            variant='contained'
-            size='large'
-            type='submit'
+            data-umami-event="Form: Join the waitlist"
+            variant="contained"
+            size="large"
+            type="submit"
             disabled={isSubmitting}
             sx={{
               width: "100%",

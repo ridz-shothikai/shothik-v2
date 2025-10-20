@@ -4,8 +4,8 @@ import Auth from "./Auth";
 export const Login = () => {
   return (
     <Auth
-      title='Log in to your account'
-      tag='Welcome back! Please enter your details.'
+      title="Log in to your account"
+      tag="Welcome back! Please enter your details."
     >
       <LoginContend />
     </Auth>

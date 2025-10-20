@@ -25,14 +25,14 @@ const B2B = () => {
         <WhyChooseUsSection />
         <FeaturesSection
           features={features}
-          title='The Features '
-          subtitle='of Our Exceptional Service Offerings in Shothik AI'
+          title="The Features "
+          subtitle="of Our Exceptional Service Offerings in Shothik AI"
         />
 
         <ClientsSection
           images={clientImages}
-          subtitle='Fostering Trust, Strengthening Partnerships: '
-          title='Our Valuable Clients'
+          subtitle="Fostering Trust, Strengthening Partnerships: "
+          title="Our Valuable Clients"
         />
         <TestimonialsSection />
         <BookACall />

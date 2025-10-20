@@ -1,8 +1,9 @@
 import {
+  CloudDownload,
   ExpandMoreOutlined,
   InfoOutlined,
   KeyboardArrowUpOutlined,
-  ShareOutlined,
+  Share,
 } from "@mui/icons-material";
 import {
   Box,
@@ -13,7 +14,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
+import useSnackbar from "../../../hooks/useSnackbar";
+import {
+  convertLogoToDataURL,
+  generateAiDetectorPDF,
+} from "./helpers/generateAiDetectorPDF";
 
 const humanColorName = {
   humanLow: "#10b91d4d",
@@ -48,27 +54,64 @@ const widths = [130, 80, 60, 60, 80, 130];
 export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
   const p = parseInt(perplexity);
 
+  console.log(highlight_sentence_for_ai, perplexity, "from output result");
+
   if (highlight_sentence_for_ai) {
     // AI text thresholds (higher perplexity = more AI-like)
     if (p >= colorValue.aiHigh) return colorName.aiHigh;
     if (p >= colorValue.aiMedium) return colorName.aiMedium;
     if (p >= colorValue.aiLow) return colorName.aiLow;
+
+    return colorName.aiLow; // default to low
   } else {
     // Human text thresholds (lower perplexity = more human-like)
     if (p <= colorValue.humanHigh) return colorName.humanHigh;
     if (p <= colorValue.humanMedium) return colorName.humanMedium;
     if (p <= colorValue.humanLow) return colorName.humanLow;
-  }
 
-  return "inherit";
+    return colorName.humanLow;
+  }
 };
 
 const OutputResult = ({ handleOpen, outputContend }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const enqueueSnackbar = useSnackbar();
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Convert logo to base64 (update the path to your actual logo path)
+      // If you don't have a logo or want to skip it, pass null as second parameter
+      let logoDataUrl = null;
+      try {
+        // Update this path to your actual logo location
+        logoDataUrl = await convertLogoToDataURL("/shothik_light_logo.png");
+      } catch (error) {
+        console.warn("Logo could not be loaded, proceeding without logo");
+      }
+
+      await generateAiDetectorPDF(outputContend, logoDataUrl);
+      enqueueSnackbar("PDF downloaded successfully", { variant: "success" });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      enqueueSnackbar("Failed to download PDF. Please try again.", {
+        variant: "error",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
-    <Card>
+    <Card
+      sx={{
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <Stack
-        justifyContent='flex-end'
-        flexDirection='row'
+        justifyContent="flex-end"
+        flexDirection="row"
         gap={1}
         sx={{
           paddingX: 2,
@@ -77,8 +120,43 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           borderBottomColor: "divider",
         }}
       >
-        <Button onClick={handleOpen} startIcon={<ShareOutlined />}>
+        <Button
+          onClick={handleOpen}
+          startIcon={<Share />}
+          sx={{
+            border: "1px solid rgba(145, 158, 171, 0.32)",
+            borderRadius: "9999px",
+            px: 2,
+            py: 1,
+            color: "#212B36",
+            transition: "all 300ms ease-in-out",
+            "&:hover": {
+              color: "primary.main",
+            },
+          }}
+        >
           Share
+        </Button>
+        <Button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          startIcon={<CloudDownload />}
+          sx={{
+            border: "1px solid rgba(145, 158, 171, 0.32)",
+            borderRadius: "9999px",
+            px: 2,
+            py: 1,
+            color: "#212B36",
+            transition: "all 300ms ease-in-out",
+            "&:hover": {
+              color: "primary.main",
+            },
+            "&:disabled": {
+              opacity: 0.6,
+            },
+          }}
+        >
+          {isDownloading ? "Downloading..." : "Download"}
         </Button>
       </Stack>
 
@@ -94,8 +172,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
         <Stack
           sx={{ flexDirection: { md: "column", lg: "row", sm: "row" }, my: 2 }}
           gap={3}
-          alignItems='center'
-          justifyContent='flex-start'
+          alignItems="center"
+          justifyContent="flex-start"
         >
           <Box
             sx={{
@@ -108,22 +186,22 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             }}
           >
             <CircularProgress
-              variant='determinate'
+              variant="determinate"
               value={100}
               size={150}
               thickness={4}
               sx={{ color: colorName.humanHigh, position: "absolute" }}
             />
             <CircularProgress
-              variant='determinate'
+              variant="determinate"
               value={outputContend.ai_percentage}
               size={150}
               thickness={4}
               sx={{ color: colorName.aiHigh, position: "absolute" }}
             />
             <Typography
-              variant='h6'
-              component='div'
+              variant="h6"
+              component="div"
               sx={{
                 color:
                   outputContend.ai_percentage > 50
@@ -134,26 +212,27 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               {outputContend.ai_percentage > 50 ? "AI" : "Human"}
             </Typography>
           </Box>
-          <Stack flexDirection='column' gap={1.5}>
-            <Stack flexDirection='row' gap={1} alignItems='center'>
-              <Typography sx={{ textWrap: "nowrap" }} color='GrayText'>
+          <Stack flexDirection="column" gap={1.5}>
+            <Stack flexDirection="row" gap={1} alignItems="center">
+              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
                 We are{" "}
               </Typography>
               <Typography
-                color='inherit'
+                color="inherit"
                 fontWeight={700}
-                fontSize={18}
+                fontSize={16}
                 sx={{
                   borderBottom: "1px solid",
                   borderBottomColor: "divider",
                   width: "fit-content",
                   display: "inline-block",
                   textWrap: "nowrap",
+                  textTransform: "uppercase",
                 }}
               >
                 highly confident
               </Typography>
-              <Typography sx={{ textWrap: "nowrap" }} color='GrayText'>
+              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
                 this text is
               </Typography>
             </Stack>
@@ -192,7 +271,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
                 border: "1px solid rgba(127, 129, 133, 0.28)",
                 borderRadius: 1,
               }}
-              color='GrayText'
+              color="GrayText"
             >
               <InfoOutlined />
               <Typography>
@@ -203,10 +282,10 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           </Stack>
         </Stack>
         <Box sx={{ mt: 2 }}>
-          <Typography color='inherit' fontWeight={600} fontSize={18}>
+          <Typography color="inherit" fontWeight={600} fontSize={18}>
             Enhanced Sentence Detection
           </Typography>
-          <Typography color='gray'>
+          <Typography color="gray">
             Sentences that have the biggest influence on the probability score.
           </Typography>
         </Box>
@@ -237,8 +316,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
           </Box>
           <Stack
             sx={{ mt: 0.6 }}
-            flexDirection='row'
-            justifyContent='space-between'
+            flexDirection="row"
+            justifyContent="space-between"
           >
             <Typography
               sx={{
@@ -265,12 +344,12 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       <Accortion
         colorList={Object.values(aiColorName)}
         data={outputContend.aiSentences}
-        title='Top sentences driving AI probability'
+        title="Top sentences driving AI probability"
       />
       <Accortion
         colorList={Object.values(humanColorName)}
         data={outputContend.humanSentences}
-        title='Top sentences driving Human probability'
+        title="Top sentences driving Human probability"
       />
     </Card>
   );
@@ -284,6 +363,8 @@ const Accortion = ({ colorList, data, title, children }) => {
       sx={{
         paddingX: 2,
         paddingY: 1,
+        maxHeight: { xs: "200px", md: "174px" },
+        overflowY: "auto",
         "&:not(:last-child)": {
           borderBottom: "1px solid #E0E0E0",
         },

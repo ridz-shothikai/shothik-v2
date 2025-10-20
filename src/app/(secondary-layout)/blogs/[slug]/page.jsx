@@ -63,7 +63,7 @@ const BlogDetails = async ({ params }) => {
     if (!blogData?.data) {
       return (
         <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-          <Typography variant='h6' color='text.secondary'>
+          <Typography variant="h6" color="text.secondary">
             No blogs found.
           </Typography>
         </Box>
@@ -74,7 +74,7 @@ const BlogDetails = async ({ params }) => {
     console.error("Error fetching blog data:", error);
     return (
       <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-        <Typography variant='h6' color='text.secondary'>
+        <Typography variant="h6" color="text.secondary">
           Error loading blog
         </Typography>
       </Box>

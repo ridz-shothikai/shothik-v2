@@ -75,7 +75,7 @@ const TutorialSection = ({
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant='h4' gutterBottom>
+          <Typography variant="h4" gutterBottom>
             {tool.name}
           </Typography>
 
@@ -111,7 +111,7 @@ const TutorialSection = ({
                       border: "none",
                       borderRadius: 8,
                     }}
-                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 ) : (
@@ -129,10 +129,10 @@ const TutorialSection = ({
                     }}
                   >
                     <Skeleton
-                      variant='rectangular'
-                      width='100%'
-                      height='100%'
-                      animation='wave'
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                      animation="wave"
                       sx={{
                         bgcolor: "rgba(0, 0, 0, 0.1)",
                         borderRadius: 1,
@@ -142,11 +142,11 @@ const TutorialSection = ({
                 )}
               </Box>
 
-              <Typography variant='h6' gutterBottom>
+              <Typography variant="h6" gutterBottom>
                 {tool.title}
               </Typography>
 
-              <Typography variant='body2' color='text.secondary' gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
                 {tool.description}
               </Typography>
 
@@ -157,13 +157,13 @@ const TutorialSection = ({
               >
                 {loading ? (
                   <>
-                    <Skeleton variant='circular' width={40} height={40} />
+                    <Skeleton variant="circular" width={40} height={40} />
                     <Box sx={{ flex: 1 }}>
-                      <Skeleton variant='text' width={100} height={28} />
-                      <Skeleton variant='text' width={140} height={20} />
+                      <Skeleton variant="text" width={100} height={28} />
+                      <Skeleton variant="text" width={140} height={20} />
                     </Box>
                     <Skeleton
-                      variant='rectangular'
+                      variant="rectangular"
                       width={100}
                       height={36}
                       sx={{ borderRadius: 1 }}
@@ -172,21 +172,21 @@ const TutorialSection = ({
                 ) : (
                   <>
                     <Image
-                      src='/green_tick.svg'
+                      src="/green_tick.svg"
                       width={40}
                       height={40}
-                      alt='Shothik AI'
+                      alt="Shothik AI"
                     />
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant='subtitle1'>Shothik AI</Typography>
-                      <Typography variant='body2' color='text.secondary'>
+                      <Typography variant="subtitle1">Shothik AI</Typography>
+                      <Typography variant="body2" color="text.secondary">
                         {formatSubscriberCount(subscriberCount)} subscribers
                       </Typography>
                     </Box>
                     <Button
                       onClick={handleSubscribe}
-                      variant='contained'
-                      color='error'
+                      variant="contained"
+                      color="error"
                       sx={{
                         bgcolor: "#FF0000",
                         "&:hover": {
@@ -223,19 +223,19 @@ const TutorialSection = ({
                     {tool.icon}
                   </IconWrapper>
 
-                  <Typography variant='h6'>
+                  <Typography variant="h6">
                     {tool.title} <br />
                     <Typography
-                      variant='body2'
-                      color='text.secondary'
-                      component='span'
+                      variant="body2"
+                      color="text.secondary"
+                      component="span"
                     >
                       Shothik AI
                     </Typography>
                   </Typography>
                 </Box>
                 <Divider sx={{ my: 2 }} />
-                <Typography variant='subtitle2' gutterBottom>
+                <Typography variant="subtitle2" gutterBottom>
                   More related to {tool.name}
                 </Typography>
                 <List>

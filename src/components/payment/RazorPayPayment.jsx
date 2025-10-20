@@ -79,7 +79,7 @@ function RazorPayPaymentComponent() {
             "Razorpay SDK failed to load. Please refresh and try again.",
             {
               variant: "error",
-            }
+            },
           );
         }
       }

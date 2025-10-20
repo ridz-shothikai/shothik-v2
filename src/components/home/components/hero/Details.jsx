@@ -1,60 +1,153 @@
-import { Box, Grid2, Rating, Typography } from "@mui/material";
+"use client";
+
+import { Grid2, Typography, useTheme, Snackbar, Alert } from "@mui/material";
 import * as motion from "motion/react-client";
-import React from "react";
+import React, { useState } from "react";
 import UserActionButton from "./UserActionButton";
+import AnimatedText from "./AnimatedText";
+import EmailModal from "../../EmailCollectModal";
+import { useRegisterUserToBetaListMutation } from "../../../../redux/api/auth/authApi";
 
-const Details = () => {
+const Details = ({ trackClick }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
+  const [showModal, setShowModal] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success", // 'success', 'error', 'warning', 'info'
+  });
+
+  const [
+    registerUserForBetaList,
+    { isLoading: registerUserProcessing, isError: registerUserError },
+  ] = useRegisterUserToBetaListMutation();
+
+  const handleEmailSubmit = async (email) => {
+    try {
+      const result = await registerUserForBetaList({ email }).unwrap();
+
+      console.log(result, "result");
+
+      // Success toast
+      setToast({
+        open: true,
+        message: "Successfully registered for beta! We'll be in touch soon.",
+        severity: "success",
+      });
+
+      // Close the modal
+      setShowModal(false);
+    } catch (error) {
+      // Error toast
+      setToast({
+        open: true,
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToast((prev) => ({ ...prev, open: false }));
+  };
+
   return (
-    <Grid2 size={{ xs: 12, md: 6 }}>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+    <>
+      <Grid2
+        size={{ xs: 12, md: 6 }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: { xl: "0.75rem" },
+          position: "relative",
+          zIndex: 12,
+        }}
       >
-        <Typography
-          variant='h2'
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: "-2%",
+              lineHeight: 1,
+              color: isDarkMode ? "" : "#111827",
+              fontSize: {
+                xs: "2.5em",
+                sm: "3.25em",
+                md: "2.75em",
+                lg: "3.75em",
+                xl: "4.75em",
+              },
+              textAlign: "center",
+              // background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
+              // backgroundClip: "text",
+              // WebkitBackgroundClip: "text",
+              // WebkitTextFillColor: "transparent",
+            }}
+          >
+            <AnimatedText />
+            {/* <span
+            style={{
+              fontWeight: 700,
+              color: "#00A76F",
+              background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            before you do.
+          </span> */}
+          </Typography>
+          {/* <Typography
+          variant="h2"
           sx={{
             fontWeight: 700,
-            letterSpacing: "-2%",
+            letterSpacing: "-9%",
             color: "#00A76F",
             background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
-        >
-          Human Quality{" "}
-        </Typography>
-        <Typography
-          variant='h2'
-          sx={{
-            fontWeight: 700,
-            letterSpacing: "-2%",
-            color: "#00A76F",
-            background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
-          Writing Agent
-        </Typography>
-      </motion.div>
+        ></Typography> */}
+        </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.2 }}
-      >
-        <Typography variant='body1' color='text.secondary' sx={{ my: 2 }}>
-          Paraphrasing, grammar correction, humanized AI writing, translation,
-          summarization, or deep research across the web, academic sources, and
-          YouTube—Shothik AI ensures natural, accurate, and impactful writing in
-          every task.
-        </Typography>
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{
+              my: 2,
+              fontSize: { xl: "1.25em" },
+              maxWidth: "800px",
+              textAlign: "center",
+            }}
+          >
+            {/* AI that understands your thoughts before you do. Paraphrasing, */}
+            {/* Humanizer, Grammer Fix, and AI Agents at your service.  */}
+            Shothik is a general ai agent that understands your thoughts before
+            you do. It doesn&apos;t just think, it delivers results.
+            Paraphrasing, Humanizer, Grammer Fix, and AI Agents at your service.
+          </Typography>
+        </motion.div>
 
-      <Box
+        {/* <Box
         component={motion.div}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -73,15 +166,40 @@ const Details = () => {
           marginBottom: "16px",
         }}
       >
-        <Rating value={5} readOnly color='#00A76F' />
+        <Rating value={5} readOnly color="#00A76F" />
         <Typography sx={{ color: "text.secondary" }}>
           Rated&nbsp;4.9/5&nbsp;| Based on&nbsp;{" "}
           <span style={{ color: "#00A76F", fontWeight: 600 }}>400,000+</span>{" "}
           &nbsp;happy clients
         </Typography>
-      </Box>
-      <UserActionButton />
-    </Grid2>
+      </Box> */}
+        <UserActionButton setShowModal={setShowModal} trackClick={trackClick} />
+      </Grid2>
+
+      {/* Email collect modal */}
+      <EmailModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleEmailSubmit}
+      />
+
+      {/* Toast notification */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
+          variant="filled"
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

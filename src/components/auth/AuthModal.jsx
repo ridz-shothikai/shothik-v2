@@ -1,7 +1,6 @@
 "use client";
 import { Close } from "@mui/icons-material";
 import { Box, IconButton, Modal } from "@mui/material";
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setShowLoginModal,
@@ -15,8 +14,8 @@ const AuthModal = ({ isOpen, onClose, children }) => {
     <Modal
       open={isOpen}
       onClose={onClose}
-      aria-labelledby='auth-modal-title'
-      aria-describedby='auth-modal-description'
+      aria-labelledby="auth-modal-title"
+      aria-describedby="auth-modal-description"
       sx={{
         display: "flex",
         alignItems: "center",

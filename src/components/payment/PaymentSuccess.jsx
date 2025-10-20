@@ -14,7 +14,7 @@ const PaymentSuccessAndUpdateUser = () => {
     if (data) {
       dispatch(updateUser(data));
     }
-  }, [data]);
+  }, [data, dispatch]);
 
   return null;
 };

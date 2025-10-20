@@ -15,7 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PATH_ACCOUNT } from "../../../config/config/route";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
@@ -48,7 +48,10 @@ export default function AccountPopover({ accessToken, user }) {
   const handleLogout = async () => {
     try {
       dispatch(logout());
+      localStorage.setItem("logout-event", Date.now().toString());
       handleClosePopover();
+      enqueueSnackbar("Logout successful!", { variant: "success" });
+      push("/");
     } catch (error) {
       console.error(error);
       enqueueSnackbar("Unable to logout!", { variant: "error" });
@@ -61,6 +64,21 @@ export default function AccountPopover({ accessToken, user }) {
   };
 
   const popoverRef = useOutsideClick(() => handleClosePopover());
+
+  useEffect(() => {
+    const syncLogout = (event) => {
+      if (event.key === "logout-event") {
+        dispatch(logout());
+        push("/");
+      }
+    };
+
+    window.addEventListener("storage", syncLogout);
+
+    return () => {
+      window.removeEventListener("storage", syncLogout);
+    };
+  }, [dispatch, push]);
 
   return (
     <>
@@ -106,10 +124,7 @@ export default function AccountPopover({ accessToken, user }) {
           <PersonOutlineSharpIcon
             sx={{
               fontSize: 30,
-              color: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.text.secondary
-                  : theme.palette.text.secondary,
+              color: "text.secondary",
             }}
           />
         )}
@@ -150,20 +165,23 @@ export default function AccountPopover({ accessToken, user }) {
               "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
             }}
           >
-            <Stack direction='row' alignItems='center' spacing={2}>
+            <Stack direction="row" alignItems="center" spacing={2}>
               <PersonOutlineSharpIcon />
               <Box>
-                <Typography variant='subtitle2' noWrap>
+                <Typography variant="subtitle2" noWrap>
                   My Profile
                 </Typography>
                 <Typography
-                  variant='body2'
+                  variant="body2"
                   sx={{
                     color: "text.secondary",
                   }}
                 >
-                  {user?.email?.length > 15 &&
-                    `${user?.email?.slice(0, 15)}...`}
+                  {user?.email
+                    ? user.email.length > 15
+                      ? `${user.email.slice(0, 15)}...`
+                      : user.email
+                    : ""}
                 </Typography>
               </Box>
             </Stack>
@@ -172,70 +190,69 @@ export default function AccountPopover({ accessToken, user }) {
 
         {!user?.email && (
           <MenuItem
+            data-umami-event="Nav: Login / Sign up"
             onClick={() => {
               handleClosePopover();
               dispatch(setShowRegisterModal(false));
               dispatch(setShowLoginModal(true));
             }}
-            direction='row'
             sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}
           >
-            <Stack direction='row' pl={1.5}>
+            <Stack direction="row" pl={1.5}>
               <LoginIcon />
-              <Typography variant='body2'>Login / Sign up</Typography>
+              <Typography variant="body2">Login / Sign up</Typography>
             </Stack>
           </MenuItem>
         )}
 
-        <Stack
-          onChange={() => dispatch(toggleThemeMode())}
+        <MenuItem
+          onClick={() => dispatch(toggleThemeMode())}
           sx={{
-            cursor: "pointer",
-            pl: 2.5,
             "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
+            py: 0,
           }}
         >
-          <Stack direction='row' alignItems='center' spacing={1}>
+          <Stack direction="row" alignItems="center" spacing={1} pl={1.5}>
             <Brightness4OutlinedIcon sx={{ width: 20, height: 20 }} />
-            <Typography variant='body2' sx={{ pl: 1 }}>
+            <Typography variant="body2" sx={{ pl: 0, ml: "0 !important" }}>
               Dark mode
             </Typography>
-            <Switch checked={themeMode === "dark"} size='medium' />
+            <Switch checked={themeMode === "dark"} size="medium" />
           </Stack>
-        </Stack>
+        </MenuItem>
 
         <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
           <Link
-            href='mailto:support@shothik.ai'
+            href="mailto:support@shothik.ai"
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
-              <HelpOutlineIcon fontSize='small' />
-              <Typography variant='body2'>Help Center</Typography>
+              <HelpOutlineIcon fontSize="small" />
+              <Typography variant="body2">Help Center</Typography>
             </Box>
           </Link>
         </MenuItem>
 
         <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
           <Link
-            href='/contact-us'
+            href="/contact-us"
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
-              <MailOutlineIcon fontSize='small' />
-              <Typography variant='body2'>Contact us</Typography>
+              <MailOutlineIcon fontSize="small" />
+              <Typography variant="body2">Contact us</Typography>
             </Box>
           </Link>
         </MenuItem>
 
         <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
           <Link
-            href='https://discord.gg/pq2wTqXEpj'
+            href="https://discord.gg/pq2wTqXEpj"
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
               <Discord />
-              <Typography variant='body2'>Join Us on Discord</Typography>
+              <Typography variant="body2">Join Us on Discord</Typography>
             </Box>
           </Link>
         </MenuItem>
@@ -247,7 +264,7 @@ export default function AccountPopover({ accessToken, user }) {
           >
             <Box sx={{ pl: 1.5, pb: 2, display: "flex", alignItems: "center" }}>
               <LoginIcon />
-              <Typography variant='body2'>Log out</Typography>
+              <Typography variant="body2">Log out</Typography>
             </Box>
           </MenuItem>
         )}

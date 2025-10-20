@@ -7,7 +7,7 @@ export default function B2bFeatures() {
   return (
     <BgContainer
       sx={{ py: 8, px: { xs: 2, sm: 4, md: 6 } }}
-      image='url(/home/b2b-background.png)'
+      image="url(/home/b2b-background.png)"
     >
       <Box
         component={motion.div}
@@ -16,8 +16,8 @@ export default function B2bFeatures() {
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
         fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        textAlign='center'
-        fontWeight='bold'
+        textAlign="center"
+        fontWeight="bold"
         marginBottom={{ xs: 8, sm: 6 }}
         sx={{
           lineHeight: 1.2,
@@ -37,8 +37,8 @@ export default function B2bFeatures() {
           }}
         >
           <Typography
-            component='span'
-            variant='inherit'
+            component="span"
+            variant="inherit"
             sx={{
               background: "linear-gradient(135deg, #00A76F 0%, #00A76F 100%)",
               backgroundClip: "text",
@@ -51,7 +51,7 @@ export default function B2bFeatures() {
         </Box>
       </Box>
 
-      <Grid2 container alignItems='center'>
+      <Grid2 container alignItems="center">
         <Grid2
           size={{ xs: 12, sm: 6, md: 6 }}
           component={motion.div}
@@ -77,8 +77,8 @@ export default function B2bFeatures() {
               }}
             >
               <Typography
-                variant='h3'
-                fontWeight='bold'
+                variant="h3"
+                fontWeight="bold"
                 sx={{
                   fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
                   lineHeight: 1.2,
@@ -87,10 +87,10 @@ export default function B2bFeatures() {
               >
                 Transform Your Business with <br />
                 <Typography
-                  component='span'
-                  variant='inherit'
-                  fontWeight='bold'
-                  color='#00A76F'
+                  component="span"
+                  variant="inherit"
+                  fontWeight="bold"
+                  color="#00A76F"
                 >
                   AI-Powered Solutions
                 </Typography>
@@ -99,7 +99,7 @@ export default function B2bFeatures() {
           </Box>
 
           <Box>
-            <Typography variant='body1' color='#fff' sx={{ marginTop: 2 }}>
+            <Typography variant="body1" color="#fff" sx={{ marginTop: 2 }}>
               Leverage cutting-edge AI solutions to optimize your business
               processes, enhance productivity, and drive innovation across your
               organization.

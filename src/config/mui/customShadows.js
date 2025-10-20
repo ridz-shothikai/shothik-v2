@@ -1,11 +1,11 @@
 // @mui
-import { alpha } from '@mui/material/styles';
+import { alpha } from "@mui/material/styles";
 //
-import palette from './palette';
+import palette from "./palette";
 
 // ----------------------------------------------------------------------
 
-const themeColor = palette('light');
+const themeColor = palette("light");
 
 const LIGHT_MODE = themeColor.grey[500];
 
@@ -36,5 +36,7 @@ function createShadow(color) {
 }
 
 export default function customShadows(themeMode) {
-  return themeMode === 'light' ? createShadow(LIGHT_MODE) : createShadow(DARK_MODE);
+  return themeMode === "light"
+    ? createShadow(LIGHT_MODE)
+    : createShadow(DARK_MODE);
 }

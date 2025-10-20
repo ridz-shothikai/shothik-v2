@@ -10,8 +10,8 @@ export async function generateMetadata() {
 
 export default function AffiliateMarketing() {
   return (
-    <WaitingpageContainer title='Affiliate Program'>
-      <WaitlistForm userType='affiliate' />
+    <WaitingpageContainer title="Affiliate Program">
+      <WaitlistForm userType="affiliate" />
     </WaitingpageContainer>
   );
 }

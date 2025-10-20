@@ -10,16 +10,16 @@ const useWordLimit = (service) => {
   const defaultLimit = freePack
     ? 180
     : starterPack
-    ? 500
-    : premiumPack
-    ? 1000
-    : 180;
+      ? 500
+      : premiumPack
+        ? 1000
+        : 180;
 
   const starter = userLimit?.find(
-    (x) => x["type"] === (user?.package || "free")
+    (x) => x["type"] === (user?.package || "free"),
   );
   const starterLimit = starter?.pricing_features?.find(
-    (f) => f["type"] === service
+    (f) => f["type"] === service,
   )?.word_limit;
 
   return {

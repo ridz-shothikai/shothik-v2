@@ -19,11 +19,11 @@ export default function AboutPage() {
         <AboutWhat />
         <AboutVision />
         <Divider
-          orientation='horizontal'
+          orientation="horizontal"
           sx={{ mt: 3, mb: 0.5, mx: "auto", width: 100, height: 2 }}
         />
         <Divider
-          orientation='horizontal'
+          orientation="horizontal"
           sx={{ mb: 3, mx: "auto", width: 100, height: 2 }}
         />
         <AboutTeam />

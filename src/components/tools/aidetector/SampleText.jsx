@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const gptModel = [
@@ -74,7 +75,7 @@ function SampleTextForMobile({ setOpen, isMini }) {
         }}
       >
         <Box sx={{ width: 24, height: 24 }}>
-          <img src='/tools/sample.svg' alt='sample' />
+          <img src="/tools/sample.svg" alt="sample" />
         </Box>
         <Typography>Sample Text</Typography>
       </Card>
@@ -96,7 +97,7 @@ const SampleTextForLarge = ({
 
   return (
     <Stack
-      justifyContent='center'
+      justifyContent="center"
       sx={{
         height: "100%",
         paddingX: 3,
@@ -118,13 +119,14 @@ const SampleTextForLarge = ({
           sx={{
             width: isDrawer ? "100%" : 250,
             boxShadow: isDrawer ? "none" : undefined,
+            border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
-          <Stack direction='column' spacing={0.5} sx={{ paddingY: 1 }}>
+          <Stack direction="column" spacing={0.5} sx={{ paddingY: 1 }}>
             {gptModel.map((item, index) => (
               <Button
-                variant='soft'
-                color='inherit'
+                variant="soft"
+                color="inherit"
                 key={index}
                 sx={{
                   display: "flex",
@@ -149,13 +151,13 @@ const SampleTextForLarge = ({
                 >
                   <img src={item.icon} alt={item.name} />
                 </Box>
-                <Typography variant='body2'>{item.name}</Typography>
+                <Typography variant="body2">{item.name}</Typography>
               </Button>
             ))}
           </Stack>
         </Card>
         <Stack
-          direction='column'
+          direction="column"
           alignItems={isDrawer ? "center" : "flex-start"}
         >
           <Box
@@ -167,13 +169,19 @@ const SampleTextForLarge = ({
               mt: 3,
             }}
           >
-            <img src='/tools/language.svg' alt='language' />
+            <Image
+              src="/tools/language.svg"
+              alt="language"
+              width={100}
+              height={100}
+              className="max-w-4!"
+            />
             <Typography fontWeight={600}>Supported languages:</Typography>
           </Box>
           <Typography sx={{ mt: 0.5, mb: 1 }}>
-            English, French and Spanish
+            English, Bangla, Hindi and 100+ more
           </Typography>
-          <Typography
+          {/* <Typography
             fontSize={15}
             sx={{
               borderBottom: "1px solid #333",
@@ -185,7 +193,7 @@ const SampleTextForLarge = ({
             }}
           >
             Request more languages
-          </Typography>
+          </Typography> */}
         </Stack>
       </Box>
     </Stack>
@@ -203,7 +211,7 @@ function SampleText({
     return (
       <>
         <Dialog
-          maxWidth='xs'
+          maxWidth="xs"
           fullWidth
           open={isDrawer}
           onClose={() => setOpen(false)}

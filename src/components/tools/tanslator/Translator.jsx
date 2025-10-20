@@ -29,6 +29,11 @@ const Translator = () => {
     toLang: "English",
   });
 
+  const handleLanguageChange = (newLangState) => {
+    setOutputContend(""); // Clear output when language changes
+    setTranslateLang(newLangState);
+  };
+
   function handleInput(e) {
     const value = e.target.value;
     setUserInput(value);
@@ -135,27 +140,35 @@ const Translator = () => {
   }
 
   return (
-    <Card sx={{ mt: 1, paddingX: 2, paddingTop: 2 }}>
+    <Card
+      sx={{
+        mt: 1,
+        paddingX: 2,
+        paddingTop: 2,
+        border: (theme) => `1px solid ${theme.palette.divider}`,
+      }}
+    >
       <LanguageMenu
         isLoading={isLoading || isHumanizing}
         userInput={userInput}
         reverseText={reverseText}
         translateLang={translateLang}
-        setTranslateLang={setTranslateLang}
+        setTranslateLang={handleLanguageChange}
       />
 
       <Grid2 container spacing={2}>
         <Grid2
           sx={{
-            height: { xs: 400, sm: 480 },
+            minHeight: { xs: 400, sm: 480 },
+            // maxHeight: { xs: 400, sm: 480 },
             overflowY: "auto",
             position: "relative",
           }}
           size={{ xs: 12, md: 6 }}
         >
           <TextField
-            name='input'
-            variant='outlined'
+            name="input"
+            variant="outlined"
             rows={isMobile ? 15 : 19}
             fullWidth
             multiline
@@ -177,6 +190,18 @@ const Translator = () => {
               },
             }}
           />
+          {isMobile && (
+            <BottomBar
+              handleClear={handleClear}
+              handleHumanize={handleHumanize}
+              handleSubmit={handleSubmit}
+              isHumanizing={isHumanizing}
+              isLoading={isLoading}
+              outputContend={outputContend}
+              userInput={userInput}
+              userPackage={user?.package}
+            />
+          )}
           {!userInput ? (
             <UserActionInput
               setUserInput={setUserInput}
@@ -191,8 +216,8 @@ const Translator = () => {
             size={{ xs: 12, md: 6 }}
           >
             <TextField
-              name='output'
-              variant='outlined'
+              name="output"
+              variant="outlined"
               rows={isMobile ? 15 : 19}
               fullWidth
               multiline
@@ -225,16 +250,18 @@ const Translator = () => {
         )}
       </Grid2>
 
-      <BottomBar
-        handleClear={handleClear}
-        handleHumanize={handleHumanize}
-        handleSubmit={handleSubmit}
-        isHumanizing={isHumanizing}
-        isLoading={isLoading}
-        outputContend={outputContend}
-        userInput={userInput}
-        userPackage={user?.package}
-      />
+      {!isMobile && (
+        <BottomBar
+          handleClear={handleClear}
+          handleHumanize={handleHumanize}
+          handleSubmit={handleSubmit}
+          isHumanizing={isHumanizing}
+          isLoading={isLoading}
+          outputContend={outputContend}
+          userInput={userInput}
+          userPackage={user?.package}
+        />
+      )}
     </Card>
   );
 };

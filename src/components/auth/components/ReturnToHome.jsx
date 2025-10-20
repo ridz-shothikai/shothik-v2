@@ -17,10 +17,11 @@ const ReturnToHome = () => {
 
   return (
     <Link
-      component='p'
+      href="/"
+      component="p"
       onClick={handleNavigation}
-      color='inherit'
-      variant='subtitle2'
+      color="inherit"
+      variant="subtitle2"
       sx={{
         mt: 3,
         mx: "auto",
@@ -28,8 +29,8 @@ const ReturnToHome = () => {
         display: "inline-flex",
       }}
     >
-      <ChevronLeft fontSize='small' />
-      Return to sign in
+      <ChevronLeft fontSize="small" />
+      Return to home
     </Link>
   );
 };

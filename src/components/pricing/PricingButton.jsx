@@ -22,6 +22,9 @@ export default function PricingButton({
   const handleTrigger = () => {
     trackEvent("click", "payment", subscription, 1);
   };
+
+  // console.log(subscription, "subscription");
+
   return (
     <Box>
       {user?.email ? (
@@ -34,15 +37,15 @@ export default function PricingButton({
                   yearly ? "yearly" : "monthly"
                 }&redirect=${redirect}`
               : paymentMethod === "razor"
-              ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
-                  yearly ? "yearly" : "monthly"
-                }&redirect=${redirect}`
-              : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
-                  yearly ? "yearly" : "monthly"
-                }&redirect=${redirect}`
+                ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
+                    yearly ? "yearly" : "monthly"
+                  }&redirect=${redirect}`
+                : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
+                    yearly ? "yearly" : "monthly"
+                  }&redirect=${redirect}`
           }
           fullWidth
-          size='large'
+          size="large"
           variant={outline ? "outlined" : "contained"}
           disabled={
             !yearly_plan_available && yearly
@@ -56,15 +59,15 @@ export default function PricingButton({
           {user?.package === subscription
             ? "current plan"
             : !yearly_plan_available && yearly
-            ? "Available for monthly plan"
-            : `Choose ${caption}`}
+              ? "Available for monthly plan"
+              : `Choose ${caption}`}
         </Button>
       ) : (
         <Button
           disabled={!yearly_plan_available && yearly}
           onClick={() => dispatch(setShowLoginModal(true))}
           fullWidth
-          size='large'
+          size="large"
           variant={
             outline || subscription === "free" ? `outlined` : "contained"
           }
@@ -72,8 +75,8 @@ export default function PricingButton({
           {!yearly_plan_available && yearly
             ? "Available for monthly plan"
             : subscription === "free"
-            ? `Sign up - it's free`
-            : `Choose ${caption}`}
+              ? `Sign up - it's free`
+              : `Choose ${caption}`}
         </Button>
       )}
     </Box>

@@ -1,5 +1,4 @@
 import { Box, Container, Typography } from "@mui/material";
-import React from "react";
 import BkashPyament from "../../../../components/payment/BkashPayment";
 
 export async function generateMetadata() {
@@ -18,11 +17,11 @@ const BkashPyamentPage = () => {
         minHeight: 1,
       }}
     >
-      <Typography variant='h3' align='center'>
+      <Typography variant="h3" align="center">
         {`Let's finish powering you up!`}
       </Typography>
 
-      <Typography align='center' sx={{ color: "text.secondary", mb: 5 }}>
+      <Typography align="center" sx={{ color: "text.secondary", mb: 5 }}>
         Professional plan is right for you.
       </Typography>
 

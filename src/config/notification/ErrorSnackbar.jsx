@@ -20,8 +20,8 @@ export default function ErrorSnackbar({ open, onClose, message }) {
     >
       <Alert
         onClose={handleClose}
-        severity='error'
-        variant='outlined'
+        severity="error"
+        variant="outlined"
         sx={{
           width: "100%",
           zIndex: 9999,

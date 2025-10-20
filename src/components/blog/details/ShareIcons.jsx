@@ -13,7 +13,7 @@ import CopyButon from "./CopyButon";
 
 const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
   return (
-    <Stack flexDirection='row' gap={1} alignItems='center'>
+    <Stack flexDirection="row" gap={1} alignItems="center">
       <Box>
         <FacebookShareButton
           url={shareUrl}
@@ -39,7 +39,7 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
         </LinkedinShareButton>
       </Box>
       <Box>
-        <Tooltip title='Copy URL' arrow placement='top'>
+        <Tooltip title="Copy URL" arrow placement="top">
           <CopyButon text={shareUrl} />
         </Tooltip>
       </Box>

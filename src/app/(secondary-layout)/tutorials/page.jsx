@@ -37,9 +37,9 @@ const TutorialTabs = ({ currentTab, onTabChange, toolsData }) => {
     <StyledTabs
       value={currentTab}
       onChange={onTabChange}
-      variant='scrollable'
-      scrollButtons='auto'
-      aria-label='tutorial navigation tabs'
+      variant="scrollable"
+      scrollButtons="auto"
+      aria-label="tutorial navigation tabs"
       sx={{
         "@media (min-width: 600px)": {
           paddingLeft: 3,

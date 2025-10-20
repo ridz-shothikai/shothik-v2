@@ -6,14 +6,18 @@ const icon = (name) => (
 );
 
 const ICONS = {
+  paraphrase: icon("paraphrase"),
   humanize: icon("bypass-svgrepo-com"),
   ai_detector: icon("ai_detector_icon"),
-  paraphrase: icon("paraphrase"),
+  plagiarism_checker: icon("plagiarism_checker"),
   summarize: icon("summarize"),
   grammar: icon("grammar"),
   translator: icon("translator"),
-  research: icon("research"),
+  agents: icon("agents"),
+  agents: icon("agents"),
   user: icon("user"),
+  agent: icon("ai-brain"),
+  marketing_automation: icon("marketing-automation"),
 };
 
 const navConfig = [
@@ -24,7 +28,15 @@ const navConfig = [
         title: "Paraphrase",
         path: PATH_TOOLS.paraphrase,
         icon: ICONS.paraphrase,
+        id: "paraphrase_nav_item",
+        id: "paraphrase_nav_item",
         iconColor: "#FF595E",
+      },
+      {
+        title: "AI Detector",
+        path: PATH_TOOLS.ai_detector,
+        icon: ICONS.ai_detector,
+        iconColor: "#f29b18",
       },
       {
         title: "Humanize GPT",
@@ -33,10 +45,22 @@ const navConfig = [
         iconColor: "#FF595E",
       },
       {
-        title: "AI Detector",
-        path: PATH_TOOLS.ai_detector,
-        icon: ICONS.ai_detector,
+        title: "Plagiarism Checker",
+        path: PATH_TOOLS.plagiarism_checker,
+        icon: ICONS.plagiarism_checker,
         iconColor: "#f29b18",
+      },
+      {
+        title: "Agents",
+        path: "/agents",
+        icon: ICONS.agent,
+        iconColor: "#1976D2",
+      },
+      {
+        title: "Marketing Automation",
+        path: "/marketing-automation",
+        icon: ICONS.marketing_automation,
+        iconColor: "#1877F2",
       },
       {
         title: "Grammar Fix",
@@ -55,12 +79,6 @@ const navConfig = [
         path: PATH_TOOLS.translator,
         icon: ICONS.translator,
         iconColor: "#A07EFB",
-      },
-      {
-        title: "Research",
-        path: PATH_TOOLS.research,
-        icon: ICONS.research,
-        iconColor: "#B71D18",
       },
     ],
   },
@@ -109,7 +127,7 @@ const tools = [
     title: "Grammar Fix",
     description: "Error correction",
     label: null,
-    link: "/grammar-check",
+    link: "/grammar-checker",
     iconColor: "#8AC926",
   },
   {
@@ -129,12 +147,20 @@ const tools = [
     iconColor: "#A07EFB",
   },
   {
-    icon: ICONS.research,
-    title: "Research",
-    description: "Web and Academic Research",
+    icon: ICONS.agent,
+    title: "Agent",
+    description: "AI Agent Platform",
     label: null,
-    link: "/research",
-    iconColor: "#B71D18",
+    link: "/agents",
+    iconColor: "#1976D2",
+  },
+  {
+    icon: ICONS.marketing_automation,
+    title: "Marketing Automation",
+    description: "Marketing automation tools",
+    label: null,
+    link: "/",
+    iconColor: "#1976D2",
   },
 ];
 

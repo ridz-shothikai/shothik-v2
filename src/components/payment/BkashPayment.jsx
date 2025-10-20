@@ -1,4 +1,5 @@
 "use client";
+
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { PAYMENT } from "../../config/config/route";
@@ -30,6 +31,7 @@ function BkashPyamentComponent() {
         amount: totalBill,
         payment_type: tenure,
       };
+      // console.log("Payload sent to bkashPayment:", payload); // New debugging line
       const data = await bkashPayment(payload).unwrap();
       window.location.href = data?.bkashURL;
     } catch (error) {

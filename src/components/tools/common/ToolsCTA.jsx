@@ -7,7 +7,6 @@ import CTAImages from "./CTAImages";
 export default function ToolsCTA({ toolType }) {
   const toolConfig = toolsCta[toolType];
 
-
   if (!toolConfig) {
     return null;
   }
@@ -24,7 +23,7 @@ export default function ToolsCTA({ toolType }) {
         paddingX: 2,
       }}
     >
-      <Grid2 container spacing={3} alignItems='center'>
+      <Grid2 container spacing={3} alignItems="center">
         <Grid2 size={{ xs: 12, md: 6 }}>
           <Description config={toolConfig} />
         </Grid2>
@@ -47,7 +46,7 @@ export default function ToolsCTA({ toolType }) {
       </Grid2>
 
       <TriangleShape />
-      <TriangleShape anchor='bottom' />
+      <TriangleShape anchor="bottom" />
     </Box>
   );
 }
@@ -73,7 +72,7 @@ function Description({ config }) {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        variant='overline'
+        variant="overline"
         sx={{
           textAlign: { md: "left", xs: "center" },
           color: "text.disabled",
@@ -88,7 +87,7 @@ function Description({ config }) {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
-        variant='h3'
+        variant="h3"
         sx={{
           my: 3,
         }}
@@ -117,9 +116,9 @@ function Description({ config }) {
         viewport={{ once: true }}
       >
         <Button
-          color='inherit'
-          size='large'
-          variant='contained'
+          color="inherit"
+          size="large"
+          variant="contained"
           href={config.buttonLink}
           endIcon={<ChevronRight />}
           sx={{
@@ -158,12 +157,12 @@ function TriangleShape({ anchor = "top" }) {
       }}
     >
       <svg
-        width='100%'
-        height='100%'
-        viewBox='0 0 1440 64'
-        preserveAspectRatio='none'
+        width="100%"
+        height="100%"
+        viewBox="0 0 1440 64"
+        preserveAspectRatio="none"
       >
-        <path d='M1440 0H0L1440 64V0Z' fill='currentColor' />
+        <path d="M1440 0H0L1440 64V0Z" fill="currentColor" />
       </svg>
     </Box>
   );

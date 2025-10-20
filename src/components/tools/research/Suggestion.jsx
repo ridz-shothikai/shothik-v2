@@ -11,12 +11,12 @@ const Suggestion = ({ handleSuggestedQuestionClick, suggestedQuestions }) => {
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5 }}
     >
-      <Box display='flex' alignItems='center' gap={2} my={2}>
-        <FormatAlignLeft fontSize='small' color='text.secondary' />
-        <Typography variant='h6'>Suggested questions</Typography>
+      <Box display="flex" alignItems="center" gap={2} my={2}>
+        <FormatAlignLeft fontSize="small" color="text.secondary" />
+        <Typography variant="h6">Suggested questions</Typography>
       </Box>
 
-      <Box display='flex' flexDirection='column' gap={1}>
+      <Box display="flex" flexDirection="column" gap={1}>
         {suggestedQuestions?.map((question, index) => (
           <Typography
             key={index}

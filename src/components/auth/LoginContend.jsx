@@ -1,6 +1,6 @@
 "use client";
 import { Box, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setShowLoginModal,
@@ -29,16 +29,16 @@ const LoginContend = () => {
         <AuthWithSocial loading={loading} setLoading={setLoading} />
       </Box>
 
-      <Stack direction='row' justifyContent='center' spacing={0.5}>
+      <Stack direction="row" justifyContent="center" spacing={0.5}>
         <Typography
-          variant='body2'
+          variant="body2"
           sx={{
             fontSize: "0.875rem",
             lineHeight: "1.25rem",
             color: "text.secondary",
           }}
         >
-          Don't have an account?
+          Don&apos;t have an account?
         </Typography>
 
         <Typography
@@ -46,7 +46,7 @@ const LoginContend = () => {
             dispatch(setShowLoginModal(false));
             dispatch(setShowRegisterModal(true));
           }}
-          variant='body2'
+          variant="body2"
           sx={{
             fontSize: "0.875rem",
             lineHeight: "1.25rem",

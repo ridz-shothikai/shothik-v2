@@ -1,6 +1,6 @@
 import { AcUnit } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import MobileFreezeModal from "./MobileFreezeModal";
 import ModeModal from "./ModeModal";
 
@@ -8,25 +8,27 @@ const ModeNavigationForMobile = ({
   selectedMode,
   setSelectedMode,
   userPackage,
-  freezeWords,
-  setFreezeWords,
+  initialFrozenWords,
+  frozenWords,
+  isLoading,
 }) => {
   const [showFreezeModal, setShowFreezeModal] = useState(false);
   const [showMoModeModal, setShowModeModal] = useState(false);
 
   return (
     <Stack
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       spacing={2}
-      justifyContent='center'
+      justifyContent="center"
       sx={{ paddingTop: 1.5, paddingBottom: 1 }}
     >
       <Button
-        variant='outlined'
-        size='medium'
-        color='primary'
+        variant="outlined"
+        size="medium"
+        color="primary"
         onClick={() => setShowModeModal(true)}
+        disabled={isLoading}
         sx={{
           textTransform: "none",
           mr: 2,
@@ -38,10 +40,10 @@ const ModeNavigationForMobile = ({
       </Button>
       <Button
         onClick={() => setShowFreezeModal(true)}
-        // disabled={!userPackage || userPackage === "free"}
+        disabled={!userPackage || userPackage === "free"}
         sx={{ textAlign: "right" }}
         startIcon={<AcUnit />}
-        variant='outlined'
+        variant="outlined"
       >
         Freeze Words
       </Button>
@@ -52,13 +54,14 @@ const ModeNavigationForMobile = ({
         setSelectedMode={setSelectedMode}
         showModeModal={showMoModeModal}
         userPackage={userPackage}
+        isLoading={isLoading}
       />
 
       <MobileFreezeModal
         handleClose={() => setShowFreezeModal(false)}
         isFreeze={showFreezeModal}
-        freezeWords={freezeWords}
-        setFreezeWords={setFreezeWords}
+        initialFrozenWords={initialFrozenWords}
+        frozenWords={frozenWords}
         userPackage={userPackage}
       />
     </Stack>

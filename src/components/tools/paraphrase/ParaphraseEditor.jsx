@@ -91,7 +91,7 @@ const ParaphraseEditor = ({
 
       const styledHtml = html.replaceAll(
         `<span style="color:#006ACC; cursor: pointer; display: inline" class="freeze-word-text">${word}</span>`,
-        word
+        word,
       );
       setHtml(styledHtml);
       setWordFreeze("Word Unfreeze");
@@ -100,7 +100,7 @@ const ParaphraseEditor = ({
       setFreezeWords((prevState) => [...prevState, word.trim()]);
       const styledHtml = html.replaceAll(
         word,
-        `<span style="color:#006ACC; cursor: pointer; display: inline" class="freeze-word-text">${word}</span>`
+        `<span style="color:#006ACC; cursor: pointer; display: inline" class="freeze-word-text">${word}</span>`,
       );
       setHtml(styledHtml);
       setWordFreeze("Word Freeze");
@@ -207,7 +207,7 @@ const ParaphraseEditor = ({
           onMouseUp={handleMouseUp}
           onPaste={handlePaste}
           onChange={(e) => handleChange(e.target.value)}
-          tagName='div'
+          tagName="div"
           className={style.content_editable}
           style={{ whiteSpace: "pre-wrap" }}
         />
@@ -218,7 +218,7 @@ const ParaphraseEditor = ({
         open={open}
         anchorEl={anchorEl}
         transition
-        placement='top'
+        placement="top"
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
@@ -242,8 +242,8 @@ const ParaphraseEditor = ({
                 freezeWords.includes(word)
                   ? "Unfreeze"
                   : paidUser
-                  ? "Freeze"
-                  : "Please upgrade to Freeze"
+                    ? "Freeze"
+                    : "Please upgrade to Freeze"
               }${instances > 1 ? ` all ${instances} instances` : ""}`}
             </Box>
           </Fade>

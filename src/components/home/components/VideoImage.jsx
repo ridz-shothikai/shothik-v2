@@ -32,7 +32,7 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
           backgroundColor: "transparent",
           borderRadius: "70px",
         }}
-        alt='Hero video'
+        alt="Hero video"
         unoptimized
         width={width}
         height={height}

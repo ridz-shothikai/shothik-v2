@@ -1,6 +1,6 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
@@ -31,11 +31,16 @@ export default function MainLayout({ children }) {
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const dispatch = useDispatch();
-  const { isLoading } = useGetUserQuery();
+  const { user, accessToken } = useSelector((state) => state.auth);
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
   useGetUserLimitQuery();
 
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   const [login] = useLoginMutation();
-  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setIsLoadingPage(false);
@@ -77,8 +82,8 @@ export default function MainLayout({ children }) {
 
   return (
     <ProgressProvider
-      height='3px'
-      color='#00AB55'
+      height="3px"
+      color={"#00AB55"}
       options={{ showSpinner: false }}
       shallowRouting
     >
@@ -86,14 +91,14 @@ export default function MainLayout({ children }) {
         <MainHeader />
         <Box
           sx={{
-            bgcolor: "background.neutral",
+            bgcolor: isDarkMode ? "#212121" : "background.neutral",
             display: { sm: "flex" },
             minHeight: { sm: 1 },
             overflow: "hidden",
           }}
         >
           {!isMobile && isNavMini ? (
-            <NavMini />
+            <NavMini isDarkMode={isDarkMode} />
           ) : (
             <NavVertical
               openNav={open}

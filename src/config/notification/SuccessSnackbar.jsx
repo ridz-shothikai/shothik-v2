@@ -19,8 +19,8 @@ export default function SuccessSnackbar({ open, onClose, message }) {
     >
       <Alert
         onClose={handleClose}
-        severity='success'
-        variant='outlined'
+        severity="success"
+        variant="outlined"
         sx={{
           width: "100%",
           zIndex: 9999,

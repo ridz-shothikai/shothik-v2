@@ -51,7 +51,7 @@ const CustomAvatar = forwardRef(
 
     return BadgeProps ? (
       <Badge
-        overlap='circular'
+        overlap="circular"
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         {...BadgeProps}
       >
@@ -60,7 +60,9 @@ const CustomAvatar = forwardRef(
     ) : (
       renderContent
     );
-  }
+  },
 );
+
+CustomAvatar.displayName = "CustomAvatar";
 
 export default CustomAvatar;

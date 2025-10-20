@@ -64,6 +64,11 @@ const AiDetector = () => {
   const { data: userLimit, refetch } = useGetUsesLimitQuery({
     service: "ai-detector",
   });
+  const sessionContent = JSON.parse(
+    sessionStorage.getItem("ai-detect-content"),
+  );
+
+  // console.log(sessionContent, "output contend");
 
   useEffect(() => {
     if (!shareContend) return;
@@ -72,10 +77,10 @@ const AiDetector = () => {
     setOutputContend({
       ...data,
       aiSentences: data.sentences.filter(
-        (sentence) => sentence.highlight_sentence_for_ai
+        (sentence) => sentence.highlight_sentence_for_ai,
       ),
       humanSentences: data.sentences.filter(
-        (sentence) => !sentence.highlight_sentence_for_ai
+        (sentence) => !sentence.highlight_sentence_for_ai,
       ),
     });
     setEnableEdit(false);
@@ -84,8 +89,10 @@ const AiDetector = () => {
   function handleClear() {
     setOutputContend(null);
     setUserInput("");
+    setEnableEdit(true);
   }
-  async function handleSubmit() {
+  // inputData -> only used when we want to pass input data from other component|function
+  async function handleSubmit(inputData = null) {
     try {
       // handle edit;
       if (!enableEdit) {
@@ -97,20 +104,26 @@ const AiDetector = () => {
       trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
-      const res = await scanAidetector({ text: userInput }).unwrap();
+      const res = await scanAidetector({
+        text: inputData ? inputData : userInput,
+      }).unwrap();
       const data = res?.result;
-      if (!data) throw { message: "Something went wrong" };
+      if (!data) throw { message: "Something went wrong" }; // TODO: Instead of throwing error need to show error status. useSnackbar has to used to show toast bar
       setOutputContend({
         ...data,
         aiSentences: data.sentences.filter(
-          (sentence) => sentence.highlight_sentence_for_ai
+          (sentence) => sentence.highlight_sentence_for_ai,
         ),
         humanSentences: data.sentences.filter(
-          (sentence) => !sentence.highlight_sentence_for_ai
+          (sentence) => !sentence.highlight_sentence_for_ai,
         ),
       });
       setEnableEdit(false);
       refetch();
+      // If we have generated output based on session content then we need to clear the session storage
+      if (sessionContent) {
+        sessionStorage.removeItem("ai-detect-content");
+      }
     } catch (err) {
       const error = err?.data;
       if (/LIMIT_REQUEST|PACAKGE_EXPIRED/.test(error?.error)) {
@@ -134,6 +147,22 @@ const AiDetector = () => {
     }
   }
 
+  // This use effect is a connection to other features that checks on session storage for "ai-detect-content", if we find it then we set it to user input and call the handleSubmit function to process it.
+  // Once we call this and get the output result we remove it from the session storage
+
+  // console.log(sessionContent);
+  useEffect(() => {
+    if (sessionContent) {
+      setUserInput(sessionContent);
+      handleSubmit(sessionContent); // passing the content to handleSubmit function so that we don't have to wait for the next useEffect cycle to get the updated userInput value
+      sessionStorage.removeItem("ai-detect-content");
+    }
+
+    return () => {
+      sessionStorage.removeItem("ai-detect-content");
+    };
+  }, [sessionContent]); // no need to include handle submit
+
   if (isContendLoading) {
     return <LoadingScreen />;
   }
@@ -148,20 +177,22 @@ const AiDetector = () => {
               height: isMobile ? 400 : 600,
               display: "flex",
               flexDirection: "column",
+              border: (theme) => `1px solid ${theme.palette.divider}`,
             }}
+            elevation={16}
           >
             {enableEdit ? (
               <TextField
-                name='input'
-                variant='outlined'
-                rows={isMobile ? 13 : 18}
+                name="input"
+                variant="outlined"
+                rows={isMobile ? 13 : 22}
                 fullWidth
                 multiline
-                placeholder='Enter your text here...'
+                placeholder="Enter your text here..."
                 value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 sx={{
-                  flexGrow: 1,
+                  // flexGrow: 1,
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
                       border: "none",
@@ -179,7 +210,7 @@ const AiDetector = () => {
                         style={{
                           backgroundColor: getColorByPerplexity(
                             item.highlight_sentence_for_ai,
-                            item.perplexity
+                            item.perplexity,
                           ),
                         }}
                       >
@@ -211,7 +242,7 @@ const AiDetector = () => {
               >
                 <WordCounter
                   btnText={enableEdit ? "Scan" : "Edit"}
-                  toolName='ai-detector'
+                  toolName="ai-detector"
                   userInput={userInput}
                   isLoading={isLoading}
                   handleClearInput={handleClear}
@@ -252,7 +283,7 @@ const AiDetector = () => {
         <ShareURLModal
           open={showShareModal}
           handleClose={() => setshowShareModal(false)}
-          title='AI Detection Report'
+          title="AI Detection Report"
           content={outputContend}
           hashtags={["Shothik AI", "AI Detector"]}
         />
@@ -272,11 +303,11 @@ function UsesLimit({ userLimit }) {
   };
 
   return (
-    <Stack sx={{ padding: 2 }} alignItems='flex-end'>
+    <Stack sx={{ padding: 2 }} alignItems="flex-end">
       <Box sx={{ width: { xs: 220, sm: 250 } }}>
         <LinearProgress
           sx={{ height: 6 }}
-          variant='determinate'
+          variant="determinate"
           value={progressPercentage()}
         />
         <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>

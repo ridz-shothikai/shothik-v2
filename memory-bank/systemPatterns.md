@@ -18,3 +18,16 @@ The platform has different pricing plans (Free, Value, Pro, Unlimited). Some too
 The system architecture consists of React for the UI, Next.js for routing and server-side rendering, and Material-UI for the component library. Key technical decisions include using Redux Toolkit for state management and React Hook Form for form handling. The system uses a dual authentication system with email/password login and Google login.
 
 The frontend uses a layered architecture with React components for the UI, Next.js for routing and server-side rendering, and Material-UI for styling. The application uses Redux for state management, with separate slices for `auth`, `inputOutput`, `settings`, and `tools`, and custom hooks for reusable logic. The `components` directory is organized into subdirectories based on features (e.g., `auth`, `b2b`, `blog`, `home`, `navigation`, `payment`, `pricing`, `tools`). The application supports light and dark themes, which are configured using Material-UI's theming capabilities. The `MUIProvider` component is used to apply the theme to the application. The `useResponsive` hook is used to make the application responsive to different screen sizes.
+
+## Color Palette
+
+The primary theme color used throughout the frontend is a shade of green, identified by the hex code `#00A76F`. Other colors frequently used include:
+
+- `#22C870` (another shade of green)
+- `#0a66c2` (blue, likely for LinkedIn)
+- `#1877F2` (blue, likely for Facebook)
+- `#00AAEC` (blue, likely for Twitter)
+- `#E02D69` (pink/red, likely for Instagram)
+- `#5865f2` (purple, likely for Discord)
+- Various shades of gray and white, often referenced via Material UI's theme palette (e.g., `grey.800`, `common.white`).
+- Material UI's default palette colors (e.g., `primary.main`, `text.secondary`, `background.paper`).

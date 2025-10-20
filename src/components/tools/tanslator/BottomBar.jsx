@@ -1,6 +1,5 @@
 import { ContentCopy, VerticalAlignBottom } from "@mui/icons-material";
-import { Button, IconButton, Stack, Tooltip } from "@mui/material";
-import React from "react";
+import { IconButton, Stack, Tooltip } from "@mui/material";
 import useResponsive from "../../../hooks/useResponsive";
 import useSnackbar from "../../../hooks/useSnackbar";
 import WordCounter from "../common/WordCounter";
@@ -24,14 +23,14 @@ const BottomBar = ({
     enqueueSnackbar("Copied to clipboard");
   }
 
-  const handleDownload = () => {
-    downloadFile(outputContend, "translation");
+  const handleDownload = async () => {
+    await downloadFile(outputContend, "translation");
     enqueueSnackbar("Text Downloaded");
   };
 
   return (
     <WordCounter
-      toolName='translator'
+      toolName="translator"
       userInput={userInput}
       userPackage={userPackage}
       isLoading={isLoading}
@@ -39,36 +38,36 @@ const BottomBar = ({
       handleSubmit={handleSubmit}
       btnText={outputContend ? "Regenerate" : "Translate"}
       sticky={320}
-      ExtraBtn={
-        outputContend ? (
-          <Button
-            onClick={handleHumanize}
-            variant='contained'
-            disabled={isLoading}
-            loading={isHumanizing}
-            sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-          >
-            Humanize
-          </Button>
-        ) : null
-      }
+      // ExtraBtn={
+      //   outputContend ? (
+      //     <Button
+      //       onClick={handleHumanize}
+      //       variant='contained'
+      //       disabled={isLoading}
+      //       loading={isHumanizing}
+      //       sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
+      //     >
+      //       Humanize
+      //     </Button>
+      //   ) : null
+      // }
     >
-      <Stack direction='row' alignItems='center'>
+      <Stack direction="row" alignItems="center">
         {outputContend && (
           <>
-            <Tooltip title='Export' placement='top' arrow>
+            <Tooltip title="Export" placement="top" arrow>
               <IconButton
                 onClick={handleDownload}
-                aria-label='download'
+                aria-label="download"
                 size={isMobile ? "small" : "large"}
               >
                 <VerticalAlignBottom sx={{ fontWeight: 600 }} />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Copy Full Text' placement='top' arrow>
+            <Tooltip title="Copy Full Text" placement="top" arrow>
               <IconButton
                 onClick={handleCopy}
-                aria-label='copy'
+                aria-label="copy"
                 size={isMobile ? "small" : "large"}
               >
                 <ContentCopy />

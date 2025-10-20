@@ -39,9 +39,9 @@ export default function UploadAvatar({
         }
       >
         <input
-          id='avatarInput'
-          type='file'
-          accept='image/*'
+          id="avatarInput"
+          type="file"
+          accept="image/*"
           style={{ display: "none" }}
           onChange={handleFileChange}
           disabled={loading}
@@ -49,7 +49,7 @@ export default function UploadAvatar({
 
         {file ? (
           <Image
-            alt='avatar'
+            alt="avatar"
             src={file}
             width={144}
             height={144}
@@ -69,15 +69,15 @@ export default function UploadAvatar({
             }}
           >
             <AddAPhotoRounded sx={{ mb: 1, color: "gray" }} />
-            <Typography variant='caption'>Upload Photo</Typography>
+            <Typography variant="caption">Upload Photo</Typography>
           </Box>
         )}
       </Box>
 
       {helperText && (
         <Typography
-          variant='caption'
-          color='error'
+          variant="caption"
+          color="error"
           sx={{ textAlign: "center", mt: 1 }}
         >
           {helperText}

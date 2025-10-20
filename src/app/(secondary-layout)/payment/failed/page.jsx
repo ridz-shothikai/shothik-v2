@@ -31,16 +31,16 @@ export default function PaymentFailed() {
           }}
         />
 
-        <Typography variant='h4'>Failed</Typography>
-        <Typography sx={{ my: 2 }} variant='body1'>
-          We're sorry, but your payment could not be processed.
+        <Typography variant="h4">Failed</Typography>
+        <Typography sx={{ my: 2 }} variant="body1">
+          We&apos;re sorry, but your payment could not be processed.
         </Typography>
 
         <Button
           component={NextLink}
-          href='/?utm_source=internal'
-          size='large'
-          variant='contained'
+          href="/?utm_source=internal"
+          size="large"
+          variant="contained"
         >
           Go to Home
         </Button>

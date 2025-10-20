@@ -1,6 +1,5 @@
 import { Alert } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
-import * as React from "react";
 
 export default function InfoSnackbar({ open, onClose, message }) {
   const handleClose = (event, reason) => {
@@ -20,8 +19,8 @@ export default function InfoSnackbar({ open, onClose, message }) {
     >
       <Alert
         onClose={handleClose}
-        severity='info'
-        variant='outlined'
+        severity="info"
+        variant="outlined"
         sx={{
           width: "100%",
           zIndex: 9999,

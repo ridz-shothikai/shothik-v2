@@ -1,14 +1,14 @@
 export const grammarfaq = [
   {
-    question: "What is Shothik AI's Grammar Checker?",
+    question: "What is Shothik AI's Grammar Fix?",
     answer:
-      "Our Grammar Checker is an advanced writing tool that helps you identify and correct grammatical errors, spelling mistakes, punctuation issues, and style improvements in your text. It uses AI-powered algorithms to provide comprehensive writing suggestions while maintaining your original message and tone.",
+      "Our Grammar Fix is an advanced writing tool that helps you identify and correct grammatical errors, spelling mistakes, punctuation issues, and style improvements in your text. It uses AI-powered algorithms to provide comprehensive writing suggestions while maintaining your original message and tone.",
   },
   {
     question: "What types of errors does it detect?",
     answer: (
       <>
-        <p>Our Grammar Checker identifies various types of writing issues:</p>
+        <p>Our Grammar Fix identifies various types of writing issues:</p>
         <ul style={{ marginLeft: "1.5em" }}>
           <li>
             <strong>Grammar:</strong> Subject-verb agreement, tense consistency,
@@ -36,10 +36,10 @@ export const grammarfaq = [
     ),
   },
   {
-    question: "What makes our Grammar Checker unique?",
+    question: "What makes our Grammar Fix unique?",
     answer: (
       <>
-        <p>Our Grammar Checker stands out with these features:</p>
+        <p>Our Grammar Fix stands out with these features:</p>
         <ul style={{ marginLeft: "1.5em" }}>
           <li>Context-aware corrections that understand your writing intent</li>
           <li>Real-time suggestions as you type</li>
@@ -53,7 +53,7 @@ export const grammarfaq = [
     question: "How do I get the best results?",
     answer: (
       <>
-        <p>To maximize the benefits of our Grammar Checker:</p>
+        <p>To maximize the benefits of our Grammar Fix:</p>
         <ul style={{ marginLeft: "1.5em" }}>
           <li>Select your preferred language</li>
           <li>Check the text in real-time as you type</li>

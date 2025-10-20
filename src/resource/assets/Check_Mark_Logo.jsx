@@ -9,16 +9,16 @@ const ShothikCheckMark = forwardRef((_, ref) => {
   const logo = (
     <Box
       ref={ref}
-      component='div'
+      component="div"
       sx={{
         width: { xs: 100, sm: 100, md: 100, lg: 150 },
         height: "auto",
       }}
     >
       <Image
-        src='/moscot.png'
+        src="/moscot.png"
         priority
-        alt='shothik_logo'
+        alt="shothik_logo"
         width={100}
         height={40}
         style={{
@@ -33,7 +33,7 @@ const ShothikCheckMark = forwardRef((_, ref) => {
   return (
     <Link
       component={NextLink}
-      href='/?utm_source=internal'
+      href="/?utm_source=internal"
       sx={{ display: "contents" }}
     >
       <div
@@ -49,5 +49,7 @@ const ShothikCheckMark = forwardRef((_, ref) => {
     </Link>
   );
 });
+
+ShothikCheckMark.displayName = "ShothikCheckMark";
 
 export default ShothikCheckMark;

@@ -32,7 +32,7 @@ export const WhyChooseUsSection = () => (
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        variant='h1'
+        variant="h1"
         sx={{
           color: "common.white",
           fontSize: { xs: "3rem", md: "6rem" },
@@ -44,8 +44,8 @@ export const WhyChooseUsSection = () => (
       >
         Why{" "}
         <Image
-          src='/b2b/icon-1.svg'
-          alt='icon'
+          src="/b2b/icon-1.svg"
+          alt="icon"
           width={24}
           height={24}
           style={{
@@ -86,7 +86,7 @@ export const WhyChooseUsSection = () => (
           >
             <Image src={item.icon} alt={item.title} width={60} height={45} />
             <Typography
-              variant='h4'
+              variant="h4"
               sx={{
                 mt: "2rem",
                 mb: "1rem",
@@ -102,7 +102,7 @@ export const WhyChooseUsSection = () => (
               {item.title}
             </Typography>
             <Typography
-              variant='body2'
+              variant="body2"
               textAlign={"center"}
               sx={{
                 color: "#D3D3D3",

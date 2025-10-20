@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
   return (
     <Stack sx={{ backgroundColor: "background.neutral" }}>
       <Box
-        component='header'
+        component="header"
         sx={{
           height: { xs: 50, sm: 80 },
           padding: { sm: 3, xs: 1 },
@@ -27,8 +27,8 @@ export default function ResetPasswordPage() {
       </Box>
       <Stack
         sx={{ height: { xs: "calc(100vh - 50px)", sm: "calc(100vh - 80px)" } }}
-        alignItems='center'
-        justifyContent='center'
+        alignItems="center"
+        justifyContent="center"
       >
         <Box
           sx={{
@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
           }}
         >
           <PasswordIcon sx={{ mb: 5, height: 96 }} />
-          <Typography variant='h3'>Reset your password</Typography>
+          <Typography variant="h3">Reset your password</Typography>
 
           <Typography sx={{ color: "text.secondary", mb: 5 }}>
             Please enter the password

@@ -30,15 +30,15 @@ export default function PaymentSuccess() {
           width: 60,
         }}
       />
-      <Typography variant='h4'>Payment Successful</Typography>
-      <Typography sx={{ mt: 1, mb: 2 }} variant='body1'>
+      <Typography variant="h4">Payment Successful</Typography>
+      <Typography sx={{ mt: 1, mb: 2 }} variant="body1">
         Thank you for your payment.
       </Typography>
       <Button
         component={NextLink}
-        href='/?utm_source=internal'
-        size='large'
-        variant='contained'
+        href="/?utm_source=internal"
+        size="large"
+        variant="contained"
       >
         Go to Home
       </Button>

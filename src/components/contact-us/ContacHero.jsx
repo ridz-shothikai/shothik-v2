@@ -17,10 +17,10 @@ export default function ContactHero() {
     >
       <Container>
         <Box>
-          <Stack direction='row' sx={{ color: "primary.main" }}>
+          <Stack direction="row" sx={{ color: "primary.main" }}>
             {["W", "h", "e", "r", "e"].map((w, i) => (
               <Typography
-                variant='h1'
+                variant="h1"
                 key={i}
                 component={motion.span}
                 initial={{ x: 20, opacity: 0 }}
@@ -34,8 +34,8 @@ export default function ContactHero() {
 
           <Stack
             spacing={2}
-            display='inline-flex'
-            direction='row'
+            display="inline-flex"
+            direction="row"
             sx={{ color: "common.white" }}
           >
             {["to", "find", "us?"].map((w, i) => (
@@ -44,7 +44,7 @@ export default function ContactHero() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
-                variant='h1'
+                variant="h1"
                 key={i}
               >
                 {w}
@@ -63,8 +63,8 @@ export default function ContactHero() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
               >
-                <Typography variant='h6'>{office.name}</Typography>
-                <Typography variant='body2'>{office.address}</Typography>
+                <Typography variant="h6">{office.name}</Typography>
+                <Typography variant="body2">{office.address}</Typography>
               </Grid2>
             ))}
           </Grid2>

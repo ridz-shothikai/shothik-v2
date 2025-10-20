@@ -12,7 +12,7 @@ const links = [
     iconSrc: "/navbar/paraphrase.svg",
   },
   {
-    title: "Humanize",
+    title: "Humanize GPT",
     link: "/humanize-gpt",
     iconColor: "#FF595E",
     iconSrc: "/navbar/bypass-svgrepo-com.svg",
@@ -24,8 +24,14 @@ const links = [
     iconSrc: "/navbar/ai_detector_icon.svg",
   },
   {
-    title: "Grammar",
-    link: "/grammar-check",
+    title: "Plagiarism Checker",
+    link: "/plagiarism-checker",
+    iconColor: "#6A4C93",
+    iconSrc: "/navbar/plagiarism_checker.svg",
+  },
+  {
+    title: "Grammar Fix",
+    link: "/grammar-checker",
     iconColor: "#8AC926",
     iconSrc: "/navbar/grammar.svg",
   },
@@ -42,10 +48,16 @@ const links = [
     iconSrc: "/navbar/translator.svg",
   },
   {
-    title: "Research",
-    link: "/research",
-    iconColor: "#B71D18",
-    iconSrc: "/navbar/research.svg",
+    title: "Agent",
+    link: "/agents",
+    iconColor: "#1976D2",
+    iconSrc: "/navbar/ai-brain.svg",
+  },
+  {
+    title: "Marketing Automation",
+    link: "/marketing-automation",
+    iconColor: "#1976D2",
+    iconSrc: "/navbar/marketing-automation.svg",
   },
 ];
 
@@ -56,7 +68,6 @@ const MobileNavigation = () => {
 
   if (!isMobile) return null;
 
-
   const validPath = links.some((tab) => tab.link === pathname)
     ? pathname
     : false;
@@ -66,13 +77,13 @@ const MobileNavigation = () => {
       <Tabs
         sx={{ mt: -1, paddingX: 2, justifyContent: "center" }}
         onChange={(e, newValue) => push(newValue)}
-        scrollButtons={false}
+        scrollButtons={true}
         value={validPath}
       >
         {links.map((tab) => (
           <Tab
             key={tab.link}
-            iconPosition='top'
+            iconPosition="top"
             icon={
               <SvgColor
                 sx={{ width: 30, height: 30 }}

@@ -1,6 +1,5 @@
 import { Container } from "@mui/material";
 import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
-import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
@@ -43,16 +42,19 @@ export async function generateMetadata() {
 const Paraphrase = () => {
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 12, xs: 10 } }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: { md: 12, xs: 10 },
+        maxWidth: "100% !important",
+      }}
     >
-      <ErrorBoundary>
-        <ParaphraseContend />
-      </ErrorBoundary>
+      <ParaphraseContend />
       <ToolsSepecigFaq
-        tag='All you need to know about Paraphrase feature'
+        tag="All you need to know about Paraphrase feature"
         data={paraphraseFaq}
       />
-      <ToolsCTA toolType='paraphrase' />
+      <ToolsCTA toolType="paraphrase" />
       <HomeAdvertisement />
       <div hidden>
         <h1>Instantly Paraphrase & Humanize AI Text with Shothik AI</h1>

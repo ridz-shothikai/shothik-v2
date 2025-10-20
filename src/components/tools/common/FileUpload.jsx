@@ -1,8 +1,8 @@
 "use client";
-import { UploadFileRounded } from "@mui/icons-material";
-import { Box, Button, CircularProgress, Tooltip } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import mammoth from "mammoth";
 import { useRef, useState } from "react";
+import CustomUiButton from "../../ui/CustomUiButton";
 import pdfToText from "./pdftotext";
 
 function FileUpload({ isMobile, setInput }) {
@@ -38,6 +38,22 @@ function FileUpload({ isMobile, setInput }) {
     return "";
   };
 
+  // HELPER FUNCTION
+  const sanitizeMarkdown = (text) => {
+    if (!text) return "";
+
+    return (
+      text
+        // Remove escaped markdown characters
+        .replace(/\\([*_\-#`~[\](){}])/g, "$1")
+        // Normalize multiple spaces to single space
+        .replace(/\s+/g, " ")
+        // Normalize newlines (keep paragraph breaks)
+        // .replace(/\n{3,}/g, "\n\n")
+        .trim()
+    );
+  };
+
   const convertPdfToHtml = async (pdfFile) => {
     try {
       let text = await pdfToText(pdfFile);
@@ -54,15 +70,16 @@ function FileUpload({ isMobile, setInput }) {
       try {
         const result = await mammoth.convertToHtml({ arrayBuffer });
 
-        // Ensure line breaks are added for new paragraphs
-        let htmlWithLineBreaks = result.value.replace(/<\/p>/g, "</p><br>");
-        // Wrap the HTML in a container with a class for styling
-        htmlWithLineBreaks = htmlWithLineBreaks.replace(
-          /<p>/g,
-          '<p style="margin: 0">'
-        );
+        // Convert paragraph and break tags to newlines, then strip all other HTML tags
+        let plainText = result.value.replace(/<\/p>/g, "\n\n"); // Replace closing paragraph tags with two newlines
+        plainText = plainText.replace(/<br\s*\/?>/g, "\n"); // Replace break tags with one newline
+        plainText = plainText.replace(/<p[^>]*>/g, "\n"); // Replace opening paragraph tags (with attributes) with one newline
+        plainText = plainText.replace(/<[^>]*>/g, ""); // Strip any remaining HTML tags
 
-        setInput(htmlWithLineBreaks);
+        // Add sanitization here
+        plainText = sanitizeMarkdown(plainText);
+
+        setInput(plainText.trim()); // Trim leading/trailing whitespace
       } catch (error) {
         console.error("Error converting DOCX to HTML:", error);
       }
@@ -71,32 +88,17 @@ function FileUpload({ isMobile, setInput }) {
   };
 
   return (
-    <Tooltip title='Browse documents (DOCX, PDF).' arrow placement='top'>
-      <Button
-        role={undefined}
-        component='label'
-        tabIndex={-1}
-        size={isMobile ? "small" : "large"}
-        variant={"outlined"}
-        color='success'
-        startIcon={
-          isProcessing ? (
-            <CircularProgress
-              size={isMobile ? 12 : 16}
-              sx={{ color: "gray" }}
-            />
-          ) : (
-            <UploadFileRounded />
-          )
-        }
-        sx={{
-          border: "2px solid",
-        }}
+    <Tooltip title="Browse documents (DOCX, PDF)." arrow placement="top">
+      <CustomUiButton
+        textLable={`Upload ${isMobile ? "Doc" : "Document"}`}
+        startIconSrc={"/icons/cloud-download-up.svg"}
+        iconClassName={"w-5 h-5 lg:w-5 lg:h-5"}
+        className={"font-bold"}
         disabled={isProcessing}
+        onClick={() => inputRef.current.click()} // Add onClick handler
       >
-        Upload {isMobile ? "Doc" : "Document"}
         <Box
-          component='input'
+          component="input"
           sx={{
             clip: "rect(0 0 0 0)",
             clipPath: "inset(50%)",
@@ -110,10 +112,10 @@ function FileUpload({ isMobile, setInput }) {
           }}
           ref={inputRef}
           onChange={handleFileChange}
-          type='file'
-          accept='application/pdf, .docx'
+          type="file"
+          accept="application/pdf, .docx"
         />
-      </Button>
+      </CustomUiButton>
     </Tooltip>
   );
 }

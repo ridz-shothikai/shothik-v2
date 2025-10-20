@@ -1,5 +1,5 @@
 "use client";
-import { Box, Container } from "@mui/material";
+import { Box, Container, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,20 +19,37 @@ export default function Main({ children }) {
   const dispatch = useDispatch();
   const pathName = usePathname();
 
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
+  const containerWidth =
+    pathName === "/" ||
+    pathName === "/paraphrase" ||
+    pathName === "/grammar-checker"
+      ? "100%"
+      : pathName === "/humanize-gpt"
+        ? "100%"
+        : "xl";
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       dispatch(loadSettingsFromLocalStorage());
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <Box
-      component='main'
+      component="main"
       sx={{
         flexGrow: 1,
+        position: "relative",
+        backgroundColor:
+          pathName === "/"
+            ? `${isDarkMode ? "#161C24" : "#FFF"}`
+            : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
-          px: 2,
+          // px: 2,
           pt: `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`,
           width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
           ...(isNavMini && {
@@ -43,15 +60,36 @@ export default function Main({ children }) {
       }}
     >
       <Container
-        maxWidth='xl'
-        overflow='hidden'
+        maxWidth={containerWidth}
+        overflow="hidden"
         disableGutters
-        sx={{ minHeight: "calc(100vh - 90px)" }}
+        sx={{ minHeight: "calc(100vh - 70px)" }}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
-        {children}
+        {pathName.startsWith("/paraphrase") ? (
+          <Box
+            sx={{
+              display: "flex",
+              position: "relative",
+              justifyContent: "space-evenly",
+            }}
+          >
+            <Box
+              sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+            >
+              {children}
+            </Box>
+            {/* <VerticalMenu/> */}
+          </Box>
+        ) : (
+          children
+        )}
       </Container>
-      {pathName !== "/research" ? <FooterServerComponent /> : null}
+      {pathName !== "/research" &&
+      !pathName.startsWith("/agents") &&
+      !pathName.startsWith("/slide") ? (
+        <FooterServerComponent />
+      ) : null}
     </Box>
   );
 }

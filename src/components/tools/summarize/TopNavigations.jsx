@@ -1,5 +1,4 @@
 import { Box, Slider, Stack, Tab, Tabs, Typography } from "@mui/material";
-import React from "react";
 
 const TopNavigations = ({
   selectedMode,
@@ -11,11 +10,11 @@ const TopNavigations = ({
 }) => {
   return (
     <Stack
-      direction='row'
-      alignItems='center'
-      justifyContent='space-between'
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
       sx={{ mb: 1 }}
-      flexWrap='wrap'
+      flexWrap="wrap"
       rowGap={1}
     >
       <Box>
@@ -53,19 +52,19 @@ const TopNavigations = ({
           mr: 2,
         }}
       >
-        <Typography variant='subtitle2'>Length:</Typography>
+        <Typography variant="subtitle2">Length:</Typography>
         <Slider
           style={{ width: "150px" }}
-          aria-label='Length'
+          aria-label="Length"
           getAriaValueText={(value) => LENGTH[value]}
           value={Object.keys(LENGTH).find(
-            (key) => LENGTH[key] === currentLength
+            (key) => LENGTH[key] === currentLength,
           )}
           marks
           step={20}
           min={20}
           max={80}
-          valueLabelDisplay='on'
+          valueLabelDisplay="on"
           valueLabelFormat={currentLength}
           onChange={(_, value) => setCurrentLength(LENGTH[value])}
           sx={{

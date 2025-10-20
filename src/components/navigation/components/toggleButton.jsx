@@ -6,6 +6,7 @@ import { NAV } from "../../../config/config/nav";
 import useResponsive from "../../../hooks/useResponsive";
 import { toggleThemeLayout } from "../../../redux/slice/settings";
 import { bgBlur } from "../../../resource/cssStyles";
+import { setIsNavVertical } from "../../../redux/slice/tools";
 
 // ----------------------------------------------------------------------
 
@@ -14,6 +15,7 @@ export default function NavToggleButton({ sx, ...other }) {
   const { themeLayout } = useSelector((state) => state.settings);
   const isDesktop = useResponsive("up", "sm");
   const dispatch = useDispatch();
+  const isVerticalNav = useSelector((state) => state.tools.isNavVertical);
 
   if (!isDesktop) {
     return null;
@@ -21,14 +23,17 @@ export default function NavToggleButton({ sx, ...other }) {
 
   return (
     <IconButton
-      size='small'
-      onClick={() => dispatch(toggleThemeLayout())}
+      size="small"
+      onClick={() => {
+        dispatch(toggleThemeLayout());
+        dispatch(setIsNavVertical(!isVerticalNav));
+      }}
       sx={{
         p: 0.5,
         top: 50,
         position: "fixed",
         left: NAV.W_DASHBOARD - 12,
-        zIndex: theme.zIndex.appBar + 1,
+        zIndex: 1104,
         border: `dashed 1px ${theme.palette.divider}`,
         ...bgBlur({ opacity: 0.48, color: theme.palette.background.default }),
         "&:hover": {
@@ -39,9 +44,9 @@ export default function NavToggleButton({ sx, ...other }) {
       {...other}
     >
       {themeLayout === "vertical" ? (
-        <ChevronLeft fontSize='small' />
+        <ChevronLeft fontSize="small" />
       ) : (
-        <ChevronRight fontSize='small' />
+        <ChevronRight fontSize="small" />
       )}
     </IconButton>
   );

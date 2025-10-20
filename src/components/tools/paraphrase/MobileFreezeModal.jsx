@@ -9,39 +9,33 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 const MobileFreezeModal = ({
   isFreeze,
   handleClose,
-  freezeWords,
-  setFreezeWords,
-  userPackage
+  userPackage,
+  initialFrozenWords,
+  frozenWords,
 }) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
   const router = useRouter();
 
   function handleSubmit(e) {
     e.preventDefault();
-    setFreezeWords((prev) => {
-      if (!prev.includes(value)) {
-        return [...prev, value];
-      }
-      return prev;
-    });
+    frozenWords.toggle(value);
     setValue("");
   }
 
   function handleDelete(word) {
-    const rest = freezeWords.filter((item) => item !== word);
-    setFreezeWords(rest);
+    frozenWords.remove(word);
   }
 
   const needToUpgrade = !userPackage || userPackage === "free";
 
   return (
     <Drawer
-      anchor='right'
+      anchor="right"
       slotProps={{
         paper: {
           sx: { width: "65%" },
@@ -60,7 +54,7 @@ const MobileFreezeModal = ({
           justifyContent: "space-between",
         }}
       >
-        <Typography variant='h4'>Freeze Words</Typography>
+        <Typography variant="h4">Freeze Words</Typography>
 
         <IconButton onClick={handleClose}>
           <CloseRounded />
@@ -72,54 +66,53 @@ const MobileFreezeModal = ({
         style={{ padding: "10px", marginTop: "30px", marginBottom: "20px" }}
       >
         <TextField
-          name='input'
-          variant='outlined'
+          name="input"
+          variant="outlined"
           rows={3}
           fullWidth
           multiline
-          label='Enter the word to freeze...'
+          label="Enter the word to freeze..."
           value={value}
           onChange={(e) => setValue(e.target.value)}
         />
 
         <Button
           sx={{ mt: 1, textAlign: "right" }}
-          variant='contained'
-          type={needToUpgrade?"button":'submit'}
-          onClick={e => {
-            router.push("/pricing?redirect=paraphrase")
-          }
-          }
+          variant="contained"
+          type={needToUpgrade ? "button" : "submit"}
+          onClick={(e) => {
+            router.push("/pricing?redirect=paraphrase");
+          }}
         >
-         {needToUpgrade ? "Upgrade":"Freeze"}
+          {needToUpgrade ? "Upgrade" : "Freeze"}
         </Button>
       </form>
 
-      {freezeWords.length > 0 && (
+      {frozenWords.size > 0 && (
         <Stack
-          direction='row'
+          direction="row"
           sx={{ px: 2, width: "100%" }}
           spacing={{ xs: 1, sm: 2 }}
           useFlexGap
-          flexWrap='wrap'
+          flexWrap="wrap"
         >
           <Chip
-            label='Clear All'
-            color='error'
-            variant='filled'
-            onClick={() => setFreezeWords([])}
-            onDelete={() => setFreezeWords([])}
+            label="Clear All"
+            color="error"
+            variant="filled"
+            onClick={() => frozenWords.reset(initialFrozenWords)}
+            onDelete={() => frozenWords.reset(initialFrozenWords)}
             sx={{
               "& .MuiChip-deleteIcon": { color: "white" },
               fontWeight: 700,
             }}
           />
 
-          {freezeWords.map((item, index) => (
+          {frozenWords.values.map((item, index) => (
             <Chip
               key={index}
               label={item}
-              variant='outlined'
+              variant="outlined"
               onDelete={(e) => handleDelete(item)}
             />
           ))}

@@ -10,9 +10,9 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import { countries } from "../../_mock/countries";
 import useResponsive from "../../hooks/useResponsive";
@@ -37,8 +37,8 @@ export const Label = ({
 }) => {
   return (
     <Stack
-      direction='row'
-      alignItems='center'
+      direction="row"
+      alignItems="center"
       gap={0.5}
       sx={{
         backgroundColor: color,
@@ -62,12 +62,14 @@ export default function AccountGeneral({ user }) {
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
 
+  console.log(user, "account general");
+
   const UpdateUserSchema = Yup.object().shape({
     name: Yup.string()
       .trim()
       .matches(
         /^[a-zA-Z\s'-]+$/,
-        "Name can only contain alphabetic characters, spaces, hyphens, and apostrophes."
+        "Name can only contain alphabetic characters, spaces, hyphens, and apostrophes.",
       )
       .min(3, "Name must be at least 2 characters")
       .max(50, "Name must not exceed 50 characters")
@@ -79,18 +81,21 @@ export default function AccountGeneral({ user }) {
     address: Yup.string(),
     state: Yup.string(),
     city: Yup.string(),
-    zipCode: Yup.number().nullable(),
+    zipCode: Yup.string()
+      .trim()
+      .nullable()
+      .matches(/^\d*$/, "Zip code must be numerical"),
   });
 
   const defaultValues = {
     name: user?.name || "",
     email: user?.email || "",
     image: user?.image || null,
-    country: user?.country || "Bangladesh",
+    country: user?.country !== "unknown" ? user?.country : "BD",
     address: user?.address || "",
     state: user?.state || "",
     city: user?.city || "",
-    zipCode: user?.zipCode || null,
+    zipCode: user?.zipCode != null ? String(user.zipCode) : "",
   };
   const [loading, setLoading] = useState(false);
 
@@ -103,7 +108,23 @@ export default function AccountGeneral({ user }) {
     setValue,
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
+
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user?.name || "",
+        email: user?.email || "",
+        image: user?.image || null,
+        country: user?.country !== "unknown" ? user?.country : "BD",
+        address: user?.address || "",
+        state: user?.state || "",
+        city: user?.city || "",
+        zipCode: user?.zipCode != null ? String(user.zipCode) : "",
+      });
+    }
+  }, [user, reset]);
 
   const onSubmit = async (data) => {
     try {
@@ -156,21 +177,21 @@ export default function AccountGeneral({ user }) {
         <Grid2 size={{ xs: 12, md: 4 }}>
           <Card sx={{ py: 10, px: 3, textAlign: "center" }}>
             {loading ? (
-              <Stack alignItems='center' height={180}>
+              <Stack alignItems="center" height={180}>
                 <Skeleton
-                  variant='circular'
+                  variant="circular"
                   width={isMobile ? 126 : 144}
                   height={isMobile ? 126 : 144}
                 />
               </Stack>
             ) : (
               <RHFUploadAvatar
-                name='image'
+                name="image"
                 onDrop={handleDrop}
                 loading={loading}
                 helperText={
                   <Typography
-                    variant='caption'
+                    variant="caption"
                     sx={{
                       mt: 2,
                       mx: "auto",
@@ -190,30 +211,30 @@ export default function AccountGeneral({ user }) {
         <Grid2 item size={{ xs: 12, md: 8 }}>
           <Card sx={{ p: 3 }}>
             <Stack gap={3}>
-              <Stack direction='row' gap={2}>
-                <RHFTextField name='name' label='Name' />
+              <Stack direction="row" gap={2}>
+                <RHFTextField name="name" label="Name" />
 
                 <RHFTextField
-                  name='email'
-                  label='Email Address'
+                  name="email"
+                  label="Email Address"
                   helperText={
-                    <Stack direction='row' gap={1}>
-                      <Info fontSize='small' /> Email can not be changed after
+                    <Stack direction="row" gap={1}>
+                      <Info fontSize="small" /> Email can not be changed after
                       sign up.
                     </Stack>
                   }
                   endAdornment={
-                    <InputAdornment position='end'>
+                    <InputAdornment position="end">
                       {user?.is_verified ? (
                         <Label
-                          color='primary.main'
+                          color="primary.main"
                           startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
                         >
                           Verified
                         </Label>
                       ) : (
                         <Label
-                          color='error.main'
+                          color="error.main"
                           startIcon={<ErrorRounded sx={{ fontSize: 16 }} />}
                         >
                           Unverified
@@ -224,11 +245,11 @@ export default function AccountGeneral({ user }) {
                   readOnly={true}
                 />
               </Stack>
-              <RHFTextField name='address' label='Address' multiline rows={2} />
+              <RHFTextField name="address" label="Address" multiline rows={2} />
               <Box
                 rowGap={3}
                 columnGap={2}
-                display='grid'
+                display="grid"
                 gridTemplateColumns={{
                   xs: "repeat(1, 1fr)",
                   sm: "repeat(2, 1fr)",
@@ -236,12 +257,12 @@ export default function AccountGeneral({ user }) {
               >
                 <RHFSelect
                   native
-                  name='country'
-                  label='Country'
-                  placeholder='Country'
+                  name="country"
+                  label="Country"
+                  placeholder="Country"
                   onChange={(e) => setValue("country", e.target.value)}
                 >
-                  <option value='' disabled>
+                  <option value="" disabled>
                     Select a country
                   </option>
                   {countries.map(({ code, label }) => (
@@ -252,24 +273,31 @@ export default function AccountGeneral({ user }) {
                 </RHFSelect>
 
                 <RHFTextField
-                  name='state'
-                  placeholder='Please enter your state or region'
+                  name="state"
+                  placeholder="Please enter your state or region"
                 />
 
                 <RHFTextField
-                  name='city'
-                  placeholder='Please enter your city'
+                  name="city"
+                  placeholder="Please enter your city"
                 />
 
                 <RHFTextField
-                  name='zipCode'
-                  placeholder='Please enter your zip code'
+                  name="zipCode"
+                  placeholder="Please enter your zip code"
+                  type="text" // keep text to avoid browser numeric edge cases
+                  restrict="digits" // <-- opt-in sanitization
+                  inputProps={{
+                    inputMode: "numeric", // mobile friendly numeric keyboard
+                    pattern: "[0-9]*",
+                    // don't add an onChange here — unless you know what you're doing.
+                  }}
                 />
               </Box>
             </Stack>
 
-            <Stack spacing={3} alignItems='flex-end' sx={{ mt: 3 }}>
-              <Button type='submit' variant='contained' loading={isSubmitting}>
+            <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
+              <Button type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes
               </Button>
             </Stack>

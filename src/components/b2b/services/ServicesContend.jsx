@@ -19,7 +19,7 @@ const ServicesContend = () => {
     <Stack spacing={5}>
       <HeroSection slug={slug} />
       <ProjectSection slug={slug} />
-      <FeaturesSection features={data} title='Other Services' />
+      <FeaturesSection features={data} title="Other Services" />
     </Stack>
   );
 };

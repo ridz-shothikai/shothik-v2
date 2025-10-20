@@ -13,7 +13,7 @@ export const BookACall = () => {
         color: "common.white",
       }}
     >
-      <Grid2 container justifyContent='space-between'>
+      <Grid2 container justifyContent="space-between">
         <Grid2
           component={motion.div}
           initial={{ x: -20, opacity: 0 }}
@@ -62,13 +62,13 @@ export const BookACall = () => {
             height: "100%",
           }}
         >
-          <Typography variant='body1'>
+          <Typography variant="body1">
             Book a 15-minute call with our team to discuss your business goals
           </Typography>
-          <Link href='/contact-us' style={{ textDecoration: "none" }}>
+          <Link href="/contact-us" style={{ textDecoration: "none" }}>
             <Button
-              variant='contained'
-              color='primary'
+              variant="contained"
+              color="primary"
               endIcon={<ArrowForward />}
               sx={{
                 backgroundColor: "primary.lighter",

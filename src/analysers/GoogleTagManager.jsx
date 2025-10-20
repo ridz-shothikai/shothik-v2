@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 
 const GoogleTagManager = () => {
-  const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+  const GTM_ID = "GTM-PPRFW7NP";
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -40,8 +40,8 @@ const GoogleTagManager = () => {
       <noscript>
         <iframe
           src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-          height='0'
-          width='0'
+          height="0"
+          width="0"
           style={{ display: "none", visibility: "hidden" }}
         ></iframe>
       </noscript>

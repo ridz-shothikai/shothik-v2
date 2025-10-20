@@ -12,20 +12,20 @@ export const toolsApiSlice = createApi({
     spellChecker: builder.mutation({
       query: (payload) => {
         return {
-          url: "/bangla-speel-check",
+          url: "/grammar/check",
           method: "POST",
           body: payload,
         };
       },
     }),
     paraphraseForTagging: builder.mutation({
-      query: (payload) => {
-        return {
-          url: "/paraphrase-for-tagging",
-          method: "POST",
-          body: payload,
-        };
-      },
+      query: (payload) => ({
+        url: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/p-v2/api/paraphrase-for-tagging`,
+        // url: `http://localhost:3050/api/paraphraseV2`,
+        // url: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/paraphrase-for-tagging`,
+        method: "POST",
+        body: payload,
+      }),
     }),
     reportForSentence: builder.mutation({
       query: (payload) => {
@@ -37,13 +37,13 @@ export const toolsApiSlice = createApi({
       },
     }),
     paraphrased: builder.mutation({
-      query: (payload) => {
-        return {
-          url: "/paraphraseV2",
-          method: "POST",
-          body: payload,
-        };
-      },
+      query: (payload) => ({
+        url: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/p-v2/api/paraphraseV2`,
+        // url: `http://localhost:3050/api/paraphraseV2`,
+        // url: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/paraphraseV2`,
+        method: "POST",
+        body: payload,
+      }),
     }),
     getUsesLimit: builder.query({
       query: (payload) => {
@@ -57,7 +57,8 @@ export const toolsApiSlice = createApi({
     humanizeContend: builder.mutation({
       query: (payload) => {
         return {
-          url: "/humanizerV4",
+          // url: "/humanizerV4",
+          url: "/humanizerV5",
           method: "POST",
           body: payload,
         };
@@ -106,6 +107,18 @@ export const toolsApiSlice = createApi({
       keepUnusedDataFor: 24 * 60 * 60,
       refetchOnMountOrArgChange: false,
     }),
+    getAgentSession: builder.query({
+      query: (payload) => ({
+        url: "/agent/session",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    getAgentSessionById: builder.query({
+      query: (session_id) => ({
+        url: `/agent/session/${session_id}`,
+      }),
+    }),
   }),
 });
 
@@ -121,4 +134,6 @@ export const {
   useResearchTrendingQuery,
   useGetResearchQuestionMutation,
   useGetResearchMetaDataQuery,
+  useGetAgentSessionQuery,
+  useGetAgentSessionByIdQuery,
 } = toolsApiSlice;

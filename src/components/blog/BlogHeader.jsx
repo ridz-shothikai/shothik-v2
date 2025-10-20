@@ -24,17 +24,17 @@ const BlogHeader = ({ searchQuery, setSearchQuery }) => {
         mb: 4,
       }}
       container
-      alignItems='center'
+      alignItems="center"
       spacing={2}
     >
       <Grid2 size={{ xs: 12, md: 9 }}>
         <Box sx={{ pt: 4, pb: 2 }}>
-          <Typography variant='h6' color='white' gutterBottom>
+          <Typography variant="h6" color="white" gutterBottom>
             Search our 8,000+ development and sysadmin blogs.
           </Typography>
           <TextField
-            variant='outlined'
-            placeholder='Search Blogs ...'
+            variant="outlined"
+            placeholder="Search Blogs ..."
             value={searchQuery}
             onChange={handleInputChange}
             sx={{
@@ -48,16 +48,16 @@ const BlogHeader = ({ searchQuery, setSearchQuery }) => {
             slotProps={{
               input: {
                 startAdornment: (
-                  <InputAdornment position='start'>
-                    <SearchIcon color='action' />
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
                   </InputAdornment>
                 ),
               },
             }}
           />
           <Typography
-            variant='body2'
-            color='white'
+            variant="body2"
+            color="white"
             sx={{ mt: 1, opacity: 0.8 }}
           >
             search this query on {"questions and answers"}
@@ -66,8 +66,8 @@ const BlogHeader = ({ searchQuery, setSearchQuery }) => {
       </Grid2>
       <Grid2 size={{ xs: 12, md: 3 }}>
         <Image
-          src='/moscot.png'
-          alt='Blog Header Image'
+          src="/moscot.png"
+          alt="Blog Header Image"
           height={180}
           width={200}
         />

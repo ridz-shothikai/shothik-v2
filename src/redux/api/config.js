@@ -7,10 +7,14 @@ export const baseQuery = fetchBaseQuery({
     const token =
       getState()?.auth?.accessToken || localStorage.getItem("accessToken");
 
-    headers.set("Access-Control-Allow-Origin", "*");
-    if (endpoint !== "uploadImage") {
+    // List of endpoints that should NOT have the JSON content-type header
+    const endpointsThatUploadFiles = ["uploadPresentationFiles", "uploadImage"];
+
+    // If the current endpoint is NOT in our list, then set the header
+    if (!endpointsThatUploadFiles.includes(endpoint)) {
       headers.set("Content-Type", "application/json");
     }
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }

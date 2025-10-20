@@ -1,0 +1,496 @@
+"use client";
+import { Box, Drawer, IconButton, Tooltip, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import compare from "../../../../public/icons/compare-modes.svg";
+import feedback from "../../../../public/icons/feedback.svg";
+import history from "../../../../public/icons/history.svg";
+import hotkeys from "../../../../public/icons/hotkeys.svg";
+import plagiarism from "../../../../public/icons/plagiarism.svg";
+import settings from "../../../../public/icons/settings.svg";
+import tone from "../../../../public/icons/tone.svg";
+import FileHistorySidebar from "./FileHistorySidebar";
+import PlagiarismSidebar from "./PlagiarismSidebar";
+import SettingsSidebar from "./settings/SettingsSidebar";
+
+const ICON_SIZE = "1.5rem";
+
+const VerticalMenu = ({
+  selectedMode,
+  setSelectedMode,
+  outputText,
+  setOutputText,
+  freezeWords,
+  text,
+  selectedLang,
+  highlightSentence,
+  setHighlightSentence,
+  plainOutput,
+  selectedSynonymLevel,
+  mobile = false,
+  fetchFileHistories,
+}) => {
+  const [showSidebar, setShowSidebar] = useState(false);
+  const { demo } = useSelector((state) => state.settings);
+
+  // Mock data for plagiarism demo based on Redux demo state
+  const mockPlagiarismData = (() => {
+    if (demo === "plagiarism_high") {
+      return {
+        score: 100,
+        results: [
+          {
+            id: 1,
+            source: "Example Source 1",
+            matches: [
+              {
+                text: "This is a highly plagiarized sentence.",
+                original: "This is a highly plagiarized sentence.",
+              },
+            ],
+          },
+          {
+            id: 2,
+            source: "Example Source 2",
+            matches: [
+              {
+                text: "Another copied phrase.",
+                original: "Another copied phrase.",
+              },
+            ],
+          },
+        ],
+      };
+    } else if (demo === "plagiarism_low") {
+      return {
+        score: 0,
+        results: [], // No plagiarism matches
+      };
+    }
+    return { score: null, results: [] };
+  })();
+
+  // Disable actions only if plainOutput is empty and demo is not true
+  const disableActions = !demo && (!plainOutput || !plainOutput.trim());
+
+  const ActionButton = ({
+    id,
+    title,
+    icon,
+    onClick,
+    disabled,
+    crown = false,
+    mobile,
+    showTooltip = false,
+    tooltipText,
+  }) => {
+    const theme = useTheme();
+    const words = title.split(" ");
+    const containerStyles = mobile
+      ? {
+          flexDirection: "row",
+          flexWrap: "nowrap",
+          width: "100%", // full-width button
+          alignItems: "center", // center vertically
+          justifyContent: "flex-start", // left-align icon+text
+          gap: theme.spacing(1),
+          padding: theme.spacing(1),
+        }
+      : { flexDirection: "column", gap: 1 };
+    return (
+      <>
+        {showTooltip ? (
+          <Tooltip title={tooltipText || title} placement="right">
+            <Box
+              onClick={!disabled ? onClick : undefined}
+              sx={{
+                // full-width row on mobile, fixed circle otherwise
+                width: mobile ? "100%" : "3.9rem",
+                height: "auto",
+                display: "flex",
+                ...containerStyles,
+                justifyContent: mobile ? "flex-start" : "center",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+                userSelect: "none",
+              }}
+            >
+              {/* icon + optional crown */}
+              <Box
+                sx={{
+                  position: "relative",
+                  // on mobile, no bottom margin; on desktop, a tiny gap
+                  mb: mobile ? 0 : 0.5,
+                  // push text over on mobile only
+                  mr: mobile ? (theme) => theme.spacing(1) : 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {" "}
+                <IconButton
+                  id={id}
+                  size="large"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!disabled) onClick();
+                  }}
+                  disabled={disabled}
+                  disableRipple
+                  disableTouchRipple
+                  sx={{
+                    p: 0,
+                    color: theme.palette.text.primary,
+                  }}
+                >
+                  <Image
+                    src={icon}
+                    priority={true}
+                    width={20}
+                    height={20}
+                    alt=""
+                    className="h-5 w-5"
+                  />
+                </IconButton>
+                {crown && (
+                  <Box
+                    component="img"
+                    src="/premium_crown.svg"
+                    alt="premium crown"
+                    sx={{
+                      position: "absolute",
+                      // mobile: bottom‐right; desktop: top‐right
+                      ...(mobile
+                        ? {
+                            bottom: 0,
+                            right: 0,
+                            transform: "translate(50%, 50%)",
+                          }
+                        : { bottom: "-6px", right: "10px", transform: "none" }),
+                      width: 16,
+                      height: 16,
+                      pointerEvents: "none",
+                    }}
+                  />
+                )}
+              </Box>
+
+              {/* split title into separate lines */}
+              <Typography
+                variant="caption"
+                align="center"
+                sx={{
+                  fontSize: 12,
+                  color: theme.palette.text.primary,
+                  whiteSpace: mobile ? "nowrap" : "pre-line",
+                  lineHeight: 1.2,
+                }}
+              >
+                {mobile
+                  ? title
+                  : words.map((w, i) => (
+                      <React.Fragment key={i}>
+                        {w}
+                        {i < words.length - 1 && "\n"}
+                      </React.Fragment>
+                    ))}
+              </Typography>
+            </Box>
+          </Tooltip>
+        ) : (
+          <Box
+            onClick={!disabled ? onClick : undefined}
+            sx={{
+              // full-width row on mobile, fixed circle otherwise
+              width: mobile ? "100%" : "3.9rem",
+              height: "auto",
+              display: "flex",
+              ...containerStyles,
+              justifyContent: mobile ? "flex-start" : "center",
+              cursor: disabled ? "not-allowed" : "pointer",
+              transition: "background-color 0.2s",
+              userSelect: "none",
+            }}
+          >
+            {/* icon + optional crown */}
+            <Box
+              sx={{
+                position: "relative",
+                // on mobile, no bottom margin; on desktop, a tiny gap
+                mb: mobile ? 0 : 0.5,
+                // push text over on mobile only
+                mr: mobile ? (theme) => theme.spacing(1) : 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {" "}
+              <IconButton
+                id={id}
+                size="large"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!disabled) onClick();
+                }}
+                disabled={disabled}
+                disableRipple
+                disableTouchRipple
+                sx={{
+                  p: 0,
+                  color: theme.palette.text.primary,
+                }}
+              >
+                <Image
+                  src={icon}
+                  priority={true}
+                  width={20}
+                  height={20}
+                  alt=""
+                  className="h-5 w-5"
+                />
+              </IconButton>
+              {crown && (
+                <Box
+                  component="img"
+                  src="/premium_crown.svg"
+                  alt="premium crown"
+                  sx={{
+                    position: "absolute",
+                    // mobile: bottom‐right; desktop: top‐right
+                    ...(mobile
+                      ? {
+                          bottom: 0,
+                          right: 0,
+                          transform: "translate(50%, 50%)",
+                        }
+                      : { bottom: "-6px", right: "10px", transform: "none" }),
+                    width: 16,
+                    height: 16,
+                    pointerEvents: "none",
+                  }}
+                />
+              )}
+            </Box>
+
+            {/* split title into separate lines */}
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{
+                fontSize: 12,
+                color: theme.palette.text.primary,
+                whiteSpace: mobile ? "nowrap" : "pre-line",
+                lineHeight: 1.2,
+              }}
+            >
+              {mobile
+                ? title
+                : words.map((w, i) => (
+                    <React.Fragment key={i}>
+                      {w}
+                      {i < words.length - 1 && "\n"}
+                    </React.Fragment>
+                  ))}
+            </Typography>
+          </Box>
+        )}
+      </>
+    );
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          maxHeight: { xs: "90vh", lg: "638px" },
+          mt: 1,
+          // make full-width on mobile
+          width: mobile ? "100%" : "fit-content",
+          // add a bit of padding so it doesn't touch the screen edge
+          px: mobile ? 2 : 0,
+          display: "flex",
+          flexDirection: "column",
+          gap: { xs: 3.5, lg: 5.5 },
+          zIndex: 10,
+          position: "relative",
+          bottom: 0,
+        }}
+      >
+        {/* Center icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 2, lg: 3 },
+            // left-align the full-width buttons on mobile
+            alignItems: mobile ? "flex-start" : "center",
+            width: mobile ? "100%" : "auto",
+          }}
+        >
+          {" "}
+          <Box id="paraphrase_plagiarism">
+            <ActionButton
+              id="paraphrase_plagiarism_button"
+              title="Check Plagiarism"
+              icon={history}
+              onClick={() => setShowSidebar("plagiarism")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+              showTooltip={true}
+              tooltipText={"Paraphrase text to see plagiarism."}
+            />
+          </Box>
+          <Box id="paraphrase_history">
+            <ActionButton
+              id="paraphrase_history_button"
+              title="History"
+              icon={plagiarism}
+              onClick={() => setShowSidebar("history")}
+              disabled={false}
+              crown={true}
+              mobile={mobile}
+            />
+          </Box>
+          <Box id="paraphrase_compare">
+            <ActionButton
+              id="paraphrase_compare_button"
+              title="Compare Modes"
+              icon={compare}
+              onClick={() => setShowSidebar("compare")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+              showTooltip={true}
+              tooltipText="Paraphrase text to see compare mode."
+            />
+          </Box>
+          <Box id="paraphrase_tone">
+            <ActionButton
+              id="paraphrase_tone_button"
+              title="Tone"
+              icon={tone}
+              onClick={() => setShowSidebar("tone")}
+              disabled={disableActions}
+              crown={true}
+              mobile={mobile}
+              showTooltip={true}
+              tooltipText="Paraphrase text to see tone."
+            />
+          </Box>
+        </Box>
+
+        {/* Bottom icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: { xs: 2, lg: 3 },
+            mt: 2,
+            // same here: stretch full width and left-align
+            alignItems: mobile ? "flex-start" : "center",
+            width: mobile ? "100%" : "auto",
+          }}
+        >
+          {mobile && (
+            <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
+          )}
+          <Box id="paraphrase_settings">
+            <ActionButton
+              title="Settings"
+              id="paraphrase_settings_button"
+              icon={settings}
+              onClick={() => setShowSidebar("settings")}
+              disabled={false}
+              mobile={mobile}
+              showTooltip={true}
+            />
+          </Box>
+          <Box id="paraphrase_feedback">
+            <ActionButton
+              id="paraphrase_feedback_button"
+              title="Feedback"
+              icon={feedback}
+              onClick={() => setShowSidebar("feedback")}
+              disabled={false}
+              mobile={mobile}
+              showTooltip={true}
+            />
+          </Box>
+          <Box id="paraphrase_shortcuts">
+            <ActionButton
+              id="paraphrase_shortcuts_button"
+              title="Hotkeys"
+              icon={hotkeys}
+              onClick={() => setShowSidebar("shortcuts")}
+              disabled={false}
+              mobile={mobile}
+              showTooltip={true}
+            />
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Material-UI Drawer Component */}
+      <Drawer
+        anchor="right"
+        open={!!showSidebar}
+        onClose={() => setShowSidebar(false)}
+        variant="temporary"
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: mobile ? "100%" : "auto",
+            maxWidth: mobile ? "100%" : "380px",
+            minWidth: mobile ? "100%" : "400px",
+          },
+        }}
+      >
+        {["plagiarism", "history", "tone", "compare"].includes(showSidebar) && (
+          <PlagiarismSidebar
+            open={showSidebar}
+            onClose={() => setShowSidebar((prev) => !prev)}
+            active={showSidebar}
+            setActive={setShowSidebar}
+            score={mockPlagiarismData.score}
+            results={mockPlagiarismData.results}
+            selectedMode={selectedMode}
+            setSelectedMode={setSelectedMode}
+            outputText={outputText}
+            setOutputText={setOutputText}
+            text={text}
+            freezeWords={freezeWords}
+            selectedLang={selectedLang}
+            sentence={
+              outputText &&
+              highlightSentence >= 0 &&
+              outputText[highlightSentence]
+                ? outputText[highlightSentence].map((w) => w.word).join(" ")
+                : ""
+            }
+            selectedSynonymLevel={selectedSynonymLevel}
+            highlightSentence={highlightSentence}
+            plainOutput={plainOutput}
+            mobile={mobile}
+            disableActions={disableActions}
+          />
+        )}
+
+        {["settings", "feedback", "shortcuts"].includes(showSidebar) && (
+          <SettingsSidebar
+            open={showSidebar}
+            onClose={() => setShowSidebar((prev) => !prev)}
+            tab={showSidebar}
+            setTab={setShowSidebar}
+            mobile={mobile}
+          />
+        )}
+      </Drawer>
+    </>
+  );
+};
+
+export default VerticalMenu;

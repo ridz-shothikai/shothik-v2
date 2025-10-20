@@ -1,4 +1,3 @@
-import { SaveAsOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetUsesLimitQuery } from "../../../redux/api/tools/toolsApi";
 import SvgColor from "../../../resource/SvgColor";
 
@@ -57,18 +56,17 @@ const Navigations = ({
   return (
     <Stack
       direction={{ xs: "column", sm: "row" }}
-      alignItems='center'
-      justifyContent='space-between'
+      justifyContent="space-between"
       spacing={{ xs: 2, sm: 0 }}
-      sx={{ my: 2 }}
+      sx={{ my: 2, alignItems: { xs: "start", sm: "center" } }}
     >
       <Stack
-        direction='row'
-        alignItems='center'
+        direction="row"
+        alignItems="center"
         spacing={2}
         sx={{ marginLeft: { xs: 1, md: 0 } }}
       >
-        <Button
+        {/* <Button
           color='warning'
           size={isMobile ? "small" : "large"}
           variant='soft'
@@ -86,13 +84,13 @@ const Navigations = ({
           }}
         >
           {miniLabel ? "Check for AI" : "Check AI"}
-        </Button>
+        </Button> */}
 
         <Button
           onClick={handleSubmit}
           size={isMobile ? "small" : "large"}
           style={{ padding: "5px 15px", height: 40 }}
-          variant='contained'
+          variant="contained"
           disabled={
             !userInput ||
             wordCount > wordLimit ||
@@ -101,10 +99,10 @@ const Navigations = ({
           loading={isLoading}
           startIcon={
             isLoading ? (
-              <CircularProgress size={16} color='inherit' />
+              <CircularProgress size={16} color="inherit" />
             ) : (
               <SvgColor
-                src='/navbar/bypass-svgrepo-com.svg'
+                src="/navbar/bypass-svgrepo-com.svg"
                 sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
               />
             )
@@ -115,17 +113,17 @@ const Navigations = ({
 
         {((model === "Raven" && !/pro_plan|unlimited/.test(userPackage)) ||
           wordCount > wordLimit) && (
-          <Link href='/pricing'>
+          <Link href="/pricing">
             <Button
               size={isMobile ? "medium" : "medium"}
-              variant='contained'
+              variant="contained"
               sx={{
                 bgcolor: "primary.main",
                 borderRadius: "5px",
               }}
               startIcon={
                 <SvgColor
-                  src='/navbar/diamond.svg'
+                  src="/navbar/diamond.svg"
                   sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
                 />
               }
@@ -150,10 +148,10 @@ const Navigations = ({
             <>
               <LinearProgress
                 sx={{ height: 6 }}
-                variant='determinate'
+                variant="determinate"
                 value={100}
               />
-              <Typography color='primary' sx={{ fontSize: { xs: 12, sm: 14 } }}>
+              <Typography color="primary" sx={{ fontSize: { xs: 12, sm: 14 } }}>
                 Unlimited
               </Typography>
             </>
@@ -161,7 +159,7 @@ const Navigations = ({
             <>
               <LinearProgress
                 sx={{ height: 6 }}
-                variant='determinate'
+                variant="determinate"
                 value={progressPercentage()}
               />
               <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>

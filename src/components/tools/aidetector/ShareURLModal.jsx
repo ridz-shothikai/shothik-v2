@@ -19,7 +19,7 @@ import {
 import CopyButon from "../../blog/details/CopyButon";
 
 const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}?share_id=${content._id}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${content._id}`;
   let outputContend = "";
 
   content.sentences.forEach((item) => {
@@ -27,11 +27,11 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
   });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
       <Stack
-        direction='column'
-        justifyContent='center'
-        alignItems='center'
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
         gap={2}
         sx={{ paddingY: 3, paddingX: 2, position: "relative" }}
       >
@@ -42,7 +42,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
           <Close />
         </IconButton>
 
-        <Typography variant='h5'>Share</Typography>
+        <Typography variant="h5">Share</Typography>
         <TextField
           value={shareUrl}
           fullWidth
@@ -70,7 +70,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
             },
           }}
         />
-        <Stack flexDirection='row' gap={1} alignItems='center'>
+        <Stack flexDirection="row" gap={1} alignItems="center">
           <Box>
             <FacebookShareButton
               url={shareUrl}

@@ -24,13 +24,13 @@ const useGeolocation = () => {
             body: JSON.stringify({
               considerIp: true, // Uses the client's IP address
             }),
-          }
+          },
         );
 
         if (!geolocationResponse.ok) {
           const errorData = await geolocationResponse.json();
           throw new Error(
-            errorData.error?.message || "Failed to get geolocation"
+            errorData.error?.message || "Failed to get geolocation",
           );
         }
 
@@ -47,7 +47,7 @@ const useGeolocation = () => {
 
         // Now get detailed address information
         const geocodingResponse = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_GEOLOCATION_KEY}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_GEOLOCATION_KEY}`,
         );
 
         if (!geocodingResponse.ok) {
@@ -56,7 +56,7 @@ const useGeolocation = () => {
 
         const geocodingData = await geocodingResponse.json();
 
-        console.log(geocodingData, "geo coding data")
+        console.log(geocodingData, "geo coding data");
 
         if (!geocodingData.results || geocodingData.results.length === 0) {
           throw new Error("No address found for location");
@@ -75,12 +75,12 @@ const useGeolocation = () => {
             addressComponents.find((c) => c.types.includes("locality"))
               ?.long_name ||
             addressComponents.find((c) =>
-              c.types.includes("administrative_area_level_2")
+              c.types.includes("administrative_area_level_2"),
             )?.long_name ||
             null,
           state:
             addressComponents.find((c) =>
-              c.types.includes("administrative_area_level_1")
+              c.types.includes("administrative_area_level_1"),
             )?.long_name || null,
           country:
             addressComponents.find((c) => c.types.includes("country"))
@@ -106,7 +106,7 @@ const useGeolocation = () => {
     fetchLocation();
   }, []);
 
-  return {location};
+  return { location };
 };
 
 export default useGeolocation;

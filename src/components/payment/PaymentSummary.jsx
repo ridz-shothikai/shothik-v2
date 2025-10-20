@@ -21,6 +21,7 @@ export default function PaymentSummary({
   isSubmitting,
   setTotalBill,
   country,
+  type = "subscription",
 }) {
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
@@ -33,8 +34,8 @@ export default function PaymentSummary({
   } = (country === "bangladesh"
     ? bn
     : country === "india"
-    ? plan.in
-    : global) || {
+      ? plan.in
+      : global) || {
     amount_monthly,
     amount_yearly,
   };
@@ -56,8 +57,8 @@ export default function PaymentSummary({
   const billtopaid = /dev|test/.test(modeResult?.data?.appMode)
     ? modePrice
     : monthly === "monthly"
-    ? price - paidAmount
-    : priceYearly - paidAmount;
+      ? price - paidAmount
+      : priceYearly - paidAmount;
 
   useEffect(() => {
     setTotalBill(billtopaid);
@@ -208,7 +209,7 @@ export default function PaymentSummary({
         sx={{ mt: 5, mb: 3 }}
         onClick={(e) => {
           onSubmit(e);
-          trackEvent("click", "payment", `${type}-checkout`, billtopaid);
+          trackEvent("click", "payment", `submit-checkout`, billtopaid);
         }}
         disabled={isSubmitting || billtopaid < 0}
       >
@@ -223,8 +224,8 @@ export default function PaymentSummary({
             {country === "bangladesh"
               ? "Bkash"
               : country === "india"
-              ? "razorpay"
-              : "Stripe"}{" "}
+                ? "razorpay"
+                : "Stripe"}{" "}
             payment
           </Typography>
         </Stack>

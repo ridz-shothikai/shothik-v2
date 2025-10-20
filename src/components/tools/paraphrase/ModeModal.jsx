@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import { modes } from "../../../_mock/tools/paraphrase";
 import SvgColor from "../../../resource/SvgColor";
 
@@ -19,12 +19,13 @@ const ModeModal = ({
   selectedMode,
   userPackage,
   setSelectedMode,
+  isLoading,
 }) => {
   const [showAlert, setShowAlert] = useState(false);
 
   return (
     <Modal
-      sx={{ zIndex: 0 }}
+      sx={{ zIndex: 1300 }}
       keepMounted
       open={showModeModal}
       onClose={handleClose}
@@ -44,7 +45,7 @@ const ModeModal = ({
           borderTopRightRadius: "5px",
         }}
       >
-        <Typography variant='h5'>Choose a mode</Typography>
+        <Typography variant="h5">Choose a mode</Typography>
 
         <IconButton
           onClick={handleClose}
@@ -62,9 +63,9 @@ const ModeModal = ({
           {modes.map((mode, index) => (
             <Grid2 size={{ xs: 6, md: 4 }} key={index}>
               <Stack
-                direction='row'
-                alignItems='center'
-                justifyContent='center'
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
                 spacing={1}
                 sx={{
                   p: 1,
@@ -80,6 +81,7 @@ const ModeModal = ({
                     selectedMode === mode.value ? "primary.lighter" : "unset",
                 }}
                 onClick={() => {
+                  if (isLoading) return; // Disable click if loading
                   if (mode.package.includes(userPackage || "free")) {
                     setSelectedMode(mode.value);
                     handleClose();
@@ -114,14 +116,14 @@ const ModeModal = ({
               paddingY: 5,
             }}
           >
-            <Link href='/pricing?redirect=paraphrase'>
+            <Link href="/pricing?redirect=paraphrase">
               <Button
-                color='primary'
-                size='medium'
-                variant='contained'
+                color="primary"
+                size="medium"
+                variant="contained"
                 startIcon={
                   <SvgColor
-                    src='/navbar/diamond.svg'
+                    src="/navbar/diamond.svg"
                     sx={{
                       width: { xs: 20, md: 24 },
                       height: { xs: 20, md: 24 },

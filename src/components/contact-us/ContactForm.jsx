@@ -65,9 +65,9 @@ export default function ContactForm() {
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          variant='h3'
+          variant="h3"
         >
-          Feel free to contact us. We'll be glad to hear from you, buddy.
+          Feel free to contact us. We&apos;ll be glad to hear from you, buddy.
         </Typography>
 
         <Stack
@@ -78,16 +78,16 @@ export default function ContactForm() {
           viewport={{ once: true }}
           spacing={3}
         >
-          <RHFTextField fullWidth label='Your name' name='name' />
-          <RHFTextField fullWidth label='Your e-mail address' name='email' />
-          <RHFTextField fullWidth label='Subject' name='subject' />
+          <RHFTextField fullWidth label="Your name" name="name" />
+          <RHFTextField fullWidth label="Your e-mail address" name="email" />
+          <RHFTextField fullWidth label="Subject" name="subject" />
 
           <RHFTextField
             fullWidth
-            label='Enter your message here.'
+            label="Enter your message here."
             multiline
             rows={4}
-            name='message'
+            name="message"
           />
         </Stack>
 
@@ -98,9 +98,9 @@ export default function ContactForm() {
           viewport={{ once: true }}
         >
           <Button
-            type='submit'
-            size='large'
-            variant='contained'
+            type="submit"
+            size="large"
+            variant="contained"
             loading={isSubmitting}
           >
             Submit Now

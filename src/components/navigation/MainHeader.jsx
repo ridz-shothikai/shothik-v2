@@ -18,7 +18,6 @@ import { setOpen } from "../../redux/slice/settings";
 import DotFlashing from "../../resource/DotFlashing";
 import SvgColor from "../../resource/SvgColor";
 import Logo from "../../resource/assets/Logo";
-import { bgBlur } from "../../resource/cssStyles";
 import AccountPopover from "./components/AccountProper";
 
 export default function MainHeader() {
@@ -29,7 +28,9 @@ export default function MainHeader() {
   const isDesktop = useResponsive("up", "sm");
   const isMd = useResponsive("up", "sm");
   const isMobile = useResponsive("down", "sm");
-  const { isLoading } = useGetUserQuery();
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
   const pathname = usePathname();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -39,18 +40,22 @@ export default function MainHeader() {
       "/paraphrase": "Paraphrase",
       "/humanize-gpt": "Humanize GPT",
       "/ai-detector": "AI Detector",
-      "/grammar-check": "Grammar Checker",
+      "/plagiarism-checker": "Plagiarism Checker",
+      "/grammar-checker": "Grammar Fix",
       "/summarize": "Summarize",
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",
-      "/research": "Research",
+      "/agents/research": "Research",
+      "/agents/sheets": "Sheet",
+      "/agents/presentation": "Presentation Slide",
+      "/agents": "Shothik AI Agent",
+      "/marketing-automation": "Marketing Automation",
     };
 
     return routeTitles[pathname] || "";
   };
 
-
-  const renderContent =  (
+  const renderContent = (
     <>
       {!isDesktop && (
         <>
@@ -62,7 +67,7 @@ export default function MainHeader() {
               color: "primary.main",
             }}
           >
-            <SvgColor src='/navbar/ic_menu_item.svg' />
+            <SvgColor src="/navbar/ic_menu_item.svg" />
           </IconButton>
           <Logo sx={{ mr: 2.5 }} />
         </>
@@ -70,9 +75,9 @@ export default function MainHeader() {
 
       <Stack
         flexGrow={1}
-        direction='row'
-        alignItems='center'
-        justifyContent='flex-end'
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
         {isNavMini && isMd && <Logo sx={{ mr: 2.5 }} />}
@@ -80,9 +85,9 @@ export default function MainHeader() {
         {isMd && (
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Typography
-              variant='h5'
+              variant="h5"
               sx={{
-                color: theme.palette.mode === "dark" ? "#FFFFFF" : "#212B36",
+                color: theme.palette.text.primary,
               }}
             >
               {title()}
@@ -96,13 +101,14 @@ export default function MainHeader() {
           user?.package !== "unlimited" && (
             <Link href={"/pricing?redirect=" + pathname}>
               <Button
-                color='primary'
+                data-umami-event="Nav: Upgrade To Premium"
+                color="primary"
                 size={isMd ? "medium" : "small"}
-                variant='contained'
-                rel='noopener'
+                variant="contained"
+                rel="noopener"
                 startIcon={
                   <SvgColor
-                    src='/navbar/diamond.svg'
+                    src="/navbar/diamond.svg"
                     sx={{
                       width: { xs: 20, md: 24 },
                       height: { xs: 20, md: 24 },
@@ -115,8 +121,8 @@ export default function MainHeader() {
                     ? "Upgrade"
                     : "Upgrade Plan"
                   : isMobile
-                  ? "Premium"
-                  : "Upgrade To Premium"}
+                    ? "Premium"
+                    : "Upgrade your plan"}
               </Button>
             </Link>
           )
@@ -138,9 +144,8 @@ export default function MainHeader() {
         boxShadow: "none",
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
-        ...bgBlur({
-          color: theme.palette.background.paper,
-        }),
+        backgroundColor: theme.palette.background.default,
+        backdropFilter: "blur(6px)",
         transition: theme.transitions.create(["height"], {
           duration: theme.transitions.duration.shorter,
         }),
@@ -149,7 +154,7 @@ export default function MainHeader() {
           height: HEADER.H_DASHBOARD_DESKTOP,
           ...(isNavHorizontal && {
             width: 1,
-            bgcolor: "background.default",
+            bgcolor: theme.palette.background.default,
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
             borderBottom: `dashed 1px ${theme.palette.divider}`,
           }),
@@ -162,7 +167,10 @@ export default function MainHeader() {
       <Toolbar
         sx={{
           height: 1,
-          px: { lg: 5 },
+          px: { lg: 3 },
+          bgcolor: theme.palette.background.default,
+          borderBottom:
+            pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
         }}
       >
         {renderContent}

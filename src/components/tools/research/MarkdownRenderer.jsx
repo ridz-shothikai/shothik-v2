@@ -30,7 +30,7 @@ const LinkPreview = ({ href }) => {
     {
       url: href,
     },
-    { skip: !href }
+    { skip: !href },
   );
 
   if (isLoading) {
@@ -74,15 +74,15 @@ const LinkPreview = ({ href }) => {
       >
         <Image
           src={`https://www.google.com/s2/favicons?domain=${domain}&sz=256`}
-          alt='Favicon'
+          alt="Favicon"
           width={20}
           height={20}
           style={{ borderRadius: 4 }}
         />
         <Typography
-          variant='body2'
+          variant="body2"
           fontWeight={500}
-          color='text.secondary'
+          color="text.secondary"
           sx={{
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -96,9 +96,9 @@ const LinkPreview = ({ href }) => {
       {/* Content Section */}
       <Box sx={{ px: 2, pb: 2 }}>
         <Typography
-          variant='h6'
+          variant="h6"
           fontWeight={600}
-          color='text.primary'
+          color="text.primary"
           sx={{
             display: "-webkit-box",
             WebkitLineClamp: 2,
@@ -111,8 +111,8 @@ const LinkPreview = ({ href }) => {
 
         {metadata?.description && (
           <Typography
-            variant='body2'
-            color='text.secondary'
+            variant="body2"
+            color="text.secondary"
             sx={{
               mt: 1,
               display: "-webkit-box",
@@ -140,12 +140,12 @@ const RenderHoverCard = ({ href, text, isCitation = false }) => {
     setAnchorEl(null);
   };
   return (
-    <Box component='span' display='inline-block'>
+    <Box component="span" display="inline-block">
       {/* Link as Trigger */}
       <Link
         href={href}
-        target='_blank'
-        rel='noopener noreferrer'
+        target="_blank"
+        rel="noopener noreferrer"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         sx={{
@@ -259,7 +259,7 @@ const MarkdownRenderer = ({ content }) => {
             </Typography>
             <IconButton
               onClick={handleCopy}
-              color='primary'
+              color="primary"
               sx={{ bgcolor: "rgba(73, 149, 87, 0.04)" }}
               aria-label={isCopied ? "Copied!" : "Copy code"}
             >
@@ -308,14 +308,14 @@ const MarkdownRenderer = ({ content }) => {
       linkItem += 1;
       // console.log({ linkItem });
       return (
-        <Typography key={this.elementId} component='sup'>
+        <Typography key={this.elementId} component="sup">
           <RenderHoverCard href={href} text={linkItem} isCitation={true} />
         </Typography>
       );
     },
     heading(children) {
       return (
-        <Typography key={this.elementId} variant='h4' sx={{ my: 2 }}>
+        <Typography key={this.elementId} variant="h4" sx={{ my: 2 }}>
           {children}
         </Typography>
       );
@@ -354,7 +354,7 @@ const MarkdownRenderer = ({ content }) => {
       return (
         <Box
           key={this.elementId}
-          component='blockquote'
+          component="blockquote"
           sx={{
             borderLeft: 4,
             borderColor: "neutral.300",

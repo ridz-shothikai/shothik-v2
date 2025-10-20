@@ -15,7 +15,7 @@ export default function PrivacyPage() {
   return (
     <BackgroundContainer>
       <Breadcrumb
-        heading='Privacy Policy'
+        heading="Privacy Policy"
         links={[{ name: "Legal" }, { name: "Privacy Policy" }]}
       />
 

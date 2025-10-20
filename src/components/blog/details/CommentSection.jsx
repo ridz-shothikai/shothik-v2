@@ -116,7 +116,7 @@ export default function CommentSection({ comments, data }) {
           Comments
         </Button>
       </Box>
-      <Typography variant='h4' gutterBottom>
+      <Typography variant="h4" gutterBottom>
         Leave a comment
       </Typography>
 
@@ -124,7 +124,7 @@ export default function CommentSection({ comments, data }) {
 
       <Button
         disabled={isPending || !comment || comment === "<p></p>"}
-        variant='contained'
+        variant="contained"
         sx={{
           width: "100px",
           ml: "auto",
@@ -141,7 +141,7 @@ export default function CommentSection({ comments, data }) {
           <Accordion
             key={comment._id}
             defaultExpanded
-            variant='outlined'
+            variant="outlined"
             sx={{
               mt: "1rem",
               borderRadius: "8px",
@@ -152,8 +152,8 @@ export default function CommentSection({ comments, data }) {
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
-              aria-controls='panel3-content'
-              id='panel3-header'
+              aria-controls="panel3-content"
+              id="panel3-header"
             >
               <Box
                 sx={{
@@ -165,23 +165,23 @@ export default function CommentSection({ comments, data }) {
               >
                 <Box>
                   <Typography
-                    component='span'
+                    component="span"
                     color={"primary"}
                     fontWeight={"500"}
                   >
                     {comment?.user?.name}
                   </Typography>
                   <Typography
-                    component='span'
+                    component="span"
                     width={"5px"}
                     height={"5px"}
                     fontWeight={"900"}
                     bgcolor={"black"}
                     borderRadius={"100%"}
                     alignSelf={"center"}
-                    mx='4px'
+                    mx="4px"
                   ></Typography>
-                  <Typography component='span' fontSize={"0.9rem"}>
+                  <Typography component="span" fontSize={"0.9rem"}>
                     {new Intl.DateTimeFormat("en-US", {
                       year: "numeric",
                       month: "long",
@@ -190,13 +190,13 @@ export default function CommentSection({ comments, data }) {
                   </Typography>
                 </Box>
 
-                <Stack flexDirection='row' alignItems='center' gap={1}>
+                <Stack flexDirection="row" alignItems="center" gap={1}>
                   <LikeDislike
-                    api='/blog/comment'
+                    api="/blog/comment"
                     id={comment._id}
                     dislike={comment.dislikes}
                     like={comment.likes}
-                    size='20px'
+                    size="20px"
                     slug={data.slag}
                   />
                   {user?._id === comment?.user?._id && (

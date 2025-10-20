@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import { useGetBlogsQuery } from "../../redux/api/blog/blogApiSlice";
 import BlogHeader from "./BlogHeader";
@@ -24,7 +24,7 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
     <Grid2 size={{ xs: 12, md: 9 }}>
       <BlogHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <Typography variant='h5' sx={{ mb: 3 }}>
+      <Typography variant="h5" sx={{ mb: 3 }}>
         Results
       </Typography>
 
@@ -46,7 +46,7 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
             count={totalPages}
             page={page}
             onChange={(e, value) => setPage(value)}
-            color='primary'
+            color="primary"
           />
         </Box>
       ) : null}
@@ -71,18 +71,18 @@ function BlogCard({ blog }) {
           }}
         >
           <CardContent>
-            <Typography
-              variant='body2'
-              color='primary.main'
-              fontWeight='bold'
+            {/* <Typography
+              variant="body2"
+              color="primary.main"
+              fontWeight="bold"
               marginBottom={2}
             >
               // {blog.category?.title || "Blog"} //
-            </Typography>
-            <Typography variant='h6' gutterBottom>
+            </Typography> */}
+            <Typography variant="h6" gutterBottom>
               {blog.title}
             </Typography>
-            <Typography variant='body2' color='text.secondary'>
+            <Typography variant="body2" color="text.secondary">
               {new Intl.DateTimeFormat("en-US", {
                 year: "numeric",
                 month: "long",
@@ -99,7 +99,7 @@ function BlogCard({ blog }) {
 function NoBlogFound() {
   return (
     <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-      <Typography variant='h6' color='text.secondary'>
+      <Typography variant="h6" color="text.secondary">
         No blogs found.
       </Typography>
     </Box>

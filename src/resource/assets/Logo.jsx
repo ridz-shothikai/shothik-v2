@@ -13,7 +13,7 @@ const Logo = forwardRef((_, ref) => {
   return (
     <Link
       component={NextLink}
-      href='/?utm_source=internal'
+      href="/?utm_source=internal"
       sx={{ display: "contents" }}
     >
       <div
@@ -26,7 +26,7 @@ const Logo = forwardRef((_, ref) => {
       >
         <Box
           ref={ref}
-          component='div'
+          component="div"
           sx={{
             width: { xs: 100, sm: 100, md: 100, lg: 150 },
             height: "auto",
@@ -35,7 +35,7 @@ const Logo = forwardRef((_, ref) => {
           <Image
             src={isLight ? "/shothik_light_logo.png" : "/shothik_dark_logo.png"}
             priority
-            alt='shothik_logo'
+            alt="shothik_logo"
             width={100}
             height={40}
             style={{
@@ -48,5 +48,7 @@ const Logo = forwardRef((_, ref) => {
     </Link>
   );
 });
+
+Logo.displayName = "Logo";
 
 export default Logo;

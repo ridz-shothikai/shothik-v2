@@ -49,7 +49,7 @@ export default function AuthSuccessPopup() {
           />
         </Box>
         <Typography
-          variant='h4'
+          variant="h4"
           sx={{
             color: green[500],
             fontWeight: 500,
@@ -61,7 +61,7 @@ export default function AuthSuccessPopup() {
         </Typography>
 
         <Typography
-          variant='body1'
+          variant="body1"
           sx={{
             color: "text.secondary",
             mb: 2,
@@ -70,7 +70,7 @@ export default function AuthSuccessPopup() {
           Congratulations, your account has been successfully created.
         </Typography>
         <Button
-          variant='contained'
+          variant="contained"
           onClick={() => dispatch(setIsNewRegistered(false))}
           sx={{
             backgroundColor: green[500],

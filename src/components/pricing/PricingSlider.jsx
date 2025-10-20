@@ -97,7 +97,7 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
   };
 
   return (
-    <Box className='pricing_slider'>
+    <Box className="pricing_slider">
       <Slider {...settings}>
         {payload?.map((item, index) => (
           <Box
@@ -119,33 +119,33 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
                     item.subscription === "free"
                       ? "#637381"
                       : item.subscription === "value plan"
-                      ? "#00A76F"
-                      : item.subscription === "pro plan"
-                      ? "#8E33FF"
-                      : "#FFAB00",
+                        ? "#00A76F"
+                        : item.subscription === "pro plan"
+                          ? "#8E33FF"
+                          : "#FFAB00",
                 }}
               >
                 {item.caption}
               </Typography>
               <Typography
-                variant='h3'
+                variant="h3"
                 fontSize={22}
                 fontWeight={700}
                 sx={{ mb: 2 }}
               >
-                <Typography variant='h3' component='sup' fontWeight={400}>
+                <Typography variant="h3" component="sup" fontWeight={400}>
                   {item.currency}
                 </Typography>
                 {/dev|test/.test(modeResult?.data?.appMode)
                   ? modePrice
                   : item.price}
-                <Typography component='sub' color='text.secondary'>
+                <Typography component="sub" color="text.secondary">
                   / {item.plan}
                 </Typography>
               </Typography>
               <Typography
                 sx={{ height: 26, mt: -1 }}
-                color='text.secondary'
+                color="text.secondary"
                 fontSize={14}
               >
                 {item.description}

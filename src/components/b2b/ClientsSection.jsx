@@ -23,10 +23,10 @@ export const ClientsSection = ({ title, images, subtitle }) => {
       >
         {subtitle}
         <Typography
-          variant='h2'
+          variant="h2"
           fontWeight={600}
-          component='span'
-          color='primary.darker'
+          component="span"
+          color="primary.darker"
         >
           {title}
         </Typography>

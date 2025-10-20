@@ -13,10 +13,10 @@ export default function AboutHero() {
         paddingY: 10,
         height: 560,
       }}
-      justifyContent='end'
+      justifyContent="end"
     >
       <Container>
-        <Stack direction='row' alignItems='center' spacing={0.2}>
+        <Stack direction="row" alignItems="center" spacing={0.2}>
           {["W", "h", "o"].map((w, i) => (
             <Typography
               key={w}
@@ -24,8 +24,8 @@ export default function AboutHero() {
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
-              variant='h1'
-              color='primary.main'
+              variant="h1"
+              color="primary.main"
             >
               {w}
             </Typography>
@@ -33,8 +33,8 @@ export default function AboutHero() {
         </Stack>
         <Stack
           spacing={2}
-          display='inline-flex'
-          direction='row'
+          display="inline-flex"
+          direction="row"
           sx={{ color: "common.white" }}
         >
           {["we", "are?"].map((w, i) => (
@@ -44,7 +44,7 @@ export default function AboutHero() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
-              variant='h1'
+              variant="h1"
             >
               {w}
             </Typography>
@@ -56,9 +56,9 @@ export default function AboutHero() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.6 }}
           sx={{ color: "common.white" }}
-          variant='h4'
+          variant="h4"
         >
-          Let's work together and <br /> make awesome writing easily
+          Let&apos;s work together and <br /> make awesome writing easily
         </Typography>
       </Container>
     </Stack>

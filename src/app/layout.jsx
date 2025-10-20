@@ -1,9 +1,11 @@
-
 import Analytics from "../analysers/Analytics";
+import SettingApplier from "../components/appliers/SettingApplier";
+import ToastApplier from "../components/appliers/ToastApplier";
 import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
 import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
+import "./globals.css";
 
 export const metadata = {
   title: "Shothik AI",
@@ -16,9 +18,34 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang='en'>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="503cfbe2-6b94-4fa0-8259-3353fa792769"
+        ></script>
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="a19fecea-d6b0-4093-9074-26531c827bfe"
+        ></script>
+      </head>
+      <body suppressHydrationWarning>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=GTM-PPRFW7NP`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
+
         <Providers>
+          {/* Appliers */}
+          <SettingApplier />
+          <ToastApplier />
+
           {children}
           {/* login modal  */}
           <LoginModal>

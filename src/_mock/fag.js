@@ -174,7 +174,7 @@ export const faqData = {
           <span>
             For more detailed pricing information, please visit our{" "}
             <Link
-              href='/pricing'
+              href="/pricing"
               style={{ color: "inherit", textDecoration: "underline" }}
             >
               pricing page
@@ -465,7 +465,7 @@ export const faqData = {
             Email us at{" "}
             <strong>
               <Link
-                href='mailto:support@shothik.ai'
+                href="mailto:support@shothik.ai"
                 style={{ color: "inherit", textDecoration: "underline" }}
               >
                 support@shothik.ai

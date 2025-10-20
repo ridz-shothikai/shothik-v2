@@ -42,7 +42,7 @@ export const VideoPlayer = ({
         <>
           <img
             src={thumbnailSrc}
-            alt='Video Thumbnail'
+            alt="Video Thumbnail"
             style={{
               width: "100%",
               height: "100%",
@@ -54,8 +54,8 @@ export const VideoPlayer = ({
           {isShowPlayIcon && (
             <img
               onClick={() => setIsPlaying(true)}
-              src='/b2b/play.svg'
-              alt='Play'
+              src="/b2b/play.svg"
+              alt="Play"
               style={{
                 position: "absolute",
                 top: "50%",

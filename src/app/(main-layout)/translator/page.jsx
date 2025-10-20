@@ -22,10 +22,10 @@ const Translatorpage = () => {
         <Translator />
       </ErrorBoundary>
       <ToolsSepecigFaq
-        tag='All you need to know about Translator feature'
+        tag="All you need to know about Translator feature"
         data={transtorFaq}
       />
-      <ToolsCTA toolType='translator' />
+      <ToolsCTA toolType="translator" />
       <HomeAdvertisement />
     </Container>
   );

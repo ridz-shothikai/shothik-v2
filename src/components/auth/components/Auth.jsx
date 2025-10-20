@@ -6,7 +6,7 @@ const Auth = ({ title, tag, children }) => {
   return (
     <>
       <Stack
-        alignItems='center'
+        alignItems="center"
         gap={2}
         sx={{
           mb: 2,
@@ -14,11 +14,11 @@ const Auth = ({ title, tag, children }) => {
         }}
       >
         <Box sx={{ position: "relative", width: "90px", height: "90px" }}>
-          <Link component={NextLink} href='/'>
-            <Image src='/moscot.png' fill alt='logo' />
+          <Link component={NextLink} href="/">
+            <Image src="/moscot.png" fill alt="logo" />
           </Link>
         </Box>
-        <Stack alignItems='center' spacing={1.5} sx={{ mt: "0 !important" }}>
+        <Stack alignItems="center" spacing={1.5} sx={{ mt: "0 !important" }}>
           <Typography
             sx={{
               fontSize: "1.875rem",

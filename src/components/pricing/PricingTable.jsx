@@ -46,7 +46,7 @@ function PricingTable({ user, data, yearly, paymentMethod, country }) {
     let service = "";
     features.forEach((feature) => {
       const index = payload.features.findIndex(
-        (item) => item[0] === feature.type
+        (item) => item[0] === feature.type,
       );
       if (index !== -1) {
         if (feature.type === service) {
@@ -104,8 +104,8 @@ function PricingTable({ user, data, yearly, paymentMethod, country }) {
                 fontSize: "20px",
                 pl: "36px",
               }}
-              component='th'
-              scope='row'
+              component="th"
+              scope="row"
             >
               {payload.pricing.title}
             </TableCell>
@@ -118,24 +118,24 @@ function PricingTable({ user, data, yearly, paymentMethod, country }) {
                 }}
               >
                 <Typography
-                  variant='h3'
+                  variant="h3"
                   fontSize={12}
                   fontWeight={700}
                   sx={{ mb: 2 }}
                 >
-                  <Typography variant='h3' component='sup' fontWeight={400}>
+                  <Typography variant="h3" component="sup" fontWeight={400}>
                     {item.currency}
                   </Typography>
                   {/dev|test/.test(modeResult?.data?.appMode)
                     ? modePrice
                     : item.price}
-                  <Typography component='sub' color='text.secondary'>
+                  <Typography component="sub" color="text.secondary">
                     / {item.plan}
                   </Typography>
                 </Typography>
                 <Typography
                   sx={{ height: 26, mt: -1 }}
-                  color='text.secondary'
+                  color="text.secondary"
                   fontSize={14}
                 >
                   {item.description}
