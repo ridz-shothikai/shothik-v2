@@ -30,7 +30,7 @@ const GrammarIssueCard = ({
 
   return (
     <div
-      onClick={() => handleIsCollapsed()}
+      onClick={() => handleIsCollapsed?.()}
       className="w-full max-w-[360px] py-2"
     >
       <div className="text-muted-foreground relative flex items-center justify-between px-3 text-sm">
