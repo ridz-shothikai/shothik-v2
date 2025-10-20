@@ -291,6 +291,7 @@ const GrammarCheckerContentSection = () => {
   useEffect(() => {
     if (!debouncedText || !prepare(debouncedText)) {
       handleClear();
+      return;
     }
 
     handleGrammarChecking();
@@ -345,21 +346,38 @@ const GrammarCheckerContentSection = () => {
   const handleAcceptAllCorrections = () => {
     if (!issues?.length || !editor) return;
 
-    let content = editor.getText();
+    const { state } = editor;
+    let tr = state.tr;
 
-    // Apply all corrections one by one
-    issues.forEach(({ error, correct }) => {
+    issues.forEach((issue, index) => {
+      const { error, correct, sentence } = issue;
       if (!error || !correct) return;
+
       const regex = new RegExp(
         error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
         "g",
       );
-      content = content.replace(regex, correct);
+
+      state.doc.descendants((node, pos) => {
+        if (!node.isText) return;
+
+        let match;
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+
+          // Replace text in the editor while preserving formatting
+          tr.insertText(correct, start, end);
+        }
+      });
     });
 
-    editor.commands.setContent(content);
-    dispatch(setIssues([])); // clear all issues
-    // toast.success("All corrections accepted!");
+    tr.setMeta("addToHistory", true);
+    editor.view.dispatch(tr);
+
+    // clear all issues from store
+    dispatch(setIssues([]));
+
     enqueueSnackbar("All corrections accepted!", {
       variant: "success",
     });
@@ -369,15 +387,30 @@ const GrammarCheckerContentSection = () => {
     if (!issue || !editor) return;
 
     const { error, correct } = issue;
-    const content = editor.getText();
+    const { state } = editor;
 
-    const newContent = content.replace(
-      new RegExp(error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
-      correct,
-    );
+    const regex = new RegExp(error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
 
-    editor.commands.setContent(newContent);
+    const tr = state.tr;
 
+    state.doc.descendants((node, pos) => {
+      if (!node.isText) return;
+
+      let match;
+      while ((match = regex.exec(node.text)) !== null) {
+        const start = pos + match.index;
+        const end = start + error.length;
+
+        // replace the matched text with correct version
+        tr.insertText(correct, start, end);
+      }
+    });
+
+    tr.setMeta("addToHistory", true);
+
+    editor.view.dispatch(tr);
+
+    // remove issue from store
     dispatch(
       setIssues(
         issues.filter(
@@ -433,19 +466,7 @@ const GrammarCheckerContentSection = () => {
   };
 
   const fetchSections = async () => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/api";
-
     try {
-      // const res = await fetch(`${API_BASE}/grammar/sections`, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-      //   },
-      // });
-      // if (!res.ok) throw new Error("Failed to fetch history");
-      // const data = await res.json();
-
       const { data } = await fetchGrammarSections();
 
       const groups = dataGroupsByPeriod(data || []);
