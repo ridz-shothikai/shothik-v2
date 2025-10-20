@@ -30,25 +30,28 @@ export default function PrivacyPage() {
           Welcome to <b> {full_name}</b>.
         </p>
         <p>
-          <b>{full_name}</b> (“us”, “we”, or “our”) operates <b>Shothik.ai</b>{" "}
-          (hereinafter referred to as <b>“Service”</b>).
+          <b>{full_name}</b> ("us", "we", or "our") operates <b>Shothik.ai</b>{" "}
+          (hereinafter referred to as <b>"Service"</b>), including our Meta Marketing Automation platform.
         </p>
         <p>
           Our Privacy Policy governs your visit to <b>Shothik.ai</b>, and
           explains how we collect, safeguard and disclose information that
-          results from your use of our Service.
+          results from your use of our Service, including our Meta Marketing Automation features.
         </p>
         <p>
-          We use your data to provide and improve Service. By using Service, you
+          We use your data to provide and improve Service, including creating and managing Facebook/Instagram advertising campaigns, competitive intelligence, and AI-powered marketing optimization. By using Service, you
           agree to the collection and use of information in accordance with this
           policy. Unless otherwise defined in this Privacy Policy, the terms
           used in this Privacy Policy have the same meanings as in our Terms and
           Conditions.
         </p>
         <p>
-          Our Terms and Conditions (<b>“Terms”</b>) govern all use of our
+          Our Terms and Conditions (<b>"Terms"</b>) govern all use of our
           Service and together with the Privacy Policy constitutes your
-          agreement with us (<b>“agreement”</b>).
+          agreement with us (<b>"agreement"</b>).
+        </p>
+        <p>
+          <b>Compliance:</b> Our privacy policy fully complies with Meta Platform Terms, GDPR, and CCPA.
         </p>
         <p>
           2. <b>Definitions</b>
@@ -107,7 +110,7 @@ export default function PrivacyPage() {
         <p>
           While using our Service, we may ask you to provide us with certain
           personally identifiable information that can be used to contact or
-          identify you (<b>“Personal Data”</b>). Personally identifiable
+          identify you (<b>"Personal Data"</b>). Personally identifiable
           information may include, but is not limited to:
         </p>
         <p>0.1. Email address</p>
@@ -115,6 +118,20 @@ export default function PrivacyPage() {
         <p>0.3. Phone number</p>
         <p>0.4. Address, Country, State, Province, ZIP/Postal code, City</p>
         <p>0.5. Cookies and Usage Data</p>
+        
+        <p>
+          <b>Meta Marketing Automation Data</b>
+        </p>
+        <p>
+          For our Meta Marketing Automation platform, we collect additional data:
+        </p>
+        <p>0.6. User account information (email, encrypted credentials)</p>
+        <p>0.7. Facebook/Meta business data (ad accounts, campaigns, metrics)</p>
+        <p>0.8. Public competitor data from Meta Ad Library API</p>
+        <p>0.9. AI-generated content (campaigns, ad copy, media)</p>
+        <p>0.10. Facebook Business Manager account information</p>
+        <p>0.11. Ad account performance metrics and analytics</p>
+        <p>0.12. Campaign optimization recommendations</p>
         <p>
           We may use your Personal Data to contact you with newsletters,
           marketing or promotional materials and other information that may be
@@ -236,6 +253,16 @@ export default function PrivacyPage() {
           information;
         </p>
         <p>0.13. for any other purpose with your consent.</p>
+        
+        <p>
+          <b>Meta Marketing Automation Data Usage:</b>
+        </p>
+        <p>0.14. Creating and managing Facebook/Instagram advertising campaigns</p>
+        <p>0.15. Competitive intelligence and market research using public data</p>
+        <p>0.16. AI-powered optimization recommendations</p>
+        <p>0.17. Performance analytics and reporting</p>
+        <p>0.18. Campaign content generation and optimization</p>
+        <p>0.19. Meta Ad Library API data analysis for competitive insights</p>
         <p>
           6. <b>Retention of Data</b>
         </p>
@@ -253,6 +280,22 @@ export default function PrivacyPage() {
           is used to strengthen the security or to improve the functionality of
           our Service, or we are legally obligated to retain this data for
           longer time periods.
+        </p>
+        
+        <p>
+          <b>Meta Marketing Automation Data Deletion:</b>
+        </p>
+        <p>
+          Users can delete their Meta Marketing Automation data via:
+        </p>
+        <p>• Facebook Settings → Apps and Websites → Remove App</p>
+        <p>• Email to support@shothik.ai</p>
+        <p>• Automated callback endpoint (HMAC-SHA256 verified)</p>
+        <p>
+          Instructions: <a href="https://ed4d0c35-fa74-4227-a572-cef2350c6355-00-57a8wxuujbe4.pike.replit.dev/data-deletion.html" target="_blank" rel="noopener noreferrer">Data Deletion Instructions</a>
+        </p>
+        <p>
+          Complete data removal is processed within 30 days of request.
         </p>
         <p>
           7. <b>Transfer of Data</b>
@@ -325,6 +368,16 @@ export default function PrivacyPage() {
           means to protect your Personal Data, we cannot guarantee its absolute
           security.
         </p>
+        
+        <p>
+          <b>Meta Marketing Automation Security Measures:</b>
+        </p>
+        <p>• HTTPS/TLS encryption for all data transmission</p>
+        <p>• bcrypt password hashing for secure credential storage</p>
+        <p>• JWT authentication for secure API access</p>
+        <p>• Database encryption at rest</p>
+        <p>• Regular security audits and vulnerability assessments</p>
+        <p>• SOC 2 Type II compliance standards</p>
         <p>
           10.{" "}
           <b>
@@ -376,6 +429,14 @@ export default function PrivacyPage() {
           withdraw your consent at any time where we rely on your consent to
           process your personal information;
         </p>
+        
+        <p>
+          <b>Meta Marketing Automation User Rights (GDPR & CCPA):</b>
+        </p>
+        <p>0.7. Right to Access - Request copy of all Meta Marketing Automation data</p>
+        <p>0.8. Right to Deletion - Complete removal within 30 days</p>
+        <p>0.9. Right to Portability - Export in machine-readable format</p>
+        <p>0.10. Right to Rectification - Correct inaccurate information</p>
         <p>
           Please note that we may ask you to verify your identity before
           responding to such requests. Please note, we may not able to provide
@@ -534,7 +595,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           We may employ third party companies and individuals to facilitate our
-          Service (<b>“Service Providers”</b>), provide Service on our behalf,
+          Service (<b>"Service Providers"</b>), provide Service on our behalf,
           perform Service-related services or assist us in analysing how our
           Service is used.
         </p>
@@ -542,6 +603,19 @@ export default function PrivacyPage() {
           These third parties have access to your Personal Data only to perform
           these tasks on our behalf and are obligated not to disclose or use it
           for any other purpose.
+        </p>
+        
+        <p>
+          <b>Meta Marketing Automation Third-Party Services:</b>
+        </p>
+        <p>• Meta (Graph API, Ad Library) - For Facebook/Instagram campaign management</p>
+        <p>• Google Cloud (Gemini AI, Vertex AI) - For AI-powered content generation</p>
+        <p>• MongoDB Atlas - For encrypted data storage</p>
+        <p>• ImageKit - For media processing and optimization</p>
+        <p>• Sentry - For error monitoring and debugging</p>
+        <p>• Redis Cloud - For caching and session management</p>
+        <p>
+          <b>Important:</b> NO DATA IS SOLD TO THIRD PARTIES. All third-party services are used solely for service functionality and are bound by strict data protection agreements.
         </p>
         <p>
           14. <b>Analytics</b>
@@ -615,7 +689,22 @@ export default function PrivacyPage() {
           consent, we take steps to remove that information from our servers.
         </p>
         <p>
-          20. <b>Changes to This Privacy Policy</b>
+          20. <b>Compliance Standards</b>
+        </p>
+        <p>
+          Our Meta Marketing Automation platform complies with the following standards:
+        </p>
+        <p>• Meta Platform Terms - Full compliance with Facebook/Meta API requirements</p>
+        <p>• Meta Advertising Policies - Adherence to all Meta advertising guidelines</p>
+        <p>• GDPR (EU data protection) - Complete compliance with European data protection laws</p>
+        <p>• CCPA (California privacy) - Full compliance with California Consumer Privacy Act</p>
+        <p>• SOC 2 Type II standards - Enterprise-grade security and compliance</p>
+        <p>
+          Contact: privacy@shothik.ai | Response time: Within 30 days
+        </p>
+        
+        <p>
+          21. <b>Changes to This Privacy Policy</b>
         </p>
         <p>
           We may update our Privacy Policy from time to time. We will notify you
@@ -623,8 +712,8 @@ export default function PrivacyPage() {
         </p>
         <p>
           We will let you know via email and/or a prominent notice on our
-          Service, prior to the change becoming effective and update “effective
-          date” at the top of this Privacy Policy.
+          Service, prior to the change becoming effective and update "effective
+          date" at the top of this Privacy Policy.
         </p>
         <p>
           You are advised to review this Privacy Policy periodically for any
@@ -632,11 +721,14 @@ export default function PrivacyPage() {
           posted on this page.
         </p>
         <p>
-          21. <b>Contact Us</b>
+          22. <b>Contact Us</b>
         </p>
         <p>
           If you have any questions about this Privacy Policy, please contact us
           by email: <b>support@shothik.ai</b>.
+        </p>
+        <p>
+          For Meta Marketing Automation specific privacy concerns: <b>privacy@shothik.ai</b>
         </p>
       </Box>
     </BackgroundContainer>
