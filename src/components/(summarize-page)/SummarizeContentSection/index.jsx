@@ -372,8 +372,6 @@ const SummarizeContentSection = () => {
         keywords: selectedKeywords || [],
       };
 
-      console.log("payload", payload);
-
       await fetchWithStreaming(payload);
     } catch (error) {
       if (/LIMIT_REQUEST|PACKAGE_EXPIRED/.test(error?.error)) {
@@ -422,15 +420,16 @@ const SummarizeContentSection = () => {
       setSelectedKeywords((prev) => {
         if (prev.includes(keyword)) {
           return prev.filter((kw) => kw !== keyword);
-        } else if (prev.length >= 5) {
-          console.log("You can select up to 5 keywords.");
-          enqueueSnackbar("You can select up to 5 keywords.", {
+        }
+
+        if (prev.length >= 5) {
+          enqueueSnackbar("You can select up to 5 keywords only.", {
             variant: "warning",
           });
           return prev;
-        } else {
-          return [...prev, keyword];
         }
+
+        return [...prev, keyword];
       });
     },
     [enqueueSnackbar],
@@ -521,10 +520,10 @@ const SummarizeContentSection = () => {
                                   : "hover:border-primary/50 border-muted-foreground"
                               }`}
                               onClick={() => handleKeywordToggle(kw)}
-                              disabled={
-                                !selectedKeywords.includes(kw) &&
-                                selectedKeywords.length >= 5
-                              }
+                              // disabled={
+                              //   !selectedKeywords.includes(kw) &&
+                              //   selectedKeywords.length >= 5
+                              // }
                             >
                               <span className="capitalize">{kw}</span>
                             </button>
