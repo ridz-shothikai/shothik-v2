@@ -1,18 +1,18 @@
 // components/SlidePreview.jsx
-import React, { useState, useEffect, useRef } from "react";
+import CheckIcon from "@mui/icons-material/Check";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import IconButton from "@mui/material/IconButton";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CheckIcon from "@mui/icons-material/Check";
-import { Button, useMediaQuery, Snackbar, Alert } from "@mui/material";
-import createEnhancedIframeContent from "../../libs/presentationEditScripts";
+import Typography from "@mui/material/Typography";
 import html2canvas from "html2canvas";
+import React, { useEffect, useRef, useState } from "react";
+import createEnhancedIframeContent from "../../libs/presentationEditScripts";
 
 const PRIMARY_GREEN = "#07B37A";
 
@@ -47,7 +47,7 @@ export default function SlidePreview({
   // Copy to clipboard function
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(slide.body);
+      await navigator.clipboard.writeText(slide.body || slide.html_content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -61,7 +61,7 @@ export default function SlidePreview({
     setIsEditMode(newEditMode);
 
     if (newEditMode) {
-      console.log("🎯 Edit mode enabled for slide:", slide?.slide_index + 1);
+      console.log("🎯 Edit mode enabled for slide:", slide?.slideNumber + 1);
       // console.log("📄 Slide data:", slide);
 
       // Enable selection in iframe
@@ -77,7 +77,7 @@ export default function SlidePreview({
 
       setShowSelectionAlert(true);
     } else {
-      console.log("🛑 Edit mode disabled for slide:", slide?.slide_index + 1);
+      console.log("🛑 Edit mode disabled for slide:", slide?.slideNumber + 1);
 
       // Disable selection in iframe
       if (iframeRef.current && iframeRef.current.contentWindow) {
@@ -390,7 +390,7 @@ export default function SlidePreview({
                   },
                 }}
               >
-                {slide?.slide_index + 1} / {totalSlides}
+                {slide?.slideNumber + 1} / {totalSlides}
               </Typography>
             )}
           </Box>
@@ -419,7 +419,9 @@ export default function SlidePreview({
               {dimensions.scale > 0 && (
                 <iframe
                   ref={iframeRef}
-                  srcDoc={createEnhancedIframeContent(slide.body)}
+                  srcDoc={createEnhancedIframeContent(
+                    slide.body || slide.html_content,
+                  )}
                   style={iframeStyle as React.CSSProperties}
                   title={`Slide ${slide.slide_index + 1}`}
                   sandbox="allow-scripts allow-same-origin"
@@ -509,7 +511,9 @@ export default function SlidePreview({
                   wordBreak: "break-word",
                 }}
               >
-                <code className="language-html">{slide.body}</code>
+                <code className="language-html">
+                  {slide.body || slide.html_content}
+                </code>
               </pre>
             </Box>
           )}
