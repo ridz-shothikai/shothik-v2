@@ -1,3 +1,5 @@
+"use client";
+
 import useSnackbar from "@/hooks/useSnackbar";
 import {
   CloudDownload,
@@ -6,15 +8,7 @@ import {
   KeyboardArrowUpOutlined,
   Share,
 } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  CircularProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import { pdfDownload } from "../helpers/pdfDownload";
 import { getColorByPerplexity } from "../helpers/pdfHelper";
@@ -26,6 +20,69 @@ import {
 
 const widths = [130, 80, 60, 60, 80, 130];
 
+const AIColor = ({ colors, perplexity, highlight_sentence_for_ai }) => {
+  const color = getColorByPerplexity(highlight_sentence_for_ai, perplexity);
+
+  return (
+    <div className="flex items-center gap-1">
+      {colors?.map((item, index) => (
+        <div
+          key={index}
+          className={`h-5 w-5 rounded-full transition-colors duration-200`}
+          style={{
+            backgroundColor: item === color ? color : "hsl(var(--muted))",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+const Accordion = ({ colorList, data, title }) => {
+  const [isExpanded, setIsExpanded] = useState(-1);
+
+  return (
+    <div className="border-border max-h-[200px] overflow-y-auto border-b px-3 py-2 last:border-b-0 md:max-h-[174px]">
+      <h3 className="mb-1 text-[18px] font-semibold">{title}</h3>
+      {data?.map((item, index) => (
+        <div
+          key={index}
+          className="border-border flex items-start gap-2 border-b py-2 last:border-b-0"
+        >
+          <AIColor
+            highlight_sentence_for_ai={item?.highlight_sentence_for_ai}
+            colors={Object.values(colorList)}
+            perplexity={item.perplexity}
+          />
+          <div className="flex w-full items-start justify-between gap-2">
+            <p
+              className={`text-sm leading-6 transition-all duration-300 ${
+                isExpanded !== index
+                  ? "line-clamp-1 overflow-hidden text-ellipsis"
+                  : ""
+              }`}
+            >
+              {item?.sentence}
+            </p>
+            <Button
+              onClick={() =>
+                setIsExpanded((prev) => (prev === index ? -1 : index))
+              }
+              sx={{ padding: 0, minWidth: "unset", width: "fit-content" }}
+            >
+              {isExpanded === index ? (
+                <KeyboardArrowUpOutlined />
+              ) : (
+                <ExpandMoreOutlined />
+              )}
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const OutputResult = ({ handleOpen, outputContend }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const enqueueSnackbar = useSnackbar();
@@ -33,12 +90,10 @@ const OutputResult = ({ handleOpen, outputContend }) => {
   const handleDownload = async () => {
     try {
       setIsDownloading(true);
-
       await pdfDownload({
         content: outputContend,
         logo: "/shothik_light_logo.png",
       });
-
       enqueueSnackbar("PDF downloaded successfully", { variant: "success" });
     } catch (error) {
       console.error("Error downloading PDF:", error);
@@ -51,22 +106,9 @@ const OutputResult = ({ handleOpen, outputContend }) => {
   };
 
   return (
-    <Card
-      sx={{
-        border: (theme) => `1px solid ${theme.palette.divider}`,
-      }}
-    >
-      <Stack
-        justifyContent="flex-end"
-        flexDirection="row"
-        gap={1}
-        sx={{
-          paddingX: 2,
-          paddingY: 1,
-          borderBottom: "1px solid",
-          borderBottomColor: "divider",
-        }}
-      >
+    <div className="border-border bg-background text-foreground rounded-lg border">
+      {/* Header */}
+      <div className="border-border flex justify-end gap-2 border-b px-3 py-2">
         <Button
           onClick={handleOpen}
           startIcon={<Share />}
@@ -75,11 +117,9 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             borderRadius: "9999px",
             px: 2,
             py: 1,
-            color: "#212B36",
+            color: "var(--foreground)",
             transition: "all 300ms ease-in-out",
-            "&:hover": {
-              color: "primary.main",
-            },
+            "&:hover": { color: "primary.main" },
           }}
         >
           Share
@@ -93,319 +133,118 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             borderRadius: "9999px",
             px: 2,
             py: 1,
-            color: "#212B36",
+            color: "var(--foreground)",
             transition: "all 300ms ease-in-out",
-            "&:hover": {
-              color: "primary.main",
-            },
-            "&:disabled": {
-              opacity: 0.6,
-            },
+            "&:hover": { color: "primary.main" },
+            "&:disabled": { opacity: 0.6 },
           }}
         >
           {isDownloading ? "Downloading..." : "Download"}
         </Button>
-      </Stack>
+      </div>
 
-      {/* ai ditector highlight */}
-      <Box
-        sx={{
-          paddingX: 2,
-          paddingY: 1,
-          borderBottom: "1px solid",
-          borderBottomColor: "divider",
-        }}
-      >
-        <Stack
-          sx={{ flexDirection: { md: "column", lg: "row", sm: "row" }, my: 2 }}
-          gap={3}
-          alignItems="center"
-          justifyContent="flex-start"
-        >
-          <Box
-            sx={{
-              width: 150,
-              height: 150,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-            }}
-          >
-            <CircularProgress
-              variant="determinate"
-              value={100}
-              size={150}
-              thickness={4}
-              sx={{ color: colorDefinitions.humanHigh, position: "absolute" }}
+      {/* Main section */}
+      <div className="border-border border-b px-3 py-2">
+        <div className="my-2 flex flex-col items-center justify-start gap-3 md:flex-row lg:flex-row">
+          <div className="relative flex h-[150px] w-[150px] items-center justify-center">
+            <div
+              className="absolute h-full w-full rounded-full border-[4px]"
+              style={{ borderColor: colorDefinitions.humanHigh }}
             />
-            <CircularProgress
-              variant="determinate"
-              value={outputContend.ai_percentage}
-              size={150}
-              thickness={4}
-              sx={{ color: colorDefinitions.aiHigh, position: "absolute" }}
-            />
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                color:
-                  outputContend.ai_percentage > 50
-                    ? "warning.main"
-                    : "primary.main",
+            <div
+              className="absolute h-full w-full rounded-full border-[4px]"
+              style={{
+                borderColor: colorDefinitions.aiHigh,
+                clipPath: `inset(${100 - outputContend.ai_percentage}% 0 0 0)`,
               }}
+            />
+            <p
+              className={`text-lg font-semibold ${
+                outputContend.ai_percentage > 50
+                  ? "text-warning"
+                  : "text-primary"
+              }`}
             >
               {outputContend.ai_percentage > 50 ? "AI" : "Human"}
-            </Typography>
-          </Box>
-          <Stack flexDirection="column" gap={1.5}>
-            <Stack flexDirection="row" gap={1} alignItems="center">
-              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
-                We are{" "}
-              </Typography>
-              <Typography
-                color="inherit"
-                fontWeight={700}
-                fontSize={16}
-                sx={{
-                  borderBottom: "1px solid",
-                  borderBottomColor: "divider",
-                  width: "fit-content",
-                  display: "inline-block",
-                  textWrap: "nowrap",
-                  textTransform: "uppercase",
-                }}
-              >
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-2">
+              <p className="text-muted-foreground whitespace-nowrap">We are</p>
+              <span className="border-border border-b font-bold whitespace-nowrap uppercase">
                 highly confident
-              </Typography>
-              <Typography sx={{ textWrap: "nowrap" }} color="GrayText">
+              </span>
+              <p className="text-muted-foreground whitespace-nowrap">
                 this text is
-              </Typography>
-            </Stack>
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: {
-                  lg: "flex-start",
-                  md: "center",
-                  xs: "center",
-                },
-              }}
-            >
-              <Chip
-                label={outputContend.assessment}
-                sx={{
-                  backgroundColor: "#7c3aed1a",
-                  color: "#6B46C1",
-                  fontWeight: 700,
-                  fontSize: 16,
-                  "& .MuiChip-label": {
-                    px: 2,
-                    py: 0.5,
-                  },
-                }}
-              />
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                py: 1,
-                px: 2,
-                border: "1px solid rgba(127, 129, 133, 0.28)",
-                borderRadius: 1,
-              }}
-              color="GrayText"
-            >
+              </p>
+            </div>
+            <div className="flex justify-start">
+              <div className="bg-primary/10 text-primary rounded-full px-2 py-1 text-sm font-bold">
+                {outputContend.assessment}
+              </div>
+            </div>
+            <div className="border-border text-muted-foreground flex items-center gap-2 rounded-md border px-3 py-1">
               <InfoOutlined />
-              <Typography>
+              <p>
                 {parseInt(outputContend.ai_percentage ?? 0)}% Probability AI
                 generated
-              </Typography>
-            </Box>
-          </Stack>
-        </Stack>
-        <Box sx={{ mt: 2 }}>
-          <Typography color="inherit" fontWeight={600} fontSize={18}>
-            Enhanced Sentence Detection
-          </Typography>
-          <Typography color="gray">
-            Sentences that have the biggest influence on the probability score.
-          </Typography>
-        </Box>
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <Box sx={{ my: 2 }}>
-          <Box
-            sx={{
-              display: "flex",
-              width: "100%",
-              height: "20px",
-              gap: "2px",
-              borderRadius: "4px",
-              overflow: "hidden",
-            }}
-          >
+        <div className="mt-3">
+          <h4 className="text-[18px] font-semibold">
+            Enhanced Sentence Detection
+          </h4>
+          <p className="text-muted-foreground text-sm">
+            Sentences that have the biggest influence on the probability score.
+          </p>
+        </div>
+
+        <div className="my-3">
+          <div className="flex h-[20px] w-full gap-[2px] overflow-hidden rounded">
             {[
               ...Object.values(colorDefinitionsAI).reverse(),
               ...Object.values(colorDefinitionsHuman),
             ].map((color, index) => (
-              <Box
+              <div
                 key={index}
-                sx={{
-                  backgroundColor: color,
-                  width: widths[index],
-                }}
+                style={{ backgroundColor: color, width: widths[index] }}
               />
             ))}
-          </Box>
-          <Stack
-            sx={{ mt: 0.6 }}
-            flexDirection="row"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{
-                fontSize: "14px",
-                fontWeight: 500,
-                color: colorDefinitions.aiHigh,
-              }}
+          </div>
+          <div className="mt-1 flex justify-between">
+            <span
+              className="text-sm font-medium"
+              style={{ color: colorDefinitions.aiHigh }}
             >
               AI
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                fontWeight: 500,
-                color: colorDefinitions.humanHigh,
-              }}
+            </span>
+            <span
+              className="text-sm font-medium"
+              style={{ color: colorDefinitions.humanHigh }}
             >
               Human
-            </Typography>
-          </Stack>
-        </Box>
-      </Box>
+            </span>
+          </div>
+        </div>
+      </div>
 
-      <Accortion
+      {/* Accordions */}
+      <Accordion
         colorList={Object.values(colorDefinitionsAI)}
         data={outputContend.aiSentences}
         title="Top sentences driving AI probability"
       />
-      <Accortion
+      <Accordion
         colorList={Object.values(colorDefinitionsHuman)}
         data={outputContend.humanSentences}
         title="Top sentences driving Human probability"
       />
-    </Card>
+    </div>
   );
 };
-
-const Accortion = ({ colorList, data, title, children }) => {
-  const [isExpanded, setIsExpanded] = useState(-1);
-
-  return (
-    <Box
-      sx={{
-        paddingX: 2,
-        paddingY: 1,
-        maxHeight: { xs: "200px", md: "174px" },
-        overflowY: "auto",
-        "&:not(:last-child)": {
-          borderBottom: "1px solid #E0E0E0",
-        },
-      }}
-    >
-      <Typography fontWeight={600} fontSize={18}>
-        {title}
-      </Typography>
-      {children}
-
-      {data.map((item, index) => (
-        <Box
-          key={index}
-          sx={{
-            display: "flex",
-            gap: 2,
-            paddingY: 2,
-            alignItems: "flex-start",
-            "&:not(:last-child)": {
-              borderBottom: "1px solid #E0E0E0",
-            },
-          }}
-        >
-          <AIColor
-            highlight_sentence_for_ai={item.highlight_sentence_for_ai}
-            colors={Object.values(colorList)}
-            perplexity={item.perplexity}
-          />
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 1,
-              justifyContent: "space-between",
-            }}
-          >
-            <Typography
-              sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: isExpanded !== index ? 1 : undefined,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                lineHeight: "1.5em",
-                transition: "all 0.3s ease",
-              }}
-            >
-              {item.sentence}
-            </Typography>
-
-            <Button
-              onClick={() =>
-                setIsExpanded((prev) => {
-                  if (prev === index) {
-                    return -1;
-                  } else {
-                    return index;
-                  }
-                })
-              }
-              sx={{ padding: 0, width: "fit-content", minWidth: "unset" }}
-            >
-              {isExpanded === index ? (
-                <KeyboardArrowUpOutlined />
-              ) : (
-                <ExpandMoreOutlined />
-              )}
-            </Button>
-          </Box>
-        </Box>
-      ))}
-    </Box>
-  );
-};
-
-function AIColor({ colors, perplexity, highlight_sentence_for_ai }) {
-  const color = getColorByPerplexity(highlight_sentence_for_ai, perplexity);
-
-  return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      {colors.map((item, index) => (
-        <Box
-          key={index}
-          sx={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            backgroundColor: item === color ? color : "#E0E0E0",
-          }}
-        ></Box>
-      ))}
-    </Box>
-  );
-}
 
 export default OutputResult;

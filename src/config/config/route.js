@@ -36,6 +36,7 @@ export const PATH_PAGE = {
   blogDetail: (id) => `/blogs/${id}`,
   tutorials: "/tutorials",
   privacy: "/privacy",
+  deletion: "/deletion",
   terms: "/terms",
   paymentPolicy: "/payment/payment-policy",
   refundPolicy: "/payment/refund-policy",

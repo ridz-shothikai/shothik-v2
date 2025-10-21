@@ -140,7 +140,7 @@ export const pdfDownload = async ({
 }) => {
   try {
     // Logo data url
-    let logoDataUrl = logoDataUrl || null;
+    let logoDataUrl = null;
 
     try {
       logoDataUrl = await convertLogoToDataURL(logo);

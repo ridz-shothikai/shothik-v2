@@ -5,15 +5,15 @@ export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
   const p = parseInt(perplexity);
 
   if (highlight_sentence_for_ai) {
-    if (p >= colorValues.aiHigh) return colorDefinitions.aiHigh;
-    if (p >= colorValues.aiMedium) return colorDefinitions.aiMedium;
-    if (p >= colorValues.aiLow) return colorDefinitions.aiLow;
+    if (p >= colorValues?.aiHigh) return colorDefinitions?.aiHigh;
+    if (p >= colorValues?.aiMedium) return colorDefinitions?.aiMedium;
+    if (p >= colorValues?.aiLow) return colorDefinitions?.aiLow;
     return colorDefinitions.aiLow;
   } else {
-    if (p <= colorValues.humanHigh) return colorDefinitions.humanHigh;
-    if (p <= colorValues.humanMedium) return colorDefinitions.humanMedium;
-    if (p <= colorValues.humanLow) return colorDefinitions.humanLow;
-    return colorDefinitions.humanLow;
+    if (p <= colorValues?.humanHigh) return colorDefinitions?.humanHigh;
+    if (p <= colorValues?.humanMedium) return colorDefinitions?.humanMedium;
+    if (p <= colorValues?.humanLow) return colorDefinitions?.humanLow;
+    return colorDefinitions?.humanLow;
   }
 };
 

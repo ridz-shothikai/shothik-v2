@@ -15,55 +15,43 @@ import {
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
 import LoadingScreen from "@/resource/LoadingScreen";
-import {
-  Box,
-  Card,
-  Grid2,
-  LinearProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import OutputResult, { getColorByPerplexity } from "./OutputResult";
+import OutputResult from "./OutputResult";
 import SampleText from "./SampleText";
 import ShareURLModal from "./ShareURLModal";
+import { getColorByPerplexity } from "./helpers/pdfHelper";
 
 function formatNumber(number) {
   if (!number) return 0;
   const length = number.toString().length;
-  if (length >= 4) {
-    return number.toLocaleString("en-US");
-  }
-  return number.toString();
+  return length >= 4 ? number.toLocaleString("en-US") : number.toString();
 }
 
 const UsesLimit = ({ userLimit }) => {
   const progressPercentage = () => {
     if (!userLimit) return 0;
-
     const totalWords = userLimit.totalWordLimit;
     const remainingWords = userLimit.remainingWord;
-    const progress = (remainingWords / totalWords) * 100;
-    return progress;
+    return (remainingWords / totalWords) * 100;
   };
 
   return (
-    <Stack sx={{ padding: 2 }} alignItems="flex-end">
-      <Box sx={{ width: { xs: 220, sm: 250 } }}>
-        <LinearProgress
-          sx={{ height: 6 }}
-          variant="determinate"
-          value={progressPercentage()}
-        />
-        <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
+    <div className="flex justify-end px-4 py-2">
+      <div className="w-[220px] sm:w-[250px]">
+        <div className="bg-muted/50 h-1.5 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-primary h-full transition-all duration-500"
+            style={{ width: `${progressPercentage()}%` }}
+          ></div>
+        </div>
+        <p className="text-muted-foreground mt-1 text-[12px] sm:text-[14px]">
           {formatNumber(userLimit?.totalWordLimit)} words /{" "}
           {formatNumber(userLimit?.remainingWord)} words left
-        </Typography>
-      </Box>
-    </Stack>
+        </p>
+      </div>
+    </div>
   );
 };
 
@@ -96,8 +84,6 @@ const AiDetectorContentSection = () => {
     sessionStorage.getItem("ai-detect-content"),
   );
 
-  // console.log(sessionContent, "output contend");
-
   useEffect(() => {
     if (!shareContend) return;
     const data = shareContend?.result;
@@ -122,13 +108,11 @@ const AiDetectorContentSection = () => {
 
   async function handleSubmit(inputData = null) {
     try {
-      // handle edit;
       if (!enableEdit) {
         setEnableEdit(true);
         return;
       }
 
-      //track event
       trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
@@ -193,40 +177,22 @@ const AiDetectorContentSection = () => {
   }
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
-          <Card
-            sx={{
-              position: "relative",
-              height: isMobile ? 400 : 600,
-              display: "flex",
-              flexDirection: "column",
-              border: (theme) => `1px solid ${theme.palette.divider}`,
-            }}
-            elevation={16}
-          >
+    <div className="mt-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Left Section */}
+        <div>
+          <div className="border-border bg-card text-card-foreground relative flex h-[400px] flex-col rounded-xl border shadow-md md:h-[600px]">
             {enableEdit ? (
-              <TextField
+              <textarea
                 name="input"
-                variant="outlined"
                 rows={isMobile ? 13 : 22}
-                fullWidth
-                multiline
                 placeholder="Enter your text here..."
+                className="placeholder:text-muted-foreground w-full flex-1 resize-none bg-transparent p-4 text-sm outline-none md:text-base"
                 value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                sx={{
-                  // flexGrow: 1,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
               />
             ) : (
-              <Box sx={{ height: "100%", overflow: "auto", padding: 2 }}>
+              <div className="h-full overflow-auto p-4">
                 {outputContend &&
                   outputContend.sentences.map((item, index) => (
                     <Fragment key={index}>
@@ -243,28 +209,19 @@ const AiDetectorContentSection = () => {
                       </span>
                     </Fragment>
                   ))}
-              </Box>
+              </div>
             )}
 
-            {!userInput ? (
-              <>
-                {!share_id ? (
-                  <UserActionInput
-                    setUserInput={setUserInput}
-                    isMobile={isMobile}
-                    disableTrySample={true}
-                  />
-                ) : null}
-              </>
+            {!userInput && !share_id ? (
+              <UserActionInput
+                setUserInput={setUserInput}
+                isMobile={isMobile}
+                disableTrySample={true}
+              />
             ) : null}
+
             {userInput ? (
-              <Box
-                sx={{
-                  borderTop: "1px solid",
-                  borderTopColor: "divider",
-                  px: 2,
-                }}
-              >
+              <div className="border-border border-t px-4">
                 <WordCounter
                   btnText={enableEdit ? "Scan" : "Edit"}
                   toolName="ai-detector"
@@ -275,18 +232,19 @@ const AiDetectorContentSection = () => {
                   userPackage={user?.package}
                   sticky={0}
                 />
-              </Box>
+              </div>
             ) : null}
 
             {userLimit && !userInput ? (
               <UsesLimit userLimit={userLimit} />
             ) : null}
-          </Card>
+          </div>
 
           {userLimit && userInput ? <UsesLimit userLimit={userLimit} /> : null}
-        </Grid2>
+        </div>
 
-        <Grid2 size={{ xs: 12, md: 6 }}>
+        {/* Right Section */}
+        <div>
           {outputContend ? (
             <OutputResult
               handleOpen={() => setshowShareModal(true)}
@@ -301,8 +259,8 @@ const AiDetectorContentSection = () => {
               isDrawer={openSampleDrawer}
             />
           )}
-        </Grid2>
-      </Grid2>
+        </div>
+      </div>
 
       {outputContend ? (
         <ShareURLModal
@@ -313,7 +271,7 @@ const AiDetectorContentSection = () => {
           hashtags={["Shothik AI", "AI Detector"]}
         />
       ) : null}
-    </Box>
+    </div>
   );
 };
 
