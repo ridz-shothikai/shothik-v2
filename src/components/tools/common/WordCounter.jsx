@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   ClickAwayListener,
   IconButton,
   Paper,
@@ -180,7 +181,7 @@ const Contend = ({
                   component="span"
                   sx={{
                     color: "#242426",
-                    fontSize: "14px",
+                    fontSize: { xs: "12px", lg: "14px" },
                   }}
                 >
                   Words
@@ -197,8 +198,10 @@ const Contend = ({
               color="inherit"
               disabled={isLoading}
               onClick={handleClearInput}
-              style={{ marginLeft: "-4px" }}
               disableRipple
+              sx={{
+                p: 0,
+              }}
             >
               {/* <DeleteRounded sx={{ color: "text.secondary" }} /> */}
               <Image
@@ -220,9 +223,11 @@ const Contend = ({
                   color="inherit"
                   disabled={false}
                   onClick={handleToggleFreeze}
-                  style={{ marginLeft: "-12px" }}
                   disableRipple
                   ref={anchorRef}
+                  sx={{
+                    p: 0,
+                  }}
                 >
                   <Image
                     src={
@@ -285,6 +290,37 @@ const Contend = ({
               </Popper>
             </>
           ) : null}
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 1,
+              alignItems: "center",
+              ml: { lg: 2 },
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <CircularProgress size={16} color="inherit" />
+            </Box>
+            <Typography
+              component="span"
+              sx={{
+                // color: "primary.main",
+                color: "#242426",
+                fontSize: "14px",
+                whiteSpace: "nowrap",
+                lineHeight: 1,
+              }}
+            >
+              freezing
+            </Typography>
+          </Box>
         </Stack>
         {ExtraCounter}
       </Stack>
