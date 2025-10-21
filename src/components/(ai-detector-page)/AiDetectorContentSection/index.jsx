@@ -180,8 +180,8 @@ const AiDetectorContentSection = () => {
     <div className="mt-2">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Left Section */}
-        <div>
-          <div className="border-border bg-card text-card-foreground relative flex h-[400px] flex-col rounded-xl border shadow-md md:h-[600px]">
+        <div className="bg-card border-border text-card-foreground relative self-stretch border">
+          <div className="flex h-full min-h-80 flex-col rounded-xl">
             {enableEdit ? (
               <textarea
                 name="input"
@@ -244,21 +244,23 @@ const AiDetectorContentSection = () => {
         </div>
 
         {/* Right Section */}
-        <div>
-          {outputContend ? (
-            <OutputResult
-              handleOpen={() => setshowShareModal(true)}
-              outputContend={outputContend}
-            />
-          ) : (
-            <SampleText
-              handleSampleText={handleSampleText}
-              isMini={isMini}
-              isMobile={isMd}
-              setOpen={setOpenSampleDrawer}
-              isDrawer={openSampleDrawer}
-            />
-          )}
+        <div className="bg-card border-border text-card-foreground relative self-stretch border">
+          <div className="flex h-full min-h-80 flex-col rounded-xl">
+            {outputContend ? (
+              <OutputResult
+                handleOpen={() => setshowShareModal(true)}
+                outputContend={outputContend}
+              />
+            ) : (
+              <SampleText
+                handleSampleText={handleSampleText}
+                isMini={isMini}
+                isMobile={isMd}
+                setOpen={setOpenSampleDrawer}
+                isDrawer={openSampleDrawer}
+              />
+            )}
+          </div>
         </div>
       </div>
 

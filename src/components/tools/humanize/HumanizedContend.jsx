@@ -25,8 +25,8 @@ import { useGetAllHistoryQuery } from "../../../redux/api/humanizeHistory/humani
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
+import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
-import LanguageMenu from "../grammar/LanguageMenu";
 import AlertDialogMessage from "./AlertDialogMessage";
 import GPTsettings from "./GPTsettings";
 import HumanizeScrores from "./HumanizeScrores";
