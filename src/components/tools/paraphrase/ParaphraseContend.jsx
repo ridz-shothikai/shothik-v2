@@ -42,6 +42,7 @@ import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
+import { useAutoFreeze } from "../../../hooks/useAutoFreeze";
 import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import {
@@ -238,6 +239,50 @@ const ParaphraseContend = () => {
     fileHistories,
   } = useSelector((state) => state.paraphraseHistory);
 
+  const paidUser =
+    user?.package === "pro_plan" ||
+    user?.package === "value_plan" ||
+    user?.package === "unlimited";
+
+  const { paraphraseOptions } = useSelector((state) => state.settings);
+
+  const {
+    autoFrozenTerms,
+    userDisabledTerms,
+    isDetecting: isAutoFreezeDetecting,
+    stats: autoFreezeStats,
+    disableTerm: disableAutoFreezeTerm,
+    enableTerm: enableAutoFreezeTerm,
+    isAutoFrozen,
+    getTermInfo,
+  } = useAutoFreeze({
+    userInput,
+    language,
+    frozenWords,
+    onAutoFreeze: (terms) => {
+      // ✅ Auto-freeze detected terms with normalization
+      terms.forEach((term) => {
+        const normalizedTerm = term.toLowerCase().trim().replace(/\s+/g, " ");
+
+        // Check if it's a phrase or single word
+        if (normalizedTerm.includes(" ")) {
+          if (!frozenPhrases.has(normalizedTerm)) {
+            frozenPhrases.add(normalizedTerm);
+          }
+        } else {
+          if (!frozenWords.has(normalizedTerm)) {
+            frozenWords.add(normalizedTerm);
+          }
+        }
+      });
+    },
+    debounceMs: 2500,
+    enableLLM: paidUser, // Only using LLM for paid users
+    shouldAutoFreeze: paraphraseOptions.autoFreeze, // checks if auto freeze should be enabled or not.
+  });
+
+  // console.log(isAutoFreezeDetecting, "isAutoFreezeDetecting");
+
   // Helper function to count word occurrences in text
   const countWordOccurrences = (text, word) => {
     if (!text || !word) return 0;
@@ -259,6 +304,7 @@ const ParaphraseContend = () => {
   const handleFreezeWord = (word) => {
     console.log("handleFreezeWord called with word:", word);
     console.log("Current userInput:", userInput);
+    const normalizedWord = word.toLowerCase().trim().replace(/\s+/g, " ");
     const count = countWordOccurrences(userInput, word);
 
     console.log("Word:", word, "Count:", count);
@@ -273,10 +319,10 @@ const ParaphraseContend = () => {
       // Show confirmation dialog
       setConfirmationDialog({
         open: true,
-        word: word,
+        word: normalizedWord,
         count: count,
         action: () => {
-          frozenWords.add(word.toLowerCase());
+          frozenWords.add(normalizedWord);
           setConfirmationDialog({
             open: false,
             word: "",
@@ -285,7 +331,7 @@ const ParaphraseContend = () => {
           });
 
           setTimeout(() => {
-            frozenWords.add(word.toLowerCase());
+            frozenWords.add(normalizedWord);
             enqueueSnackbar(`Frozen all ${count} instances successfully`, {
               variant: "success",
             });
@@ -295,7 +341,7 @@ const ParaphraseContend = () => {
     } else {
       console.log("Directly freezing word (count <= 1):", word);
       // Directly freeze if only one occurrence
-      frozenWords.add(word.toLowerCase());
+      frozenWords.add(normalizedWord);
       enqueueSnackbar("Frozen successfully", { variant: "success" });
     }
   };
@@ -304,6 +350,7 @@ const ParaphraseContend = () => {
   const handleFreezePhrase = (phrase) => {
     console.log("handleFreezePhrase called with phrase:", phrase);
     console.log("Current userInput:", userInput);
+    const normalizedPhrase = phrase.toLowerCase().trim().replace(/\s+/g, " ");
     const count = countWordOccurrences(userInput, phrase);
 
     console.log("Phrase:", phrase, "Count:", count);
@@ -320,7 +367,8 @@ const ParaphraseContend = () => {
         word: phrase,
         count: count,
         action: () => {
-          frozenPhrases.add(phrase.toLowerCase());
+          // frozenPhrases.add(phrase.toLowerCase());
+          frozenPhrases.add(normalizedPhrase);
           setConfirmationDialog({
             open: false,
             word: "",
@@ -331,7 +379,7 @@ const ParaphraseContend = () => {
       });
     } else {
       console.log("Directly freezing phrase (count <= 1):", phrase);
-      frozenPhrases.add(phrase.toLowerCase());
+      frozenPhrases.add(normalizedPhrase);
     }
   };
 
@@ -1561,11 +1609,6 @@ const ParaphraseContend = () => {
     setRecommendedFreezeWords(randomWords);
   }, [userInputValue, stableFrozenWords]); // This effect runs whenever userInput, frozenWords changes
 
-  const paidUser =
-    user?.package === "pro_plan" ||
-    user?.package === "value_plan" ||
-    user?.package === "unlimited";
-
   return (
     <Box sx={{ display: "flex", width: "100%", overflow: "hidden", pt: 2 }}>
       {!isMobile && (
@@ -1792,6 +1835,7 @@ const ParaphraseContend = () => {
                   handleClearInput={() => handleClear("", "all")}
                   handleSubmit={handleSubmit}
                   isLoading={isLoading}
+                  btnDisabled={isAutoFreezeDetecting}
                   userInput={userInput}
                   userPackage={user?.package}
                   toolName="paraphrase"
@@ -1800,6 +1844,7 @@ const ParaphraseContend = () => {
                   dontDisable={true}
                   sticky={320}
                   freeze_modal={true}
+                  detectingFreezeTerms={isAutoFreezeDetecting}
                 />
 
                 {showLanguageDetect && (

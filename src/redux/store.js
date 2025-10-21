@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApiSlice } from "./api/auth/authApiSlice";
 import { blogApiSlice } from "./api/blog/blogApiSlice";
 import { humanizeHistoryApiSlice } from "./api/humanizeHistory/humanizeHistory";
+import { autoFreezeApiSlice } from "./api/paraphrase/autoFreeze";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
 import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { researchChatApi } from "./api/research/researchChatApi";
@@ -74,6 +75,7 @@ const store = configureStore({
     [sheetApiSlice.reducerPath]: sheetApiSlice.reducer,
     [researchChatApi.reducerPath]: researchChatApi.reducer,
     [researchCoreApi.reducerPath]: researchCoreApi.reducer,
+    [autoFreezeApiSlice.reducerPath]: autoFreezeApiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -89,6 +91,7 @@ const store = configureStore({
       sheetApiSlice.middleware,
       researchChatApi.middleware,
       researchCoreApi.middleware,
+      autoFreezeApiSlice.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

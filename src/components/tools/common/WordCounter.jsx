@@ -35,6 +35,7 @@ function WordCounter({
   dontDisable = false,
   sticky = 635,
   isMobile = false,
+  detectingFreezeTerms,
 }) {
   // if (false) {
   //   const { ref, style } = useStickyBottom(sticky);
@@ -79,6 +80,7 @@ function WordCounter({
       freeze_modal={freeze_modal}
       freeze_props={freeze_props}
       isMobile={isMobile}
+      detectingFreezeTerms={detectingFreezeTerms}
     >
       {children}
     </Contend>
@@ -104,6 +106,7 @@ const Contend = ({
   freeze_props = {},
   dontDisable = false,
   isMobile,
+  detectingFreezeTerms,
 }) => {
   const [wordCount, setWordCount] = useState(0);
   // const isMobile = useResponsive("down", "sm"); // This is now passed as a prop
@@ -291,36 +294,38 @@ const Contend = ({
             </>
           ) : null}
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 1,
-              alignItems: "center",
-              ml: { lg: 2 },
-            }}
-          >
+          {detectingFreezeTerms && (
             <Box
               sx={{
                 display: "flex",
+                flexDirection: "row",
+                gap: 1,
                 alignItems: "center",
+                ml: { lg: 2 },
               }}
             >
-              <CircularProgress size={16} color="inherit" />
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <CircularProgress size={16} color="inherit" />
+              </Box>
+              <Typography
+                component="span"
+                sx={{
+                  // color: "primary.main",
+                  color: "#242426",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  lineHeight: 1,
+                }}
+              >
+                freezing
+              </Typography>
             </Box>
-            <Typography
-              component="span"
-              sx={{
-                // color: "primary.main",
-                color: "#242426",
-                fontSize: "14px",
-                whiteSpace: "nowrap",
-                lineHeight: 1,
-              }}
-            >
-              freezing
-            </Typography>
-          </Box>
+          )}
         </Stack>
         {ExtraCounter}
       </Stack>
