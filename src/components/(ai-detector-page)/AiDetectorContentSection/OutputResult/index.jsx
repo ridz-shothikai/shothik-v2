@@ -16,62 +16,15 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { pdfDownload } from "../helpers/pdfDownload";
+import { getColorByPerplexity } from "../helpers/pdfHelper";
 import {
-  convertLogoToDataURL,
-  generateAiDetectorPDF,
-} from "./helpers/generateAiDetectorPDF";
+  colorDefinitions,
+  colorDefinitionsAI,
+  colorDefinitionsHuman,
+} from "../helpers/pdfStyles";
 
-const humanColorName = {
-  humanLow: "#10b91d4d",
-  humanMedium: "#10b91d99",
-  humanHigh: "#10b91d",
-};
-
-const aiColorName = {
-  aiLow: "#f5c33b4d",
-  aiMedium: "#f5c33bcc",
-  aiHigh: "#f5c33b",
-};
-
-const colorName = {
-  ...humanColorName,
-  ...aiColorName,
-};
-
-const colorValue = {
-  // Human text thresholds (lower numbers = more human-like)
-  humanHigh: 40, // Least human-like threshold
-  humanMedium: 75, // Medium human-like threshold
-  humanLow: 100, // Most human-like threshold
-
-  // AI text thresholds (higher numbers = more AI-like)
-  aiLow: 100, // Least AI-like threshold
-  aiMedium: 250, // Medium AI-like threshold
-  aiHigh: 400, // Most AI-like threshold
-};
 const widths = [130, 80, 60, 60, 80, 130];
-
-export const getColorByPerplexity = (highlight_sentence_for_ai, perplexity) => {
-  const p = parseInt(perplexity);
-
-  console.log(highlight_sentence_for_ai, perplexity, "from output result");
-
-  if (highlight_sentence_for_ai) {
-    // AI text thresholds (higher perplexity = more AI-like)
-    if (p >= colorValue.aiHigh) return colorName.aiHigh;
-    if (p >= colorValue.aiMedium) return colorName.aiMedium;
-    if (p >= colorValue.aiLow) return colorName.aiLow;
-
-    return colorName.aiLow; // default to low
-  } else {
-    // Human text thresholds (lower perplexity = more human-like)
-    if (p <= colorValue.humanHigh) return colorName.humanHigh;
-    if (p <= colorValue.humanMedium) return colorName.humanMedium;
-    if (p <= colorValue.humanLow) return colorName.humanLow;
-
-    return colorName.humanLow;
-  }
-};
 
 const OutputResult = ({ handleOpen, outputContend }) => {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -81,17 +34,11 @@ const OutputResult = ({ handleOpen, outputContend }) => {
     try {
       setIsDownloading(true);
 
-      // Convert logo to base64 (update the path to your actual logo path)
-      // If you don't have a logo or want to skip it, pass null as second parameter
-      let logoDataUrl = null;
-      try {
-        // Update this path to your actual logo location
-        logoDataUrl = await convertLogoToDataURL("/shothik_light_logo.png");
-      } catch (error) {
-        console.warn("Logo could not be loaded, proceeding without logo");
-      }
+      await pdfDownload({
+        content: outputContend,
+        logo: "/shothik_light_logo.png",
+      });
 
-      await generateAiDetectorPDF(outputContend, logoDataUrl);
       enqueueSnackbar("PDF downloaded successfully", { variant: "success" });
     } catch (error) {
       console.error("Error downloading PDF:", error);
@@ -190,14 +137,14 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               value={100}
               size={150}
               thickness={4}
-              sx={{ color: colorName.humanHigh, position: "absolute" }}
+              sx={{ color: colorDefinitions.humanHigh, position: "absolute" }}
             />
             <CircularProgress
               variant="determinate"
               value={outputContend.ai_percentage}
               size={150}
               thickness={4}
-              sx={{ color: colorName.aiHigh, position: "absolute" }}
+              sx={{ color: colorDefinitions.aiHigh, position: "absolute" }}
             />
             <Typography
               variant="h6"
@@ -302,8 +249,8 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             }}
           >
             {[
-              ...Object.values(aiColorName).reverse(),
-              ...Object.values(humanColorName),
+              ...Object.values(colorDefinitionsAI).reverse(),
+              ...Object.values(colorDefinitionsHuman),
             ].map((color, index) => (
               <Box
                 key={index}
@@ -323,7 +270,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               sx={{
                 fontSize: "14px",
                 fontWeight: 500,
-                color: colorName.aiHigh,
+                color: colorDefinitions.aiHigh,
               }}
             >
               AI
@@ -332,7 +279,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               sx={{
                 fontSize: "14px",
                 fontWeight: 500,
-                color: colorName.humanHigh,
+                color: colorDefinitions.humanHigh,
               }}
             >
               Human
@@ -342,12 +289,12 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       </Box>
 
       <Accortion
-        colorList={Object.values(aiColorName)}
+        colorList={Object.values(colorDefinitionsAI)}
         data={outputContend.aiSentences}
         title="Top sentences driving AI probability"
       />
       <Accortion
-        colorList={Object.values(humanColorName)}
+        colorList={Object.values(colorDefinitionsHuman)}
         data={outputContend.humanSentences}
         title="Top sentences driving Human probability"
       />

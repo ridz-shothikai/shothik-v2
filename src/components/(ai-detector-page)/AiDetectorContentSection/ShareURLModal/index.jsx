@@ -1,3 +1,4 @@
+import ButtonCopy from "@/components/buttons/ButtonCopy";
 import { Close } from "@mui/icons-material";
 import {
   Box,
@@ -15,7 +16,6 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
-import CopyButton from "../../blog/details/CopyButon";
 
 const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
   const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${content._id}`;
@@ -47,7 +47,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
           fullWidth
           slotProps={{
             input: {
-              endAdornment: <CopyButton text={shareUrl} />,
+              endAdornment: <ButtonCopy text={shareUrl} />,
             },
           }}
           sx={{

@@ -1,10 +1,10 @@
 "use client";
 import useSnackbar from "@/hooks/useSnackbar";
-import { Check, ContentCopy } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
-const CopyButton = ({ text }) => {
+const ButtonCopy = ({ text }) => {
   const enqueueSnackbar = useSnackbar();
   const [showCopy, setShowCopy] = useState(true);
 
@@ -14,14 +14,14 @@ const CopyButton = ({ text }) => {
     setShowCopy(false);
     setTimeout(() => {
       setShowCopy(true);
-    }, 2000);
+    }, 3000);
   }
 
   return (
     <IconButton onClick={handleCopy}>
-      {showCopy ? <ContentCopy /> : <Check />}
+      {showCopy ? <Copy /> : <Check />}
     </IconButton>
   );
 };
 
-export default CopyButton;
+export default ButtonCopy;

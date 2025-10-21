@@ -1,4 +1,5 @@
 "use client";
+
 import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
 import UserActionInput from "@/components/tools/common/UserActionInput";
@@ -39,7 +40,34 @@ function formatNumber(number) {
   return number.toString();
 }
 
-const AiDetector = () => {
+const UsesLimit = ({ userLimit }) => {
+  const progressPercentage = () => {
+    if (!userLimit) return 0;
+
+    const totalWords = userLimit.totalWordLimit;
+    const remainingWords = userLimit.remainingWord;
+    const progress = (remainingWords / totalWords) * 100;
+    return progress;
+  };
+
+  return (
+    <Stack sx={{ padding: 2 }} alignItems="flex-end">
+      <Box sx={{ width: { xs: 220, sm: 250 } }}>
+        <LinearProgress
+          sx={{ height: 6 }}
+          variant="determinate"
+          value={progressPercentage()}
+        />
+        <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
+          {formatNumber(userLimit?.totalWordLimit)} words /{" "}
+          {formatNumber(userLimit?.remainingWord)} words left
+        </Typography>
+      </Box>
+    </Stack>
+  );
+};
+
+const AiDetectorContentSection = () => {
   const [openSampleDrawer, setOpenSampleDrawer] = useState(false);
   const { themeLayout } = useSelector((state) => state.settings);
   const [showShareModal, setshowShareModal] = useState(false);
@@ -91,7 +119,7 @@ const AiDetector = () => {
     setUserInput("");
     setEnableEdit(true);
   }
-  // inputData -> only used when we want to pass input data from other component|function
+
   async function handleSubmit(inputData = null) {
     try {
       // handle edit;
@@ -108,7 +136,8 @@ const AiDetector = () => {
         text: inputData ? inputData : userInput,
       }).unwrap();
       const data = res?.result;
-      if (!data) throw { message: "Something went wrong" }; // TODO: Instead of throwing error need to show error status. useSnackbar has to used to show toast bar
+      if (!data) throw { message: "Something went wrong" };
+
       setOutputContend({
         ...data,
         aiSentences: data.sentences.filter(
@@ -120,7 +149,7 @@ const AiDetector = () => {
       });
       setEnableEdit(false);
       refetch();
-      // If we have generated output based on session content then we need to clear the session storage
+
       if (sessionContent) {
         sessionStorage.removeItem("ai-detect-content");
       }
@@ -147,21 +176,17 @@ const AiDetector = () => {
     }
   }
 
-  // This use effect is a connection to other features that checks on session storage for "ai-detect-content", if we find it then we set it to user input and call the handleSubmit function to process it.
-  // Once we call this and get the output result we remove it from the session storage
-
-  // console.log(sessionContent);
   useEffect(() => {
     if (sessionContent) {
       setUserInput(sessionContent);
-      handleSubmit(sessionContent); // passing the content to handleSubmit function so that we don't have to wait for the next useEffect cycle to get the updated userInput value
+      handleSubmit(sessionContent);
       sessionStorage.removeItem("ai-detect-content");
     }
 
     return () => {
       sessionStorage.removeItem("ai-detect-content");
     };
-  }, [sessionContent]); // no need to include handle submit
+  }, [sessionContent]);
 
   if (isContendLoading) {
     return <LoadingScreen />;
@@ -292,31 +317,4 @@ const AiDetector = () => {
   );
 };
 
-function UsesLimit({ userLimit }) {
-  const progressPercentage = () => {
-    if (!userLimit) return 0;
-
-    const totalWords = userLimit.totalWordLimit;
-    const remainingWords = userLimit.remainingWord;
-    const progress = (remainingWords / totalWords) * 100;
-    return progress;
-  };
-
-  return (
-    <Stack sx={{ padding: 2 }} alignItems="flex-end">
-      <Box sx={{ width: { xs: 220, sm: 250 } }}>
-        <LinearProgress
-          sx={{ height: 6 }}
-          variant="determinate"
-          value={progressPercentage()}
-        />
-        <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
-          {formatNumber(userLimit?.totalWordLimit)} words /{" "}
-          {formatNumber(userLimit?.remainingWord)} words left
-        </Typography>
-      </Box>
-    </Stack>
-  );
-}
-
-export default AiDetector;
+export default AiDetectorContentSection;
