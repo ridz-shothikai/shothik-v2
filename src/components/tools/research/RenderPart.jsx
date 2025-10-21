@@ -1,6 +1,6 @@
 import { AutoAwesome } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
-import CopyButon from "../../blog/details/CopyButon";
+import CopyButton from "../../blog/details/CopyButon";
 import { AcademicLoadingState } from "./AcademicLoadingState";
 import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -25,7 +25,7 @@ const RenderPart = ({ data, group }) => {
               </Typography>
             </Stack>
             <Box>
-              <CopyButon text={data.content} />
+              <CopyButton text={data.content} />
             </Box>
           </Stack>
           <MarkdownRenderer content={data.content} />

@@ -22,6 +22,12 @@ const Grammar = () => {
       <ErrorBoundary>
         <GrammarCheckerContentSection />
       </ErrorBoundary>
+      {/* <ToolsSepecigFaq
+        tag="All you need to know about Grammar Fix feature"
+        data={grammarfaq}
+      />
+      <ToolsCTA toolType="grammar" />
+      <HomeAdvertisement /> */}
     </Container>
   );
 };

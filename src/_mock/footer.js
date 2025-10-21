@@ -16,6 +16,7 @@ export const LINKS = [
     children: [
       { name: "Terms of service ", href: PATH_PAGE.terms },
       { name: "Privacy policy", href: PATH_PAGE.privacy },
+      { name: "Deletion policy", href: PATH_PAGE.deletion },
       { name: "Refund policy", href: PATH_PAGE.refundPolicy },
       { name: "Payment policy", href: PATH_PAGE.paymentPolicy },
     ],

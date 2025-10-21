@@ -60,6 +60,9 @@ export default function Footer() {
               <Link href="/privacy" color="inherit">
                 Privacy Policy
               </Link>
+              <Link href="/deletion" color="inherit">
+                Deletion Policy
+              </Link>
               <Link href="/copyright" color="inherit">
                 Copyright, Community Guidelines
               </Link>

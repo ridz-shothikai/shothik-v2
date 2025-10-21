@@ -18,6 +18,7 @@ import {
   setScores,
   setSections,
   setSectionsGroups,
+  setSectionsMeta,
   setSelectedIssue,
   setSelectedSection,
   setSelectedTab,
@@ -36,7 +37,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { ChevronsRight, ChevronUp, MoreVertical, Plus } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ActionMenu from "./ActionMenu";
 import ActionToolbar from "./ActionToolbar";
@@ -47,12 +48,17 @@ import GrammarSidebar from "./GrammarSidebar";
 import InitialInputAction from "./InitialInputAction";
 import LanguageMenu from "./LanguageMenu";
 
+// Utility: Group histories by period
 const dataGroupsByPeriod = (histories = []) => {
+  if (!Array.isArray(histories) || histories.length === 0) return [];
+
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  const groups = histories?.reduce((acc, entry) => {
+  const groups = histories.reduce((acc, entry) => {
+    if (!entry?.timestamp) return acc;
+
     const d = new Date(entry.timestamp);
     const m = d.getMonth();
     const y = d.getFullYear();
@@ -77,6 +83,7 @@ const dataGroupsByPeriod = (histories = []) => {
     result.push({ period: "This Month", history: groups["This Month"] });
     delete groups["This Month"];
   }
+
   Object.keys(groups)
     .sort((a, b) => {
       const [ma, ya] = a.split(" ");
@@ -86,7 +93,7 @@ const dataGroupsByPeriod = (histories = []) => {
       return db - da;
     })
     .forEach((key) => {
-      result.push({ period: key, history: groups?.[key] });
+      result.push({ period: key, history: groups[key] });
     });
 
   return result;
@@ -98,30 +105,16 @@ const ErrorMark = Mark.create({
 
   addAttributes() {
     return {
-      error: {
-        default: null,
-      },
-      correct: {
-        default: null,
-      },
-      errorId: {
-        default: null,
-      },
-      sentence: {
-        default: null,
-      },
-      type: {
-        default: null,
-      },
+      error: { default: null },
+      correct: { default: null },
+      errorId: { default: null },
+      sentence: { default: null },
+      type: { default: null },
     };
   },
 
   parseHTML() {
-    return [
-      {
-        tag: "span[data-error]",
-      },
-    ];
+    return [{ tag: "span[data-error]" }];
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -141,6 +134,15 @@ const ErrorMark = Mark.create({
   },
 });
 
+// Utility: Normalize text
+const prepareText = (text) => {
+  if (!text || typeof text !== "string") return "";
+  return text
+    .normalize("NFC")
+    .trim()
+    .replace(/\u200B|\u200C|\u200D/g, "");
+};
+
 const GrammarCheckerContentSection = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
@@ -154,6 +156,8 @@ const GrammarCheckerContentSection = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const [anchorEl3, setAnchorEl3] = useState(null);
 
+  const [isCurrentSection, setIsCurrentSection] = useState(false);
+
   const {
     isCheckLoading,
     isRecommendationLoading,
@@ -164,37 +168,37 @@ const GrammarCheckerContentSection = () => {
     issues,
     selectedIssue,
     recommendations,
-    selectedRecommendation,
     isSidebarOpen,
-    // sections
     isSectionbarOpen,
-    isUpdatedSections,
     sections,
-    sectionsGroups,
-    sectionsMeta,
     selectedSection,
-    isSectionLoading,
-    tabs,
     selectedTab,
   } = useSelector((state) => state.grammar_checker) || {};
 
-  const sample =
-    trySamples.grammar[language.startsWith("English") ? "English" : language];
+  const sample = useMemo(
+    () =>
+      trySamples.grammar[language.startsWith("English") ? "English" : language],
+    [language],
+  );
 
-  const id = searchParams.get("id");
+  const sectionId = searchParams.get("section");
 
-  const setId = (newId) => {
+  // URL parameter management
+  const setSectionId = useCallback(
+    (newId) => {
+      if (!newId) return;
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("section", newId);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const removeSectionId = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("id", newId);
+    params.delete("section");
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  // Remove id
-  const removeId = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("id");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
+  }, [pathname, router, searchParams]);
 
   // Initialize Tiptap Editor
   const editor = useEditor({
@@ -245,58 +249,100 @@ const GrammarCheckerContentSection = () => {
     },
   });
 
-  function prepare(text) {
-    text = text.normalize("NFC").trim();
-    text = text.replace(/\u200B|\u200C|\u200D/g, "");
-    return text;
-  }
-
+  // Auto-detect language
   useEffect(() => {
-    if (!text || !prepare(text)) return;
-    const lang = detectLanguage(text);
-    dispatch(setLanguage(lang));
-  }, [text, dispatch]);
+    const preparedText = prepareText(text);
+    if (!preparedText) return;
 
-  const handleGrammarChecking = async () => {
-    try {
-      if (!text || !prepare(text) || !accessToken) return;
-
-      dispatch(setIsCheckLoading(true));
-      const data = await grammarCheck({
-        content: text,
-        language: language,
-        ...(id && { id }),
-      });
-      const { issues, scores } = data?.result || {};
-
-      dispatch(setIssues(issues || []));
-
-      const avgScore =
-        (scores?.reduce((sum, item) => sum + Number(item?.score || 0), 0) ||
-          0) / (scores?.length || 1);
-
-      dispatch(setScore(avgScore || 0));
-      dispatch(setScores(Math.round(avgScore * 100) || []));
-    } catch (error) {
-      enqueueSnackbar(error?.data?.message || "Something went wrong", {
-        variant: "error",
-      });
-    } finally {
-      dispatch(setIsCheckLoading(false));
+    const lang = detectLanguage(preparedText);
+    if (lang && lang !== language) {
+      dispatch(setLanguage(lang));
     }
-  };
+  }, [text, language, dispatch]);
 
   const debouncedText = useDebounce(text, 1500);
+  const abortControllerRef = useRef(null);
 
-  useEffect(() => {
-    if (!debouncedText || !prepare(debouncedText)) {
-      handleClear();
+  // Clear function
+  const handleClear = useCallback(() => {
+    if (editor) {
+      editor?.commands?.clearContent();
     }
 
-    handleGrammarChecking();
+    dispatch(setScore(0));
+    dispatch(setScores([]));
+    dispatch(setText(""));
+    dispatch(setIssues([]));
+    dispatch(setSelectedIssue({}));
+  }, [editor, dispatch]);
+
+  // Grammar check with debounce
+  useEffect(() => {
+    const preparedText = prepareText(debouncedText);
+    if (!preparedText) {
+      handleClear();
+      return;
+    }
+
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const fetchGrammar = async () => {
+      try {
+        dispatch(setIsCheckLoading(true));
+
+        const data = await grammarCheck(
+          { content: preparedText, language },
+          controller.signal,
+        );
+
+        const { issues = [], scores = [] } = data?.result || {};
+        dispatch(setIssues(issues));
+
+        const avgScore =
+          scores.length > 0
+            ? Math.round(
+                scores.reduce(
+                  (sum, item) => sum + Number(item?.score || 0),
+                  0,
+                ) / scores.length,
+              )
+            : 0;
+
+        dispatch(setScore(avgScore));
+        dispatch(setScores(scores));
+
+        const { _id } = data?.section || {};
+        if (_id && (!sectionId || _id !== sectionId)) {
+          setIsCurrentSection(true);
+          dispatch(setSections([data?.section || {}, ...sections]));
+          dispatch(setSelectedSection(data.section));
+          setSectionId(_id);
+        }
+      } catch (error) {
+        if (error.name === "CanceledError" || error.name === "AbortError")
+          return;
+        enqueueSnackbar(error?.data?.message || "Something went wrong", {
+          variant: "error",
+        });
+      } finally {
+        dispatch(setIsCheckLoading(false));
+      }
+    };
+
+    fetchGrammar();
+
+    return () => {
+      controller.abort();
+    };
   }, [debouncedText]);
 
-  // Apply error highlighting to editor
+  // Apply error highlighting
   useEffect(() => {
     if (!editor || !text) return;
 
@@ -309,10 +355,8 @@ const GrammarCheckerContentSection = () => {
       const { error, correct, sentence, type } = errorObj;
       if (!error) return;
 
-      const regex = new RegExp(
-        error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "g",
-      );
+      const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedError, "g");
 
       state.doc.descendants((node, pos) => {
         if (!node.isText) return;
@@ -338,175 +382,193 @@ const GrammarCheckerContentSection = () => {
     });
 
     tr.setMeta("addToHistory", false);
-
     editor.view.dispatch(tr);
   }, [issues, editor, text]);
 
-  const handleAcceptAllCorrections = () => {
-    if (!issues?.length || !editor) return;
+  // Accept all corrections
+  const handleAcceptAllCorrections = useCallback(() => {
+    if (!Array.isArray(issues) || !editor) return;
 
-    let content = editor.getText();
+    const { state } = editor;
+    const transactions = [];
 
-    // Apply all corrections one by one
-    issues.forEach(({ error, correct }) => {
+    state.doc.descendants((node, pos) => {
+      if (!node.isText) return;
+
+      issues?.forEach((issue) => {
+        const { error, correct } = issue;
+        if (!error || !correct) return;
+
+        const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedError, "g");
+        let match;
+
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+          transactions.push({ start, end, correct });
+        }
+      });
+    });
+
+    const tr = state.tr;
+    transactions
+      .sort((a, b) => b.start - a.start)
+      .forEach(({ start, end, correct }) => {
+        tr.insertText(correct, start, end);
+      });
+
+    // 🧹 Remove all error marks after replacements
+    tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    tr.setMeta("addToHistory", true);
+    editor.view.dispatch(tr);
+
+    dispatch(setIssues([]));
+    enqueueSnackbar("All corrections accepted!", { variant: "success" });
+  }, [issues, editor, dispatch, enqueueSnackbar]);
+
+  // Accept single correction
+  const handleAcceptCorrection = useCallback(
+    (issue) => {
+      if (!issue || !editor) return;
+
+      const { error, correct, sentence } = issue;
       if (!error || !correct) return;
-      const regex = new RegExp(
-        error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-        "g",
-      );
-      content = content.replace(regex, correct);
-    });
 
-    editor.commands.setContent(content);
-    dispatch(setIssues([])); // clear all issues
-    // toast.success("All corrections accepted!");
-    enqueueSnackbar("All corrections accepted!", {
-      variant: "success",
-    });
-  };
+      const { state } = editor;
+      const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedError, "g");
 
-  const handleAcceptCorrection = (issue) => {
-    if (!issue || !editor) return;
+      let tr = state.tr;
 
-    const { error, correct } = issue;
-    const content = editor.getText();
+      state.doc.descendants((node, pos) => {
+        if (!node.isText) return;
 
-    const newContent = content.replace(
-      new RegExp(error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
-      correct,
-    );
+        let match;
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+          tr = tr.insertText(correct, start, end);
 
-    editor.commands.setContent(newContent);
+          // 🧹 Remove error mark only from this range
+          tr = tr.removeMark(start, end, state.schema.marks.errorMark);
+        }
+      });
 
-    dispatch(
-      setIssues(
-        issues.filter(
-          (e) => !(e.error === error && e.sentence === issue.sentence),
+      tr.setMeta("addToHistory", true);
+      editor.view.dispatch(tr);
+
+      dispatch(
+        setIssues(
+          issues.filter((e) => !(e.error === error && e.sentence === sentence)),
         ),
-      ),
-    );
+      );
 
-    handleClosePopover();
-  };
+      setAnchorEl(null);
+    },
+    [editor, issues, dispatch],
+  );
 
-  const handleIgnoreError = (issue) => {
-    if (!issue) return;
-
-    handleClosePopover();
-  };
-
-  const handleClosePopover = () => {
+  const handleIgnoreError = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const handleCopy = () => {
+  const handleCopy = useCallback(() => {
     if (!text) return;
     navigator.clipboard.writeText(text);
-  };
+    enqueueSnackbar("Copied to clipboard!", { variant: "success" });
+  }, [text, enqueueSnackbar]);
 
-  const handleClear = () => {
-    if (editor) {
-      editor.commands.clearContent();
-      setText("");
-      dispatch(setText(""));
-      dispatch(setIssues([]));
-      dispatch(setSelectedIssue({}));
-    }
-  };
-
-  // Sections
-  const handleNewSection = () => {
-    editor.commands.clearContent();
-    dispatch(setText(""));
-    dispatch(setIssues([]));
-    dispatch(setSelectedIssue({}));
+  // Section management
+  const handleNewSection = useCallback(() => {
+    handleClear();
     dispatch(setSelectedSection({}));
+    removeSectionId();
+    enqueueSnackbar("New chat opened!", { variant: "info" });
+  }, [handleClear, dispatch, removeSectionId, enqueueSnackbar]);
 
-    removeId();
-    enqueueSnackbar("New chat opened!", {
-      variant: "info",
-    });
-  };
+  const handleSelectSection = useCallback(
+    (section) => {
+      handleClear();
+      setIsCurrentSection(true);
+      dispatch(setSelectedSection(section || {}));
 
-  const handleSelectSection = (section) => {
-    setId(section?._id);
-  };
+      if (editor) editor.commands.setContent(section?.text || "");
+      if (section?._id && section._id !== sectionId) {
+        setSectionId(section._id);
+      }
+    },
+    [dispatch, setSectionId],
+  );
 
-  const fetchSections = async () => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/api";
+  const fetchSections = useCallback(
+    async ({ page = 1, limit = 10, search = "", reset = false } = {}) => {
+      try {
+        const { data, meta } = await fetchGrammarSections({
+          page,
+          limit,
+          search,
+        });
 
-    try {
-      // const res = await fetch(`${API_BASE}/grammar/sections`, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-      //   },
-      // });
-      // if (!res.ok) throw new Error("Failed to fetch history");
-      // const data = await res.json();
+        if (reset) {
+          const groups = dataGroupsByPeriod(data || []);
+          dispatch(setSections(data || []));
+          dispatch(setSectionsGroups(groups));
+          dispatch(setSectionsMeta(meta || {}));
+        } else {
+          const allData = [...(sections || []), ...(data || [])];
+          const groups = dataGroupsByPeriod(allData);
+          dispatch(setSections(allData));
+          dispatch(setSectionsGroups(groups));
+          dispatch(setSectionsMeta(meta || {}));
+        }
+      } catch (err) {
+        console.error("Error fetching sections:", err);
+      }
+    },
+    [sections, dispatch],
+  );
 
-      const { data } = await fetchGrammarSections();
-
-      const groups = dataGroupsByPeriod(data || []);
-
-      dispatch(setSections(data));
-      dispatch(setSectionsGroups(groups));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  // Load section by ID
   useEffect(() => {
-    if (!accessToken) return;
-
-    // fetchSections();
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (!accessToken) return;
-
-    // fetchSections({ reset: true });
-  }, [isUpdatedSections]);
-
-  useEffect(() => {
-    if (!id) {
+    if (!sectionId) {
       dispatch(setSelectedSection({}));
       return;
     }
 
+    if (isCurrentSection) return;
+
+    if (selectedSection?._id === sectionId) return;
+
+    console.log("Fetching section:", sectionId, selectedSection);
+
     const setCurrentSection = async () => {
       try {
-        const { success, data } = await fetchGrammarSection(id);
-
-        if (success) {
-          dispatch(setSelectedSection(data || {}));
+        const { success, data } = await fetchGrammarSection(sectionId);
+        if (success && data) {
+          dispatch(setSelectedSection(data));
+          if (editor) editor.commands.setContent(data?.text || "");
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error("Error fetching section:", err);
+      }
     };
 
-    if (selectedSection?._id !== id) {
-      setCurrentSection();
-    }
-  }, [id]);
+    setCurrentSection();
+  }, [sectionId]);
 
-  useEffect(() => {
-    if (!editor) return;
-    if (!selectedSection?._id) return;
-
-    editor.commands.setContent(selectedSection?.text || "");
-  }, [selectedSection, editor]);
-
-  const handlePreferences = () => {
+  const handlePreferences = useCallback(() => {
     alert("Open Preferences modal");
-  };
-  const handleStatistics = () => {
-    alert(`Sentences: ${sentences}\nWords: ${words}`);
-  };
-  const handleDownload = async () => {
+  }, []);
+
+  const handleStatistics = useCallback(() => {
+    alert("Statistics feature coming soon");
+  }, []);
+
+  const handleDownload = useCallback(async () => {
+    if (!text) return;
     await downloadFile(text, "grammar");
-    // alert("Download triggered");
-  };
+  }, [text]);
 
   return (
     <>
@@ -517,7 +579,7 @@ const GrammarCheckerContentSection = () => {
               <button onClick={() => dispatch(setIsSectionbarOpen(true))}>
                 <BookIcon className="size-5" />
               </button>
-              <button onClick={handleNewSection} className="">
+              <button onClick={handleNewSection}>
                 <Plus className="size-6" />
               </button>
             </div>
@@ -540,9 +602,7 @@ const GrammarCheckerContentSection = () => {
               </div>
             </div>
             <div className="relative flex h-full flex-1 flex-col">
-              <div
-                className={`border-border bg-card flex h-full flex-1 flex-col overflow-hidden rounded-br-lg rounded-bl-lg border lg:rounded-tr-lg`}
-              >
+              <div className="border-border bg-card flex h-full flex-1 flex-col overflow-hidden rounded-br-lg rounded-bl-lg border lg:rounded-tr-lg">
                 <style jsx global>{`
                   .ProseMirror {
                     padding: 16px;
@@ -583,7 +643,6 @@ const GrammarCheckerContentSection = () => {
                         >
                           <MoreVertical className="size-4" />
                         </button>
-
                         <Menu
                           anchorEl={anchorEl3}
                           open={Boolean(anchorEl3)}
@@ -658,14 +717,15 @@ const GrammarCheckerContentSection = () => {
                             "flex cursor-pointer items-center gap-1.5 border-b border-b-transparent px-2 py-1",
                             {
                               "text-primary bg-primary/10":
-                                selectedTab === ("grammar" || "all"),
+                                selectedTab === "grammar" ||
+                                selectedTab === "all",
                             },
                           )}
                         >
                           <span className="shrink-0">
                             {issues?.length ? (
                               <span className="rounded-full bg-red-500/15 p-1 text-xs text-red-500">
-                                {issues?.length || 0}
+                                {issues.length}
                               </span>
                             ) : (
                               <Image
@@ -679,8 +739,6 @@ const GrammarCheckerContentSection = () => {
                           </span>
                           <span className="text-xs capitalize">Grammar</span>
                         </div>
-
-                        {/* Recommendation Tab */}
                         <div
                           onClick={() =>
                             dispatch(setSelectedTab("recommendation"))
@@ -696,7 +754,7 @@ const GrammarCheckerContentSection = () => {
                           <span className="shrink-0">
                             {recommendations?.length ? (
                               <span className="bg-primary/10 text-primary rounded-full p-1 text-xs">
-                                {recommendations?.length || 0}
+                                {recommendations.length}
                               </span>
                             ) : (
                               <Image
@@ -715,14 +773,14 @@ const GrammarCheckerContentSection = () => {
                       </Menu>
                     </div>
                     <div className="flex items-center gap-1">
-                      {/* Grammar Tab Button */}
                       {(selectedTab === "grammar" || selectedTab === "all") && (
                         <Tooltip title="Accept All Grammar" placement="top">
                           <Button
                             size="small"
                             variant="contained"
                             className="!gap-2 rounded"
-                            disabled={true}
+                            disabled={!issues?.length}
+                            onClick={handleAcceptAllCorrections}
                           >
                             <span className="shrink-0">Fix Grammar</span>
                             <span className="shrink-0">
@@ -731,8 +789,6 @@ const GrammarCheckerContentSection = () => {
                           </Button>
                         </Tooltip>
                       )}
-
-                      {/* Recommendation Tab Button */}
                       {selectedTab === "recommendation" && (
                         <Tooltip
                           title="Accept All Recommendations"
@@ -774,7 +830,6 @@ const GrammarCheckerContentSection = () => {
             </div>
           </div>
 
-          {/* Sidebar Drawer */}
           <div className="hidden lg:block">
             <div
               className={cn(
@@ -815,7 +870,7 @@ const GrammarCheckerContentSection = () => {
                       <span>
                         {issues?.length ? (
                           <span className="rounded-md bg-red-500 px-1.5 py-1 text-white">
-                            {issues?.length || 0}
+                            {issues.length}
                           </span>
                         ) : isCheckLoading ? (
                           <div className="flex items-center justify-center">
@@ -825,7 +880,7 @@ const GrammarCheckerContentSection = () => {
                           <Image
                             className="shrink-0"
                             alt="check"
-                            src={"/favicon.png"}
+                            src="/favicon.png"
                             height={20}
                             width={20}
                           />
@@ -849,7 +904,7 @@ const GrammarCheckerContentSection = () => {
                       <span>
                         {recommendations?.length ? (
                           <span className="rounded-md bg-red-500 px-1.5 py-1 text-white">
-                            {issues?.length || 0}
+                            {recommendations.length || 0}
                           </span>
                         ) : isRecommendationLoading ? (
                           <div className="flex items-center justify-center">
@@ -859,7 +914,7 @@ const GrammarCheckerContentSection = () => {
                           <Image
                             className="shrink-0"
                             alt="check"
-                            src={"/favicon.png"}
+                            src="/favicon.png"
                             height={20}
                             width={20}
                           />
@@ -882,11 +937,13 @@ const GrammarCheckerContentSection = () => {
         </div>
       </div>
 
-      {/* Section Drawer */}
       <GrammarSectionbar
         fetchSections={fetchSections}
         handleNewSection={handleNewSection}
         handleSelectSection={handleSelectSection}
+        sectionId={sectionId}
+        setSectionId={setSectionId}
+        removeSectionId={removeSectionId}
       />
 
       <Popover
@@ -895,7 +952,7 @@ const GrammarCheckerContentSection = () => {
           (Boolean(anchorEl) && isMobile)
         }
         anchorEl={anchorEl}
-        onClose={handleClosePopover}
+        onClose={() => setAnchorEl(null)}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "center",
@@ -905,7 +962,7 @@ const GrammarCheckerContentSection = () => {
           horizontal: "center",
         }}
       >
-        {selectedIssue && Object.keys(selectedIssue)?.length > 0 && (
+        {selectedIssue && Object.keys(selectedIssue).length > 0 && (
           <div>
             <GrammarIssueCard
               issue={selectedIssue}

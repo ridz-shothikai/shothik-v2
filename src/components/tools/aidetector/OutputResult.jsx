@@ -1,3 +1,4 @@
+import useSnackbar from "@/hooks/useSnackbar";
 import {
   CloudDownload,
   ExpandMoreOutlined,
@@ -15,7 +16,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   convertLogoToDataURL,
   generateAiDetectorPDF,

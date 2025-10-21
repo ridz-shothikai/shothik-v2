@@ -1,6 +1,5 @@
 "use client";
 import { Box, Stack, Tooltip } from "@mui/material";
-import React from "react";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -9,7 +8,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
-import CopyButon from "./CopyButon";
+import CopyButton from "./CopyButon";
 
 const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
   return (
@@ -40,7 +39,7 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
       </Box>
       <Box>
         <Tooltip title="Copy URL" arrow placement="top">
-          <CopyButon text={shareUrl} />
+          <CopyButton text={shareUrl} />
         </Tooltip>
       </Box>
     </Stack>
