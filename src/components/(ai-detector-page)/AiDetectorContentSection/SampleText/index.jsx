@@ -1,37 +1,12 @@
-import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Dialog } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const gptModel = [
-  {
-    name: "Chat GPT",
-    icon: "/tools/chatgpt.svg",
-    text: "chatgpt",
-  },
-  {
-    name: "Claude",
-    icon: "/tools/claude.svg",
-    text: "claude",
-  },
-  {
-    name: "Llama",
-    icon: "/tools/llama.svg",
-    text: "llama",
-  },
-  {
-    name: "Human",
-    icon: "/tools/human.svg",
-    text: "human",
-  },
+  { name: "Chat GPT", icon: "/tools/chatgpt.svg", text: "chatgpt" },
+  { name: "Claude", icon: "/tools/claude.svg", text: "claude" },
+  { name: "Llama", icon: "/tools/llama.svg", text: "llama" },
+  { name: "Human", icon: "/tools/human.svg", text: "human" },
 ];
 
 function SampleTextForMobile({ setOpen, isMini }) {
@@ -41,45 +16,29 @@ function SampleTextForMobile({ setOpen, isMini }) {
     function handleScroll() {
       const height = window.innerHeight;
       const scrollHeight = window.scrollY;
-      if (scrollHeight + height - 100 > height) setShow(false);
-      else setShow(true);
+      setShow(!(scrollHeight + height - 100 > height));
     }
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   if (!show) return null;
+
   return (
-    <Stack
-      sx={{
-        position: "fixed",
-        bottom: 2,
-        left: { xs: 0, sm: isMini ? 105 : 290 },
-        right: 5,
-        zIndex: 100,
-      }}
+    <div
+      className={`fixed right-5 bottom-2 z-50 ${isMini ? "sm:left-[105px]" : "sm:left-[290px]"} left-0`}
     >
-      <Card
+      <div
+        className="bg-background mt-3 flex items-center gap-2 rounded-full px-4 py-2 hover:cursor-pointer"
         onClick={() => setOpen(true)}
-        sx={{
-          paddingX: 3,
-          paddingY: 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          borderRadius: 50,
-          mt: 3,
-        }}
       >
-        <Box sx={{ width: 24, height: 24 }}>
-          <img src="/tools/sample.svg" alt="sample" />
-        </Box>
-        <Typography>Sample Text</Typography>
-      </Card>
-    </Stack>
+        <div className="h-6 w-6">
+          <Image width={24} height={24} src="/tools/sample.svg" alt="sample" />
+        </div>
+        <span className="text-foreground">Sample Text</span>
+      </div>
+    </div>
   );
 }
 
@@ -90,113 +49,58 @@ const SampleTextForLarge = ({
 }) => {
   const handleClick = (text) => {
     handleSampleText(text);
-    if (isDrawer) {
-      setOpen(false);
-    }
+    if (isDrawer) setOpen(false);
   };
 
   return (
-    <Stack
-      justifyContent="center"
-      sx={{
-        height: "100%",
-        paddingX: 3,
-        paddingY: isDrawer ? 3 : 0,
-        position: "relative",
-      }}
-    >
-      {isDrawer && (
-        <IconButton
-          sx={{ position: "absolute", top: 2, right: 2, zIndex: 50 }}
-          onClick={() => setOpen(false)}
-        >
-          <Close />
-        </IconButton>
-      )}
-
-      <Box sx={{ marginLeft: isDrawer ? 0 : 4 }}>
-        <Card
-          sx={{
-            width: isDrawer ? "100%" : 250,
-            boxShadow: isDrawer ? "none" : undefined,
-            border: (theme) => `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <Stack direction="column" spacing={0.5} sx={{ paddingY: 1 }}>
-            {gptModel.map((item, index) => (
-              <Button
-                variant="soft"
-                color="inherit"
+    <div className={`relative flex h-full justify-center p-4`}>
+      <div>
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Try Sample Text</h3>
+          <div className="flex flex-wrap items-center gap-4">
+            {gptModel?.map((item, index) => (
+              <button
                 key={index}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  gap: 2,
-                  paddingY: 1,
-                  backgroundColor: "transparent",
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                  },
-                }}
                 onClick={() => handleClick(item.text)}
+                className="bg-muted hover:bg-muted/50 flex h-8 cursor-pointer items-center justify-start gap-2 self-stretch px-4 py-1"
               >
-                <Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    filter: (theme) =>
-                      theme.palette.mode === "dark" ? "invert(1)" : "none",
-                  }}
-                >
-                  <img src={item.icon} alt={item.name} />
-                </Box>
-                <Typography variant="body2">{item.name}</Typography>
-              </Button>
+                <div className="h-5 w-5 dark:invert">
+                  <Image
+                    width={20}
+                    height={20}
+                    src={item?.icon || ""}
+                    alt={item?.name}
+                  />
+                </div>
+                <span className="text-sm">{item?.name}</span>
+              </button>
             ))}
-          </Stack>
-        </Card>
-        <Stack
-          direction="column"
-          alignItems={isDrawer ? "center" : "flex-start"}
+          </div>
+        </div>
+
+        <div
+          className={`flex flex-col ${isDrawer ? "items-center" : "items-start"} mt-3`}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: isDrawer ? "center" : "flex-start",
-              gap: 0.5,
-              mt: 3,
-            }}
+          <div
+            className={`flex items-center gap-1 ${isDrawer ? "justify-center" : "justify-start"}`}
           >
             <Image
               src="/tools/language.svg"
               alt="language"
               width={100}
               height={100}
-              className="max-w-4!"
+              className="max-w-[100px]"
             />
-            <Typography fontWeight={600}>Supported languages:</Typography>
-          </Box>
-          <Typography sx={{ mt: 0.5, mb: 1 }}>
+            <span className="text-foreground font-semibold">
+              Supported languages:
+            </span>
+          </div>
+          <span className="text-foreground mt-1 mb-2">
             English, Bangla, Hindi and 100+ more
-          </Typography>
-          {/* <Typography
-            fontSize={15}
-            sx={{
-              borderBottom: "1px solid #333",
-              width: "fit-content",
-              cursor: "pointer",
-              ...(isDrawer && {
-                color: "text.secondary",
-              }),
-            }}
-          >
-            Request more languages
-          </Typography> */}
-        </Stack>
-      </Box>
-    </Stack>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -207,7 +111,7 @@ function SampleText({
   handleSampleText,
   isMini,
 }) {
-  if (isMobile)
+  if (isMobile) {
     return (
       <>
         <Dialog
@@ -225,7 +129,7 @@ function SampleText({
         <SampleTextForMobile setOpen={setOpen} isMini={isMini} />
       </>
     );
-  else
+  } else {
     return (
       <SampleTextForLarge
         handleSampleText={handleSampleText}
@@ -233,6 +137,7 @@ function SampleText({
         isDrawer={isDrawer}
       />
     );
+  }
 }
 
 export default SampleText;

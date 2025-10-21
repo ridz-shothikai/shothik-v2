@@ -30,7 +30,7 @@ const AIColor = ({ colors, perplexity, highlight_sentence_for_ai }) => {
           key={index}
           className={`h-5 w-5 rounded-full transition-colors duration-200`}
           style={{
-            backgroundColor: item === color ? color : "hsl(var(--muted))",
+            backgroundColor: item === color ? color : "#E0E0E0",
           }}
         />
       ))}
@@ -42,43 +42,45 @@ const Accordion = ({ colorList, data, title }) => {
   const [isExpanded, setIsExpanded] = useState(-1);
 
   return (
-    <div className="border-border max-h-[200px] overflow-y-auto border-b px-3 py-2 last:border-b-0 md:max-h-[174px]">
-      <h3 className="mb-1 text-[18px] font-semibold">{title}</h3>
-      {data?.map((item, index) => (
-        <div
-          key={index}
-          className="border-border flex items-start gap-2 border-b py-2 last:border-b-0"
-        >
-          <AIColor
-            highlight_sentence_for_ai={item?.highlight_sentence_for_ai}
-            colors={Object.values(colorList)}
-            perplexity={item.perplexity}
-          />
-          <div className="flex w-full items-start justify-between gap-2">
-            <p
-              className={`text-sm leading-6 transition-all duration-300 ${
-                isExpanded !== index
-                  ? "line-clamp-1 overflow-hidden text-ellipsis"
-                  : ""
-              }`}
-            >
-              {item?.sentence}
-            </p>
-            <Button
-              onClick={() =>
-                setIsExpanded((prev) => (prev === index ? -1 : index))
-              }
-              sx={{ padding: 0, minWidth: "unset", width: "fit-content" }}
-            >
-              {isExpanded === index ? (
-                <KeyboardArrowUpOutlined />
-              ) : (
-                <ExpandMoreOutlined />
-              )}
-            </Button>
+    <div className="border-border flex flex-1 flex-col border-b px-4 py-2 last:border-b-0">
+      <h3 className="mb-1 text-lg font-semibold">{title}</h3>
+      <div className="h-full min-h-8 flex-1 overflow-y-auto">
+        {data?.map((item, index) => (
+          <div
+            key={index}
+            className="border-border flex items-start gap-2 border-b py-2 last:border-b-0"
+          >
+            <AIColor
+              highlight_sentence_for_ai={item?.highlight_sentence_for_ai}
+              colors={Object.values(colorList)}
+              perplexity={item.perplexity}
+            />
+            <div className="flex w-full flex-1 items-start justify-between gap-2">
+              <p
+                className={`text-sm leading-6 transition-all duration-300 ${
+                  isExpanded !== index
+                    ? "line-clamp-1 overflow-hidden text-ellipsis"
+                    : ""
+                }`}
+              >
+                {item?.sentence}
+              </p>
+              <Button
+                onClick={() =>
+                  setIsExpanded((prev) => (prev === index ? -1 : index))
+                }
+                sx={{ padding: 0, minWidth: "unset", width: "fit-content" }}
+              >
+                {isExpanded === index ? (
+                  <KeyboardArrowUpOutlined />
+                ) : (
+                  <ExpandMoreOutlined />
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
@@ -106,9 +108,9 @@ const OutputResult = ({ handleOpen, outputContend }) => {
   };
 
   return (
-    <div className="border-border bg-background text-foreground rounded-lg border">
+    <div className="border-border bg-background text-foreground flex flex-1 flex-col rounded-lg border">
       {/* Header */}
-      <div className="border-border flex justify-end gap-2 border-b px-3 py-2">
+      <div className="border-border flex justify-end gap-2 border-b px-4 py-2">
         <Button
           onClick={handleOpen}
           startIcon={<Share />}
@@ -144,15 +146,15 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       </div>
 
       {/* Main section */}
-      <div className="border-border border-b px-3 py-2">
+      <div className="border-border border-b px-4 py-2">
         <div className="my-2 flex flex-col items-center justify-start gap-3 md:flex-row lg:flex-row">
-          <div className="relative flex h-[150px] w-[150px] items-center justify-center">
+          <div className="relative flex size-40 items-center justify-center">
             <div
-              className="absolute h-full w-full rounded-full border-[4px]"
+              className="absolute h-full w-full rounded-full border-8"
               style={{ borderColor: colorDefinitions.humanHigh }}
             />
             <div
-              className="absolute h-full w-full rounded-full border-[4px]"
+              className="absolute h-full w-full rounded-full border-8"
               style={{
                 borderColor: colorDefinitions.aiHigh,
                 clipPath: `inset(${100 - outputContend.ai_percentage}% 0 0 0)`,
@@ -184,7 +186,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
                 {outputContend.assessment}
               </div>
             </div>
-            <div className="border-border text-muted-foreground flex items-center gap-2 rounded-md border px-3 py-1">
+            <div className="border-border text-muted-foreground flex items-center gap-2 rounded-md border px-4 py-1">
               <InfoOutlined />
               <p>
                 {parseInt(outputContend.ai_percentage ?? 0)}% Probability AI
@@ -233,16 +235,18 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       </div>
 
       {/* Accordions */}
-      <Accordion
-        colorList={Object.values(colorDefinitionsAI)}
-        data={outputContend.aiSentences}
-        title="Top sentences driving AI probability"
-      />
-      <Accordion
-        colorList={Object.values(colorDefinitionsHuman)}
-        data={outputContend.humanSentences}
-        title="Top sentences driving Human probability"
-      />
+      <div className="flex-1 flex-col">
+        <Accordion
+          colorList={Object.values(colorDefinitionsAI)}
+          data={outputContend.aiSentences}
+          title="Top sentences driving AI probability"
+        />
+        <Accordion
+          colorList={Object.values(colorDefinitionsHuman)}
+          data={outputContend.humanSentences}
+          title="Top sentences driving Human probability"
+        />
+      </div>
     </div>
   );
 };
