@@ -31,8 +31,11 @@ export const useResearchHistory = () => {
       );
       const researches = await response.json();
 
+      // Ensure researches is an array before filtering
+      const researchesArray = Array.isArray(researches) ? researches : [];
+      
       // Filter out incomplete researches (those without result)
-      const completeResearches = researches?.filter(isResearchCompleted) || [];
+      const completeResearches = researchesArray.filter(isResearchCompleted);
 
       dispatch(loadExistingResearches(completeResearches));
       return completeResearches;
@@ -46,12 +49,17 @@ export const useResearchHistory = () => {
     const researches = await loadChatResearches();
 
     // Also check queue status for comprehensive state
-    const queueStats = await QueueStatusService.getQueueStats();
+    let queueStats = { research: { active: 0, waiting: 0 } };
+    try {
+      queueStats = await QueueStatusService.getQueueStats();
+    } catch (error) {
+      console.error("Failed to load queue stats:", error);
+    }
 
     return {
       researches,
       hasActiveQueue:
-        queueStats.research.active > 0 || queueStats.research.waiting > 0,
+        queueStats?.research?.active > 0 || queueStats?.research?.waiting > 0,
       queueStats,
     };
   }, [loadChatResearches]);

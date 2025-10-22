@@ -6,6 +6,9 @@ import {
   Paper,
   Typography,
   useMediaQuery,
+  Button,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -26,6 +29,7 @@ import { FooterCta } from "./SheetAgentPage";
 
 const USER_MESSAGE_COLOR = "#1976d2";
 const PRIMARY_GREEN = "#07B37A";
+
 
 // Updated MessageBubble component
 const MessageBubble = ({
@@ -267,6 +271,7 @@ export default function SheetChatArea({
 
   const [showModal, setShowModal] = useState(false);
   const [simulationCompleted, setSimulationCompleted] = useState(false);
+  const [showNewChatWarning, setShowNewChatWarning] = useState(false);
   const s_id = searchParams.get("s_id"); // simulation id
 
   // Determine the actual chat ID to use
@@ -1256,6 +1261,40 @@ export default function SheetChatArea({
     dispatch(setSheetStatus("completed"));
   };
 
+  // Handle new chat creation - redirect to agents page
+  const handleNewChat = () => {
+    console.log("New Chat button clicked - starting redirect process");
+    
+    // Clear all current state
+    setMessages([]);
+    setError(null);
+    setShowNewChatWarning(false);
+    
+    // Reset Redux state
+    dispatch(setSheetData(null));
+    dispatch(setSheetStatus("idle"));
+    dispatch(setSheetTitle("Ready to Generate"));
+    dispatch(setActiveSheetIdForPolling(null));
+    
+    // Clear session storage
+    sessionStorage.removeItem("activeChatId");
+    sessionStorage.removeItem("initialSheetPrompt");
+    
+    // Show success message first
+    enqueueSnackbar("Redirecting to AI Sheets for a fresh start!", {
+      variant: "success",
+    });
+    
+    // Navigate to agents page with AI Sheets tab selected
+    try {
+      router.push("/agents?tab=sheets");
+      console.log("Router.push called for /agents?tab=sheets");
+    } catch (error) {
+      console.log("Router.push failed, trying window.location:", error);
+      window.location.href = "/agents?tab=sheets";
+    }
+  };
+
   useEffect(() => {
     if (toast.open) {
       const timer = setTimeout(() => {
@@ -1333,7 +1372,7 @@ export default function SheetChatArea({
             scrollbarColor: "#c1c1c1 transparent",
           }}
         >
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: 3, position: "relative" }}>
             {messages.length === 0 && !isLoadingHistory ? (
               <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -1448,6 +1487,7 @@ export default function SheetChatArea({
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 onSend={handleMessage}
+                onNewChat={handleNewChat}
                 isLoading={isLoading || sheetState.status === "generating"}
                 disabled={
                   !isInitialized ||

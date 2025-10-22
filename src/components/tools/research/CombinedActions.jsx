@@ -1,97 +1,70 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
-  Button,
-  Typography,
+  IconButton,
+  Tooltip,
   Menu,
   MenuItem,
-  useMediaQuery,
+  ListItemIcon,
+  ListItemText,
+  Typography,
   useTheme,
 } from "@mui/material";
-import { SaveIcon } from "lucide-react";
-import NextImage from "next/image";
+import {
+  Share as ShareIcon,
+  FileDownload as ExportIcon,
+  Refresh as RewriteIcon,
+  PictureAsPdf as PdfIcon,
+  Link as LinkIcon,
+  ContentCopy as CopyIcon,
+  ThumbUp as ThumbUpIcon,
+  ThumbDown as ThumbDownIcon,
+  Email as EmailIcon,
+  Public as PublicIcon,
+} from "@mui/icons-material";
+import { useState } from "react";
+import jsPDF from "jspdf";
+import ShareAgentModal from "../../share/ShareAgentModal";
 
-// NOTE: This component expects a `researchItem` prop shaped like the sample data
-// you included. If you keep a different shape, adapt the helpers below.
-
-export default function HeaderTitleWithDownload({
-  headerHeight,
-  setHeaderHeight,
-  query,
-  researchItem,
-}) {
-  const titleRef = useRef(null);
-  const [titleCharCount, setTitleCharCount] = useState(60);
+const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
   const theme = useTheme();
-  const isMd = useMediaQuery(theme.breakpoints.down("md"));
+  const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
+  const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareModalDefaultTab, setShareModalDefaultTab] = useState(0);
 
-  useEffect(() => {
-    if (isMd) {
-      setTitleCharCount(40);
-    } else {
-      setTitleCharCount(100);
+  const handleShareClick = (event) => {
+    setShareMenuAnchor(event.currentTarget);
+  };
+
+  const handleExportClick = (event) => {
+    setExportMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setShareMenuAnchor(null);
+    setExportMenuAnchor(null);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      const currentUrl = window.location.href;
+      await navigator.clipboard.writeText(currentUrl);
+      console.log("Link copied to clipboard");
+    } catch (err) {
+      console.error("Failed to copy link:", err);
     }
-  }, [isMd]);
-
-  // Truncate to max characters with ellipsis
-  const getTruncatedTitle = (text, maxChars) => {
-    if (!text) return "Untitled";
-    if (text.length <= maxChars) return text;
-    return text.slice(0, maxChars) + "…";
+    handleMenuClose();
   };
 
-  // Build markdown string: CONTENT (researchItem.result) then SOURCES list, images excluded
-  const buildMarkdown = (item, includeSources = false) => {
-    if (!item) return `# ${query || "Research"}\n\n`;
-
-    let md = item.result || "";
-    md = md.replace(/!\[[^\]]*\]\([^)]*\)/g, ""); // remove markdown images
-    md = md.replace(/<img[^>]*>/g, ""); // remove HTML img tags
-    md = md.trim() + "\n\n";
-
-    if (includeSources && item.sources?.length > 0) {
-      md += "## Sources\n\n";
-      item.sources.forEach((s) => {
-        const title = s.title || s.resolved_url || s.url || "source";
-        const url = s.url || s.resolved_url || "";
-        if (url) md += `- [${title}](${url})\n`;
-        else md += `- ${title}\n`;
-      });
-    }
-
-    return md;
+  const handleShare = (shareResult) => {
+    console.log("Share created:", shareResult);
+    handleMenuClose();
   };
 
-  // Utility to make a filename-safe string
-  const safeFilename = (str) =>
-    (str || "research").replace(/[^a-z0-9\-_.() ]/gi, "_").slice(0, 150);
-
-  // --------- Download handlers ---------
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleButtonClick = (e) => setAnchorEl(e.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-
-  // Raw markdown download using FileSaver API
-  const downloadMarkdown = async () => {
-    handleClose();
-    const md = buildMarkdown(researchItem);
-
-    // Use native blob download (no extra deps required)
-    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
-    const filename = `${safeFilename(researchItem?.query || query)}.md`;
-
-    // create temporary link
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
-  };
 
   // ===== LOAD SHOTHIK AI LOGO FROM FILE =====
   const loadShothikLogo = () => {
@@ -125,23 +98,8 @@ export default function HeaderTitleWithDownload({
     });
   };
 
-  // PDF generation using CombinedActions design with logo and proper spacing
-  const downloadPdfFromMarkdown = async () => {
-    handleClose();
-
+  const handleExportPDF = async () => {
     try {
-      // Validate researchItem data
-      if (!researchItem) {
-        throw new Error("No research data available for PDF generation");
-      }
-      
-      const md = buildMarkdown(researchItem, false);
-      
-      if (!md || md.trim().length === 0) {
-        throw new Error("No content available for PDF generation");
-      }
-
-      // Dynamic imports
       const markedMod = await import("marked").catch((e) => {
         console.error("Failed to import marked", e);
         return null;
@@ -150,57 +108,31 @@ export default function HeaderTitleWithDownload({
         console.error("Failed to import dompurify", e);
         return null;
       });
-      const jspdfMod = await import("jspdf").catch((e) => {
-        console.error("Failed to import jspdf", e);
-        return null;
-      });
 
       const marked = markedMod?.marked || markedMod?.default || markedMod;
       const DOMPurify = DOMPurifyMod?.default || DOMPurifyMod;
-      const jsPDF = jspdfMod?.jsPDF || jspdfMod?.default || jspdfMod;
 
-      if (!marked || !DOMPurify || !jsPDF) {
-        console.error("One or more PDF libraries are missing:", {
-          marked,
-          DOMPurify,
-          jsPDF,
-        });
-        throw new Error(
-          "Missing PDF generation libraries. Make sure 'marked', 'dompurify', and 'jspdf' are installed.",
-        );
+      if (!marked || !DOMPurify) {
+        console.error("Missing PDF generation libraries.");
+        throw new Error("Missing PDF generation libraries");
       }
 
-      // ===== LOAD LOGO FOR PDF =====
-      console.log("Loading logo for PDF...");
-      const logoBase64 = await loadShothikLogo();
-      console.log("Logo ready:", logoBase64 ? "Yes" : "No");
+       // ===== LOAD LOGO FOR PDF =====
+       console.log("Loading logo for PDF...");
+       const logoBase64 = await loadShothikLogo();
+       console.log("Logo ready:", logoBase64 ? "Yes" : "No");
 
-      // Convert markdown to HTML and sanitize
-      const html =
-        typeof marked === "function" ? marked(md) : marked.marked(md);
-      const clean = DOMPurify.sanitize(html);
-
-      // Create PDF with proper A4 dimensions
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "pt",
         format: "a4",
       });
 
-      // A4 dimensions in points
       const pageWidth = 595.28;
       const pageHeight = 841.89;
       const margin = 50;
       const contentWidth = pageWidth - margin * 2;
       const contentHeight = pageHeight - margin * 2;
-
-      // Parse HTML content for PDF generation
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = clean;
-
-      // Remove images
-      const imgs = tempDiv.querySelectorAll("img");
-      imgs.forEach((img) => img.remove());
 
       let yPosition = margin;
       let currentPage = 1;
@@ -208,38 +140,48 @@ export default function HeaderTitleWithDownload({
       const maxLinesPerPage = Math.floor(contentHeight / lineHeight) - 3;
       let currentLineCount = 0;
 
-      // ===== ADD HEADER WITH LOGO TO FIRST PAGE =====
-      if (logoBase64) {
-        try {
-          console.log("Adding logo to PDF at position:", margin, yPosition);
-          // Logo size to match AI Detection Report (width: 120, increased height for better proportion)
-          doc.addImage(logoBase64, 'PNG', margin, yPosition, 120, 40);
-          yPosition += 50; // Increased spacing after logo for better margin bottom
-          currentLineCount += 2;
-          console.log("Logo added successfully!");
-        } catch (error) {
-          console.error("Error adding logo image:", error);
-          // Fallback: Add text logo if image fails
-          doc.setFontSize(16);
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor("#1a1a1a");
-          doc.text("SHOTHIK AI", margin, yPosition + 15);
-          yPosition += 30;
-          currentLineCount += 2;
-        }
-      } else {
-        console.warn("Logo not available, using text fallback");
-        // Fallback: Add text logo if image loading fails
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor("#1a1a1a");
-        doc.text("SHOTHIK AI", margin, yPosition + 15);
-        yPosition += 30;
-        currentLineCount += 2;
-      }
+      const markdownContent = content || "";
+      const html = typeof marked === "function" ? marked(markdownContent) : marked.marked(markdownContent);
+      const cleanHtml = DOMPurify.sanitize(html);
+
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = cleanHtml;
+
+      const imgs = tempDiv.querySelectorAll("img");
+      imgs.forEach((img) => img.remove());
+
+       // ===== ADD HEADER WITH LOGO TO FIRST PAGE =====
+       if (logoBase64) {
+         try {
+           console.log("Adding logo to PDF at position:", margin, yPosition);
+           // Logo size to match AI Detection Report (width: 120, increased height for better proportion)
+           doc.addImage(logoBase64, 'PNG', margin, yPosition, 120, 40);
+           yPosition += 50; // Increased spacing after logo for better margin bottom
+           currentLineCount += 2;
+           console.log("Logo added successfully!");
+         } catch (error) {
+           console.error("Error adding logo image:", error);
+           // Fallback: Add text logo if image fails
+           doc.setFontSize(16);
+           doc.setFont("helvetica", "bold");
+           doc.setTextColor("#1a1a1a");
+           doc.text("SHOTHIK AI", margin, yPosition + 15);
+           yPosition += 30;
+           currentLineCount += 2;
+         }
+       } else {
+         console.warn("Logo not available, using text fallback");
+         // Fallback: Add text logo if image loading fails
+         doc.setFontSize(16);
+         doc.setFont("helvetica", "bold");
+         doc.setTextColor("#1a1a1a");
+         doc.text("SHOTHIK AI", margin, yPosition + 15);
+         yPosition += 30;
+         currentLineCount += 2;
+       }
       
       // Add "Research Results" title with AI detector-style spacing
-      const queryTitle = query || researchItem?.query || "Research Results";
+      const queryTitle = title || "Research Results";
       doc.setFontSize(16); // Match AI detector title size
       doc.setFont("helvetica", "bold");
       doc.setTextColor("#637381"); // Match AI detector title color
@@ -271,10 +213,9 @@ export default function HeaderTitleWithDownload({
       doc.setDrawColor("#e5e5e5");
       doc.setLineWidth(0.5);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
-      yPosition += 20; // Increased spacing after separator for better content separation
+       yPosition += 20; // Increased spacing after separator for better content separation
       currentLineCount += 1;
 
-      // Helper function to add new page
       const addNewPage = () => {
         doc.addPage();
         yPosition = margin;
@@ -282,7 +223,6 @@ export default function HeaderTitleWithDownload({
         currentPage++;
       };
 
-      // Helper function to check if we need a new page
       const checkPageBreak = (linesToAdd = 1) => {
         if (currentLineCount + linesToAdd > maxLinesPerPage) {
           addNewPage();
@@ -291,7 +231,6 @@ export default function HeaderTitleWithDownload({
         return false;
       };
 
-      // Helper function to add spacing
       const addSpacing = (lines = 1) => {
         if (currentLineCount + lines <= maxLinesPerPage) {
           yPosition += lineHeight * lines;
@@ -299,7 +238,6 @@ export default function HeaderTitleWithDownload({
         }
       };
 
-      // Helper function to add text with inline references (same as CombinedActions)
       const addTextWithInlineReferences = (text, fontSize = 11, fontStyle = "normal", color = "#000000", customMargin = margin) => {
         doc.setFontSize(fontSize);
         doc.setFont("helvetica", fontStyle);
@@ -359,7 +297,7 @@ export default function HeaderTitleWithDownload({
             if (refMatch) {
               const refNumbers = refMatch[1].split(',').map(n => parseInt(n.trim()));
               const firstRef = refNumbers[0];
-              const source = researchItem?.sources?.find(s => s.reference === firstRef);
+              const source = sources.find(s => s.reference === firstRef);
 
               doc.setTextColor("#000000");
               doc.setFont("helvetica", "normal");
@@ -384,7 +322,6 @@ export default function HeaderTitleWithDownload({
         });
       };
 
-      // Process HTML elements (same as CombinedActions)
       const processElement = (element) => {
         const tagName = element.tagName?.toLowerCase();
         const textContent = element.textContent?.trim();
@@ -509,7 +446,6 @@ export default function HeaderTitleWithDownload({
         }
       };
 
-      // Process all elements (same as CombinedActions)
       const allElements = tempDiv.querySelectorAll('*');
       const processedElements = new Set();
 
@@ -554,15 +490,15 @@ export default function HeaderTitleWithDownload({
         }
       }
 
-      // Professional Sources section (same as CombinedActions)
-      if (researchItem?.sources?.length > 0) {
+      // Professional Sources section
+      if (sources && sources.length > 0) {
         checkPageBreak(4);
         addSpacing(1.5);
         
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.setTextColor("#1a1a1a");
-        doc.text(`Sources (${researchItem.sources.length})`, margin, yPosition);
+        doc.text(`Sources (${sources.length})`, margin, yPosition);
         yPosition += lineHeight;
         currentLineCount++;
         
@@ -574,7 +510,7 @@ export default function HeaderTitleWithDownload({
         yPosition += 16;
         currentLineCount += 1;
 
-        researchItem.sources.forEach((s, index) => {
+        sources.forEach((s, index) => {
           checkPageBreak(2);
           
           const sourceTitle = s.title || s.resolved_url || s.url || "Source";
@@ -664,131 +600,250 @@ export default function HeaderTitleWithDownload({
         const pageTextWidth = doc.getTextWidth(pageText);
         doc.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - 18);
       }
-
-      const filename = `${safeFilename(researchItem?.query || query)}.pdf`;
-      doc.save(filename);
+      
+      doc.save(`${title || 'research-results'}.pdf`);
     } catch (err) {
-      console.error("PDF generation failed:", err);
-      console.error("Error details:", {
-        message: err.message,
-        stack: err.stack,
-        name: err.name
-      });
-      
-      // Show user-friendly error message
-      alert(`PDF generation failed: ${err.message}\n\nPlease try downloading the Markdown file instead.`);
-      
-      // Automatically fallback to markdown download
-      try {
-        downloadMarkdown();
-      } catch (e) {
-        console.error("Markdown download also failed:", e);
-        alert("Both PDF and Markdown downloads failed. Please try again later.");
+      console.error("Failed to export PDF:", err);
+    }
+    handleMenuClose();
+  };
+
+  const handleRewrite = () => {
+    console.log("Rewrite requested");
+    handleMenuClose();
+  };
+
+  const handleFeedback = async (type) => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setFeedback(type);
+    
+    try {
+      if (onFeedback) {
+        await onFeedback(type);
       }
+      console.log(`Feedback submitted: ${type}`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+      setFeedback(null);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Box
       sx={{
-        pb: { xl: 1 },
         display: "flex",
         alignItems: "center",
+        gap: 2,
+        py: 1,
+        px: 2,
+        borderTop: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.background.paper,
         justifyContent: "space-between",
-        gap: 4,
-        padding: 1,
-        position: "relative",
-        bgcolor: theme.palette.mode === "dark" && "#161C24",
       }}
     >
-      <Typography
-        ref={titleRef}
-        variant="h1"
+      <Box
         sx={{
-          fontSize: {
-            xs: "16px",
-            sm: "16px",
-            md: "20px",
-            lg: "22px",
-            xl: "30px",
-          },
-          fontWeight: "700",
-          cursor: "pointer",
-          color: "text.primary",
-          "&:hover": { opacity: 0.8 },
-        }}
-      >
-        {getTruncatedTitle(
-          query || researchItem?.query || "Untitled",
-          titleCharCount,
-        )}
-      </Typography>
-
-      {/* Download button that opens a small menu */}
-      <Button
-        onClick={handleButtonClick}
-        aria-controls={open ? "download-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        sx={{
-          backgroundColor: "background.paper",
-          borderRadius: "6px",
-          width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          padding: { xs: "4px", lg: "8px", xl: "12px" },
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          "&:hover": {
-            backgroundColor:
-              theme.palette.mode === "dark"
-                ? theme.palette.grey[800]
-                : theme.palette.grey[100],
-            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-          },
+          gap: 1,
         }}
       >
-        <NextImage
-          src={"/agents/edit.svg"}
-          alt={"Download"}
-          width={24}
-          height={24}
-          style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            objectFit: "contain",
-            filter:
-              theme.palette.mode === "dark"
-                ? "invert(1) brightness(0.9)"
-                : "none",
+        <Tooltip title="Share">
+          <IconButton
+            size="small"
+            onClick={handleShareClick}
+            sx={{
+              color: theme.palette.text.secondary,
+              "&:hover": {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
+          >
+            <ShareIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Export">
+          <IconButton
+            size="small"
+            onClick={handleExportClick}
+            sx={{
+              color: theme.palette.text.secondary,
+              "&:hover": {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
+          >
+            <ExportIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Rewrite">
+          <IconButton
+            size="small"
+            onClick={handleRewrite}
+            sx={{
+              color: theme.palette.text.secondary,
+              "&:hover": {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
+          >
+            <RewriteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            color: theme.palette.text.secondary,
+            fontSize: "0.875rem",
+            mr: 1,
           }}
-        />
-      </Button>
+        >
+          Was this helpful?
+        </Typography>
+        
+        <Tooltip title="Yes, helpful">
+          <IconButton
+            size="small"
+            onClick={() => handleFeedback('helpful')}
+            disabled={isSubmitting}
+            sx={{
+              color: feedback === 'helpful' 
+                ? theme.palette.success.main 
+                : theme.palette.text.secondary,
+              "&:hover": {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.success.main,
+              },
+              "&:disabled": {
+                color: feedback === 'helpful' 
+                  ? theme.palette.success.main 
+                  : theme.palette.text.disabled,
+              },
+            }}
+          >
+            <ThumbUpIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        
+        <Tooltip title="No, not helpful">
+          <IconButton
+            size="small"
+            onClick={() => handleFeedback('not-helpful')}
+            disabled={isSubmitting}
+            sx={{
+              color: feedback === 'not-helpful' 
+                ? theme.palette.error.main 
+                : theme.palette.text.secondary,
+              "&:hover": {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.error.main,
+              },
+              "&:disabled": {
+                color: feedback === 'not-helpful' 
+                  ? theme.palette.error.main 
+                  : theme.palette.text.disabled,
+              },
+            }}
+          >
+            <ThumbDownIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      
 
       <Menu
-        id="download-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "download-button",
+        anchorEl={shareMenuAnchor}
+        open={Boolean(shareMenuAnchor)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
         }}
-        sx={{
-          mt: 1,
-          "& .MuiPaper-root": {
-            backgroundColor: "background.paper",
-            color: "text.primary",
-          },
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
         }}
       >
-        <MenuItem onClick={downloadPdfFromMarkdown}>Download PDF</MenuItem>
-        <MenuItem onClick={downloadMarkdown}>
-          Download Raw Markdown (.md)
+        {agentId ? [
+            <MenuItem key="email" onClick={() => {
+              handleMenuClose();
+              setShareModalDefaultTab(0); // Private (Email) tab
+              setShareModalOpen(true);
+            }}>
+              <ListItemIcon>
+                <EmailIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Share via Email" 
+                secondary="Send to specific people"
+              />
+            </MenuItem>,
+            <MenuItem key="public" onClick={() => {
+              handleMenuClose();
+              setShareModalDefaultTab(1); // Public Link tab
+              setShareModalOpen(true);
+            }}>
+              <ListItemIcon>
+                <PublicIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Create Public Link" 
+                secondary="Anyone with link can view"
+              />
+            </MenuItem>
+          ] : []}
+      </Menu>
+
+      <Menu
+        anchorEl={exportMenuAnchor}
+        open={Boolean(exportMenuAnchor)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem onClick={handleExportPDF}>
+          <ListItemIcon>
+            <PdfIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Export as PDF</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/* Share Agent Modal */}
+      {agentId && (
+        <ShareAgentModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          agentId={agentId}
+          agentData={{ content, sources, title }}
+          defaultTab={shareModalDefaultTab}
+        />
+      )}
     </Box>
   );
-}
+};
+
+export default CombinedActions;

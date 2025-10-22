@@ -16,7 +16,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 // import CloseIcon from "@mui/icons-material/Close";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
@@ -196,6 +196,7 @@ const suggestedTopics = {
 
 export default function AgentLandingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setAgentType } = useAgentContext();
   const [inputValue, setInputValue] = useState("");
   const [selectedNavItem, setSelectedNavItem] = useState("slides");
@@ -335,6 +336,22 @@ export default function AgentLandingPage() {
       localStorage.setItem("shothik_has_visited", "true");
     }
   }, []);
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && NAVIGATION_ITEMS.some(item => item.id === tab)) {
+      setSelectedNavItem(tab);
+      // Set appropriate input value based on tab
+      if (tab === "sheets") {
+        setInputValue("Create a list for ");
+      } else if (tab === "slides") {
+        setInputValue("Create a presentation about ");
+      } else if (tab === "research") {
+        setInputValue("");
+      }
+    }
+  }, [searchParams]);
 
   const handleSubmit = async () => {
     if (!inputValue.trim() || isSubmitting) return;

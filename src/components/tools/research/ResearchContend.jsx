@@ -13,6 +13,7 @@ import RenderPart from "./RenderPart";
 import Suggestion from "./Suggestion";
 import { SuggestionCards } from "./SuggetionCard";
 import UserMessage from "./UserMessage";
+import ResearchContentWithReferences from "./ResearchContentWithReferences";
 
 const ResearchContend = () => {
   const [selectedModel, setSelectedModel] = useState("shothik-brain-1.0");
@@ -81,9 +82,16 @@ const ResearchContend = () => {
               const cleanedValue = value.replaceAll("0: ", "");
               if (index === prev.length - 1) {
                 if (cleanedValue) {
+                  // Ensure content is a string before concatenating
+                  const currentContent = typeof item.content === 'string' 
+                    ? item.content 
+                    : (typeof item.content === 'object' && item.content !== null)
+                      ? (item.content.text || item.content.content || item.content.result || item.content.answer || '')
+                      : String(item.content || '');
+                  
                   return {
                     ...item,
-                    content: item.content + cleanedValue,
+                    content: currentContent + cleanedValue,
                   };
                 } else {
                   return item;
@@ -94,7 +102,7 @@ const ResearchContend = () => {
           });
         } else if (value.startsWith("inovation:")) {
           try {
-            const content = JSON.parse(value.replace("inovation:", ""));
+            const contentObj = JSON.parse(value.replace("inovation:", ""));
             const TextMessage = {
               role: "assistant",
               type: "text",
@@ -104,7 +112,8 @@ const ResearchContend = () => {
               const updatedPrev = [...prev];
               updatedPrev[prev.length - 1] = {
                 ...updatedPrev[prev.length - 1],
-                content,
+                content: contentObj,
+                sources: contentObj.sources || [],
               };
 
               return [...updatedPrev, TextMessage];
@@ -231,6 +240,7 @@ const ResearchContend = () => {
                 group={selectedGroup}
                 isLoading={isLoading}
                 data={message}
+                userQuestion={userInput}
               />
             ) : null,
           )}
