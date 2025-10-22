@@ -26,7 +26,7 @@ export default function MainHeader() {
   const isNavHorizontal = themeLayout === "horizontal";
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
-  const isMd = useResponsive("up", "sm");
+  const isMd = useResponsive("up", "md");
   const isMobile = useResponsive("down", "sm");
   const { isLoading } = useGetUserQuery(undefined, {
     skip: !accessToken,
@@ -77,10 +77,10 @@ export default function MainHeader() {
         flexGrow={1}
         direction="row"
         alignItems="center"
-        justifyContent="flex-end"
+        justifyContent={isMobile ? "flex-end" : "space-between"}
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
-        {isNavMini && isMd && <Logo sx={{ mr: 2.5 }} />}
+        {isNavMini && !isMobile && <Logo sx={{ mr: 2.5 }} />}
 
         {isMd && (
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
@@ -95,44 +95,52 @@ export default function MainHeader() {
           </Box>
         )}
 
-        {isLoading ? (
-          <DotFlashing />
-        ) : (
-          user?.package !== "unlimited" && (
-            <Link href={"/pricing?redirect=" + pathname}>
-              <Button
-                data-umami-event="Nav: Upgrade To Premium"
-                color="primary"
-                size={isMd ? "medium" : "small"}
-                variant="contained"
-                rel="noopener"
-                startIcon={
-                  <SvgColor
-                    src="/navbar/diamond.svg"
-                    sx={{
-                      width: { xs: 20, md: 24 },
-                      height: { xs: 20, md: 24 },
-                    }}
-                  />
-                }
-              >
-                {user?.email
-                  ? isMobile
-                    ? "Upgrade"
-                    : "Upgrade Plan"
-                  : isMobile
-                    ? "Premium"
-                    : "Upgrade your plan"}
-              </Button>
-            </Link>
-          )
-        )}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 1, md: 2 },
+          }}
+        >
+          {isLoading ? (
+            <DotFlashing />
+          ) : (
+            user?.package !== "unlimited" && (
+              <Link href={"/pricing?redirect=" + pathname}>
+                <Button
+                  data-umami-event="Nav: Upgrade To Premium"
+                  color="primary"
+                  size={isMd ? "medium" : "small"}
+                  variant="contained"
+                  rel="noopener"
+                  startIcon={
+                    <SvgColor
+                      src="/navbar/diamond.svg"
+                      sx={{
+                        width: { xs: 20, md: 24 },
+                        height: { xs: 20, md: 24 },
+                      }}
+                    />
+                  }
+                >
+                  {user?.email
+                    ? isMobile
+                      ? "Upgrade"
+                      : "Upgrade Plan"
+                    : isMobile
+                      ? "Premium"
+                      : "Upgrade your plan"}
+                </Button>
+              </Link>
+            )
+          )}
 
-        {!isLoading && (
-          <>
-            <AccountPopover accessToken={accessToken} user={user} />
-          </>
-        )}
+          {!isLoading && (
+            <>
+              <AccountPopover accessToken={accessToken} user={user} />
+            </>
+          )}
+        </Box>
       </Stack>
     </>
   );
