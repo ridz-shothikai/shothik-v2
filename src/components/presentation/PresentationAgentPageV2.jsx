@@ -19,7 +19,7 @@ export default function PresentationAgentPageV2({ presentationId }) {
   console.log(presentationState, "SLIDE DAATA ON REDUX");
 
   const config = {
-    baseUrl: "https://03dbbfed1354.ngrok-free.app", // "https://17b9c083b988.ngrok-free.app",
+    baseUrl: process.env.NEXT_PUBLIC_API_URI_SLIDE, // "https://03dbbfed1354.ngrok-free.app", // "https://17b9c083b988.ngrok-free.app",
     statusCheckInterval: 15000, // Check status every 15 seconds
     reconnectAttempts: 5,
     reconnectDelay: 1000,
