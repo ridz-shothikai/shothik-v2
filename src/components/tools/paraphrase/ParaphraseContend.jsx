@@ -44,6 +44,7 @@ import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
 import { useAutoFreeze } from "../../../hooks/useAutoFreeze";
+import useKeyboardShortcuts from "../../../hooks/useKeyboardShortcuts";
 import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import {
@@ -280,6 +281,59 @@ const ParaphraseContend = () => {
     debounceMs: 2500,
     enableLLM: paidUser, // Only using LLM for paid users
     shouldAutoFreeze: paraphraseOptions.autoFreeze, // checks if auto freeze should be enabled or not.
+  });
+
+  // Define keyboard shortcuts
+  useKeyboardShortcuts({
+    // Ctrl/Cmd + Enter: Paraphrase
+    "ctrl+enter": () => {
+      if (userInput && !isLoading && !processing.loading) {
+        handleSubmit();
+      }
+    },
+
+    // Ctrl/Cmd + Shift + C: Clear all
+    "ctrl+shift+c": () => {
+      handleClear("", "all");
+    },
+
+    // Ctrl/Cmd + K: Copy output
+    "ctrl+k": () => {
+      if (outputContend) {
+        navigator.clipboard.writeText(outputContend);
+        enqueueSnackbar("Output copied to clipboard!", {
+          variant: "success",
+        });
+      }
+    },
+
+    // Ctrl/Cmd + Shift + L: Change language (cycle through)
+    "ctrl+shift+l": () => {
+      const languages = ["English (US)", "English (UK)", "Bangla"];
+      const currentIndex = languages.indexOf(language);
+      const nextIndex = (currentIndex + 1) % languages.length;
+      setLanguage(languages[nextIndex]);
+    },
+
+    // Ctrl/Cmd + 1-4: Switch modes
+    "ctrl+1": () => setSelectedMode("Standard"),
+    "ctrl+2": () => setSelectedMode("Fluency"),
+    "ctrl+3": () => setSelectedMode("Humanize"),
+    "ctrl+4": () => setSelectedMode("Formal"),
+
+    // Escape: Clear output only
+    escape: () => {
+      if (result?.length > 0) {
+        handleClear("", "output");
+      }
+    },
+
+    // Ctrl/Cmd + H: Navigate history (cycle)
+    "ctrl+h": () => {
+      if (outputHistory.length > 0) {
+        setOutputHistoryIndex((prev) => (prev + 1) % outputHistory.length);
+      }
+    },
   });
 
   // console.log(isAutoFreezeDetecting, "isAutoFreezeDetecting");

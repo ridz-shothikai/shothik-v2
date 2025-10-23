@@ -1,30 +1,46 @@
 // ShortcutsTab.jsx
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 const ShortcutsTab = ({
   fromComp = "paraphrase", // This flag is to maintain different sesstings on same component. ENUM: [paraphrase, humanize, ai-detector, grammar-fix, translator]
 }) => {
-  const rows = [
-    { action: "Copy sentence", shortcut: "Alt + C" },
+  const humanizeRows = [
+    { action: "Copy sentence", shortcut: "Ctrl + C" },
     {
-      action:
-        fromComp === "paraphrase"
-          ? "Paraphrase all text"
-          : fromComp === "humanize"
-            ? "Humanize all text"
-            : "Apply auto changes",
+      action: "Humanize all text",
       shortcut: "Ctrl + Enter",
     },
     {
-      action:
-        fromComp === "paraphrase"
-          ? "Copy all paraphrased text"
-          : fromComp === "humanize"
-            ? "Copy all humanized text"
-            : "Copy all text",
+      action: "Copy all humanized text",
       shortcut: "Ctrl + C",
     },
   ];
+  const paraphraseRows = [
+    { action: "Paraphrase text", shortcut: "Ctrl/Cmd + Enter" },
+    {
+      action: "Clear all",
+      shortcut: "Ctrl/Cmd + Shift + C",
+    },
+    {
+      action: "Copy output",
+      shortcut: "Ctrl/Cmd + K",
+    },
+    {
+      action: "Cycle language",
+      shortcut: "Ctrl/Cmd + Shift + L",
+    },
+    {
+      action: "Switch mode",
+      shortcut: "Ctrl/Cmd + 1-4",
+    },
+    {
+      action: "Clear output",
+      shortcut: "Escape",
+    },
+  ];
+
+  const currentCompData =
+    fromComp === "paraphrase" ? paraphraseRows : humanizeRows;
 
   return (
     <Box id="shortcuts_tab" sx={{ px: 2, py: 1 }}>
@@ -50,7 +66,7 @@ const ShortcutsTab = ({
       </Box>
 
       {/* Data Rows */}
-      {rows.map((row, i) => (
+      {currentCompData.map((row, i) => (
         <Box
           key={i}
           sx={{
@@ -58,7 +74,7 @@ const ShortcutsTab = ({
             justifyContent: "space-between",
             alignItems: "center",
             py: 1,
-            borderBottom: i < rows.length - 1 ? 1 : 0,
+            borderBottom: i < currentCompData.length - 1 ? 1 : 0,
             borderColor: "divider",
           }}
         >
@@ -70,10 +86,10 @@ const ShortcutsTab = ({
       ))}
 
       {/* Section Divider */}
-      <Divider sx={{ my: 3 }} />
+      {/* <Divider sx={{ my: 3 }} /> */}
 
       {/* Canvas Divider Section */}
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      {/* <Typography variant="subtitle2" color="text.secondary" gutterBottom>
         Canvas divider
       </Typography>
       <Box
@@ -88,7 +104,7 @@ const ShortcutsTab = ({
         <Typography variant="body2" sx={{ fontFamily: "Monospace" }}>
           Ctrl + |
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
