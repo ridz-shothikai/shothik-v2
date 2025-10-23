@@ -85,7 +85,7 @@ const Accordion = ({ colorList, data, title }) => {
   );
 };
 
-const OutputResult = ({ handleOpen, outputContend }) => {
+const OutputResult = ({ handleOpen, result, history }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const enqueueSnackbar = useSnackbar();
 
@@ -93,7 +93,7 @@ const OutputResult = ({ handleOpen, outputContend }) => {
     try {
       setIsDownloading(true);
       await pdfDownload({
-        content: outputContend,
+        content: result,
         logo: "/shothik_light_logo.png",
       });
       enqueueSnackbar("PDF downloaded successfully", { variant: "success" });
@@ -110,22 +110,25 @@ const OutputResult = ({ handleOpen, outputContend }) => {
   return (
     <div className="border-border bg-background text-foreground flex flex-1 flex-col rounded-lg border">
       {/* Header */}
-      <div className="border-border flex justify-end gap-2 border-b px-4 py-2">
-        <Button
-          onClick={handleOpen}
-          startIcon={<Share />}
-          sx={{
-            border: "1px solid rgba(145, 158, 171, 0.32)",
-            borderRadius: "9999px",
-            px: 2,
-            py: 1,
-            color: "var(--foreground)",
-            transition: "all 300ms ease-in-out",
-            "&:hover": { color: "primary.main" },
-          }}
-        >
-          Share
-        </Button>
+      <div className="border-border flex gap-2 border-b px-4 py-2 md:justify-end">
+        {history?._id && (
+          <Button
+            onClick={handleOpen}
+            startIcon={<Share />}
+            sx={{
+              border: "1px solid rgba(145, 158, 171, 0.32)",
+              borderRadius: "9999px",
+              px: 2,
+              py: 1,
+              color: "var(--foreground)",
+              transition: "all 300ms ease-in-out",
+              "&:hover": { color: "primary.main" },
+            }}
+          >
+            Share
+          </Button>
+        )}
+
         <Button
           onClick={handleDownload}
           disabled={isDownloading}
@@ -157,17 +160,15 @@ const OutputResult = ({ handleOpen, outputContend }) => {
               className="absolute h-full w-full rounded-full border-8"
               style={{
                 borderColor: colorDefinitions.aiHigh,
-                clipPath: `inset(${100 - outputContend.ai_percentage}% 0 0 0)`,
+                clipPath: `inset(${100 - result.ai_percentage}% 0 0 0)`,
               }}
             />
             <p
               className={`text-lg font-semibold ${
-                outputContend.ai_percentage > 50
-                  ? "text-warning"
-                  : "text-primary"
+                result.ai_percentage > 50 ? "text-warning" : "text-primary"
               }`}
             >
-              {outputContend.ai_percentage > 50 ? "AI" : "Human"}
+              {result.ai_percentage > 50 ? "AI" : "Human"}
             </p>
           </div>
 
@@ -183,14 +184,13 @@ const OutputResult = ({ handleOpen, outputContend }) => {
             </div>
             <div className="flex justify-start">
               <div className="bg-primary/10 text-primary rounded-full px-2 py-1 text-sm font-bold">
-                {outputContend.assessment}
+                {result.assessment}
               </div>
             </div>
             <div className="border-border text-muted-foreground flex items-center gap-2 rounded-md border px-4 py-1">
               <InfoOutlined />
               <p>
-                {parseInt(outputContend.ai_percentage ?? 0)}% Probability AI
-                generated
+                {parseInt(result.ai_percentage ?? 0)}% Probability AI generated
               </p>
             </div>
           </div>
@@ -238,12 +238,12 @@ const OutputResult = ({ handleOpen, outputContend }) => {
       <div className="flex-1 flex-col">
         <Accordion
           colorList={Object.values(colorDefinitionsAI)}
-          data={outputContend.aiSentences}
+          data={result.aiSentences}
           title="Top sentences driving AI probability"
         />
         <Accordion
           colorList={Object.values(colorDefinitionsHuman)}
-          data={outputContend.humanSentences}
+          data={result.humanSentences}
           title="Top sentences driving Human probability"
         />
       </div>

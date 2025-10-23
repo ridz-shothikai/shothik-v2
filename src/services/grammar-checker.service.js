@@ -1,10 +1,12 @@
 import api from "../lib/api";
 
+// Check
 export const grammarCheck = async (payload = {}, signal) => {
   const response = await api.post("/grammar/check", { ...payload }, { signal });
   return response?.data;
 };
 
+// Sections
 export const fetchGrammarSections = async (query = {}, payload = {}) => {
   const queryParams = new URLSearchParams();
   const { page = 1, limit = 10, search = "" } = query;

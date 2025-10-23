@@ -67,7 +67,7 @@ export const toolsApiSlice = createApi({
     scanAidetector: builder.mutation({
       query: (payload) => {
         return {
-          url: "/ai-detector",
+          url: "/ai-detector/check",
           method: "POST",
           body: payload,
         };

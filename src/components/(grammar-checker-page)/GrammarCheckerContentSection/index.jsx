@@ -45,7 +45,7 @@ import EditorToolbar from "./EditorToolbar";
 import GrammarIssueCard from "./GrammarIssueCard";
 import GrammarSectionbar from "./GrammarSectionbar";
 import GrammarSidebar from "./GrammarSidebar";
-import InitialInputAction from "./InitialInputAction";
+import InitialInputActions from "./InitialInputActions";
 import LanguageMenu from "./LanguageMenu";
 
 // Utility: Group histories by period
@@ -70,9 +70,10 @@ const dataGroupsByPeriod = (histories = []) => {
 
     if (!acc[key]) acc[key] = [];
     acc?.[key]?.push({
-      _id: entry._id,
-      text: entry.text,
-      time: entry.timestamp,
+      ...(entry || {}),
+      _id: entry?._id,
+      text: entry?.text,
+      time: entry?.timestamp,
     });
     return acc;
   }, {});
@@ -263,19 +264,6 @@ const GrammarCheckerContentSection = () => {
   const debouncedText = useDebounce(text, 1500);
   const abortControllerRef = useRef(null);
 
-  // Clear function
-  const handleClear = useCallback(() => {
-    if (editor) {
-      editor?.commands?.clearContent();
-    }
-
-    dispatch(setScore(0));
-    dispatch(setScores([]));
-    dispatch(setText(""));
-    dispatch(setIssues([]));
-    dispatch(setSelectedIssue({}));
-  }, [editor, dispatch]);
-
   // Grammar check with debounce
   useEffect(() => {
     const preparedText = prepareText(debouncedText);
@@ -419,7 +407,10 @@ const GrammarCheckerContentSection = () => {
       });
 
     // 🧹 Remove all error marks after replacements
-    tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    if (!!state?.doc?.content?.size && !!state?.schema?.marks?.errorMark) {
+      tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    }
+
     tr.setMeta("addToHistory", true);
     editor.view.dispatch(tr);
 
@@ -472,6 +463,19 @@ const GrammarCheckerContentSection = () => {
   const handleIgnoreError = useCallback(() => {
     setAnchorEl(null);
   }, []);
+
+  // Clear function
+  const handleClear = useCallback(() => {
+    if (editor) {
+      editor?.commands?.clearContent();
+    }
+
+    dispatch(setScore(0));
+    dispatch(setScores([]));
+    dispatch(setText(""));
+    dispatch(setIssues([]));
+    dispatch(setSelectedIssue({}));
+  }, [editor, dispatch]);
 
   const handleCopy = useCallback(() => {
     if (!text) return;
@@ -814,16 +818,16 @@ const GrammarCheckerContentSection = () => {
 
               {!text && (
                 <div className="absolute top-20 left-4">
-                  <InitialInputAction
+                  <InitialInputActions
                     setInput={(text) => {
                       if (editor) {
                         editor?.commands?.setContent(text);
                       }
                     }}
                     sample={sample}
-                    isSample={true}
-                    isPaste={true}
-                    isDocument={true}
+                    showSample={true}
+                    showPaste={true}
+                    showInsertDocument={true}
                   />
                 </div>
               )}
