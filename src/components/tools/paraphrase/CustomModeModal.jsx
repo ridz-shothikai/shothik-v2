@@ -32,6 +32,7 @@ const CustomModeModal = ({
       PaperProps={{
         sx: {
           borderRadius: fullScreen ? 0 : 2,
+          maxHeight: "fit-content",
         },
       }}
     >
