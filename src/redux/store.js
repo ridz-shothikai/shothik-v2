@@ -3,6 +3,7 @@ import { authApiSlice } from "./api/auth/authApiSlice";
 import { blogApiSlice } from "./api/blog/blogApiSlice";
 import { humanizeHistoryApiSlice } from "./api/humanizeHistory/humanizeHistory";
 import { autoFreezeApiSlice } from "./api/paraphrase/autoFreeze";
+import { customModesApi } from "./api/paraphrase/customModesApi";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
 import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { researchChatApi } from "./api/research/researchChatApi";
@@ -78,6 +79,7 @@ const store = configureStore({
     [researchChatApi.reducerPath]: researchChatApi.reducer,
     [researchCoreApi.reducerPath]: researchCoreApi.reducer,
     [autoFreezeApiSlice.reducerPath]: autoFreezeApiSlice.reducer,
+    [customModesApi.reducerPath]: customModesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -95,6 +97,7 @@ const store = configureStore({
       researchChatApi.middleware,
       researchCoreApi.middleware,
       autoFreezeApiSlice.middleware,
+      customModesApi.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

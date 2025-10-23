@@ -6,10 +6,10 @@ import { NAV } from "../../config/config/nav";
 import navConfig from "../../config/config/navConfig";
 import useResponsive from "../../hooks/useResponsive";
 import Logo from "../../resource/assets/Logo";
+import NavigantionIcons from "./components/NavigationIcons";
 import NavSectionVertical from "./components/NavSectionVertical";
 import NavToggleButton from "./components/toggleButton";
 import UserInfo from "./components/UserInfo";
-import NavigantionIcons from "./components/NavigationIcons";
 
 // ----------------------------------------------------------------------
 

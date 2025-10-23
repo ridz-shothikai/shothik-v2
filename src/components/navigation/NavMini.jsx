@@ -46,42 +46,6 @@ export default function NavMini({ isDarkMode }) {
         <ShothikCheckMark sx={{ mx: "auto", my: 2 }} />
 
         <NavSectionMini data={navConfig} user={user} />
-
-        {user?.package && (
-          <Box
-            style={{
-              position: "absolute",
-              bottom: 0,
-              textAlign: "center",
-              width: "100%",
-              height: "100px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#8E33FF",
-                color: "#fff",
-                padding: "20px 0px",
-                width: plan == "free" ? 60 : 75,
-                height: plan == "free" ? 60 : 75,
-                borderRadius: "50%",
-                fontSize: "12px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                fontSize: "14px",
-                "&:first-letter": {
-                  textTransform: "uppercase",
-                },
-              }}
-            >
-              <span>{plan.replaceAll("_", " ")}</span>
-            </Box>
-          </Box>
-        )}
       </Stack>
     </Box>
   );
