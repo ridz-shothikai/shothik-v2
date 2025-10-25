@@ -1,5 +1,6 @@
 import { AutoAwesome } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
+import CopyButon from "../../blog/details/CopyButon";
 import { AcademicLoadingState } from "./AcademicLoadingState";
 import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";

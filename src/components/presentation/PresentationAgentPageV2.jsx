@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  selectPresentation,
-  setCurrentSlideId,
-} from "@/redux/slice/presentationSlice";
+import { selectPresentation } from "@/redux/slice/presentationSlice";
 import { Box, useTheme } from "@mui/material";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetSlideDataByStream } from "../../hooks/useGetSlideDataByStream";
+import { io } from "socket.io-client";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 
@@ -26,13 +22,27 @@ export default function PresentationAgentPageV2({ presentationId }) {
     heartbeatTimeout: 30000,
   };
 
-  const presentation = useGetSlideDataByStream(config);
+  const socketInstance = io(`http://163.172.176.81:8031`, {
+    transports: ["websocket"],
+    path: `/ws/${presentationId}?token=${localStorage.getItem("accessToken")}`,
+    forceNew: true,
+    autoConnect: true,
+    reconnection: true,
+    reconnectionDelay: 2000,
+    reconnectionAttempts: 5,
+  });
 
-  useEffect(() => {
-    if (presentationId) {
-      dispatch(setCurrentSlideId({ presentationId }));
-    }
-  }, [presentationId, dispatch]);
+  socketInstance.on("connect", () => {
+    console.log("Connected to WebSocket server");
+  });
+
+  // const presentation = useGetSlideDataByStream(config);
+
+  // useEffect(() => {
+  //   if (presentationId) {
+  //     dispatch(setCurrentSlideId({ presentationId }));
+  //   }
+  // }, [presentationId, dispatch]);
 
   return (
     <Box
