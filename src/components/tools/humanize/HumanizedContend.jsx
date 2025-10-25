@@ -133,7 +133,11 @@ const HumanizedContend = () => {
         // Restore everything from history
         setUserInput(entry.text);
         setOutputContent(entry.outputs);
-        setScores(entry.outputs.map((output) => output.score));
+        setScores(
+          entry.outputs.map((output) => output.aiPercentage || output.score),
+        );
+        (console.log(entry.outputs.map((output) => output.aiPercentage)),
+          "RESTORED SCORES");
         setShowIndex(0);
         setIsRestoredFromHistory(true);
 
@@ -214,7 +218,11 @@ const HumanizedContend = () => {
         };
       }
 
-      const scores = data.output.map((item) => item.score);
+      // const scores = data.output.map((item) => item.score); // human scroe
+      const scores = data.output.map(
+        (item) => item?.aiPercentage || item?.score,
+      ); // ai score
+      // console.log(scores, "GENERATED SCORES");
       setOutputContent(data.output);
       setScores(scores);
       setUpdate((prev) => !prev);

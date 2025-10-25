@@ -2,8 +2,8 @@
 
 import { selectPresentation } from "@/redux/slice/presentationSlice";
 import { Box, useTheme } from "@mui/material";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { io } from "socket.io-client";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 
@@ -11,6 +11,10 @@ export default function PresentationAgentPageV2({ presentationId }) {
   const dispatch = useDispatch();
   const presentationState = useSelector(selectPresentation);
   const theme = useTheme();
+
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState("Connecting...");
 
   console.log(presentationState, "SLIDE DAATA ON REDUX");
 
@@ -21,20 +25,6 @@ export default function PresentationAgentPageV2({ presentationId }) {
     reconnectDelay: 1000,
     heartbeatTimeout: 30000,
   };
-
-  const socketInstance = io(`http://163.172.176.81:8031`, {
-    transports: ["websocket"],
-    path: `/ws/${presentationId}?token=${localStorage.getItem("accessToken")}`,
-    forceNew: true,
-    autoConnect: true,
-    reconnection: true,
-    reconnectionDelay: 2000,
-    reconnectionAttempts: 5,
-  });
-
-  socketInstance.on("connect", () => {
-    console.log("Connected to WebSocket server");
-  });
 
   // const presentation = useGetSlideDataByStream(config);
 

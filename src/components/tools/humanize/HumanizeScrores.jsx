@@ -6,8 +6,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
-import CustomDonutChart from "./CustomDonutChart";
 
 const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
   return (
@@ -44,7 +42,7 @@ const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
             </Box>
             <Box style={{ marginTop: -18 }}>
               <span className="progress-text">
-                {scores[showIndex]}% Human Written
+                {scores[showIndex]}% AI Written
               </span>
             </Box>
           </div>
@@ -53,7 +51,7 @@ const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
         )}
       </Card>
 
-      {!loadingAi && scores[showIndex] && (
+      {/* {!loadingAi && scores[showIndex] && (
         <div
           style={{
             flex: 1,
@@ -71,7 +69,7 @@ const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
             initialSize={isMobile ? 100 : 115}
           />
         </div>
-      )}
+      )} */}
     </Stack>
   );
 };
