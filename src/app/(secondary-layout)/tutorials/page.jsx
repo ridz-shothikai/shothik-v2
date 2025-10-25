@@ -72,7 +72,7 @@ const Tutorials = () => {
     useYoutubeSubscriber();
 
   const handleVideoClick = (videoId) => {
-    console.log("Video clicked:", videoId);
+    // Video click handler - can be used for analytics if needed
   };
 
   return (

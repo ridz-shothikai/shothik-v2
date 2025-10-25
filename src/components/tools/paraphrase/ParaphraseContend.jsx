@@ -89,12 +89,10 @@ const ParaphraseContend = () => {
     });
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
       setSocketId(socket.id);
     });
 
     socket.on("disconnect", () => {
-      console.warn("Socket disconnected");
       setSocketId("");
     });
 
@@ -141,6 +139,17 @@ const ParaphraseContend = () => {
             updated[sentence.index] = sentence.data;
             return updated;
           });
+          // Also update the newest entry in history if it exists
+          setOutputHistory((prevHistory) => {
+            if (prevHistory.length > 0) {
+              const updatedHistory = [...prevHistory];
+              const currentSnapshot = [...updatedHistory[0]];
+              currentSnapshot[sentence.index] = sentence.data;
+              updatedHistory[0] = currentSnapshot;
+              return updatedHistory;
+            }
+            return prevHistory;
+          });
         }
       } catch (error) {
         console.error("Error parsing paraphrase-tagging data:", error);
@@ -149,7 +158,6 @@ const ParaphraseContend = () => {
 
     socket.on("paraphrase-synonyms", (data) => {
       if (data === ":end:") {
-        console.log("Synonyms processing completed.");
         setProcessing({ success: true, loading: false });
         return;
       }
@@ -161,6 +169,17 @@ const ParaphraseContend = () => {
             const updated = [...prev];
             updated[sentence.index] = sentence.data;
             return updated;
+          });
+          // Also update the newest entry in history if it exists
+          setOutputHistory((prevHistory) => {
+            if (prevHistory.length > 0) {
+              const updatedHistory = [...prevHistory];
+              const currentSnapshot = [...updatedHistory[0]];
+              currentSnapshot[sentence.index] = sentence.data;
+              updatedHistory[0] = currentSnapshot;
+              return updatedHistory;
+            }
+            return prevHistory;
           });
         }
       } catch (error) {
@@ -362,6 +381,7 @@ const ParaphraseContend = () => {
                     selectedLang={language}
                     highlightSentence={highlightSentence}
                     setOutputHistory={setOutputHistory}
+                    setOutputHistoryIndex={setOutputHistoryIndex}
                     input={userInput}
                     freezeWords={freezeWords}
                     socketId={socketId}

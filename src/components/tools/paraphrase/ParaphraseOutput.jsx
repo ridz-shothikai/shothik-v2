@@ -47,6 +47,7 @@ const ParaphraseOutput = ({
   selectedLang,
   highlightSentence,
   setOutputHistory,
+  setOutputHistoryIndex,
   freezeWords,
   socketId,
   language,
@@ -118,13 +119,15 @@ const ParaphraseOutput = ({
     newData[synonymsOptions.sentenceIndex] = sentenceData;
     setData(newData);
     setOutputHistory((prevHistory) => {
-      const arr = [];
       if (!prevHistory.length) {
-        arr.push(data);
+        // First replacement: add new data, then old data
+        return [newData, data];
       }
-      arr.push(newData);
-      return [...prevHistory, ...arr];
+      // Subsequent replacements: prepend new data to history
+      return [newData, ...prevHistory];
     });
+    // Reset history index to 0 (newest) after replacement
+    setOutputHistoryIndex(0);
 
     setShowRephrase(false);
 
@@ -142,13 +145,14 @@ const ParaphraseOutput = ({
         }
       }
       const randomNumber = Math.floor(Math.random() * 10000000000);
-      setEventId(`${socketId}-${randomNumber}`);
+      const newEventId = `${socketId}-${randomNumber}`;
+      setEventId(newEventId);
       const payload = {
         sentence,
         socketId,
         index: synonymsOptions.sentenceIndex,
         language,
-        eventId,
+        eventId: newEventId,
       };
       await paraphraseForTagging(payload).unwrap();
     } catch (error) {
