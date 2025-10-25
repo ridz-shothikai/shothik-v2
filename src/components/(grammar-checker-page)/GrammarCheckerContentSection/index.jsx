@@ -578,7 +578,7 @@ const GrammarCheckerContentSection = () => {
     <>
       <div className="py-6">
         <div className="relative flex flex-col items-start gap-4 overflow-hidden lg:flex-row">
-          <div className="bg-card hidden rounded-md border p-4 px-3 lg:block">
+          <div className="bg-card hidden rounded-lg border p-4 px-3 lg:block">
             <div className="flex flex-col gap-6">
               <button onClick={() => dispatch(setIsSectionbarOpen(true))}>
                 <BookIcon className="size-5" />
@@ -589,7 +589,7 @@ const GrammarCheckerContentSection = () => {
             </div>
           </div>
           <div className="mx-auto flex w-full flex-1 flex-col lg:min-h-[calc(100vh-140px)]">
-            <div className="bg-card flex w-full items-center justify-between border border-b-0 lg:w-fit lg:rounded-t-2xl">
+            <div className="bg-card flex w-full items-center justify-between border border-b-0 lg:w-fit lg:rounded-t-lg">
               <LanguageMenu
                 isLoading={isCheckLoading}
                 setLanguage={(lang) => dispatch(setLanguage(lang))}

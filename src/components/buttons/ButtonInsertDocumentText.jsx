@@ -99,11 +99,12 @@ const ButtonInsertDocumentText = ({ className, onApply, onChange }) => {
       placement="top"
     >
       <Button
-        className="!relative"
+        className="!relative shrink-0 whitespace-nowrap"
         component="label"
         tabIndex={-1}
         color="success"
         variant="outlined"
+        size="small"
         startIcon={
           isProcessing ? <CircularProgress size={16} /> : <UploadFileRounded />
         }

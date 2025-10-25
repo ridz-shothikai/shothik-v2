@@ -1,7 +1,7 @@
+import useScreenSize from "@/hooks/ui/useScreenSize";
 import { cn } from "@/lib/utils";
 import { Dialog } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 const gptModel = [
   { name: "Chat GPT", icon: "/tools/chatgpt.svg", text: "chatgpt" },
@@ -10,45 +10,10 @@ const gptModel = [
   { name: "Human", icon: "/tools/human.svg", text: "human" },
 ];
 
-function SampleTextForMobile({ setOpen }) {
-  const [show, setShow] = useState(true);
-
-  useEffect(() => {
-    function handleScroll() {
-      const height = window.innerHeight;
-      const scrollHeight = window.scrollY;
-      setShow(!(scrollHeight + height - 100 > height));
-    }
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  if (!show) return null;
-
-  return (
-    <div className={`fixed right-5 bottom-2 left-0 z-50`}>
-      <div
-        className="bg-background mt-3 flex items-center gap-2 rounded-full px-4 py-2 hover:cursor-pointer"
-        onClick={() => setOpen(true)}
-      >
-        <div className="h-6 w-6">
-          <Image width={24} height={24} src="/tools/sample.svg" alt="sample" />
-        </div>
-        <span className="text-foreground">Sample Text</span>
-      </div>
-    </div>
-  );
-}
-
-const SampleTextForLarge = ({
-  isDrawer = false,
-  setOpen,
-  handleSampleText,
-}) => {
+const SampleTextContent = ({ isOpen = false, setOpen, handleSampleText }) => {
   const handleClick = (text) => {
     handleSampleText(text);
-    if (isDrawer) setOpen(false);
+    if (isOpen) setOpen(false);
   };
 
   const contentTypes = [
@@ -109,7 +74,7 @@ const SampleTextForLarge = ({
               ))}
             </ul>
           </div>
-          <div className="">
+          {/* <div className="">
             <div className={cn("flex items-center gap-1")}>
               <Image
                 src="/tools/language.svg"
@@ -125,41 +90,41 @@ const SampleTextForLarge = ({
             <span className="text-foreground mt-1 mb-2 inline-block">
               English, Bangla, Hindi and 100+ more
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
   );
 };
 
-function SampleText({ isMobile, isDrawer = false, setOpen, handleSampleText }) {
-  if (isMobile) {
+const SampleText = ({ isOpen = false, setOpen, handleSampleText }) => {
+  const { width } = useScreenSize();
+  if (1024 >= width) {
     return (
       <>
         <Dialog
           maxWidth="xs"
           fullWidth
-          open={isDrawer}
+          open={isOpen}
           onClose={() => setOpen(false)}
         >
-          <SampleTextForLarge
-            isDrawer={true}
+          <SampleTextContent
+            isOpen={true}
             setOpen={setOpen}
             handleSampleText={handleSampleText}
           />
         </Dialog>
-        <SampleTextForMobile setOpen={setOpen} />
       </>
     );
   } else {
     return (
-      <SampleTextForLarge
+      <SampleTextContent
         handleSampleText={handleSampleText}
         setOpen={setOpen}
-        isDrawer={isDrawer}
+        isOpen={isOpen}
       />
     );
   }
-}
+};
 
 export default SampleText;

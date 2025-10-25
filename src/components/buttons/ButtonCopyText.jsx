@@ -33,7 +33,8 @@ const ButtonCopyText = ({ className, text, onClick, children, ...props }) => {
       )}
       {...props}
     >
-      {children || (showCopy ? <Copy /> : <Check />)}
+      {children ||
+        (showCopy ? <Copy className="size-5" /> : <Check className="size-5" />)}
     </button>
   );
 };

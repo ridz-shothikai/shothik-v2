@@ -31,8 +31,10 @@ const ButtonSampleText = ({
       placement="top"
     >
       <Button
+        className="shrink-0 whitespace-nowrap"
         color="primary"
         variant="outlined"
+        size="small"
         onClick={(e) => {
           handleSampleText();
           onClick?.(e);

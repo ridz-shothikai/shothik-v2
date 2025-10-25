@@ -24,8 +24,10 @@ const ButtonPasteText = ({
   return (
     <Tooltip className={cn(className)} title="Paste text" arrow placement="top">
       <Button
+        className="shrink-0 whitespace-nowrap"
         color="primary"
         variant="outlined"
+        size="small"
         onClick={(e) => {
           handlePaste(e);
           onClick?.(e);

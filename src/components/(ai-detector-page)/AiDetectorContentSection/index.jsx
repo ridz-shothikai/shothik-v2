@@ -3,7 +3,7 @@
 import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
 import BookIcon from "@/components/icons/BookIcon";
-import WordCounter from "@/components/tools/common/WordCounter";
+import useScreenSize from "@/hooks/ui/useScreenSize";
 import useLoadingText from "@/hooks/useLoadingText";
 import useSnackbar from "@/hooks/useSnackbar";
 import {
@@ -14,6 +14,7 @@ import {
 import {
   setIsSectionbarOpen,
   setSections,
+  setSectionsGroups,
   setSectionsMeta,
   setSelectedSection,
 } from "@/redux/slice/ai-detector-slice";
@@ -25,12 +26,14 @@ import {
   fetchAiDetectorSections,
 } from "@/services/ai-detector.service";
 import { Plus } from "lucide-react";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AiDetectorSectionbar from "./AiDetectorSectionbar";
 import { getColorByPerplexity } from "./helpers/pdfHelper";
 import InitialInputActions from "./InitialInputActions";
+import InputActions from "./InputActions";
 import OutputResult from "./OutputResult";
 import SampleText from "./SampleText";
 import ShareURLModal from "./ShareURLModal";
@@ -145,6 +148,8 @@ const AiDetectorContentSection = () => {
 
   const pathname = usePathname();
 
+  const { width } = useScreenSize();
+
   const setResultToState = (result) => {
     if (!result) return;
     setResult({
@@ -188,18 +193,20 @@ const AiDetectorContentSection = () => {
     setEnableEdit(false);
   }, [shareContend]);
 
-  async function handleSubmit(inputData = null) {
+  const handleSubmit = async (input = null) => {
     try {
       if (!enableEdit) {
         setEnableEdit(true);
         return;
       }
 
+      if (!input) return;
+
       trackEvent("click", "ai-detector", "ai-detector_click", 1);
 
       setIsLoading(true);
       const res = await scanAidetector({
-        text: inputData ? inputData : text,
+        text: input,
       }).unwrap();
       const { result, history } = res;
       if (!result) throw { message: "Something went wrong" };
@@ -240,7 +247,7 @@ const AiDetectorContentSection = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   function handleSampleText(keyName) {
     const text = trySamples.ai_detector[keyName];
@@ -256,8 +263,7 @@ const AiDetectorContentSection = () => {
     setResult(null);
     setHistory(null);
     setEnableEdit(true);
-    dispatch(setText(""));
-  }, [dispatch]);
+  }, []);
 
   // Section management
   const handleNewSection = useCallback(() => {
@@ -337,11 +343,13 @@ const AiDetectorContentSection = () => {
           dispatch(setSelectedSection(data));
           setText(data?.text);
 
-          const result = data?.result;
+          const { result, last_history } = data || {};
+
+          setHistory(last_history || null);
+          setResultToState(last_history?.result || result || null);
+          setEnableEdit(false);
 
           if (result) {
-            setResultToState(result);
-            setEnableEdit(false);
           }
         }
       } catch (err) {
@@ -372,33 +380,58 @@ const AiDetectorContentSection = () => {
     <>
       <div className="py-6">
         <div className="flex flex-col gap-4 lg:flex-row">
-          <div className="bg-card hidden h-fit rounded-md border p-4 px-3 lg:block">
+          {/* Section Bar */}
+          <div className="bg-card hidden h-fit rounded-lg border p-4 px-3 lg:block">
             <div className="flex flex-col gap-6">
-              <button onClick={() => dispatch(setIsSectionbarOpen(true))}>
+              <button
+                className="cursor-pointer"
+                onClick={() => dispatch(setIsSectionbarOpen(true))}
+              >
                 <BookIcon className="size-5" />
               </button>
-              <button onClick={() => handleNewSection()}>
+              <button
+                className="cursor-pointer"
+                onClick={() => handleNewSection()}
+              >
                 <Plus className="size-6" />
               </button>
             </div>
           </div>
-          <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2 md:gap-0">
+
+          {/* Main Section */}
+          <div className="relative grid flex-1 grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-0">
             {/* Left Section */}
-            <div className="bg-card border-border text-card-foreground relative self-stretch border">
-              <div className="flex h-full min-h-60 flex-col rounded-xl">
-                <div className="relative h-full">
-                  <div className="h-full">
+            <div className="bg-card border-border text-card-foreground relative rounded-lg border lg:self-stretch lg:rounded-r-none">
+              <div className="flex h-full max-h-[48rem] min-h-[28rem] flex-col rounded-xl xl:min-h-[36rem]">
+                <div className="h-12 border-b px-3 lg:hidden">
+                  <div className="flex h-full items-center justify-between gap-6">
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => dispatch(setIsSectionbarOpen(true))}
+                    >
+                      <BookIcon className="size-5" />
+                    </button>
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => handleNewSection()}
+                    >
+                      <Plus className="size-6" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative flex flex-1 flex-col">
+                  <div className="flex flex-1 flex-col">
                     {enableEdit ? (
                       <textarea
                         name="input"
-                        rows={16}
                         placeholder="Enter your text here..."
-                        className="placeholder:text-muted-foreground w-full flex-1 resize-none bg-transparent p-4 text-sm outline-none md:text-base"
+                        className="placeholder:text-muted-foreground size-full flex-1 resize-none bg-transparent p-4 text-sm outline-none lg:text-base"
                         value={loadingText ? loadingText : text}
                         onChange={(e) => setText(e.target.value)}
                       />
                     ) : (
-                      <div className="h-full overflow-auto p-4">
+                      <div className="size-full flex-1 overflow-y-auto p-4">
                         {result &&
                           result?.sentences?.map((item, index) => (
                             <Fragment key={index}>
@@ -419,58 +452,94 @@ const AiDetectorContentSection = () => {
                     )}
                   </div>
 
-                  {!text && !share_id ? (
-                    <div className="absolute right-4 bottom-6 left-4 mx-auto flex items-center justify-center">
-                      <InitialInputActions
-                        setInput={(text) => {
-                          setText(text);
-                        }}
-                        showPaste={true}
-                        showInsertDocument={true}
-                      />
+                  {!text && !share_id && (
+                    <div className="absolute right-4 bottom-6 left-4 mx-auto flex flex-col items-center justify-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {1024 >= width && !result && (
+                          <>
+                            <button
+                              className="bg-background flex h-8 items-center gap-2 rounded-md border px-2 hover:cursor-pointer"
+                              onClick={() => setOpenSampleDrawer(true)}
+                            >
+                              <Image
+                                width={20}
+                                height={20}
+                                src="/tools/sample.svg"
+                                alt="sample"
+                              />
+                              <span className="text-sm">Sample Text</span>
+                            </button>
+                            <span>Or</span>
+                          </>
+                        )}
+                        <InitialInputActions
+                          className={""}
+                          setInput={(text) => {
+                            setText(text);
+                          }}
+                          showPaste={true}
+                          showInsertDocument={true}
+                        />
+                      </div>
                     </div>
-                  ) : null}
+                  )}
                 </div>
 
-                {text ? (
-                  <div className="border-border border-t px-4">
-                    <WordCounter
-                      btnText={enableEdit ? "Scan" : "Edit"}
+                {text && (
+                  <div className="border-t">
+                    <InputActions
+                      className={"h-12 py-1"}
                       toolName="ai-detector"
-                      userInput={text}
-                      isLoading={isLoading}
-                      handleClearInput={handleClear}
-                      handleSubmit={handleSubmit}
                       userPackage={user?.package}
-                      sticky={0}
+                      isLoading={isLoading}
+                      input={text}
+                      setInput={setText}
+                      label={enableEdit ? "Scan" : "Edit"}
+                      onClear={handleClear}
+                      onSubmit={() => handleSubmit(text)}
                     />
                   </div>
-                ) : null}
+                )}
 
-                {limit && !text ? (
-                  <UsesLimitBar text={text} min={minCharacters} limit={limit} />
-                ) : null}
+                {limit && !text && (
+                  <div className="border-t">
+                    <UsesLimitBar
+                      className={"h-12 py-1"}
+                      text={text}
+                      min={minCharacters}
+                      limit={limit}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Right Section */}
-            <div className="bg-card border-border text-card-foreground relative self-stretch border">
-              <div className="flex h-full min-h-60 flex-col rounded-xl">
-                {result ? (
-                  <OutputResult
-                    handleOpen={() => setShowShareModal(true)}
-                    result={result}
-                    history={history}
-                  />
-                ) : (
-                  <SampleText
-                    handleSampleText={handleSampleText}
-                    setOpen={setOpenSampleDrawer}
-                    isDrawer={openSampleDrawer}
-                  />
-                )}
+            {(1024 >= width && result) || 1024 < width ? (
+              <div className="bg-card border-border text-card-foreground relative overflow-hidden rounded-lg border lg:self-stretch lg:rounded-l-none lg:border-l-0">
+                <div className="flex h-full max-h-[48rem] min-h-[28rem] flex-col rounded-xl xl:min-h-[36rem]">
+                  {result ? (
+                    <OutputResult
+                      handleOpen={() => setShowShareModal(true)}
+                      result={result}
+                      history={history}
+                    />
+                  ) : (
+                    <SampleText
+                      handleSampleText={handleSampleText}
+                      setOpen={setOpenSampleDrawer}
+                      isOpen={openSampleDrawer}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <SampleText
+                handleSampleText={handleSampleText}
+                setOpen={setOpenSampleDrawer}
+                isOpen={openSampleDrawer}
+              />
+            )}
           </div>
 
           {history?._id && (
