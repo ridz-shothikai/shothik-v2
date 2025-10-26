@@ -22,7 +22,7 @@ export default function NavMini({ isDarkMode }) {
         left: 0,
         top: 0,
         bottom: 0,
-        bgcolor: isDarkMode ? "#161C24" : "background.paper",
+        bgcolor: isDarkMode ? "#242526" : "background.paper",
         zIndex: (theme) => theme.zIndex.drawer,
       }}
     >

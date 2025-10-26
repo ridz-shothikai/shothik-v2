@@ -48,8 +48,8 @@ export default function Main({ children }) {
         position: "relative",
         backgroundColor:
           pathName === "/"
-            ? `${isDarkMode ? "#161C24" : "#FFF"}`
-            : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
+            ? `${isDarkMode ? "#2c2c2c" : "#FFF"}`
+            : `${isDarkMode ? "#2c2c2c" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
           // px: 2,

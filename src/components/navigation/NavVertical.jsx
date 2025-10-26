@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Drawer, Stack } from "@mui/material";
+import { Box, Drawer, Stack, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { NAV } from "../../config/config/nav";
 import navConfig from "../../config/config/navConfig";
@@ -16,12 +16,13 @@ import UserInfo from "./components/UserInfo";
 export default function NavVertical({ openNav, onCloseNav }) {
   const { user, accessToken } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
+  const theme = useTheme();
 
   return (
     <Box
       component="nav"
       sx={{
-        bgcolor: "background.paper",
+        bgcolor: theme.palette.mode === "dark" ? "#242526" : "background.paper",
         flexShrink: { sm: 0 },
         width: { sm: NAV.W_DASHBOARD },
       }}
@@ -41,7 +42,10 @@ export default function NavVertical({ openNav, onCloseNav }) {
               zIndex: isDesktop ? 1103 : 0,
               width: NAV.W_DASHBOARD,
               ...(isDesktop && {
-                bgcolor: "background.paper",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "#242526"
+                    : "background.paper",
                 borderRightStyle: "dashed",
               }),
             },
@@ -56,7 +60,13 @@ export default function NavVertical({ openNav, onCloseNav }) {
             justifyContent: "space-between",
           }}
         >
-          <Box sx={{ bgcolor: "background.paper", height: 1 }}>
+          <Box
+            sx={{
+              bgcolor:
+                theme.palette.mode === "dark" ? "#242526" : "background.paper",
+              height: 1,
+            }}
+          >
             <Stack
               spacing={3}
               sx={{

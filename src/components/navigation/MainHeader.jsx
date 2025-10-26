@@ -87,7 +87,10 @@ export default function MainHeader() {
             <Typography
               variant="h5"
               sx={{
-                color: theme.palette.text.primary,
+                color:
+                  theme.palette.mode === "dark"
+                    ? "#858481"
+                    : theme.palette.text.primary,
               }}
             >
               {title()}
@@ -152,7 +155,10 @@ export default function MainHeader() {
         boxShadow: "none",
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? "#242526"
+            : theme.palette.background.default,
         backdropFilter: "blur(6px)",
         transition: theme.transitions.create(["height"], {
           duration: theme.transitions.duration.shorter,
@@ -162,7 +168,10 @@ export default function MainHeader() {
           height: HEADER.H_DASHBOARD_DESKTOP,
           ...(isNavHorizontal && {
             width: 1,
-            bgcolor: theme.palette.background.default,
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "#242526"
+                : theme.palette.background.default,
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
             borderBottom: `dashed 1px ${theme.palette.divider}`,
           }),
@@ -176,7 +185,10 @@ export default function MainHeader() {
         sx={{
           height: 1,
           px: { lg: 3 },
-          bgcolor: theme.palette.background.default,
+          bgcolor:
+            theme.palette.mode === "dark"
+              ? "#242526"
+              : theme.palette.background.default,
           borderBottom:
             pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
         }}
