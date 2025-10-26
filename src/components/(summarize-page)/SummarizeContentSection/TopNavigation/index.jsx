@@ -1,6 +1,8 @@
-import { Box, Slider, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { Slider, Tab, Tabs } from "@mui/material";
 
 const TopNavigation = ({
+  className,
   selectedMode,
   setSelectedMode,
   modes,
@@ -9,22 +11,19 @@ const TopNavigation = ({
   setCurrentLength,
 }) => {
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      sx={{ mb: 1 }}
-      flexWrap="wrap"
-      rowGap={1}
+    <div
+      className={cn(
+        "flex h-12 flex-wrap items-center justify-between gap-2 px-4",
+        className,
+      )}
     >
-      <Box>
+      {/* Tabs */}
+      <div>
         <Tabs
           value={selectedMode}
           onChange={(_, value) => setSelectedMode(value)}
           sx={{
-            "& .MuiTabs-indicator": {
-              display: "none",
-            },
+            "& .MuiTabs-indicator": { display: "none" },
           }}
         >
           {modes.map((tab) => (
@@ -35,26 +34,18 @@ const TopNavigation = ({
               label={tab.name}
               sx={{
                 color: "text.secondary",
-                "&.Mui-selected": {
-                  color: "primary.main",
-                },
+                "&.Mui-selected": { color: "primary.main" },
               }}
             />
           ))}
         </Tabs>
-      </Box>
-      <Box
-        sx={{
-          display: { xs: "none", sm: "flex" },
-          alignItems: "center",
-          gap: 2,
-          mt: 2,
-          mr: 2,
-        }}
-      >
-        <Typography variant="subtitle2">Length:</Typography>
+      </div>
+
+      {/* Slider */}
+      <div className="hidden items-center gap-2 sm:flex">
+        <span className="text-sm font-medium">Length:</span>
         <Slider
-          style={{ width: "150px" }}
+          style={{ width: 150 }}
           aria-label="Length"
           getAriaValueText={(value) => LENGTH[value]}
           value={Object.keys(LENGTH).find(
@@ -68,21 +59,16 @@ const TopNavigation = ({
           valueLabelFormat={currentLength}
           onChange={(_, value) => setCurrentLength(LENGTH[value])}
           sx={{
-            mt: { xs: 2, sm: 0 },
             "& .MuiSlider-valueLabel": {
-              fontSize: "12px",
+              fontSize: 12,
               padding: "2px 6px",
               transform: "translateY(-21px)",
-              "&:before": {
-                width: "6px",
-                height: "6px",
-                bottom: "-0px",
-              },
+              "&:before": { width: 6, height: 6, bottom: 0 },
             },
           }}
         />
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 };
 

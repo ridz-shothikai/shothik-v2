@@ -2,10 +2,8 @@
 
 import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
-import UserActionInput from "@/components/tools/common/UserActionInput";
 import useDebounce from "@/hooks/useDebounce";
 import useLoadingText from "@/hooks/useLoadingText";
-import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
@@ -15,7 +13,6 @@ import {
 } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import BottomBar from "./BottomBar";
 import TopNavigation from "./TopNavigation";
 
 // Tiptap imports
@@ -26,6 +23,12 @@ import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { ChevronDown, ChevronUp } from "lucide-react";
+
+import ButtonInsertDocumentText from "@/components/buttons/ButtonInsertDocumentText";
+import useScreenSize from "@/hooks/ui/useScreenSize";
+import InitialInputActions from "./InitialInputActions";
+import InputActions from "./InputActions";
+import OutputActions from "./OutputActions";
 
 const modes = [
   {
@@ -127,10 +130,8 @@ const TiptapEditor = ({
       state.doc.descendants((node, pos) => {
         if (!node.isText) return;
 
-        const originalText = node.text;
-
         // Normalize text for matching (accents, case)
-        const normalizedText = originalText
+        const normalizedText = node.text
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
@@ -141,16 +142,13 @@ const TiptapEditor = ({
           .replace(/[\u0300-\u036f]/g, "");
 
         // Escape special regex characters
-        const escapedKeyword = normalizedKeyword.replace(
-          /[.*+?^${}()|[\]\\]/g,
-          "\\$&",
-        );
+        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const regex = new RegExp(escapedKeyword, "gi");
 
         let match;
-        while ((match = regex.exec(normalizedText)) !== null) {
+        while ((match = regex.exec(node.text)) !== null) {
           const start = pos + match.index;
-          const end = start + match[0].length; // <-- use matched substring length, not keyword.length
+          const end = start + keyword.length; // <-- use matched substring length, not keyword.length
 
           // Apply highlight mark
           tr.addMark(
@@ -188,8 +186,10 @@ const TiptapEditor = ({
 
         .ProseMirror {
           padding: 16px;
-          min-width: 100%;
-          min-height: 360px;
+          width: 100%;
+          height: 100%;
+          min-height: 0;
+          overflow-y: auto;
         }
         .ProseMirror:focus {
           outline: none;
@@ -214,18 +214,19 @@ const SummarizeContentSection = () => {
   const [currentLength, setCurrentLength] = useState(LENGTH[20]);
   const [outputContent, setOutputContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [userInput, setUserInput] = useState("");
+  const [text, setText] = useState("");
   const [keywords, setKeywords] = useState([]);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [isKeywordsLoading, setIsKeywordsLoading] = useState(false);
   const [isKeywordsOpen, setIsKeywordsOpen] = useState(false);
 
   const { user, accessToken } = useSelector((state) => state.auth);
-  const isMobile = useResponsive("down", "sm");
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const loadingText = useLoadingText(isLoading);
   const sampleText = trySamples.summarize.English;
+
+  const { width } = useScreenSize();
 
   const debouncedSelectedMode = useDebounce(selectedMode, 500);
   const debouncedCurrentLength = useDebounce(currentLength, 500);
@@ -239,11 +240,11 @@ const SummarizeContentSection = () => {
   }, []);
 
   // Debounced plain text for keyword extraction
-  const plainTextInput = useMemo(
-    () => extractTextFromHTML(userInput),
-    [userInput, extractTextFromHTML],
+  const plainText = useMemo(
+    () => extractTextFromHTML(text),
+    [text, extractTextFromHTML],
   );
-  const debouncedPlainText = useDebounce(plainTextInput, 1000);
+  const debouncedPlainText = useDebounce(plainText, 1000);
 
   // Fetch keywords when text changes
   useEffect(() => {
@@ -261,7 +262,7 @@ const SummarizeContentSection = () => {
 
   // Auto-submit when mode or length changes
   useEffect(() => {
-    if (userInput && userInput.trim() && !isLoading) {
+    if (text && text.trim() && !isLoading) {
       handleSubmit();
     }
   }, [debouncedSelectedMode, debouncedCurrentLength]);
@@ -348,7 +349,7 @@ const SummarizeContentSection = () => {
   );
 
   const handleSubmit = useCallback(async () => {
-    if (!userInput?.trim()) {
+    if (!text?.trim()) {
       enqueueSnackbar("Please enter some text to summarize", {
         variant: "warning",
       });
@@ -364,7 +365,7 @@ const SummarizeContentSection = () => {
       setIsLoading(true);
       setOutputContent("");
 
-      const textContent = extractTextFromHTML(userInput);
+      const textContent = extractTextFromHTML(text);
       const payload = {
         text: textContent,
         mode: debouncedSelectedMode,
@@ -390,7 +391,7 @@ const SummarizeContentSection = () => {
     }
   }, [
     accessToken,
-    userInput,
+    text,
     debouncedSelectedMode,
     debouncedCurrentLength,
     selectedKeywords,
@@ -401,7 +402,7 @@ const SummarizeContentSection = () => {
   ]);
 
   const handleInput = useCallback((content) => {
-    setUserInput(content);
+    setText(content);
   }, []);
 
   const handleOutput = useCallback((content) => {
@@ -409,7 +410,7 @@ const SummarizeContentSection = () => {
   }, []);
 
   const handleClear = useCallback(() => {
-    setUserInput("");
+    setText("");
     setOutputContent("");
     setKeywords([]);
     setSelectedKeywords([]);
@@ -445,146 +446,172 @@ const SummarizeContentSection = () => {
   }, [outputContent, selectedKeywords, extractTextFromHTML]);
 
   return (
-    <div>
-      <div className="bg-card overflow-visible rounded-lg border px-4">
+    <div className="py-6">
+      <div className="overflow-visible rounded-lg">
         {/* Top Navigation */}
-        <TopNavigation
-          LENGTH={LENGTH}
-          currentLength={currentLength}
-          modes={modes}
-          selectedMode={selectedMode}
-          setCurrentLength={setCurrentLength}
-          setSelectedMode={setSelectedMode}
-        />
+        <div className="bg-card rounded-t-lg border border-b-0">
+          <TopNavigation
+            LENGTH={LENGTH}
+            currentLength={currentLength}
+            modes={modes}
+            selectedMode={selectedMode}
+            setCurrentLength={setCurrentLength}
+            setSelectedMode={setSelectedMode}
+          />
+        </div>
 
-        <div className="grid grid-cols-1 gap-4 overflow-hidden md:grid-cols-2">
-          {/* Input Section */}
-          <div className="relative h-full self-stretch overflow-y-auto">
-            <div className="h-full rounded-md border">
-              <TiptapEditor
-                content={userInput}
-                onChange={handleInput}
-                placeholder="Input your text here..."
-                readOnly={false}
-                highlightedKeywords={selectedKeywords}
-              />
+        <div className="relative grid flex-1 grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-0">
+          {/* Left Section */}
+          <div className="bg-card border-border text-card-foreground relative rounded-b-lg border lg:self-stretch lg:rounded-r-none">
+            <div className="flex h-[28rem] flex-col rounded-xl xl:h-[36rem]">
+              <div className="relative flex max-h-full flex-1 flex-col">
+                <div className="relative flex-1">
+                  <TiptapEditor
+                    className="absolute inset-0"
+                    content={text}
+                    onChange={handleInput}
+                    placeholder="Input your text here..."
+                    readOnly={false}
+                    highlightedKeywords={selectedKeywords}
+                  />
+                </div>
 
-              {plainTextInput && plainTextInput?.length > 10 && (
-                <div className="bg-muted p-4">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold">
-                        Select keywords (up to 5)
-                      </p>
-                      <div
-                        className={cn("cursor-pointer", {
-                          hidden: !(keywords?.length > 0),
-                        })}
-                        onClick={() => setIsKeywordsOpen((prev) => !prev)}
-                      >
-                        {isKeywordsOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
+                {!text && (
+                  <div className="absolute top-1/2 left-1/2 mx-auto flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-2">
+                    <div className="flex flex-col items-center gap-2">
+                      <InitialInputActions
+                        className={"flex-nowrap"}
+                        setInput={(text) => {
+                          setText(text);
+                        }}
+                        sample={sampleText}
+                        showSample={true}
+                        showPaste={true}
+                        showInsertDocument={false}
+                      />
+                      <ButtonInsertDocumentText
+                        key="insert-document"
+                        onApply={(value) => setText(value)}
+                      />
+                    </div>
+                  </div>
+                )}
+                {text && plainText && plainText?.length > 10 && (
+                  <div className="bg-muted p-4">
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold">
+                          Select keywords (up to 5)
+                        </p>
+                        <div
+                          className={cn("cursor-pointer", {
+                            hidden: !(keywords?.length > 0),
+                          })}
+                          onClick={() => setIsKeywordsOpen((prev) => !prev)}
+                        >
+                          {isKeywordsOpen ? (
+                            <ChevronUp className="size-4" />
+                          ) : (
+                            <ChevronDown className="size-4" />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-2">
+                        {isKeywordsLoading && (
+                          <div className="text-primary text-xs">
+                            Loading keywords...
+                          </div>
+                        )}
+                        {!isKeywordsLoading &&
+                          keywords.length === 0 &&
+                          text && (
+                            <div className="text-muted-foreground text-xs">
+                              No keywords found
+                            </div>
+                          )}
+                        {!isKeywordsLoading && keywords?.length > 0 && (
+                          <div
+                            className={cn("flex max-h-29 flex-wrap gap-1", {
+                              "h-6.5 overflow-hidden": !isKeywordsOpen,
+                              "overflow-y-scroll": isKeywordsOpen,
+                            })}
+                          >
+                            {keywords.map((kw, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                className={`h-6 shrink-0 cursor-pointer rounded-full border px-3 text-xs transition-all hover:shadow-md ${
+                                  selectedKeywords.includes(kw)
+                                    ? "border-primary bg-primary/10 text-primary"
+                                    : "hover:border-primary/50 border-muted-foreground"
+                                }`}
+                                onClick={() => handleKeywordToggle(kw)}
+                              >
+                                <span className="capitalize">{kw}</span>
+                              </button>
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>
-
-                    <div className="mt-2">
-                      {isKeywordsLoading && (
-                        <div className="text-primary text-xs">
-                          Loading keywords...
-                        </div>
-                      )}
-                      {!isKeywordsLoading &&
-                        keywords.length === 0 &&
-                        userInput && (
-                          <div className="text-muted-foreground text-xs">
-                            No keywords found
-                          </div>
-                        )}
-                      {!isKeywordsLoading && keywords?.length > 0 && (
-                        <div
-                          className={cn("flex max-h-29 flex-wrap gap-1", {
-                            "h-6.5 overflow-hidden": !isKeywordsOpen,
-                            "overflow-y-scroll": isKeywordsOpen,
-                          })}
-                        >
-                          {keywords.map((kw, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              className={`h-6 shrink-0 cursor-pointer rounded-full border px-3 text-xs transition-all hover:shadow-md ${
-                                selectedKeywords.includes(kw)
-                                  ? "border-primary bg-primary/10 text-primary"
-                                  : "hover:border-primary/50 border-muted-foreground"
-                              }`}
-                              onClick={() => handleKeywordToggle(kw)}
-                              // disabled={
-                              //   !selectedKeywords.includes(kw) &&
-                              //   selectedKeywords.length >= 5
-                              // }
-                            >
-                              <span className="capitalize">{kw}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </div>
+                )}
+              </div>
+
+              {text && (
+                <div className="border-t">
+                  <InputActions
+                    className={"h-12 py-1"}
+                    toolName="summarize"
+                    userPackage={user?.package}
+                    isLoading={isLoading}
+                    input={text}
+                    setInput={setText}
+                    label={"Summarize"}
+                    onClear={handleClear}
+                    onSubmit={() => handleSubmit(text)}
+                  />
                 </div>
               )}
             </div>
-
-            {isMobile && (
-              <BottomBar
-                handleClear={handleClear}
-                handleSubmit={handleSubmit}
-                isLoading={isLoading}
-                outputContend={outputContent}
-                userInput={userInput}
-                userPackage={user?.package}
-                isMobile={isMobile}
-              />
-            )}
-
-            {!userInput && (
-              <UserActionInput
-                setUserInput={setUserInput}
-                isMobile={isMobile}
-                sampleText={sampleText}
-              />
-            )}
           </div>
 
-          {/* Output Section */}
-          {!userInput && isMobile ? null : (
-            <div className="h-full self-stretch overflow-y-auto pb-2 md:pb-0">
-              <div className="h-full rounded-md border">
-                <TiptapEditor
-                  className="h-full"
-                  content={isLoading ? `<p>${loadingText}</p>` : outputContent}
-                  onChange={handleOutput}
-                  placeholder="Summarized text will appear here..."
-                  readOnly={true}
-                  highlightedKeywords={matchingKeywords}
-                />
+          {/* Right Section */}
+
+          {((1024 >= width && outputContent) || 1024 < width) && (
+            <div className="bg-card border-border text-card-foreground relative overflow-hidden rounded-b-lg border lg:self-stretch lg:rounded-l-none lg:border-l-0">
+              <div className="flex h-[28rem] flex-col rounded-xl xl:h-[36rem]">
+                <div className="relative flex flex-1 flex-col">
+                  <div className="relative flex-1">
+                    <TiptapEditor
+                      className="absolute inset-0"
+                      content={
+                        isLoading ? `<p>${loadingText}</p>` : outputContent
+                      }
+                      onChange={handleOutput}
+                      placeholder="Summarized text will appear here..."
+                      readOnly={true}
+                      highlightedKeywords={matchingKeywords}
+                    />
+                  </div>
+                </div>
+
+                {outputContent && (
+                  <div className="border-t">
+                    <OutputActions
+                      className={"h-12 justify-center py-1 lg:justify-end"}
+                      input={text}
+                      showSentenceCount={true}
+                      showDownload={true}
+                      showCopy={true}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
-
-        {!isMobile && (
-          <BottomBar
-            handleClear={handleClear}
-            handleSubmit={handleSubmit}
-            isLoading={isLoading}
-            outputContend={outputContent}
-            userInput={userInput}
-            userPackage={user?.package}
-            isMobile={isMobile}
-          />
-        )}
       </div>
     </div>
   );

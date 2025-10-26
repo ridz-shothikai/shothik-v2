@@ -45,7 +45,7 @@ import EditorToolbar from "./EditorToolbar";
 import GrammarIssueCard from "./GrammarIssueCard";
 import GrammarSectionbar from "./GrammarSectionbar";
 import GrammarSidebar from "./GrammarSidebar";
-import InitialInputAction from "./InitialInputAction";
+import InitialInputActions from "./InitialInputActions";
 import LanguageMenu from "./LanguageMenu";
 
 // Utility: Group histories by period
@@ -70,9 +70,10 @@ const dataGroupsByPeriod = (histories = []) => {
 
     if (!acc[key]) acc[key] = [];
     acc?.[key]?.push({
-      _id: entry._id,
-      text: entry.text,
-      time: entry.timestamp,
+      ...(entry || {}),
+      _id: entry?._id,
+      text: entry?.text,
+      time: entry?.timestamp,
     });
     return acc;
   }, {});
@@ -263,19 +264,6 @@ const GrammarCheckerContentSection = () => {
   const debouncedText = useDebounce(text, 1500);
   const abortControllerRef = useRef(null);
 
-  // Clear function
-  const handleClear = useCallback(() => {
-    if (editor) {
-      editor?.commands?.clearContent();
-    }
-
-    dispatch(setScore(0));
-    dispatch(setScores([]));
-    dispatch(setText(""));
-    dispatch(setIssues([]));
-    dispatch(setSelectedIssue({}));
-  }, [editor, dispatch]);
-
   // Grammar check with debounce
   useEffect(() => {
     const preparedText = prepareText(debouncedText);
@@ -419,7 +407,10 @@ const GrammarCheckerContentSection = () => {
       });
 
     // 🧹 Remove all error marks after replacements
-    tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    if (!!state?.doc?.content?.size && !!state?.schema?.marks?.errorMark) {
+      tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    }
+
     tr.setMeta("addToHistory", true);
     editor.view.dispatch(tr);
 
@@ -472,6 +463,19 @@ const GrammarCheckerContentSection = () => {
   const handleIgnoreError = useCallback(() => {
     setAnchorEl(null);
   }, []);
+
+  // Clear function
+  const handleClear = useCallback(() => {
+    if (editor) {
+      editor?.commands?.clearContent();
+    }
+
+    dispatch(setScore(0));
+    dispatch(setScores([]));
+    dispatch(setText(""));
+    dispatch(setIssues([]));
+    dispatch(setSelectedIssue({}));
+  }, [editor, dispatch]);
 
   const handleCopy = useCallback(() => {
     if (!text) return;
@@ -574,7 +578,7 @@ const GrammarCheckerContentSection = () => {
     <>
       <div className="py-6">
         <div className="relative flex flex-col items-start gap-4 overflow-hidden lg:flex-row">
-          <div className="bg-card hidden rounded-md border p-4 px-3 lg:block">
+          <div className="bg-card hidden rounded-lg border p-4 px-3 lg:block">
             <div className="flex flex-col gap-6">
               <button onClick={() => dispatch(setIsSectionbarOpen(true))}>
                 <BookIcon className="size-5" />
@@ -585,7 +589,7 @@ const GrammarCheckerContentSection = () => {
             </div>
           </div>
           <div className="mx-auto flex w-full flex-1 flex-col lg:min-h-[calc(100vh-140px)]">
-            <div className="bg-card flex w-full items-center justify-between border border-b-0 lg:w-fit lg:rounded-t-2xl">
+            <div className="bg-card flex w-full items-center justify-between border border-b-0 lg:w-fit lg:rounded-t-lg">
               <LanguageMenu
                 isLoading={isCheckLoading}
                 setLanguage={(lang) => dispatch(setLanguage(lang))}
@@ -814,16 +818,16 @@ const GrammarCheckerContentSection = () => {
 
               {!text && (
                 <div className="absolute top-20 left-4">
-                  <InitialInputAction
+                  <InitialInputActions
                     setInput={(text) => {
                       if (editor) {
                         editor?.commands?.setContent(text);
                       }
                     }}
                     sample={sample}
-                    isSample={true}
-                    isPaste={true}
-                    isDocument={true}
+                    showSample={true}
+                    showPaste={true}
+                    showInsertDocument={true}
                   />
                 </div>
               )}

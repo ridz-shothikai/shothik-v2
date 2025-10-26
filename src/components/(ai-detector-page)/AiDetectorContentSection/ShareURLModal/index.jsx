@@ -1,4 +1,4 @@
-import ButtonCopy from "@/components/buttons/ButtonCopy";
+import ButtonCopyText from "@/components/buttons/ButtonCopyText";
 import { Close } from "@mui/icons-material";
 import {
   Box,
@@ -17,11 +17,13 @@ import {
   TwitterShareButton,
 } from "react-share";
 
-const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${content._id}`;
+const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
+  if (!history?._id) return null;
+
+  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${history._id}`;
   let outputContend = "";
 
-  content.sentences.forEach((item) => {
+  history?.result?.sentences.forEach((item) => {
     outputContend += ` ${item.sentence}`;
   });
 
@@ -47,7 +49,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
           fullWidth
           slotProps={{
             input: {
-              endAdornment: <ButtonCopy text={shareUrl} />,
+              endAdornment: <ButtonCopyText text={shareUrl} />,
             },
           }}
           sx={{

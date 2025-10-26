@@ -22,14 +22,17 @@ export default function Main({ children }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const containerWidth =
-    pathName === "/" ||
-    pathName === "/paraphrase" ||
-    pathName === "/grammar-checker"
-      ? "100%"
-      : pathName === "/humanize-gpt"
-        ? "100%"
-        : "xl";
+  const containerWidth = [
+    "/",
+    "/paraphrase",
+    "/grammar-checker",
+    "/humanize-gpt",
+    "/ai-detector",
+    "/plagiarism-checker",
+    "/summarize",
+  ].includes(pathName)
+    ? "100%"
+    : "xl";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
