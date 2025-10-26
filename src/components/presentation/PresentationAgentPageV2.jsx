@@ -2,8 +2,9 @@
 
 import { selectPresentation } from "@/redux/slice/presentationSlice";
 import { Box, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import usePresentationSocket from "../../hooks/usePresentationSocket";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 
@@ -12,37 +13,59 @@ export default function PresentationAgentPageV2({ presentationId }) {
   const presentationState = useSelector(selectPresentation);
   const theme = useTheme();
 
-  const [messages, setMessages] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const [connectionStatus, setConnectionStatus] = useState("Connecting...");
+  console.log(presentationState, "SLIDE DATA ON REDUX");
 
-  console.log(presentationState, "SLIDE DAATA ON REDUX");
+  const token = localStorage.getItem("accessToken");
+  const API_URL = process.env.NEXT_PUBLIC_API_URI_SLIDE;
 
-  const config = {
-    baseUrl: process.env.NEXT_PUBLIC_API_URI_SLIDE, // "https://03dbbfed1354.ngrok-free.app", // "https://17b9c083b988.ngrok-free.app",
-    statusCheckInterval: 15000, // Check status every 15 seconds
-    reconnectAttempts: 5,
-    reconnectDelay: 1000,
-    heartbeatTimeout: 30000,
-  };
+  // Start the presentation (moved to useEffect)
+  useEffect(() => {
+    const startPresentation = async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/start-presentation/${presentationId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        const data = await response.json();
+        console.log(data, "SUBSCRIBE RESPONSE FOR PRESENTATION");
+      } catch (error) {
+        console.log("Error starting presentation:", error);
+      }
+    };
 
-  // const presentation = useGetSlideDataByStream(config);
+    if (presentationId && token) {
+      startPresentation();
+    }
+  }, [presentationId, token, API_URL]);
 
-  // useEffect(() => {
-  //   if (presentationId) {
-  //     dispatch(setCurrentSlideId({ presentationId }));
-  //   }
-  // }, [presentationId, dispatch]);
+  // Callback to handle agent output messages
+  const handleAgentOutput = useCallback(
+    (message) => {
+      console.log("Processing agent_output:", message);
+    },
+    [dispatch],
+  );
+
+  // Initialize socket with the callback
+  const { subscribe } = usePresentationSocket(
+    presentationId,
+    token,
+    handleAgentOutput,
+  );
 
   return (
     <Box
       sx={{
         height: {
-          xs: "90dvh", // height for mobile screens (extra-small)
+          xs: "90dvh",
           lg: "calc(100dvh - 70px)",
         },
-        // bgcolor: "white",
-        // color: "#333",
         bgcolor: theme.palette.background.default,
         color: theme.palette.text.primary,
         display: "flex",

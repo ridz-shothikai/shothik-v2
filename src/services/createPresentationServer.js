@@ -1,5 +1,5 @@
 export async function createPresentationServer({ message, file_urls, token }) {
-  const api = `${process.env.NEXT_PUBLIC_API_URI_SLIDE}/create-presentation-sse`; // TODO: This needs to be redirected.
+  const api = `${process.env.NEXT_PUBLIC_API_URI_SLIDE}/create-presentation`; // TODO: This needs to be redirected.
   /**
    * api return expected: 
    {
@@ -25,13 +25,16 @@ export async function createPresentationServer({ message, file_urls, token }) {
 
     console.log(data, "CREATE PRESENTATION RESPONSE");
 
+    console.log("Create presentation response:", res.status, res.ok, res);
+
     if (!res.ok) {
       console.log(data.message || "Failed to create presentation");
     }
 
     return {
       success: true,
-      presentationId: data?.presentationId || data?.presentation_id,
+      presentationId:
+        data?.presentationId || data?.presentation_id || data?.p_id,
     };
   } catch (err) {
     console.error("Server action failed:", err);
