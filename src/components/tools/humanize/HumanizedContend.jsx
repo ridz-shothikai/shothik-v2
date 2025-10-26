@@ -28,6 +28,7 @@ import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
 import AlertDialogMessage from "./AlertDialogMessage";
+import AnimatedLoader from "./AnimatedLoader";
 import GPTsettings from "./GPTsettings";
 import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
@@ -465,9 +466,24 @@ const HumanizedContend = () => {
                     {outputContent[showIndex].text}
                   </Typography>
                 ) : (
-                  <Typography sx={{ color: "text.disabled" }}>
-                    {loadingText ? loadingText : "Humanized Contend"}
-                  </Typography>
+                  <>
+                    {isLoading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "100%",
+                        }}
+                      >
+                        <AnimatedLoader />
+                      </Box>
+                    ) : (
+                      <Typography sx={{ color: "text.disabled" }}>
+                        Humanized Contend
+                      </Typography>
+                    )}
+                  </>
                 )}
 
                 {showShalowAlert ? <AlertDialogMessage /> : null}
