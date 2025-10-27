@@ -19,6 +19,7 @@
 import {
   resetPresentationState,
   setCurrentSlideId,
+  setHistoryData,
   setStatus,
 } from "@/redux/slice/presentationSlice";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -122,7 +123,7 @@ export default function usePresentationOrchestrator(presentationId) {
    * Fetch presentation history/logs from API
    *
    * @param {string} pId - Presentation ID
-   * @returns {Promise<Object|null>} History data or null on error
+   * @returns {Promise<Object|null>} Parsed history data or null on error
    */
   const fetchPresentationHistory = useCallback(
     async (pId) => {
@@ -148,15 +149,39 @@ export default function usePresentationOrchestrator(presentationId) {
           throw new Error(`History API returned ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log("[Orchestrator] History data received:", data);
+        const rawData = await response.json();
+        console.log("[Orchestrator] Raw history data received:", rawData);
 
-        // TODO: Process and format history data in future iteration
-        // For now, just log it as requested
+        // Import and use the history parser
+        const {
+          parseHistoryData,
+          validateHistoryData,
+          extractPresentationSummary,
+        } = await import(
+          "../../utils/presentation/presentationHistoryDataParser"
+        );
 
-        return data;
+        // Extract summary for logging
+        const summary = extractPresentationSummary(rawData);
+        console.log("[Orchestrator] Presentation summary:", summary);
+
+        // Parse the history data
+        const parsedData = parseHistoryData(rawData);
+
+        if (!parsedData || !validateHistoryData(parsedData)) {
+          throw new Error("Failed to parse history data");
+        }
+
+        console.log("[Orchestrator] History data parsed successfully:", {
+          logsCount: parsedData.logs.length,
+          slidesCount: parsedData.slides.length,
+          status: parsedData.status,
+          allData: parsedData,
+        });
+
+        return parsedData;
       } catch (error) {
-        console.error("[Orchestrator] Error fetching history:", error);
+        console.error("[Orchestrator] Error fetching/parsing history:", error);
         setError(error.message);
         return null;
       }
@@ -289,6 +314,7 @@ export default function usePresentationOrchestrator(presentationId) {
         console.log("[Orchestrator] History loaded successfully");
         // TODO: Process and dispatch history data to Redux in future iteration
         // dispatch(setPresentationState({ ...processedHistory, _replaceArrays: true }));
+        dispatch(setHistoryData(historyData));
       }
 
       setHookStatus(HOOK_STATUS.READY);
@@ -369,7 +395,7 @@ export default function usePresentationOrchestrator(presentationId) {
 
         default:
           console.warn(`[Orchestrator] Unknown status: ${status}`);
-          handleFailedStatus(p_id, `Unknown status: ${status}`); // even if data is failed we need to fetch history and then set the state as failed. History must be fetched to show the error logs / previous data.
+          handleFailedStatus(p_id, `Unknown status: ${status}`);
       }
     },
     [

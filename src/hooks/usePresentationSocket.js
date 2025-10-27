@@ -20,7 +20,7 @@ import {
   parseAgentOutput,
   parseConnectedEvent,
   parseTerminalEvent,
-} from "@/utils/presentationDataParser";
+} from "@/utils/presentation/presentationDataParser";
 import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";

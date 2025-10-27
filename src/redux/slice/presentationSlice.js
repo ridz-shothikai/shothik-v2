@@ -45,6 +45,36 @@ const presentationSlice = createSlice({
   initialState,
   reducers: {
     /**
+     * Add history data (logs + slides) when loading past presentations
+     */
+    setHistoryData(state, action) {
+      const { logs, slides, status, title, totalSlides } = action.payload;
+
+      console.log("[Redux] Setting history data:", action.payload);
+
+      if (Array.isArray(logs)) {
+        state.logs = logs;
+      }
+
+      if (Array.isArray(slides)) {
+        state.slides = slides;
+      }
+
+      if (status) {
+        state.status = status;
+        state.presentationStatus = status;
+      }
+
+      if (title) {
+        state.title = title;
+      }
+
+      if (totalSlides) {
+        state.totalSlides = totalSlides;
+      }
+    },
+
+    /**
      * Set session data from "connected" event
      */
     setSessionData(state, action) {
@@ -420,6 +450,7 @@ export const {
   setPresentationState,
   resetPresentationState,
   setCurrentSlideId,
+  setHistoryData,
 } = presentationSlice.actions;
 
 // Selectors
