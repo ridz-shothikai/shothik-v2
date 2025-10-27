@@ -264,9 +264,43 @@ export default function usePresentationOrchestrator(presentationId) {
    * @param {string} pId - Presentation ID
    */
   const handleProcessingStatus = useCallback(
-    (pId) => {
+    async (pId) => {
       console.log("[Orchestrator] 🔄 Handling PROCESSING status");
+      console.log("[Orchestrator] Step 1: Loading existing history first...");
 
+      setHookStatus(HOOK_STATUS.LOADING_HISTORY);
+
+      dispatch(
+        setStatus({
+          status: "loading_history",
+          presentationStatus: PRESENTATION_STATUS.PROCESSING,
+        }),
+      );
+
+      dispatch(setCurrentSlideId({ presentationId: pId }));
+
+      // STEP 1: Fetch and load historical data first
+      const historyData = await fetchPresentationHistory(pId);
+
+      if (historyData) {
+        console.log("[Orchestrator] ✅ History loaded successfully:", {
+          logs: historyData.logs.length,
+          slides: historyData.slides.length,
+        });
+
+        // Load history into Redux
+        dispatch(setHistoryData(historyData));
+
+        console.log(
+          "[Orchestrator] Step 2: Now establishing socket connection for real-time updates...",
+        );
+      } else {
+        console.warn(
+          "[Orchestrator] ⚠️ Could not load history, proceeding with socket anyway",
+        );
+      }
+
+      // STEP 2: Now transition to streaming mode for real-time updates
       setHookStatus(HOOK_STATUS.STREAMING);
 
       dispatch(
@@ -276,14 +310,11 @@ export default function usePresentationOrchestrator(presentationId) {
         }),
       );
 
-      dispatch(setCurrentSlideId({ presentationId: pId }));
-
       // Socket will automatically connect via usePresentationSocket
-      console.log(
-        "[Orchestrator] Socket connection building for processing presentation",
-      );
+      // because currentStatusRef.current is now PROCESSING
+      console.log("[Orchestrator] ✅ Ready for real-time socket updates");
     },
-    [dispatch],
+    [dispatch, fetchPresentationHistory],
   );
 
   /**

@@ -104,17 +104,51 @@ const presentationSlice = createSlice({
         id: logEntry.id,
       });
 
-      // Check for duplicate
-      const exists = state.logs.some((log) => log.id === logEntry.id);
-      if (!exists) {
+      // Enhanced duplicate checking
+      const isDuplicate = state.logs.some((log) => {
+        // Check by ID
+        if (log.id === logEntry.id) {
+          console.log("[Redux] Duplicate detected by ID:", logEntry.id);
+          return true;
+        }
+
+        // Check by author + timestamp for socket events
+        if (
+          log.author === logEntry.author &&
+          log.timestamp === logEntry.timestamp
+        ) {
+          console.log("[Redux] Duplicate detected by author+timestamp:", {
+            author: logEntry.author,
+            timestamp: logEntry.timestamp,
+          });
+          return true;
+        }
+
+        // Special check for browser workers (by author only, since they update incrementally)
+        if (
+          log.author?.startsWith("browser_worker_") &&
+          log.author === logEntry.author
+        ) {
+          console.log(
+            "[Redux] Browser worker already exists, will update:",
+            log.author,
+          );
+          // Don't treat as duplicate here - let updateLog handle it
+          return false;
+        }
+
+        return false;
+      });
+
+      if (!isDuplicate) {
         state.logs.push(logEntry);
-        console.log("[Redux] Log added, total logs:", state.logs.length);
+        console.log("[Redux] ✅ Log added, total logs:", state.logs.length);
 
         // Update derived state
         state.currentPhase = deriveCurrentPhase(state.logs, state.slides);
         state.completedPhases = deriveCompletedPhases(state.logs, state.slides);
       } else {
-        console.warn("[Redux] Duplicate log ignored:", logEntry.id);
+        console.log("[Redux] ⏭️ Duplicate log ignored:", logEntry.id);
       }
     },
 
@@ -124,20 +158,52 @@ const presentationSlice = createSlice({
     updateLog(state, action) {
       const { logIndex, logEntry } = action.payload;
 
-      console.log("[Redux] Updating log at index:", logIndex);
+      console.log("[Redux] Updating log at index:", logIndex, {
+        author: logEntry.author,
+        hasLinks: !!logEntry.links,
+        hasSummary: !!logEntry.summary,
+      });
 
       if (logIndex >= 0 && logIndex < state.logs.length) {
-        state.logs[logIndex] = logEntry;
-        console.log("[Redux] Log updated:", {
-          author: logEntry.author,
-          linksCount: logEntry.links?.length,
-        });
+        const existingLog = state.logs[logIndex];
+
+        // Smart merge for browser workers - don't lose existing data
+        if (existingLog.author?.startsWith("browser_worker_")) {
+          const mergedLog = {
+            ...existingLog,
+            ...logEntry,
+            // Merge links arrays (avoid duplicates)
+            links: [
+              ...(existingLog.links || []),
+              ...(logEntry.links || []).filter(
+                (newLink) =>
+                  !existingLog.links?.some(
+                    (existingLink) => existingLink.url === newLink.url,
+                  ),
+              ),
+            ],
+            // Keep summary if already exists (don't overwrite with null)
+            summary: logEntry.summary || existingLog.summary,
+          };
+
+          state.logs[logIndex] = mergedLog;
+          console.log("[Redux] ✅ Browser worker log merged:", {
+            author: mergedLog.author,
+            linksCount: mergedLog.links?.length,
+            hasSummary: !!mergedLog.summary,
+          });
+        } else {
+          state.logs[logIndex] = logEntry;
+          console.log("[Redux] ✅ Log updated:", {
+            author: logEntry.author,
+          });
+        }
 
         // Update derived state
         state.currentPhase = deriveCurrentPhase(state.logs, state.slides);
         state.completedPhases = deriveCompletedPhases(state.logs, state.slides);
       } else {
-        console.error("[Redux] Invalid log index for update:", logIndex);
+        console.error("[Redux] ❌ Invalid log index for update:", logIndex);
       }
     },
 
@@ -170,53 +236,85 @@ const presentationSlice = createSlice({
       });
 
       if (type === "update") {
-        // Update existing slide
         if (
           slideIndex !== undefined &&
           slideIndex >= 0 &&
           slideIndex < state.slides.length
         ) {
+          const existingSlide = state.slides[slideIndex];
+
           console.log("[Redux] Updating existing slide at index:", slideIndex);
-          console.log("[Redux] Before:", {
-            thinking: !!state.slides[slideIndex].thinking,
-            html: !!state.slides[slideIndex].htmlContent,
+          console.log("[Redux] Before update:", {
+            thinking: !!existingSlide.thinking,
+            html: !!existingSlide.htmlContent,
           });
 
-          state.slides[slideIndex] = slideEntry;
+          // Smart merge - don't overwrite existing data with null/undefined
+          const mergedSlide = {
+            ...existingSlide,
+            thinking: slideEntry.thinking || existingSlide.thinking,
+            htmlContent: slideEntry.htmlContent || existingSlide.htmlContent,
+            lastUpdated: slideEntry.lastUpdated || new Date().toISOString(),
+            // Recalculate completion status
+            isComplete: !!(
+              (slideEntry.thinking || existingSlide.thinking) &&
+              (slideEntry.htmlContent || existingSlide.htmlContent)
+            ),
+          };
 
-          console.log("[Redux] After:", {
-            thinking: !!state.slides[slideIndex].thinking,
-            html: !!state.slides[slideIndex].htmlContent,
+          state.slides[slideIndex] = mergedSlide;
+
+          console.log("[Redux] After update:", {
+            thinking: !!mergedSlide.thinking,
+            html: !!mergedSlide.htmlContent,
+            complete: mergedSlide.isComplete,
           });
         } else {
-          console.error("[Redux] Invalid slideIndex for update:", slideIndex);
+          console.error(
+            "[Redux] ❌ Invalid slideIndex for update:",
+            slideIndex,
+          );
         }
       } else if (type === "create") {
-        // Add new slide
         console.log("[Redux] Creating new slide:", slideEntry.slideNumber);
 
-        // Check if slide already exists (shouldn't happen, but safety check)
+        // Check if slide already exists
         const existingIndex = state.slides.findIndex(
           (s) => s.slideNumber === slideEntry.slideNumber,
         );
 
         if (existingIndex !== -1) {
           console.warn(
-            "[Redux] Slide already exists, updating instead:",
+            "[Redux] ⚠️ Slide already exists (from history), merging instead:",
             slideEntry.slideNumber,
           );
-          state.slides[existingIndex] = slideEntry;
+
+          const existingSlide = state.slides[existingIndex];
+
+          // Merge new data with existing
+          state.slides[existingIndex] = {
+            ...existingSlide,
+            thinking: slideEntry.thinking || existingSlide.thinking,
+            htmlContent: slideEntry.htmlContent || existingSlide.htmlContent,
+            lastUpdated: slideEntry.lastUpdated || new Date().toISOString(),
+            isComplete: !!(
+              (slideEntry.thinking || existingSlide.thinking) &&
+              (slideEntry.htmlContent || existingSlide.htmlContent)
+            ),
+          };
+
+          console.log("[Redux] ✅ Merged with existing slide from history");
         } else {
+          // Truly new slide
           state.slides.push(slideEntry);
-          // Sort by slideNumber
           state.slides.sort((a, b) => a.slideNumber - b.slideNumber);
           console.log(
-            "[Redux] Slide added, total slides:",
+            "[Redux] ✅ New slide added, total:",
             state.slides.length,
           );
         }
       } else {
-        console.error("[Redux] Invalid update type:", type);
+        console.error("[Redux] ❌ Invalid update type:", type);
       }
 
       // Update derived state

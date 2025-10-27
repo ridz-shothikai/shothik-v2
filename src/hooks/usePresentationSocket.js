@@ -55,21 +55,59 @@ export default function usePresentationSocket(pId, token) {
       console.log("[Socket] Processing agent_output:", {
         author: message.author,
         type: message.type,
+        timestamp: message.timestamp,
       });
 
       try {
-        // Use ref to get current state
-        const parsed = parseAgentOutput(message, presentationStateRef.current);
+        const currentState = presentationStateRef.current;
 
-        console.log("[Socket] Parsed result:", parsed);
+        // Parse the message
+        const parsed = parseAgentOutput(message, currentState);
 
-        // Dispatch actions based on parsed type
+        console.log("[Socket] Parsed result:", {
+          type: parsed.type,
+          author:
+            parsed.data?.author ||
+            parsed.logEntry?.author ||
+            parsed.slideEntry?.author,
+        });
+
+        // Check for duplicates before dispatching
         switch (parsed.type) {
           case "log":
+            // Check if this log already exists in Redux (from history)
+            const logExists = currentState.logs?.some(
+              (log) =>
+                log.id === parsed.data.id ||
+                (log.author === parsed.data.author &&
+                  log.timestamp === parsed.data.timestamp),
+            );
+
+            if (logExists) {
+              console.log(
+                "[Socket] ⏭️ Skipping duplicate log:",
+                parsed.data.author,
+              );
+              break;
+            }
+
             dispatch(addLog(parsed.data));
             break;
 
           case "log_with_metadata":
+            // Check for duplicate
+            const metadataLogExists = currentState.logs?.some(
+              (log) =>
+                log.id === parsed.data.id ||
+                (log.author === parsed.data.author &&
+                  log.timestamp === parsed.data.timestamp),
+            );
+
+            if (metadataLogExists) {
+              console.log("[Socket] ⏭️ Skipping duplicate metadata log");
+              break;
+            }
+
             dispatch(addLog(parsed.data));
             if (parsed.metadata) {
               dispatch(setMetadata(parsed.metadata));
@@ -77,7 +115,7 @@ export default function usePresentationSocket(pId, token) {
             break;
 
           case "browser_worker":
-            // FIXED: Check updateType, not type
+            // Browser workers always update, so we process them
             if (parsed.updateType === "update") {
               console.log(
                 "[Socket] Updating browser worker log at index:",
@@ -90,11 +128,37 @@ export default function usePresentationSocket(pId, token) {
                 }),
               );
             } else if (parsed.updateType === "create") {
-              console.log(
-                "[Socket] Creating new browser worker log:",
-                parsed.logEntry.author,
+              // Check if this browser worker already exists (from history)
+              const workerExists = currentState.logs?.some(
+                (log) => log.author === parsed.logEntry.author,
               );
-              dispatch(addLog(parsed.logEntry));
+
+              if (workerExists) {
+                console.log(
+                  "[Socket] ⏭️ Browser worker already exists from history, will update incrementally:",
+                  parsed.logEntry.author,
+                );
+
+                // Find its index and update instead of creating
+                const existingIndex = currentState.logs.findIndex(
+                  (log) => log.author === parsed.logEntry.author,
+                );
+
+                if (existingIndex !== -1) {
+                  dispatch(
+                    updateLog({
+                      logIndex: existingIndex,
+                      logEntry: parsed.logEntry,
+                    }),
+                  );
+                }
+              } else {
+                console.log(
+                  "[Socket] Creating new browser worker log:",
+                  parsed.logEntry.author,
+                );
+                dispatch(addLog(parsed.logEntry));
+              }
             }
 
             if (parsed.isComplete) {
@@ -106,22 +170,48 @@ export default function usePresentationSocket(pId, token) {
             break;
 
           case "slide":
-            // FIXED: Check updateType properly
+            // Check if slide already exists (from history)
+            const slideExists = currentState.slides?.some(
+              (slide) => slide.slideNumber === parsed.slideEntry.slideNumber,
+            );
+
             console.log("[Socket] Processing slide:", {
               updateType: parsed.updateType,
               slideNumber: parsed.slideEntry.slideNumber,
               hasThinking: !!parsed.slideEntry.thinking,
               hasHtml: !!parsed.slideEntry.htmlContent,
               isComplete: parsed.slideEntry.isComplete,
+              existsInHistory: slideExists,
             });
 
-            dispatch(
-              updateSlide({
-                type: parsed.updateType, // 'create' or 'update'
-                slideIndex: parsed.slideIndex,
-                slideEntry: parsed.slideEntry,
-              }),
-            );
+            if (slideExists && parsed.updateType === "create") {
+              console.log(
+                "[Socket] ⚠️ Slide exists from history, forcing update instead of create:",
+                parsed.slideEntry.slideNumber,
+              );
+
+              // Find the existing slide index
+              const existingSlideIndex = currentState.slides.findIndex(
+                (slide) => slide.slideNumber === parsed.slideEntry.slideNumber,
+              );
+
+              dispatch(
+                updateSlide({
+                  type: "update", // Force update
+                  slideIndex: existingSlideIndex,
+                  slideEntry: parsed.slideEntry,
+                }),
+              );
+            } else {
+              // Normal flow - dispatch as parsed
+              dispatch(
+                updateSlide({
+                  type: parsed.updateType,
+                  slideIndex: parsed.slideIndex,
+                  slideEntry: parsed.slideEntry,
+                }),
+              );
+            }
 
             if (parsed.slideEntry.isComplete) {
               console.log(

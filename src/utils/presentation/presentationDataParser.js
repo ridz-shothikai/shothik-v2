@@ -401,3 +401,47 @@ export const parseTerminalEvent = (message) => {
     timestamp: message.timestamp || new Date().toISOString(),
   };
 };
+
+/**
+ * Check if a log entry already exists (for deduplication)
+ * @param {Object} newLog - New log entry to check
+ * @param {Array} existingLogs - Existing logs array
+ * @returns {boolean} True if log already exists
+ */
+const isLogDuplicate = (newLog, existingLogs) => {
+  // Check by ID first (most reliable)
+  if (newLog.id && existingLogs.some((log) => log.id === newLog.id)) {
+    return true;
+  }
+
+  // For browser workers and slides, check by author + timestamp
+  if (newLog.author && newLog.timestamp) {
+    return existingLogs.some(
+      (log) =>
+        log.author === newLog.author && log.timestamp === newLog.timestamp,
+    );
+  }
+
+  return false;
+};
+
+/**
+ * Check if a slide entry already exists (for deduplication)
+ * @param {Object} newSlide - New slide entry to check
+ * @param {Array} existingSlides - Existing slides array
+ * @returns {boolean} True if slide already exists
+ */
+const isSlideDuplicate = (newSlide, existingSlides) => {
+  // Check by ID first
+  if (newSlide.id && existingSlides.some((slide) => slide.id === newSlide.id)) {
+    return true;
+  }
+
+  // Check by slide number
+  return existingSlides.some(
+    (slide) => slide.slideNumber === newSlide.slideNumber,
+  );
+};
+
+// Export these for use in Redux
+export { isLogDuplicate, isSlideDuplicate };
