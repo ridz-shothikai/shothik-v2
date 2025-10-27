@@ -608,6 +608,11 @@ const GrammarCheckerContentSection = () => {
             <div className="relative flex h-full flex-1 flex-col">
               <div className="border-border bg-card flex h-full flex-1 flex-col overflow-hidden rounded-br-lg rounded-bl-lg border lg:rounded-tr-lg">
                 <style jsx global>{`
+                  .tiptap-content {
+                    background-color: transparent !important;
+                    color: currentColor !important;
+                  }
+
                   .ProseMirror {
                     padding: 16px;
                     min-width: 100%;
@@ -626,6 +631,7 @@ const GrammarCheckerContentSection = () => {
                     content: "Input your text here...";
                     color: hsl(var(--muted-foreground));
                   }
+
                   .error-highlight:hover {
                     background-color: #fee2e2 !important;
                   }

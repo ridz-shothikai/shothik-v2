@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Slider, Tab, Tabs } from "@mui/material";
+import { Slider } from "@mui/material";
 
 const TopNavigation = ({
   className,
@@ -13,39 +13,38 @@ const TopNavigation = ({
   return (
     <div
       className={cn(
-        "flex h-12 flex-wrap items-center justify-between gap-2 px-4",
+        "flex h-12 flex-row items-center justify-between gap-6 px-4 py-1",
         className,
       )}
     >
-      {/* Tabs */}
-      <div>
-        <Tabs
-          value={selectedMode}
-          onChange={(_, value) => setSelectedMode(value)}
-          sx={{
-            "& .MuiTabs-indicator": { display: "none" },
-          }}
-        >
-          {modes.map((tab) => (
-            <Tab
-              key={tab.name}
-              icon={tab.icon}
-              value={tab.name}
-              label={tab.name}
-              sx={{
-                color: "text.secondary",
-                "&.Mui-selected": { color: "primary.main" },
-              }}
-            />
-          ))}
-        </Tabs>
+      {/* Tailwind Tabs */}
+      <div className="flex flex-1 items-center gap-2 md:flex-auto md:gap-x-4">
+        {modes?.map((tab) => (
+          <button
+            key={tab.name}
+            onClick={() => setSelectedMode(tab.name)}
+            className={cn(
+              "flex shrink-0 cursor-pointer items-center gap-1 text-xs leading-none font-medium whitespace-nowrap md:text-sm",
+              {
+                "text-primary": selectedMode === tab.name,
+              },
+            )}
+          >
+            {tab?.icon && (
+              <span className="text-base leading-0 md:text-xl">{tab.icon}</span>
+            )}
+            <span className="leading-0">{tab.name}</span>
+          </button>
+        ))}
       </div>
 
       {/* Slider */}
-      <div className="hidden items-center gap-2 sm:flex">
-        <span className="text-sm font-medium">Length:</span>
+      <div className="flex max-w-xs flex-1 items-center gap-2 md:flex-auto">
+        <span className="hidden text-sm font-medium sm:inline-block">
+          Length:
+        </span>
         <Slider
-          style={{ width: 150 }}
+          style={{ width: "100%" }}
           aria-label="Length"
           getAriaValueText={(value) => LENGTH[value]}
           value={Object.keys(LENGTH).find(
@@ -58,14 +57,6 @@ const TopNavigation = ({
           valueLabelDisplay="on"
           valueLabelFormat={currentLength}
           onChange={(_, value) => setCurrentLength(LENGTH[value])}
-          sx={{
-            "& .MuiSlider-valueLabel": {
-              fontSize: 12,
-              padding: "2px 6px",
-              transform: "translateY(-21px)",
-              "&:before": { width: 6, height: 6, bottom: 0 },
-            },
-          }}
         />
       </div>
     </div>
