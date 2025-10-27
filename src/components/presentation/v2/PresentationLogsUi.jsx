@@ -2,13 +2,12 @@
 
 import useResponsive from "@/hooks/useResponsive";
 import { Box, Typography, useTheme } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InputArea from "../InputAreas";
 
 export default function PresentationLogsUi({ logs = [] }) {
-  console.log(logs, "LOGS");
   const theme = useTheme();
-  const scrollContainerRef = useRef();
+  const scrollContainerRef = useRef(null);
 
   const isMobile = useResponsive("down", "md");
   const [inputValue, setInputValue] = useState("");
@@ -18,90 +17,96 @@ export default function PresentationLogsUi({ logs = [] }) {
 
   const onSend = () => {};
 
+  // Auto-scroll to bottom when logs change
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    // small timeout to allow render
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [logs]);
+
   return (
-    <>
+    // Container: column flex so logs area can be flex:1 and input stays fixed at bottom
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%", // must inherit from parent (PresentationAgentPageV2 ensures that)
+        minHeight: 0, // allow children to shrink properly
+        bgcolor: theme.palette.background.default,
+      }}
+    >
+      {/* Scrollable logs area */}
       <Box
+        ref={scrollContainerRef}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          maxHeight: "100%",
-          borderRight: `1px solid ${theme.palette.divider}`,
-          bgcolor: theme.palette.background.default,
-          overflow: "hidden",
+          flex: 1, // take remaining space
+          overflowY: "auto",
+          overflowX: "hidden",
+          minHeight: 0,
+          scrollBehavior: "smooth",
+          p: 3,
+          "&::-webkit-scrollbar": { width: "6px" },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
+            borderRadius: "3px",
+            "&:hover": {
+              background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
+            },
+          },
+          scrollbarWidth: "thin",
+          scrollbarColor:
+            theme.palette.mode === "dark"
+              ? "#555 transparent"
+              : "#c1c1c1 transparent",
         }}
       >
-        <Box
-          ref={scrollContainerRef}
-          sx={{
-            flex: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            minHeight: 0,
-            scrollBehavior: "smooth",
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
-              borderRadius: "3px",
-              "&:hover": {
-                background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
-              },
-            },
-            scrollbarWidth: "thin",
-            scrollbarColor:
-              theme.palette.mode === "dark"
-                ? "#555 transparent"
-                : "#c1c1c1 transparent",
-          }}
-        >
-          <Box
-            sx={{
-              p: 3,
-              minHeight: "100%",
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            {logs?.map((l) => {
-              return (
-                <Typography key={l.id} sx={{ py: 1 }}>
-                  logs
-                </Typography>
-              );
-            })}
-          </Box>
-
-          <Box
-            sx={{
-              borderTop: `1px solid ${theme.palette.divider}`,
-              bgcolor: theme.palette.background.paper,
-              maxHeight: isMobile ? "400px" : "300px",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}
-          >
-            <Box>
-              <InputArea
-                currentAgentType={"presentation"}
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-                onSend={onSend}
-                isLoading={isLoading}
-                setUploadedFiles={setUploadedFiles}
-                setFileUrls={setFileUrls}
-                uploadedFiles={uploadedFiles}
-                fileUrls={fileUrls}
-              />
-            </Box>
-          </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          {logs?.length ? (
+            logs.map((l) => (
+              <Typography
+                key={l.id ?? `${l.type}-${Math.random()}`}
+                sx={{ py: 1 }}
+              >
+                {l.text ?? "logs"} {/* render real text if available */}
+              </Typography>
+            ))
+          ) : (
+            <Typography sx={{ color: theme.palette.text.secondary }}>
+              No logs yet
+            </Typography>
+          )}
         </Box>
       </Box>
-    </>
+
+      {/* Input area pinned to bottom */}
+      <Box
+        sx={{
+          borderTop: `1px solid ${theme.palette.divider}`,
+          flexShrink: 0,
+          bgcolor:
+            theme.palette.mode === "light"
+              ? "white"
+              : theme.palette.background.paper,
+        }}
+      >
+        <InputArea
+          currentAgentType={"presentation"}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          onSend={onSend}
+          isLoading={isLoading}
+          setUploadedFiles={setUploadedFiles}
+          setFileUrls={setFileUrls}
+          uploadedFiles={uploadedFiles}
+          fileUrls={fileUrls}
+        />
+      </Box>
+    </Box>
   );
 }

@@ -53,11 +53,16 @@ export default function PresentationAgentPageV2({ presentationId }) {
   );
 
   // Initialize socket with the callback
-  const { subscribe } = usePresentationSocket(
+  const { subscribe, disconnect, isConnected } = usePresentationSocket(
     presentationId,
     token,
-    handleAgentOutput,
   );
+
+  // useEffect(() => {
+  //   return () => {
+  //     disconnect(); // Clean up the socket connection on unmount
+  //   };
+  // }, [disconnect]);
 
   return (
     <Box
@@ -73,16 +78,55 @@ export default function PresentationAgentPageV2({ presentationId }) {
         overflow: "hidden",
       }}
     >
-      <div className="grid !w-[100%] grid-cols-1 items-center gap-5 bg-gray-50 lg:grid-cols-2">
-        <PresentationLogsUi logs={presentationState.logs} />
-        <PreviewPanel
-          currentAgentType={"presentation"}
-          slidesData={presentationState.slides}
-          slidesLoading={false}
-          presentationId={presentationState.slideCurrentId}
-          title={presentationState.title}
-        />
-      </div>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          minHeight: 0,
+        }}
+      >
+        <Box
+          sx={{
+            flex: 1,
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gridTemplateRows: "1fr",
+            overflow: "hidden",
+            minHeight: 0,
+          }}
+        >
+          <Box
+            sx={{
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+              borderRight: `1px solid ${theme.palette.divider}`,
+              height: "100%",
+            }}
+          >
+            <PresentationLogsUi logs={presentationState.logs} />
+          </Box>
+          <Box
+            sx={{
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+            }}
+          >
+            <PreviewPanel
+              currentAgentType={"presentation"}
+              slidesData={presentationState.slides}
+              slidesLoading={false}
+              presentationId={presentationState.slideCurrentId}
+              title={presentationState.title}
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 }

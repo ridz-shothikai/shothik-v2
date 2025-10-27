@@ -44,10 +44,14 @@ export default function SlidePreview({
   const iframeRef = useRef(null);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // console.log(slide, "SLIDES DATA");
+
   // Copy to clipboard function
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(slide.body || slide.html_content);
+      await navigator.clipboard.writeText(
+        slide.body || slide.html_content || slide.htmlContent,
+      );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -420,7 +424,7 @@ export default function SlidePreview({
                 <iframe
                   ref={iframeRef}
                   srcDoc={createEnhancedIframeContent(
-                    slide.body || slide.html_content,
+                    slide.body || slide.html_content || slide.htmlContent,
                   )}
                   style={iframeStyle as React.CSSProperties}
                   title={`Slide ${slide.slide_index + 1}`}
@@ -512,7 +516,7 @@ export default function SlidePreview({
                 }}
               >
                 <code className="language-html">
-                  {slide.body || slide.html_content}
+                  {slide.body || slide.html_content || slide.htmlContent}
                 </code>
               </pre>
             </Box>
@@ -607,12 +611,14 @@ const parseSimpleMarkdown = (text) => {
 const EnhancedThinkingTab = ({ slide, dimensions }) => {
   const [processedContent, setProcessedContent] = useState("");
 
+  // console.log(slide, "THOUGHT SLIDE DATA");
+
   useEffect(() => {
-    if (slide?.thought) {
-      const parsed = parseSimpleMarkdown(slide.thought);
+    if (slide?.thinking) {
+      const parsed = parseSimpleMarkdown(slide.thinking);
       setProcessedContent(parsed);
     }
-  }, [slide?.thought]);
+  }, [slide.thinking]);
 
   return (
     <Box

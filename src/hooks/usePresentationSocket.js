@@ -1,50 +1,193 @@
-// hooks/usePresentationSocket.ts
+/**
+ * Presentation Socket Hook
+ *
+ * Manages WebSocket connection for presentation generation.
+ * Handles event parsing and Redux state updates.
+ *
+ * @module usePresentationSocket
+ */
+
+import {
+  addLog,
+  selectPresentation,
+  setMetadata,
+  setSessionData,
+  setStatus,
+  updateLog,
+  updateSlide,
+} from "@/redux/slice/presentationSlice";
+import {
+  parseAgentOutput,
+  parseConnectedEvent,
+  parseTerminalEvent,
+} from "@/utils/presentationDataParser";
 import { useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
-export default function usePresentationSocket(pId, token, onAgentOutput) {
+/**
+ * Custom hook for managing presentation WebSocket connection
+ *
+ * @param {string} pId - Presentation ID
+ * @param {string} token - Authentication token
+ * @returns {Object} Socket utilities and connection status
+ */
+export default function usePresentationSocket(pId, token) {
+  const dispatch = useDispatch();
   const socketRef = useRef(null);
   const messageBufferRef = useRef([]);
   const isProcessingRef = useRef(false);
 
-  // Process buffered messages
+  // IMPORTANT: Use ref to avoid stale closure issues
+  const presentationStateRef = useRef(null);
+  const presentation = useSelector(selectPresentation);
+
+  // Update ref whenever state changes (doesn't cause re-render)
+  useEffect(() => {
+    presentationStateRef.current = presentation;
+  }, [presentation]);
+
+  /**
+   * Process a single agent_output message
+   */
+  const processAgentOutputMessage = useCallback(
+    (message) => {
+      console.log("[Socket] Processing agent_output:", {
+        author: message.author,
+        type: message.type,
+      });
+
+      try {
+        // Use ref to get current state
+        const parsed = parseAgentOutput(message, presentationStateRef.current);
+
+        console.log("[Socket] Parsed result:", parsed);
+
+        // Dispatch actions based on parsed type
+        switch (parsed.type) {
+          case "log":
+            dispatch(addLog(parsed.data));
+            break;
+
+          case "log_with_metadata":
+            dispatch(addLog(parsed.data));
+            if (parsed.metadata) {
+              dispatch(setMetadata(parsed.metadata));
+            }
+            break;
+
+          case "browser_worker":
+            // FIXED: Check updateType, not type
+            if (parsed.updateType === "update") {
+              console.log(
+                "[Socket] Updating browser worker log at index:",
+                parsed.logIndex,
+              );
+              dispatch(
+                updateLog({
+                  logIndex: parsed.logIndex,
+                  logEntry: parsed.logEntry,
+                }),
+              );
+            } else if (parsed.updateType === "create") {
+              console.log(
+                "[Socket] Creating new browser worker log:",
+                parsed.logEntry.author,
+              );
+              dispatch(addLog(parsed.logEntry));
+            }
+
+            if (parsed.isComplete) {
+              console.log(
+                "[Socket] ✅ Browser worker completed:",
+                parsed.logEntry.author,
+              );
+            }
+            break;
+
+          case "slide":
+            // FIXED: Check updateType properly
+            console.log("[Socket] Processing slide:", {
+              updateType: parsed.updateType,
+              slideNumber: parsed.slideEntry.slideNumber,
+              hasThinking: !!parsed.slideEntry.thinking,
+              hasHtml: !!parsed.slideEntry.htmlContent,
+              isComplete: parsed.slideEntry.isComplete,
+            });
+
+            dispatch(
+              updateSlide({
+                type: parsed.updateType, // 'create' or 'update'
+                slideIndex: parsed.slideIndex,
+                slideEntry: parsed.slideEntry,
+              }),
+            );
+
+            if (parsed.slideEntry.isComplete) {
+              console.log(
+                "[Socket] ✅ Slide completed:",
+                parsed.slideEntry.slideNumber,
+              );
+            }
+            break;
+
+          default:
+            console.warn("[Socket] Unknown parsed type:", parsed.type);
+        }
+      } catch (error) {
+        console.error("[Socket] Error processing agent_output:", error);
+        console.error("[Socket] Message that caused error:", message);
+      }
+    },
+    [dispatch],
+  );
+
+  /**
+   * Process buffered messages sequentially
+   * FIXED: Stable dependencies
+   */
   const processBuffer = useCallback(() => {
-    if (isProcessingRef.current || messageBufferRef.current.length === 0)
+    if (isProcessingRef.current || messageBufferRef.current.length === 0) {
       return;
+    }
 
     isProcessingRef.current = true;
 
+    console.log(
+      `[Socket] Processing ${messageBufferRef.current.length} buffered messages`,
+    );
+
     while (messageBufferRef.current.length > 0) {
       const message = messageBufferRef.current.shift();
-      console.log("📦 Processing buffered message:", message);
 
-      if (onAgentOutput) {
-        try {
-          onAgentOutput(message);
-        } catch (error) {
-          console.error("❌ Error processing message:", error);
-        }
+      try {
+        processAgentOutputMessage(message);
+      } catch (error) {
+        console.error("[Socket] Error processing buffered message:", error);
       }
     }
 
     isProcessingRef.current = false;
-  }, [onAgentOutput]);
+  }, [processAgentOutputMessage]); // Now stable since processAgentOutputMessage is stable
 
+  /**
+   * Initialize WebSocket connection
+   * FIXED: Stable dependencies - only pId, token, dispatch
+   */
   useEffect(() => {
     if (!pId || !token) {
-      console.warn("⚠️ Missing pId or token");
+      console.warn("[Socket] ⚠️ Missing pId or token");
       return;
     }
 
     const base = process.env.NEXT_PUBLIC_API_URI_SLIDE;
     if (!base) {
-      console.error("❌ NEXT_PUBLIC_API_URI_SLIDE not configured");
+      console.error("[Socket] ❌ NEXT_PUBLIC_API_URI_SLIDE not configured");
       return;
     }
 
-    console.log("🔌 Creating socket connection:", { pId, base });
+    console.log("[Socket] 🔌 Initializing NEW socket connection:", { pId });
 
-    // Create socket with proper configuration
     const socket = io(base, {
       transports: ["websocket", "polling"],
       autoConnect: false,
@@ -53,7 +196,7 @@ export default function usePresentationSocket(pId, token, onAgentOutput) {
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       timeout: 20000,
-      forceNew: true, // Force new connection
+      forceNew: true,
       query: {
         p_id: pId,
         token: token,
@@ -62,112 +205,80 @@ export default function usePresentationSocket(pId, token, onAgentOutput) {
 
     socketRef.current = socket;
 
-    // 🔥 CRITICAL: Register agent_output handler FIRST, before any other events
-    socket.onAny((eventName, ...args) => {
-      console.log(`🎯 [ANY EVENT] ${eventName}:`, args);
-    });
-
-    socket.on("agent_output", (message) => {
-      console.log("📨 !!!! AGENT OUTPUT RECEIVED !!!!", message);
-
-      // Buffer the message immediately
-      messageBufferRef.current.push(message);
-
-      // Process buffer
-      processBuffer();
-    });
-
-    // Other event handlers
+    // All event handlers here...
     socket.on("connect", () => {
-      console.log("✅ Socket CONNECTED:", socket.id);
-      console.log("   - Transport:", socket.io.engine.transport.name);
-      console.log("   - Query params:", { p_id: pId });
-
-      // Process any buffered messages after connection
-      setTimeout(processBuffer, 100);
-    });
-
-    socket.on("connect_error", (error) => {
-      console.error("❌ Connection error:", {
-        message: error.message,
-        type: error.type,
-        description: error.description,
-      });
+      console.log("[Socket] ✅ CONNECTED:", socket.id);
+      dispatch(setStatus({ status: "streaming" }));
+      setTimeout(() => processBuffer(), 100);
     });
 
     socket.on("connected", (payload) => {
-      console.log("🎉 Server welcome:", payload);
+      console.log("[Socket] 🎉 Server welcome:", payload);
+      const sessionData = parseConnectedEvent(payload);
+      dispatch(setSessionData(sessionData));
     });
 
-    socket.on("subscribed", (data) => {
-      console.log("✅ Subscribed:", data);
-    });
+    socket.on("agent_output", (message) => {
+      console.log("[Socket] 📨 AGENT OUTPUT:", message.author);
+      if (message.type === "terminal" || message.event === "completed") {
+        const terminalData = parseTerminalEvent(message);
+        dispatch(
+          setStatus({
+            status: terminalData.status,
+            presentationStatus: terminalData.status,
+          }),
+        );
 
-    socket.on("message", (data) => {
-      console.log("📬 Message:", data);
-    });
-
-    socket.on("error", (err) => {
-      console.error("❌ Socket error:", err);
-    });
-
-    socket.on("disconnect", (reason, details) => {
-      console.log("🔌 Disconnected:", reason, details);
-
-      // If server disconnects us, try manual reconnect
-      if (reason === "io server disconnect") {
-        console.log("🔄 Server kicked us, reconnecting...");
-        setTimeout(() => {
-          socket.connect();
-        }, 1000);
+        setTimeout(() => socket?.disconnect(), 1000);
+      } else {
+        messageBufferRef.current.push(message);
+        processBuffer();
       }
     });
 
-    socket.on("reconnect", (attemptNumber) => {
-      console.log(`🔄 Reconnected after ${attemptNumber} attempts`);
-    });
+    socket.on("message", (data) => {});
 
-    socket.on("reconnect_attempt", (attemptNumber) => {
-      console.log(`🔄 Reconnection attempt #${attemptNumber}`);
-    });
-
-    socket.on("reconnect_error", (error) => {
-      console.error("❌ Reconnection error:", error);
-    });
-
-    socket.on("reconnect_failed", () => {
-      console.error("❌ All reconnection attempts failed");
+    socket.on("disconnect", (reason) => {
+      console.log("[Socket] 🔌 Disconnected:", reason);
     });
 
     // Connect
-    console.log("🚀 Initiating connection...");
+    console.log("[Socket] 🚀 Connecting...");
     socket.connect();
 
     // Cleanup
     return () => {
-      console.log("🧹 Cleaning up socket");
+      console.log("[Socket] 🧹 Cleanup - disconnecting");
 
-      // Process any remaining buffered messages
-      processBuffer();
+      if (messageBufferRef.current.length > 0) {
+        processBuffer();
+      }
 
       socket.removeAllListeners();
       socket.disconnect();
       socketRef.current = null;
       messageBufferRef.current = [];
     };
-  }, [pId, token, onAgentOutput, processBuffer]);
+  }, [pId, token, dispatch]);
 
+  /**
+   * Subscribe to presentation updates
+   * @param {string} p_id - Presentation ID to subscribe to
+   */
   const subscribe = useCallback((p_id) => {
     const socket = socketRef.current;
     if (!socket?.connected) {
-      console.warn("⚠️ Cannot subscribe - socket not connected");
+      console.warn("[Socket] ⚠️ Cannot subscribe - socket not connected");
       return;
     }
 
-    console.log("📤 Subscribing to:", p_id);
+    console.log("[Socket] 📤 Subscribing to:", p_id);
     socket.emit("subscribe_presentation", { p_id });
   }, []);
 
+  /**
+   * Send ping to keep connection alive
+   */
   const sendPing = useCallback(() => {
     const socket = socketRef.current;
     if (!socket?.connected) return;
@@ -175,9 +286,21 @@ export default function usePresentationSocket(pId, token, onAgentOutput) {
     socket.emit("ping", { timestamp: new Date().toISOString() });
   }, []);
 
+  /**
+   * Manually disconnect socket
+   */
+  const disconnect = useCallback(() => {
+    const socket = socketRef.current;
+    if (socket) {
+      console.log("[Socket] 🔌 Manual disconnect");
+      socket.disconnect();
+    }
+  }, []);
+
   return {
     subscribe,
     sendPing,
+    disconnect,
     socketRef,
     isConnected: socketRef.current?.connected || false,
   };
