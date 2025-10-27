@@ -2,67 +2,50 @@
 
 import { selectPresentation } from "@/redux/slice/presentationSlice";
 import { Box, useTheme } from "@mui/material";
-import { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import usePresentationSocket from "../../hooks/usePresentationSocket";
+import { useSelector } from "react-redux";
+import usePresentationOrchestrator from "../../hooks/orchestrator/usePresentationOrchestrator";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 
 export default function PresentationAgentPageV2({ presentationId }) {
-  const dispatch = useDispatch();
   const presentationState = useSelector(selectPresentation);
   const theme = useTheme();
 
-  console.log(presentationState, "SLIDE DATA ON REDUX");
+  // Initialize orchestrator - handles all status-based logic
+  const { hookStatus, error, retry, currentStatus, socketConnected } =
+    usePresentationOrchestrator(presentationId);
 
-  const token = localStorage.getItem("accessToken");
-  const API_URL = process.env.NEXT_PUBLIC_API_URI_SLIDE;
+  console.log("[Page] Presentation state:", {
+    hookStatus,
+    currentStatus,
+    socketConnected,
+    logsCount: presentationState.logs.length,
+    slidesCount: presentationState.slides.length,
+    status: presentationState.status,
+  });
 
-  // Start the presentation (moved to useEffect)
-  useEffect(() => {
-    const startPresentation = async () => {
-      try {
-        const response = await fetch(
-          `${API_URL}/start-presentation/${presentationId}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-        const data = await response.json();
-        console.log(data, "SUBSCRIBE RESPONSE FOR PRESENTATION");
-      } catch (error) {
-        console.log("Error starting presentation:", error);
-      }
-    };
+  /**
+   * Render error state
+   */
+  if (hookStatus === "error" || presentationState.status === "failed") {
+  }
 
-    if (presentationId && token) {
-      startPresentation();
-    }
-  }, [presentationId, token, API_URL]);
+  /**
+   * Render loading state for initial status check
+   */
+  if (hookStatus === "checking" || hookStatus === "idle") {
+  }
 
-  // Callback to handle agent output messages
-  const handleAgentOutput = useCallback(
-    (message) => {
-      console.log("Processing agent_output:", message);
-    },
-    [dispatch],
-  );
+  /**
+   * Render loading state for history loading
+   */
+  if (hookStatus === "loading_history") {
+  }
 
-  // Initialize socket with the callback
-  const { subscribe, disconnect, isConnected } = usePresentationSocket(
-    presentationId,
-    token,
-  );
-
-  // useEffect(() => {
-  //   return () => {
-  //     disconnect(); // Clean up the socket connection on unmount
-  //   };
-  // }, [disconnect]);
+  /**
+   * Render main interface
+   * Shows when: streaming, ready, or has data to display
+   */
 
   return (
     <Box
