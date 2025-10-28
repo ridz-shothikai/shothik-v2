@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, forwardRef } from "react";
+import React, { useState, useMemo, useEffect, forwardRef, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -15,6 +15,8 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import {
   Refresh,
@@ -26,6 +28,10 @@ import {
   ArrowDropDown,
   TableChart,
   Description,
+  Edit,
+  DragIndicator,
+  Reorder,
+  OpenInNew,
 } from "@mui/icons-material";
 import { DataGrid, useRowSelection } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
@@ -38,9 +44,137 @@ import {
   setSheetStatus,
   switchToGeneration,
   switchToSavePoint,
+  setSheetData,
 } from "../../redux/slice/sheetSlice";
+import { useSaveEditedSheetDataMutation } from "../../redux/api/sheet/sheetApi";
 import SavePointsDropdown from "./SavePointsDropDown";
 import * as XLSX from "xlsx";
+
+// Editable Cell Component
+const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) => {
+  const [editValue, setEditValue] = useState(value || '');
+  const [isLocalEditing, setIsLocalEditing] = useState(false);
+
+  const handleSave = () => {
+    onValueChange(row, column, editValue);
+    setIsLocalEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditValue(value || '');
+    setIsLocalEditing(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSave();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCancel();
+    }
+  };
+
+  const handleDoubleClick = () => {
+    setIsLocalEditing(true);
+    setEditValue(value || '');
+  };
+
+  useEffect(() => {
+    setEditValue(value || '');
+  }, [value]);
+
+  if (isLocalEditing || isEditing) {
+    return (
+      <TextField
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        autoFocus
+        size="small"
+        variant="outlined"
+        sx={{
+          width: '100%',
+          '& .MuiOutlinedInput-root': {
+            padding: '4px 8px',
+            fontSize: '14px',
+            '& fieldset': {
+              borderColor: 'primary.main',
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px 8px',
+        cursor: 'pointer',
+        '&:hover': {
+          backgroundColor: 'action.hover',
+        },
+      }}
+      onDoubleClick={handleDoubleClick}
+    >
+      <Typography
+        variant="body2"
+        sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          width: '100%',
+        }}
+      >
+        {value || '—'}
+      </Typography>
+      <IconButton
+        size="small"
+        sx={{
+          opacity: 0,
+          ml: 1,
+          transition: 'opacity 0.2s',
+          '&:hover': {
+            opacity: 1,
+          },
+        }}
+        onClick={handleDoubleClick}
+      >
+        <Edit sx={{ fontSize: 14 }} />
+      </IconButton>
+    </Box>
+  );
+};
+
+// Drag Handle Component for Row Reordering
+const DragHandle = ({ row }) => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        cursor: 'grab',
+        '&:active': {
+          cursor: 'grabbing',
+        },
+        '&:hover': {
+          backgroundColor: 'action.hover',
+        },
+      }}
+    >
+      <DragIndicator sx={{ fontSize: 16, color: 'text.secondary' }} />
+    </Box>
+  );
+};
 
 // Status indicator component
 const StatusChip = ({ status, title, rowCount = 0 }) => {
@@ -186,7 +320,7 @@ const CustomRow = forwardRef(function CustomRow(props, ref) {
 });
 
 // Data processing utilities
-const processSheetData = (sheetData) => {
+const processSheetData = (sheetData, onCellValueChange, editingCell) => {
   if (!sheetData || !Array.isArray(sheetData)) {
     return { columns: [], rows: [] };
   }
@@ -207,83 +341,40 @@ const processSheetData = (sheetData) => {
 
   const headers = Array.from(allKeys);
 
-  // Create columns configuration
-  const columns = headers.map((header) => ({
-    key: header,
-    name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
-    width: Math.max(250, Math.min(350, header.length * 15)),
-    resizable: true,
-    sortable: true,
-    renderCell: (params) => {
-      const value = params.row[header];
-
-      // Handle different data types
-      if (value === null || value === undefined || value === "") {
-        return (
-          <Tooltip title="Empty value" arrow>
-            <span style={{ color: "#999", fontStyle: "italic" }}>—</span>
-          </Tooltip>
-        );
-      }
-
-      if (typeof value === "number") {
-        return (
-          <Tooltip title={`Number: ${value.toLocaleString()}`} arrow>
-            <span style={{ fontFamily: "monospace" }}>
-              {value.toLocaleString()}
-            </span>
-          </Tooltip>
-        );
-      }
-
-      if (typeof value === "boolean") {
-        return (
-          <Tooltip title={`Boolean: ${value}`} arrow>
-            <Chip
-              label={value ? "Yes" : "No"}
-              color={value ? "success" : "default"}
-              size="small"
-              variant="outlined"
-            />
-          </Tooltip>
-        );
-      }
-
-      // Handle dates
-      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
-        try {
-          const date = new Date(value);
-          if (!isNaN(date.getTime())) {
-            return (
-              <Tooltip title={`Date: ${value}`} arrow>
-                <span>{date.toLocaleDateString()}</span>
-              </Tooltip>
-            );
-          }
-        } catch (e) {
-          // Fall through to string handling
-        }
-      }
-
-      // Handle all text values with tooltip
-      const stringValue = String(value);
-      return (
-        <Tooltip title={stringValue} arrow>
-          <span
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              display: "block",
-              width: "100%",
-            }}
-          >
-            {stringValue}
-          </span>
-        </Tooltip>
-      );
+  // Add drag handle column first
+  const columns = [
+    {
+      key: "__drag_handle__",
+      name: "",
+      width: 40,
+      resizable: false,
+      sortable: false,
+      frozen: true,
+      renderCell: ({ row }) => <DragHandle row={row} />,
     },
-  }));
+    ...headers.map((header) => ({
+      key: header,
+      name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
+      width: Math.max(250, Math.min(350, header.length * 15)),
+      resizable: true,
+      sortable: true,
+      renderCell: (params) => {
+        const value = params.row[header];
+        const cellKey = `${params.row.id}-${header}`;
+        const isEditing = editingCell === cellKey;
+
+        return (
+          <EditableCell
+            value={value}
+            onValueChange={onCellValueChange}
+            row={params.row}
+            column={header}
+            isEditing={isEditing}
+          />
+        );
+      },
+    })),
+  ];
 
   // Process rows with proper IDs
   const rows = sheetData.map((row, index) => ({
@@ -297,6 +388,9 @@ const processSheetData = (sheetData) => {
 export default function SheetDataArea() {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
+  const [editingCell, setEditingCell] = useState(null);
+  const [columnOrder, setColumnOrder] = useState([]);
+  const [rowOrder, setRowOrder] = useState([]);
 
   const theme = useTheme();
 
@@ -309,10 +403,143 @@ export default function SheetDataArea() {
 
   const dispatch = useDispatch();
 
+  // API mutation for saving edited sheet data
+  const [saveEditedSheetData, { isLoading: isSavingData }] = useSaveEditedSheetDataMutation();
+
+  // Handle cell value changes
+  const handleCellValueChange = useCallback(async (row, column, newValue) => {
+    const updatedRows = sheetState.sheet.map((r, index) => {
+      if (index === row) {
+        return { ...r, [column]: newValue };
+      }
+      return r;
+    });
+    
+    // Update Redux store immediately for UI responsiveness
+    dispatch(setSheetData(updatedRows));
+    setEditingCell(null);
+
+    // Save to API in the background
+    try {
+      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
+      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
+        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
+        const conversationId = currentSavePoint.id.replace('savepoint-', '');
+        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
+
+        if (conversationId && chatId) {
+          await saveEditedSheetData({
+            chatId,
+            conversationId,
+            sheetData: updatedRows,
+            columnOrder,
+            rowOrder,
+            metadata: {
+              ...activeGeneration?.metadata,
+              lastEdited: new Date().toISOString(),
+              editedBy: 'user',
+              editType: 'cell_edit',
+              editedCell: { row, column, oldValue: sheetState.sheet[row]?.[column], newValue }
+            }
+          }).unwrap();
+          
+          console.log("Sheet data saved successfully to API");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save sheet data to API:", error);
+      // Optionally show a toast notification to the user
+    }
+  }, [sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData, columnOrder, rowOrder]);
+
+  // Handle column reordering
+  const handleColumnReorder = useCallback(async (sourceIndex, destinationIndex) => {
+    const newColumnOrder = [...columnOrder];
+    const [movedColumn] = newColumnOrder.splice(sourceIndex, 1);
+    newColumnOrder.splice(destinationIndex, 0, movedColumn);
+    setColumnOrder(newColumnOrder);
+
+    // Save to API in the background
+    try {
+      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
+      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
+        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
+        const conversationId = currentSavePoint.id.replace('savepoint-', '');
+        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
+
+        if (conversationId && chatId) {
+          await saveEditedSheetData({
+            chatId,
+            conversationId,
+            sheetData: sheetState.sheet,
+            columnOrder: newColumnOrder,
+            rowOrder,
+            metadata: {
+              ...activeGeneration?.metadata,
+              lastEdited: new Date().toISOString(),
+              editedBy: 'user',
+              editType: 'column_reorder',
+              reorderDetails: { sourceIndex, destinationIndex, movedColumn }
+            }
+          }).unwrap();
+          
+          console.log("Column reorder saved successfully to API");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save column reorder to API:", error);
+    }
+  }, [columnOrder, sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, saveEditedSheetData, rowOrder]);
+
+  // Handle row reordering
+  const handleRowReorder = useCallback(async (sourceIndex, destinationIndex) => {
+    const newRowOrder = [...rowOrder];
+    const [movedRow] = newRowOrder.splice(sourceIndex, 1);
+    newRowOrder.splice(destinationIndex, 0, movedRow);
+    setRowOrder(newRowOrder);
+    
+    // Update the actual data
+    const newSheetData = [...sheetState.sheet];
+    const [movedDataRow] = newSheetData.splice(sourceIndex, 1);
+    newSheetData.splice(destinationIndex, 0, movedDataRow);
+    dispatch(setSheetData(newSheetData));
+
+    // Save to API in the background
+    try {
+      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
+      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
+        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
+        const conversationId = currentSavePoint.id.replace('savepoint-', '');
+        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
+
+        if (conversationId && chatId) {
+          await saveEditedSheetData({
+            chatId,
+            conversationId,
+            sheetData: newSheetData,
+            columnOrder,
+            rowOrder: newRowOrder,
+            metadata: {
+              ...activeGeneration?.metadata,
+              lastEdited: new Date().toISOString(),
+              editedBy: 'user',
+              editType: 'row_reorder',
+              reorderDetails: { sourceIndex, destinationIndex, movedRowId: movedDataRow.id }
+            }
+          }).unwrap();
+          
+          console.log("Row reorder saved successfully to API");
+        }
+      }
+    } catch (error) {
+      console.error("Failed to save row reorder to API:", error);
+    }
+  }, [rowOrder, sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData, columnOrder]);
+
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
-    return processSheetData(sheetState.sheet);
-  }, [sheetState.sheet]);
+    return processSheetData(sheetState.sheet, handleCellValueChange, editingCell);
+  }, [sheetState.sheet, handleCellValueChange, editingCell]);
 
   // Check if we have data
   const hasData = rows.length > 0 && columns.length > 0;
@@ -447,6 +674,188 @@ export default function SheetDataArea() {
     }
   };
 
+  // Handle View in New Window
+  const handleViewInNewWindow = () => {
+    if (!hasData) return;
+    
+    // Get current sheet data
+    const exportData = prepareExportData();
+    if (!exportData) return;
+    
+    // Create HTML content for the new window
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Generated Sheet - ${currentSavePoint?.title || 'Sheet Data'}</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+          }
+          .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+          }
+          .header {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+            padding: 20px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+          }
+          .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+          }
+          .content {
+            padding: 20px;
+          }
+          .metadata {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+          }
+          .metadata-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+          }
+          .metadata-item:last-child {
+            margin-bottom: 0;
+          }
+          .metadata-label {
+            font-weight: 600;
+            color: #333;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          }
+          th {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 14px;
+          }
+          td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+          }
+          tr:hover {
+            background-color: #f8f9fa;
+          }
+          tr:last-child td {
+            border-bottom: none;
+          }
+          .footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #e9ecef;
+          }
+          @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>${currentSavePoint?.title || 'Generated Sheet Data'}</h1>
+            <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+          </div>
+          
+          <div class="content">
+            <div class="metadata">
+              <div class="metadata-item">
+                <span class="metadata-label">Total Rows:</span>
+                <span>${exportData.dataRows.length}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">Total Columns:</span>
+                <span>${exportData.headers.length}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">Generated By:</span>
+                <span>Shothik AI Sheet Generator</span>
+              </div>
+            </div>
+            
+            <table>
+              <thead>
+                <tr>
+                  ${exportData.headers.map(header => 
+                    `<th>${header}</th>`
+                  ).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${exportData.dataRows.map(row => `
+                  <tr>
+                    ${row.map(value => 
+                      `<td>${value || '—'}</td>`
+                    ).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="footer">
+            <p>This sheet was generated by Shothik AI • View in New Window Feature</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    // Open new window with the HTML content
+    const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+    
+    if (newWindow) {
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+      
+      // Focus the new window
+      newWindow.focus();
+      
+      console.log("Opened sheet data in new window");
+    } else {
+      // Fallback if popup is blocked
+      alert("Please allow popups for this site to view the sheet in a new window.");
+    }
+  };
+
   // Handle refresh - could trigger a re-generation
   const handleRefresh = () => {
     console.log("Refresh sheet data");
@@ -483,7 +892,7 @@ export default function SheetDataArea() {
     };
   }, []);
 
-  // Grid configuration with proper row renderer
+  // Grid configuration with enhanced features
   const gridProps = useMemo(
     () => ({
       columns,
@@ -508,12 +917,17 @@ export default function SheetDataArea() {
       onSortColumnsChange: (sortColumns) => {
         console.log("Sort columns changed:", sortColumns);
       },
+      // Enhanced features
+      onColumnsReorder: handleColumnReorder,
+      onRowsReorder: handleRowReorder,
+      enableColumnReordering: true,
+      enableRowReordering: true,
       // Use proper components prop instead of renderers
       components: {
         Row: CustomRow,
       },
     }),
-    [columns, rows, selectedRows, theme.palette],
+    [columns, rows, selectedRows, theme.palette, handleColumnReorder, handleRowReorder],
   );
 
   // Render generating state
@@ -607,6 +1021,89 @@ export default function SheetDataArea() {
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          {/* Edit Mode Toggle */}
+          <Tooltip title="Toggle edit mode - Double-click cells to edit">
+            <Button
+              variant="outlined"
+              startIcon={<Edit />}
+              size="small"
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                borderWidth: 2,
+                "&:hover": {
+                  borderWidth: 2,
+                  transform: "translateY(-1px)",
+                  boxShadow: 2,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Edit Mode
+            </Button>
+          </Tooltip>
+
+          {/* Reorder Info */}
+          {/* <Tooltip title="Drag the grip handles to reorder rows and columns">
+            <Button
+              variant="outlined"
+              startIcon={<Reorder />}
+              size="small"
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                borderWidth: 2,
+                "&:hover": {
+                  borderWidth: 2,
+                  transform: "translateY(-1px)",
+                  boxShadow: 2,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              Reorder
+            </Button>
+          </Tooltip> */}
+
+          {/* View in New Window Button */}
+          <Tooltip title="View generated sheet in new window">
+            <Button
+              variant="outlined"
+              startIcon={<OpenInNew />}
+              onClick={handleViewInNewWindow}
+              disabled={!hasData}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                px: { xs: 1, sm: 2 },
+                py: 1,
+                borderWidth: 2,
+                minWidth: { xs: 44, sm: "auto" },
+                mr: 1,
+                "& .MuiButton-startIcon": {
+                  marginRight: { xs: -0.5, sm: 1 },
+                },
+                "&:hover": {
+                  borderWidth: 2,
+                  transform: "translateY(-1px)",
+                  boxShadow: 2,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", sm: "inline" } }}
+              >
+                View in New Window
+              </Box>
+            </Button>
+          </Tooltip>
+
           {/* Export Button with Dropdown */}
           <Tooltip title="Export data">
             <Button
@@ -697,15 +1194,34 @@ export default function SheetDataArea() {
 
       {/* Footer */}
       <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: "divider" }}>
-        <Typography variant="caption" color="text.secondary">
-          Last updated:{" "}
-          {new Date().toLocaleTimeString(undefined, {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true,
-          })}
-        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+          <Typography variant="caption" color="text.secondary">
+            Last updated:{" "}
+            {new Date().toLocaleTimeString(undefined, {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
+            })}
+          </Typography>
+          
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Edit sx={{ fontSize: 12 }} />
+              Double-click to edit
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <DragIndicator sx={{ fontSize: 12 }} />
+              Drag to reorder
+            </Typography>
+            {isSavingData && (
+              <Typography variant="caption" color="primary.main" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <CircularProgress size={12} />
+                Saving changes...
+              </Typography>
+            )}
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

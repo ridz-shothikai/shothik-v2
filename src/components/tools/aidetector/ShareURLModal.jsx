@@ -7,7 +7,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -16,7 +15,7 @@ import {
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
-import CopyButon from "../../blog/details/CopyButon";
+import CopyButton from "../../blog/details/CopyButon";
 
 const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
   const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${content._id}`;
@@ -48,7 +47,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
           fullWidth
           slotProps={{
             input: {
-              endAdornment: <CopyButon text={shareUrl} />,
+              endAdornment: <CopyButton text={shareUrl} />,
             },
           }}
           sx={{

@@ -1,5 +1,5 @@
 // components/InputArea.jsx
-import { Close } from "@mui/icons-material";
+import { Close, MoreVert } from "@mui/icons-material";
 import SendIcon from "@mui/icons-material/Send";
 import {
   Alert,
@@ -8,6 +8,10 @@ import {
   Chip,
   Snackbar,
   Tooltip,
+  Menu,
+  MenuItem,
+  Modal,
+  Button,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -30,6 +34,7 @@ export default function InputArea({
   setFileUrls,
   uploadedFiles,
   fileUrls,
+  onNewChat, // Add onNewChat prop
 }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
@@ -43,8 +48,37 @@ export default function InputArea({
     severity: "error",
   });
 
+  // Three-dot menu state
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+
   const showToast = (message, severity = "error") => {
     setToast({ open: true, message, severity });
+  };
+
+  // Three-dot menu handlers
+  const handleThreeDotClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleThreeDotClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNewChatClick = () => {
+    setAnchorEl(null);
+    setShowNewChatModal(true);
+  };
+
+  const handleNewChatConfirm = () => {
+    setShowNewChatModal(false);
+    if (onNewChat) {
+      onNewChat();
+    }
+  };
+
+  const handleNewChatCancel = () => {
+    setShowNewChatModal(false);
   };
 
   // Updated click handler
@@ -381,20 +415,128 @@ export default function InputArea({
               Attach
             </Button> */}
 
-            <IconButton
-              onClick={() => onSend()}
-              disabled={!inputValue.trim() || isLoading || isUploading}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* Three-dot menu button */}
+              <IconButton
+                onClick={handleThreeDotClick}
+                sx={{
+                  color: "#666",
+                  "&:hover": { color: PRIMARY_GREEN },
+                }}
+              >
+                <MoreVert />
+              </IconButton>
+
+              <IconButton
+                onClick={() => onSend()}
+                disabled={!inputValue.trim() || isLoading || isUploading}
+                sx={{
+                  bgcolor: PRIMARY_GREEN,
+                  color: "white",
+                  width: 40,
+                  height: 40,
+                  "&:hover": { bgcolor: "#06A36D" },
+                  "&.Mui-disabled": { bgcolor: "#ddd", color: "#999" },
+                }}
+              >
+                <SendIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Three-dot menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleThreeDotClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+      >
+        <MenuItem onClick={handleNewChatClick}>
+          <Typography variant="body2">New Chat</Typography>
+        </MenuItem>
+      </Menu>
+
+      {/* New Chat Modal */}
+      <Box
+        sx={{
+          position: 'relative',
+          display: showNewChatModal ? 'block' : 'none',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -250, // Position with more bottom space above the input area
+            right: 20, // Align with the right side of the input area
+            width: 320,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+            border: '1px solid #e0e0e0',
+            p: 3,
+            zIndex: 1000, // Ensure it appears above other elements
+          }}
+        >
+          {/* Close button */}
+          <IconButton
+            onClick={handleNewChatCancel}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              color: '#999',
+              '&:hover': {
+                color: '#666',
+                bgcolor: 'rgba(0,0,0,0.04)',
+              },
+            }}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+          
+          <Typography id="new-chat-modal-title" variant="h6" component="h2" gutterBottom>
+            Start New Chat
+          </Typography>
+          <Typography id="new-chat-modal-description" variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            This will clear the current conversation and start fresh. Are you sure you want to continue?
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button
+              onClick={handleNewChatCancel}
+              variant="outlined"
               sx={{
-                bgcolor: PRIMARY_GREEN,
-                color: "white",
-                width: 40,
-                height: 40,
-                "&:hover": { bgcolor: "#06A36D" },
-                "&.Mui-disabled": { bgcolor: "#ddd", color: "#999" },
+                color: '#666',
+                borderColor: '#ddd',
+                '&:hover': {
+                  borderColor: '#999',
+                  bgcolor: 'rgba(0,0,0,0.04)',
+                },
               }}
             >
-              <SendIcon />
-            </IconButton>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleNewChatConfirm}
+              variant="contained"
+              sx={{
+                bgcolor: '#666',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: '#555',
+                },
+              }}
+            >
+              New Chat
+            </Button>
           </Box>
         </Box>
       </Box>

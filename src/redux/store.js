@@ -2,15 +2,20 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApiSlice } from "./api/auth/authApiSlice";
 import { blogApiSlice } from "./api/blog/blogApiSlice";
 import { humanizeHistoryApiSlice } from "./api/humanizeHistory/humanizeHistory";
+import { autoFreezeApiSlice } from "./api/paraphrase/autoFreeze";
+import { customModesApi } from "./api/paraphrase/customModesApi";
 import { presentationApiSlice } from "./api/presentation/presentationApi";
 import { pricingApiSlice } from "./api/pricing/pricingApi";
 import { researchChatApi } from "./api/research/researchChatApi";
 import { researchCoreApi } from "./api/research/researchCoreApi";
 import { shareApiSlice } from "./api/share/shareApi";
+import { shareAgentApiSlice } from "./api/shareAgent/shareAgentApi";
 import { sheetApiSlice } from "./api/sheet/sheetApi";
 import { toolsApiSlice } from "./api/tools/toolsApi";
+import aiDetectorReducer from "./slice/ai-detector-slice";
 import analyticsReducer from "./slice/analyticsSlice";
 import auth from "./slice/auth";
+import grammarCheckerReducer from "./slice/grammar-checker-slice";
 import inputOutput from "./slice/inputOutput";
 import paraphraseHistoryReducer from "./slice/paraphraseHistorySlice";
 import presentationSlice from "./slice/presentationSlice";
@@ -62,7 +67,10 @@ const store = configureStore({
     researchCore: researchCoreReducer,
     researchUi: researchUiSlice,
     paraphraseHistory: paraphraseHistoryReducer,
+    grammar_checker: grammarCheckerReducer,
+    ai_detector: aiDetectorReducer,
     [shareApiSlice.reducerPath]: shareApiSlice.reducer,
+    [shareAgentApiSlice.reducerPath]: shareAgentApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [blogApiSlice.reducerPath]: blogApiSlice.reducer,
     [pricingApiSlice.reducerPath]: pricingApiSlice.reducer,
@@ -72,6 +80,8 @@ const store = configureStore({
     [sheetApiSlice.reducerPath]: sheetApiSlice.reducer,
     [researchChatApi.reducerPath]: researchChatApi.reducer,
     [researchCoreApi.reducerPath]: researchCoreApi.reducer,
+    [autoFreezeApiSlice.reducerPath]: autoFreezeApiSlice.reducer,
+    [customModesApi.reducerPath]: customModesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -84,9 +94,12 @@ const store = configureStore({
       presentationApiSlice.middleware,
       humanizeHistoryApiSlice.middleware,
       shareApiSlice.middleware,
+      shareAgentApiSlice.middleware,
       sheetApiSlice.middleware,
       researchChatApi.middleware,
       researchCoreApi.middleware,
+      autoFreezeApiSlice.middleware,
+      customModesApi.middleware,
     ),
   devTools: process.env.NODE_ENV !== "production",
 });

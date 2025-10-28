@@ -1,18 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CircularProgress,
-  useTheme,
-} from "@mui/material";
-import SlidePreview from "./SlidePreview";
+import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
 import { Chart, registerables } from "chart.js";
-import AppLink from "../common/AppLink";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import AppLink from "../common/AppLink";
+import SlidePreview from "./SlidePreview";
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -53,6 +46,8 @@ export default function PreviewPanel({
     }));
   };
 
+  console.log("slides data", slidesData);
+
   return (
     <Box
       sx={{
@@ -71,6 +66,10 @@ export default function PreviewPanel({
           overflowY: "auto",
           overflowX: "hidden",
           minHeight: 0,
+          maxHeight: {
+            xs: "90dvh", // height for mobile screens (extra-small)
+            lg: "calc(100dvh - 70px)",
+          },
           "&::-webkit-scrollbar": { width: "8px" },
           "&::-webkit-scrollbar-track": {
             background: isDark ? "#2b2b2b" : "#f1f1f1",
@@ -154,14 +153,13 @@ export default function PreviewPanel({
 
                 {/* Scrollable Content */}
                 <Box sx={{ p: 3, pt: 0 }}>
-                  {slidesData?.data?.length === 0 &&
-                  slidesData.status !== "failed" ? (
+                  {slidesData?.length === 0 ? (
                     <Box
                       sx={{ display: "flex", justifyContent: "center", p: 4 }}
                     >
                       <CircularProgress />
                     </Box>
-                  ) : slidesData?.data?.length > 0 ? (
+                  ) : slidesData?.length > 0 ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -171,7 +169,7 @@ export default function PreviewPanel({
                         pt: 2,
                       }}
                     >
-                      {slidesData?.data.map((slide, index) => (
+                      {slidesData?.map((slide, index) => (
                         <SlidePreview
                           key={index}
                           slide={slide}
@@ -179,7 +177,7 @@ export default function PreviewPanel({
                           activeTab={slideTabs[index] || "preview"}
                           onTabChange={handleSlideTabChange}
                           totalSlides={
-                            slidesData?.totalSlide || slidesData?.data?.length
+                            slidesData?.length || slidesData?.data?.length
                           }
                           theme={theme}
                           isDarkMode={isDark}

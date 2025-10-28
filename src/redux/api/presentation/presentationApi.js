@@ -1,10 +1,29 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../config";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+const baseQuerySlide = fetchBaseQuery({
+  mode: "cors",
+  baseUrl: process.env.NEXT_PUBLIC_API_URI_SLIDE,
+  prepareHeaders: async (headers, { getState, endpoint }) => {
+    const token =
+      getState()?.auth?.accessToken || localStorage.getItem("accessToken");
+
+    const endpointsThatUploadFiles = ["uploadPresentationFiles", "uploadImage"];
+
+    // if (!endpointsThatUploadFiles.includes(endpoint)) {
+    //   headers.set("Content-Type", "application/json");
+    // }
+
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
 
 export const presentationApiSlice = createApi({
   reducerPath: "presentationApi",
   baseQuery: async (args, api, extraOptions) => {
-    let result = await baseQuery(args, api, extraOptions);
+    let result = await baseQuerySlide(args, api, extraOptions);
     // console.log(result, "Base Query Result");
     return result;
   },
@@ -38,7 +57,7 @@ export const presentationApiSlice = createApi({
 
     // Fetch all presentations
     fetchAllPresentations: builder.query({
-      query: () => "/presentation/get-slides",
+      query: () => "/presentations",
       providesTags: ["presentation"],
     }),
 
@@ -61,7 +80,7 @@ export const presentationApiSlice = createApi({
 
         // Add userId if provided
         if (userId) {
-          formData.append("userId", userId);
+          formData.append("user_id", userId);
         }
 
         // Log FormData contents for debugging
@@ -71,7 +90,7 @@ export const presentationApiSlice = createApi({
         }
 
         return {
-          url: "/presentation/upload-files",
+          url: "/upload-file",
           method: "POST",
           body: formData,
           // Don't set Content-Type header - let browser set it with boundary

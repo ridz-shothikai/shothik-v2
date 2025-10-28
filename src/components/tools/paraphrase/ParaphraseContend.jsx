@@ -30,12 +30,12 @@ import useSnackbar from "../../../hooks/useSnackbar";
 import useWordLimit from "../../../hooks/useWordLimit";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
+// import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
 import WordCounter from "../common/WordCounter";
 import LanguageMenu from "../grammar/LanguageMenu";
 import FileHistorySidebar from "./FileHistorySidebar";
 import ModeNavigation from "./ModeNavigation";
-import ModeNavigationForMobile from "./ModeNavigationForMobile";
 import Onboarding from "./Onboarding";
 import OutputBotomNavigation from "./OutputBotomNavigation";
 import ParaphraseOutput from "./ParaphraseOutput";
@@ -43,6 +43,8 @@ import UpdateComponent from "./UpdateComponent";
 import UserInputBox from "./UserInputBox";
 import VerticalMenu from "./VerticalMenu";
 
+import { useAutoFreeze } from "../../../hooks/useAutoFreeze";
+import useKeyboardShortcuts from "../../../hooks/useKeyboardShortcuts";
 import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
 import { setParaphraseValues } from "../../../redux/slice/inputOutput";
 import {
@@ -55,6 +57,8 @@ import {
   setIsFileHistoryLoading,
 } from "../../../redux/slice/paraphraseHistorySlice";
 import MultipleFileUpload from "../common/MultipleFileUpload";
+import AutoFreezeSettings from "./AutoFreezeSettings";
+import AutoParaphraseSettings from "./AutoParaphraseSettings";
 
 // Define the punctuation marks that require specific spacing rules.
 // This constant can be easily updated if more punctuation types need to be included.
@@ -118,6 +122,13 @@ const SYNONYMS = {
 const initialFrozenWords = new Set();
 const initialFrozenPhrase = new Set();
 
+// helper function to check if a mode is locked
+const isModeLockedForUser = (modeValue, userPackage) => {
+  const mode = modes.find((m) => m.value === modeValue);
+  if (!mode) return false;
+  return !mode.package.includes(userPackage || "free");
+};
+
 const ParaphraseContend = () => {
   const {
     paraphraseQuotations,
@@ -169,6 +180,7 @@ const ParaphraseContend = () => {
     dispatch(setActiveHistory({}));
     return setLanguageState(...args);
   };
+  // console.log(outputContend, "----------- OUTPUT CONTEND -----------");
   // const sampleText =
   //   trySamples.paraphrase[
   //     language && language.startsWith("English")
@@ -197,7 +209,7 @@ const ParaphraseContend = () => {
   const [socketId, setSocketId] = useState(null);
   const [paraphrased] = useParaphrasedMutation();
   const [eventId, setEventId] = useState(null);
-  const isMobile = useResponsive("down", "lg");
+  const isMobile = useResponsive("down", "md");
   const [result, setResult] = useState([]);
   const [historyResult, setHistoryResult] = useState([]);
 
@@ -229,6 +241,103 @@ const ParaphraseContend = () => {
     fileHistories,
   } = useSelector((state) => state.paraphraseHistory);
 
+  const paidUser =
+    user?.package === "pro_plan" ||
+    user?.package === "value_plan" ||
+    user?.package === "unlimited";
+
+  const { paraphraseOptions } = useSelector((state) => state.settings);
+
+  const {
+    autoFrozenTerms,
+    userDisabledTerms,
+    isDetecting: isAutoFreezeDetecting,
+    stats: autoFreezeStats,
+    disableTerm: disableAutoFreezeTerm,
+    enableTerm: enableAutoFreezeTerm,
+    isAutoFrozen,
+    getTermInfo,
+  } = useAutoFreeze({
+    userInput,
+    language,
+    frozenWords,
+    onAutoFreeze: (terms) => {
+      // ✅ Auto-freeze detected terms with normalization
+      terms.forEach((term) => {
+        const normalizedTerm = term.toLowerCase().trim().replace(/\s+/g, " ");
+
+        // Check if it's a phrase or single word
+        if (normalizedTerm.includes(" ")) {
+          if (!frozenPhrases.has(normalizedTerm)) {
+            frozenPhrases.add(normalizedTerm);
+          }
+        } else {
+          if (!frozenWords.has(normalizedTerm)) {
+            frozenWords.add(normalizedTerm);
+          }
+        }
+      });
+    },
+    debounceMs: 2500,
+    enableLLM: paidUser, // Only using LLM for paid users
+    shouldAutoFreeze: paraphraseOptions.autoFreeze, // checks if auto freeze should be enabled or not.
+  });
+
+  // Define keyboard shortcuts
+  useKeyboardShortcuts({
+    // Ctrl/Cmd + Enter: Paraphrase
+    "ctrl+enter": () => {
+      if (userInput && !isLoading && !processing.loading) {
+        handleSubmit();
+      }
+    },
+
+    // Ctrl/Cmd + Shift + C: Clear all
+    "ctrl+shift+c": () => {
+      handleClear("", "all");
+    },
+
+    // Ctrl/Cmd + K: Copy output
+    "ctrl+k": () => {
+      if (outputContend) {
+        navigator.clipboard.writeText(outputContend);
+        enqueueSnackbar("Output copied to clipboard!", {
+          variant: "success",
+        });
+      }
+    },
+
+    // Ctrl/Cmd + Shift + L: Change language (cycle through)
+    "ctrl+shift+l": () => {
+      const languages = ["English (US)", "English (UK)", "Bangla"];
+      const currentIndex = languages.indexOf(language);
+      const nextIndex = (currentIndex + 1) % languages.length;
+      setLanguage(languages[nextIndex]);
+    },
+
+    // Ctrl/Cmd + 1-4: Switch modes
+    "ctrl+1": () => setSelectedMode("Standard"),
+    "ctrl+2": () => setSelectedMode("Fluency"),
+    "ctrl+3": () => setSelectedMode("Humanize"),
+    "ctrl+4": () => setSelectedMode("Formal"),
+
+    // Escape: Clear output only
+    escape: () => {
+      if (result?.length > 0) {
+        handleClear("", "output");
+      }
+    },
+
+    // Ctrl/Cmd + H: Navigate history (cycle)
+    "ctrl+h": () => {
+      if (outputHistory.length > 0) {
+        setOutputHistoryIndex((prev) => (prev + 1) % outputHistory.length);
+      }
+    },
+  });
+
+  // console.log(isAutoFreezeDetecting, "isAutoFreezeDetecting");
+
   // Helper function to count word occurrences in text
   const countWordOccurrences = (text, word) => {
     if (!text || !word) return 0;
@@ -250,6 +359,7 @@ const ParaphraseContend = () => {
   const handleFreezeWord = (word) => {
     console.log("handleFreezeWord called with word:", word);
     console.log("Current userInput:", userInput);
+    const normalizedWord = word.toLowerCase().trim().replace(/\s+/g, " ");
     const count = countWordOccurrences(userInput, word);
 
     console.log("Word:", word, "Count:", count);
@@ -264,10 +374,10 @@ const ParaphraseContend = () => {
       // Show confirmation dialog
       setConfirmationDialog({
         open: true,
-        word: word,
+        word: normalizedWord,
         count: count,
         action: () => {
-          frozenWords.add(word.toLowerCase());
+          frozenWords.add(normalizedWord);
           setConfirmationDialog({
             open: false,
             word: "",
@@ -276,7 +386,7 @@ const ParaphraseContend = () => {
           });
 
           setTimeout(() => {
-            frozenWords.add(word.toLowerCase());
+            frozenWords.add(normalizedWord);
             enqueueSnackbar(`Frozen all ${count} instances successfully`, {
               variant: "success",
             });
@@ -286,7 +396,7 @@ const ParaphraseContend = () => {
     } else {
       console.log("Directly freezing word (count <= 1):", word);
       // Directly freeze if only one occurrence
-      frozenWords.add(word.toLowerCase());
+      frozenWords.add(normalizedWord);
       enqueueSnackbar("Frozen successfully", { variant: "success" });
     }
   };
@@ -295,6 +405,7 @@ const ParaphraseContend = () => {
   const handleFreezePhrase = (phrase) => {
     console.log("handleFreezePhrase called with phrase:", phrase);
     console.log("Current userInput:", userInput);
+    const normalizedPhrase = phrase.toLowerCase().trim().replace(/\s+/g, " ");
     const count = countWordOccurrences(userInput, phrase);
 
     console.log("Phrase:", phrase, "Count:", count);
@@ -311,7 +422,8 @@ const ParaphraseContend = () => {
         word: phrase,
         count: count,
         action: () => {
-          frozenPhrases.add(phrase.toLowerCase());
+          // frozenPhrases.add(phrase.toLowerCase());
+          frozenPhrases.add(normalizedPhrase);
           setConfirmationDialog({
             open: false,
             word: "",
@@ -322,7 +434,7 @@ const ParaphraseContend = () => {
       });
     } else {
       console.log("Directly freezing phrase (count <= 1):", phrase);
-      frozenPhrases.add(phrase.toLowerCase());
+      frozenPhrases.add(normalizedPhrase);
     }
   };
 
@@ -465,6 +577,8 @@ const ParaphraseContend = () => {
   // Fixed frontend socket handling - based on your working version
   useEffect(() => {
     if (!!activeHistory?._id) return;
+
+    // Reset completion flags
     setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
     const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
@@ -474,16 +588,15 @@ const ParaphraseContend = () => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
-    });
-
-    // const socket = io("http://localhost:3050", {
+    }); // prod
+    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
     //   path: "/socket.io",
     //   transports: ["websocket"],
     //   auth: { token: accessToken },
     //   reconnection: true,
     //   reconnectionAttempts: 5,
     //   reconnectionDelay: 2000,
-    // });
+    // }); // local
 
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);
@@ -496,54 +609,57 @@ const ParaphraseContend = () => {
     });
 
     let accumulatedText = "";
+    // Track which indices have been processed to avoid duplicates
+    const processedIndices = {
+      tagging: new Set(),
+      synonyms: new Set(),
+    };
 
     function mapBackendIndexToResultIndex(backendIndex, result) {
       const sentenceSlots = [];
       result.forEach((seg, idx) => {
-        if (!(seg.length === 1 && seg[0].type === "newline"))
+        if (!(seg.length === 1 && seg[0].type === "newline")) {
           sentenceSlots.push(idx);
+        }
       });
       return sentenceSlots[backendIndex] ?? -1;
     }
 
-    const sentenceSeparator =
-      language === "Bangla"
-        ? /(?:।\s+|\.\r?\n+)/ // Bangla: either "। " or ".\n"
-        : /(?:\.\s+|\.\r?\n+)/;
-
-    // ─── 2) Plain handler: clear `result` on first chunk of each run ────────────
+    // ═══════════════════════════════════════════════════════════
+    // PLAIN TEXT HANDLER
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-plain", (data) => {
       console.log("paraphrase-plain:", data);
+
       if (data === ":end:") {
+        console.log("✅ Plain text streaming completed");
         accumulatedText = "";
         setIsLoading(false);
         setCompletedEvents((prev) => ({ ...prev, plain: true }));
         return;
       }
 
-      // if this is the very first chunk of a brand-new run, wipe out old result:
+      // First chunk - clear old results
       if (accumulatedText === "") {
+        console.log("🔄 Starting new paraphrase - clearing old results");
         setResult([]);
+        processedIndices.tagging.clear();
+        processedIndices.synonyms.clear();
       }
 
-      // accumulate raw Markdown
       accumulatedText += data.replace(/[{}]/g, "");
 
-      // console.log("Accumulated Text (before normalization):", accumulatedText);
-
-      // update word count, etc…
       setOutputContend(accumulatedText);
       setOutputWordCount(
         accumulatedText.split(/\s+/).filter((w) => w.length > 0).length,
       );
 
-      // rebuild `result` with blank lines preserved
-      // const lines = accumulatedText.split("\n");
-
+      // Rebuild result with proper sentence structure
       const lines = accumulatedText.split(/\r?\n/);
       const sentenceSeparator =
         language === "Bangla" ? /(?:।\s+|\.\r?\n+)/ : /(?:\.\s+|\.\r?\n+)/;
       const newResult = [];
+
       lines.forEach((line) => {
         if (!line.trim()) {
           newResult.push([{ word: "\n", type: "newline", synonyms: [] }]);
@@ -555,11 +671,12 @@ const ParaphraseContend = () => {
               const words = sentence
                 .trim()
                 .split(/\s+/)
-                ?.map((w) => ({ word: w, type: "none", synonyms: [] }));
+                .map((w) => ({ word: w, type: "none", synonyms: [] }));
               newResult.push(words);
             });
         }
       });
+
       setResult(newResult);
       dispatch(
         setParaphraseValues({
@@ -567,55 +684,92 @@ const ParaphraseContend = () => {
           values: { text: accumulatedText },
         }),
       );
-      console.log("new plain result:", newResult);
     });
 
-    // ─── 3) Tagging handler: map backend index to correct slot ─────────────────
+    // ═══════════════════════════════════════════════════════════
+    // TAGGING HANDLER - CRITICAL FIX
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-tagging", (raw) => {
       if (raw === ":end:") {
-        // setIsLoading(false);
+        console.log("✅ Tagging completed for all sentences");
         setCompletedEvents((prev) => ({ ...prev, tagging: true }));
         return;
       }
-      console.log("paraphrase-tagging: ", raw);
+
       let parsed, backendIndex, eid;
       try {
-        ({ index: backendIndex, eventId: eid, data: parsed } = JSON.parse(raw));
-        if (eid !== eventId) return;
+        const payload = JSON.parse(raw);
+        backendIndex = payload.index;
+        eid = payload.eventId;
+        parsed = payload.data;
+
+        if (eid !== eventId) {
+          console.warn(
+            "⚠️ EventId mismatch in tagging:",
+            eid,
+            "expected:",
+            eventId,
+          );
+          return;
+        }
+
+        // Prevent duplicate processing
+        if (processedIndices.tagging.has(backendIndex)) {
+          console.log(
+            `⏭️  Skipping duplicate tagging for index ${backendIndex}`,
+          );
+          return;
+        }
+        processedIndices.tagging.add(backendIndex);
       } catch (err) {
-        console.error("Error parsing paraphrase-tagging:", err);
+        console.error("❌ Error parsing paraphrase-tagging:", err);
         return;
       }
 
+      console.log(`📝 Processing tagging for backend index ${backendIndex}`);
+
       setResult((prev) => {
-        const updated = [...prev];
-        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
-        if (targetIdx < 0) {
-          console.warn("tagging: couldn't map index", backendIndex);
+        // Don't process if result is empty
+        if (!prev || prev.length === 0) {
+          console.warn("⚠️ Result array is empty, waiting for plain text...");
           return prev;
         }
 
-        updated[targetIdx] = parsed?.map((item) => ({
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+
+        if (targetIdx < 0) {
+          console.warn(
+            `⚠️ Tagging: couldn't map backend index ${backendIndex} (result length: ${prev.length})`,
+          );
+          return prev;
+        }
+
+        // Ensure we have valid data
+        if (!Array.isArray(parsed)) {
+          console.error("❌ Invalid tagging data format:", parsed);
+          return prev;
+        }
+
+        updated[targetIdx] = parsed.map((item) => ({
           ...item,
-          // word: item.word, // preserves markdown tokens
           word: item.word.replace(/[{}]/g, ""),
         }));
+
         console.log(
-          "updated[targetIdx]: ",
-          updated[targetIdx],
-          "targetIdx: ",
-          targetIdx,
-          "backendIndex: ",
-          backendIndex,
+          `✅ Tagging updated at result[${targetIdx}] for backend[${backendIndex}]`,
         );
+
         return updated;
       });
     });
 
-    // ─── 4) Synonyms handler: same index mapping ────────────────────────────────
+    // ═══════════════════════════════════════════════════════════
+    // SYNONYMS HANDLER - CRITICAL FIX
+    // ═══════════════════════════════════════════════════════════
     socket.on("paraphrase-synonyms", (raw) => {
-      console.log("paraphrase-synonyms:", raw);
       if (raw === ":end:") {
+        console.log("✅ Synonyms completed for all sentences");
         setProcessing({ success: true, loading: false });
         setCompletedEvents((prev) => ({ ...prev, synonyms: true }));
         return;
@@ -623,49 +777,94 @@ const ParaphraseContend = () => {
 
       let analysis, backendIndex, eid;
       try {
-        ({
-          index: backendIndex,
-          eventId: eid,
-          data: analysis,
-        } = JSON.parse(raw));
-        if (eid !== eventId) return;
+        const payload = JSON.parse(raw);
+        backendIndex = payload.index;
+        eid = payload.eventId;
+        analysis = payload.data;
+
+        if (eid !== eventId) {
+          console.warn(
+            "⚠️ EventId mismatch in synonyms:",
+            eid,
+            "expected:",
+            eventId,
+          );
+          return;
+        }
+
+        // Prevent duplicate processing
+        if (processedIndices.synonyms.has(backendIndex)) {
+          console.log(
+            `⏭️  Skipping duplicate synonyms for index ${backendIndex}`,
+          );
+          return;
+        }
+        processedIndices.synonyms.add(backendIndex);
       } catch (err) {
-        console.error("Error parsing paraphrase-synonyms:", err);
+        console.error("❌ Error parsing paraphrase-synonyms:", err);
         return;
       }
 
+      console.log(`🔍 Processing synonyms for backend index ${backendIndex}`);
+
       setResult((prev) => {
-        const updated = [...prev];
-        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
-        if (targetIdx < 0) {
-          console.warn("synonyms: couldn't map index", backendIndex);
+        // Critical: Check if result exists and has content
+        if (!prev || prev.length === 0) {
+          console.warn("⚠️ Result array is empty, waiting for plain text...");
           return prev;
         }
 
-        if (Array.isArray(analysis) && analysis?.length > 0) {
-          updated[targetIdx] = analysis?.map((item) => ({
-            ...item,
-            // word: item.word,
-            word: item.word.replace(/[{}]/g, ""),
-          }));
-          return updated;
+        const updated = [...prev];
+        const targetIdx = mapBackendIndexToResultIndex(backendIndex, prev);
+
+        if (targetIdx < 0) {
+          console.warn(
+            `⚠️ Synonyms: couldn't map backend index ${backendIndex} (result length: ${prev.length})`,
+          );
+          return prev;
         }
+
+        // Ensure we have valid data
+        if (!Array.isArray(analysis) || analysis.length === 0) {
+          console.error("❌ Invalid synonyms data format:", analysis);
+          return prev;
+        }
+
+        updated[targetIdx] = analysis.map((item) => ({
+          ...item,
+          word: item.word.replace(/[{}]/g, ""),
+        }));
+
+        console.log(
+          `✅ Synonyms updated at result[${targetIdx}] for backend[${backendIndex}]`,
+          `(${analysis.length} words)`,
+        );
+
+        return updated;
       });
     });
-  }, [language, eventId]);
 
-  useEffect(() => {
-    console.log("completedEvents:", completedEvents);
-    if (completedEvents.plain && accessToken) {
-      console.log("✅ All socket events finished");
+    // return () => {
+    //   console.log("🔌 Disconnecting socket");
+    //   socket.off("paraphrase-plain");
+    //   socket.off("paraphrase-tagging");
+    //   socket.off("paraphrase-synonyms");
+    //   socket.disconnect();
+    // };
+  }, [language, eventId, accessToken]);
 
-      const timer = setTimeout(() => {
-        fetchHistory();
-      }, 500);
+  // useEffect(() => {
+  //   console.log("completedEvents:", completedEvents);
+  //   if (completedEvents.plain && accessToken) {
+  //     console.log("✅ All socket events finished");
 
-      return () => clearTimeout(timer);
-    }
-  }, [completedEvents, accessToken]);
+  //     const timer = setTimeout(() => {
+  //       fetchHistory();
+  //     }, 500);
+
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [completedEvents, accessToken]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -1048,6 +1247,16 @@ const ParaphraseContend = () => {
 
   const handleSubmit = async (value) => {
     try {
+      // Clear any locked mode messages when starting a new paraphrase
+      if (showMessage.show) {
+        setShowMessage({ show: false, Component: null });
+      }
+
+      setCompletedEvents({
+        plain: false,
+        tagging: false,
+        synonyms: false,
+      }); // For restarting flags.
       // track event
       if (!value) {
         trackEvent("click", "paraphrase", "paraphrase_click", 1);
@@ -1140,14 +1349,32 @@ const ParaphraseContend = () => {
     if (!!activeHistory?._id) return;
     // only auto-start if the setting is ON
 
+    // Check if current mode is locked for user
+    const isLocked = isModeLockedForUser(selectedMode, user?.package);
+
+    // If mode is locked, show message and don't auto-paraphrase
+    if (isLocked) {
+      setShowMessage({ show: true, Component: selectedMode });
+      if (result?.length > 0) {
+        handleClear("", "output"); // Clear output if any
+      }
+      return;
+    }
+
+    // Clear message if mode is not locked
+    if (!isLocked && showMessage.show) {
+      setShowMessage({ show: false, Component: null });
+    }
+
+    // only auto-start if the setting is ON
     if (!automaticStartParaphrasing) {
       if (result?.length > 0) {
         enqueueSnackbar("Click Rephrase to view the updated result.", {
           variant: "info",
         });
-        handleClear("", "output"); // Clear only output, keep input and frozen words
+        handleClear("", "output");
       }
-      return; // Early return if not auto paraphrasing
+      return;
     }
 
     // Trigger paraphrase if language changes and there is user input
@@ -1159,7 +1386,7 @@ const ParaphraseContend = () => {
         enqueueSnackbar("Please wait while paraphrasing is in progress...", {
           variant: "info",
         });
-        handleClear("", "output"); // Clear only output, keep input and frozen words
+        handleClear("", "output");
       }
     }
   }, [
@@ -1168,6 +1395,7 @@ const ParaphraseContend = () => {
     language,
     selectedMode,
     selectedSynonyms,
+    user?.package,
   ]); // All the dependencies that should trigger re-paraphrasing are listed here.
 
   useEffect(() => {
@@ -1436,11 +1664,6 @@ const ParaphraseContend = () => {
     setRecommendedFreezeWords(randomWords);
   }, [userInputValue, stableFrozenWords]); // This effect runs whenever userInput, frozenWords changes
 
-  const paidUser =
-    user?.package === "pro_plan" ||
-    user?.package === "value_plan" ||
-    user?.package === "unlimited";
-
   return (
     <Box sx={{ display: "flex", width: "100%", overflow: "hidden", pt: 2 }}>
       {!isMobile && (
@@ -1471,7 +1694,8 @@ const ParaphraseContend = () => {
         {/* desktop: language tabs outside card; hide on mobile */}
         <Box
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
             width: "100%", // match card width
             flex: "0 0 auto",
             // padding: '0 20px'
@@ -1482,6 +1706,19 @@ const ParaphraseContend = () => {
             setLanguage={setLanguage}
             language={language}
           />
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: {
+                xs: 1,
+                lg: 2,
+              },
+            }}
+          >
+            <AutoFreezeSettings />
+            <AutoParaphraseSettings />
+          </Box>
         </Box>
 
         <Box
@@ -1523,7 +1760,7 @@ const ParaphraseContend = () => {
             {/* mobile: selected language button in card header */}
             <Box
               sx={{
-                display: { xs: "flex", sm: "none" },
+                display: { xs: "flex", md: "none" },
                 borderBottom: 1,
                 borderColor: "divider",
                 px: 2,
@@ -1540,7 +1777,12 @@ const ParaphraseContend = () => {
                 <MoreVert fontSize="small" />
               </IconButton>
             </Box>
-            {!isMobile ? (
+            {/* {!isMobile ? ( */}
+            <Box
+              sx={{
+                display: { xs: "none", lg: "block" },
+              }}
+            >
               <ModeNavigation
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -1554,19 +1796,24 @@ const ParaphraseContend = () => {
                 dispatch={dispatch}
                 setShowLoginModal={setShowLoginModal}
               />
-            ) : (
-              <ModeNavigationForMobile
+            </Box>
+            {/* ) : ( */}
+            {/* <ModeNavigationForMobile
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
                 initialFrozenWords={initialFrozenWords}
                 frozenWords={frozenWords}
                 userPackage={user?.package}
                 isLoading={processing.loading}
-              />
-            )}
+              /> */}
+            {/* )} */}
 
             <Divider
-              sx={{ borderBottom: "2px solid", borderColor: "divider" }}
+              sx={{
+                display: { xs: "none", lg: "block" },
+                borderBottom: "2px solid",
+                borderColor: "divider",
+              }}
             />
 
             <Grid2 container>
@@ -1574,18 +1821,20 @@ const ParaphraseContend = () => {
                 sx={{
                   height: {
                     xs: "400px",
-                    md: "calc(100vh - 340px)",
+                    md: "450px",
                     lg: "530px",
                   },
                   position: "relative",
-                  borderRight: { md: "2px solid" },
-                  borderRightColor: { md: "divider" },
+                  borderRight: { lg: "2px solid" },
+                  borderRightColor: { lg: "divider" },
+                  borderBottom: { xs: "2px solid", lg: "0px" },
+                  borderBottomColor: { xs: "divider", lg: "transparent" },
                   // padding: 2,
                   paddingBottom: 1,
                   display: "flex",
                   flexDirection: "column",
                 }}
-                size={{ xs: 12, md: 6 }}
+                size={{ xs: 12, lg: 6 }}
               >
                 <UserInputBox
                   wordLimit={wordLimit}
@@ -1641,14 +1890,16 @@ const ParaphraseContend = () => {
                   handleClearInput={() => handleClear("", "all")}
                   handleSubmit={handleSubmit}
                   isLoading={isLoading}
+                  btnDisabled={isAutoFreezeDetecting}
                   userInput={userInput}
                   userPackage={user?.package}
                   toolName="paraphrase"
                   btnIcon={isMobile ? null : <InsertDriveFile />}
-                  sx={{ py: 0 }}
+                  sx={{ py: { md: 1 } }}
                   dontDisable={true}
                   sticky={320}
                   freeze_modal={true}
+                  detectingFreezeTerms={isAutoFreezeDetecting}
                 />
 
                 {showLanguageDetect && (
@@ -1669,25 +1920,25 @@ const ParaphraseContend = () => {
                   </Stack>
                 )}
               </Grid2>
-              {isMobile && !userInput ? null : (
-                <Grid2
-                  size={{ xs: 12, md: 6 }}
-                  ref={outputRef}
-                  sx={{
-                    height: {
-                      xs: "400px",
-                      md: "calc(100vh - 340px)",
-                      lg: "530px",
-                    },
-                    overflow: "hidden",
-                    borderTop: { xs: "2px solid", md: "none" },
-                    borderTopColor: { xs: "divider", md: undefined },
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
+
+              <Grid2
+                size={{ xs: 12, lg: 6 }}
+                ref={outputRef}
+                sx={{
+                  height: {
+                    xs: "480px",
+                    sm: "450px",
+                    lg: "530px",
+                  },
+                  overflow: "hidden",
+                  borderTop: { xs: "2px solid", md: "none" },
+                  borderTopColor: { xs: "divider", md: undefined },
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
                   {isLoading ? (
                     <ViewInputInOutAsDemo
                       input={userInput}
@@ -1697,35 +1948,59 @@ const ParaphraseContend = () => {
                     <p>Paraphrased Text</p>
                   ) : null}
                 </div> */}
-
-                  <ParaphraseOutput
-                    data={result}
-                    setData={setResult}
-                    synonymLevel={selectedSynonyms}
-                    dataModes={modes}
+                <Box
+                  sx={{
+                    display: {
+                      xs: "block",
+                      lg: "none",
+                      borderBottom: "1px solid",
+                      borderBottomColor: "#F4F6F8",
+                    },
+                  }}
+                >
+                  <ModeNavigation
+                    selectedMode={selectedMode}
+                    setSelectedMode={setSelectedMode}
                     userPackage={user?.package}
-                    selectedLang={language}
-                    highlightSentence={highlightSentence}
-                    setHighlightSentence={setHighlightSentence}
-                    setOutputHistory={setOutputHistory}
-                    input={userInput}
-                    freezeWords={[
-                      ...(frozenWords?.values || []),
-                      ...(frozenPhrases?.values || []),
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                    socketId={socketId}
-                    language={language}
-                    setProcessing={setProcessing}
-                    eventId={eventId}
-                    setEventId={setEventId}
-                    paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
+                    selectedSynonyms={selectedSynonyms}
+                    setSelectedSynonyms={setSelectedSynonyms}
+                    SYNONYMS={SYNONYMS}
+                    setShowMessage={setShowMessage}
+                    isLoading={processing.loading}
+                    accessToken={accessToken}
+                    dispatch={dispatch}
+                    setShowLoginModal={setShowLoginModal}
                   />
+                </Box>
 
-                  {result?.length ? (
-                    <>
-                      {/* <ParaphraseOutput
+                <ParaphraseOutput
+                  data={result}
+                  setData={setResult}
+                  synonymLevel={selectedSynonyms}
+                  dataModes={modes}
+                  userPackage={user?.package}
+                  selectedLang={language}
+                  highlightSentence={highlightSentence}
+                  setHighlightSentence={setHighlightSentence}
+                  setOutputHistory={setOutputHistory}
+                  input={userInput}
+                  freezeWords={[
+                    ...(frozenWords?.values || []),
+                    ...(frozenPhrases?.values || []),
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                  socketId={socketId}
+                  language={language}
+                  setProcessing={setProcessing}
+                  eventId={eventId}
+                  setEventId={setEventId}
+                  paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
+                />
+
+                {result?.length ? (
+                  <>
+                    {/* <ParaphraseOutput
                       data={result}
                       setData={setResult}
                       synonymLevel={selectedSynonyms}
@@ -1749,26 +2024,26 @@ const ParaphraseContend = () => {
                       eventId={eventId}
                       setEventId={setEventId}
                     /> */}
-                      <OutputBotomNavigation
-                        handleClear={() => handleClear("", "output")}
-                        highlightSentence={highlightSentence}
-                        outputContend={outputContend}
-                        outputHistory={outputHistory}
-                        outputHistoryIndex={outputHistoryIndex}
-                        outputWordCount={outputWordCount}
-                        proccessing={processing}
-                        sentenceCount={result.length - 1}
-                        setHighlightSentence={setHighlightSentence}
-                        setOutputHistoryIndex={setOutputHistoryIndex}
-                      />
-                    </>
-                  ) : null}
+                    <OutputBotomNavigation
+                      handleClear={() => handleClear("", "output")}
+                      highlightSentence={highlightSentence}
+                      outputContend={outputContend}
+                      outputHistory={outputHistory}
+                      outputHistoryIndex={outputHistoryIndex}
+                      outputWordCount={outputWordCount}
+                      proccessing={processing}
+                      sentenceCount={result.length - 1}
+                      setHighlightSentence={setHighlightSentence}
+                      setOutputHistoryIndex={setOutputHistoryIndex}
+                    />
+                  </>
+                ) : null}
 
-                  {user?.package === "free" && showMessage.show ? (
-                    <UpdateComponent Component={showMessage.Component} />
-                  ) : null}
-                </Grid2>
-              )}
+                {showMessage.show &&
+                isModeLockedForUser(showMessage.Component, user?.package) ? (
+                  <UpdateComponent Component={showMessage.Component} />
+                ) : null}
+              </Grid2>
             </Grid2>
           </Card>
 
@@ -1798,6 +2073,7 @@ const ParaphraseContend = () => {
                 plainOutput={extractPlainText(result)}
                 selectedSynonymLevel={selectedSynonyms}
                 mobile={true}
+                fetchFileHistories={fetchFileHistories}
               />
             </Box>
           </SwipeableDrawer>
@@ -1810,6 +2086,7 @@ const ParaphraseContend = () => {
             width: "min-content",
             ml: 2,
             transition: "width 200ms",
+            mt: { lg: 7 },
           }}
         >
           <VerticalMenu
@@ -1829,6 +2106,7 @@ const ParaphraseContend = () => {
             highlightSentence={highlightSentence}
             setHighlightSentence={setHighlightSentence}
             selectedSynonymLevel={selectedSynonyms}
+            fetchFileHistories={fetchFileHistories}
           />
         </Box>
       )}

@@ -121,7 +121,7 @@ function annotateStructuralChanges({
     const matchedInput = inputSentences[bestIdx] || "";
     const matchedWordsSet = new Set(tokenizeWords(matchedInput));
     for (const token of cloned[sIdx]) {
-      const tokenWords = tokenizeWords(token.word);
+      const tokenWords = tokenizeWords(token?.word);
       if (tokenWords.length === 0) continue;
       const common = tokenWords.filter((w) => matchedWordsSet.has(w)).length;
       const tokenOverlap = common / tokenWords.length;
@@ -154,7 +154,7 @@ function buildWordToTokenMap(outSentence) {
   const arr = []; // { w, tokenIdx }
   for (let tokenIdx = 0; tokenIdx < (outSentence || []).length; tokenIdx++) {
     const token = outSentence[tokenIdx];
-    const surface = normalizeTokenSurface(token.word);
+    const surface = normalizeTokenSurface(token?.word);
     const words = surface.length ? surface.split(/\s+/).filter(Boolean) : [];
     for (const w of words) arr.push({ w, tokenIdx });
   }
@@ -212,7 +212,7 @@ function markLongestUnchangedUsingDiff({
     let inStr = null;
     if (inputTokens && inputTokens[sIdx]) {
       inStr = inputTokens[sIdx]
-        ?.map((t) => t.word)
+        ?.map((t) => t?.word)
         .join(" ")
         .trim();
     } else if (inputTokens) {
@@ -222,7 +222,7 @@ function markLongestUnchangedUsingDiff({
       for (let i = 0; i < inputTokens.length; i++) {
         const score = wordOverlapRatio(
           outStr,
-          inputTokens[i]?.map((t) => t.word).join(" "),
+          inputTokens[i]?.map((t) => t?.word).join(" "),
         );
         if (score > bestScore) {
           bestScore = score;
@@ -402,10 +402,12 @@ const EnterHandler = Extension.create({
    ============================================================ */
 
 function parseMarkdownText(text) {
+  // console.log(text, "FROM PARSE MARKDOWN");
   const marks = [];
   let core = text;
   let trailing = "";
-  const punctMatch = core.match(/^(.*?)([.,;?!])$/);
+  if (!text) return { text, marks };
+  const punctMatch = core?.match(/^(.*?)([.,;?!])$/);
   if (punctMatch) {
     core = punctMatch[1];
     trailing = punctMatch[2];
@@ -447,7 +449,7 @@ function processHeadingSentence(sentence, sIdx) {
   return null;
 }
 function isNewlineSentence(sentence) {
-  return sentence.length === 1 && /^\n+$/.test(sentence[0].word);
+  return sentence.length === 1 && /^\n+$/.test(sentence[0]?.word);
 }
 
 /* ============================================================
@@ -494,7 +496,14 @@ function getColorStyle(
 function formatContent(data, showChangedWords, showStructural, showLongest) {
   if (!data) return { type: "doc", content: [] };
 
-  console.log("Formatting content with data:", data);
+  console.log("Formatting content with data:", {
+    totalSegments: data.length,
+    firstFewSegments: data.slice(0, 3).map((s) => ({
+      length: s?.length,
+      firstWord: s?.[0]?.word,
+      type: s?.[0]?.type,
+    })),
+  });
 
   if (typeof data === "string") {
     try {
@@ -512,11 +521,14 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
   const sentences = Array.isArray(data && data[0]) ? data : [data];
   const docContent = [];
   let currentParagraphSentences = [];
-  let actualSentenceIndex = 0; // New counter for non-newline sentences
+
+  // CRITICAL FIX: Only count non-newline sentences for actual indices
+  let actualSentenceIndex = 0;
 
   for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
     const sentence = sentences[sIdx];
 
+    // Skip newline sentences - don't increment counter
     if (isNewlineSentence(sentence)) {
       if (currentParagraphSentences.length > 0) {
         docContent.push({
@@ -525,10 +537,10 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         });
         currentParagraphSentences = [];
       }
-      // Do not increment actualSentenceIndex for newline sentences
-      continue;
+      continue; // DON'T increment actualSentenceIndex
     }
 
+    // Handle heading sentences
     const headingNode = processHeadingSentence(sentence, actualSentenceIndex);
     if (headingNode) {
       if (currentParagraphSentences.length > 0) {
@@ -539,18 +551,24 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         currentParagraphSentences = [];
       }
       docContent.push(headingNode);
-      actualSentenceIndex++; // Increment for heading sentences
+      actualSentenceIndex++; // Increment for headings
       continue;
     }
 
+    // CRITICAL: Log the mapping
+    // console.log(
+    //   `📍 Mapping: array index ${sIdx} → sentence index ${actualSentenceIndex}`,
+    // );
+
+    // Process regular sentence
     const sentenceNode = {
       type: "sentenceNode",
       attrs: {
-        "data-sentence-index": actualSentenceIndex,
+        "data-sentence-index": actualSentenceIndex, // Use actualSentenceIndex
         class: "sentence-span",
       },
       content: sentence?.map((wObj, wIdx) => {
-        const raw = wObj.word;
+        const raw = wObj?.word;
         const { text: processedText, marks } = parseMarkdownText(raw);
         const prefix =
           (actualSentenceIndex === 0 && wIdx === 0) || /^[.,;?!]$/.test(raw)
@@ -570,7 +588,7 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
         return {
           type: "wordNode",
           attrs: {
-            "data-sentence-index": actualSentenceIndex,
+            "data-sentence-index": actualSentenceIndex, // Use actualSentenceIndex
             "data-word-index": wIdx,
             "data-type": wObj.type,
             class: "word-span",
@@ -588,12 +606,16 @@ function formatContent(data, showChangedWords, showStructural, showLongest) {
     };
 
     currentParagraphSentences.push(sentenceNode);
-    actualSentenceIndex++; // Increment for regular sentences
+    actualSentenceIndex++; // NOW increment for regular sentences
   }
 
   if (currentParagraphSentences.length > 0) {
     docContent.push({ type: "paragraph", content: currentParagraphSentences });
   }
+
+  console.log(
+    `✅ Formatted ${actualSentenceIndex} actual sentences from ${sentences.length} array items`,
+  );
 
   return { type: "doc", content: docContent };
 }
@@ -784,9 +806,47 @@ export default function EditableOutput({
 
       const sI = Number(el.getAttribute("data-sentence-index"));
       const wI = Number(el.getAttribute("data-word-index"));
-      const wObj =
-        annotatedData[sI]?.[wI] || (data && data[sI] && data[sI][wI]);
-      if (!wObj) return;
+
+      console.log(`🖱️  Clicked: sentenceIndex=${sI}, wordIndex=${wI}`);
+
+      // CRITICAL FIX: Map display index back to data array index
+      // Count non-newline sentences to find the correct data index
+      let dataIndex = -1;
+      let nonNewlineCount = 0;
+
+      for (let i = 0; i < data.length; i++) {
+        const segment = data[i];
+        // Skip newline segments
+        if (segment.length === 1 && segment[0].type === "newline") {
+          continue;
+        }
+        if (nonNewlineCount === sI) {
+          dataIndex = i;
+          break;
+        }
+        nonNewlineCount++;
+      }
+
+      if (dataIndex === -1) {
+        console.error(`❌ Could not map sentence index ${sI} to data array`);
+        return;
+      }
+
+      console.log(`📍 Mapped display index ${sI} → data index ${dataIndex}`);
+
+      // Get word object from the correct data index
+      const wObj = data[dataIndex]?.[wI];
+
+      if (!wObj) {
+        console.error(`❌ Word not found at data[${dataIndex}][${wI}]`);
+        return;
+      }
+
+      console.log(
+        `✅ Found word:`,
+        wObj.word,
+        `with ${wObj.synonyms?.length || 0} synonyms`,
+      );
 
       // Create a virtual anchor that tracks the mouse position
       const rect = el.getBoundingClientRect();
@@ -811,12 +871,14 @@ export default function EditableOutput({
 
       setSynonymsOptions({
         synonyms: wObj.synonyms || [],
-        sentenceIndex: sI,
+        sentenceIndex: dataIndex, // Use data array index, not display index
         wordIndex: wI,
         showRephraseNav: true,
       });
-      setHighlightSentence(sI);
-      setSentence((data[sI] || [])?.map((w) => w.word).join(" "));
+      setHighlightSentence(sI); // Display index for highlighting
+
+      // Reconstruct sentence from data
+      setSentence((data[dataIndex] || [])?.map((w) => w?.word).join(" "));
     };
 
     dom.addEventListener("click", onClick);

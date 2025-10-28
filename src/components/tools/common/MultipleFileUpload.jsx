@@ -23,6 +23,7 @@ import {
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleUpdateFileHistory } from "../../../redux/slice/paraphraseHistorySlice";
+import CustomUiButton from "../../ui/CustomUiButton";
 import UpgradePopover from "./UpgradePopover";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
@@ -165,7 +166,7 @@ export default function MultipleFileUpload({
 
   return (
     <>
-      <Button
+      {/* <Button
         id="multi_upload_button"
         sx={{
           display: shouldShowButton ? "flex" : "none",
@@ -180,7 +181,15 @@ export default function MultipleFileUpload({
       >
         <CloudUploadOutlined fontSize="small" />
         Multi Upload Document
-      </Button>
+      </Button> */}
+      <CustomUiButton
+        id="multi_upload_button"
+        textLable={"Multi Upload Document"}
+        startIconSrc={"/icons/cloud.svg"}
+        iconClassName={"w-4 h-4 lg:w-4 lg:h-4"}
+        onClick={handleOpen}
+        className={`${shouldShowButton ? "flex" : "hidden"}`}
+      />
       <Button
         id="multi_upload_close_button"
         sx={{

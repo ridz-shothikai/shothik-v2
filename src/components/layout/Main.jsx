@@ -22,12 +22,17 @@ export default function Main({ children }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const containerWidth =
-    pathName === "/" || pathName === "/paraphrase"
-      ? "100%"
-      : pathName === "/humanize-gpt"
-        ? "100%"
-        : "xl";
+  const containerWidth = [
+    "/",
+    "/paraphrase",
+    "/grammar-checker",
+    "/humanize-gpt",
+    "/ai-detector",
+    "/plagiarism-checker",
+    "/summarize",
+  ].includes(pathName)
+    ? "100%"
+    : "xl";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -43,11 +48,11 @@ export default function Main({ children }) {
         position: "relative",
         backgroundColor:
           pathName === "/"
-            ? `${isDarkMode ? "#161C24" : "#FFF"}`
-            : `${isDarkMode ? "#161C24" : "#F4F6F8"}`,
+            ? `${isDarkMode ? "#2c2c2c" : "#FFF"}`
+            : `${isDarkMode ? "#2c2c2c" : "#F4F6F8"}`,
         pt: `${HEADER.H_MOBILE + SPACING}px`,
         ...(isDesktop && {
-          px: 2,
+          // px: 2,
           pt: `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`,
           width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
           ...(isNavMini && {

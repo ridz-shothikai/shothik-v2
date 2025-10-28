@@ -1,4 +1,19 @@
 "use client";
+import { trySamples } from "@/_mock/trySamples";
+import { trackEvent } from "@/analysers/eventTracker";
+import UserActionInput from "@/components/tools/common/UserActionInput";
+import WordCounter from "@/components/tools/common/WordCounter";
+import useLoadingText from "@/hooks/useLoadingText";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
+import {
+  useGetShareAidetectorContendQuery,
+  useGetUsesLimitQuery,
+  useScanAidetectorMutation,
+} from "@/redux/api/tools/toolsApi";
+import { setShowLoginModal } from "@/redux/slice/auth";
+import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
+import LoadingScreen from "@/resource/LoadingScreen";
 import {
   Box,
   Card,
@@ -11,21 +26,6 @@ import {
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { trySamples } from "../../../_mock/trySamples";
-import { trackEvent } from "../../../analysers/eventTracker";
-import useLoadingText from "../../../hooks/useLoadingText";
-import useResponsive from "../../../hooks/useResponsive";
-import useSnackbar from "../../../hooks/useSnackbar";
-import {
-  useGetShareAidetectorContendQuery,
-  useGetUsesLimitQuery,
-  useScanAidetectorMutation,
-} from "../../../redux/api/tools/toolsApi";
-import { setShowLoginModal } from "../../../redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
-import LoadingScreen from "../../../resource/LoadingScreen";
-import UserActionInput from "../common/UserActionInput";
-import WordCounter from "../common/WordCounter";
 import OutputResult, { getColorByPerplexity } from "./OutputResult";
 import SampleText from "./SampleText";
 import ShareURLModal from "./ShareURLModal";

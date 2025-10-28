@@ -137,9 +137,9 @@ async function handleSheetGenerationRequest(
     // Check if we have a sheet stored token
     const storedSheetToken = localStorage.getItem("sheetai-token");
 
-    if (!storedSheetToken) {
-      await refreshSheetAIToken();
-    }
+    // if (!storedSheetToken) {
+    //   await refreshSheetAIToken();
+    // }
 
     // After authenticate we will have a sheet token on the local storage
     let response;

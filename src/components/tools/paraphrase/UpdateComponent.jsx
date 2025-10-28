@@ -1,8 +1,8 @@
-import React from "react";
 import {
   AcademicMessage,
   CreativeMessage,
   FormalMessage,
+  Humanize,
   LongMessage,
   NewsMessage,
   ShortMessage,
@@ -10,6 +10,7 @@ import {
 } from "./UpdateModals";
 
 const Components = {
+  Humanize: Humanize,
   Formal: FormalMessage,
   Academic: AcademicMessage,
   Creative: CreativeMessage,

@@ -31,7 +31,7 @@ const links = [
   },
   {
     title: "Grammar Fix",
-    link: "/grammar-check",
+    link: "/grammar-checker",
     iconColor: "#8AC926",
     iconSrc: "/navbar/grammar.svg",
   },

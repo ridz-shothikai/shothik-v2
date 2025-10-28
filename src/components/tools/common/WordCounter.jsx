@@ -1,18 +1,21 @@
-import { AcUnit, DeleteRounded } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
+  ClickAwayListener,
   IconButton,
+  Paper,
+  Popper,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useWordLimit from "../../../hooks/useWordLimit";
-import WordIcon from "../../../resource/assets/WordIcon";
 import SvgColor from "../../../resource/SvgColor";
-import FreezeWordsDialog from "../paraphrase/FreezeWordsDialog";
+import FreezeWordsContent from "../paraphrase/FreezeWordsContent";
 function WordCounter({
   freeze_modal = false,
   freeze_props = {},
@@ -32,6 +35,7 @@ function WordCounter({
   dontDisable = false,
   sticky = 635,
   isMobile = false,
+  detectingFreezeTerms,
 }) {
   // if (false) {
   //   const { ref, style } = useStickyBottom(sticky);
@@ -76,6 +80,7 @@ function WordCounter({
       freeze_modal={freeze_modal}
       freeze_props={freeze_props}
       isMobile={isMobile}
+      detectingFreezeTerms={detectingFreezeTerms}
     >
       {children}
     </Contend>
@@ -101,6 +106,7 @@ const Contend = ({
   freeze_props = {},
   dontDisable = false,
   isMobile,
+  detectingFreezeTerms,
 }) => {
   const [wordCount, setWordCount] = useState(0);
   // const isMobile = useResponsive("down", "sm"); // This is now passed as a prop
@@ -111,6 +117,16 @@ const Contend = ({
     setWordCount(words);
   }, [userInput]);
   const [show_freeze, set_show_freeze] = useState(false);
+  const anchorRef = useRef(null);
+
+  const handleToggleFreeze = () => {
+    set_show_freeze((prev) => !prev);
+  };
+
+  const handleCloseFreeze = () => {
+    set_show_freeze(false);
+  };
+
   if (!userInput) return <Box sx={{ height: 48 }} />;
   return (
     <Stack
@@ -127,16 +143,6 @@ const Contend = ({
       }}
       bgcolor="background.paper"
     >
-      {freeze_modal && show_freeze ? (
-        <FreezeWordsDialog
-          close={() => {
-            set_show_freeze(false);
-          }}
-          readOnly={isLoading}
-          freeze_props={freeze_props}
-        />
-      ) : null}
-
       <Stack
         direction="row"
         spacing={2}
@@ -151,21 +157,39 @@ const Contend = ({
         flex={1}
       >
         <Stack direction="row" spacing={1} alignItems="center">
-          <WordIcon />
+          {/* <WordIcon /> */}
           <Typography
             variant="subtitle2"
             sx={{
               color: `${wordCount > wordLimit ? "error.main" : ""}`,
               whiteSpace: "nowrap",
+              fontSize: { xs: "12px", lg: "14px" },
             }}
           >
             <b>{wordCount}</b> /{" "}
             {wordLimit === 9999 ? (
-              <Typography component="span" sx={{ color: "primary.main" }}>
+              <Typography
+                component="span"
+                sx={{
+                  color: "primary.main",
+                  fontSize: "14px",
+                }}
+              >
                 Unlimited
               </Typography>
             ) : (
-              wordLimit
+              <>
+                {wordLimit}{" "}
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "#242426",
+                    fontSize: { xs: "12px", lg: "14px" },
+                  }}
+                >
+                  Words
+                </Typography>
+              </>
             )}
           </Typography>
 
@@ -177,29 +201,131 @@ const Contend = ({
               color="inherit"
               disabled={isLoading}
               onClick={handleClearInput}
-              style={{ marginLeft: "-4px" }}
               disableRipple
+              sx={{
+                p: 0,
+              }}
             >
-              <DeleteRounded sx={{ color: "text.secondary" }} />
+              {/* <DeleteRounded sx={{ color: "text.secondary" }} /> */}
+              <Image
+                src={"/icons/delete.svg"}
+                alt="delete"
+                width={18}
+                height={18}
+              />
             </IconButton>
           </Tooltip>
           {freeze_modal ? (
-            <Tooltip title="Freeze Words" placement="top" arrow>
-              <IconButton
-                id="show_freeze_button"
-                aria-label="freeze"
-                size={isMobile ? "small" : "large"}
-                variant={"outlined"}
-                color="inherit"
-                disabled={false}
-                onClick={() => set_show_freeze(true)}
-                style={{ marginLeft: "-4px" }}
-                disableRipple
+            <>
+              <Tooltip title="Freeze Words" placement="top" arrow>
+                <IconButton
+                  id="show_freeze_button"
+                  aria-label="freeze"
+                  size={isMobile ? "small" : "large"}
+                  variant={"outlined"}
+                  color="inherit"
+                  disabled={false}
+                  onClick={handleToggleFreeze}
+                  disableRipple
+                  ref={anchorRef}
+                  sx={{
+                    p: 0,
+                  }}
+                >
+                  <Image
+                    src={
+                      show_freeze
+                        ? "/icons/freeze-active.svg"
+                        : "/icons/freeze.svg"
+                    }
+                    alt="freeze"
+                    width={18}
+                    height={18}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Popper
+                open={show_freeze}
+                anchorEl={anchorRef.current}
+                placement="top-start"
+                disablePortal={false}
+                modifiers={[
+                  {
+                    name: "flip",
+                    enabled: true,
+                    options: {
+                      altBoundary: true,
+                      rootBoundary: "viewport",
+                      createPopper: {
+                        strategy: "fixed",
+                      },
+                    },
+                  },
+                  {
+                    name: "preventOverflow",
+                    enabled: true,
+                    options: {
+                      altAxis: true,
+                      altBoundary: true,
+                      tether: true,
+                      rootBoundary: "viewport",
+                      padding: 8,
+                    },
+                  },
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, 8], // Example: 0px horizontal skidding, 8px vertical distance from anchor
+                    },
+                  },
+                ]}
+                sx={{ zIndex: 1300 }}
               >
-                <AcUnit sx={{ color: "text.secondary" }} />
-              </IconButton>
-            </Tooltip>
+                <ClickAwayListener onClickAway={handleCloseFreeze}>
+                  <Paper>
+                    <FreezeWordsContent
+                      close={handleCloseFreeze}
+                      readOnly={isLoading}
+                      freeze_props={freeze_props}
+                    />
+                  </Paper>
+                </ClickAwayListener>
+              </Popper>
+            </>
           ) : null}
+
+          {detectingFreezeTerms && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 1,
+                alignItems: "center",
+                ml: { lg: 2 },
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <CircularProgress size={16} color="inherit" />
+              </Box>
+              <Typography
+                component="span"
+                sx={{
+                  // color: "primary.main",
+                  color: "#242426",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  lineHeight: 1,
+                }}
+              >
+                freezing
+              </Typography>
+            </Box>
+          )}
         </Stack>
         {ExtraCounter}
       </Stack>
@@ -242,7 +368,7 @@ const Contend = ({
             height: { md: 40 },
             whiteSpace: "nowrap",
           }}
-          startIcon={btnIcon}
+          // startIcon={btnIcon}
         >
           {btnText}
         </Button>

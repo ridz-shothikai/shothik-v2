@@ -26,7 +26,7 @@ export default function MainHeader() {
   const isNavHorizontal = themeLayout === "horizontal";
   const isNavMini = themeLayout === "mini";
   const isDesktop = useResponsive("up", "sm");
-  const isMd = useResponsive("up", "sm");
+  const isMd = useResponsive("up", "md");
   const isMobile = useResponsive("down", "sm");
   const { isLoading } = useGetUserQuery(undefined, {
     skip: !accessToken,
@@ -41,7 +41,7 @@ export default function MainHeader() {
       "/humanize-gpt": "Humanize GPT",
       "/ai-detector": "AI Detector",
       "/plagiarism-checker": "Plagiarism Checker",
-      "/grammar-check": "Grammar Fix",
+      "/grammar-checker": "Grammar Fix",
       "/summarize": "Summarize",
       "/translator": "Translate",
       "/pricing": "Shothik.ai Premium",
@@ -77,17 +77,20 @@ export default function MainHeader() {
         flexGrow={1}
         direction="row"
         alignItems="center"
-        justifyContent="flex-end"
+        justifyContent={isMobile ? "flex-end" : "space-between"}
         spacing={{ xs: 0.5, sm: 1.5 }}
       >
-        {isNavMini && isMd && <Logo sx={{ mr: 2.5 }} />}
+        {isNavMini && !isMobile && <Logo sx={{ mr: 2.5 }} />}
 
         {isMd && (
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Typography
               variant="h5"
               sx={{
-                color: theme.palette.text.primary,
+                color:
+                  theme.palette.mode === "dark"
+                    ? "#858481"
+                    : theme.palette.text.primary,
               }}
             >
               {title()}
@@ -95,44 +98,52 @@ export default function MainHeader() {
           </Box>
         )}
 
-        {isLoading ? (
-          <DotFlashing />
-        ) : (
-          user?.package !== "unlimited" && (
-            <Link href={"/pricing?redirect=" + pathname}>
-              <Button
-                data-umami-event="Nav: Upgrade To Premium"
-                color="primary"
-                size={isMd ? "medium" : "small"}
-                variant="contained"
-                rel="noopener"
-                startIcon={
-                  <SvgColor
-                    src="/navbar/diamond.svg"
-                    sx={{
-                      width: { xs: 20, md: 24 },
-                      height: { xs: 20, md: 24 },
-                    }}
-                  />
-                }
-              >
-                {user?.email
-                  ? isMobile
-                    ? "Upgrade"
-                    : "Upgrade Plan"
-                  : isMobile
-                    ? "Premium"
-                    : "Upgrade To Premium"}
-              </Button>
-            </Link>
-          )
-        )}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 1, md: 2 },
+          }}
+        >
+          {isLoading ? (
+            <DotFlashing />
+          ) : (
+            user?.package !== "unlimited" && (
+              <Link href={"/pricing?redirect=" + pathname}>
+                <Button
+                  data-umami-event="Nav: Upgrade To Premium"
+                  color="primary"
+                  size={isMd ? "medium" : "small"}
+                  variant="contained"
+                  rel="noopener"
+                  startIcon={
+                    <SvgColor
+                      src="/navbar/diamond.svg"
+                      sx={{
+                        width: { xs: 20, md: 24 },
+                        height: { xs: 20, md: 24 },
+                      }}
+                    />
+                  }
+                >
+                  {user?.email
+                    ? isMobile
+                      ? "Upgrade"
+                      : "Upgrade Plan"
+                    : isMobile
+                      ? "Premium"
+                      : "Upgrade your plan"}
+                </Button>
+              </Link>
+            )
+          )}
 
-        {!isLoading && (
-          <>
-            <AccountPopover accessToken={accessToken} user={user} />
-          </>
-        )}
+          {!isLoading && (
+            <>
+              <AccountPopover accessToken={accessToken} user={user} />
+            </>
+          )}
+        </Box>
       </Stack>
     </>
   );
@@ -144,7 +155,10 @@ export default function MainHeader() {
         boxShadow: "none",
         height: HEADER.H_MOBILE,
         zIndex: theme.zIndex.appBar + 1,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? "#242526"
+            : theme.palette.background.default,
         backdropFilter: "blur(6px)",
         transition: theme.transitions.create(["height"], {
           duration: theme.transitions.duration.shorter,
@@ -154,7 +168,10 @@ export default function MainHeader() {
           height: HEADER.H_DASHBOARD_DESKTOP,
           ...(isNavHorizontal && {
             width: 1,
-            bgcolor: theme.palette.background.default,
+            bgcolor:
+              theme.palette.mode === "dark"
+                ? "#242526"
+                : theme.palette.background.default,
             height: HEADER.H_DASHBOARD_DESKTOP_OFFSET,
             borderBottom: `dashed 1px ${theme.palette.divider}`,
           }),
@@ -167,8 +184,11 @@ export default function MainHeader() {
       <Toolbar
         sx={{
           height: 1,
-          px: { lg: 5 },
-          bgcolor: theme.palette.background.default,
+          px: { lg: 3 },
+          bgcolor:
+            theme.palette.mode === "dark"
+              ? "#242526"
+              : theme.palette.background.default,
           borderBottom:
             pathname === "/" ? `dashed 1px ${theme.palette.divider}` : "none",
         }}

@@ -25,9 +25,10 @@ import { useGetAllHistoryQuery } from "../../../redux/api/humanizeHistory/humani
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
+import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
-import LanguageMenu from "../grammar/LanguageMenu";
 import AlertDialogMessage from "./AlertDialogMessage";
+import AnimatedLoader from "./AnimatedLoader";
 import GPTsettings from "./GPTsettings";
 import HumanizeScrores from "./HumanizeScrores";
 import InputBottom from "./InputBottom";
@@ -133,7 +134,11 @@ const HumanizedContend = () => {
         // Restore everything from history
         setUserInput(entry.text);
         setOutputContent(entry.outputs);
-        setScores(entry.outputs.map((output) => output.score));
+        setScores(
+          entry.outputs.map((output) => output.aiPercentage || output.score),
+        );
+        (console.log(entry.outputs.map((output) => output.aiPercentage)),
+          "RESTORED SCORES");
         setShowIndex(0);
         setIsRestoredFromHistory(true);
 
@@ -214,7 +219,11 @@ const HumanizedContend = () => {
         };
       }
 
-      const scores = data.output.map((item) => item.score);
+      // const scores = data.output.map((item) => item.score); // human scroe
+      const scores = data.output.map(
+        (item) => item?.aiPercentage || item?.score,
+      ); // ai score
+      // console.log(scores, "GENERATED SCORES");
       setOutputContent(data.output);
       setScores(scores);
       setUpdate((prev) => !prev);
@@ -457,9 +466,24 @@ const HumanizedContend = () => {
                     {outputContent[showIndex].text}
                   </Typography>
                 ) : (
-                  <Typography sx={{ color: "text.disabled" }}>
-                    {loadingText ? loadingText : "Humanized Contend"}
-                  </Typography>
+                  <>
+                    {isLoading ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "100%",
+                        }}
+                      >
+                        <AnimatedLoader />
+                      </Box>
+                    ) : (
+                      <Typography sx={{ color: "text.disabled" }}>
+                        Humanized Contend
+                      </Typography>
+                    )}
+                  </>
                 )}
 
                 {showShalowAlert ? <AlertDialogMessage /> : null}

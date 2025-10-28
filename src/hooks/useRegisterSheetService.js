@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 const useSheetAIToken = () => {
@@ -62,7 +62,7 @@ const useSheetAIToken = () => {
   }, [user?.email]);
 
   useEffect(() => {
-    const existingToken = localStorage.getItem("sheetai-token");
+    const existingToken = localStorage.getItem("accessToken");
 
     if (existingToken) {
       setSheetAIToken(existingToken);

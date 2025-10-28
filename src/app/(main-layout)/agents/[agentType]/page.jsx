@@ -1,20 +1,27 @@
 "use client";
-import { useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import Box from "@mui/material/Box";
-import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
-import AgentPage from "../../../../../components/agents/AgentPage";
-import ChatInput from "../../../../components/research/ui/ChatInput";
-import { useSelector } from "react-redux";
-import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
 import { useMediaQuery, useTheme } from "@mui/material";
+import Box from "@mui/material/Box";
 import dynamic from "next/dynamic";
+import { useParams, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import AgentPage from "../../../../../components/agents/AgentPage";
+import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
+import ChatInput from "../../../../components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
 import { FooterCta } from "../../../../components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
+import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
 // import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
 // import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
 const PresentationAgentPage = dynamic(
   () => import("../../../../components/presentation/PresentationAgentPage"),
+  {
+    loading: () => <ResearchPageSkeletonLoader />,
+    ssr: false,
+  },
+);
+const PresentationAgentPageV2 = dynamic(
+  () => import("../../../../components/presentation/PresentationAgentPageV2"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
@@ -59,10 +66,11 @@ export default function SpecificAgentPage() {
     switch (agentType) {
       case "presentation":
         return (
-          <PresentationAgentPage
-            specificAgent={agentType}
-            presentationId={id}
-          />
+          // <PresentationAgentPage
+          //   specificAgent={agentType}
+          //   presentationId={id}
+          // /> // working version previously
+          <PresentationAgentPageV2 presentationId={id} />
         );
       case "sheets":
         return <SheetAgentPage specificAgent={agentType} sheetId={id} />;

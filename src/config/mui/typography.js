@@ -1,4 +1,4 @@
-import { Barlow, Public_Sans } from "next/font/google";
+import { Barlow, Open_Sans } from "next/font/google";
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ export function responsiveFontSizes({ sm, md, lg }) {
   };
 }
 
-export const primaryFont = Public_Sans({
+export const primaryFont = Open_Sans({
   weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   display: "swap",

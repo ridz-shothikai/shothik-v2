@@ -16,7 +16,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 // import CloseIcon from "@mui/icons-material/Close";
 import AutoModeIcon from "@mui/icons-material/AutoMode";
@@ -29,6 +29,7 @@ import PaletteIcon from "@mui/icons-material/Palette";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import SchoolIcon from "@mui/icons-material/School";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -195,6 +196,7 @@ const suggestedTopics = {
 
 export default function AgentLandingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setAgentType } = useAgentContext();
   const [inputValue, setInputValue] = useState("");
   const [selectedNavItem, setSelectedNavItem] = useState("slides");
@@ -222,6 +224,8 @@ export default function AgentLandingPage() {
   } = useFetchAllPresentationsQuery(undefined, {
     skip: !accessToken,
   });
+
+  // console.log(slidesChats, "slides chat");
 
   const {
     data: researchData,
@@ -332,6 +336,22 @@ export default function AgentLandingPage() {
       localStorage.setItem("shothik_has_visited", "true");
     }
   }, []);
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && NAVIGATION_ITEMS.some(item => item.id === tab)) {
+      setSelectedNavItem(tab);
+      // Set appropriate input value based on tab
+      if (tab === "sheets") {
+        setInputValue("Create a list for ");
+      } else if (tab === "slides") {
+        setInputValue("Create a presentation about ");
+      } else if (tab === "research") {
+        setInputValue("");
+      }
+    }
+  }, [searchParams]);
 
   const handleSubmit = async () => {
     if (!inputValue.trim() || isSubmitting) return;
@@ -526,7 +546,7 @@ export default function AgentLandingPage() {
 
       const result = await uploadFilesForSlides(uploadData).unwrap();
 
-      // console.log("Upload successful:", result);
+      console.log("Upload successful:", result);
 
       if (result?.success) {
         // setUploadedFiles((prev) => [...prev, ...result.data]);
@@ -534,8 +554,8 @@ export default function AgentLandingPage() {
         //   ...prev,
         //   ...result.data.map((file) => file.signed_url),
         // ]);
-        const newUrls = result.data.map((file) => file.signed_url);
-        addFiles(result.data, newUrls);
+        const newUrls = result.uploads.map((file) => file.signed_url);
+        addFiles(result.uploads, newUrls);
         showToast(`${files.length} file(s) uploaded successfully`, "success");
       }
 
@@ -614,7 +634,7 @@ export default function AgentLandingPage() {
         router={router}
         myChats={myChats}
         SlideDataLoading={SlideDataLoading}
-        slidesChats={slidesChats?.data}
+        slidesChats={slidesChats}
         SlideDataLoadingError={SlideDataLoadingError}
         researchData={researchData}
         researchDataLoading={researchDataLoading}
@@ -1072,7 +1092,15 @@ export default function AgentLandingPage() {
                   },
                 }}
               >
-                <SendIcon />
+                {isInitiatingPresentation ||
+                isInitiatingSheet ||
+                isInitiatingResearch ? (
+                  <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <CircularProgress color="primary" size={20} />
+                  </Box>
+                ) : (
+                  <SendIcon />
+                )}
               </IconButton>
 
               {/* for research only */}

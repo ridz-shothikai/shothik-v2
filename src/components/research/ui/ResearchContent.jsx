@@ -4,6 +4,8 @@ import { Box, Typography, Paper, Chip, useTheme } from "@mui/material";
 import { marked } from "marked";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
+import { researchChatState } from "../../../redux/slice/researchChatSlice";
+import ResearchContentWithReferences from "../../tools/research/ResearchContentWithReferences";
 
 const MessageBubble = ({ message, isLastData, isDataGenerating, theme }) => (
   <Box
@@ -206,17 +208,34 @@ export default function ResearchContent({ currentResearch, isLastData }) {
     currentResearch?.result || currentResearch?.answer || "";
 
   const researchCore = useSelector(researchCoreState);
+  const researchChat = useSelector(researchChatState);
 
   const theme = useTheme();
 
+  // Check if we have sources to use the new component with references
+  const hasSources = currentResearch?.sources && currentResearch.sources.length > 0;
+
+  // Get the current agent ID for sharing functionality
+  const agentId = researchChat?.currentChatId;
+
   return (
     <Box sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-      <MessageBubble
-        message={researchResult}
-        isLastData={isLastData}
-        isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
-        theme={theme}
-      />
+      {hasSources ? (
+        <ResearchContentWithReferences
+          content={researchResult}
+          sources={currentResearch.sources}
+          isLastData={isLastData}
+          isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
+          agentId={agentId}
+        />
+      ) : (
+        <MessageBubble
+          message={researchResult}
+          isLastData={isLastData}
+          isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
+          theme={theme}
+        />
+      )}
     </Box>
   );
 }

@@ -110,7 +110,39 @@ export const sheetApiSlice = createApi({
       query: () => "/chat/get_my_chats",
       providesTags: ["MyChats"],
     }),
+    
+    // Save edited sheet data
+    saveEditedSheetData: builder.mutation({
+      query: ({ chatId, conversationId, sheetData, columnOrder, rowOrder, metadata }) => ({
+        url: "/conversation/save_edited_sheet_data",
+        method: "POST",
+        body: {
+          chatId,
+          conversationId,
+          sheetData,
+          columnOrder,
+          rowOrder,
+          metadata,
+          timestamp: new Date().toISOString(),
+        },
+      }),
+      invalidatesTags: ["ChatHistory"],
+      // Transform response to ensure proper data structure
+      transformResponse: (response) => {
+        console.log("Sheet data saved successfully:", response);
+        return response;
+      },
+      // Handle errors
+      transformErrorResponse: (response) => {
+        console.error("Failed to save sheet data:", response);
+        return response;
+      },
+    }),
   }),
 });
 
-export const { useGetChatHistoryQuery, useGetMyChatsQuery } = sheetApiSlice;
+export const { 
+  useGetChatHistoryQuery, 
+  useGetMyChatsQuery,
+  useSaveEditedSheetDataMutation 
+} = sheetApiSlice;

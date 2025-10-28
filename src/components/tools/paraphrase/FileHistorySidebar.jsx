@@ -29,8 +29,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Download, Edit2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import UpgradePopover from "../common/UpgradePopover"; // Import UpgradePopover
 
 export default function FileHistorySidebar({ fetchFileHistories }) {
   const theme = useTheme();
@@ -42,6 +44,7 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [newFilename, setNewFilename] = useState("");
   const { accessToken } = useSelector((state) => state.auth);
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState(null); // State for popover
 
   const [search, setSearch] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
@@ -64,9 +67,16 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
 
   // const API_BASE = "http://localhost:3050/api";
 
+  const handlePopoverClose = () => setPopoverAnchorEl(null); // Popover close handler
+
   // Trigger upload button
-  const handleAddClick = () =>
-    document.querySelector("#multi_upload_button")?.click();
+  const handleAddClick = (event) => {
+    if (!accessToken) {
+      setPopoverAnchorEl(event.currentTarget);
+    } else {
+      document.querySelector("#multi_upload_button")?.click();
+    }
+  };
 
   // Sidebar toggles
   const handleBookClick = () => setIsSidebarOpen(true);
@@ -75,9 +85,13 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
     // Reset search when closing sidebar
     setSearch("");
   };
-  const handleNewClick = () => {
-    handleAddClick();
-    handleCloseSidebar();
+  const handleNewClick = (event) => {
+    if (!accessToken) {
+      setPopoverAnchorEl(event.currentTarget);
+    } else {
+      handleAddClick(event);
+      handleCloseSidebar();
+    }
   };
 
   // Menu handlers
@@ -231,7 +245,7 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
         sx={{
           bgcolor: theme.palette.background.paper,
           borderRadius: 2,
-          p: 1,
+          p: { xs: "3px", md: 1 },
           display: "flex",
           flexDirection: "column",
           gap: 1,
@@ -247,12 +261,34 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
             size="small"
             onClick={handleBookClick}
           >
-            <MenuBookOutlinedIcon />
+            <Image
+              src={"/icons/file.svg"}
+              alt="file"
+              width={24}
+              height={24}
+              className="h-5 w-5 lg:h-6 lg:w-6"
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                display: { md: "none" },
+                ml: 2,
+                color: "#242426",
+              }}
+            >
+              Saved Files
+            </Typography>
           </IconButton>
         </Tooltip>
-        <Tooltip title="Add new document" placement="right">
+        <Tooltip
+          title="Add new document"
+          placement="right"
+          sx={{
+            display: { xs: "none", md: "block" },
+          }}
+        >
           <IconButton size="small" onClick={handleAddClick}>
-            <AddOutlinedIcon />
+            <AddOutlinedIcon sx={{ color: theme.palette.text.primary }} />
           </IconButton>
         </Tooltip>
       </Box>
@@ -562,6 +598,13 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <UpgradePopover
+        anchorEl={popoverAnchorEl}
+        onClose={handlePopoverClose}
+        message="Log in to upload documents."
+        redirectPath="/pricing?redirect=/paraphrase"
+      />
     </>
   );
 }

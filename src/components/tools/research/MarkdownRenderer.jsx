@@ -210,6 +210,20 @@ const RenderHoverCard = ({ href, text, isCitation = false }) => {
 
 const MarkdownRenderer = ({ content }) => {
   let linkItem = 0;
+  
+  // Handle content - it might be an object with text property or a string
+  let contentStr = '';
+  if (typeof content === 'string') {
+    contentStr = content;
+  } else if (typeof content === 'object' && content !== null) {
+    // If content is an object, try to extract the text content
+    contentStr = content.text || content.content || content.result || content.answer || '';
+  } else {
+    contentStr = String(content || '');
+  }
+  
+  // Clean any [object Object] strings from the content
+  contentStr = contentStr.replace(/\[object Object\]/g, '');
 
   const CodeBlock = ({ language, children }) => {
     const [isCopied, setIsCopied] = useState(false);
@@ -289,12 +303,29 @@ const MarkdownRenderer = ({ content }) => {
     );
   };
 
+  // Helper function to safely render children
+  const safeRenderChildren = (children) => {
+    if (Array.isArray(children)) {
+      return children.map((child, index) => {
+        if (typeof child === 'object' && child !== null) {
+          // If it's an object, try to extract text or convert to string
+          return child.text || child.content || child.result || child.answer || String(child);
+        }
+        return child;
+      });
+    }
+    if (typeof children === 'object' && children !== null) {
+      return children.text || children.content || children.result || children.answer || String(children);
+    }
+    return children;
+  };
+
   const renderer = {
     text(text) {
       return text;
     },
     paragraph(children) {
-      return <Typography key={this.elementId}>{children}</Typography>;
+      return <Typography key={this.elementId}>{safeRenderChildren(children)}</Typography>;
     },
     code(children, language) {
       return (
@@ -316,7 +347,7 @@ const MarkdownRenderer = ({ content }) => {
     heading(children) {
       return (
         <Typography key={this.elementId} variant="h4" sx={{ my: 2 }}>
-          {children}
+          {safeRenderChildren(children)}
         </Typography>
       );
     },
@@ -332,7 +363,7 @@ const MarkdownRenderer = ({ content }) => {
             "& li": { display: "list-item" },
           }}
         >
-          {children}
+          {safeRenderChildren(children)}
         </List>
       );
     },
@@ -346,7 +377,7 @@ const MarkdownRenderer = ({ content }) => {
             p: 0,
           }}
         >
-          {children}
+          {safeRenderChildren(children)}
         </ListItem>
       );
     },
@@ -364,12 +395,12 @@ const MarkdownRenderer = ({ content }) => {
             color: "text.secondary",
           }}
         >
-          {children}
+          {safeRenderChildren(children)}
         </Box>
       );
     },
   };
 
-  return <Marked renderer={renderer}>{content}</Marked>;
+  return <Marked renderer={renderer}>{contentStr}</Marked>;
 };
 export default MarkdownRenderer;

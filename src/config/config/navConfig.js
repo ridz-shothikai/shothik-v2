@@ -127,7 +127,7 @@ const tools = [
     title: "Grammar Fix",
     description: "Error correction",
     label: null,
-    link: "/grammar-check",
+    link: "/grammar-checker",
     iconColor: "#8AC926",
   },
   {

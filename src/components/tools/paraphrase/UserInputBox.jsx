@@ -537,6 +537,12 @@ function UserInputBox({
       return;
     }
 
+    // Add sanitization before parsing
+    // const sanitizedInput = userInput
+    //   .replace(/\\([*_\-#`~[\](){}])/g, '$1') // Remove escaped markdown
+    //   .replace(/\s+/g, ' ') // Normalize spaces
+    //   .replace(/\n{3,}/g, '\n\n'); // Normalize excessive newlines
+
     // parse the Markdown into a ProseMirror node
     const doc = defaultMarkdownParser.parse(userInput);
 
@@ -590,17 +596,18 @@ function UserInputBox({
     }
   }, [isDemoMode, editor]);
 
-  const normalize = (text) => text.toLowerCase().trim();
+  // const normalize = (text) => text.toLowerCase().trim();
+  const normalize = (text) => text.toLowerCase().trim().replace(/\s+/g, " ");
 
   const handleToggleFreeze = () => {
-    const key = normalize(selectedWord);
+    const key = normalize(selectedWord); // Normalize the selected word/phrase
     const isPhrase = key.includes(" ");
     const editorText = editor.getText();
 
-    // Function to count occurrences
+    // Function to count occurrences - now using normalized text
     const countOccurrences = (text, searchTerm, isPhrase) => {
-      const normalizedText = text.toLowerCase();
-      const normalizedSearch = searchTerm.toLowerCase();
+      const normalizedText = normalize(text); // Normalize the editor text too
+      const normalizedSearch = normalize(searchTerm);
 
       if (isPhrase) {
         let count = 0;
@@ -643,13 +650,11 @@ function UserInputBox({
         variant: "success",
       });
     } else {
-      // Freezing - use confirmation handlers
+      // Freezing - pass normalized key to handlers
       if (isPhrase && onFreezePhrase) {
-        // The parent handler will show confirmation if needed
-        // and will handle the snackbar message
-        onFreezePhrase(key);
+        onFreezePhrase(key); // Already normalized
       } else if (!isPhrase && onFreezeWord) {
-        onFreezeWord(key);
+        onFreezeWord(key); // Already normalized
       }
     }
 
@@ -662,15 +667,18 @@ function UserInputBox({
       return demo === "unfrozen";
     }
 
-    const raw = selectedWord.trim().toLowerCase();
-    const unquoted = raw.replace(/^"+|"+$/g, "");
+    // Normalize the selected word before checking
+    const normalizedSelected = normalize(selectedWord);
 
-    // Check both quoted and unquoted keys
+    // Also check with quotes removed (for quoted phrases)
+    const unquoted = normalizedSelected.replace(/^"+|"+$/g, "");
+
+    // Check all variations in normalized form
     return (
-      frozenPhrases.has(raw) ||
+      frozenPhrases.has(normalizedSelected) ||
       frozenPhrases.has(`"${unquoted}"`) ||
       frozenPhrases.has(unquoted) ||
-      frozenWords.has(raw) ||
+      frozenWords.has(normalizedSelected) ||
       frozenWords.has(unquoted)
     );
   };

@@ -1,20 +1,20 @@
 "use client";
 
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { addMessage } from "../redux/slice/researchChatSlice";
 import {
-  startStreaming,
   addStreamEvent,
   finishResearch,
+  setConnectionStatus,
   setError,
   setPollingMode,
-  setConnectionStatus,
   setStreamingMode,
+  startStreaming,
 } from "../redux/slice/researchCoreSlice";
-import { addMessage } from "../redux/slice/researchChatSlice";
-import { useConnectionState } from "./useConnectionState";
-import { QueueStatusService } from "../services/queueStatusService";
 import store from "../redux/store";
+import { QueueStatusService } from "../services/queueStatusService";
+import { useConnectionState } from "./useConnectionState";
 
 export const useResearchStream = () => {
   const dispatch = useDispatch();
@@ -394,7 +394,7 @@ export const useResearchStream = () => {
         return;
       }
 
-      console.log(config, "config data");
+      // console.log(config, "config data");
 
       // Check if there's already an active research
       const hasActive = await QueueStatusService.hasActiveResearch();

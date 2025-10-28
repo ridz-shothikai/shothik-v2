@@ -12,7 +12,7 @@ export const toolsApiSlice = createApi({
     spellChecker: builder.mutation({
       query: (payload) => {
         return {
-          url: "/bangla-speel-check",
+          url: "/grammar/check",
           method: "POST",
           body: payload,
         };
@@ -21,7 +21,6 @@ export const toolsApiSlice = createApi({
     paraphraseForTagging: builder.mutation({
       query: (payload) => ({
         url: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/p-v2/api/paraphrase-for-tagging`,
-        // url: `http://localhost:3050/api/paraphraseV2`,
         // url: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/paraphrase-for-tagging`,
         method: "POST",
         body: payload,
@@ -39,7 +38,6 @@ export const toolsApiSlice = createApi({
     paraphrased: builder.mutation({
       query: (payload) => ({
         url: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/p-v2/api/paraphraseV2`,
-        // url: `http://localhost:3050/api/paraphraseV2`,
         // url: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URI}/paraphraseV2`,
         method: "POST",
         body: payload,
@@ -67,7 +65,7 @@ export const toolsApiSlice = createApi({
     scanAidetector: builder.mutation({
       query: (payload) => {
         return {
-          url: "/ai-detector",
+          url: "/ai-detector/check",
           method: "POST",
           body: payload,
         };

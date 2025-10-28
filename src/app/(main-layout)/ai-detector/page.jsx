@@ -1,11 +1,11 @@
+import { aidetectorFaq } from "@/_mock/tools/aidetectorFaq";
+import AiDetectorContentSection from "@/components/(ai-detector-page)/AiDetectorContentSection";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
+import HomeAdvertisement from "@/components/common/HomeAdvertisement";
+import ToolsCTA from "@/components/tools/common/ToolsCTA";
+import ToolsSepecigFaq from "@/components/tools/common/ToolsSepecigFaq";
 import { Container } from "@mui/material";
 import { Suspense } from "react";
-import { aidetectorFaq } from "../../../_mock/tools/aidetectorFaq";
-import ErrorBoundary from "../../../components/common/ErrorBoundary";
-import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
-import AiDetector from "../../../components/tools/aidetector/AiDetector";
-import ToolsCTA from "../../../components/tools/common/ToolsCTA";
-import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
 
 export async function generateMetadata() {
   return {
@@ -17,11 +17,16 @@ export async function generateMetadata() {
 const Aidetector = () => {
   return (
     <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: { md: 12, xs: 10 },
+        maxWidth: "100% !important",
+      }}
     >
       <ErrorBoundary>
         <Suspense fallback={null}>
-          <AiDetector />
+          <AiDetectorContentSection />
         </Suspense>
       </ErrorBoundary>
       <ToolsSepecigFaq

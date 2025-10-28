@@ -1,10 +1,10 @@
 "use client";
+import useSnackbar from "@/hooks/useSnackbar";
 import { Check, ContentCopy } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import React, { useState } from "react";
-import useSnackbar from "../../../hooks/useSnackbar";
+import { useState } from "react";
 
-const CopyButon = ({ text }) => {
+const CopyButton = ({ text }) => {
   const enqueueSnackbar = useSnackbar();
   const [showCopy, setShowCopy] = useState(true);
 
@@ -24,4 +24,4 @@ const CopyButon = ({ text }) => {
   );
 };
 
-export default CopyButon;
+export default CopyButton;

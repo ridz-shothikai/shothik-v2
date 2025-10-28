@@ -1,9 +1,9 @@
-import PlagiarismCheckerClientSections from "@/components/(plagiarism-checker)/PlagiarismCheckerClientSections";
+import PlagiarismCheckerContentSection from "@/components/(plagiarism-checker)/PlagiarismCheckerContentSection";
 
 const PlagiarismCheckerPage = () => {
   return (
     <div>
-      <PlagiarismCheckerClientSections />
+      <PlagiarismCheckerContentSection />
     </div>
   );
 };

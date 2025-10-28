@@ -1,5 +1,5 @@
 import { Box, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useParaphraseForTaggingMutation,
@@ -26,7 +26,7 @@ const ParaphraseOutput = ({
   eventId,
   setEventId,
   setHighlightSentence,
-  paraphraseRequestCounter, // Receive the new prop
+  paraphraseRequestCounter,
 }) => {
   const [paraphraseForTagging] = useParaphraseForTaggingMutation();
   const [reportForSentence] = useReportForSentenceMutation();
@@ -39,6 +39,10 @@ const ParaphraseOutput = ({
   const enqueueSnackbar = useSnackbar();
   const theme = useTheme();
   const dark = theme.palette.mode === "dark";
+
+  // CRITICAL: Use ref to track current request to prevent stale closures
+  const currentRequestRef = useRef(paraphraseRequestCounter);
+
   const synonymInit = {
     synonyms: [],
     sentenceIndex: -1,
@@ -49,12 +53,57 @@ const ParaphraseOutput = ({
 
   // Effect to clear rephrase suggestions when a new main paraphrase request is made
   useEffect(() => {
+    console.log(`🔄 New paraphrase request: ${paraphraseRequestCounter}`);
+    currentRequestRef.current = paraphraseRequestCounter;
     setRephraseData([]);
     setShowRephrase(false);
     setSynonymsOptions(synonymInit);
   }, [paraphraseRequestCounter]);
 
+  // CRITICAL FIX: Log data changes for debugging
+  useEffect(() => {
+    if (data && data.length > 0) {
+      console.log("📊 ParaphraseOutput data updated:", {
+        totalSegments: data.length,
+        nonNewlineSegments: data.filter(
+          (s) => !(s.length === 1 && s[0].type === "newline"),
+        ).length,
+        firstSentence: data[0]?.slice(0, 3).map((w) => w.word),
+        hasSynonyms: data.some((sentence) =>
+          sentence.some((word) => word.synonyms && word.synonyms.length > 0),
+        ),
+      });
+
+      // Deep check for synonym data
+      let sentenceWithSynonyms = 0;
+      let wordsWithSynonyms = 0;
+      data.forEach((sentence, sIdx) => {
+        let sentenceHasSynonyms = false;
+        sentence.forEach((word, wIdx) => {
+          if (word.synonyms && word.synonyms.length > 0) {
+            wordsWithSynonyms++;
+            sentenceHasSynonyms = true;
+            if (sIdx === 0 && wIdx < 3) {
+              console.log(
+                `  ✅ Word "${word.word}" has ${word.synonyms.length} synonyms`,
+              );
+            }
+          }
+        });
+        if (sentenceHasSynonyms) sentenceWithSynonyms++;
+      });
+
+      console.log(
+        `📈 Synonym stats: ${sentenceWithSynonyms} sentences, ${wordsWithSynonyms} words with synonyms`,
+      );
+    }
+  }, [data]);
+
   const replaceSynonym = (newWord) => {
+    console.log(
+      `🔄 Replacing word at [${synonymsOptions.sentenceIndex}][${synonymsOptions.wordIndex}] with: ${newWord}`,
+    );
+
     setData((prevData) => {
       const newData = prevData.map((sentence, sIndex) =>
         sIndex === synonymsOptions.sentenceIndex
@@ -66,6 +115,7 @@ const ParaphraseOutput = ({
           : sentence,
       );
 
+      console.log("✅ Synonym replaced successfully");
       return newData;
     });
     setSynonymsOptions(synonymInit);
@@ -74,6 +124,13 @@ const ParaphraseOutput = ({
   const handleWordClick = (event, synonyms, sentenceIndex, wordIndex) => {
     event.stopPropagation();
 
+    console.log(`🖱️  Word clicked:`, {
+      sentenceIndex,
+      wordIndex,
+      synonymsCount: synonyms?.length || 0,
+      word: data[sentenceIndex]?.[wordIndex]?.word,
+    });
+
     setAnchorEl(event.currentTarget);
     setSynonymsOptions({
       synonyms,
@@ -81,6 +138,7 @@ const ParaphraseOutput = ({
       wordIndex,
       showRephraseNav: true,
     });
+
     const sentenceArr = data[sentenceIndex];
     let sentence = "";
     for (let i = 0; i < sentenceArr.length; i++) {
@@ -95,6 +153,10 @@ const ParaphraseOutput = ({
   };
 
   const replaceSentence = async (sentenceData) => {
+    console.log(
+      `🔄 Replacing sentence at index ${synonymsOptions.sentenceIndex}`,
+    );
+
     let newData = [...data];
     newData[synonymsOptions.sentenceIndex] = sentenceData;
     setData(newData);
@@ -113,27 +175,33 @@ const ParaphraseOutput = ({
       setProcessing({ success: false, loading: true });
 
       let sentence = "";
-      const data = newData[synonymsOptions.sentenceIndex];
-      for (let i = 0; i < data.length; i++) {
-        const word = data[i].word;
+      const sentenceArray = newData[synonymsOptions.sentenceIndex];
+      for (let i = 0; i < sentenceArray.length; i++) {
+        const word = sentenceArray[i].word;
         if (/^[.,]$/.test(word)) {
           sentence += word;
         } else {
           sentence += (sentence ? " " : "") + word;
         }
       }
+
       const randomNumber = Math.floor(Math.random() * 10000000000);
-      setEventId(`${socketId}-${randomNumber}`);
+      const newEventId = `${socketId}-${randomNumber}`;
+      setEventId(newEventId);
+
       const payload = {
         sentence,
         socketId,
         index: synonymsOptions.sentenceIndex,
         language,
-        eventId,
+        eventId: newEventId,
       };
+
+      console.log("📤 Sending tagging request:", payload);
       await paraphraseForTagging(payload).unwrap();
+      console.log("✅ Tagging request sent successfully");
     } catch (error) {
-      console.log(error);
+      console.error("❌ Error replacing sentence:", error);
       setProcessing({ success: false, loading: false });
     }
     setSynonymsOptions(synonymInit);
@@ -176,7 +244,17 @@ const ParaphraseOutput = ({
 
   async function rephraseSentence() {
     try {
-      if (!sentence || !selectedLang) return;
+      if (!sentence || !selectedLang) {
+        console.warn("⚠️  Cannot rephrase: missing sentence or language");
+        return;
+      }
+
+      console.log("🔄 Starting sentence rephrase:", {
+        mode: rephraseMode,
+        synonymLevel,
+        language: selectedLang,
+      });
+
       setIsPending(true);
       setShowRephrase(true);
       setRephraseData([]); // Clear previous rephrase data immediately
@@ -184,10 +262,8 @@ const ParaphraseOutput = ({
       const url =
         process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
         "/p-v2/api" +
-        "/paraphrase-with-variantV2"; // prod
-      // const url =
-      //   process.env.NEXT_PUBLIC_PARAPHRASE_API_URI +
-      //   "/paraphrase-with-variantV2"; // local
+        "/paraphrase-with-variantV2";
+
       const token = localStorage.getItem("accessToken");
       const payload = {
         text: sentence,
@@ -197,6 +273,9 @@ const ParaphraseOutput = ({
         language: selectedLang,
         freezeWord: freezeWords,
       };
+
+      console.log("📤 Rephrase payload:", payload);
+
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -210,22 +289,24 @@ const ParaphraseOutput = ({
         const error = await response.json();
         throw { message: error.message, error: error.error };
       }
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
 
       setIsPending(false);
       if (reader) {
         let text = "";
-        const saparator = selectedLang === "Bengali" ? "।" : ". ";
+        const separator = selectedLang === "Bengali" ? "।" : ". ";
         const pattern = /\{[^}]+\}|\S+/g;
+
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          // Decode the chunk and add it to the buffer
+
           const buffer = decoder.decode(value, { stream: true });
           text += buffer.replaceAll("\n", " ");
 
-          let sentences = text.split(saparator);
+          let sentences = text.split(separator);
           sentences = sentences.map((sentence) => {
             let result = sentence.match(pattern) || [];
             result = result.map((item) => {
@@ -235,16 +316,18 @@ const ParaphraseOutput = ({
                 synonyms: [],
               };
             });
-            result.push({ word: saparator.trim(), type: "none", synonyms: [] });
+            result.push({ word: separator.trim(), type: "none", synonyms: [] });
             return result;
           });
           sentences = sentences.filter((item) => item.length > 1);
 
           setRephraseData(sentences);
         }
+
+        console.log("✅ Rephrase completed successfully");
       }
     } catch (error) {
-      console.log(error);
+      console.error("❌ Rephrase error:", error);
       enqueueSnackbar(error?.message, { variant: "error" });
     }
   }
@@ -252,7 +335,7 @@ const ParaphraseOutput = ({
   // This useEffect should trigger rephraseSentence when the selected sentence or rephrase mode changes
   useEffect(() => {
     if (sentence && showRephrase) {
-      // Only rephrase if a sentence is selected and the rephrase popover is open
+      console.log("🔄 Triggering rephrase due to sentence/mode change");
       rephraseSentence();
     }
   }, [sentence, rephraseMode]);
