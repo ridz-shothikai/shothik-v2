@@ -126,7 +126,6 @@ const ErrorMark = Mark.create({
         "data-correct": HTMLAttributes.correct,
         "data-error-id": HTMLAttributes.errorId,
         "data-sentence": HTMLAttributes.sentence,
-        "data-context": HTMLAttributes.context,
         "data-type": HTMLAttributes.type,
         style:
           "padding: 2px 0; cursor: pointer; border-bottom: 2px solid #FF5630;",
@@ -145,10 +144,6 @@ const prepareText = (text) => {
     .replace(/\u200B|\u200C|\u200D/g, "");
 };
 
-const isWordBoundary = (char) => {
-  return /[\p{P}\p{Z}\p{C}]/u.test(char) || char === "";
-};
-
 const GrammarCheckerContentSection = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
@@ -162,20 +157,20 @@ const GrammarCheckerContentSection = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
   const [anchorEl3, setAnchorEl3] = useState(null);
 
-  const skipSectionRef = useRef(false);
-  const skipCheckRef = useRef(false);
-  const skipMarkRef = useRef(false);
-  const abortControllerRef = useRef(null);
+  const [isCurrentSection, setIsCurrentSection] = useState(false);
 
   const {
     isCheckLoading,
     isRecommendationLoading,
     language,
     text,
+    score,
+    scores,
     issues,
     selectedIssue,
     recommendations,
     isSidebarOpen,
+    isSectionbarOpen,
     sections,
     selectedSection,
     selectedTab,
@@ -206,16 +201,6 @@ const GrammarCheckerContentSection = () => {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [pathname, router, searchParams]);
 
-  // Auto-detect language
-  useEffect(() => {
-    if (!text?.trim()) return;
-
-    const lang = detectLanguage(text);
-    if (lang && lang !== language) {
-      dispatch(setLanguage(lang));
-    }
-  }, [text, language, dispatch]);
-
   // Initialize Tiptap Editor
   const editor = useEditor({
     immediatelyRender: false,
@@ -230,8 +215,10 @@ const GrammarCheckerContentSection = () => {
     content: "",
     editorProps: {
       attributes: {
-        class: "tiptap-content prose focus:outline-none",
-        style: "outline: none; min-height: 400px; padding: 16px;",
+        class:
+          "tiptap-content prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none text-foreground bg-transparent",
+        style:
+          "outline: none; min-height: 400px; padding: 16.5px 14px; font-family: inherit; font-size: 1rem; line-height: 1.5;",
       },
       handleClickOn: (view, pos, node, nodePos, event) => {
         const target = event.target;
@@ -239,7 +226,6 @@ const GrammarCheckerContentSection = () => {
           const error = target.getAttribute("data-error");
           const correct = target.getAttribute("data-correct");
           const sentence = target.getAttribute("data-sentence");
-          const context = target.getAttribute("data-context");
           const type = target.getAttribute("data-type");
           const errorId = target.getAttribute("data-error-id");
 
@@ -248,7 +234,6 @@ const GrammarCheckerContentSection = () => {
               error,
               correct,
               sentence,
-              context,
               type,
               errorId,
             }),
@@ -260,33 +245,34 @@ const GrammarCheckerContentSection = () => {
       },
     },
     onUpdate: ({ editor }) => {
-      const newText = editor.getText();
-      dispatch(setText(newText));
+      const text = editor.getText();
+      dispatch(setText(text));
     },
   });
 
-  const debouncedText = useDebounce(text, 1500);
-
-  // Grammar check with position-based errors
+  // Auto-detect language
   useEffect(() => {
-    const preparedText = debouncedText.trim();
+    const preparedText = prepareText(text);
+    if (!preparedText) return;
 
-    console.log("Checking grammar for text", skipCheckRef.current);
+    const lang = detectLanguage(preparedText);
+    if (lang && lang !== language) {
+      dispatch(setLanguage(lang));
+    }
+  }, [text, language, dispatch]);
 
-    if (!debouncedText) {
+  const debouncedText = useDebounce(text, 1500);
+  const abortControllerRef = useRef(null);
+
+  // Grammar check with debounce
+  useEffect(() => {
+    const preparedText = prepareText(debouncedText);
+    if (!preparedText) {
       handleClear();
       return;
     }
 
-    if (!preparedText) {
-      return;
-    }
-
-    if (skipCheckRef.current) {
-      skipCheckRef.current = false;
-      return;
-    }
-
+    // Cancel previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -299,31 +285,39 @@ const GrammarCheckerContentSection = () => {
         dispatch(setIsCheckLoading(true));
 
         const data = await grammarCheck(
-          { content: debouncedText, language },
+          { content: preparedText, language },
           controller.signal,
         );
 
-        const { result, section, history } = data || {};
+        const { issues = [], scores = [] } = data?.result || {};
+        dispatch(setIssues(issues));
 
-        const { issues = [] } = result || {};
+        const avgScore =
+          scores.length > 0
+            ? Math.round(
+                scores.reduce(
+                  (sum, item) => sum + Number(item?.score || 0),
+                  0,
+                ) / scores.length,
+              )
+            : 0;
 
-        skipMarkRef.current = false;
-        dispatch(setIssues(issues || []));
+        dispatch(setScore(avgScore));
+        dispatch(setScores(scores));
 
         const { _id } = data?.section || {};
         if (_id && (!sectionId || _id !== sectionId)) {
-          skipSectionRef.current = true;
-
-          const currentSection = { ...(section || {}), last_history: history };
-
-          dispatch(setSections([currentSection, ...sections]));
-          dispatch(setSelectedSection(currentSection));
+          setIsCurrentSection(true);
+          dispatch(setSections([data?.section || {}, ...sections]));
+          dispatch(setSelectedSection(data.section));
           setSectionId(_id);
         }
       } catch (error) {
         if (error.name === "CanceledError" || error.name === "AbortError")
           return;
-        console.error("Grammar check error:", error);
+        enqueueSnackbar(error?.data?.message || "Something went wrong", {
+          variant: "error",
+        });
       } finally {
         dispatch(setIsCheckLoading(false));
       }
@@ -334,70 +328,32 @@ const GrammarCheckerContentSection = () => {
     return () => {
       controller.abort();
     };
-  }, [debouncedText, language, dispatch]);
+  }, [debouncedText]);
 
-  // Apply error highlighting using sentence + context + error matching
+  // Apply error highlighting
   useEffect(() => {
-    if (!editor || !text?.trim()) return;
-
-    if (skipMarkRef.current) {
-      // skipMarkRef.current = false;
-      return;
-    }
+    if (!editor || !text) return;
 
     const { state } = editor;
     let tr = state.tr;
 
-    // Remove all existing marks
     tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
 
     issues?.forEach((errorObj, index) => {
-      const { error, correct, sentence, type, context, errorId } = errorObj;
+      const { error, correct, sentence, type } = errorObj;
       if (!error) return;
+
+      const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedError, "g");
 
       state.doc.descendants((node, pos) => {
         if (!node.isText) return;
 
-        const nodeText = node.text;
+        let match;
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
 
-        // Step 1: Check if this node contains the sentence
-        if (
-          !nodeText.includes(sentence) &&
-          !sentence.includes(nodeText.trim())
-        ) {
-          return; // Skip if sentence not in this node
-        }
-
-        // Step 2: If context exists, use it to narrow down search
-        let searchText = nodeText;
-        let searchOffset = 0;
-
-        if (context && context.includes(error)) {
-          const contextIndex = nodeText.indexOf(context);
-          if (contextIndex !== -1) {
-            // Search only within context area
-            searchText = nodeText.substring(contextIndex);
-            searchOffset = contextIndex;
-          }
-        }
-
-        // Step 3: Find error in search area
-        const errorIndex = searchText.indexOf(error);
-        if (errorIndex === -1) return;
-
-        const actualIndex = searchOffset + errorIndex;
-        const start = pos + actualIndex;
-        const end = start + error.length;
-
-        // Step 4: Verify word boundaries (prevent "com" in "come")
-        const beforeChar = actualIndex > 0 ? nodeText?.[actualIndex - 1] : " ";
-        const afterChar =
-          actualIndex + error.length < nodeText.length
-            ? nodeText[actualIndex + error.length]
-            : " ";
-
-        // Only mark if at word boundary
-        if (isWordBoundary(beforeChar) && isWordBoundary(afterChar)) {
           tr = tr.addMark(
             start,
             end,
@@ -405,9 +361,8 @@ const GrammarCheckerContentSection = () => {
               error,
               correct,
               sentence,
-              context,
               type,
-              errorId,
+              errorId: `error-${index}-${start}`,
             }),
           );
         }
@@ -416,90 +371,91 @@ const GrammarCheckerContentSection = () => {
 
     tr.setMeta("addToHistory", false);
     editor.view.dispatch(tr);
-  }, [issues, editor]);
+  }, [issues, editor, text]);
 
+  // Accept all corrections
   const handleAcceptAllCorrections = useCallback(() => {
     if (!Array.isArray(issues) || !editor) return;
 
     const { state } = editor;
-    let tr = state.tr;
-    const appliedIds = new Set();
+    const transactions = [];
 
     state.doc.descendants((node, pos) => {
       if (!node.isText) return;
 
-      const marks = node.marks?.filter(
-        (mark) => mark.type?.name === "errorMark",
-      );
+      issues?.forEach((issue) => {
+        const { error, correct } = issue;
+        if (!error || !correct) return;
 
-      marks.forEach((mark) => {
-        const { errorId } = mark.attrs;
-        if (!errorId || appliedIds.has(errorId)) return;
+        const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedError, "g");
+        let match;
 
-        const issue = issues.find((i) => i.errorId === errorId);
-        if (!issue || !issue.correct) return;
-
-        // Mark as processed
-        appliedIds.add(errorId);
-
-        const start = pos;
-        const end = pos + node.text.length; // or adjust per nodeText.length
-
-        // Apply correction
-        skipCheckRef.current = true;
-        skipMarkRef.current = true;
-        tr = tr.insertText(issue.correct, start, end);
-        tr = tr.removeMark(start, start + issue.correct.length, mark.type);
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+          transactions.push({ start, end, correct });
+        }
       });
     });
 
-    // Cleanup all remaining marks after applying all corrections
-    tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    const tr = state.tr;
+    transactions
+      .sort((a, b) => b.start - a.start)
+      .forEach(({ start, end, correct }) => {
+        tr.insertText(correct, start, end);
+      });
+
+    // 🧹 Remove all error marks after replacements
+    if (!!state?.doc?.content?.size && !!state?.schema?.marks?.errorMark) {
+      tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    }
 
     tr.setMeta("addToHistory", true);
     editor.view.dispatch(tr);
 
-    // Clear issues from Redux state
     dispatch(setIssues([]));
-
     enqueueSnackbar("All corrections accepted!", { variant: "success" });
   }, [issues, editor, dispatch, enqueueSnackbar]);
 
+  // Accept single correction
   const handleAcceptCorrection = useCallback(
     (issue) => {
-      if (!editor || !issue?.errorId) return;
+      if (!issue || !editor) return;
+
+      const { error, correct, sentence } = issue;
+      if (!error || !correct) return;
+
       const { state } = editor;
+      const escapedError = error.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedError, "g");
+
       let tr = state.tr;
-      let corrected = false;
 
       state.doc.descendants((node, pos) => {
-        if (!node.isText || corrected) return;
+        if (!node.isText) return;
 
-        const marks = node.marks.filter(
-          (mark) =>
-            mark.type.name === "errorMark" &&
-            mark.attrs.errorId === issue.errorId,
-        );
+        let match;
+        while ((match = regex.exec(node.text)) !== null) {
+          const start = pos + match.index;
+          const end = start + error.length;
+          tr = tr.insertText(correct, start, end);
 
-        if (marks.length > 0) {
-          const mark = marks?.[0];
-          const start = pos;
-          const end = pos + node.text.length; // or adjust per nodeText.length
-
-          // Insert correction
-          skipCheckRef.current = true;
-          skipMarkRef.current = true;
-          tr = tr.insertText(issue.correct, start, end);
-          tr = tr.removeMark(start, start + issue.correct.length, mark.type);
-          corrected = true;
+          // 🧹 Remove error mark only from this range
+          tr = tr.removeMark(start, end, state.schema.marks.errorMark);
         }
       });
 
-      if (corrected) {
-        tr.setMeta("addToHistory", true);
-        editor.view.dispatch(tr);
-        dispatch(setIssues(issues.filter((e) => e.errorId !== issue.errorId)));
-      }
+      tr.setMeta("addToHistory", true);
+      editor.view.dispatch(tr);
+
+      dispatch(
+        setIssues(
+          issues.filter((e) => !(e.error === error && e.sentence === sentence)),
+        ),
+      );
+
+      setAnchorEl(null);
     },
     [editor, issues, dispatch],
   );
@@ -537,18 +493,9 @@ const GrammarCheckerContentSection = () => {
 
   const handleSelectSection = useCallback(
     (section) => {
-      // Skip next check to avoid loop
-      skipCheckRef.current = true;
-
       handleClear();
+      setIsCurrentSection(true);
       dispatch(setSelectedSection(section || {}));
-      dispatch(
-        setIssues(
-          section?.last_history?.result?.issues ||
-            section?.result?.issues ||
-            [],
-        ),
-      );
 
       if (editor) editor.commands.setContent(section?.text || "");
       if (section?._id && section._id !== sectionId) {
@@ -593,32 +540,18 @@ const GrammarCheckerContentSection = () => {
       return;
     }
 
-    if (skipSectionRef.current) return;
+    if (isCurrentSection) return;
 
     if (selectedSection?._id === sectionId) return;
 
+    console.log("Fetching section:", sectionId, selectedSection);
+
     const setCurrentSection = async () => {
       try {
-        const { success, data: section } = await fetchGrammarSection(sectionId);
-        if (success && section) {
-          if (editor) {
-            editor.commands.setContent(
-              section?.last_history?.text || section?.text || "",
-            );
-          } else {
-            dispatch(
-              setText(section?.last_history?.text || section?.text || ""),
-            );
-          }
-
-          dispatch(setSelectedSection(section));
-          dispatch(
-            setIssues(
-              section?.last_history?.result?.issues ||
-                section?.result?.issues ||
-                [],
-            ),
-          );
+        const { success, data } = await fetchGrammarSection(sectionId);
+        if (success && data) {
+          dispatch(setSelectedSection(data));
+          if (editor) editor.commands.setContent(data?.text || "");
         }
       } catch (err) {
         console.error("Error fetching section:", err);
@@ -802,7 +735,7 @@ const GrammarCheckerContentSection = () => {
                           <span className="shrink-0">
                             {issues?.length ? (
                               <span className="rounded-full bg-red-500/15 p-1 text-xs text-red-500">
-                                {issues?.length}
+                                {issues.length}
                               </span>
                             ) : (
                               <Image
@@ -933,13 +866,13 @@ const GrammarCheckerContentSection = () => {
                     <ChevronsRight />
                     <span>Open assistant</span>
                   </button>
-                  {/* <div
+                  <div
                     className={cn(
                       "flex aspect-square h-8 items-center justify-center rounded-md border bg-red-500/15 px-2 text-sm",
                     )}
                   >
                     {score || 0}/100
-                  </div> */}
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between gap-4">
@@ -947,7 +880,7 @@ const GrammarCheckerContentSection = () => {
                       <span>
                         {issues?.length ? (
                           <span className="rounded-md bg-red-500 px-1.5 py-1 text-white">
-                            {issues?.length}
+                            {issues.length}
                           </span>
                         ) : isCheckLoading ? (
                           <div className="flex items-center justify-center">

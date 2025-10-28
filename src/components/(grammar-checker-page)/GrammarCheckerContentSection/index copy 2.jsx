@@ -111,6 +111,8 @@ const ErrorMark = Mark.create({
       errorId: { default: null },
       sentence: { default: null },
       type: { default: null },
+      startIndex: { default: null },
+      endIndex: { default: null },
     };
   },
 
@@ -126,8 +128,9 @@ const ErrorMark = Mark.create({
         "data-correct": HTMLAttributes.correct,
         "data-error-id": HTMLAttributes.errorId,
         "data-sentence": HTMLAttributes.sentence,
-        "data-context": HTMLAttributes.context,
         "data-type": HTMLAttributes.type,
+        "data-start-index": HTMLAttributes.startIndex,
+        "data-end-index": HTMLAttributes.endIndex,
         style:
           "padding: 2px 0; cursor: pointer; border-bottom: 2px solid #FF5630;",
       }),
@@ -145,10 +148,6 @@ const prepareText = (text) => {
     .replace(/\u200B|\u200C|\u200D/g, "");
 };
 
-const isWordBoundary = (char) => {
-  return /[\p{P}\p{Z}\p{C}]/u.test(char) || char === "";
-};
-
 const GrammarCheckerContentSection = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const isMobile = useResponsive("down", "sm");
@@ -164,7 +163,6 @@ const GrammarCheckerContentSection = () => {
 
   const skipSectionRef = useRef(false);
   const skipCheckRef = useRef(false);
-  const skipMarkRef = useRef(false);
   const abortControllerRef = useRef(null);
 
   const {
@@ -239,21 +237,22 @@ const GrammarCheckerContentSection = () => {
           const error = target.getAttribute("data-error");
           const correct = target.getAttribute("data-correct");
           const sentence = target.getAttribute("data-sentence");
-          const context = target.getAttribute("data-context");
           const type = target.getAttribute("data-type");
           const errorId = target.getAttribute("data-error-id");
+          const startIndex = parseInt(target.getAttribute("data-start-index"));
+          const endIndex = parseInt(target.getAttribute("data-end-index"));
 
           dispatch(
             setSelectedIssue({
               error,
               correct,
               sentence,
-              context,
               type,
               errorId,
+              startIndex,
+              endIndex,
             }),
           );
-          setAnchorEl(target);
           return true;
         }
         return false;
@@ -267,20 +266,20 @@ const GrammarCheckerContentSection = () => {
 
   const debouncedText = useDebounce(text, 1500);
 
-  // Grammar check with position-based errors
+  // ✅ Grammar check with position-based errors
   useEffect(() => {
-    const preparedText = debouncedText.trim();
-
-    console.log("Checking grammar for text", skipCheckRef.current);
-
     if (!debouncedText) {
       handleClear();
       return;
     }
 
+    const preparedText = debouncedText.trim();
+
     if (!preparedText) {
       return;
     }
+
+    console.log("Checking grammar for text:", preparedText);
 
     if (skipCheckRef.current) {
       skipCheckRef.current = false;
@@ -303,21 +302,22 @@ const GrammarCheckerContentSection = () => {
           controller.signal,
         );
 
-        const { result, section, history } = data || {};
+        const { issues = [] } = data?.result || {};
 
-        const { issues = [] } = result || {};
+        // ✅ Add unique errorId to each issue
+        const issuesWithIds = issues.map((issue, index) => ({
+          ...issue,
+          errorId: `error-${index}-${issue.startIndex}`,
+        }));
 
-        skipMarkRef.current = false;
-        dispatch(setIssues(issues || []));
+        dispatch(setIssues(issuesWithIds));
 
         const { _id } = data?.section || {};
         if (_id && (!sectionId || _id !== sectionId)) {
           skipSectionRef.current = true;
 
-          const currentSection = { ...(section || {}), last_history: history };
-
-          dispatch(setSections([currentSection, ...sections]));
-          dispatch(setSelectedSection(currentSection));
+          dispatch(setSections([data?.section || {}, ...sections]));
+          dispatch(setSelectedSection(data.section));
           setSectionId(_id);
         }
       } catch (error) {
@@ -336,173 +336,229 @@ const GrammarCheckerContentSection = () => {
     };
   }, [debouncedText, language, dispatch]);
 
-  // Apply error highlighting using sentence + context + error matching
+  // ✅ Apply error highlighting using EXACT positions from backend
   useEffect(() => {
-    if (!editor || !text?.trim()) return;
-
-    if (skipMarkRef.current) {
-      // skipMarkRef.current = false;
+    if (!editor || !text || !issues?.length) {
+      // Clear all marks if no issues
+      if (editor && text) {
+        const { state } = editor;
+        let tr = state.tr.removeMark(
+          0,
+          state.doc.content.size,
+          state.schema.marks.errorMark,
+        );
+        tr.setMeta("addToHistory", false);
+        editor.view.dispatch(tr);
+      }
       return;
     }
 
     const { state } = editor;
     let tr = state.tr;
 
-    // Remove all existing marks
+    // Remove all existing error marks
     tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
 
-    issues?.forEach((errorObj, index) => {
-      const { error, correct, sentence, type, context, errorId } = errorObj;
-      if (!error) return;
+    // ✅ Convert text positions to ProseMirror document positions
+    issues?.forEach((issue) => {
+      const { error, correct, sentence, type, errorId, startIndex, endIndex } =
+        issue;
+
+      if (
+        typeof startIndex !== "number" ||
+        typeof endIndex !== "number" ||
+        startIndex < 0 ||
+        endIndex > text.length
+      ) {
+        console.warn(`Invalid position for error: "${error}"`);
+        return;
+      }
+
+      // Map text position to ProseMirror document position
+      let currentTextPos = 0;
+      let found = false;
 
       state.doc.descendants((node, pos) => {
-        if (!node.isText) return;
+        if (!node.isText || found) return;
 
-        const nodeText = node.text;
+        const nodeTextStart = currentTextPos;
+        const nodeTextEnd = currentTextPos + node.text.length;
 
-        // Step 1: Check if this node contains the sentence
-        if (
-          !nodeText.includes(sentence) &&
-          !sentence.includes(nodeText.trim())
-        ) {
-          return; // Skip if sentence not in this node
-        }
+        // Check if this node contains the error
+        if (startIndex >= nodeTextStart && startIndex < nodeTextEnd) {
+          const relativeStart = startIndex - nodeTextStart;
+          const relativeEnd = Math.min(
+            endIndex - nodeTextStart,
+            node.text.length,
+          );
 
-        // Step 2: If context exists, use it to narrow down search
-        let searchText = nodeText;
-        let searchOffset = 0;
+          // Verify the text matches
+          const extractedText = node.text.substring(relativeStart, relativeEnd);
 
-        if (context && context.includes(error)) {
-          const contextIndex = nodeText.indexOf(context);
-          if (contextIndex !== -1) {
-            // Search only within context area
-            searchText = nodeText.substring(contextIndex);
-            searchOffset = contextIndex;
+          if (
+            extractedText === error ||
+            extractedText === error.substring(0, relativeEnd - relativeStart)
+          ) {
+            const docStart = pos + relativeStart;
+            const docEnd = pos + relativeEnd;
+
+            tr = tr.addMark(
+              docStart,
+              docEnd,
+              state.schema.marks.errorMark.create({
+                error,
+                correct,
+                sentence,
+                type,
+                errorId,
+                startIndex,
+                endIndex,
+              }),
+            );
+
+            // If error spans multiple nodes, handle the rest
+            if (endIndex > nodeTextEnd) {
+              found = false; // Continue to next node
+            } else {
+              found = true;
+            }
           }
         }
 
-        // Step 3: Find error in search area
-        const errorIndex = searchText.indexOf(error);
-        if (errorIndex === -1) return;
-
-        const actualIndex = searchOffset + errorIndex;
-        const start = pos + actualIndex;
-        const end = start + error.length;
-
-        // Step 4: Verify word boundaries (prevent "com" in "come")
-        const beforeChar = actualIndex > 0 ? nodeText?.[actualIndex - 1] : " ";
-        const afterChar =
-          actualIndex + error.length < nodeText.length
-            ? nodeText[actualIndex + error.length]
-            : " ";
-
-        // Only mark if at word boundary
-        if (isWordBoundary(beforeChar) && isWordBoundary(afterChar)) {
-          tr = tr.addMark(
-            start,
-            end,
-            state.schema.marks.errorMark.create({
-              error,
-              correct,
-              sentence,
-              context,
-              type,
-              errorId,
-            }),
-          );
-        }
+        currentTextPos = nodeTextEnd;
       });
     });
 
     tr.setMeta("addToHistory", false);
     editor.view.dispatch(tr);
-  }, [issues, editor]);
+  }, [issues, editor, text]);
 
-  const handleAcceptAllCorrections = useCallback(() => {
-    if (!Array.isArray(issues) || !editor) return;
-
-    const { state } = editor;
-    let tr = state.tr;
-    const appliedIds = new Set();
-
-    state.doc.descendants((node, pos) => {
-      if (!node.isText) return;
-
-      const marks = node.marks?.filter(
-        (mark) => mark.type?.name === "errorMark",
-      );
-
-      marks.forEach((mark) => {
-        const { errorId } = mark.attrs;
-        if (!errorId || appliedIds.has(errorId)) return;
-
-        const issue = issues.find((i) => i.errorId === errorId);
-        if (!issue || !issue.correct) return;
-
-        // Mark as processed
-        appliedIds.add(errorId);
-
-        const start = pos;
-        const end = pos + node.text.length; // or adjust per nodeText.length
-
-        // Apply correction
-        skipCheckRef.current = true;
-        skipMarkRef.current = true;
-        tr = tr.insertText(issue.correct, start, end);
-        tr = tr.removeMark(start, start + issue.correct.length, mark.type);
-      });
-    });
-
-    // Cleanup all remaining marks after applying all corrections
-    tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
-
-    tr.setMeta("addToHistory", true);
-    editor.view.dispatch(tr);
-
-    // Clear issues from Redux state
-    dispatch(setIssues([]));
-
-    enqueueSnackbar("All corrections accepted!", { variant: "success" });
-  }, [issues, editor, dispatch, enqueueSnackbar]);
-
+  // ✅ Accept single correction using exact position
   const handleAcceptCorrection = useCallback(
     (issue) => {
-      if (!editor || !issue?.errorId) return;
+      if (!issue || !editor) return;
+
+      const { error, correct, startIndex, endIndex, errorId } = issue;
+
+      if (
+        !error ||
+        !correct ||
+        typeof startIndex !== "number" ||
+        typeof endIndex !== "number"
+      ) {
+        console.error("Invalid issue data:", issue);
+        return;
+      }
+
+      skipCheckRef.current = true;
+
       const { state } = editor;
       let tr = state.tr;
-      let corrected = false;
+
+      // Find the exact position in ProseMirror document
+      let currentTextPos = 0;
+      let found = false;
 
       state.doc.descendants((node, pos) => {
-        if (!node.isText || corrected) return;
+        if (!node.isText || found) return;
 
-        const marks = node.marks.filter(
-          (mark) =>
-            mark.type.name === "errorMark" &&
-            mark.attrs.errorId === issue.errorId,
-        );
+        const nodeTextStart = currentTextPos;
+        const nodeTextEnd = currentTextPos + node.text.length;
 
-        if (marks.length > 0) {
-          const mark = marks?.[0];
-          const start = pos;
-          const end = pos + node.text.length; // or adjust per nodeText.length
+        if (startIndex >= nodeTextStart && startIndex < nodeTextEnd) {
+          const relativeStart = startIndex - nodeTextStart;
+          const relativeEnd = Math.min(
+            endIndex - nodeTextStart,
+            node.text.length,
+          );
 
-          // Insert correction
-          skipCheckRef.current = true;
-          skipMarkRef.current = true;
-          tr = tr.insertText(issue.correct, start, end);
-          tr = tr.removeMark(start, start + issue.correct.length, mark.type);
-          corrected = true;
+          const extractedText = node.text.substring(relativeStart, relativeEnd);
+
+          if (extractedText === error || error.startsWith(extractedText)) {
+            const docStart = pos + relativeStart;
+            const docEnd = pos + relativeEnd;
+
+            // Replace text
+            tr = tr.insertText(correct, docStart, docEnd);
+
+            // Remove mark
+            tr = tr.removeMark(
+              docStart,
+              docStart + correct.length,
+              state.schema.marks.errorMark,
+            );
+
+            found = true;
+          }
         }
+
+        currentTextPos = nodeTextEnd;
       });
 
-      if (corrected) {
-        tr.setMeta("addToHistory", true);
-        editor.view.dispatch(tr);
-        dispatch(setIssues(issues.filter((e) => e.errorId !== issue.errorId)));
+      if (!found) {
+        console.warn(
+          `Could not find error "${error}" at position ${startIndex}`,
+        );
+        return;
       }
+
+      tr.setMeta("addToHistory", true);
+      editor.view.dispatch(tr);
+
+      // Remove this issue from the list
+      dispatch(setIssues(issues.filter((e) => e.errorId !== errorId)));
     },
     [editor, issues, dispatch],
   );
+
+  // ✅ Accept all corrections using exact positions
+  const handleAcceptAllCorrections = useCallback(() => {
+    if (!Array.isArray(issues) || !issues?.length || !editor) return;
+
+    skipCheckRef.current = true;
+
+    const { state } = editor;
+
+    // Sort by position (descending) to replace from end to start
+    const sortedIssues = [...issues].sort(
+      (a, b) => b.startIndex - a.startIndex,
+    );
+
+    let tr = state.tr;
+
+    sortedIssues.forEach(({ error, correct, startIndex, endIndex }) => {
+      let currentTextPos = 0;
+
+      state.doc.descendants((node, pos) => {
+        if (!node.isText) return;
+
+        const nodeTextStart = currentTextPos;
+        const nodeTextEnd = currentTextPos + node.text.length;
+
+        if (startIndex >= nodeTextStart && startIndex < nodeTextEnd) {
+          const relativeStart = startIndex - nodeTextStart;
+          const relativeEnd = Math.min(
+            endIndex - nodeTextStart,
+            node.text.length,
+          );
+
+          const docStart = pos + relativeStart;
+          const docEnd = pos + relativeEnd;
+
+          tr = tr.insertText(correct, docStart, docEnd);
+        }
+
+        currentTextPos = nodeTextEnd;
+      });
+    });
+
+    // Remove all error marks
+    tr = tr.removeMark(0, state.doc.content.size, state.schema.marks.errorMark);
+    tr.setMeta("addToHistory", true);
+    editor.view.dispatch(tr);
+
+    dispatch(setIssues([]));
+  }, [issues, editor, dispatch]);
 
   const handleIgnoreError = useCallback(() => {
     setAnchorEl(null);
@@ -537,18 +593,9 @@ const GrammarCheckerContentSection = () => {
 
   const handleSelectSection = useCallback(
     (section) => {
-      // Skip next check to avoid loop
-      skipCheckRef.current = true;
-
       handleClear();
+      skipSectionRef.current = true;
       dispatch(setSelectedSection(section || {}));
-      dispatch(
-        setIssues(
-          section?.last_history?.result?.issues ||
-            section?.result?.issues ||
-            [],
-        ),
-      );
 
       if (editor) editor.commands.setContent(section?.text || "");
       if (section?._id && section._id !== sectionId) {
@@ -597,28 +644,14 @@ const GrammarCheckerContentSection = () => {
 
     if (selectedSection?._id === sectionId) return;
 
+    console.log("Fetching section:", sectionId, selectedSection);
+
     const setCurrentSection = async () => {
       try {
-        const { success, data: section } = await fetchGrammarSection(sectionId);
-        if (success && section) {
-          if (editor) {
-            editor.commands.setContent(
-              section?.last_history?.text || section?.text || "",
-            );
-          } else {
-            dispatch(
-              setText(section?.last_history?.text || section?.text || ""),
-            );
-          }
-
-          dispatch(setSelectedSection(section));
-          dispatch(
-            setIssues(
-              section?.last_history?.result?.issues ||
-                section?.result?.issues ||
-                [],
-            ),
-          );
+        const { success, data } = await fetchGrammarSection(sectionId);
+        if (success && data) {
+          dispatch(setSelectedSection(data));
+          if (editor) editor.commands.setContent(data?.text || "");
         }
       } catch (err) {
         console.error("Error fetching section:", err);
@@ -802,7 +835,7 @@ const GrammarCheckerContentSection = () => {
                           <span className="shrink-0">
                             {issues?.length ? (
                               <span className="rounded-full bg-red-500/15 p-1 text-xs text-red-500">
-                                {issues?.length}
+                                {issues.length}
                               </span>
                             ) : (
                               <Image
@@ -947,7 +980,7 @@ const GrammarCheckerContentSection = () => {
                       <span>
                         {issues?.length ? (
                           <span className="rounded-md bg-red-500 px-1.5 py-1 text-white">
-                            {issues?.length}
+                            {issues.length}
                           </span>
                         ) : isCheckLoading ? (
                           <div className="flex items-center justify-center">
