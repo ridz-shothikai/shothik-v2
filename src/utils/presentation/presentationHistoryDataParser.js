@@ -14,6 +14,8 @@
  * @module presentationHistoryParser
  */
 
+import { enrichLogEntry } from "./messageTypeClassifier.js";
+
 /**
  * Generate a unique ID for log entries from history
  * Uses the same format as real-time logs for consistency
@@ -116,13 +118,15 @@ const parseHistoryLogEntry = (logEntry, existingLogs = []) => {
 const parseHistoryUserMessage = (logEntry) => {
   console.log("[HistoryParser] Parsing user message");
 
-  return {
+  const log = {
     id: generateHistoryLogId("user", logEntry.timestamp),
     author: "user",
     content: logEntry.user_message || logEntry.content || "",
     timestamp: logEntry.timestamp || new Date().toISOString(),
     phase: "planning",
   };
+
+  return enrichLogEntry(log);
 };
 
 /**
@@ -161,13 +165,15 @@ const parseHistoryPresentationSpecExtractor = (logEntry) => {
     phase: "planning",
   };
 
+  const enrichedFormattedLog = enrichLogEntry(formattedLog);
+
   // Extract metadata
   const metadata = {
     totalSlides: parsedOutput.slide_count || 0,
     title: parsedOutput.topic || "Generating...",
   };
 
-  return { logEntry: formattedLog, metadata };
+  return { logEntry: enrichedFormattedLog, metadata };
 };
 
 /**
@@ -192,13 +198,15 @@ const parseHistoryKeywordResearchAgent = (logEntry) => {
     }
   }
 
-  return {
+  const log = {
     id: generateHistoryLogId("KeywordResearchAgent", logEntry.timestamp),
     author: "KeywordResearchAgent",
     keywords,
     timestamp: logEntry.timestamp || new Date().toISOString(),
     phase: "research",
   };
+
+  return enrichLogEntry(log);
 };
 
 /**
@@ -253,7 +261,7 @@ const parseHistoryBrowserWorker = (logEntry, existingLogs = []) => {
       });
     }
 
-    return updatedLog;
+    return enrichLogEntry(updatedLog);
   } else {
     // Create new log entry
     const newLog = {
@@ -276,7 +284,7 @@ const parseHistoryBrowserWorker = (logEntry, existingLogs = []) => {
       });
     }
 
-    return newLog;
+    return enrichLogEntry(newLog);
   }
 };
 
@@ -302,13 +310,15 @@ const parseHistoryLightweightPlanningAgent = (logEntry) => {
     }
   }
 
-  return {
+  const log = {
     id: generateHistoryLogId("lightweight_planning_agent", logEntry.timestamp),
     author: "lightweight_planning_agent",
     data: parsedOutput,
     timestamp: logEntry.timestamp || new Date().toISOString(),
     phase: "planning",
   };
+
+  return enrichLogEntry(log);
 };
 
 /**
@@ -319,7 +329,7 @@ const parseHistoryLightweightPlanningAgent = (logEntry) => {
 const parseHistoryLightweightSlideGeneration = (logEntry) => {
   console.log("[HistoryParser] Parsing lightweight slide generation");
 
-  return {
+  const log = {
     id: generateHistoryLogId("LightweightSlideGeneration", logEntry.timestamp),
     author: "LightweightSlideGeneration",
     text: logEntry.parsed_output || "",
@@ -327,6 +337,8 @@ const parseHistoryLightweightSlideGeneration = (logEntry) => {
     timestamp: logEntry.timestamp || new Date().toISOString(),
     phase: "generation",
   };
+
+  return enrichLogEntry(log);
 };
 
 /**

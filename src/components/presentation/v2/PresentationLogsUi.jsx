@@ -4,6 +4,7 @@ import useResponsive from "@/hooks/useResponsive";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import InputArea from "../InputAreas";
+import MessageBubble from "./MessageBubble";
 
 export default function PresentationLogsUi({ logs = [] }) {
   const theme = useTheme();
@@ -68,13 +69,15 @@ export default function PresentationLogsUi({ logs = [] }) {
       >
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           {logs?.length ? (
-            logs.map((l) => (
-              <Typography
-                key={l.id ?? `${l.type}-${Math.random()}`}
-                sx={{ py: 1 }}
-              >
-                {l.text ?? "logs"} {/* render real text if available */}
-              </Typography>
+            logs.map((l, idx) => (
+              // <Typography
+              //   key={l.id ?? `${l.type}-${Math.random()}`}
+              //   sx={{ py: 1 }}
+              // >
+              //   {l.text ?? "logs"} {/* render real text if available */}
+              // </Typography>
+
+              <MessageBubble key={l.id || idx} logs={l} />
             ))
           ) : (
             <Typography sx={{ color: theme.palette.text.secondary }}>

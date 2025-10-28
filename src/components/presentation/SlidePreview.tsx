@@ -394,7 +394,7 @@ export default function SlidePreview({
                   },
                 }}
               >
-                {slide?.slideNumber + 1} / {totalSlides}
+                {slide?.slideNumber} / {totalSlides}
               </Typography>
             )}
           </Box>

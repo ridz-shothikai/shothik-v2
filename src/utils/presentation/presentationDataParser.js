@@ -1,4 +1,5 @@
 // File: src/utils/presentationDataParser.js
+import { enrichLogEntry } from "../../utils/presentation/messageTypeClassifier.js";
 /**
  * Presentation Data Parser
  *
@@ -63,13 +64,16 @@ export const parseConnectedEvent = (payload) => {
 export const parseUserMessage = (message) => {
   console.log("[Parser] Parsing user message:", message);
 
-  return {
+  const logEntry = {
     id: generateLogId("user", message.timestamp),
     author: "user",
     content: message.content || message.user_message || "",
     timestamp: message.timestamp || new Date().toISOString(),
     phase: "planning",
   };
+
+  // Enrich with messageType to have sync with real time logs and history logs
+  return enrichLogEntry(logEntry);
 };
 
 /**
@@ -89,13 +93,15 @@ export const parsePresentationSpecExtractor = (message) => {
     phase: "planning",
   };
 
+  const enrichedLogEntry = enrichLogEntry(logEntry);
+
   // Extracted metadata for separate Redux fields
   const metadata = {
     totalSlides: message.slide_count || 0,
     title: message.topic || "Generating...",
   };
 
-  return { logEntry, metadata };
+  return { enrichedLogEntry, metadata };
 };
 
 /**
@@ -106,13 +112,15 @@ export const parsePresentationSpecExtractor = (message) => {
 export const parseKeywordResearchAgent = (message) => {
   console.log("[Parser] Parsing keyword research agent:", message);
 
-  return {
+  const logEntry = {
     id: generateLogId("KeywordResearchAgent", message.timestamp),
     author: "KeywordResearchAgent",
     keywords: Array.isArray(message.keywords) ? message.keywords : [],
     timestamp: message.timestamp || new Date().toISOString(),
     phase: "research",
   };
+
+  return enrichLogEntry(logEntry);
 };
 
 /**
@@ -161,7 +169,7 @@ export const parseBrowserWorker = (message, existingLogs = []) => {
       type: "browser_worker",
       updateType: "update",
       logIndex: existingLogIndex,
-      logEntry: updatedLog,
+      logEntry: enrichLogEntry(updatedLog),
       isComplete: hasSummary,
     };
   } else {
@@ -194,7 +202,7 @@ export const parseBrowserWorker = (message, existingLogs = []) => {
     return {
       type: "browser_worker",
       updateType: "create",
-      logEntry: newLog,
+      logEntry: enrichLogEntry(newLog),
       isComplete: hasSummary,
     };
   }
@@ -208,13 +216,15 @@ export const parseBrowserWorker = (message, existingLogs = []) => {
 export const parseLightweightPlanningAgent = (message) => {
   console.log("[Parser] Parsing lightweight planning agent:", message);
 
-  return {
+  const logEntry = {
     id: generateLogId("lightweight_planning_agent", message.timestamp),
     author: "lightweight_planning_agent",
     data: { ...message }, // Store all data
     timestamp: message.timestamp || new Date().toISOString(),
     phase: "planning",
   };
+
+  return enrichLogEntry(logEntry);
 };
 
 /**
@@ -225,7 +235,7 @@ export const parseLightweightPlanningAgent = (message) => {
 export const parseLightweightSlideGeneration = (message) => {
   console.log("[Parser] Parsing lightweight slide generation:", message);
 
-  return {
+  const logEntry = {
     id: generateLogId("LightweightSlideGeneration", message.timestamp),
     author: "LightweightSlideGeneration",
     text: message.text || "",
@@ -233,6 +243,8 @@ export const parseLightweightSlideGeneration = (message) => {
     timestamp: message.timestamp || new Date().toISOString(),
     phase: "generation",
   };
+
+  return enrichLogEntry(logEntry);
 };
 
 /**

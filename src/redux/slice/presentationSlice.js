@@ -11,7 +11,7 @@
  * @module presentationSlice
  */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   // Session data
@@ -607,5 +607,38 @@ export const selectCompletedSlides = (state) => {
   const slides = selectSlides(state);
   return slides.filter((slide) => slide.isComplete);
 };
+
+export const selectLogsByType = (messageType) =>
+  createSelector([selectLogs], (logs) =>
+    logs.filter((log) => log.messageType === messageType),
+  );
+
+// Separate user and agent messages with single pass
+export const selectCategorizedLogs = createSelector([selectLogs], (logs) => {
+  const userMessages = [];
+  const agentMessages = [];
+
+  for (const log of logs) {
+    if (log.author === "user") {
+      userMessages.push(log);
+    } else {
+      agentMessages.push(log);
+    }
+  }
+
+  return { userMessages, agentMessages };
+});
+
+// Get only user messages
+export const selectUserMessages = createSelector(
+  [selectCategorizedLogs],
+  (categorized) => categorized.userMessages,
+);
+
+// Get only agent messages
+export const selectAgentMessages = createSelector(
+  [selectCategorizedLogs],
+  (categorized) => categorized.agentMessages,
+);
 
 export default presentationSlice.reducer;
