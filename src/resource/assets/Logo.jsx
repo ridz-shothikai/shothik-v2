@@ -33,7 +33,7 @@ const Logo = forwardRef((_, ref) => {
           }}
         >
           <Image
-            src={isLight ? "/shothik_light_logo.png" : "/shothik_dark_logo.png"}
+            src={isLight ? "/shothik-dark-logo.png" : "/shothik_white_logo.png"}
             priority
             alt="shothik_logo"
             width={100}

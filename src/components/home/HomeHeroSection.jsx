@@ -5,14 +5,16 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Container, Grid2 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import BgContainer from "./components/hero/BgContainer";
-import Details from "./components/hero/Details";
+import { useState } from "react";
 import { useComponentTracking } from "../../hooks/useComponentTracking";
 import { trackingList } from "../../libs/trackingList";
+import BgContainer from "./components/hero/BgContainer";
+import Details from "./components/hero/Details";
+import UserActionButton from "./components/hero/UserActionButton";
 import HeroVideo from "./HeroVideo";
-import Image from "next/image";
 
 export default function HomeHeroSection() {
+  const [showModal, setShowModal] = useState(false);
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.LANDING_HERO,
   );
@@ -152,6 +154,7 @@ export default function HomeHeroSection() {
               </Box>
             </Box>
           </Box>
+          <UserActionButton />
         </Grid2>
       </Container>
     </BgContainer>

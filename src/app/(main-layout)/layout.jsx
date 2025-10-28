@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
 import Main from "../../components/layout/Main";
-import MainHeader from "../../components/navigation/MainHeader";
 import NavMini from "../../components/navigation/NavMini";
 import NavVertical from "../../components/navigation/NavVertical";
 import AlertDialog from "../../components/tools/common/AlertDialog";
@@ -25,7 +24,7 @@ import {
 import { setOpen } from "../../redux/slice/settings";
 import LoadingScreen from "../../resource/LoadingScreen";
 
-export default function MainLayout({ children }) {
+function MainLayoutContent({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const isMobile = useResponsive("down", "sm");
@@ -88,7 +87,8 @@ export default function MainLayout({ children }) {
       shallowRouting
     >
       <Box>
-        <MainHeader />
+        {/* <MainHeader /> */}
+        <ShothikHeader />
         <Box
           sx={{
             bgcolor: isDarkMode ? "#212121" : "background.neutral",
@@ -114,5 +114,19 @@ export default function MainLayout({ children }) {
         </Box>
       </Box>
     </ProgressProvider>
+  );
+}
+
+import ShothikHeader from "../../components/layout/ShothikHeader";
+import { ThemeRegistry } from "../../components/providers";
+import MUIProvider from "../../config/MUIProvider";
+
+export default function MainLayout({ children }) {
+  return (
+    <MUIProvider>
+      <ThemeRegistry>
+        <MainLayoutContent>{children}</MainLayoutContent>
+      </ThemeRegistry>
+    </MUIProvider>
   );
 }

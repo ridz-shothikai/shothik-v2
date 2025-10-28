@@ -1,0 +1,147 @@
+Dear Team,
+
+Please find below the documentation for the Shothik AI Design System. This outlines the principles, guidelines, and specifications for our visual language, ensuring a consistent and cohesive user experience across all our products.
+
+**Shothik AI Design System Documentation**
+
+**Brand Philosophy**
+
+The Shothik AI design system embraces Steve Jobs' minimalism principles, emphasizing that "Simplicity is the ultimate sophistication." We believe every element should serve a distinct purpose, achieved through radical focus and the strategic use of intentional white space.
+
+**Color Palette**
+
+Our color palette is carefully curated to reflect our brand identity and enhance usability.
+
+**Primary Brand Colors**
+
+* **Primary Brand:** #005249 (HSL: 180, 100%, 15%) - A deep teal representing trust, stability, and growth. This color is primarily used for key Calls to Action (CTAs) and core brand elements.
+* **Secondary Brand:** #00AA93 (HSL: 174, 100%, 33%) - A vibrant teal that embodies innovation and energy. This is used for interactive elements and visual highlights.
+
+**Neutral Foundation**
+
+* **Pure White:** #FFFFFF - The primary background color, inspired by a Jobs-ian "clean slate" to ensure clarity and focus.
+* **Deep Black:** #000000 - Used for essential typography and primary CTAs, providing strong visual hierarchy.
+* **Charcoal:** #374151 (HSL: 215, 25%, 27%) - Applied to body text and secondary content for comfortable readability.
+* **Light Gray:** #6B7280 (HSL: 215, 16%, 47%) - Used for muted text and labels, providing subtle visual cues.
+
+**Accent Colors**
+
+* **Accent Light:** #EAFDF9 (HSL: 160, 60%, 96%) - Used for subtle background variations and hover states, adding gentle visual interest.
+* **Accent Highlight:** #E7FEFE (HSL: 180, 100%, 96%) - Provides visual feedback for interactive elements.
+
+**Trust & Security Indicators**
+
+* **Trust Green:** #22C55E (HSL: 142, 71%, 45%) - Indicates success states and is used for security badges, fostering user confidence.
+* **Security Blue:** #3B82F6 (HSL: 213, 94%, 68%) - Used for general trust indicators and certifications.
+* **Warning Amber:** #F59E0B (HSL: 38, 92%, 50%) - Signals caution and draws attention to important states.
+
+**Typography System**
+
+Our typography system is built for clarity and visual appeal, ensuring a consistent reading experience.
+
+**Font Stack**
+
+* **Primary:** 'Inter' - A clean and highly readable sans-serif font intended for body text.
+* **Display:** 'Manrope' - A geometric sans-serif font for impactful headlines and hero text.
+* **Fallback:** system-ui, -apple-system, sans-serif - Ensures a reliable rendering across different systems.
+
+**Typography Hierarchy**
+
+* **Hero Headlines:** 7xl-9xl (112px-224px), font-thin, tracking-tight - For prominent headings on landing pages and key sections.
+* **Section Headlines:** 4xl-6xl (36px-60px), font-bold, letter-spacing -0.025em - For clear demarcation of content sections.
+* **Body Large:** 3xl (30px), font-light - Often used for subtext within hero sections, providing additional context.
+* **Body Regular:** Base (16px), line-height 1.6 - The standard font size and line height for optimal readability of paragraph text.
+* **Small Text:** sm (14px) - Used for captions, metadata, and less prominent information.
+
+**Font Features**
+
+We utilize specific font features to enhance typography:
+
+* `font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';` - Enables stylistic alternates for improved visual harmony.
+* `text-rendering: optimizeLegibility;` - Optimizes text rendering for better readability.
+* `-webkit-font-smoothing: antialiased;` - Improves the appearance of text on web browsers.
+
+**Layout & Spacing**
+
+Consistent layout and spacing are crucial for a clean and organized interface.
+
+**Container System**
+
+* **Max Width: 5xl (1024px)** - Used for hero sections to maintain focus and readability.
+* **Max Width: 7xl (1280px)** - Applied to content sections to provide ample space while maintaining structure.
+* **Responsive Padding:** `px-4` (mobile) → `px-6` (tablet) → `px-8` (desktop) - Ensures consistent horizontal padding across different screen sizes.
+
+**Spacing Scale (Tailwind)**
+
+We utilize a Tailwind-inspired spacing scale for consistent application of margins and padding:
+
+* **Micro: 1-2 (4px-8px)** - Primarily used for spacing within icons and for borders.
+* **Small: 4-6 (16px-24px)** - For internal spacing within components.
+* **Medium: 8-12 (32px-48px)** - Applied for spacing between different sections of content.
+* **Large: 16-20 (64px-80px)** - Used for significant gaps between major sections.
+* **Extra Large: 24-32 (96px-128px)** - Typically used for spacing in hero sections to create visual breathing room.
+
+**Interactive Elements**
+
+Our interactive elements are designed to be intuitive and provide clear feedback.
+
+**Button Styles**
+
+* **Primary CTA:**
+* Background: Pure black (#000000)
+* Text: White
+* Padding: `px-20 py-6` (80px horizontal, 24px vertical)
+* Border-radius: `xl` (12px)
+* Font: `2xl` (24px), font-light
+* Hover: Scale 1.02, `bg-gray-900` - Provides a clear and engaging call to action.
+* **Secondary Button:**
+* Background: Transparent
+* Border: 1px solid border color (context-dependent)
+* Text: Foreground color (context-dependent)
+* Hover: Background fill with a subtle color - Offers a less prominent action.
+
+**Micro-Interactions**
+
+Subtle animations and transitions enhance the user experience:
+
+* **Scale:** 1.01-1.02 for gentle hover effects on interactive elements.
+* **Duration:** 300-500ms for smooth and natural transitions.
+* **Easing:** `cubic-bezier(0.25, 0.46, 0.45, 0.94)` for a natural and engaging motion curve.
+
+**Component Design Principles**
+
+Our components are designed with reusability and consistency in mind.
+
+**Cards & Containers**
+
+* Background: Pure white (#FFFFFF) with subtle shadows for visual lift.
+* Border: 1px solid `slate-200/50` for clear definition.
+* Border-radius: `2xl` (16px) for a modern aesthetic.
+* Shadow: Soft, minimal shadows to provide depth without being distracting.
+
+**Form Elements**
+
+* Input Height: Minimum 44px to ensure comfortable touch interaction.
+* Focus States: `ring-2` with the primary brand color at 20% opacity for clear visual feedback.
+* Placeholder: Muted foreground color for subtle guidance.
+* Error States: Utilize the warning amber color with clear and concise error messaging.
+
+**Responsive Design**
+
+We adopt a mobile-first approach to ensure our designs are accessible and performant across all devices.
+
+**Breakpoint Strategy**
+
+* **Mobile First Approach:** Designs are initially optimized for mobile devices and then progressively enhanced for larger screens.
+* **Breakpoints:**
+* `Base`: 0-640px (mobile)
+* `sm`: 640px+ (large mobile)
+* `md`: 768px+ (tablet)
+* `lg`: 1024px+ (desktop)
+* `xl`: 1280px+ (large desktop)
+
+**Mobile Optimizations**
+
+* **Touch Targets:** Interactive elements have a minimum size of 44px × 44px for easy interaction on touchscreens.
+* **Font Scaling:** Responsive text sizes (e.g., `text-7xl` on mobile scaling up to `text-9xl` on larger screens) ensure readability.
+* **Spacing:** Reduced spacing on mobile (e.g., `space-y-12` might become `space

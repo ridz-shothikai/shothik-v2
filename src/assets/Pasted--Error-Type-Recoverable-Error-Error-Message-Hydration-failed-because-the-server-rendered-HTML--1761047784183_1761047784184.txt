@@ -1,0 +1,60 @@
+## Error Type
+Recoverable Error
+
+## Error Message
+Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RedirectErrorBoundary router={{...}}>
+      <InnerLayoutRouter url="/features#..." tree={[...]} cacheNode={{lazyData:null, ...}} segmentPath={[...]}>
+        <SegmentViewNode type="page" pagePath="features/p...">
+          <SegmentTrieNode>
+          <ClientPageRoot Component={function FeaturesPage} searchParams={{}} params={{}}>
+            <FeaturesPage params={Promise} searchParams={Promise}>
+              <Box sx={{...}}>
+                <Styled(div) as="div" ref={null} className="MuiBox-root" theme={{...}} sx={{...}}>
+                  <Insertion>
+                  <div className="MuiBox-roo...">
+                    <ScrollProgress>
+                    <ShothikHeader>
+                      <AppBar position="fixed" sx={{top:0,right:0, ...}}>
+                        <MuiAppBar-root square={true} component="header" ownerState={{position:"...", ...}} elevation={4} ...>
+                          <Insertion>
+                          <Paper square={true} component="header" elevation={4} className="MuiAppBar-...">
+                            <MuiPaper-root as="header" ownerState={{square:true, ...}} className="MuiPaper-r..." ...>
+                              <Insertion>
++                             <header
++                               className="MuiPaper-root MuiPaper-elevation MuiPaper-elevation4 MuiAppBar-root MuiAppB..."
++                               style={{--Paper-shadow:"0 4px 8px ..."}}
++                             >
+-                             <aside className="MuiBox-root mui-1h91gf">
+                    ...
+        ...
+      ...
+
+
+
+    at header (<anonymous>:null:null)
+    at ShothikHeader (components/layout/ShothikHeader.tsx:106:5)
+    at FeaturesPage (app/features/page.tsx:160:7)
+
+## Code Frame
+  104 |
+  105 |   return (
+> 106 |     <AppBar
+      |     ^
+  107 |       position="fixed"
+  108 |       sx={{
+  109 |         top: 0,
+
+Next.js version: 15.5.6 (Webpack)

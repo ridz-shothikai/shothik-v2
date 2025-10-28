@@ -5,6 +5,13 @@ import { Login } from "../components/auth/components/Login";
 import { Register } from "../components/auth/components/Register";
 import Providers from "../config/Providers";
 import "./globals.css";
+import { Manrope } from "next/font/google";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+});
 
 export const metadata = {
   title: "Shothik AI",
@@ -29,6 +36,8 @@ export default function RootLayout({ children }) {
           src="https://cloud.umami.is/script.js"
           data-website-id="a19fecea-d6b0-4093-9074-26531c827bfe"
         ></script>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
       </head>
       <body suppressHydrationWarning>
         <noscript>

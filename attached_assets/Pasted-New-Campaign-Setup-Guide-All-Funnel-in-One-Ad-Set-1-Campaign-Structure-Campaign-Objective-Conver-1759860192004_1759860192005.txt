@@ -1,0 +1,160 @@
+New Campaign Setup Guide (All-Funnel in One Ad Set)
+1. Campaign Structure
+Campaign Objective: Conversions (Sales or Leads, depending on your business).
+
+
+Number of Campaigns: 1 per goal.
+
+
+Ad Set: Just one broad ad set — targeting cold + warm users together.
+
+
+Use Advantage+ (broad targeting).
+
+
+Only restrict on things like location, age, or language if necessary.
+
+
+Ads: 10–50 ads inside that ad set.
+
+
+👉 Meta will automatically use different ads as Top of Funnel (TOF), Middle of Funnel (MOF), and Bottom of Funnel (BOF) depending on each user’s stage of awareness.
+
+🎨 Creative Strategy (The Core)
+Meta now decides who sees what, so your creative library becomes the targeting mechanism. The goal is to create ads that map to different user personas and different awareness stages.
+2. Awareness Ladder (stages of user journey)
+Problem Aware:
+
+
+Audience: People who don’t even realize the problem yet.
+
+
+Creative: Educational, thought-provoking ads.
+
+
+Example: “Did you know most small businesses lose 30% of sales because of XYZ problem?”
+
+
+Solution Aware:
+
+
+Audience: People know the problem but not the solution.
+
+
+Creative: Demonstrate how the problem can be solved.
+
+
+Example: Explainer videos, carousel ads showing “3 ways to fix XYZ.”
+
+
+Product Aware:
+
+
+Audience: People know there are solutions but not your product.
+
+
+Creative: Product demo, feature highlight, side-by-side comparison.
+
+
+Most Aware / Conversion Ready:
+
+
+Audience: People ready to buy.
+
+
+Creative: Testimonials, case studies, strong CTA (“Sign up today / Buy now”).
+
+
+
+🧑 User Personas → Creative Mapping
+When analyzing a business, identify who the real buyers are and what pain points they care about. For each persona, design creatives across the funnel stages.
+Example (for an e-commerce fitness brand):
+Persona A: Busy Professionals
+
+
+TOF Ad: “Struggling to stay fit while working long hours?” (Problem-aware video).
+
+
+MOF Ad: “Quick 20-minute workout you can do anywhere” (Solution explainer).
+
+
+BOF Ad: “See how 2,000 professionals lost weight with our plan” (Testimonial + CTA).
+
+
+Persona B: New Moms
+
+
+TOF Ad: “Did you know post-pregnancy weight can affect energy?” (Awareness).
+
+
+MOF Ad: “Safe 10-minute daily exercises” (How-to demo).
+
+
+BOF Ad: “Hear Sarah’s story: lost 10 lbs with us in 6 weeks” (UGC testimonial).
+
+
+Persona C: Fitness Enthusiasts
+
+
+TOF Ad: “Why most workouts plateau after 6 weeks” (Problem).
+
+
+MOF Ad: “Upgrade your workout with resistance tracking” (Product feature).
+
+
+BOF Ad: “Claim your free trial today” (CTA heavy).
+
+
+
+📐 Formats to Include
+Meta explicitly wants format diversity:
+Short video (Reels/TikTok-style) → fast, relatable, UGC look.
+
+
+Longer video (60–90s) → demos, founder stories, explainer.
+
+
+Static images → product shots, bold copy, simple offers.
+
+
+Carousel ads → problem → solution → testimonial flow.
+
+
+Story format ads → immersive, CTA swipe-up.
+
+
+
+⚙️ Optimization Process
+Launch 10–50 creatives across personas + awareness stages.
+
+
+Don’t judge purely by ROAS. Meta may spend on a “bad” ROAS ad because it’s being used as TOF.
+
+
+Kill the non-spenders → The real underperformers are ads that get no budget at all.
+
+
+Refresh monthly → Add 5–10 new creatives (new angles + refreshed versions of winners).
+
+
+Watch budget flow → If Meta shifts spend from one TOF ad to another, that’s your new top-funnel winner.
+
+
+
+✅ Summary
+One campaign, one broad ad set, many creatives.
+
+
+Creative diversity = the new targeting.
+
+
+Map ads to personas + awareness stages.
+
+
+Use all formats (video, static, carousel, story).
+
+
+Optimize by pruning non-spenders and refreshing monthly.
+
+
+

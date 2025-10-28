@@ -173,15 +173,15 @@ const Details = ({ trackClick }) => {
           &nbsp;happy clients
         </Typography>
       </Box> */}
-        <UserActionButton setShowModal={setShowModal} trackClick={trackClick} />
+        {/* <UserActionButton setShowModal={setShowModal} trackClick={trackClick} /> */}
       </Grid2>
 
       {/* Email collect modal */}
-      <EmailModal
+      {/* <EmailModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
-      />
+      /> */}
 
       {/* Toast notification */}
       <Snackbar

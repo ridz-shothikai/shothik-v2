@@ -1,0 +1,61 @@
+## Error Type
+Console Error
+
+## Error Message
+A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <div className="MuiBox-roo...">
+      <LoadableComponent>
+      <LoadableComponent>
+        <Sidebar>
+          <Box component="aside" sx={{position:"...", ...}}>
+            <Styled(div) as="aside" ref={null} className="MuiBox-root" theme={{...}} sx={{position:"...", ...}}>
+              <Insertion>
+              <aside className="MuiBox-roo...">
+                <Box>
+                <Box>
+                <Box sx={{mt:"auto"}}>
+                  <Styled(div) as="div" ref={null} className="MuiBox-root" theme={{...}} sx={{mt:"auto"}}>
+                    <Insertion>
+                    <div className="MuiBox-roo...">
+                      <Box component="button" data-testid="nav-market..." sx={{display:"flex", ...}}>
+                        <Styled(div) as="button" ref={null} className="MuiBox-root" theme={{...}} ...>
+                          <Insertion>
+                          <button className="MuiBox-roo..." data-testid="nav-market...">
+                            <Box sx={{p:1,borderRadius:1, ...}}>
+                              <Styled(div) as="div" ref={null} className="MuiBox-root" theme={{...}} ...>
+                                <Insertion>
+                                <div
++                                 className="MuiBox-root mui-15lgjc4"
+-                                 className="MuiBox-root mui-1xlo7z3"
+                                >
+                            ...
+      ...
+
+
+
+    at div (<anonymous>:null:null)
+    at Sidebar (components/layout/Sidebar.tsx:183:11)
+    at Home (app/page.tsx:44:7)
+
+## Code Frame
+  181 |           }}
+  182 |         >
+> 183 |           <Box
+      |           ^
+  184 |             sx={{
+  185 |               p: 1,
+  186 |               borderRadius: 1,
+
+Next.js version: 15.5.6 (Webpack)
