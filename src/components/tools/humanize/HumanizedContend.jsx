@@ -288,8 +288,8 @@ const HumanizedContend = () => {
             <div className="block md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="icon"
                     onClick={() => setMobileMenuOpen((prev) => !prev)}
                   >
@@ -300,9 +300,9 @@ const HumanizedContend = () => {
             </div>
           </div>
 
-          <div className="grid gap-2 grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
             <div>
-              <Card className="relative h-[420px] flex flex-col overflow-visible rounded-none rounded-r-xl rounded-bl-xl border border-border">
+              <Card className="border-border relative flex h-[420px] flex-col overflow-visible rounded-none rounded-r-xl rounded-bl-xl border pt-0">
                 <TopNavigation
                   model={model}
                   setModel={setModel}
@@ -321,7 +321,7 @@ const HumanizedContend = () => {
                   disabled={showShalowAlert}
                   className={cn(
                     "flex-grow resize-none border-0 focus-visible:ring-0",
-                    "text-left whitespace-normal break-words"
+                    "text-left break-words whitespace-normal",
                   )}
                 />
                 {!userInput ? (
@@ -372,7 +372,7 @@ const HumanizedContend = () => {
 
             <div>
               {/* output */}
-              <Card className="h-[420px] overflow-y-auto p-4 border border-border relative">
+              <Card className="border-border relative h-[420px] overflow-y-auto border p-4">
                 {/* Restored from history indicator */}
                 {/* {isRestoredFromHistory && outputContent.length > 0 && (
                   <Box
@@ -400,13 +400,11 @@ const HumanizedContend = () => {
                 ) : (
                   <>
                     {isLoading ? (
-                      <div className="flex justify-center items-center h-full">
+                      <div className="flex h-full items-center justify-center">
                         <AnimatedLoader />
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">
-                        Humanized Content
-                      </p>
+                      <p className="text-muted-foreground">Humanized Content</p>
                     )}
                   </>
                 )}
@@ -431,7 +429,7 @@ const HumanizedContend = () => {
 
         {/* GPT options (e.g: history, settings) */}
         {/* This will be for DESKTOP */}
-        <div className="hidden md:block flex-none w-min ml-2">
+        <div className="ml-2 hidden w-min flex-none md:block">
           <GPTsettings
             handleHistorySelect={handleHistorySelect}
             allHumanizeHistory={allHumanizeHistory?.data}
@@ -442,7 +440,7 @@ const HumanizedContend = () => {
         {/* Mobile menu for options */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent side="bottom" className="px-4 pt-1 pb-2">
-            <div className="flex-none w-min ml-2">
+            <div className="ml-2 w-min flex-none">
               <GPTsettings
                 handleHistorySelect={handleHistorySelect}
                 allHumanizeHistory={allHumanizeHistory?.data}
