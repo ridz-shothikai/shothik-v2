@@ -1,11 +1,5 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  LinearProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useGetUsesLimitQuery } from "../../../redux/api/tools/toolsApi";
@@ -54,120 +48,47 @@ const Navigations = ({
   };
 
   return (
-    <Stack
-      direction={{ xs: "column", sm: "row" }}
-      justifyContent="space-between"
-      spacing={{ xs: 2, sm: 0 }}
-      sx={{ my: 2, alignItems: { xs: "start", sm: "center" } }}
-    >
-      <Stack
-        direction="row"
-        alignItems="center"
-        spacing={2}
-        sx={{ marginLeft: { xs: 1, md: 0 } }}
-      >
-        {/* <Button
-          color='warning'
-          size={isMobile ? "small" : "large"}
-          variant='soft'
-          disabled={!hasOutput}
-          loading={loadingAi}
-          onClick={handleAiDitectors}
-          startIcon={<SaveAsOutlined />}
-          style={{ padding: "5px 15px", height: 40 }}
-          sx={{
-            borderColor: "primary.warning",
-            borderRadius: "5px",
-            "&:hover": {
-              borderColor: "primary.dark",
-            },
-          }}
-        >
-          {miniLabel ? "Check for AI" : "Check AI"}
-        </Button> */}
-
+    <div className="my-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="ml-1 flex flex-row items-center gap-2 md:ml-0">
         <Button
           onClick={handleSubmit}
-          size={isMobile ? "small" : "large"}
-          style={{ padding: "5px 15px", height: 40 }}
-          variant="contained"
-          disabled={
-            !userInput ||
-            wordCount > wordLimit ||
-            (!/pro_plan|unlimited/.test(userPackage) && model === "Raven")
-          }
-          loading={isLoading}
-          startIcon={
-            isLoading ? (
-              <CircularProgress size={16} color="inherit" />
-            ) : (
-              <SvgColor
-                src="/navbar/bypass-svgrepo-com.svg"
-                className="h-5 w-5"
-              />
-            )
-          }
+          disabled={!userInput || wordCount > wordLimit || (!/pro_plan|unlimited/.test(userPackage) && model === "Raven")}
+          className="h-10 px-4"
         >
+          {isLoading ? (
+            <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          ) : (
+            <SvgColor src="/navbar/bypass-svgrepo-com.svg" className="mr-2 h-5 w-5" />
+          )}
           {!hasOutput ? "Humanize" : "Re humanize"}
         </Button>
 
-        {((model === "Raven" && !/pro_plan|unlimited/.test(userPackage)) ||
-          wordCount > wordLimit) && (
+        {((model === "Raven" && !/pro_plan|unlimited/.test(userPackage)) || wordCount > wordLimit) && (
           <Link href="/pricing">
-            <Button
-              size={isMobile ? "medium" : "medium"}
-              variant="contained"
-              sx={{
-                bgcolor: "primary.main",
-                borderRadius: "5px",
-              }}
-              startIcon={
-                <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
-              }
-            >
+            <Button className="h-10">
+              <SvgColor src="/navbar/diamond.svg" className="mr-2 h-5 w-5" />
               Upgrade
             </Button>
           </Link>
         )}
-      </Stack>
+      </div>
 
       {userLimit && (
-        <Box
-          sx={{
-            width: {
-              xs: "200px",
-              sm: "235px",
-              paddingLeft: { xs: 2, sm: 0 },
-            },
-          }}
-        >
+        <div className="w-[235px] pl-2 sm:pl-0">
           {userLimit?.totalWordLimit === 99999 ? (
             <>
-              <LinearProgress
-                sx={{ height: 6 }}
-                variant="determinate"
-                value={100}
-              />
-              <Typography color="primary" sx={{ fontSize: { xs: 12, sm: 14 } }}>
-                Unlimited
-              </Typography>
+              <Progress value={100} className="h-2" />
+              <p className="text-sm text-primary">Unlimited</p>
             </>
           ) : (
             <>
-              <LinearProgress
-                sx={{ height: 6 }}
-                variant="determinate"
-                value={progressPercentage()}
-              />
-              <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
-                {formatNumber(userLimit?.totalWordLimit)} words /{" "}
-                {formatNumber(userLimit?.remainingWord)} words left
-              </Typography>
+              <Progress value={progressPercentage()} className="h-2" />
+              <p className="text-sm">{formatNumber(userLimit?.totalWordLimit)} words / {formatNumber(userLimit?.remainingWord)} words left</p>
             </>
           )}
-        </Box>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 };
 

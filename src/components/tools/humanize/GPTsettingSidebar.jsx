@@ -1,5 +1,5 @@
-import { Close, History } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
+import { History, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import UpgradePrompt from "../paraphrase/UpgradePrompt";
 import GPTHistoryTab from "./GPTHistoryTab";
@@ -27,31 +27,9 @@ export default function GPTsettingSidebar({
   if (!open) return null;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "auto",
-        borderLeft: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.paper",
-        boxSizing: "border-box",
-        overflowY: "auto",
-      }}
-    >
+    <div className="h-auto w-full overflow-y-auto border-l border-border bg-background">
       {/* top nav with bottom border */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row-reverse",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 2,
-          pt: 2,
-          pb: 1,
-          // borderBottom: "1px solid",
-          // borderColor: "divider",
-        }}
-      >
+      <div className="flex flex-row-reverse items-center justify-between px-2 pb-1 pt-2">
         {/* <Box sx={{ display: "flex", flex: 1, justifyContent: "space-around" }}>
           {tabs.map((t) => {
             return (
@@ -90,10 +68,10 @@ export default function GPTsettingSidebar({
           })}
         </Box> */}
 
-        <IconButton size="small" id="GPT_sidebar_x_button" onClick={onClose}>
-          <Close fontSize="small" />
-        </IconButton>
-      </Box>
+        <Button variant="ghost" size="icon" id="GPT_sidebar_x_button" onClick={onClose} className="h-7 w-7">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
 
       {/* active tab content */}
       {
@@ -118,6 +96,6 @@ export default function GPTsettingSidebar({
         // If other tabs are added, this logic will need to be expanded.
         null // Or a default component if no specific tab is active
       }
-    </Box>
+    </div>
   );
 }

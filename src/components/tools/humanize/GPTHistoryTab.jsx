@@ -1,7 +1,7 @@
 "use client";
 
-import { Delete, ExpandLess, ExpandMore, Refresh } from "@mui/icons-material";
-import { Button, IconButton } from "@mui/material";
+import { ChevronDown, ChevronUp, RefreshCw, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { historyGroupsByPeriod } from "../../../utils/historyGroupsByPeriod";
@@ -68,20 +68,12 @@ export default function GPTHistoryTab({
         <h6 className="text-lg font-bold">History</h6>
         {accessToken && (
           <div className="flex gap-1">
-            <IconButton
-              size="small"
-              onClick={refetchHistory}
-              className="min-w-0 p-1"
-            >
-              <Refresh className="text-sm" />
-            </IconButton>
-            <IconButton
-              size="small"
-              // onClick={handleDeleteAll} TODO: implement
-              className="min-w-0 p-1"
-            >
-              <Delete className="text-sm" />
-            </IconButton>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={refetchHistory}>
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7" /* onClick={handleDeleteAll} */>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         )}
       </div>
@@ -94,19 +86,12 @@ export default function GPTHistoryTab({
       ) : (
         groupedData?.map(({ period, history }) => (
           <div key={period} className="mb-2">
-            <div
-              onClick={() => toggleGroup(period)}
-              className="mb-1 flex cursor-pointer items-center justify-between px-2"
-            >
-              <span className="text-muted-foreground text-sm">{period}</span>
+            <div onClick={() => toggleGroup(period)} className="mb-1 flex cursor-pointer items-center justify-between px-2">
+              <span className="text-sm text-muted-foreground">{period}</span>
               {expandedGroups?.[period] ? (
-                <IconButton size="small" className="min-w-0 p-1">
-                  <ExpandLess className="text-sm" />
-                </IconButton>
+                <ChevronUp className="h-4 w-4" />
               ) : (
-                <IconButton size="small" className="min-w-0 p-1">
-                  <ExpandMore className="text-sm" />
-                </IconButton>
+                <ChevronDown className="h-4 w-4" />
               )}
             </div>
             <div className="border-border border-b" />
@@ -127,30 +112,27 @@ export default function GPTHistoryTab({
                         minute: "2-digit",
                       })}
                     </span>
-                    <IconButton
-                      size="small"
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
                         // handleDeleteEntry(entry._id);
                       }}
-                      className="text-error min-w-0 p-1"
                     >
-                      <Delete className="text-sm" />
-                    </IconButton>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                   <p className="text-sm">
                     {expandedEntries?.[`${period}-${i}`]
                       ? entry?.text
                       : truncateText(entry?.text, 20)}
                     {entry?.text?.split(" ")?.length > 20 && (
-                      <Button
-                        size="small"
-                        onClick={(e) => {
+                      <Button variant="link" className="ml-1 h-auto p-0" onClick={(e) => {
                           e.stopPropagation();
                           toggleEntryExpansion(period, i);
-                        }}
-                        className="ml-1 normal-case"
-                      >
+                        }}>
                         {expandedEntries?.[`${period}-${i}`]
                           ? "Read Less"
                           : "Read More"}

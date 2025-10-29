@@ -1,55 +1,27 @@
-import {
-  Box,
-  Card,
-  CircularProgress,
-  Slider,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 
 const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
   return (
-    <Stack
-      flexDirection="row"
-      alignItems="center"
-      sx={{ gap: { lg: 10, md: 3, sm: 1 } }}
-    >
-      <Card
-        sx={{
-          flex: 1,
-          maxWidth: isMobile ? 300 : 500,
-          display: "flex",
-          flexDirection: "column",
-          padding: 2,
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-        }}
-      >
-        <Typography fontWeight={700}>Shothik AI Detector</Typography>
+    <div className="flex flex-row items-center gap-2 sm:gap-3 md:gap-3 lg:gap-10">
+      <div className="flex flex-1 max-w-[500px] flex-col rounded-md border p-2">
+        <p className="font-bold">Shothik AI Detector</p>
 
         {loadingAi ? (
-          <CircularProgress size={16} color="inherit" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
         ) : scores ? (
-          // <Box>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Box style={{ width: "100%" }}>
-              <Slider
-                aria-label="AI Score"
-                key={showIndex}
-                value={scores[showIndex]}
-                sx={{ height: 5 }}
-                valueLabelDisplay="on"
-              />
-            </Box>
-            <Box style={{ marginTop: -18 }}>
-              <span className="progress-text">
-                {scores[showIndex]}% AI Written
-              </span>
-            </Box>
+          <div className="flex flex-col">
+            <div className="w-full">
+              <Slider key={showIndex} value={[scores[showIndex]]} max={100} step={1} className="py-1" />
+            </div>
+            <div className="-mt-2">
+              <span className="text-sm text-muted-foreground">{scores[showIndex]}% AI Written</span>
+            </div>
           </div>
         ) : (
-          <span className="progress-text">No score</span>
+          <span className="text-sm text-muted-foreground">No score</span>
         )}
-      </Card>
+      </div>
 
       {/* {!loadingAi && scores[showIndex] && (
         <div
@@ -70,7 +42,7 @@ const HumanizeScrores = ({ loadingAi, scores, showIndex, isMobile }) => {
           />
         </div>
       )} */}
-    </Stack>
+    </div>
   );
 };
 

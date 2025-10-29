@@ -1,49 +1,22 @@
-import { Diamond } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
+import { Gem } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const AlertDialogMessage = () => {
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        translate: "-50% -50%",
-      }}
-    >
-      <Box
-        sx={{
-          backgroundColor: "background.paper",
-          color: "text.primary",
-          padding: "20px",
-          borderRadius: "10px",
-          textAlign: "center",
-          width: { xs: "90%", sm: 400 },
-          boxShadow: 3,
-        }}
-      >
-        <Typography variant="h5">Upgrade</Typography>
-        <Typography variant="body1" sx={{ xs: "14px", lg: "16px" }}>
+    <div className="absolute left-1/2 top-1/2 flex h-full w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+      <div className="w-[90%] max-w-sm rounded-lg bg-card p-5 text-center text-card-foreground shadow">
+        <h3 className="mb-2 text-xl font-semibold">Upgrade</h3>
+        <p className="text-sm text-muted-foreground">
           Unlock advanced features and enhance your paraphrasing experience.
-        </Typography>
-        <Link href="/pricing">
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginTop: "20px" }}
-          >
-            <Diamond fontSize="small" sx={{ marginRight: "5px" }} />
-            Upgrade to Premium
+        </p>
+        <Link href="/pricing" className="inline-block">
+          <Button className="mt-4">
+            <Gem className="mr-2 h-4 w-4" /> Upgrade to Premium
           </Button>
         </Link>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

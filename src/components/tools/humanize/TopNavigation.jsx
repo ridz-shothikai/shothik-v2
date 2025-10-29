@@ -1,18 +1,20 @@
-import { Lock, Diamond } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
 import {
-  Slider,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  Popover,
-  Typography,
-  Button,
-  Box,
-} from "@mui/material";
-import { useState } from "react";
-
+    Popover,
+    PopoverContent
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { Gem, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const models = ["Panda", "Raven"];
 
@@ -25,151 +27,84 @@ const TopNavigation = ({
   setCurrentLength,
   LENGTH,
 }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const router = useRouter();
 
-  const handleTabClick = (event, tab) => {
+  const handleTabClick = (tab) => {
     const isLocked = !/pro_plan|unlimited/.test(userPackage) && tab === "Raven";
 
     if (isLocked) {
       setShalowAlert(true);
-      setAnchorEl(event.currentTarget);
+      setPopoverOpen(true);
     } else {
       setShalowAlert(false);
-      setAnchorEl(null);
+      setPopoverOpen(false);
     }
 
     setModel(tab);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "upgrade-popover" : undefined;
-
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      sx={{
-        borderBottom: "1px solid",
-        borderBottomColor: "divider",
-        paddingX: 2,
-      }}
-    >
-      <Tabs
-        value={model}
-        textColor="primary"
-        sx={{
-          "& .MuiTabs-indicator": {
-            display: "none",
-          },
-        }}
-      >
-        {models.map((tab) => {
-          const isLocked =
-            !/pro_plan|unlimited/.test(userPackage) && tab === "Raven";
-          return (
-            <Tab
-              key={tab}
-              value={tab}
-              color="#00A76F"
-              sx={{
-                color: "text.secondary",
-                "&.Mui-selected": {
-                  color: "primary.main",
-                },
-              }}
-              label={
-                <Tooltip title="Model" arrow placement="top">
-                  {tab}
+    <div className="flex items-center justify-between border-b border-border px-4 py-2">
+      <Tabs value={model} onValueChange={handleTabClick} className="w-auto">
+        <TabsList>
+          {models.map((tab) => {
+            const isLocked =
+              !/pro_plan|unlimited/.test(userPackage) && tab === "Raven";
+            return (
+              <TooltipProvider key={tab}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <TabsTrigger
+                      value={tab}
+                      className={cn(
+                        "relative",
+                        isLocked && "cursor-not-allowed opacity-50"
+                      )}
+                      disabled={isLocked}
+                    >
+                      {tab}
+                      {isLocked && (
+                        <Lock className="ml-1 h-3 w-3 text-muted-foreground" />
+                      )}
+                    </TabsTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Model</TooltipContent>
                 </Tooltip>
-              }
-              icon={
-                isLocked ? <Lock sx={{ width: 12, height: 12 }} /> : undefined
-              }
-              onClick={(e) => handleTabClick(e, tab)}
-            />
-          );
-        })}
+              </TooltipProvider>
+            );
+          })}
+        </TabsList>
       </Tabs>
 
       <Slider
-        style={{ width: "150px" }}
-        aria-label="Length"
-        getAriaValueText={(value) => LENGTH[value]}
-        value={Object.keys(LENGTH).find((key) => LENGTH[key] === currentLength)}
-        marks
-        step={20}
+        className="w-[150px]"
         min={20}
         max={80}
-        valueLabelDisplay="on"
-        valueLabelFormat={currentLength}
-        onChange={(_, value) => setCurrentLength(LENGTH[value])}
-        sx={{
-          mt: { xs: 2, sm: 0 },
-          "& .MuiSlider-valueLabel": {
-            fontSize: "12px",
-            padding: "2px 6px",
-            transform: "translateY(-21px)",
-            "&:before": {
-              width: "6px",
-              height: "6px",
-              bottom: "-0px",
-            },
-          },
-        }}
+        step={20}
+        value={[parseInt(Object.keys(LENGTH).find((key) => LENGTH[key] === currentLength))]}
+        onValueChange={([value]) => setCurrentLength(LENGTH[value])}
+        marks={true}
       />
 
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-        disableRestoreFocus
-        PaperProps={{
-          sx: {
-            p: 2,
-            borderRadius: 2,
-            boxShadow: 3,
-            width: 300,
-            textAlign: "center",
-          },
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{ mt: 1, mb: 2, color: "text.secondary" }}
-        >
-          Unlock advanced features and enhance your humanize experience.
-        </Typography>
-        <Button
-          data-umami-event="Nav: Upgrade To Premium"
-          variant="contained"
-          color="success"
-          size="small"
-          startIcon={<Diamond />}
-          sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-          onClick={(e) => {
-            router.push("/pricing?redirect=/humanize-gpt");
-          }}
-        >
-          Upgrade To Premium
-        </Button>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverContent className="w-80 p-4 text-center">
+          <p className="text-sm text-muted-foreground mb-4">
+            Unlock advanced features and enhance your humanize experience.
+          </p>
+          <Button
+            data-umami-event="Nav: Upgrade To Premium"
+            variant="default"
+            size="sm"
+            className="font-semibold"
+            onClick={() => router.push("/pricing?redirect=/humanize-gpt")}
+          >
+            <Gem className="mr-2 h-4 w-4" />
+            Upgrade To Premium
+          </Button>
+        </PopoverContent>
       </Popover>
-    </Stack>
+    </div>
   );
 };
 
