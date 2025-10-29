@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,52 +10,37 @@ import {
   TextField,
   Box,
   Typography,
+  Alert,
+  Snackbar,
   Tabs,
   Tab,
-  Chip,
-  IconButton,
   Switch,
   FormControlLabel,
-  Alert,
-  CircularProgress,
-  Snackbar,
-  Tooltip,
+  Chip,
+  IconButton,
   InputAdornment,
 } from "@mui/material";
 import {
   Close as CloseIcon,
   ContentCopy as CopyIcon,
+  Share as ShareIcon,
   Email as EmailIcon,
   Link as LinkIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
-  Settings as SettingsIcon,
 } from "@mui/icons-material";
-import {
-  useCreatePrivateShareMutation,
-  useCreatePublicShareMutation,
-} from "../../redux/api/shareAgent/shareAgentApi";
+import { useCreatePrivateShareMutation, useCreatePublicShareMutation } from "../../redux/api/shareAgent/shareAgentApi";
 
-const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab = 0 }) => {
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const [emails, setEmails] = useState([]);
-  const [currentEmail, setCurrentEmail] = useState("");
+const ShareSheetModal = ({ 
+  open, 
+  onClose, 
+  sheetId, 
+  sheetData, 
+  chatId 
+}) => {
+  const [activeTab, setActiveTab] = useState(0);
   const [message, setMessage] = useState("");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [emails, setEmails] = useState("");
   const [shareLink, setShareLink] = useState("");
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-
-  // Debug: Log the chat ID when modal opens
-  useEffect(() => {
-    if (open) {
-      console.log('ShareSheetModal opened with chatId:', chatId);
-      console.log('ShareSheetModal props:', { sheetId, chatId, sheetDataLength: sheetData?.length });
-    }
-  }, [open, chatId, sheetId, sheetData]);
-
-  // Advanced settings
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [settings, setSettings] = useState({
     requireSignIn: false,
     allowCopy: true,
@@ -64,49 +49,31 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
     password: "",
     expiryDate: "",
   });
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
   const [createPrivateShare, { isLoading: isPrivateLoading }] = useCreatePrivateShareMutation();
   const [createPublicShare, { isLoading: isPublicLoading }] = useCreatePublicShareMutation();
 
-  // Reset tab when modal opens
-  useEffect(() => {
-    if (open) {
-      setActiveTab(defaultTab);
-    }
-  }, [open, defaultTab]);
-
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    // Reset state when switching tabs
-    setEmails([]);
-    setCurrentEmail("");
+    setShareLink(""); // Clear previous share link
+  };
+
+  const handleClose = () => {
+    setActiveTab(0);
     setMessage("");
+    setEmails("");
     setShareLink("");
-  };
-
-  const handleAddEmail = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (currentEmail && emailRegex.test(currentEmail)) {
-      if (!emails.includes(currentEmail)) {
-        setEmails([...emails, currentEmail]);
-        setCurrentEmail("");
-      } else {
-        showSnackbar("Email already added", "warning");
-      }
-    } else {
-      showSnackbar("Please enter a valid email address", "error");
-    }
-  };
-
-  const handleRemoveEmail = (emailToRemove) => {
-    setEmails(emails.filter((email) => email !== emailToRemove));
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddEmail();
-    }
+    setShowAdvanced(false);
+    setSettings({
+      requireSignIn: false,
+      allowCopy: true,
+      allowExport: true,
+      trackViews: true,
+      password: "",
+      expiryDate: "",
+    });
+    onClose();
   };
 
   const showSnackbar = (message, severity = "success") => {
@@ -117,34 +84,39 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareLink);
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
       showSnackbar("Link copied to clipboard!", "success");
-    } catch (err) {
+    }).catch(() => {
       showSnackbar("Failed to copy link", "error");
-    }
+    });
   };
 
   const handlePrivateShare = async () => {
-    if (emails.length === 0) {
-      showSnackbar("Please add at least one email address", "error");
+    if (!emails.trim()) {
+      showSnackbar("Please enter at least one email address", "error");
+      return;
+    }
+
+    const emailList = emails.split(",").map(email => email.trim()).filter(email => email);
+    
+    if (emailList.length === 0) {
+      showSnackbar("Please enter valid email addresses", "error");
       return;
     }
 
     try {
-      console.log('Creating private share with chatId:', chatId);
-      console.log('Share metadata will include:', {
-        originalChatId: chatId,
-        chatId: chatId,
-        title: "Shared Sheet Data",
-        description: "A spreadsheet shared from Shothik AI",
-        createdAt: new Date().toISOString(),
-      });
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📤 CREATING PRIVATE SHARE');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🆔 Chat ID being saved:', chatId);
+      console.log('📧 Emails:', emailList);
+      console.log('📝 Sheet ID:', sheetId);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
       const response = await createPrivateShare({
-        agentId: sheetId, // Use sheetId as agentId for the API
-        emails,
+        agentId: sheetId,
+        emails: emailList,
         message: message || undefined,
         content: {
           type: "sheet",
@@ -153,7 +125,6 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
             title: "Shared Sheet Data",
             description: "A spreadsheet shared from Shothik AI",
             createdAt: new Date().toISOString(),
-            // Include the original chat ID for replication
             originalChatId: chatId,
             chatId: chatId,
           }
@@ -174,7 +145,6 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
           `Successfully sent to ${response.data.emailsSent} recipient(s)!`,
           "success"
         );
-        // Don't close the modal so user can copy the link
       }
     } catch (error) {
       console.error("Error creating private share:", error);
@@ -187,17 +157,16 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
 
   const handlePublicShare = async () => {
     try {
-      console.log('Creating public share with chatId:', chatId);
-      console.log('Public share metadata will include:', {
-        originalChatId: chatId,
-        chatId: chatId,
-        title: "Shared Sheet Data",
-        description: "A spreadsheet shared from Shothik AI",
-        createdAt: new Date().toISOString(),
-      });
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📤 CREATING PUBLIC SHARE');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🆔 Chat ID being saved:', chatId);
+      console.log('📝 Sheet ID:', sheetId);
+      console.log('📊 Sheet Data rows:', sheetData?.length);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
       const response = await createPublicShare({
-        agentId: sheetId, // Use sheetId as agentId for the API
+        agentId: sheetId,
         message: message || undefined,
         content: {
           type: "sheet",
@@ -206,7 +175,6 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
             title: "Shared Sheet Data",
             description: "A spreadsheet shared from Shothik AI",
             createdAt: new Date().toISOString(),
-            // Include the original chat ID for replication
             originalChatId: chatId,
             chatId: chatId,
           }
@@ -223,7 +191,7 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
         const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || window.location.origin;
         const shareLink = `${baseUrl}/shared-sheet/${response.data.shareId}`;
         setShareLink(shareLink);
-        showSnackbar("Public share link created!", "success");
+        showSnackbar("✓ Share link created successfully!", "success");
       }
     } catch (error) {
       console.error("Error creating public share:", error);
@@ -234,315 +202,225 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId, defaultTab
     }
   };
 
-  const handleSettingChange = (setting) => (event) => {
-    setSettings({
-      ...settings,
-      [setting]: event.target.type === "checkbox" ? event.target.checked : event.target.value,
-    });
-  };
-
-  const handleClose = () => {
-    // Reset all state
-    setActiveTab(0);
-    setEmails([]);
-    setCurrentEmail("");
-    setMessage("");
-    setShareLink("");
-    setSettings({
-      requireSignIn: false,
-      allowCopy: true,
-      allowExport: true,
-      trackViews: true,
-      password: "",
-      expiryDate: "",
-    });
-    setShowAdvanced(false);
-    onClose();
-  };
-
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="md"
+      <Dialog 
+        open={open} 
+        onClose={handleClose} 
+        maxWidth="md" 
         fullWidth
         PaperProps={{
           sx: {
             borderRadius: 2,
-            minHeight: "500px",
-          },
+            minHeight: 500,
+          }
         }}
       >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            pb: 1,
-          }}
-        >
-          <Typography variant="h6" component="div" fontWeight={600}>
-            Share Sheet Data
-          </Typography>
+        <DialogTitle sx={{ 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "space-between",
+          pb: 1
+        }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <ShareIcon color="primary" />
+            <Typography variant="h6" fontWeight={600}>
+              Share Sheet Data
+            </Typography>
+          </Box>
           <IconButton onClick={handleClose} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
-        <Box sx={{ borderBottom: 1, borderColor: "divider", px: 3 }}>
-          <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab
-              icon={<EmailIcon />}
-              label="Private (Email)"
+        <DialogContent sx={{ px: 3, py: 2 }}>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            sx={{ mb: 3 }}
+            indicatorColor="primary"
+            textColor="primary"
+          >
+            <Tab 
+              icon={<EmailIcon />} 
+              label="Private (Email)" 
               iconPosition="start"
+              sx={{ textTransform: "none" }}
             />
-            <Tab
-              icon={<LinkIcon />}
-              label="Public Link"
+            <Tab 
+              icon={<LinkIcon />} 
+              label="Public Link" 
               iconPosition="start"
+              sx={{ textTransform: "none" }}
             />
           </Tabs>
-        </Box>
 
-        <DialogContent sx={{ pt: 3, px: 3 }}>
-          {/* Private Share Tab */}
           {activeTab === 0 && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" mb={2}>
-                Share this sheet privately by sending an email invitation
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Send this sheet directly to specific people via email.
               </Typography>
-
-              {/* Email Input */}
-              <Box mb={3}>
-                <TextField
-                  fullWidth
-                  label="Add email addresses"
-                  placeholder="Enter email and press Enter"
-                  value={currentEmail}
-                  onChange={(e) => setCurrentEmail(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleAddEmail}
-                          edge="end"
-                          disabled={!currentEmail}
-                        >
-                          <AddIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  helperText="Press Enter or click + to add"
-                />
-              </Box>
-
-              {/* Email Chips */}
-              {emails.length > 0 && (
-                <Box mb={3} display="flex" flexWrap="wrap" gap={1}>
-                  {emails.map((email, index) => (
-                    <Chip
-                      key={index}
-                      label={email}
-                      onDelete={() => handleRemoveEmail(email)}
-                      deleteIcon={<DeleteIcon />}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              )}
-
-              {/* Custom Message */}
+              
               <TextField
                 fullWidth
+                label="Email addresses"
+                placeholder="Enter email addresses separated by commas"
+                value={emails}
+                onChange={(e) => setEmails(e.target.value)}
                 multiline
-                rows={3}
-                label="Custom message (optional)"
-                placeholder="Add a personal message to your email..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                rows={2}
                 sx={{ mb: 2 }}
+                helperText="Separate multiple emails with commas"
               />
             </Box>
           )}
 
-          {/* Public Link Tab */}
           {activeTab === 1 && (
-            <Box>
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body2">
-                  Anyone with this link can view your sheet. You can customize access settings below.
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Anyone with this link can view your sheet. You can customize access settings below.
+              </Typography>
+            </Box>
+          )}
+
+          <TextField
+            fullWidth
+            label="Description (optional)"
+            placeholder="Add a message about this shared sheet..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            multiline
+            rows={2}
+            sx={{ mb: 3 }}
+          />
+
+          {shareLink && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              ✓ Share link created successfully!
+              <Box sx={{ mt: 2, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+                <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                  Share Link:
                 </Typography>
-              </Alert>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TextField
+                    value={shareLink}
+                    fullWidth
+                    size="small"
+                    InputProps={{
+                      readOnly: true,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton 
+                            onClick={() => copyToClipboard(shareLink)}
+                            size="small"
+                          >
+                            <CopyIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Alert>
+          )}
+
+          <Button
+            variant="text"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            sx={{ mb: 2 }}
+          >
+            {showAdvanced ? "Hide" : "Show"} Advanced Settings
+          </Button>
+
+          {showAdvanced && (
+            <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.requireSignIn}
+                    onChange={(e) => setSettings({...settings, requireSignIn: e.target.checked})}
+                  />
+                }
+                label="Require sign-in to view"
+                sx={{ mb: 1 }}
+              />
+              
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.allowCopy}
+                    onChange={(e) => setSettings({...settings, allowCopy: e.target.checked})}
+                  />
+                }
+                label="Allow copying to personal account"
+                sx={{ mb: 1 }}
+              />
+              
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.allowExport}
+                    onChange={(e) => setSettings({...settings, allowExport: e.target.checked})}
+                  />
+                }
+                label="Allow data export"
+                sx={{ mb: 1 }}
+              />
+              
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={settings.trackViews}
+                    onChange={(e) => setSettings({...settings, trackViews: e.target.checked})}
+                  />
+                }
+                label="Track views and analytics"
+                sx={{ mb: 2 }}
+              />
 
               <TextField
                 fullWidth
-                multiline
-                rows={3}
-                label="Description (optional)"
-                placeholder="Add a description for this shared link..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                label="Password (optional)"
+                type="password"
+                value={settings.password}
+                onChange={(e) => setSettings({...settings, password: e.target.value})}
+                size="small"
                 sx={{ mb: 2 }}
+                helperText="Set a password to protect the shared link"
+              />
+
+              <TextField
+                fullWidth
+                label="Expiry Date (optional)"
+                type="date"
+                value={settings.expiryDate}
+                onChange={(e) => setSettings({...settings, expiryDate: e.target.value})}
+                size="small"
+                InputLabelProps={{ shrink: true }}
+                helperText="Set when this share should expire"
               />
             </Box>
           )}
-
-          {/* Share Link Display */}
-          {shareLink && (
-            <Box
-              mt={3}
-              p={2}
-              sx={{
-                bgcolor: "success.light",
-                borderRadius: 1,
-                border: "1px solid",
-                borderColor: "success.main",
-              }}
-            >
-              <Typography variant="subtitle2" color="success.dark" gutterBottom>
-                ✓ Share link created successfully!
-              </Typography>
-              <Box display="flex" alignItems="center" gap={1} mt={1}>
-                <TextField
-                  fullWidth
-                  value={shareLink}
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <Tooltip title="Copy link">
-                  <IconButton onClick={handleCopyLink} color="primary">
-                    <CopyIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-          )}
-
-          {/* Advanced Settings */}
-          <Box mt={3}>
-            <Button
-              startIcon={<SettingsIcon />}
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              sx={{ mb: 2 }}
-            >
-              {showAdvanced ? "Hide" : "Show"} Advanced Settings
-            </Button>
-
-            {showAdvanced && (
-              <Box
-                p={2}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  bgcolor: "background.paper",
-                }}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.requireSignIn}
-                      onChange={handleSettingChange("requireSignIn")}
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography variant="body2">Require sign-in</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Viewers must be logged in to access
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ mb: 2, display: "flex", alignItems: "flex-start" }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.allowCopy}
-                      onChange={handleSettingChange("allowCopy")}
-                    />
-                  }
-                  label="Allow copying content"
-                  sx={{ mb: 2 }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.allowExport}
-                      onChange={handleSettingChange("allowExport")}
-                    />
-                  }
-                  label="Allow exporting"
-                  sx={{ mb: 2 }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.trackViews}
-                      onChange={handleSettingChange("trackViews")}
-                    />
-                  }
-                  label="Track views"
-                  sx={{ mb: 2 }}
-                />
-
-                <TextField
-                  fullWidth
-                  type="password"
-                  label="Password protection (optional)"
-                  value={settings.password}
-                  onChange={handleSettingChange("password")}
-                  sx={{ mb: 2 }}
-                  helperText="Leave empty for no password"
-                />
-
-                <TextField
-                  fullWidth
-                  type="datetime-local"
-                  label="Expiry date (optional)"
-                  value={settings.expiryDate}
-                  onChange={handleSettingChange("expiryDate")}
-                  InputLabelProps={{ shrink: true }}
-                  helperText="Leave empty for no expiration"
-                />
-              </Box>
-            )}
-          </Box>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={handleClose} color="inherit">
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={handleClose} sx={{ textTransform: "none" }}>
             Cancel
           </Button>
-          {activeTab === 0 && (
-            <Button
-              variant="contained"
-              onClick={handlePrivateShare}
-              disabled={isPrivateLoading || emails.length === 0}
-              startIcon={isPrivateLoading ? <CircularProgress size={20} /> : <EmailIcon />}
-            >
-              {isPrivateLoading ? "Sending..." : `Send to ${emails.length} recipient(s)`}
-            </Button>
-          )}
-          {activeTab === 1 && (
-            <Button
-              variant="contained"
-              onClick={handlePublicShare}
-              disabled={isPublicLoading}
-              startIcon={isPublicLoading ? <CircularProgress size={20} /> : <LinkIcon />}
-            >
-              {isPublicLoading ? "Creating..." : "Generate Public Link"}
-            </Button>
-          )}
+          <Button
+            onClick={activeTab === 0 ? handlePrivateShare : handlePublicShare}
+            variant="contained"
+            disabled={isPrivateLoading || isPublicLoading}
+            sx={{ textTransform: "none" }}
+          >
+            {isPrivateLoading || isPublicLoading 
+              ? "Creating..." 
+              : activeTab === 0 
+                ? "Send Emails" 
+                : "Generate Public Link"
+            }
+          </Button>
         </DialogActions>
       </Dialog>
 

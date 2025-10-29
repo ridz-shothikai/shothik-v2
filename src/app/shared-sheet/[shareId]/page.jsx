@@ -33,6 +33,13 @@ import { useLazyVerifySharedAgentQuery, useCreateAgentReplicaMutation } from "..
 import { useSelector, useDispatch } from "react-redux";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import * as XLSX from "xlsx";
+import MainHeader from "../../../components/navigation/MainHeader";
+import NavMini from "../../../components/navigation/NavMini";
+import NavVertical from "../../../components/navigation/NavVertical";
+import Main from "../../../components/layout/Main";
+import useResponsive from "../../../hooks/useResponsive";
+import { useTheme } from "@mui/material/styles";
+import { setOpen } from "../../../redux/slice/settings";
 
 // Editable Cell Component for shared sheets
 const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) => {
@@ -151,8 +158,15 @@ export default function SharedSheetPage({ params }) {
   const [editingCell, setEditingCell] = useState(null);
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [pendingSaveAction, setPendingSaveAction] = useState(false);
 
+  // All hooks must be at the top before any conditional returns
+  const theme = useTheme();
   const { user } = useSelector((state) => state.auth);
+  const { open, themeLayout } = useSelector((state) => state.settings);
+  const isMobile = useResponsive("down", "sm");
+  const isNavMini = themeLayout === "mini";
+  const isDarkMode = theme.palette.mode === "dark";
   
   // Fallback: try to get user from localStorage if Redux state is not available
   const [localUser, setLocalUser] = useState(null);
@@ -243,177 +257,68 @@ export default function SharedSheetPage({ params }) {
   };
 
   const handleSaveAndCopy = async () => {
-    console.log('Save and Copy clicked:', { 
-      user, 
-      shareId,
-      sharedData
-    });
+    console.log('🚀 handleSaveAndCopy function called!');
     
+    // Check if user is authenticated
     const currentUser = user || localUser;
-    if (!currentUser) {
-      console.log('User not authenticated, opening login modal');
-      // Open the login modal instead of redirecting
+    const accessToken = localStorage.getItem('accessToken');
+    
+    // More robust authentication check - user must have either user data OR accessToken
+    if (!currentUser || (Object.keys(currentUser).length === 0 && !accessToken)) {
+      console.log('❌ User not authenticated, opening login modal');
+      console.log('   currentUser:', currentUser);
+      console.log('   accessToken:', accessToken ? 'exists' : 'missing');
+      
+      // Set pending flag so we can retry after login
+      setPendingSaveAction(true);
+      
+      // Show login modal
       dispatch(setShowLoginModal(true));
+      
+      // Show info message
+      showSnackbar("Please log in to save this sheet to your account", "info");
       return;
     }
-
-    console.log('User authenticated, creating replica using new API');
     
+    console.log('✅ User authenticated:', currentUser);
+
     try {
-      console.log('Using RTK Query mutation for replica creation');
-      // Debug the values being sent
-      // The shareId is a UUID, but we need the actual chat ID (MongoDB ObjectId)
-      // Let's try to find the chat ID from the shared data structure
-      let chatId = null;
+      // Extract chat ObjectId from shared data
+      // The correct path is: sharedData.agent.metadata.chatId (or originalChatId)
+      let chatId = sharedData?.agent?.metadata?.chatId || 
+                   sharedData?.agent?.metadata?.originalChatId;
       
-      // Try to find MongoDB ObjectId in various nested structures
-      if (sharedData) {
-        // Check direct properties
-        chatId = sharedData.originalChatId || sharedData.chatId || sharedData.agentId || sharedData.chat_id || sharedData.id;
-        
-        // If not found, check nested structures
-        if (!chatId) {
-          // Check if there's a content or data object with chat info
-          const content = sharedData.content || sharedData.data || sharedData.response;
-          if (content) {
-            chatId = content.originalChatId || content.chatId || content.agentId || content.chat_id || content.id;
-          }
-        }
-        
-        // Check if there's a metadata or info object
-        if (!chatId) {
-          const metadata = sharedData.metadata || sharedData.info;
-          if (metadata) {
-            chatId = metadata.originalChatId || metadata.chatId || metadata.agentId || metadata.chat_id || metadata.id;
-          }
-        }
-        
-        // Check if there's a user or owner object
-        if (!chatId) {
-          const user = sharedData.user || sharedData.owner || sharedData.createdBy;
-          if (user) {
-            chatId = user.agentId || user.chatId || user.chat_id || user.id;
-          }
-        }
+      console.log('🔍 Extracted chat ID from agent.metadata:', chatId);
+      
+      // Validate that we have a valid MongoDB ObjectId
+      const isValidObjectId = chatId && /^[0-9a-fA-F]{24}$/.test(chatId);
+      
+      if (!chatId || !isValidObjectId) {
+        console.error('❌ Invalid or missing chat ID');
+        console.error('sharedData.agent.metadata:', sharedData?.agent?.metadata);
+        showSnackbar("Unable to find the original chat ID. This link may be invalid.", "error");
+        return;
       }
       
-      // If still no chatId found, try to get it from URL parameters or other sources
-      if (!chatId) {
-        // Try to get chat ID from URL search params
-        const urlParams = new URLSearchParams(window.location.search);
-        const chatIdFromUrl = urlParams.get('chatId') || urlParams.get('chat_id');
-        
-        if (chatIdFromUrl) {
-          chatId = chatIdFromUrl;
-          console.log('Found chat ID from URL parameters:', chatId);
-        } else {
-          // Last resort: try to use the shareId but convert it or handle it differently
-          chatId = shareId;
-          console.warn('⚠️ No MongoDB ObjectId found, using shareId (UUID) - this will likely fail');
-        }
-      }
+      console.log('✅ Using valid Chat ID:', chatId);
       
-      console.log('Chat ID sources:');
-      console.log('- sharedData?.agentId:', sharedData?.agentId);
-      console.log('- sharedData?.chatId:', sharedData?.chatId);
-      console.log('- sharedData?.chat_id:', sharedData?.chat_id);
-      console.log('- sharedData?.id:', sharedData?.id);
-      console.log('- shareId (fallback):', shareId);
-      console.log('- Final chatId:', chatId);
-      
-      // Debug the complete sharedData structure to find the correct chat ID
-      console.log('Complete sharedData structure:', sharedData);
-      console.log('All keys in sharedData:', sharedData ? Object.keys(sharedData) : 'No sharedData');
-      
-      // Search for any MongoDB ObjectId in the entire sharedData structure
-      const findObjectId = (obj, path = '') => {
-        if (!obj || typeof obj !== 'object') return null;
-        
-        for (const [key, value] of Object.entries(obj)) {
-          const currentPath = path ? `${path}.${key}` : key;
-          
-          if (typeof value === 'string' && /^[0-9a-fA-F]{24}$/.test(value)) {
-            console.log(`Found MongoDB ObjectId at ${currentPath}:`, value);
-            return value;
-          }
-          
-          if (typeof value === 'object' && value !== null) {
-            const found = findObjectId(value, currentPath);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-      
-      const foundObjectId = findObjectId(sharedData);
-      if (foundObjectId && foundObjectId !== chatId) {
-        console.log('Found MongoDB ObjectId in shared data, using it instead of UUID');
-        chatId = foundObjectId;
-      }
-      
-      // Check if chatId is in correct MongoDB ObjectId format (24-character hex string)
-      const isObjectId = /^[0-9a-fA-F]{24}$/.test(chatId);
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId);
-      
-      console.log('Chat ID format check:');
-      console.log('- Is MongoDB ObjectId (24 hex chars):', isObjectId);
-      console.log('- Is UUID format:', isUUID);
-      console.log('- Chat ID length:', chatId?.length);
-      
-      if (!isObjectId && isUUID) {
-        console.warn('⚠️ Chat ID is in UUID format, but backend expects MongoDB ObjectId format');
-        console.log('Attempting API call with UUID format - this will likely fail on the backend');
-        console.log('This is a known limitation: shared sheets don\'t contain the original chat MongoDB ObjectId');
-        // We'll still try the API call to get a proper error message from the backend
-      }
-      
-      const currentUser = user || localUser;
-      
-      // Try multiple possible user ID field names
+      // Get user ID
       let userId = currentUser?.id || 
                    currentUser?.userId || 
                    currentUser?._id || 
-                   currentUser?.user_id ||
-                   currentUser?.userID;
+                   currentUser?.user_id;
       
-      // If still no user ID, try to get it from access token
+      // Try to get user ID from access token if not found
       if (!userId) {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
           try {
             const tokenPayload = JSON.parse(atob(accessToken.split('.')[1]));
             userId = tokenPayload.userId || tokenPayload.id || tokenPayload.sub;
-            console.log('Got user ID from access token:', userId);
           } catch (e) {
-            console.log('Could not decode access token for user ID:', e);
+            console.error('Could not decode access token:', e);
           }
         }
-      }
-      
-      console.log('Debug values:');
-      console.log('- sharedData:', sharedData);
-      console.log('- sharedData?.agentId:', sharedData?.agentId);
-      console.log('- shareId:', shareId);
-      console.log('- chatId (final):', chatId);
-      console.log('- Redux user:', user);
-      console.log('- LocalStorage user:', localUser);
-      console.log('- currentUser (final):', currentUser);
-      console.log('- userId (final):', userId);
-      
-      // Debug all localStorage keys that might contain user data
-      console.log('All localStorage keys:');
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.toLowerCase().includes('user') || key.toLowerCase().includes('auth'))) {
-          console.log(`- ${key}:`, localStorage.getItem(key));
-        }
-      }
-      
-      // Validate required parameters
-      if (!chatId) {
-        console.error('Chat ID is missing');
-        showSnackbar("Chat ID is missing. Cannot create replica.", "error");
-        return;
       }
       
       if (!userId) {
@@ -422,61 +327,155 @@ export default function SharedSheetPage({ params }) {
         return;
       }
       
-      // Use the correct format for the share-agent/replica endpoint
-      const requestBody = {
-        sharedAgentId: chatId, // The original chat ID
-        currentUserId: userId, // The user ID to replicate to
-        source: "shared_sheet", // Source of the replication
-        metadata: {
-          shareId: shareId, // The share ID for reference
-          replicatedAt: new Date().toISOString(),
-          replicatedFrom: "shared_sheet_page"
-        }
+      console.log('Replicating chat:', { chatId, userId });
+      
+      // Get base URL from environment
+      const baseUrl = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX;
+      console.log('🌐 Environment base URL:', baseUrl);
+      
+      if (!baseUrl) {
+        console.error('API base URL not configured - NEXT_PUBLIC_API_URI_WITHOUT_PREFIX is missing');
+        showSnackbar("Configuration error. Please contact support.", "error");
+        return;
+      }
+      
+      // Construct the API URL
+      // NEXT_PUBLIC_API_URI_WITHOUT_PREFIX = https://api-qa.shothik.ai
+      // We need to add: /sheet/chat/replicate_chat
+      // Remove trailing slash if present
+      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      const apiUrl = `${cleanBaseUrl}/sheet/chat/replicate_chat`;
+      
+      console.log('🔗 Constructed API URL:', apiUrl);
+      console.log('✅ Expected URL:', 'https://api-qa.shothik.ai/sheet/chat/replicate_chat');
+      
+      // Prepare the request payload
+      const requestPayload = {
+        chat: chatId,
+        replicate_to: userId
       };
       
-      console.log('Request body before API call:', requestBody);
-      console.log('Chat ID type:', typeof chatId);
-      console.log('Chat ID value:', chatId);
+      const accessToken = localStorage.getItem('accessToken');
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      };
       
-      console.log('Final request body:', requestBody);
-      
-      // Use the correct API endpoint as documented by Phase 4 developer
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5000';
-      // Check if baseUrl already includes /api to avoid double /api
-      const apiUrl = baseUrl.includes('/api') 
-        ? `${baseUrl}/chat/replicate_chat`
-        : `${baseUrl}/api/chat/replicate_chat`;
-      
-      console.log('Base URL from env:', process.env.NEXT_PUBLIC_API_URI);
-      console.log('Final API URL:', apiUrl);
-      console.log('Request body:', { chat: chatId, replicate_to: userId });
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📡 COMPLETE API REQUEST DETAILS');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🔗 URL:', apiUrl);
+      console.log('📍 Method: POST');
+      console.log('');
+      console.log('📦 Headers:');
+      Object.entries(headers).forEach(([key, value]) => {
+        if (key === 'Authorization') {
+          console.log(`   ${key}: Bearer ${value.split(' ')[1]?.substring(0, 30)}...`);
+        } else {
+          console.log(`   ${key}: ${value}`);
+        }
+      });
+      console.log('');
+      console.log('📝 Request Body:');
+      console.log('   Raw Object:', requestPayload);
+      console.log('   JSON String:', JSON.stringify(requestPayload));
+      console.log('   Formatted:');
+      console.log(JSON.stringify(requestPayload, null, 2));
+      console.log('');
+      console.log('🔍 Payload Validation:');
+      console.log('   chat ID:', chatId);
+      console.log('   chat ID type:', typeof chatId);
+      console.log('   chat ID length:', chatId?.length);
+      console.log('   chat ID is valid ObjectId:', /^[0-9a-fA-F]{24}$/.test(chatId));
+      console.log('   replicate_to ID:', userId);
+      console.log('   replicate_to ID type:', typeof userId);
+      console.log('   replicate_to ID length:', userId?.length);
+      console.log('   replicate_to ID is valid ObjectId:', /^[0-9a-fA-F]{24}$/.test(userId));
+      console.log('');
+      console.log('✅ POSTMAN EQUIVALENT (copy this to test):');
+      console.log(`curl -X POST '${apiUrl}' \\`);
+      console.log(`  -H 'Content-Type: application/json' \\`);
+      console.log(`  -H 'Authorization: Bearer ${accessToken?.substring(0, 30)}...' \\`);
+      console.log(`  -d '${JSON.stringify(requestPayload)}'`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-        body: JSON.stringify({
-          chat: chatId,
-          replicate_to: userId
-        }),
+        headers: headers,
+        body: JSON.stringify(requestPayload),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Replica creation response:', result);
-        showSnackbar("Sheet saved to your account successfully!", "success");
-      } else {
-        const errorData = await response.json();
-        console.error("API Error:", errorData);
-        showSnackbar(errorData.message || "Failed to save sheet. Please try again.", "error");
+      console.log('');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📨 RESPONSE DETAILS');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📊 Status:', response.status, response.statusText);
+      console.log('🔗 URL:', response.url);
+      console.log('✓ OK:', response.ok);
+      console.log('📋 Type:', response.type);
+      console.log('');
+      console.log('📦 Response Headers:');
+      response.headers.forEach((value, key) => {
+        console.log(`   ${key}: ${value}`);
+      });
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      if (!response.ok) {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          errorData = { message: await response.text() };
+        }
+        console.error("❌ API Error Response:", errorData);
+        console.error("❌ Response Headers:", [...response.headers.entries()]);
+        showSnackbar(errorData.message || `Failed to save sheet (${response.status}). Please try again.`, "error");
+        return;
       }
+      
+      const result = await response.json();
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('✅ REPLICA CREATED SUCCESSFULLY!');
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('📊 Response:', result);
+      console.log('🆔 Replicated Chat ID:', result.data?.replicatedChatId || result.replicatedChatId || chatId);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      
+      // Show success message
+      showSnackbar("Sheet saved to your account successfully! Redirecting...", "success");
+      
+      // Redirect to the replicated chat page after a short delay
+      setTimeout(() => {
+        const replicatedChatId = result.data?.replicatedChatId || result.replicatedChatId || chatId;
+        
+        // Redirect to the agents sheets page with the replicated chat ID
+        const redirectUrl = `/agents/sheets?id=${replicatedChatId}`;
+        
+        console.log('🔗 Redirecting to:', redirectUrl);
+        window.location.href = redirectUrl;
+      }, 1500);
+      
     } catch (err) {
       console.error("Error creating replica:", err);
       showSnackbar("Failed to create a copy. Please try again.", "error");
     }
   };
+
+  // Watch for user login and retry save action if pending
+  useEffect(() => {
+    const currentUser = user || localUser;
+    const accessToken = localStorage.getItem('accessToken');
+    
+    // If user just logged in and there's a pending save action
+    if (pendingSaveAction && (currentUser || accessToken)) {
+      console.log('✅ User logged in! Retrying save action...');
+      setPendingSaveAction(false);
+      // Retry the save action
+      setTimeout(() => {
+        handleSaveAndCopy();
+      }, 500); // Small delay to ensure auth state is fully updated
+    }
+  }, [user, localUser, pendingSaveAction]);
 
   const handleExportMenuOpen = (event) => {
     setExportMenuAnchor(event.currentTarget);
@@ -606,61 +605,31 @@ export default function SharedSheetPage({ params }) {
   const hasData = rows.length > 0 && columns.length > 0;
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5" }}>
-      {/* Top Header Bar */}
+    <Box sx={{ minHeight: "100vh" }}>
+      {/* Real Main Header */}
+      <MainHeader />
+
+      {/* Main Layout with Sidebar */}
       <Box
         sx={{
-          bgcolor: "white",
-          borderBottom: "1px solid #e0e0e0",
-          px: 3,
-          py: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          bgcolor: isDarkMode ? "#212121" : "background.neutral",
+          display: { sm: "flex" },
+          minHeight: { sm: 1 },
+          overflow: "hidden",
         }}
       >
-        <Typography variant="h6" sx={{ color: "#07B37A", fontWeight: 600 }}>
-          SHOTHIKAI
-        </Typography>
-        <Typography variant="h6" sx={{ color: "#333", fontWeight: 500 }}>
-          Sheet
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Button
-            variant="contained"
-            sx={{
-              bgcolor: "#07B37A",
-              color: "white",
-              textTransform: "none",
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-            }}
-          >
-            Upgrade Plan
-          </Button>
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              bgcolor: "#07B37A",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontWeight: 600,
-            }}
-          >
-            Ak
-          </Box>
-        </Box>
-      </Box>
+        {/* Sidebar Navigation */}
+        {!isMobile && isNavMini ? (
+          <NavMini isDarkMode={isDarkMode} />
+        ) : (
+          <NavVertical
+            openNav={open}
+            onCloseNav={() => dispatch(setOpen(false))}
+          />
+        )}
 
-      {/* Main Content - Sheet Display Area */}
-      <Box sx={{ display: "flex", height: "calc(100vh - 80px)" }}>
-        {/* Sheet Display Area (Right Side) */}
-        <Box sx={{ flex: 1, bgcolor: "white", p: 3 }}>
+        {/* Main Content Area */}
+        <Main>
           {/* Sheet Title/Dropdown */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <Box
@@ -843,8 +812,6 @@ export default function SharedSheetPage({ params }) {
               <Edit sx={{ fontSize: 12 }} />
               Double-click to edit cells
             </Typography>
-          </Box>
-        </Box>
       </Box>
 
       {/* Export Menu */}
@@ -890,6 +857,8 @@ export default function SharedSheetPage({ params }) {
           {snackbar.message}
         </Alert>
       </Snackbar>
+        </Main>
+      </Box>
     </Box>
   );
 }

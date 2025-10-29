@@ -1163,8 +1163,7 @@ export default function SheetDataArea() {
         onClose={() => setShareModalOpen(false)}
         sheetId={currentSavePoint?.id || 'sheet-' + Date.now()}
         sheetData={sheetState.sheet}
-        chatId={currentSavePoint?.id?.replace('savepoint-', '') || sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1]}
-        defaultTab={0}
+        chatId={sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1] || null}
       />
     </Box>
   );
