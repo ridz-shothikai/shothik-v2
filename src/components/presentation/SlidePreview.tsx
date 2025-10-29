@@ -1,20 +1,18 @@
 // components/SlidePreview.jsx
-import CheckIcon from "@mui/icons-material/Check";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { useMediaQuery } from "@mui/material";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import IconButton from "@mui/material/IconButton";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import html2canvas from "html2canvas";
+import { Check, Copy } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import createEnhancedIframeContent from "../../libs/presentationEditScripts";
-
-const PRIMARY_GREEN = "#07B37A";
 
 // Original slide dimensions
 const SLIDE_WIDTH = 1280;
@@ -27,8 +25,6 @@ export default function SlidePreview({
   activeTab,
   onTabChange,
   totalSlides,
-  theme,
-  isDarkMode,
 }) {
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -42,7 +38,7 @@ export default function SlidePreview({
 
   const containerRef = useRef(null);
   const iframeRef = useRef(null);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
 
   // console.log(slide, "SLIDES DATA");
 
@@ -169,7 +165,7 @@ export default function SlidePreview({
     height: `${SLIDE_HEIGHT}px`,
     transform: `scale(${dimensions.scale})`,
     transformOrigin: "center center",
-    border: isEditMode ? `2px solid ${PRIMARY_GREEN}` : "none",
+    border: isEditMode ? "2px solid hsl(var(--primary))" : "none",
     display: "block",
     pointerEvents: isEditMode ? "auto" : "none",
     transition: "transform 0.2s ease-in-out, border 0.2s ease-in-out",
@@ -293,132 +289,63 @@ export default function SlidePreview({
   }, [activeTab]);
 
   return (
-    <Card sx={{ boxShadow: 2, borderRadius: 2, overflow: "hidden" }}>
-      <CardContent sx={{ p: "0 !important" }}>
-        <Box
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-            bgcolor: theme.palette.background.paper,
-            px: 2,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+    <Card className="overflow-hidden rounded-lg py-0 shadow-md">
+      <CardContent className="p-0">
+        <Tabs
+          value={activeTab}
+          onValueChange={(newValue) => onTabChange(index, newValue)}
+          className="gap-0"
         >
-          <Tabs
-            value={activeTab}
-            onChange={(e, newValue) => onTabChange(index, newValue)}
-            aria-label={`Tabs for slide ${index + 1}`}
-            sx={{
-              "& .MuiTabs-indicator": { bgcolor: PRIMARY_GREEN },
-              "& .Mui-selected": { color: `${PRIMARY_GREEN} !important` },
-            }}
-          >
-            <Tab
-              label="Preview"
-              value="preview"
-              sx={{
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.875rem",
-                },
-              }}
-            />
-            <Tab
-              label="Thinking"
-              value="thinking"
-              sx={{
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.875rem",
-                },
-              }}
-            />
-            <Tab
-              label="Code"
-              value="code"
-              sx={{
-                fontSize: {
-                  xs: "0.75rem",
-                  sm: "0.875rem",
-                },
-              }}
-            />
-          </Tabs>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: { xs: "4px", md: "8px", lg: "12px", xl: "16px" },
-            }}
-          >
-            {/* When edit mode will be on then we will need this. So don't remove it */}
-            {/* <Button
-              variant={isEditMode ? "contained" : "outlined"}
-              size="small"
-              sx={{
-                px: 2,
-                py: 0.5,
-                fontSize: "0.75rem",
-                bgcolor: isEditMode
-                  ? PRIMARY_GREEN
-                  : isDarkMode
-                  ? "background.paper"
-                  : "white",
-                color: isEditMode ? "white" : PRIMARY_GREEN,
-                borderColor: PRIMARY_GREEN,
-                "&:hover": {
-                  bgcolor: PRIMARY_GREEN,
-                  color: "white",
-                  borderColor: PRIMARY_GREEN,
-                },
-              }}
-              onClick={handleEditSlide}
-            >
-              {isEditMode ? "Exit Edit" : "Edit"}
-            </Button> */}
-
-            {totalSlides && !isMobile && (
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  fontSize: {
-                    xs: "0.75rem",
-                    sm: "0.875rem",
-                  },
-                }}
+          <div className="border-border bg-card flex flex-row items-center justify-between overflow-hidden border-b px-2 py-2">
+            <TabsList className="h-auto bg-transparent p-0">
+              <TabsTrigger
+                value="preview"
+                className="data-[state=active]:text-primary text-xs sm:text-sm"
               >
-                {slide?.slideNumber} / {totalSlides}
-              </Typography>
-            )}
-          </Box>
-        </Box>
+                Preview
+              </TabsTrigger>
+              <TabsTrigger
+                value="thinking"
+                className="data-[state=active]:text-primary text-xs sm:text-sm"
+              >
+                Thinking
+              </TabsTrigger>
+              <TabsTrigger
+                value="code"
+                className="data-[state=active]:text-primary text-xs sm:text-sm"
+              >
+                Code
+              </TabsTrigger>
+            </TabsList>
 
-        <Box sx={{ p: 0 }}>
-          {activeTab === "preview" && (
-            <Box
+            <div className="flex flex-row items-center gap-1 md:gap-2 lg:gap-3 xl:gap-4">
+              {/* When edit mode will be on then we will need this. So don't remove it */}
+              {/* <Button
+                variant={isEditMode ? "default" : "outline"}
+                size="sm"
+                className="px-2 py-0.5 text-xs"
+                onClick={handleEditSlide}
+              >
+                {isEditMode ? "Exit Edit" : "Edit"}
+              </Button> */}
+
+              {totalSlides && !isMobile && (
+                <p className="text-muted-foreground text-xs sm:text-sm">
+                  {slide?.slideNumber} / {totalSlides}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <TabsContent value="preview" className="m-0 p-0">
+            <div
               ref={containerRef}
-              sx={{
-                height: `${dimensions.height}px`,
-                position: "relative",
-                width: "100%",
-                bgcolor: isEditMode ? "#f8f9ff" : "#f0f0f0",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 0,
-                overflow: "hidden",
-                margin: 0,
-                padding: 0,
-                transition:
-                  "height 0.3s ease-in-out, background-color 0.2s ease-in-out",
-              }}
+              style={{ height: `${dimensions.height}px` }}
+              className={cn(
+                "relative m-0 flex w-full items-center justify-center overflow-hidden p-0",
+                "transition-all duration-300",
+                isEditMode ? "bg-accent/20" : "bg-muted/30",
+              )}
             >
               {dimensions.scale > 0 && (
                 <iframe
@@ -434,68 +361,47 @@ export default function SlidePreview({
 
               {/* Edit mode indicator */}
               {/* {isEditMode && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    left: 8,
-                    bgcolor: PRIMARY_GREEN,
-                    color: "white",
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 1,
-                    fontSize: "0.75rem",
-                    fontWeight: "bold",
-                    zIndex: 10,
-                  }}
-                >
+                <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-1 py-0.5 rounded text-xs font-bold z-10">
                   EDIT MODE
-                </Box>
+                </div>
               )} */}
-            </Box>
-          )}
-          {activeTab === "thinking" && (
+            </div>
+          </TabsContent>
+          <TabsContent value="thinking" className="m-0 p-0">
             <EnhancedThinkingTab slide={slide} dimensions={dimensions} />
-          )}
-          {activeTab === "code" && (
-            <Box
-              sx={{
-                position: "relative",
+          </TabsContent>
+          <TabsContent value="code" className="m-0 p-0">
+            <div
+              style={{
                 minHeight: `${dimensions.height}px`,
                 maxHeight: `${dimensions.height}px`,
-                bgcolor: "#2d2d2d",
-                borderRadius: 1,
               }}
+              className="bg-secondary relative rounded"
             >
               {/* Copy button */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  zIndex: 10,
-                }}
-              >
-                <Tooltip title={copied ? "Copied!" : "Copy code"}>
-                  <IconButton
-                    onClick={handleCopy}
-                    size="small"
-                    sx={{
-                      bgcolor: "rgba(255, 255, 255, 0.1)",
-                      color: "white",
-                      "&:hover": {
-                        bgcolor: "rgba(255, 255, 255, 0.2)",
-                      },
-                    }}
-                  >
-                    {copied ? (
-                      <CheckIcon fontSize="small" />
-                    ) : (
-                      <ContentCopyIcon fontSize="small" />
-                    )}
-                  </IconButton>
-                </Tooltip>
-              </Box>
+              <div className="absolute top-2 right-2 z-10">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleCopy}
+                        size="sm"
+                        variant="secondary"
+                        className="bg-secondary-foreground/10 text-secondary-foreground hover:bg-secondary-foreground/20 h-8 w-8 p-0"
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{copied ? "Copied!" : "Copy code"}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
 
               {/* Enhanced code display */}
               <pre
@@ -510,18 +416,18 @@ export default function SlidePreview({
                   fontSize: "14px",
                   lineHeight: "1.5",
                   fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
-                  color: "#f8f8f2",
                   whiteSpace: "pre-wrap",
                   wordBreak: "break-word",
                 }}
+                className="text-secondary-foreground"
               >
                 <code className="language-html">
                   {slide.body || slide.html_content || slide.htmlContent}
                 </code>
               </pre>
-            </Box>
-          )}
-        </Box>
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
 
       {/* Selection feedback snackbar */}
@@ -553,37 +459,37 @@ const parseSimpleMarkdown = (text) => {
       // Headers
       .replace(
         /^### (.*$)/gm,
-        '<h3 style="margin: 16px 0 8px 0; font-size: 1.1em; font-weight: 600; color: #1976d2;">$1</h3>',
+        '<h3 style="margin: 16px 0 8px 0; font-size: 1.1em; font-weight: 600; color: hsl(var(--primary));">$1</h3>',
       )
       .replace(
         /^## (.*$)/gm,
-        '<h2 style="margin: 18px 0 10px 0; font-size: 1.2em; font-weight: 600; color: #1976d2;">$1</h2>',
+        '<h2 style="margin: 18px 0 10px 0; font-size: 1.2em; font-weight: 600; color: hsl(var(--primary));">$1</h2>',
       )
       .replace(
         /^# (.*$)/gm,
-        '<h1 style="margin: 20px 0 12px 0; font-size: 1.3em; font-weight: 600; color: #1976d2;">$1</h1>',
+        '<h1 style="margin: 20px 0 12px 0; font-size: 1.3em; font-weight: 600; color: hsl(var(--primary));">$1</h1>',
       )
 
       // Bold and italic
       .replace(
         /\*\*(.*?)\*\*/g,
-        '<strong style="font-weight: 600; color: #2e7d32;">$1</strong>',
+        '<strong style="font-weight: 600; color: hsl(var(--primary));">$1</strong>',
       )
       .replace(
         /\*(.*?)\*/g,
-        '<em style="font-style: italic; color: #666;">$1</em>',
+        '<em style="font-style: italic; color: hsl(var(--muted-foreground));">$1</em>',
       )
 
       // Code blocks
       .replace(
         /```([\s\S]*?)```/g,
-        '<pre style="background: #f5f5f5; padding: 12px; border-radius: 4px; margin: 12px 0; overflow-x: auto; font-family: monospace; font-size: 0.9em; border-left: 4px solid #07B37A;"><code>$1</code></pre>',
+        '<pre style="background: hsl(var(--muted)); padding: 12px; border-radius: 4px; margin: 12px 0; overflow-x: auto; font-family: monospace; font-size: 0.9em; border-left: 4px solid hsl(var(--primary));"><code>$1</code></pre>',
       )
 
       // Inline code
       .replace(
         /`(.*?)`/g,
-        '<code style="background: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-size: 0.9em; color: #d73502;">$1</code>',
+        '<code style="background: hsl(var(--muted)); padding: 2px 4px; border-radius: 3px; font-family: monospace; font-size: 0.9em; color: hsl(var(--accent-foreground));">$1</code>',
       )
 
       // Lists
@@ -599,7 +505,7 @@ const parseSimpleMarkdown = (text) => {
       // Links
       .replace(
         /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" style="color: #1976d2; text-decoration: none;" target="_blank" rel="noopener">$1</a>',
+        '<a href="$2" style="color: hsl(var(--primary)); text-decoration: none;" target="_blank" rel="noopener">$1</a>',
       )
 
       // Line breaks
@@ -621,83 +527,41 @@ const EnhancedThinkingTab = ({ slide, dimensions }) => {
   }, [slide.thinking]);
 
   return (
-    <Box
-      sx={{
-        p: 3,
+    <div
+      style={{
         maxHeight: `${dimensions.height}px`,
         minHeight: `${dimensions.height}px`,
-        bgcolor: "#fafafa",
-        borderRadius: 1,
-        overflowY: "auto",
-        position: "relative",
-
-        // Custom scrollbar styling
-        "&::-webkit-scrollbar": {
-          width: "8px",
-        },
-        "&::-webkit-scrollbar-track": {
-          background: "#f1f1f1",
-          borderRadius: "4px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          background: "#c1c1c1",
-          borderRadius: "4px",
-          "&:hover": {
-            background: "#a8a8a8",
-          },
-        },
       }}
+      className={cn(
+        "bg-muted/10 relative overflow-y-auto rounded p-3",
+        "[&::-webkit-scrollbar]:w-2",
+        "[&::-webkit-scrollbar-track]:bg-muted/20",
+        "[&::-webkit-scrollbar-track]:rounded",
+        "[&::-webkit-scrollbar-thumb]:bg-muted-foreground/20",
+        "[&::-webkit-scrollbar-thumb]:rounded",
+        "[&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/30",
+      )}
     >
       {/* Content */}
-      <Box
-        sx={{
-          "& h1, & h2, & h3": {
-            fontFamily: "inherit",
-          },
-          "& p": {
-            margin: "8px 0",
-            lineHeight: 1.6,
-          },
-          "& ul, & ol": {
-            paddingLeft: "20px",
-            margin: "8px 0",
-          },
-          "& li": {
-            marginBottom: "4px",
-          },
-          "& pre": {
-            fontFamily: '"Fira Code", "Consolas", "Monaco", monospace',
-          },
-          "& blockquote": {
-            borderLeft: "4px solid #07B37A",
-            paddingLeft: "16px",
-            margin: "16px 0",
-            fontStyle: "italic",
-            color: "#666",
-          },
-          fontSize: {
-            xs: "0.75rem",
-            sm: "0.875rem",
-            lg: "1rem",
-          },
-        }}
+      <div
+        className={cn(
+          "[&_h1]:font-[inherit] [&_h2]:font-[inherit] [&_h3]:font-[inherit]",
+          "[&_p]:my-2 [&_p]:leading-[1.6]",
+          "[&_ol]:my-2 [&_ol]:pl-5 [&_ul]:my-2 [&_ul]:pl-5",
+          "[&_li]:mb-1",
+          "[&_pre]:font-mono",
+          "[&_blockquote]:border-primary [&_blockquote]:text-muted-foreground [&_blockquote]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_blockquote]:italic",
+          "text-xs sm:text-sm lg:text-base",
+        )}
       >
         {processedContent ? (
           <div dangerouslySetInnerHTML={{ __html: processedContent }} />
         ) : (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              lineHeight: 1.6,
-              fontSize: "0.9em",
-              whiteSpace: "pre-wrap",
-            }}
-          >
+          <p className="text-muted-foreground text-[0.9em] leading-[1.6] whitespace-pre-wrap">
             {slide?.thought}
-          </Typography>
+          </p>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };

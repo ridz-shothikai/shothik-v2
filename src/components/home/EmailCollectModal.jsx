@@ -148,32 +148,3 @@ export default function EmailModal({ open, onClose, onSubmit }) {
     </Dialog>
   );
 }
-
-// Example usage component
-// export function EmailModalExample() {
-//   const [showModal, setShowModal] = useState(false);
-
-//   const handleEmailSubmit = async (email) => {
-//     console.log("Email submitted:", email);
-//     // Here we would typically send the email to your backend
-//     // await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify({ email }) });
-//   };
-
-//   return (
-//     <Box>
-//       <Button
-//         variant="contained"
-//         onClick={() => setShowModal(true)}
-//         sx={{ mb: 2 }}
-//       >
-//         Show Email Modal
-//       </Button>
-
-//       <EmailModal
-//         open={showModal}
-//         onClose={() => setShowModal(false)}
-//         onSubmit={handleEmailSubmit}
-//       />
-//     </Box>
-//   );
-// }

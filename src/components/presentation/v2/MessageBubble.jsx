@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { selectCategorizedLogs } from "@/redux/slice/presentationSlice";
-import PersonIcon from "@mui/icons-material/Person";
+import { User } from "lucide-react";
 import { useSelector } from "react-redux";
 
 export default function MessageBubble({ logs }) {
@@ -28,19 +28,19 @@ export default function MessageBubble({ logs }) {
         {isUserMessage ? (
           <>
             <div className="mb-1.5 flex items-center justify-end gap-2 opacity-70">
-              <span className="text-[11px] text-[#637381]">
+              <span className="text-muted-foreground text-[11px]">
                 {timeFormatter.format(
                   new Date(logs?.timestamp || logs?.lastUpdated),
                 )}
               </span>
-              <span className="text-xs text-[#637381]">You</span>
+              <span className="text-muted-foreground text-xs">You</span>
 
-              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1976d2]">
-                <PersonIcon sx={{ fontSize: 12, color: "white" }} />
+              <div className="bg-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                <User className="text-primary-foreground h-3 w-3" />
               </div>
             </div>
-            <div className="rounded-t-[18px] rounded-br-[4px] rounded-bl-[18px] bg-[#1976d2] px-4 py-3 wrap-break-word">
-              <span className="text-sm leading-[1.5] text-white md:text-base">
+            <div className="bg-primary rounded-t-[18px] rounded-br-[4px] rounded-bl-[18px] px-4 py-3 wrap-break-word">
+              <span className="text-primary-foreground text-sm leading-[1.5] md:text-base">
                 {logs?.content || logs?.text}
               </span>
             </div>

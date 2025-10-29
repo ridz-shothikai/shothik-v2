@@ -1,7 +1,8 @@
 "use client";
 
-import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { Chart, registerables } from "chart.js";
+import { Loader2 } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import AppLink from "../common/AppLink";
@@ -9,8 +10,6 @@ import SlidePreview from "./SlidePreview";
 
 // Register Chart.js components
 Chart.register(...registerables);
-
-const PRIMARY_GREEN = "#07B37A";
 
 export default function PreviewPanel({
   currentAgentType,
@@ -27,9 +26,6 @@ export default function PreviewPanel({
   onRegenerateWithFeedback,
   title,
 }) {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === "dark";
-
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -49,92 +45,35 @@ export default function PreviewPanel({
   console.log("slides data", slidesData);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: isDark ? "background.default" : "white",
-        color: isDark ? "text.primary" : "inherit",
-        height: "100%",
-        maxHeight: "100%",
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        sx={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-          minHeight: 0,
-          maxHeight: {
-            xs: "90dvh", // height for mobile screens (extra-small)
-            lg: "calc(100dvh - 70px)",
-          },
-          "&::-webkit-scrollbar": { width: "8px" },
-          "&::-webkit-scrollbar-track": {
-            background: isDark ? "#2b2b2b" : "#f1f1f1",
-            borderRadius: "4px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: isDark ? "#555" : "#c1c1c1",
-            borderRadius: "4px",
-            "&:hover": {
-              background: isDark ? "#666" : "#a8a8a8",
-            },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor: isDark ? "#555 #2b2b2b" : "#c1c1c1 #f1f1f1",
-        }}
+    <div className="bg-background text-foreground flex h-full max-h-full flex-col overflow-hidden">
+      <div
+        className={cn(
+          "min-h-0 flex-1 overflow-x-hidden overflow-y-auto",
+          "max-h-[90dvh] lg:max-h-[calc(100dvh-70px)]",
+          "[&::-webkit-scrollbar]:w-2",
+          "[&::-webkit-scrollbar-track]:bg-muted/20",
+          "[&::-webkit-scrollbar-track]:rounded",
+          "[&::-webkit-scrollbar-thumb]:bg-muted-foreground/20",
+          "[&::-webkit-scrollbar-thumb]:rounded",
+          "[&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/30",
+          "scrollbar-thin",
+        )}
       >
         {previewTab === "preview" && (
-          <Box>
+          <div>
             {currentAgentType === "presentation" ? (
               <>
                 {/* Sticky Header */}
-                <Box
-                  sx={{
-                    position: "sticky",
-                    top: 0,
-                    bgcolor: isDark ? "background.paper" : "white",
-                    zIndex: 10,
-                    borderBottom: `1px solid ${isDark ? "#444" : "#e0e0e0"}`,
-                    px: 3,
-                    pt: 3,
-                    pb: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                      color: isDark ? "text.primary" : "#333",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      minWidth: 0,
-                    }}
-                  >
+                <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-3 pt-3 pb-2">
+                  <h6 className="min-w-0 overflow-hidden text-[0.9rem] font-medium text-ellipsis whitespace-nowrap sm:text-base md:text-[1.1rem]">
                     {slidesData?.status !== "failed"
                       ? title || slidesData?.title || "Generating..."
                       : "Presentation generation failed"}
-                  </Typography>
+                  </h6>
 
                   {(slidesData?.status === "completed" ||
                     slidesData?.status === "saved") && (
-                    <Typography
-                      sx={{
-                        fontSize: {
-                          xs: "0.8rem",
-                          sm: "0.9rem",
-                          md: "1rem",
-                        },
-                        color: isDark ? "text.secondary" : "#666",
-                      }}
-                    >
+                    <div className="text-muted-foreground text-[0.8rem] sm:text-[0.9rem] md:text-base">
                       {!hasReplay && (
                         <AppLink
                           href={`/slides?project_id=${presentationId}`}
@@ -147,28 +86,18 @@ export default function PreviewPanel({
                           View & Export
                         </AppLink>
                       )}
-                    </Typography>
+                    </div>
                   )}
-                </Box>
+                </div>
 
                 {/* Scrollable Content */}
-                <Box sx={{ p: 3, pt: 0 }}>
+                <div className="p-3 pt-0">
                   {slidesData?.length === 0 ? (
-                    <Box
-                      sx={{ display: "flex", justifyContent: "center", p: 4 }}
-                    >
-                      <CircularProgress />
-                    </Box>
+                    <div className="flex justify-center p-4">
+                      <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                    </div>
                   ) : slidesData?.length > 0 ? (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        gap: 2,
-                        pt: 2,
-                      }}
-                    >
+                    <div className="flex flex-col justify-center gap-2 pt-2">
                       {slidesData?.map((slide, index) => (
                         <SlidePreview
                           key={index}
@@ -179,42 +108,34 @@ export default function PreviewPanel({
                           totalSlides={
                             slidesData?.length || slidesData?.data?.length
                           }
-                          theme={theme}
-                          isDarkMode={isDark}
                         />
                       ))}
 
                       {slidesLoading && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            p: 4,
-                          }}
-                        >
-                          <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center p-4">
+                          <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                        </div>
                       )}
-                    </Box>
+                    </div>
                   ) : (
-                    <Box sx={{ textAlign: "center", mt: 8, p: 3 }}>
-                      <Typography color={isDark ? "text.secondary" : "#666"}>
+                    <div className="mt-8 p-3 text-center">
+                      <p className="text-muted-foreground">
                         No slides generated
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
                   )}
-                </Box>
+                </div>
               </>
             ) : (
-              <Box sx={{ textAlign: "center", mt: 8, p: 3 }}>
-                <Typography color={isDark ? "text.secondary" : "#666"}>
+              <div className="mt-8 p-3 text-center">
+                <p className="text-muted-foreground">
                   Agent output will appear here
-                </Typography>
-              </Box>
+                </p>
+              </div>
             )}
-          </Box>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
