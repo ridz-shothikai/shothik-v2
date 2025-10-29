@@ -1,21 +1,5 @@
 "use client";
-import { InsertDriveFile, MoreVert } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid2,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import { Close, InsertDriveFile, MoreVert } from "@mui/icons-material";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -33,7 +17,8 @@ import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 // import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
 import WordCounter from "../common/WordCounter";
-import LanguageMenu from "../grammar/LanguageMenu";
+// import LanguageMenu from "../grammar/LanguageMenu";
+import LanguageMenu from "../../(paraphrase-migration)/LanguageMenu";
 import FileHistorySidebar from "./FileHistorySidebar";
 import ModeNavigation from "./ModeNavigation";
 import Onboarding from "./Onboarding";
@@ -1665,124 +1650,48 @@ const ParaphraseContend = () => {
   }, [userInputValue, stableFrozenWords]); // This effect runs whenever userInput, frozenWords changes
 
   return (
-    <Box sx={{ display: "flex", width: "100%", overflow: "hidden", pt: 2 }}>
+    <div className="flex w-full overflow-hidden pt-2">
+      {showDemo && <Onboarding />}
+
+      {/* Desktop Sidebar - Left */}
       {!isMobile && (
-        <Box
-          sx={{
-            flex: "0 0 auto",
-            width: "min-content",
-            mr: 2,
-            transition: "width 200ms",
-            // when collapsed you could toggle a class to shrink to e.g. 40px
-          }}
-        >
-          <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
-        </Box>
+        <div className="mr-2 w-auto flex-shrink-0 transition-all duration-200">
+          <FileHistorySidebar fetchFileHistories={() => {}} />
+        </div>
       )}
 
-      <Box
-        sx={{
-          flex: "1 1 auto", // can grow & shrink
-          minWidth: 0, // allow inner overflow hidden
-          display: "flex",
-          flexDirection: "column",
-          gap: 0,
-        }}
-      >
-        {showDemo ? <Onboarding /> : null}
-
-        {/* desktop: language tabs outside card; hide on mobile */}
-        <Box
-          sx={{
-            display: { xs: "none", md: "flex" },
-            alignItems: "center",
-            width: "100%", // match card width
-            flex: "0 0 auto",
-            // padding: '0 20px'
-          }}
-        >
+      {/* Main Content Area */}
+      <div className="flex min-w-0 flex-1 flex-col gap-0">
+        {/* Desktop Language Tabs - Outside Card */}
+        <div className="hidden w-full flex-shrink-0 items-center md:flex">
           <LanguageMenu
             isLoading={isLoading || processing.loading}
             setLanguage={setLanguage}
             language={language}
           />
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              gap: {
-                xs: 1,
-                lg: 2,
-              },
-            }}
-          >
+          <div className="hidden items-center gap-2 md:flex lg:gap-4">
             <AutoFreezeSettings />
             <AutoParaphraseSettings />
-          </Box>
-        </Box>
+          </div>
+        </div>
 
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            overflow: "visible",
-            flex: "1 1 auto", // ← allow this wrapper to grow/shrink
-            minWidth: 0, // ← so its children can shrink
-            width: "100%", // ← match the language menu’s 100%
-          }}
-        >
-          <Card
-            sx={{
-              flex: "1 1 auto", // fill remaining height
-              minWidth: 0, // allow it to shrink
-              width: "100%",
-              mt: 0,
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "0 12px 12px 12px",
-              overflow: "visible",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            {/* <Card */}
-            {/*   sx={{ */}
-            {/*     flex: "1 1 0%", */}
-            {/*     minWidth: 0, */}
-            {/*     width: "100%", */}
-            {/*     mt: 0, */}
-            {/*     border: "1px solid", */}
-            {/*     borderColor: "divider", */}
-            {/*     borderRadius: "12px", */}
-            {/*     overflow: "visible", */}
-            {/*   }} */}
-            {/* > */}
-            {/* mobile: selected language button in card header */}
-            <Box
-              sx={{
-                display: { xs: "flex", md: "none" },
-                borderBottom: 1,
-                borderColor: "divider",
-                px: 2,
-                py: 1,
-              }}
-            >
+        {/* Main Card Container */}
+        <div className="flex w-full min-w-0 flex-1 gap-2 overflow-visible">
+          <div className="mt-0 flex w-full min-w-0 flex-1 flex-col overflow-visible rounded-tr-xl rounded-br-xl rounded-bl-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+            {/* Mobile Header with Language Menu */}
+            <div className="flex border-b border-gray-200 px-2 py-1 md:hidden dark:border-gray-700">
               <LanguageMenu
                 isLoading={isLoading}
                 setLanguage={setLanguage}
                 language={language}
               />
-              {/* three-dots overflow menu for mobile */}
-              <IconButton size="small" onClick={() => setMobileMenuOpen(true)}>
-                <MoreVert fontSize="small" />
-              </IconButton>
-            </Box>
-            {/* {!isMobile ? ( */}
-            <Box
-              sx={{
-                display: { xs: "none", lg: "block" },
-              }}
-            >
+              <button className="p-2" onClick={() => setMobileMenuOpen(true)}>
+                <MoreVert className="text-sm" />
+              </button>
+            </div>
+
+            {/* Desktop Mode Navigation */}
+            <div className="hidden lg:block">
               <ModeNavigation
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -1796,46 +1705,15 @@ const ParaphraseContend = () => {
                 dispatch={dispatch}
                 setShowLoginModal={setShowLoginModal}
               />
-            </Box>
-            {/* ) : ( */}
-            {/* <ModeNavigationForMobile
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                initialFrozenWords={initialFrozenWords}
-                frozenWords={frozenWords}
-                userPackage={user?.package}
-                isLoading={processing.loading}
-              /> */}
-            {/* )} */}
+            </div>
 
-            <Divider
-              sx={{
-                display: { xs: "none", lg: "block" },
-                borderBottom: "2px solid",
-                borderColor: "divider",
-              }}
-            />
+            {/* Divider */}
+            <div className="hidden border-b-2 border-gray-200 lg:block dark:border-gray-700" />
 
-            <Grid2 container>
-              <Grid2
-                sx={{
-                  height: {
-                    xs: "400px",
-                    md: "450px",
-                    lg: "530px",
-                  },
-                  position: "relative",
-                  borderRight: { lg: "2px solid" },
-                  borderRightColor: { lg: "divider" },
-                  borderBottom: { xs: "2px solid", lg: "0px" },
-                  borderBottomColor: { xs: "divider", lg: "transparent" },
-                  // padding: 2,
-                  paddingBottom: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-                size={{ xs: 12, lg: 6 }}
-              >
+            {/* Two Column Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              {/* Left Panel - Input */}
+              <div className="relative flex h-[400px] flex-col border-b-2 border-gray-200 pb-1 md:h-[450px] lg:h-[530px] lg:border-r-2 lg:border-b-0 dark:border-gray-700">
                 <UserInputBox
                   wordLimit={wordLimit}
                   setUserInput={setUserInputState}
@@ -1851,7 +1729,7 @@ const ParaphraseContend = () => {
                   onFreezePhrase={handleFreezePhrase}
                 />
 
-                {!userInput ? (
+                {!userInput && (
                   <UserActionInput
                     setUserInput={setUserInputState}
                     isMobile={isMobile}
@@ -1869,7 +1747,8 @@ const ParaphraseContend = () => {
                       .join(", ")}
                     disableTrySample={!hasSampleText}
                   />
-                ) : null}
+                )}
+
                 <WordCounter
                   freeze_props={{
                     recommendedWords: recommendedFreezeWords,
@@ -1903,61 +1782,22 @@ const ParaphraseContend = () => {
                 />
 
                 {showLanguageDetect && (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component={Paper}
-                    gap={2}
-                    sx={{
-                      position: "absolute",
-                      bottom: 80,
-                      left: 20,
-                      padding: 1,
-                    }}
-                  >
-                    <Typography>Detected Language: </Typography>
-                    <Button variant="outlined">{language}</Button>
-                  </Stack>
+                  <div className="absolute bottom-20 left-5 flex items-center gap-2 rounded bg-white p-1 shadow-md dark:bg-gray-800">
+                    <span className="text-sm">Detected Language:</span>
+                    <button className="rounded border border-gray-300 px-3 py-1 text-sm">
+                      {language}
+                    </button>
+                  </div>
                 )}
-              </Grid2>
+              </div>
 
-              <Grid2
-                size={{ xs: 12, lg: 6 }}
+              {/* Right Panel - Output */}
+              <div
                 ref={outputRef}
-                sx={{
-                  height: {
-                    xs: "480px",
-                    sm: "450px",
-                    lg: "530px",
-                  },
-                  overflow: "hidden",
-                  borderTop: { xs: "2px solid", md: "none" },
-                  borderTopColor: { xs: "divider", md: undefined },
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
+                className="relative flex h-[480px] flex-col overflow-hidden border-t-2 border-gray-200 sm:h-[450px] md:border-t-0 lg:h-[530px] dark:border-gray-700"
               >
-                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
-                  {isLoading ? (
-                    <ViewInputInOutAsDemo
-                      input={userInput}
-                      wordLimit={wordLimit}
-                    />
-                  ) : !result.length ? (
-                    <p>Paraphrased Text</p>
-                  ) : null}
-                </div> */}
-                <Box
-                  sx={{
-                    display: {
-                      xs: "block",
-                      lg: "none",
-                      borderBottom: "1px solid",
-                      borderBottomColor: "#F4F6F8",
-                    },
-                  }}
-                >
+                {/* Mobile Mode Navigation */}
+                <div className="block border-b border-gray-100 lg:hidden dark:border-gray-800">
                   <ModeNavigation
                     selectedMode={selectedMode}
                     setSelectedMode={setSelectedMode}
@@ -1971,7 +1811,7 @@ const ParaphraseContend = () => {
                     dispatch={dispatch}
                     setShowLoginModal={setShowLoginModal}
                   />
-                </Box>
+                </div>
 
                 <ParaphraseOutput
                   data={result}
@@ -1995,100 +1835,80 @@ const ParaphraseContend = () => {
                   setProcessing={setProcessing}
                   eventId={eventId}
                   setEventId={setEventId}
-                  paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
+                  paraphraseRequestCounter={paraphraseRequestCounter}
                 />
 
-                {result?.length ? (
-                  <>
-                    {/* <ParaphraseOutput
-                      data={result}
-                      setData={setResult}
-                      synonymLevel={selectedSynonyms}
-                      dataModes={modes}
-                      userPackage={user?.package}
-                      selectedLang={language}
-                      highlightSentence={highlightSentence}
-                      setHighlightSentence={setHighlightSentence}
-                      setOutputHistory={setOutputHistory}
-                      input={userInput}
-                      freezeWords={
-                        frozenWords.size > 0
-                          ? frozenWords.values.join(", ")
-                          : frozenPhrases.size > 0
-                          ? frozenPhrases.values.join(", ")
-                          : ""
-                      }
-                      socketId={socketId}
-                      language={language}
-                      setProcessing={setProcessing}
-                      eventId={eventId}
-                      setEventId={setEventId}
-                    /> */}
-                    <OutputBotomNavigation
-                      handleClear={() => handleClear("", "output")}
-                      highlightSentence={highlightSentence}
-                      outputContend={outputContend}
-                      outputHistory={outputHistory}
-                      outputHistoryIndex={outputHistoryIndex}
-                      outputWordCount={outputWordCount}
-                      proccessing={processing}
-                      sentenceCount={result.length - 1}
-                      setHighlightSentence={setHighlightSentence}
-                      setOutputHistoryIndex={setOutputHistoryIndex}
-                    />
-                  </>
-                ) : null}
+                {result?.length > 0 && (
+                  <OutputBotomNavigation
+                    handleClear={() => handleClear("", "output")}
+                    highlightSentence={highlightSentence}
+                    outputContend={outputContend}
+                    outputHistory={outputHistory}
+                    outputHistoryIndex={outputHistoryIndex}
+                    outputWordCount={outputWordCount}
+                    proccessing={processing}
+                    sentenceCount={result.length - 1}
+                    setHighlightSentence={setHighlightSentence}
+                    setOutputHistoryIndex={setOutputHistoryIndex}
+                  />
+                )}
 
                 {showMessage.show &&
-                isModeLockedForUser(showMessage.Component, user?.package) ? (
-                  <UpdateComponent Component={showMessage.Component} />
-                ) : null}
-              </Grid2>
-            </Grid2>
-          </Card>
+                  isModeLockedForUser(showMessage.Component, user?.package) && (
+                    <UpdateComponent Component={showMessage.Component} />
+                  )}
+              </div>
+            </div>
+          </div>
 
-          <SwipeableDrawer
-            anchor="bottom"
-            open={mobileMenuOpen}
-            onOpen={() => setMobileMenuOpen(true)}
-            onClose={() => setMobileMenuOpen(false)}
-          >
-            {/* you can wrap in a Box to add padding if you like */}
-            <Box sx={{ px: 2, pt: 1, pb: 2 }}>
-              <VerticalMenu
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                outputText={result}
-                setOutputText={setResult}
-                freezeWords={[
-                  ...(frozenWords?.values || []),
-                  ...(frozenPhrases?.values || []),
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-                text={userInput}
-                selectedLang={language}
-                highlightSentence={highlightSentence}
-                setHighlightSentence={setHighlightSentence}
-                plainOutput={extractPlainText(result)}
-                selectedSynonymLevel={selectedSynonyms}
-                mobile={true}
-                fetchFileHistories={fetchFileHistories}
+          {/* Mobile Bottom Drawer */}
+          {mobileMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="bg-opacity-50 fixed inset-0 z-40 bg-black"
+                onClick={() => setMobileMenuOpen(false)}
               />
-            </Box>
-          </SwipeableDrawer>
-        </Box>
-      </Box>
+
+              {/* Drawer */}
+              <div className="fixed right-0 bottom-0 left-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-xl bg-white px-2 pt-1 pb-2 shadow-2xl dark:bg-gray-800">
+                <div className="mb-2 flex justify-end">
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <Close />
+                  </button>
+                </div>
+                <VerticalMenu
+                  selectedMode={selectedMode}
+                  setSelectedMode={setSelectedMode}
+                  outputText={result}
+                  setOutputText={setResult}
+                  freezeWords={[
+                    ...(frozenWords?.values || []),
+                    ...(frozenPhrases?.values || []),
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                  text={userInput}
+                  selectedLang={language}
+                  highlightSentence={highlightSentence}
+                  setHighlightSentence={setHighlightSentence}
+                  plainOutput={extractPlainText(result)}
+                  selectedSynonymLevel={selectedSynonyms}
+                  mobile={true}
+                  fetchFileHistories={() => {}}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop Right Sidebar - Vertical Menu */}
       {!isMobile && (
-        <Box
-          sx={{
-            flex: "0 0 auto",
-            width: "min-content",
-            ml: 2,
-            transition: "width 200ms",
-            mt: { lg: 7 },
-          }}
-        >
+        <div className="mt-7 ml-2 w-auto flex-shrink-0 transition-all duration-200">
           <VerticalMenu
             selectedMode={selectedMode}
             outputText={result}
@@ -2106,11 +1926,12 @@ const ParaphraseContend = () => {
             highlightSentence={highlightSentence}
             setHighlightSentence={setHighlightSentence}
             selectedSynonymLevel={selectedSynonyms}
-            fetchFileHistories={fetchFileHistories}
+            fetchFileHistories={() => {}}
           />
-        </Box>
+        </div>
       )}
 
+      {/* File Upload Component */}
       <MultipleFileUpload
         isMobile={isMobile}
         setInput={() => {}}
@@ -2120,32 +1941,12 @@ const ParaphraseContend = () => {
         shouldShowButton={false}
       />
 
-      <Dialog
-        open={confirmationDialog.open}
-        onClose={() =>
-          setConfirmationDialog({
-            open: false,
-            word: "",
-            count: 0,
-            action: null,
-          })
-        }
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Freeze Multiple Occurrences?</DialogTitle>
-        <DialogContent>
-          <Typography>
-            The word/phrase appears{" "}
-            <strong>{confirmationDialog.count} times</strong> in your text.
-          </Typography>
-          <Typography sx={{ mt: 2 }}>
-            Freezing this will prevent all {confirmationDialog.count}{" "}
-            occurrences from being paraphrased. Do you want to continue?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
+      {/* Confirmation Dialog */}
+      {confirmationDialog.open && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4"
             onClick={() =>
               setConfirmationDialog({
                 open: false,
@@ -2154,20 +1955,59 @@ const ParaphraseContend = () => {
                 action: null,
               })
             }
-            color="inherit"
           >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmationDialog.action}
-            variant="contained"
-            color="primary"
-          >
-            Freeze All {confirmationDialog.count}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+            {/* Dialog */}
+            <div
+              className="w-full max-w-sm rounded-lg bg-white shadow-xl dark:bg-gray-800"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Title */}
+              <div className="px-6 pt-6 pb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Freeze Multiple Occurrences?
+                </h2>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 pb-4">
+                <p className="text-gray-700 dark:text-gray-300">
+                  The word/phrase appears{" "}
+                  <strong>{confirmationDialog.count} times</strong> in your
+                  text.
+                </p>
+                <p className="mt-4 text-gray-700 dark:text-gray-300">
+                  Freezing this will prevent all {confirmationDialog.count}{" "}
+                  occurrences from being paraphrased. Do you want to continue?
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-2 px-6 pb-6">
+                <button
+                  onClick={() =>
+                    setConfirmationDialog({
+                      open: false,
+                      word: "",
+                      count: 0,
+                      action: null,
+                    })
+                  }
+                  className="rounded px-4 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmationDialog.action}
+                  className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+                >
+                  Freeze All {confirmationDialog.count}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

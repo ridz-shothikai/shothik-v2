@@ -1,5 +1,6 @@
 import { Container } from "@mui/material";
 import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
+// import ParaphraseMigrated from "../../../components/(paraphrase-migration)/ParaphraseMigrated";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
@@ -50,6 +51,7 @@ const Paraphrase = () => {
       }}
     >
       <ParaphraseContend />
+      {/* <ParaphraseMigrated /> */}
       <ToolsSepecigFaq
         tag="All you need to know about Paraphrase feature"
         data={paraphraseFaq}
