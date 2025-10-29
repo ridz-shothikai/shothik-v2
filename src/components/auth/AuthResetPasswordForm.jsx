@@ -1,7 +1,6 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Typography } from "@mui/material";
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -78,27 +77,25 @@ export default function AuthResetPasswordForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <RHFTextField name="email" label="Email address" />
-      {errorMessage && (
-        <Typography
-          variant="body2"
-          color="error"
-          sx={{ mt: 1, minHeight: "1.5em" }} // Added minHeight to reserve space
-        >
-          {errorMessage}
-        </Typography>
-      )}
+      <div className="space-y-4">
+        <RHFTextField name="email" label="Email address" />
+        {errorMessage && (
+          <p className="text-destructive min-h-[1.5em] text-sm">
+            {errorMessage}
+          </p>
+        )}
 
-      <Button
-        fullWidth
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        sx={{ mt: 3 }}
-      >
-        {isSentMail ? "Resend" : "Send"} Request
-      </Button>
+        <Button
+          type="submit"
+          className="mt-6 w-full"
+          size="lg"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? "Sending..."
+            : `${isSentMail ? "Resend" : "Send"} Request`}
+        </Button>
+      </div>
     </FormProvider>
   );
 }

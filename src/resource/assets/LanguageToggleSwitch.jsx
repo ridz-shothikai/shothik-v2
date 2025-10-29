@@ -1,10 +1,11 @@
-export function FluentMdl2Switch(props) {
+export function FluentMdl2Switch({ className, ...props }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="1em"
       height="1em"
       viewBox="0 0 2048 2048"
+      className={className}
       {...props}
     >
       <path

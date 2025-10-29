@@ -1,20 +1,14 @@
 "use client";
 
-import { Box, useTheme } from "@mui/material";
-
-function PageNotFoundIllustration({ ...other }) {
-  const theme = useTheme();
-
-  const PRIMARY_LIGHT = theme.palette.primary.light;
-
-  const PRIMARY_MAIN = theme.palette.primary.main;
-
-  const PRIMARY_DARK = theme.palette.primary.dark;
-
-  const PRIMARY_DARKER = theme.palette.primary.darker;
+function PageNotFoundIllustration({ className, ...other }) {
+  // Using CSS variables for theme colors
+  const PRIMARY_LIGHT = "hsl(var(--primary) / 0.7)";
+  const PRIMARY_MAIN = "hsl(var(--primary))";
+  const PRIMARY_DARK = "hsl(var(--primary) / 0.8)";
+  const PRIMARY_DARKER = "hsl(var(--primary) / 0.9)";
 
   return (
-    <Box {...other}>
+    <div className={className} {...other}>
       <svg
         width="100%"
         height="100%"
@@ -83,7 +77,7 @@ function PageNotFoundIllustration({ ...other }) {
           </linearGradient>
         </defs>
       </svg>
-    </Box>
+    </div>
   );
 }
 

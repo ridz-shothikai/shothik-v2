@@ -1,10 +1,10 @@
-import Analytics from "../analysers/Analytics";
-import SettingApplier from "../components/appliers/SettingApplier";
-import ToastApplier from "../components/appliers/ToastApplier";
-import { LoginModal, RegisterModal } from "../components/auth/AuthModal";
-import { Login } from "../components/auth/components/Login";
-import { Register } from "../components/auth/components/Register";
-import Providers from "../config/Providers";
+import Analytics from "@/analysers/Analytics";
+import SettingApplier from "@/components/appliers/SettingApplier";
+import ToastApplier from "@/components/appliers/ToastApplier";
+import { LoginModal, RegisterModal } from "@/components/auth/AuthModal";
+import { Login } from "@/components/auth/components/Login";
+import { Register } from "@/components/auth/components/Register";
+import Providers from "@/config/Providers";
 import "./globals.css";
 
 export const metadata = {
@@ -46,7 +46,6 @@ export default function RootLayout({ children }) {
           <SettingApplier />
           <ToastApplier />
 
-          {children}
           {/* login modal  */}
           <LoginModal>
             <Login />
@@ -54,6 +53,8 @@ export default function RootLayout({ children }) {
           <RegisterModal>
             <Register />
           </RegisterModal>
+
+          <div>{children}</div>
         </Providers>
         <Analytics />
       </body>

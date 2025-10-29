@@ -1,116 +1,116 @@
-import { TextField } from "@mui/material";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { Controller, useFormContext } from "react-hook-form";
 
 // ----------------------------------------------------------------------
 
 /**
- * New props:
+ * RHFTextField - React Hook Form + shadcn/ui Input
+ * Props:
  *  - restrict: "digits" | null   // opt-in input sanitization
- *  - (existing) inputProps: can pass as before
+ *  - endAdornment: React element to show at end of input
+ *  - startAdornment: React element to show at start of input
+ *  - border: boolean - show/hide border
  */
 export default function RHFTextField({
   name,
+  label,
   helperText,
   endAdornment,
   startAdornment,
   readOnly,
   border = true,
-  InputProps, // Accept InputProps directly
-  inputProps: inputPropsFromProps = {},
-  restrict = null, // <-- opt-in: "digits"
-  type, // optional type passed from caller
+  inputProps = {},
+  restrict = null,
+  type,
+  className,
   ...other
 }) {
   const { control } = useFormContext();
-
-  // Merge adornments into InputProps (same as before)
-  const mergedInputProps = {
-    ...InputProps, // InputProps from parent take precedence
-    ...(endAdornment && { endAdornment }),
-    ...(startAdornment && { startAdornment }),
-  };
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => {
-        // Normalize value so TextField never gets undefined
+        // Normalize value so Input never gets undefined
         const valueForInput = field.value ?? "";
 
-        // Build a merged onChange that sanitizes when restrict === "digits",
-        // but also calls any onChange passed via inputPropsFromProps.
-        const callerOnChange = inputPropsFromProps.onChange;
+        const callerOnChange = inputProps.onChange;
 
         const handleChange = (e) => {
           let raw = e?.target?.value;
 
-          // If caller passed numeric values (number) convert to string to sanitize correctly
+          // Convert to string if needed
           if (typeof raw !== "string" && raw != null) raw = String(raw);
 
           let sanitized = raw;
 
           if (restrict === "digits") {
             sanitized = (raw ?? "").replace(/[^0-9]/g, "");
-            // If we want to show the raw user input but still block, we could
-            // keep raw in display and only send sanitized to form value.
-            // Here we sanitize both display and stored value for simplicity.
           }
 
           // Update react-hook-form value
           field.onChange(sanitized);
 
-          // Also call caller's inputProps onChange if any (pass original event)
+          // Call caller's onChange if provided
           if (typeof callerOnChange === "function") {
             try {
               callerOnChange(e);
             } catch (err) {
-              // swallow to avoid breaking
-              // (caller handler shouldn't break our form)
-              // optional: console.warn(err)
+              // Silently fail to avoid breaking form
             }
           }
         };
 
-        // Merge inputProps safely (don't overwrite important ones)
-        const mergedInputPropsForInput = {
-          ...inputPropsFromProps,
-          readOnly,
-          // if caller already provided onChange, we've already stored it as callerOnChange
-          // we should NOT include inputPropsFromProps.onChange here; we merged above.
-          onChange: handleChange,
-        };
-
         return (
-          <TextField
-            {...field}
-            fullWidth
-            value={valueForInput}
-            error={!!error}
-            helperText={error ? error?.message : helperText}
-            InputProps={mergedInputProps}
-            inputProps={mergedInputPropsForInput}
-            type={type} // preserves caller expectation if they pass type
-            slotProps={{
-              inputLabel: { style: { color: error ? "red" : "inherit" } },
-            }}
-            sx={{
-              "& .MuiInputLabel-root": {
-                color: "inherit", // Use theme's text color
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: "primary.main", // Highlight color when focused
-              },
-              ...(border
-                ? {}
-                : {
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none",
-                    },
-                  }),
-            }}
-            {...other}
-          />
+          <div className="space-y-2">
+            {label && (
+              <Label htmlFor={name} className={cn(error && "text-destructive")}>
+                {label}
+              </Label>
+            )}
+            <div className="relative">
+              {startAdornment && (
+                <div className="absolute top-1/2 left-3 -translate-y-1/2">
+                  {startAdornment}
+                </div>
+              )}
+              <Input
+                {...field}
+                id={name}
+                value={valueForInput}
+                onChange={handleChange}
+                type={type}
+                readOnly={readOnly}
+                className={cn(
+                  error && "border-destructive focus-visible:ring-destructive",
+                  !border && "border-none",
+                  startAdornment && "pl-10",
+                  endAdornment && "pr-10",
+                  className,
+                )}
+                {...inputProps}
+                {...other}
+              />
+              {endAdornment && (
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                  {endAdornment}
+                </div>
+              )}
+            </div>
+            {(error || helperText) && (
+              <p
+                className={cn(
+                  "text-sm",
+                  error ? "text-destructive" : "text-muted-foreground",
+                )}
+              >
+                {error ? error.message : helperText}
+              </p>
+            )}
+          </div>
         );
       }}
     />

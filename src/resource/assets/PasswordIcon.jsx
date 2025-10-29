@@ -1,18 +1,12 @@
 "use client";
-import { Box } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
-// ----------------------------------------------------------------------
-
-function PasswordIcon({ ...other }) {
-  const theme = useTheme();
-
-  const PRIMARY_MAIN = theme.palette.primary.main;
-
-  const WARNING_LIGHT = theme.palette.warning.light;
+function PasswordIcon({ className, ...other }) {
+  // Using CSS variables for theme colors
+  const PRIMARY_MAIN = "hsl(var(--primary))";
+  const WARNING_LIGHT = "hsl(var(--warning) / 0.7)";
 
   return (
-    <Box {...other}>
+    <div className={className} {...other}>
       <svg
         width="100%"
         height="100%"
@@ -113,7 +107,7 @@ function PasswordIcon({ ...other }) {
           </filter>
         </defs>
       </svg>
-    </Box>
+    </div>
   );
 }
 

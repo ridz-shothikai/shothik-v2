@@ -1,4 +1,3 @@
-import { FormHelperText } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import UploadAvatar from "./UploadAvatar";
 
@@ -20,9 +19,9 @@ export function RHFUploadAvatar({ name, onDrop, helperText, loading }) {
           />
 
           {!!error && (
-            <FormHelperText error sx={{ px: 2, textAlign: "center" }}>
+            <p className="text-destructive px-4 text-center text-sm">
               {error.message}
-            </FormHelperText>
+            </p>
           )}
         </div>
       )}

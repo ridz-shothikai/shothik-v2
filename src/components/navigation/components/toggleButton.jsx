@@ -1,17 +1,14 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { NAV } from "../../../config/config/nav";
 import useResponsive from "../../../hooks/useResponsive";
 import { toggleThemeLayout } from "../../../redux/slice/settings";
-import { bgBlur } from "../../../resource/cssStyles";
 import { setIsNavVertical } from "../../../redux/slice/tools";
 
 // ----------------------------------------------------------------------
 
-export default function NavToggleButton({ sx, ...other }) {
-  const theme = useTheme();
+export default function NavToggleButton({ className, ...other }) {
   const { themeLayout } = useSelector((state) => state.settings);
   const isDesktop = useResponsive("up", "sm");
   const dispatch = useDispatch();
@@ -22,32 +19,21 @@ export default function NavToggleButton({ sx, ...other }) {
   }
 
   return (
-    <IconButton
-      size="small"
+    <Button
+      variant="ghost"
+      size="icon-sm"
       onClick={() => {
         dispatch(toggleThemeLayout());
         dispatch(setIsNavVertical(!isVerticalNav));
       }}
-      sx={{
-        p: 0.5,
-        top: 50,
-        position: "fixed",
-        left: NAV.W_DASHBOARD - 12,
-        zIndex: 1104,
-        border: `dashed 1px ${theme.palette.divider}`,
-        ...bgBlur({ opacity: 0.48, color: theme.palette.background.default }),
-        "&:hover": {
-          bgcolor: "background.default",
-        },
-        ...sx,
-      }}
+      className={cn("bg-card rounded-full border border-dashed", className)}
       {...other}
     >
       {themeLayout === "vertical" ? (
-        <ChevronLeft fontSize="small" />
+        <ChevronLeft className="h-4 w-4" />
       ) : (
-        <ChevronRight fontSize="small" />
+        <ChevronRight className="h-4 w-4" />
       )}
-    </IconButton>
+    </Button>
   );
 }

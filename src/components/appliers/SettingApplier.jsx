@@ -3,11 +3,7 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-// If needed, extract these later into separate functions
 const SettingApplier = () => {
-  const settings = useSelector((state) => state.settings);
-  console.log("Current settings:", settings);
-
   const direction = useSelector((state) => state.settings.direction);
   const theme = useSelector((state) => state.settings.themeMode);
   const language = useSelector((state) => state.settings.language);

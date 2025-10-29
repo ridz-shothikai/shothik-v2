@@ -1,8 +1,6 @@
 "use client";
-import { ChevronLeft } from "@mui/icons-material";
-import { Link } from "@mui/material";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useDispatch } from "react-redux";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 
@@ -16,22 +14,13 @@ const ReturnToHome = () => {
   };
 
   return (
-    <Link
-      href="/"
-      component="p"
+    <button
       onClick={handleNavigation}
-      color="inherit"
-      variant="subtitle2"
-      sx={{
-        mt: 3,
-        mx: "auto",
-        alignItems: "center",
-        display: "inline-flex",
-      }}
+      className="mx-auto mt-6 inline-flex items-center text-sm font-medium"
     >
-      <ChevronLeft fontSize="small" />
+      <ChevronLeft className="h-4 w-4" />
       Return to home
-    </Link>
+    </button>
   );
 };
 

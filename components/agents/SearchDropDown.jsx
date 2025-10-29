@@ -31,6 +31,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   const userPackage = user?.package || "free";
   const isPremiumUser = ["value_plan", "pro_plan", "unlimited"].includes(
     userPackage,
+    userPackage,
   );
 
   const handleMenuItemClick = (level, model, topLevel, isPremium = false) => {
@@ -131,6 +132,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
                   item.level,
                   item.model,
                   item.topLevel,
+                  item.isPremium,
                   item.isPremium,
                 )
               }

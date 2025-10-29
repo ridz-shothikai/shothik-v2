@@ -95,6 +95,7 @@ export default function WaitlistForm({ userType }) {
             Join the waitlist
           </Button>
         </div>
+        </div>
       </form>
     </FormProvider>
   );

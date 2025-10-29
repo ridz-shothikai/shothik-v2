@@ -1,17 +1,13 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { RemoveRedEyeRounded, VisibilityOffRounded } from "@mui/icons-material";
-import {
-  Alert,
-  Button,
-  IconButton,
-  InputAdornment,
-  Stack,
-  useTheme,
-} from "@mui/material";
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import * as Yup from "yup";
+import { z } from "zod";
+
 import { trackEvent } from "../../analysers/eventTracker";
 import { useLoginMutation } from "../../redux/api/auth/authApi";
 import {
@@ -20,37 +16,49 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../redux/slice/auth";
-import FormProvider from "../../resource/FormProvider";
-import RHFTextField from "../../resource/RHFTextField";
-import { useRouter } from "next/navigation";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
 
 // ----------------------------------------------------------------------
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .nonempty("Email is required")
+    .email("Email must be a valid email address"),
+  password: z.string().nonempty("Password is required"),
+});
 
 export default function AuthLoginForm({ loading, setLoading }) {
   const [login, { isLoading, error, isError }] = useLoginMutation();
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
-  const theme = useTheme();
   const router = useRouter();
 
-  const LoginSchema = Yup.object().shape({
-    email: Yup.string()
-      .required("Email is required")
-      .email("Email must be a valid email address"),
-    password: Yup.string().required("Password is required"),
+  const form = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
-
-  const defaultValues = {
-    email: "",
-    password: "",
-  };
 
   const handleLogout = async () => {
     try {
       dispatch(logout());
       localStorage.setItem("logout-event", Date.now().toString());
     } catch (error) {
-      console.log("🚀 ~ handleLogout ~ error:", error);
+      console.error("🚀 ~ handleLogout ~ error:", error);
     }
   };
 
@@ -63,26 +71,15 @@ export default function AuthLoginForm({ loading, setLoading }) {
     };
 
     window.addEventListener("storage", syncLogout);
-
-    return () => {
-      window.removeEventListener("storage", syncLogout);
-    };
-  }, [dispatch]);
-
-  const methods = useForm({
-    resolver: yupResolver(LoginSchema),
-    defaultValues,
-  });
-
-  const { reset, setError, handleSubmit } = methods;
+    return () => window.removeEventListener("storage", syncLogout);
+  }, [dispatch, router]);
 
   const onSubmit = async (data) => {
     try {
       handleLogout();
-
       trackEvent("click", "auth", "login-button", 1);
 
-      let payload = {
+      const payload = {
         email: data.email,
         auth_type: "manual",
         password: data.password,
@@ -94,10 +91,9 @@ export default function AuthLoginForm({ loading, setLoading }) {
         dispatch(setShowLoginModal(false));
       }
     } catch (error) {
-      reset();
-      setError("afterSubmit", {
-        ...error,
-        message: error.message || error,
+      form.reset();
+      form.setError("root", {
+        message: error?.message || "An error occurred during login",
       });
     } finally {
       setLoading(false);
@@ -105,58 +101,86 @@ export default function AuthLoginForm({ loading, setLoading }) {
   };
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
-        {isError && <Alert severity="error">{error?.data?.message}</Alert>}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Error Alert */}
+        {isError && (
+          <Alert variant="destructive">
+            <AlertDescription>{error?.data?.message}</AlertDescription>
+          </Alert>
+        )}
 
-        <RHFTextField name="email" label="Email address" size="small" />
-
-        <RHFTextField
-          name="password"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          size="small"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <RemoveRedEyeRounded />
-                  ) : (
-                    <VisibilityOffRounded />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
+        {/* Email Field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email address</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </Stack>
 
-      <Stack alignItems="flex-end">
+        {/* Password Field */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <Eye className="h-4 w-4" />
+                    ) : (
+                      <EyeOff className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Forgot Password */}
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="link"
+            onClick={() => dispatch(setShowForgotPasswordModal(true))}
+            className="px-0 font-semibold"
+          >
+            Forgot password?
+          </Button>
+        </div>
+
+        {/* Submit Button */}
         <Button
-          onClick={() => {
-            dispatch(setShowForgotPasswordModal(true));
-          }}
-          variant="body2"
-          color={theme.palette.primary.main}
-          fontWeight={600}
+          type="submit"
+          className="w-full"
+          size="lg"
+          disabled={loading || isLoading}
         >
-          Forgot password?
+          {loading || isLoading ? "Logging in..." : "Login"}
         </Button>
-      </Stack>
-
-      <Button
-        fullWidth
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={loading || isLoading}
-      >
-        Login
-      </Button>
-    </FormProvider>
+      </form>
+    </Form>
   );
 }

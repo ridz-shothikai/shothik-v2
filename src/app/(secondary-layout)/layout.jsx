@@ -1,6 +1,7 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import FooterServerComponent from "../../components/navigation/components/FooterServerComponent";
@@ -10,7 +11,6 @@ import {
   useGetUserQuery,
 } from "../../redux/api/auth/authApi";
 import LoadingScreen from "../../resource/LoadingScreen";
-import { useSelector } from "react-redux";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -35,9 +35,7 @@ export default function SecondaryLayout({ children }) {
     >
       <SecondaryHeader />
 
-      <main className="min-h-[calc(100vh-100px)]">
-        {children}
-      </main>
+      <main>{children}</main>
 
       <FooterServerComponent />
     </ProgressProvider>

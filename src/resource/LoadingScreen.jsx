@@ -2,8 +2,8 @@
 
 export default function LoadingScreen() {
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-background z-[9999]">
-      <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-lg animate-scale-in">
+    <div className="bg-background fixed top-0 right-0 bottom-0 left-0 z-[9999] flex items-center justify-center">
+      <div className="bg-primary animate-scale-in flex h-20 w-20 items-center justify-center rounded-full shadow-lg">
         <svg
           width="48"
           height="48"

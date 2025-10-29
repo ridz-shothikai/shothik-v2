@@ -39,7 +39,7 @@ export default function AlertDialog() {
           <SvgColor
             src="/icons/close.svg"
             onClick={() => dispatch(setAlertMessage(false))}
-            sx={{ cursor: "pointer" }}
+            className="cursor-pointer"
           />
         </span>
       </span>
@@ -48,7 +48,7 @@ export default function AlertDialog() {
           <SvgColor
             color="primary.main"
             src={"/tools/ic-lock.svg"}
-            sx={{ margin: "0 auto", width: 96, height: 96 }}
+            className="mx-auto h-24 w-24"
           />
         </Stack>
         <DialogContentText

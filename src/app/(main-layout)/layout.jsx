@@ -1,11 +1,11 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { Box, useTheme } from "@mui/material";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { usePathname } from "next/navigation";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
 import Main from "../../components/layout/Main";
@@ -30,7 +30,7 @@ export default function MainLayout({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const pathname = usePathname();
-  const isSharedPage = pathname?.startsWith('/shared');
+  const isSharedPage = pathname?.startsWith("/shared");
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const dispatch = useDispatch();
@@ -40,8 +40,7 @@ export default function MainLayout({ children }) {
   });
   useGetUserLimitQuery();
 
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  const isDarkMode = false; // Theme switching handled internally by shadcn
 
   const [login] = useLoginMutation();
 
@@ -65,7 +64,6 @@ export default function MainLayout({ children }) {
           },
         });
 
-        // console.log(response);
         if (response?.data) {
           dispatch(setShowRegisterModal(false));
           dispatch(setShowLoginModal(false));
@@ -91,15 +89,15 @@ export default function MainLayout({ children }) {
       options={{ showSpinner: false }}
       shallowRouting
     >
-      <Box>
+      <div>
         <MainHeader />
-        <Box
-          sx={{
-            bgcolor: isDarkMode ? "#212121" : "background.neutral",
-            display: { sm: "flex" },
-            minHeight: { sm: 1 },
-            overflow: "hidden",
-          }}
+        <div
+          className={cn(
+            "bg-background",
+            "sm:flex",
+            "min-h-screen",
+            "overflow-hidden",
+          )}
         >
           {!isMobile && isNavMini ? (
             <NavMini isDarkMode={isDarkMode} />
@@ -115,8 +113,8 @@ export default function MainLayout({ children }) {
             <AuthSuccessPopup />
             <AlertDialog />
           </Main>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </ProgressProvider>
   );
 }

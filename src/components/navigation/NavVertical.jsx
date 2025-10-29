@@ -1,8 +1,8 @@
 "use client";
 
-import { Box, Drawer, Stack, useTheme } from "@mui/material";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
-import { NAV } from "../../config/config/nav";
 import navConfig from "../../config/config/navConfig";
 import useResponsive from "../../hooks/useResponsive";
 import Logo from "../../resource/assets/Logo";
@@ -11,87 +11,76 @@ import NavSectionVertical from "./components/NavSectionVertical";
 import NavToggleButton from "./components/toggleButton";
 import UserInfo from "./components/UserInfo";
 
-// ----------------------------------------------------------------------
-
 export default function NavVertical({ openNav, onCloseNav }) {
   const { user, accessToken } = useSelector((state) => state.auth);
   const isDesktop = useResponsive("up", "sm");
-  const theme = useTheme();
 
   return (
-    <Box
-      component="nav"
-      sx={{
-        bgcolor: theme.palette.mode === "dark" ? "#242526" : "background.paper",
-        flexShrink: { sm: 0 },
-        width: { sm: NAV.W_DASHBOARD },
-      }}
-    >
-      <NavToggleButton />
+    <nav className={cn("bg-background", "flex-shrink-0", "sm:w-60")}>
+      <NavToggleButton className="absolute top-12 -right-4" />
 
-      <Drawer
-        open={isDesktop ? true : openNav}
-        onClose={isDesktop ? undefined : onCloseNav}
-        variant={isDesktop ? "permanent" : "temporary"}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              zIndex: isDesktop ? 1103 : 0,
-              width: NAV.W_DASHBOARD,
-              ...(isDesktop && {
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? "#242526"
-                    : "background.paper",
-                borderRightStyle: "dashed",
-              }),
-            },
-          },
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            justifyContent: "space-between",
-          }}
+      {isDesktop ? (
+        <div
+          className={cn(
+            "fixed top-0 left-0 z-40 h-full",
+            "w-60",
+            "bg-background border-border border-r border-dashed",
+          )}
         >
-          <Box
-            sx={{
-              bgcolor:
-                theme.palette.mode === "dark" ? "#242526" : "background.paper",
-              height: 1,
-            }}
+          <NavContent
+            accessToken={accessToken}
+            onCloseNav={onCloseNav}
+            user={user}
+          />
+        </div>
+      ) : (
+        // Sheet for mobile
+        <Sheet open={openNav} onOpenChange={onCloseNav}>
+          <SheetContent
+            side="left"
+            className={cn(
+              "w-60 p-0",
+              "bg-background border-border border-r border-dashed",
+            )}
           >
-            <Stack
-              spacing={3}
-              sx={{
-                pt: 2,
-                pr: 2.5,
-                pl: 4,
-                flexShrink: 0,
-              }}
-            >
-              <Logo />
-            </Stack>
-
-            <NavSectionVertical
+            <NavContent
+              accessToken={accessToken}
               onCloseNav={onCloseNav}
-              data={navConfig}
               user={user}
             />
+          </SheetContent>
+        </Sheet>
+      )}
+    </nav>
+  );
+}
 
-            <Box sx={{ flexGrow: 1 }} />
-          </Box>
-          <Box sx={{ mt: 8 }}>
-            {!accessToken ? <UserInfo /> : <NavigantionIcons />}
-          </Box>
-        </Box>
-      </Drawer>
-    </Box>
+// Separate component for shared navigation content
+function NavContent({ accessToken, onCloseNav, user }) {
+  return (
+    <div className="flex h-full flex-col justify-between">
+      <div className="bg-background h-full">
+        <div
+          className={cn(
+            "flex flex-col gap-6",
+            "pt-2 pr-5 pl-8",
+            "flex-shrink-0",
+          )}
+        >
+          <Logo />
+        </div>
+
+        <NavSectionVertical
+          onCloseNav={onCloseNav}
+          data={navConfig}
+          user={user}
+        />
+
+        <div className="flex-grow" />
+      </div>
+      <div className="mt-32">
+        {!accessToken ? <UserInfo /> : <NavigantionIcons />}
+      </div>
+    </div>
   );
 }

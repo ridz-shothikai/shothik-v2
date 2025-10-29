@@ -5,9 +5,9 @@ import VideoImage from "../components/home/components/VideoImage";
 
 export default function ComingSoon() {
   return (
-    <div className="container mx-auto px-4 h-[calc(100vh-100px)] flex flex-col justify-center items-center">
+    <div className="container mx-auto flex h-[calc(100vh-100px)] flex-col items-center justify-center px-4">
       <div>
-        <h2 className="text-4xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent">
+        <h2 className="from-primary to-primary/70 bg-gradient-to-br bg-clip-text text-4xl font-bold text-transparent">
           Coming Soon
         </h2>
 
@@ -23,18 +23,10 @@ export default function ComingSoon() {
         width={400}
       />
 
-      <div className="flex flex-row gap-1 items-center justify-center">
+      <div className="flex flex-row items-center justify-center gap-1">
         {_socials.map((social) => (
-          <Button
-            key={social.value}
-            variant="ghost"
-            size="icon"
-            asChild
-          >
-            <NextLink
-              href={social.path}
-              className="hover:opacity-80"
-            >
+          <Button key={social.value} variant="ghost" size="icon" asChild>
+            <NextLink href={social.path} className="hover:opacity-80">
               <social.icon className="text-current" />
             </NextLink>
           </Button>

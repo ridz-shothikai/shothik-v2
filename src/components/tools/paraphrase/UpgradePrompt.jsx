@@ -33,10 +33,7 @@ const UpgradePrompt = ({ onClose }) => {
           startIcon={
             <SvgColor
               src="/navbar/diamond.svg"
-              sx={{
-                width: { xs: 16, md: 20 },
-                height: { xs: 16, md: 20 },
-              }}
+              className="h-4 w-4 md:h-5 md:w-5"
             />
           }
         >

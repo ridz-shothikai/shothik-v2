@@ -103,7 +103,7 @@ const Navigations = ({
             ) : (
               <SvgColor
                 src="/navbar/bypass-svgrepo-com.svg"
-                sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
+                className="h-5 w-5"
               />
             )
           }
@@ -122,10 +122,7 @@ const Navigations = ({
                 borderRadius: "5px",
               }}
               startIcon={
-                <SvgColor
-                  src="/navbar/diamond.svg"
-                  sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
-                />
+                <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
               }
             >
               Upgrade

@@ -1,26 +1,18 @@
 "use client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { RemoveRedEyeRounded, VisibilityOffRounded } from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  Stack,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
+import { Check, Circle, Eye, EyeOff } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useResetPasswordMutation } from "../../redux/api/auth/authApi";
+import { setShowLoginModal } from "../../redux/slice/auth";
 import FormProvider from "../../resource/FormProvider";
 import RHFTextField from "../../resource/RHFTextField";
-import { setShowLoginModal } from "../../redux/slice/auth";
-import { useDispatch } from "react-redux";
 
 // ----------------------------------------------------------------------
 const commonPasswords = [
@@ -109,74 +101,61 @@ export default function AuthForgotPasswordForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2.5}>
+      <div className="space-y-6">
         {!!errors.afterSubmit && (
-          <Alert severity="error">{errors.afterSubmit.message}</Alert>
+          <Alert variant="destructive">
+            <AlertDescription>{errors.afterSubmit.message}</AlertDescription>
+          </Alert>
         )}
 
-        {isError && <Alert severity="error">{error?.data?.message}</Alert>}
+        {isError && (
+          <Alert variant="destructive">
+            <AlertDescription>{error?.data?.message}</AlertDescription>
+          </Alert>
+        )}
+
         <RHFTextField
           name="password"
           label="Password"
-          size="small"
           type={showPassword ? "text" : "password"}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={() => setShowPassword(!showPassword)}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <RemoveRedEyeRounded />
-                  ) : (
-                    <VisibilityOffRounded />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
+          endAdornment={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowPassword(!showPassword)}
+              className="h-8 w-8"
+            >
+              {showPassword ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </Button>
+          }
         />
 
-        <Stack spacing={1.5}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {password.length >= 6 ? (
-              <Image alt="valid" src="/green_tick.svg" width={20} height={20} />
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            {password.length >= 8 ? (
+              <Check className="h-5 w-5 text-green-500" />
             ) : (
-              <Image
-                alt="invalid"
-                src="/gray_tick.svg"
-                width={20}
-                height={20}
-              />
+              <Circle className="text-muted-foreground h-5 w-5" />
             )}
-            <Typography sx={{ fontSize: 14, color: "text.secondary" }}>
+            <span className="text-muted-foreground text-sm">
               Must be at least 8 characters
-            </Typography>
-          </Box>
-        </Stack>
+            </span>
+          </div>
+        </div>
 
         <Button
-          fullWidth
-          color="inherit"
-          size="large"
           type="submit"
-          variant="contained"
-          loading={isLoading}
-          sx={{
-            height: "44px",
-            background: (theme) =>
-              `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-            color: (theme) =>
-              theme.palette.mode === "light" ? "common.white" : "grey.800",
-            "& .css-11d3pii-MuiLoadingButton-loadingIndicator, & .css-8balfn": {
-              color: "white",
-            },
-          }}
+          className="from-primary to-primary/80 h-11 w-full bg-gradient-to-r"
+          disabled={isLoading}
         >
-          Update Password
+          {isLoading ? "Updating..." : "Update Password"}
         </Button>
-      </Stack>
+      </div>
     </FormProvider>
   );
 }

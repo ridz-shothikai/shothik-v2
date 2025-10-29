@@ -1,5 +1,5 @@
-import { AddAPhotoRounded } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { Camera } from "lucide-react";
 import Image from "next/image";
 
 export default function UploadAvatar({
@@ -19,21 +19,14 @@ export default function UploadAvatar({
 
   return (
     <>
-      <Box
-        sx={{
-          width: 144,
-          height: 144,
-          margin: "auto",
-          display: "flex",
-          cursor: loading ? "not-allowed" : "pointer",
-          overflow: "hidden",
-          borderRadius: "50%",
-          alignItems: "center",
-          position: "relative",
-          justifyContent: "center",
-          border: `1px dashed ${error ? "red" : "#ccc"}`,
-          backgroundColor: error ? "#ffeeee" : "#f9f9f9",
-        }}
+      <div
+        className={cn(
+          "relative mx-auto flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border border-dashed",
+          loading ? "cursor-not-allowed" : "cursor-pointer",
+          error
+            ? "border-destructive bg-destructive/10"
+            : "border-border bg-muted",
+        )}
         onClick={() =>
           !loading && document.getElementById("avatarInput").click()
         }
@@ -42,7 +35,7 @@ export default function UploadAvatar({
           id="avatarInput"
           type="file"
           accept="image/*"
-          style={{ display: "none" }}
+          className="hidden"
           onChange={handleFileChange}
           disabled={loading}
         />
@@ -53,35 +46,20 @@ export default function UploadAvatar({
             src={file}
             width={144}
             height={144}
-            style={{
-              borderRadius: "50%",
-              objectFit: "cover",
-              position: "absolute",
-            }}
+            className="absolute rounded-full object-cover"
           />
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <AddAPhotoRounded sx={{ mb: 1, color: "gray" }} />
-            <Typography variant="caption">Upload Photo</Typography>
-          </Box>
+          <div className="flex flex-col items-center justify-center">
+            <Camera className="text-muted-foreground mb-2 h-6 w-6" />
+            <span className="text-muted-foreground text-xs">Upload Photo</span>
+          </div>
         )}
-      </Box>
+      </div>
 
       {helperText && (
-        <Typography
-          variant="caption"
-          color="error"
-          sx={{ textAlign: "center", mt: 1 }}
-        >
+        <p className="text-destructive mt-2 text-center text-xs">
           {helperText}
-        </Typography>
+        </p>
       )}
     </>
   );

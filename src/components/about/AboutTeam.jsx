@@ -1,6 +1,6 @@
 "use client";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -52,7 +52,7 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
       >
-        <p className="text-sm uppercase tracking-wider text-muted-foreground">
+        <p className="text-muted-foreground text-sm tracking-wider uppercase">
           DREAM TEAM
         </p>
       </motion.div>
@@ -63,9 +63,7 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl font-bold my-2">
-          Great team is the key
-        </h2>
+        <h2 className="my-2 text-4xl font-bold">Great team is the key</h2>
       </motion.div>
 
       <motion.div
@@ -74,7 +72,7 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.6 }}
         viewport={{ once: true }}
       >
-        <p className="mx-auto max-w-[640px] text-muted-foreground">
+        <p className="text-muted-foreground mx-auto max-w-[640px]">
           Shothik will provide you support if you have any problems, our support
           team will reply within a day and we also have detailed documentation.
         </p>
@@ -86,18 +84,12 @@ export default function AboutTeam() {
           shape="rounded"
           onNext={handleNext}
           onPrevious={handlePrev}
-          sx={{ zIndex: -1 }}
+          className="-z-10"
           leftButtonProps={{
-            sx: {
-              left: 24,
-              zIndex: 1,
-            },
+            className: "z-10 left-6",
           }}
           rightButtonProps={{
-            sx: {
-              right: 24,
-              zIndex: 1,
-            },
+            className: "z-10 left-6",
           }}
         >
           <Carousel ref={carouselRef} {...carouselSettings}>
@@ -117,7 +109,7 @@ function MemberCard({ member, isFirst }) {
   const { name, designation, image } = member;
 
   return (
-    <Card className="w-[280px] h-[430px] mx-auto flex flex-col items-center p-2 rounded-lg shadow-md relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <Card className="relative mx-auto flex h-[430px] w-[280px] flex-col items-center rounded-lg p-2 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       <Image
         alt={name}
         src={image}
@@ -131,13 +123,9 @@ function MemberCard({ member, isFirst }) {
         width={250}
       />
 
-      <p className="text-base font-semibold mt-4 mb-1">
-        {name}
-      </p>
+      <p className="mt-4 mb-1 text-base font-semibold">{name}</p>
 
-      <p className="text-sm text-muted-foreground">
-        {designation}
-      </p>
+      <p className="text-muted-foreground text-sm">{designation}</p>
 
       {isFirst && (
         <div className="hover:bg-primary">
@@ -145,28 +133,19 @@ function MemberCard({ member, isFirst }) {
             href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1-0YrraZrcWyTUUrowfsWSDMKPOj57Lt8u9X-NcjC2Oz522EPBGzsD4SjjpkUzwHJOMePNPnbw?gv=true"
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute top-[63%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] px-4 py-2 bg-primary text-primary-foreground rounded font-semibold no-underline cursor-pointer"
+            className="bg-primary text-primary-foreground absolute top-[63%] left-1/2 w-[200px] -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded px-4 py-2 font-semibold no-underline"
           >
             Book an appointment
           </a>
         </div>
       )}
 
-      <div className="flex flex-row items-center justify-center absolute bottom-1 left-0 right-0 p-1">
+      <div className="absolute right-0 bottom-1 left-0 flex flex-row items-center justify-center p-1">
         {member.social.map((link, index) => {
-          const Icon = _socials[index];
+          const social = _socials[index];
           return (
-            <Button
-              key={index}
-              variant="ghost"
-              size="icon"
-              asChild
-            >
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+            <Button key={index} variant="ghost" size="icon" asChild>
+              <a href={link} target="_blank" rel="noopener noreferrer">
                 {Icon ? <Icon.icon style={{ color: Icon.color }} /> : null}
               </a>
             </Button>

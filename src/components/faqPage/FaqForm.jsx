@@ -63,17 +63,13 @@ export default function FaqForm() {
           Haven&apos;t found the right help?
         </h4>
 
-        <RHFTextField fullWidth label="Your name" name="name" />
-
-        <RHFTextField fullWidth label="Your e-mail address" name="email" />
-        <RHFTextField fullWidth label="Subject" name="subject" />
-
+        <RHFTextField label="Your name" name="name" />
+        <RHFTextField label="Your e-mail address" name="email" />
+        <RHFTextField label="Subject" name="subject" />
         <RHFTextField
-          fullWidth
           label="Enter your message here."
-          multiline
-          rows={4}
           name="message"
+          placeholder="Enter your message here."
         />
         <Button
           type="submit"

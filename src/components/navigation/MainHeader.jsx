@@ -119,10 +119,7 @@ export default function MainHeader() {
                   startIcon={
                     <SvgColor
                       src="/navbar/diamond.svg"
-                      sx={{
-                        width: { xs: 20, md: 24 },
-                        height: { xs: 20, md: 24 },
-                      }}
+                      className="h-5 w-5 md:h-6 md:w-6"
                     />
                   }
                 >
