@@ -1,5 +1,5 @@
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { Slider } from "@mui/material";
 
 const TopNavigation = ({
   className,
@@ -10,6 +10,10 @@ const TopNavigation = ({
   currentLength,
   setCurrentLength,
 }) => {
+  const currentValue = Number(
+    Object.keys(LENGTH).find((key) => LENGTH[key] === currentLength) || 20,
+  );
+
   return (
     <div
       className={cn(
@@ -17,7 +21,7 @@ const TopNavigation = ({
         className,
       )}
     >
-      {/* Tailwind Tabs */}
+      {/* Mode Tabs */}
       <div className="flex flex-1 items-center gap-2 md:flex-auto md:gap-x-4">
         {modes?.map((tab) => (
           <button
@@ -25,39 +29,40 @@ const TopNavigation = ({
             onClick={() => setSelectedMode(tab.name)}
             className={cn(
               "flex shrink-0 cursor-pointer items-center gap-1 text-xs leading-none font-medium whitespace-nowrap md:text-sm",
-              {
-                "text-primary": selectedMode === tab.name,
-              },
+              selectedMode === tab.name
+                ? "text-primary"
+                : "text-muted-foreground",
             )}
           >
             {tab?.icon && (
-              <span className="text-base leading-0 md:text-xl">{tab.icon}</span>
+              <span className="text-base leading-none md:text-xl">
+                {tab.icon}
+              </span>
             )}
-            <span className="leading-0">{tab.name}</span>
+            <span className="leading-none">{tab.name}</span>
           </button>
         ))}
       </div>
 
-      {/* Slider */}
+      {/* Length Slider */}
       <div className="flex max-w-xs flex-1 items-center gap-2 md:flex-auto">
         <span className="hidden text-sm font-medium sm:inline-block">
           Length:
         </span>
-        <Slider
-          style={{ width: "100%" }}
-          aria-label="Length"
-          getAriaValueText={(value) => LENGTH[value]}
-          value={Object.keys(LENGTH).find(
-            (key) => LENGTH[key] === currentLength,
-          )}
-          marks
-          step={20}
-          min={20}
-          max={80}
-          valueLabelDisplay="on"
-          valueLabelFormat={currentLength}
-          onChange={(_, value) => setCurrentLength(LENGTH[value])}
-        />
+        <div className="relative w-full">
+          <Slider
+            value={[currentValue]}
+            onValueChange={(values) => setCurrentLength(LENGTH[values[0]])}
+            min={20}
+            max={80}
+            step={20}
+            className="w-full"
+            aria-label="Length"
+          />
+          <div className="bg-primary text-primary-foreground absolute -top-8 left-1/2 -translate-x-1/2 rounded px-2 py-1 text-xs">
+            {currentLength}
+          </div>
+        </div>
       </div>
     </div>
   );
