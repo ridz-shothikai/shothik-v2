@@ -146,7 +146,7 @@ function MemberCard({ member, isFirst }) {
           return (
             <Button key={index} variant="ghost" size="icon" asChild>
               <a href={link} target="_blank" rel="noopener noreferrer">
-                {Icon ? <Icon.icon style={{ color: Icon.color }} /> : null}
+                {social ? <social.icon style={{ color: social.color }} /> : null}
               </a>
             </Button>
           );

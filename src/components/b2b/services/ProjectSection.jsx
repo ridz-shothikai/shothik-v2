@@ -1,14 +1,6 @@
 "use client";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
 import React from "react";
+import * as motion from "motion/react-client";
 import { projectDetails } from "../../../_mock/b2b/projectDetails";
 import { VideoPlayer } from "../VideoPlayer";
 
@@ -21,90 +13,57 @@ const detectListStyle = (items) => {
 };
 
 export const ProjectSection = ({ slug }) => {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const data = projectDetails[slug];
 
   const getPrefix = (index, style) => {
     if (style === "number") {
       return (
-        <span
-          style={{ color: isDarkMode ? "white" : "#585858", fontWeight: "700" }}
-        >
-          {index + 1}.
-        </span>
+        <span className="font-bold text-foreground/80">{index + 1}.</span>
       );
     } else if (style === "dot") {
       return (
-        <span
-          style={{ color: isDarkMode ? "white" : "#585858", fontWeight: "700" }}
-        >
-          •
-        </span>
+        <span className="font-bold text-foreground/80">•</span>
       );
     }
     return null;
   };
 
   return (
-    <Box sx={{ px: { xs: "1rem", sm: "1.25rem", md: "1.5rem" } }}>
+    <div className="px-4 sm:px-5 md:px-6">
       {data &&
         data.map((section, index) => {
           const computedListStyle = detectListStyle(section.listItems);
           return (
-            <Stack
-              key={index}
-              direction="column"
-              gap={2}
-              sx={{ textAlign: "justify" }}
-            >
+            <div key={index} className="flex flex-col gap-2 text-justify">
               {section.paragraphs?.map((paragraph, pIndex) => (
-                <Typography
-                  sx={{ fontSize: 20, fontWeight: 500 }}
-                  key={pIndex}
-                  variant="body1"
-                >
+                <p key={pIndex} className="text-lg font-medium text-foreground">
                   {paragraph}
-                </Typography>
+                </p>
               ))}
               {section.listItems && (
-                <List sx={{ fontSize: 24, fontWeight: 500 }}>
+                <ul className="space-y-2 text-xl font-medium text-foreground">
                   {section.listItems.map((item, lIndex) => {
-                    // Remove any pre-existing numbering or bullet prefixes
-                    const cleanedItem = item.replace(
-                      /^(?:\s*(?:\d+\.|•))\s*/,
-                      "",
-                    );
-
-                    // Split text at "-" and make first part bold if it exists
+                    const cleanedItem = item.replace(/^(?:\s*(?:\d+\.|•))\s*/, "");
                     const parts = cleanedItem.split(" – ");
                     const formattedText =
                       parts.length > 1 ? (
                         <>
-                          <Typography component="span">{parts[0]}</Typography> –{" "}
-                          {parts[1]}
+                          <span className="font-semibold">{parts[0]}</span>
+                          <span className="mx-1">–</span>
+                          <span>{parts[1]}</span>
                         </>
                       ) : (
                         cleanedItem
                       );
 
                     return (
-                      <ListItem
-                        sx={{ fontSize: 24, fontWeight: 500 }}
-                        key={lIndex}
-                      >
-                        <ListItemText
-                          primary={
-                            <>
-                              {getPrefix(lIndex, computedListStyle)}{" "}
-                              {formattedText}
-                            </>
-                          }
-                        />
-                      </ListItem>
+                      <li key={lIndex} className="flex">
+                        <span className="mr-2">{getPrefix(lIndex, computedListStyle)}</span>
+                        <span>{formattedText}</span>
+                      </li>
                     );
                   })}
-                </List>
+                </ul>
               )}
               {section.image && (
                 <VideoPlayer
@@ -112,25 +71,12 @@ export const ProjectSection = ({ slug }) => {
                   thumbnailSrc={section.image.src}
                   isShowInfo={false}
                   isShowPlayIcon={section.image.isShowPlayIcon}
-                  sx={{
-                    minWidth: "100%",
-                    height: "25.1875rem",
-                    marginTop: { xs: "0.75rem", sm: "1rem" },
-                    borderRadius: "4px",
-                    transition: "all 0.3s ease",
-                    marginBottom: 3,
-                    boxShadow: isDarkMode
-                      ? "0 4px 8px rgba(0,0,0,0.2)"
-                      : "none",
-                    "&:hover": {
-                      transform: "scale(1.01)",
-                    },
-                  }}
+                  sx={{}}
                 />
               )}
-            </Stack>
+            </div>
           );
         })}
-    </Box>
+    </div>
   );
 };
