@@ -1,14 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
 import {
+  ChevronDown,
+  ChevronUp,
   CloudDownload,
-  ExpandMoreOutlined,
-  InfoOutlined,
-  KeyboardArrowUpOutlined,
+  Info,
   Share,
-} from "@mui/icons-material";
-import { Button } from "@mui/material";
+} from "lucide-react";
 import { useState } from "react";
 import { pdfDownload } from "../helpers/pdfDownload";
 import { getColorByPerplexity } from "../helpers/pdfHelper";
@@ -68,15 +68,17 @@ const Accordion = ({ colorList, data, title }) => {
                   {item?.sentence}
                 </p>
                 <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() =>
                     setIsExpanded((prev) => (prev === index ? -1 : index))
                   }
-                  sx={{ padding: 0, minWidth: "unset", width: "fit-content" }}
+                  className="h-6 w-6 min-w-0 shrink-0 p-0"
                 >
                   {isExpanded === index ? (
-                    <KeyboardArrowUpOutlined />
+                    <ChevronUp className="h-4 w-4" />
                   ) : (
-                    <ExpandMoreOutlined />
+                    <ChevronDown className="h-4 w-4" />
                   )}
                 </Button>
               </div>
@@ -177,7 +179,7 @@ const OutputResult = ({ handleOpen, result, history }) => {
                 </div>
               </div>
               <div className="border-border text-muted-foreground flex items-center gap-2 rounded-md border px-4 py-1">
-                <InfoOutlined />
+                <Info className="h-4 w-4" />
                 <p>
                   {parseInt(result.ai_percentage ?? 0)}% Probability AI
                   generated

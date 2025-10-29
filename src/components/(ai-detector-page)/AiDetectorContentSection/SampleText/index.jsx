@@ -1,6 +1,6 @@
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import useScreenSize from "@/hooks/ui/useScreenSize";
 import { cn } from "@/lib/utils";
-import { Dialog } from "@mui/material";
 import Image from "next/image";
 
 const gptModel = [
@@ -101,20 +101,15 @@ const SampleText = ({ isOpen = false, setOpen, handleSampleText }) => {
   const { width } = useScreenSize();
   if (1024 >= width) {
     return (
-      <>
-        <Dialog
-          maxWidth="xs"
-          fullWidth
-          open={isOpen}
-          onClose={() => setOpen(false)}
-        >
+      <Dialog open={isOpen} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
           <SampleTextContent
             isOpen={true}
             setOpen={setOpen}
             handleSampleText={handleSampleText}
           />
-        </Dialog>
-      </>
+        </DialogContent>
+      </Dialog>
     );
   } else {
     return (

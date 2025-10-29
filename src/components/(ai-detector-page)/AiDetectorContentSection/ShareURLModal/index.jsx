@@ -1,13 +1,11 @@
 import ButtonCopyText from "@/components/buttons/ButtonCopyText";
-import { Close } from "@mui/icons-material";
 import {
-  Box,
   Dialog,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -28,51 +26,21 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
   });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-      <Stack
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        gap={2}
-        sx={{ paddingY: 3, paddingX: 2, position: "relative" }}
-      >
-        <IconButton
-          onClick={handleClose}
-          sx={{ position: "absolute", top: 0, right: 0 }}
-        >
-          <Close />
-        </IconButton>
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-center">Share</DialogTitle>
+        </DialogHeader>
 
-        <Typography variant="h5">Share</Typography>
-        <TextField
-          value={shareUrl}
-          fullWidth
-          slotProps={{
-            input: {
-              endAdornment: <ButtonCopyText text={shareUrl} />,
-            },
-          }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              paddingY: 0.5,
-              paddingRight: 0,
-              "& fieldset": {
-                borderColor: "divider",
-              },
-              "&:hover fieldset": {
-                borderColor: "divider",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "divider",
-              },
-            },
-            "& .MuiInputBase-input": {
-              paddingY: 0,
-            },
-          }}
-        />
-        <Stack flexDirection="row" gap={1} alignItems="center">
-          <Box>
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="relative w-full">
+            <Input value={shareUrl} readOnly className="pr-12" />
+            <div className="absolute top-1/2 right-2 -translate-y-1/2">
+              <ButtonCopyText text={shareUrl} />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
             <FacebookShareButton
               url={shareUrl}
               quote={title}
@@ -81,8 +49,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
             >
               <FacebookIcon size={32} round />
             </FacebookShareButton>
-          </Box>
-          <Box>
+
             <TwitterShareButton
               url={shareUrl}
               title={title}
@@ -90,8 +57,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
             >
               <TwitterIcon size={32} round />
             </TwitterShareButton>
-          </Box>
-          <Box>
+
             <LinkedinShareButton
               url={shareUrl}
               title={title}
@@ -100,9 +66,9 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
             >
               <LinkedinIcon size={32} round />
             </LinkedinShareButton>
-          </Box>
-        </Stack>
-      </Stack>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 };

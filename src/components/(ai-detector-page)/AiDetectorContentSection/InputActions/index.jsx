@@ -1,10 +1,16 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useWordLimit from "@/hooks/useWordLimit";
 import { cn } from "@/lib/utils";
 import SvgColor from "@/resource/SvgColor";
-import { DeleteRounded } from "@mui/icons-material";
-import { Button, IconButton, Tooltip } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -62,28 +68,32 @@ const InputActions = ({
         </div>
 
         {/* Clear text */}
-        <Tooltip title="Clear text" arrow placement="top">
-          <IconButton
-            aria-label="delete"
-            size="small"
-            disabled={isLoading}
-            onClick={onClear}
-          >
-            <DeleteRounded fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                disabled={isLoading}
+                onClick={onClear}
+                aria-label="delete"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Clear text</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
-      <div className={`flex flex-1 items-center justify-end gap-2`}>
+      <div className="flex flex-1 items-center justify-end gap-2">
         {exceedsLimit && (
           <Link href="/pricing">
-            <Button
-              variant="contained"
-              startIcon={
-                <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
-              }
-              sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-            >
+            <Button variant="default" className="h-8 px-4 md:h-10 md:px-4">
+              <SvgColor src="/navbar/diamond.svg" className="mr-2 h-5 w-5" />
               Upgrade
             </Button>
           </Link>
@@ -91,16 +101,11 @@ const InputActions = ({
 
         <Button
           onClick={onSubmit}
-          variant="contained"
+          variant="default"
           disabled={!enabled ? wordCount > wordLimit : disabled || false}
-          sx={{
-            py: { md: 0 },
-            px: { md: 2 },
-            height: { md: 40 },
-            whiteSpace: "nowrap",
-          }}
-          startIcon={icon}
+          className="h-8 px-4 whitespace-nowrap md:h-10 md:px-4"
         >
+          {icon && <span className="mr-2">{icon}</span>}
           {label}
         </Button>
       </div>
