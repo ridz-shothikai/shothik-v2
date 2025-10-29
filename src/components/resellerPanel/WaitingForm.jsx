@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail, User } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -6,7 +7,6 @@ import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useAffiliateMutation } from "../../redux/api/auth/authApi";
 import RHFTextField from "../../resource/RHFTextField";
-import { Button } from "@/components/ui/button";
 
 export default function WaitlistForm({ userType }) {
   const enqueueSnackbar = useSnackbar();
@@ -59,30 +59,30 @@ export default function WaitlistForm({ userType }) {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="w-full max-w-full sm:max-w-[450px] mx-auto">
+        <div className="mx-auto w-full max-w-full sm:max-w-[450px]">
           <RHFTextField
             name="name"
             placeholder="Full Name"
             startAdornment={
-              <div className="flex items-center justify-center mr-1">
-                <User className="h-5 w-5 text-muted-foreground" />
+              <div className="mr-1 flex items-center justify-center">
+                <User className="text-muted-foreground h-5 w-5" />
               </div>
             }
             error={Boolean(errors.name)}
             helperText={errors.name?.message}
-            className="w-full mb-2"
+            className="mb-2 w-full"
           />
           <RHFTextField
             name="email"
             placeholder="Email"
             startAdornment={
-              <div className="flex items-center justify-center mr-1">
-                <Mail className="h-5 w-5 text-muted-foreground" />
+              <div className="mr-1 flex items-center justify-center">
+                <Mail className="text-muted-foreground h-5 w-5" />
               </div>
             }
             error={Boolean(errors.email)}
             helperText={errors.email?.message}
-            className="w-full mb-2"
+            className="mb-2 w-full"
           />
           <Button
             data-umami-event="Form: Join the waitlist"
@@ -94,7 +94,6 @@ export default function WaitlistForm({ userType }) {
           >
             Join the waitlist
           </Button>
-        </div>
         </div>
       </form>
     </FormProvider>
