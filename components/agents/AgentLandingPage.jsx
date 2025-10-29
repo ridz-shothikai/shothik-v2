@@ -1,54 +1,48 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import SendIcon from "@mui/icons-material/Send";
-import SlideshowIcon from "@mui/icons-material/Slideshow";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Modal from "@mui/material/Modal";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import {
+  BookOpen,
+  Bot,
+  Briefcase,
+  CheckCircle,
+  GraduationCap,
+  LinkIcon,
+  Loader2,
+  Menu,
+  Palette,
+  Presentation,
+  Rocket,
+  Search,
+  Send,
+  Table,
+  Target,
+  X,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-// import CloseIcon from "@mui/icons-material/Close";
-import AutoModeIcon from "@mui/icons-material/AutoMode";
-import BusinessIcon from "@mui/icons-material/Business";
-import FactCheckIcon from "@mui/icons-material/FactCheck";
-import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import ManageSearchIcon from "@mui/icons-material/ManageSearch";
-import TrainingIcon from "@mui/icons-material/ModelTraining";
-import PaletteIcon from "@mui/icons-material/Palette";
-import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import SchoolIcon from "@mui/icons-material/School";
-import {
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Tooltip,
-  useTheme,
-} from "@mui/material";
-import { useAgentContext } from "./shared/AgentContextProvider";
-
-import { Close, Close as CloseIcon } from "@mui/icons-material";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Alert, Snackbar } from "@mui/material";
-import { LinkIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import { Badge } from "../../src/components/ui/badge";
+import { Button } from "../../src/components/ui/button";
+import { Card, CardContent } from "../../src/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../src/components/ui/dialog";
+import { Textarea } from "../../src/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../src/components/ui/tooltip";
 import useNavItemFiles from "../../src/hooks/useNavItemFiles";
 import { useResearchAiToken } from "../../src/hooks/useRegisterResearchService";
 import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
 import useResponsive from "../../src/hooks/useResponsive";
+import { cn } from "../../src/lib/utils";
 import {
   useFetchAllPresentationsQuery,
   useUploadPresentationFilesMutation,
@@ -63,19 +57,18 @@ import {
 import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
 import ChatSidebar from "./ChatSidebar";
 import SearchDropdown from "./SearchDropDown";
+import { useAgentContext } from "./shared/AgentContextProvider";
 import {
   handleResearchRequest,
   handleSheetGenerationRequest,
   handleSlideCreation,
 } from "./super-agent/agentPageUtils";
 
-const PRIMARY_GREEN = "#07B37A";
-
 const NAVIGATION_ITEMS = [
   {
     id: "slides",
     label: "AI Slides",
-    icon: <SlideshowIcon />,
+    icon: <Presentation className="h-5 w-5" />,
     isNew: true,
     isComingSoon: false,
     isDisabled: false,
@@ -83,7 +76,7 @@ const NAVIGATION_ITEMS = [
   {
     id: "sheets",
     label: "AI Sheets",
-    icon: <TableChartIcon />,
+    icon: <Table className="h-5 w-5" />,
     isNew: true,
     isComingSoon: false,
     isDisabled: false,
@@ -91,14 +84,14 @@ const NAVIGATION_ITEMS = [
   // {
   //   id: "download",
   //   label: "Download For Me",
-  //   icon: <DownloadIcon />,
+  //   icon: <Download />,
   //   isNew: true,
   // },
-  // { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
+  // { id: "chat", label: "AI Chat", icon: <MessageCircle /> },
   {
     id: "research",
     label: "Deep research",
-    icon: <ManageSearchIcon />,
+    icon: <Search className="h-5 w-5" />,
     isNew: true,
     isComingSoon: false,
     isDisabled: false,
@@ -106,7 +99,7 @@ const NAVIGATION_ITEMS = [
   {
     id: "browse",
     label: "Browse for me",
-    icon: <AutoModeIcon />,
+    icon: <Bot className="h-5 w-5" />,
     isNew: false,
     isComingSoon: true,
     isDisabled: true,
@@ -118,36 +111,36 @@ const QUICK_START_TEMPLATES = [
     id: "business",
     title: "Business Presentation",
     description: "Professional presentation for business meetings",
-    icon: <BusinessIcon />,
+    icon: <Briefcase className="h-6 w-6" />,
     prompt: "Create a professional business presentation about",
-    color: "#1976d2",
+    colorClass: "text-blue-600",
     examples: ["quarterly results", "product launch", "market analysis"],
   },
   {
     id: "academic",
     title: "Academic Research",
     description: "Educational content with citations and research",
-    icon: <SchoolIcon />,
+    icon: <GraduationCap className="h-6 w-6" />,
     prompt: "Create an academic presentation about",
-    color: "#9c27b0",
+    colorClass: "text-purple-600",
     examples: ["climate change", "machine learning", "historical events"],
   },
   {
     id: "product",
     title: "Product Launch",
     description: "Engaging presentation for new product reveals",
-    icon: <RocketLaunchIcon />,
+    icon: <Rocket className="h-6 w-6" />,
     prompt: "Create a product launch presentation for",
-    color: "#ff9800",
+    colorClass: "text-orange-600",
     examples: ["mobile app", "SaaS platform", "hardware device"],
   },
   {
     id: "training",
     title: "Training Material",
     description: "Educational content for team training",
-    icon: <TrainingIcon />,
+    icon: <BookOpen className="h-6 w-6" />,
     prompt: "Create training materials about",
-    color: PRIMARY_GREEN,
+    colorClass: "text-primary",
     examples: ["onboarding process", "software tools", "best practices"],
   },
 ];
@@ -245,11 +238,6 @@ export default function AgentLandingPage() {
     useState(false);
   const [isInitiatingSheet, setIsInitiatingSheet] = useState(false);
   const [isInitiatingResearch, setIsInitiatingResearch] = useState(false);
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "error",
-  });
 
   // console.log(selectedNavItem, "-selectedNavItem");
 
@@ -293,8 +281,6 @@ export default function AgentLandingPage() {
     dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
   };
 
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const isMobile = useResponsive("down", "sm");
 
   const user = useSelector((state) => state.auth.user);
@@ -340,7 +326,7 @@ export default function AgentLandingPage() {
   // Handle tab parameter from URL
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && NAVIGATION_ITEMS.some(item => item.id === tab)) {
+    if (tab && NAVIGATION_ITEMS.some((item) => item.id === tab)) {
       setSelectedNavItem(tab);
       // Set appropriate input value based on tab
       if (tab === "sheets") {
@@ -435,9 +421,15 @@ export default function AgentLandingPage() {
     setShowOnboarding(false);
   };
 
-  // to show toast
-  const showToast = (message, severity = "error") => {
-    setToast({ open: true, message, severity });
+  // to show toast - currently using console instead of UI toast
+  const showToast = (message, variant = "destructive") => {
+    if (variant === "destructive" || variant === "error") {
+      console.error(message);
+    } else if (variant === "default" || variant === "success") {
+      console.log("✓", message);
+    } else {
+      console.info(message);
+    }
   };
 
   // Updated click handler
@@ -596,30 +588,18 @@ export default function AgentLandingPage() {
   // console.log(researchModel, researchLoops, "research model");
 
   return (
-    <Box
-      sx={{
-        minHeight: "calc(100vh - 100px)",
-        bgcolor: isDarkMode ? "#161C24" : "white",
-        color: isDarkMode ? "#eee" : "#333",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
+    <div className="bg-background text-foreground relative flex min-h-[calc(100vh-100px)] flex-col">
       {/* ============== FOR AGENTS USAGE HISTORY STARTS ================ */}
       {/* Menu Button (Top Left) */}
       {accessToken && (
-        <IconButton
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleDrawer(true)}
-          sx={{
-            position: "absolute",
-            top: 3,
-            left: 10,
-            color: isDarkMode ? "#eee" : "#333",
-          }}
+          className="absolute top-1 left-3 z-10"
         >
-          <MenuIcon />
-        </IconButton>
+          <Menu className="h-5 w-5" />
+        </Button>
       )}
 
       {/* Sidebar Drawer */}
@@ -628,7 +608,6 @@ export default function AgentLandingPage() {
         toggleDrawer={toggleDrawer}
         isMobile={isMobile}
         isNavbarExpanded={isNavbarExpanded}
-        isDarkMode={isDarkMode}
         isLoading={SheetDataLoading}
         error={error}
         router={router}
@@ -643,700 +622,344 @@ export default function AgentLandingPage() {
 
       {/* ============== FOR AGENTS USAGE HISTORY ENDS ================ */}
 
-      <Modal
-        open={showOnboarding}
-        onClose={handleCloseOnboarding}
-        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
-      >
-        <Card
-          sx={{
-            maxWidth: 600,
-            width: "90%",
-            maxHeight: "80vh",
-            overflow: "auto",
-            bgcolor: "white",
-            borderRadius: 2,
-            boxShadow: 24,
-          }}
-        >
-          <CardContent sx={{ p: 4 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 600, color: PRIMARY_GREEN }}
-              >
+      {/* Onboarding Dialog */}
+      <Dialog open={showOnboarding} onOpenChange={setShowOnboarding}>
+        <DialogContent className="max-h-[80vh] max-w-2xl overflow-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-primary text-2xl font-semibold">
                 Welcome to Shothik AI
-              </Typography>
-              <IconButton onClick={handleCloseOnboarding} size="small">
-                <CloseIcon />
-              </IconButton>
-            </Box>
-
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseOnboarding}
+                className="h-6 w-6"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <DialogDescription className="mt-2 text-base">
               Experience the world&apos;s most advanced AI presentation
               generation system powered by 7 specialized agents working
               together.
-            </Typography>
+            </DialogDescription>
+          </DialogHeader>
 
-            <Stepper orientation="vertical" sx={{ mb: 3 }}>
-              {ONBOARDING_STEPS.map((step, index) => (
-                <Step key={index} active={true} completed={false}>
-                  <StepLabel>
-                    <Typography variant="h6" sx={{ color: "#333" }}>
-                      {step.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {step.description}
-                    </Typography>
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+          <div className="my-6 space-y-6">
+            {ONBOARDING_STEPS.map((step, index) => (
+              <div key={index} className="flex gap-4">
+                <div className="bg-primary/10 text-primary flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-semibold">
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <h3 className="mb-1 text-lg font-semibold">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
 
-            <Box sx={{ textAlign: "center" }}>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={handleCloseOnboarding}
-                sx={{
-                  bgcolor: PRIMARY_GREEN,
-                  "&:hover": { bgcolor: "#06A36D" },
-                  px: 4,
-                  py: 1.5,
-                }}
-              >
-                Get Started
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      </Modal>
+          <div className="text-center">
+            <Button size="lg" onClick={handleCloseOnboarding} className="px-8">
+              Get Started
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: 700,
-              mb: 1,
-              background: `linear-gradient(45deg, ${PRIMARY_GREEN}, #00ff88)`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="mb-8 text-center">
+          <h1 className="from-primary mb-2 bg-gradient-to-r to-emerald-400 bg-clip-text text-5xl font-bold text-transparent">
             Shothik Agent
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 1,
-            }}
-          >
-            <Box
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                bgcolor: PRIMARY_GREEN,
-                animation: "pulse 2s infinite",
-                "@keyframes pulse": {
-                  "0%": { opacity: 1 },
-                  "50%": { opacity: 0.5 },
-                  "100%": { opacity: 1 },
-                },
-              }}
-            />
-            <Typography variant="body2" sx={{ color: "#666" }}>
+          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <div className="bg-primary h-2 w-2 animate-pulse rounded-full" />
+            <p className="text-muted-foreground text-sm">
               4-Agent AI system ready to create presentations
-            </Typography>
-          </Box>
-        </Box>
+            </p>
+          </div>
+        </div>
 
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: 2,
-            mb: 4,
-          }}
-        >
+        <div className="mb-8 flex flex-wrap justify-center gap-3">
           {NAVIGATION_ITEMS.map((item) => (
             <Button
               key={item.id}
-              variant={selectedNavItem === item.id ? "contained" : "outlined"}
-              startIcon={item.icon}
+              variant={selectedNavItem === item.id ? "default" : "outline"}
               onClick={() => handleNavItemClick(item.id)}
               disabled={item.isDisabled}
-              sx={{
-                borderRadius: 3,
-                px: 3,
-                py: 1,
-                position: "relative",
-                borderColor:
-                  selectedNavItem === item.id ? PRIMARY_GREEN : "#ddd",
-                bgcolor:
-                  selectedNavItem === item.id ? PRIMARY_GREEN : "transparent",
-                color: selectedNavItem === item.id ? "white" : "#666",
-                "&:hover": {
-                  borderColor: PRIMARY_GREEN,
-                  bgcolor:
-                    selectedNavItem === item.id
-                      ? PRIMARY_GREEN
-                      : "rgba(7, 179, 122, 0.1)",
-                  color: selectedNavItem === item.id ? "white" : PRIMARY_GREEN,
-                },
-              }}
+              className={cn(
+                "relative rounded-full px-6 py-2",
+                selectedNavItem === item.id
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "border-border hover:bg-primary/10 hover:text-primary hover:border-primary",
+              )}
             >
+              <span className="mr-2">{item.icon}</span>
               {item.label}
               {item.isNew && (
-                <Chip
-                  label="New"
-                  size="small"
-                  sx={{
-                    position: "absolute",
-                    top: -8,
-                    right: -8,
-                    bgcolor: "#ff4444",
-                    color: "white",
-                    fontSize: "0.7rem",
-                    height: 18,
-                    "& .MuiChip-label": {
-                      px: 1,
-                    },
-                  }}
-                />
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-5 px-1.5 text-[0.65rem]"
+                >
+                  New
+                </Badge>
               )}
               {item.isComingSoon && (
-                <Chip
-                  label="Coming soon"
-                  size="small"
-                  sx={{
-                    position: "absolute",
-                    top: -8,
-                    right: -8,
-                    bgcolor: "#ff4444",
-                    color: "white",
-                    fontSize: "0.7rem",
-                    height: 18,
-                    "& .MuiChip-label": {
-                      px: 1,
-                    },
-                  }}
-                />
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-5 px-1.5 text-[0.65rem]"
+                >
+                  Coming soon
+                </Badge>
               )}
             </Button>
           ))}
-        </Box>
+        </div>
 
         {selectedNavItem === "slides" && (
-          <Box sx={{ mb: 4 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                textAlign: "center",
-                mb: 2,
-                color: isDarkMode ? "#fff" : "#333",
-              }}
-            >
+          <div className="mb-8">
+            <h2 className="mb-4 text-center text-xl font-semibold">
               Quick Start Templates
-            </Typography>
-            <Grid
-              container
-              spacing={2}
-              sx={{ maxWidth: 1000, mx: "auto", width: "100%" }}
-            >
+            </h2>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
               {QUICK_START_TEMPLATES.map((template) => (
-                <Grid item xs={12} sm={6} md={3} key={template.id}>
-                  <Card
-                    sx={{
-                      cursor: "pointer",
-                      width: "100%",
-                      height: "100%",
-                      border: "1px solid #e0e0e0",
-                      transition: "all 0.2s ease",
-                      "&:hover": {
-                        borderColor: template.color,
-                        boxShadow: `0 4px 8px ${template.color}20`,
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                    onClick={() => handleTemplateSelect(template)}
-                  >
-                    <CardContent sx={{ textAlign: "center", p: 2 }}>
-                      <Box sx={{ color: template.color, mb: 1 }}>
-                        {template.icon}
-                      </Box>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: 600, mb: 1 }}
-                      >
-                        {template.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2, fontSize: "0.8rem" }}
-                      >
-                        {template.description}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 0.5,
-                          justifyContent: "center",
-                        }}
-                      >
-                        {template.examples.slice(0, 2).map((example) => (
-                          <Chip
-                            key={example}
-                            label={example}
-                            size="small"
-                            sx={{
-                              fontSize: "0.7rem",
-                              height: 20,
-                              bgcolor: `${template.color}10`,
-                              color: template.color,
-                              border: `1px solid ${template.color}30`,
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <Card
+                  key={template.id}
+                  className="cursor-pointer border transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                  onClick={() => handleTemplateSelect(template)}
+                >
+                  <CardContent className="flex flex-col items-center p-4 text-center">
+                    <div className={cn("mb-2", template.colorClass)}>
+                      {template.icon}
+                    </div>
+                    <h3 className="mb-1 text-base font-semibold">
+                      {template.title}
+                    </h3>
+                    <p className="text-muted-foreground mb-3 text-xs">
+                      {template.description}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-1">
+                      {template.examples.slice(0, 2).map((example) => (
+                        <Badge
+                          key={example}
+                          variant="outline"
+                          className={cn(
+                            "h-5 border text-[0.65rem]",
+                            template.colorClass,
+                          )}
+                        >
+                          {example}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </Grid>
-          </Box>
+            </div>
+          </div>
         )}
 
-        <Box
-          sx={{
-            maxWidth: 800,
-            mx: "auto",
-            bgcolor: isDarkMode ? "#161C24" : "#f8f9fa",
-            borderRadius: 4,
-            p: 3,
-            border: "1px solid #e0e0e0",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              mb: 2,
-            }}
-          >
-            <TextField
-              fullWidth
-              multiline
-              maxRows={4}
-              placeholder={
-                selectedNavItem === "slides"
-                  ? "Create a presentation about..."
-                  : "Ask anything, create anything..."
-              }
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit();
+        <Card className="mx-auto max-w-3xl rounded-2xl border shadow-md">
+          <CardContent className="p-6">
+            <div className="mb-4 flex items-center gap-3">
+              <Textarea
+                placeholder={
+                  selectedNavItem === "slides"
+                    ? "Create a presentation about..."
+                    : "Ask anything, create anything..."
                 }
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "transparent",
-                  color: "#333",
-                  fontSize: "1.1rem",
-                  border: "none",
-                  "& fieldset": {
-                    border: "none",
-                  },
-                  "& input": {
-                    color: "#333",
-                  },
-                  "& textarea": {
-                    color: isDarkMode ? "#fff" : "#333",
-                  },
-                },
-                "& .MuiOutlinedInput-input::placeholder": {
-                  color: "#999",
-                  opacity: 1,
-                },
-              }}
-            />
-            {/* <IconButton
-              sx={{
-                color: "#666",
-                "&:hover": { color: PRIMARY_GREEN },
-              }}
-            >
-              <MicIcon />
-            </IconButton> */}
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {selectedNavItem === "research" && (
-                <SearchDropdown
-                  setResearchModel={setResearchModel}
-                  setTopLevel={setTopLevel}
-                />
-              )}
-              {/* Hidden file input for slide file selection */}
-              <input
-                id="file-upload-input"
-                type="file"
-                accept=".pdf,.doc,.docx,.txt"
-                multiple
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-              />
-              {selectedNavItem === "slides" && (
-                <Button
-                  startIcon={<LinkIcon />}
-                  onClick={handleClick}
-                  sx={{
-                    color: "#666",
-                    textTransform: "none",
-                    "&:hover": {
-                      color: PRIMARY_GREEN,
-                      bgcolor: "rgba(7, 179, 122, 0.1)",
-                    },
-                  }}
-                >
-                  Attach
-                </Button>
-              )}
-
-              {/* <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                <MenuItem onClick={() => handleSelect("image")}>
-                  <ListItemIcon>
-                    <ImageIcon fontSize="small" />
-                  </ListItemIcon>
-                  Image
-                </MenuItem>
-                <MenuItem onClick={() => handleSelect("document")}>
-                  <ListItemIcon>
-                    <DescriptionIcon fontSize="small" />
-                  </ListItemIcon>
-                  Document
-                </MenuItem>
-              </Menu> */}
-
-              {isFirstTimeUser && (
-                <Button
-                  startIcon={<GpsFixedIcon />}
-                  onClick={() => setShowOnboarding(true)}
-                  sx={{
-                    color: PRIMARY_GREEN,
-                    textTransform: "none",
-                    "&:hover": {
-                      bgcolor: "rgba(7, 179, 122, 0.1)",
-                    },
-                  }}
-                >
-                  Quick Tour
-                </Button>
-              )}
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <IconButton
-                onClick={handleSubmit}
-                disabled={
-                  !inputValue.trim() ||
-                  isInitiatingPresentation ||
-                  isInitiatingSheet ||
-                  isUploading ||
-                  isInitiatingResearch
-                }
-                sx={{
-                  bgcolor: PRIMARY_GREEN,
-                  color: "white",
-                  width: 40,
-                  height: 40,
-                  "&:hover": {
-                    bgcolor: "#06A36D",
-                  },
-                  "&.Mui-disabled": {
-                    bgcolor: "#ddd",
-                    color: "#999",
-                  },
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit();
+                  }
                 }}
-              >
-                {isInitiatingPresentation ||
-                isInitiatingSheet ||
-                isInitiatingResearch ? (
-                  <Box sx={{ display: "flex", justifyContent: "center" }}>
-                    <CircularProgress color="primary" size={20} />
-                  </Box>
-                ) : (
-                  <SendIcon />
+                className="max-h-32 min-h-[60px] resize-none border-none text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex flex-wrap gap-2">
+                {selectedNavItem === "research" && (
+                  <SearchDropdown
+                    setResearchModel={setResearchModel}
+                    setTopLevel={setTopLevel}
+                  />
                 )}
-              </IconButton>
-
-              {/* for research only */}
-              {/* {
-                selectedNavItem === "research" && <ModelSelectForResearch/>
-              } */}
-            </Box>
-          </Box>
-
-          {/* uploaded files preview STARTS */}
-          {hasFiles > 0 && (
-            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 } }}>
-              {currentFiles?.map((file, index) => {
-                const extension = getFileExtension(file.filename);
-                const truncatedName = truncateFilename(file.filename);
-
-                return (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    key={`${file.filename}-${index}`}
+                {/* Hidden file input for slide file selection */}
+                <input
+                  id="file-upload-input"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.txt"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFileUpload}
+                />
+                {selectedNavItem === "slides" && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleClick}
+                    className="text-muted-foreground hover:text-primary"
                   >
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Attach
+                  </Button>
+                )}
+
+                {isFirstTimeUser && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowOnboarding(true)}
+                    className="text-primary hover:bg-primary/10"
+                  >
+                    <Target className="mr-2 h-4 w-4" />
+                    Quick Tour
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={
+                    !inputValue.trim() ||
+                    isInitiatingPresentation ||
+                    isInitiatingSheet ||
+                    isUploading ||
+                    isInitiatingResearch
+                  }
+                  size="icon"
+                  className="bg-primary hover:bg-primary/90 h-10 w-10 rounded-full"
+                >
+                  {isInitiatingPresentation ||
+                  isInitiatingSheet ||
+                  isInitiatingResearch ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Send className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* uploaded files preview STARTS */}
+            {hasFiles > 0 && (
+              <div className="grid grid-cols-1 gap-2 pt-4 sm:grid-cols-2 md:grid-cols-3">
+                {currentFiles?.map((file, index) => {
+                  const extension = getFileExtension(file.filename);
+                  const truncatedName = truncateFilename(file.filename);
+
+                  return (
                     <Card
-                      sx={{
-                        position: "relative",
-                        bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
-                        border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-                        borderRadius: 2,
-                        transition: "all 0.2s ease-in-out",
-                        "&:hover": {
-                          boxShadow: isDarkMode
-                            ? "0 4px 12px rgba(7, 179, 122, 0.2)"
-                            : "0 4px 12px rgba(0,0,0,0.1)",
-                          borderColor: PRIMARY_GREEN,
-                          transform: "translateY(-2px)",
-                        },
-                      }}
+                      key={`${file.filename}-${index}`}
+                      className="hover:border-primary relative border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     >
-                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                      <CardContent className="p-3">
                         {/* Remove button */}
-                        <IconButton
-                          size="small"
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleRemoveFile(index, file.filename)}
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            color: "#999",
-                            bgcolor: isDarkMode
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.05)",
-                            width: 24,
-                            height: 24,
-                            "&:hover": {
-                              bgcolor: "#f44336",
-                              color: "white",
-                            },
-                          }}
+                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 absolute top-2 right-2 h-6 w-6"
                         >
-                          <Close fontSize="small" />
-                        </IconButton>
+                          <X className="h-4 w-4" />
+                        </Button>
 
                         {/* File icon and info */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            mb: 2,
-                          }}
-                        >
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Tooltip title={file.filename}>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: isDarkMode ? "#fff" : "#333",
-                                  lineHeight: 1.3,
-                                  mb: 0.5,
-                                  wordBreak: "break-word",
-                                }}
-                              >
-                                {truncatedName}
-                              </Typography>
+                        <div className="mb-3 pr-6">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <p className="text-sm leading-tight font-semibold break-words">
+                                  {truncatedName}
+                                </p>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{file.filename}</p>
+                              </TooltipContent>
                             </Tooltip>
-                          </Box>
-                        </Box>
+                          </TooltipProvider>
+                        </div>
 
-                        {/* File extension chip */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Chip
-                            label={extension.toUpperCase()}
-                            size="small"
-                            sx={{
-                              bgcolor: PRIMARY_GREEN,
-                              color: "white",
-                              fontWeight: 600,
-                              fontSize: "0.7rem",
-                              height: 20,
-                            }}
-                          />
-                        </Box>
+                        {/* File extension badge */}
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-primary text-primary-foreground h-5 text-[0.65rem] font-semibold">
+                            {extension.toUpperCase()}
+                          </Badge>
+                        </div>
                       </CardContent>
                     </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          )}
-          {/* uploaded files preview ENDS */}
-        </Box>
+                  );
+                })}
+              </div>
+            )}
+            {/* uploaded files preview ENDS */}
+          </CardContent>
+        </Card>
 
-        <Box
-          sx={{
-            mt: 4,
-            textAlign: "center",
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{ color: isDarkMode ? "#fff" : "#666", mb: 2 }}
-          >
+        <div className="mt-8 text-center">
+          <p className="text-muted-foreground mb-3 text-sm">
             {selectedNavItem === "slides"
               ? "Popular presentation topics:"
               : "Try these popular requests:"}
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: 1,
-            }}
-          >
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
             {suggestedTopics[selectedNavItem].length > 0 &&
               suggestedTopics[selectedNavItem].map((prompt) => (
-                <Chip
+                <Badge
                   key={prompt}
-                  label={prompt}
+                  variant="outline"
                   onClick={() => setInputValue(prompt)}
-                  sx={{
-                    bgcolor: "rgba(7, 179, 122, 0.1)",
-                    color: PRIMARY_GREEN,
-                    border: `1px solid ${PRIMARY_GREEN}33`,
-                    cursor: "pointer",
-                    "&:hover": {
-                      bgcolor: "rgba(7, 179, 122, 0.2)",
-                    },
-                  }}
-                />
+                  className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer px-3 py-1.5"
+                >
+                  {prompt}
+                </Badge>
               ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {selectedNavItem === "slides" && (
-          <Box sx={{ mt: 6, textAlign: "center" }}>
-            <Typography
-              variant="h6"
-              sx={{ color: isDarkMode ? "#fff" : "#333", mb: 3 }}
-            >
+          <div className="mt-12 text-center">
+            <h2 className="mb-6 text-xl font-semibold">
               Powered by 4 AI Agents
-            </Typography>
-            <Grid container spacing={3} sx={{ maxWidth: 800, mx: "auto" }}>
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <GpsFixedIcon
-                    sx={{ fontSize: 40, color: PRIMARY_GREEN, mb: 1 }}
-                  />
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Smart Planning
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    AI analyzes your needs
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <PaletteIcon
-                    sx={{ fontSize: 40, color: PRIMARY_GREEN, mb: 1 }}
-                  />
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Custom Design
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Your style, your brand
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <FactCheckIcon
-                    sx={{ fontSize: 40, color: PRIMARY_GREEN, mb: 1 }}
-                  />
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Quality Assured
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    AI validates everything
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
+            </h2>
+            <div className="mx-auto grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
+              <div className="text-center">
+                <Target className="text-primary mx-auto mb-2 h-10 w-10" />
+                <h3 className="mb-1 text-sm font-semibold">Smart Planning</h3>
+                <p className="text-muted-foreground text-xs">
+                  AI analyzes your needs
+                </p>
+              </div>
+              <div className="text-center">
+                <Palette className="text-primary mx-auto mb-2 h-10 w-10" />
+                <h3 className="mb-1 text-sm font-semibold">Custom Design</h3>
+                <p className="text-muted-foreground text-xs">
+                  Your style, your brand
+                </p>
+              </div>
+              <div className="text-center">
+                <CheckCircle className="text-primary mx-auto mb-2 h-10 w-10" />
+                <h3 className="mb-1 text-sm font-semibold">Quality Assured</h3>
+                <p className="text-muted-foreground text-xs">
+                  AI validates everything
+                </p>
+              </div>
+            </div>
+          </div>
         )}
-      </Container>
+      </div>
 
       <LoginDialog
         loginDialogOpen={loginDialogOpen}
         setLoginDialogOpen={setLoginDialogOpen}
       />
-
-      {/* snackbar for toast messages */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+    </div>
   );
 }
 
@@ -1344,34 +967,29 @@ export default function AgentLandingPage() {
 const LoginDialog = ({ loginDialogOpen, setLoginDialogOpen }) => {
   const dispatch = useDispatch();
   return (
-    <Dialog
-      open={loginDialogOpen}
-      onClose={() => setLoginDialogOpen(false)}
-      aria-labelledby="login-dialog-title"
-      aria-describedby="login-dialog-description"
-    >
-      <DialogTitle id="login-dialog-title">Authentication Required</DialogTitle>
+    <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
       <DialogContent>
-        <DialogContentText id="login-dialog-description">
-          You need to be logged in to create a presentation. Please log in to
-          continue.
-        </DialogContentText>
+        <DialogHeader>
+          <DialogTitle>Authentication Required</DialogTitle>
+          <DialogDescription>
+            You need to be logged in to create a presentation. Please log in to
+            continue.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setLoginDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              dispatch(setShowLoginModal(true));
+              setLoginDialogOpen(false);
+            }}
+          >
+            Login
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setLoginDialogOpen(false)} color="secondary">
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            dispatch(setShowLoginModal(true));
-            setLoginDialogOpen(false);
-          }}
-          color="primary"
-          variant="contained"
-        >
-          Login
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

@@ -1,29 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  Typography,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import { KeyboardArrowDown, Search } from "@mui/icons-material";
-import SvgColor from "../../src/resource/SvgColor";
-import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import { Button } from "../../src/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../src/components/ui/dropdown-menu";
+import useResponsive from "../../src/hooks/useResponsive";
+import { cn } from "../../src/lib/utils";
+import SvgColor from "../../src/resource/SvgColor";
 
 const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("Level 1-3");
-  const open = Boolean(anchorEl);
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMd = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useResponsive("down", "sm");
+  const isMd = useResponsive("down", "md");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -33,22 +30,14 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   // Check if user has premium access
   const userPackage = user?.package || "free";
   const isPremiumUser = ["value_plan", "pro_plan", "unlimited"].includes(
-    userPackage
+    userPackage,
   );
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleMenuItemClick = (level, model, topLevel, isPremium = false) => {
     // If it's a premium feature and user doesn't have premium access
     if (isPremium && !isPremiumUser) {
       // Close the menu first
-      setAnchorEl(null);
+      setOpen(false);
 
       // Redirect to pricing page
       const redirectUrl = `/pricing?redirect=${encodeURIComponent(pathname)}`;
@@ -58,7 +47,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
 
     // For free features or premium users with premium features
     setSelectedLevel(level);
-    setAnchorEl(null);
+    setOpen(false);
     setResearchModel(model);
     setTopLevel(topLevel);
   };
@@ -68,7 +57,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
     event.stopPropagation();
 
     // Close the menu
-    setAnchorEl(null);
+    setOpen(false);
 
     // Navigate to pricing page
     const redirectUrl = `/pricing?redirect=${encodeURIComponent(pathname)}`;
@@ -109,219 +98,104 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   ];
 
   return (
-    <Box>
-      <Box
-        sx={{
-          position: "relative",
-          display: "inline-block",
-        }}
-      >
-        <Box
-          sx={{
-            "&:focus-within": {
-              borderColor: "#00c851",
-            },
-          }}
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className={cn(
+            "bg-primary/10 text-muted-foreground focus-within:border-primary rounded-md font-semibold",
+            isMobile ? "text-xs" : "text-sm",
+          )}
         >
-          {/* Dropdown Button */}
-          <Button
-            onClick={handleClick}
-            endIcon={<KeyboardArrowDown />}
-            sx={{
-              borderRadius: "6px",
-              backgroundColor: "#00A76F29",
-              color: "#637381",
-              fontWeight: 600,
-              fontSize: isMobile ? "0.75rem" : "0.875rem",
-              textTransform: "none",
-              "& .MuiButton-endIcon": {
-                marginLeft: "4px",
-              },
-            }}
-          >
-            {isMobile ? selectedLevel.replace("Level ", "Lv ") : selectedLevel}
-          </Button>
-        </Box>
-      </Box>
-
-      {/* Dropdown Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        slotProps={{
-          paper: {
-            elevation: 8,
-            sx: {
-              mt: 1,
-              borderRadius: 2,
-              minWidth: isMobile ? 200 : 320,
-              maxWidth: isMobile ? 300 : 400,
-              border: "1px solid #e9ecef",
-              "& .MuiMenuItem-root": {
-                whiteSpace: "normal",
-                wordBreak: "break-word",
-              },
-            },
-          },
-        }}
+          {isMobile ? selectedLevel.replace("Level ", "Lv ") : selectedLevel}
+          <ChevronDown className="ml-1 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className={cn(
+          "mt-1 rounded-lg border shadow-lg",
+          isMobile
+            ? "max-w-[300px] min-w-[200px]"
+            : "max-w-[400px] min-w-[320px]",
+        )}
       >
         {searchLevels.map((item, index) => {
           const isPremiumFeature = item.isPremium && !isPremiumUser;
 
           return (
-            <MenuItem
+            <DropdownMenuItem
               key={index}
               onClick={() =>
                 handleMenuItemClick(
                   item.level,
                   item.model,
                   item.topLevel,
-                  item.isPremium
+                  item.isPremium,
                 )
               }
-              selected={selectedLevel === item.level}
-              sx={{
-                flexDirection: "column",
-                alignItems: "flex-start",
-                py: 2,
-                px: 3,
-                borderBottom:
-                  index < searchLevels.length - 1
-                    ? "1px solid #f0f0f0"
-                    : "none",
-                cursor: "pointer",
-                "&:hover": {
-                  backgroundColor: "#f8f9fa",
-                },
-                "&.Mui-selected": {
-                  backgroundColor: "#e8f5e8",
-                  "&:hover": {
-                    backgroundColor: "#d4edda",
-                  },
-                },
-              }}
+              className={cn(
+                "flex cursor-pointer flex-col items-start px-6 py-4 break-words whitespace-normal",
+                index < searchLevels.length - 1 && "border-b",
+                selectedLevel === item.level
+                  ? "bg-primary/10 hover:bg-primary/20"
+                  : "hover:bg-accent",
+              )}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 0.5,
-                  width: "100%",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
+              <div className="mb-1 flex w-full items-center justify-between">
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-2">
                     <SvgColor
                       src={item.icon}
-                      sx={{
-                        width: { xs: 18, md: 20 },
-                        height: { xs: 18, md: 20 },
-                        color:
-                          selectedLevel === item.level ? "#00c851" : "#333",
-                      }}
+                      className={cn(
+                        "h-4 w-4 md:h-5 md:w-5",
+                        selectedLevel === item.level
+                          ? "text-primary"
+                          : "text-foreground",
+                      )}
                     />
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        fontWeight: 600,
-                        color:
-                          selectedLevel === item.level ? "#00c851" : "#333",
-                        mr: 1,
-                      }}
+                    <p
+                      className={cn(
+                        "mr-2 font-semibold",
+                        selectedLevel === item.level
+                          ? "text-primary"
+                          : "text-foreground",
+                      )}
                     >
                       {item.level}
-                    </Typography>
+                    </p>
                     {item.isPremium && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          backgroundColor: "#07B37A",
-                          color: "white",
-                          px: 1,
-                          py: 0.25,
-                          borderRadius: 1,
-                          fontSize: "0.65rem",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <span className="bg-primary text-primary-foreground rounded px-2 py-0.5 text-[0.65rem] font-semibold">
                         {isPremiumUser ? "PRO" : "PRO"}
-                      </Typography>
+                      </span>
                     )}
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: 500,
-                      color:
-                        selectedLevel === item.level ? "#00c851" : "#00c851",
-                    }}
-                  >
-                    {item.title}
-                  </Typography>
-                </Box>
+                  </div>
+                  <p className="text-primary font-medium">{item.title}</p>
+                </div>
 
                 {/* Show upgrade button only for premium features when user is not premium */}
                 {isPremiumFeature && (
                   <Button
                     onClick={handleUpgradeClick}
-                    color="primary"
-                    size={isMd ? "medium" : "small"}
-                    variant="contained"
-                    rel="noopener"
-                    startIcon={
-                      <SvgColor
-                        src="/navbar/diamond.svg"
-                        sx={{
-                          width: { xs: 18, md: 20 },
-                          height: { xs: 18, md: 20 },
-                        }}
-                      />
-                    }
-                    sx={{
-                      backgroundColor: "#07B37A",
-                    }}
+                    size={isMd ? "default" : "sm"}
+                    className="bg-primary hover:bg-primary/90"
                   >
+                    <SvgColor
+                      src="/navbar/diamond.svg"
+                      className="mr-2 h-4 w-4 md:h-5 md:w-5"
+                    />
                     upgrade
                   </Button>
                 )}
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#666",
-                  fontSize: "0.8rem",
-                  lineHeight: 1.4,
-                }}
-              >
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">
                 {item.description}
-              </Typography>
-            </MenuItem>
+              </p>
+            </DropdownMenuItem>
           );
         })}
-      </Menu>
-    </Box>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

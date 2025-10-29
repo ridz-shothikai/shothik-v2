@@ -1,21 +1,12 @@
 "use client";
 
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import CloseIcon from "@mui/icons-material/Close";
-import {
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  Drawer,
-  IconButton,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { Card, CardContent } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { format } from "date-fns";
+import { Clock, Loader2, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 export default function ChatSidebar({
@@ -35,10 +26,10 @@ export default function ChatSidebar({
   researchDataLoading,
   researchDataError,
 }) {
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState("slide");
 
-  const handleTabChange = (event, newIndex) => {
-    setTabIndex(newIndex);
+  const handleTabChange = (value) => {
+    setTabIndex(value);
   };
 
   console.log("researchData in ChatSidebar:", researchData);
@@ -46,288 +37,213 @@ export default function ChatSidebar({
   console.log("researchDataError in ChatSidebar:", researchDataError);
 
   return (
-    <Drawer
-      anchor="left"
-      open={sidebarOpen}
-      onClose={toggleDrawer(false)}
-      ModalProps={{ keepMounted: true }}
-      sx={{
-        zIndex: 1102,
-        "& .MuiDrawer-paper": {
-          position: "absolute",
-          left: isMobile ? 0 : isNavbarExpanded ? 273 : 100,
-          width: { xs: "100vw", sm: 320, md: 360 },
-          maxWidth: { xs: "100vw", sm: "calc(100vw - 320px)" },
-          bgcolor: isDarkMode ? "#1e272e" : "#fff",
-          color: isDarkMode ? "#eee" : "#333",
-          overflow: "hidden",
-        },
-      }}
-    >
-      <Box
-        sx={{
-          width: "100%",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
+    <Sheet open={sidebarOpen} onOpenChange={(open) => toggleDrawer(open)()}>
+      <SheetContent
+        side="left"
+        className={cn(
+          "absolute w-screen overflow-hidden p-0 sm:w-80 sm:max-w-[calc(100vw-320px)] md:w-[360px]",
+          isMobile
+            ? "left-0"
+            : isNavbarExpanded
+              ? "left-[273px]"
+              : "left-[100px]",
+        )}
+        style={{ zIndex: 1102 }}
       >
-        {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            p: 2,
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-        >
-          <Tabs value={tabIndex} onChange={handleTabChange} sx={{ px: 2 }}>
-            <Tab label="Slide" />
-            <Tab label="Sheet" />
-            <Tab label="Research" />
-          </Tabs>
-          <IconButton onClick={toggleDrawer(false)} size="small">
-            <CloseIcon />
-          </IconButton>
-        </Box>
+        <VisuallyHidden>
+          <SheetTitle>Chat History</SheetTitle>
+        </VisuallyHidden>
+        <div className="flex h-screen w-full flex-col">
+          {/* Header */}
+          <div className="border-b p-4">
+            <Tabs
+              value={tabIndex}
+              onValueChange={handleTabChange}
+              className="w-4/5"
+            >
+              <TabsList className="w-4/5">
+                <TabsTrigger value="slide" className="flex-1">
+                  Slide
+                </TabsTrigger>
+                <TabsTrigger value="sheet" className="flex-1">
+                  Sheet
+                </TabsTrigger>
+                <TabsTrigger value="research" className="flex-1">
+                  Research
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
 
-        {/* Content */}
-        <Box sx={{ flex: 1, overflow: "auto", p: 2 }}>
-          {tabIndex === 0 && (
-            <>
-              {SlideDataLoading && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 100,
-                  }}
-                >
-                  <CircularProgress size={24} />
-                  <Typography sx={{ ml: 2 }}>Loading chats…</Typography>
-                </Box>
-              )}
-              {SlideDataLoadingError && (
-                <Typography color="text.secondary">No chats found</Typography>
-              )}
-              {!SlideDataLoading && slidesChats?.length === 0 && (
-                <Box sx={{ textAlign: "center", mt: 4 }}>
-                  <ChatBubbleOutlineIcon
-                    sx={{ fontSize: 48, color: "text.disabled" }}
-                  />
-                  <Typography>No chats yet</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Start a new conversation to see it here
-                  </Typography>
-                </Box>
-              )}
-              {slidesChats?.length > 0 && (
-                <Stack spacing={1}>
-                  {slidesChats.map((chat) => (
-                    <Card
-                      key={chat.p_id}
-                      onClick={() =>
-                        router.push(`/agents/presentation?id=${chat.p_id}`)
-                      }
-                      sx={{
-                        cursor: "pointer",
-                        border: 1,
-                        borderColor: "divider",
-                        "&:hover": {
-                          bgcolor: "action.hover",
-                          borderColor: "primary.main",
-                        },
-                        transition: "transform 0.1s",
-                        "&:active": { transform: "scale(0.98)" },
-                      }}
-                      elevation={0}
-                    >
-                      <CardContent sx={{ p: 2 }}>
-                        {/* <Typography noWrap fontWeight={600} title={chat.title}>
-                          {chat.title}
-                        </Typography> */}
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                          }}
-                        >
-                          <AccessTimeIcon sx={{ fontSize: 14 }} />
-                          {format(
-                            new Date(chat.creation_date),
-                            "dd/MM/yyyy, hh:mm a",
-                          )}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Stack>
-              )}
-            </>
-          )}
+          {/* Content */}
+          <div className="flex-1 overflow-auto p-4">
+            {tabIndex === "slide" && (
+              <>
+                {SlideDataLoading && (
+                  <div className="flex h-[100px] items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <p className="ml-2">Loading chats…</p>
+                  </div>
+                )}
+                {SlideDataLoadingError && (
+                  <p className="text-muted-foreground">No chats found</p>
+                )}
+                {!SlideDataLoading && slidesChats?.length === 0 && (
+                  <div className="mt-4 text-center">
+                    <MessageCircle className="text-muted-foreground mx-auto h-12 w-12" />
+                    <p>No chats yet</p>
+                    <p className="text-muted-foreground text-sm">
+                      Start a new conversation to see it here
+                    </p>
+                  </div>
+                )}
+                {slidesChats?.length > 0 && (
+                  <div className="flex flex-col space-y-2">
+                    {slidesChats.map((chat) => (
+                      <Card
+                        key={chat.p_id}
+                        onClick={() =>
+                          router.push(`/agents/presentation?id=${chat.p_id}`)
+                        }
+                        className={cn(
+                          "cursor-pointer border transition-all duration-100",
+                          "hover:bg-accent hover:border-primary",
+                          "active:scale-[0.98]",
+                        )}
+                      >
+                        <CardContent className="p-4">
+                          {/* <p className="truncate font-semibold" title={chat.title}>
+                            {chat.title}
+                          </p> */}
+                          <p className="text-muted-foreground flex items-center gap-1 text-sm">
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(
+                              new Date(chat.creation_date),
+                              "dd/MM/yyyy, hh:mm a",
+                            )}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
 
-          {tabIndex === 1 && (
-            <>
-              {/* your existing sheet‑listing UI */}
-              {isLoading && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 100,
-                  }}
-                >
-                  <CircularProgress size={24} />
-                  <Typography sx={{ ml: 2 }}>Loading chats…</Typography>
-                </Box>
-              )}
-              {error && (
-                <Typography color="text.secondary">No chats found</Typography>
-              )}
-              {!isLoading && myChats.length === 0 && (
-                <Box sx={{ textAlign: "center", mt: 4 }}>
-                  <ChatBubbleOutlineIcon
-                    sx={{ fontSize: 48, color: "text.disabled" }}
-                  />
-                  <Typography>No chats yet</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Start a new conversation to see it here
-                  </Typography>
-                </Box>
-              )}
-              {myChats.length > 0 && (
-                <Stack spacing={1}>
-                  {myChats.map((chat) => (
-                    <Card
-                      key={chat._id || chat.id}
-                      onClick={() =>
-                        router.push(`/agents/sheets?id=${chat._id}`)
-                      }
-                      sx={{
-                        cursor: "pointer",
-                        border: 1,
-                        borderColor: "divider",
-                        "&:hover": {
-                          bgcolor: "action.hover",
-                          borderColor: "primary.main",
-                        },
-                        transition: "transform 0.1s",
-                        "&:active": { transform: "scale(0.98)" },
-                      }}
-                      elevation={0}
-                    >
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography noWrap fontWeight={600} title={chat.name}>
-                          {chat.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                          }}
-                        >
-                          <AccessTimeIcon sx={{ fontSize: 14 }} />
-                          {format(
-                            new Date(chat.createdAt),
-                            "dd/MM/yyyy, hh:mm a",
-                          )}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Stack>
-              )}
-            </>
-          )}
+            {tabIndex === "sheet" && (
+              <>
+                {isLoading && (
+                  <div className="flex h-[100px] items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <p className="ml-2">Loading chats…</p>
+                  </div>
+                )}
+                {error && (
+                  <p className="text-muted-foreground">No chats found</p>
+                )}
+                {!isLoading && myChats.length === 0 && (
+                  <div className="mt-4 text-center">
+                    <MessageCircle className="text-muted-foreground mx-auto h-12 w-12" />
+                    <p>No chats yet</p>
+                    <p className="text-muted-foreground text-sm">
+                      Start a new conversation to see it here
+                    </p>
+                  </div>
+                )}
+                {myChats.length > 0 && (
+                  <div className="flex flex-col space-y-2">
+                    {myChats.map((chat) => (
+                      <Card
+                        key={chat._id || chat.id}
+                        onClick={() =>
+                          router.push(`/agents/sheets?id=${chat._id}`)
+                        }
+                        className={cn(
+                          "cursor-pointer border transition-all duration-100",
+                          "hover:bg-accent hover:border-primary",
+                          "active:scale-[0.98]",
+                        )}
+                      >
+                        <CardContent className="p-4">
+                          <p
+                            className="truncate font-semibold"
+                            title={chat.name}
+                          >
+                            {chat.name}
+                          </p>
+                          <p className="text-muted-foreground flex items-center gap-1 text-sm">
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(
+                              new Date(chat.createdAt),
+                              "dd/MM/yyyy, hh:mm a",
+                            )}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
 
-          {tabIndex === 2 && (
-            <>
-              {researchDataLoading && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 100,
-                  }}
-                >
-                  <CircularProgress size={24} />
-                  <Typography sx={{ ml: 2 }}>Loading chats…</Typography>
-                </Box>
-              )}
-              {researchDataError && (
-                <Typography color="text.secondary">No chats found</Typography>
-              )}
-              {!researchDataLoading && researchData?.length === 0 && (
-                <Box sx={{ textAlign: "center", mt: 4 }}>
-                  <ChatBubbleOutlineIcon
-                    sx={{ fontSize: 48, color: "text.disabled" }}
-                  />
-                  <Typography>No chats yet</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Start a new conversation to see it here
-                  </Typography>
-                </Box>
-              )}
-              {researchData?.length > 0 && (
-                <Stack spacing={1}>
-                  {researchData.map((chat) => (
-                    <Card
-                      key={chat._id}
-                      onClick={() =>
-                        router.push(`/agents/research?id=${chat._id}`)
-                      }
-                      sx={{
-                        cursor: "pointer",
-                        border: 1,
-                        borderColor: "divider",
-                        "&:hover": {
-                          bgcolor: "action.hover",
-                          borderColor: "primary.main",
-                        },
-                        transition: "transform 0.1s",
-                        "&:active": { transform: "scale(0.98)" },
-                      }}
-                      elevation={0}
-                    >
-                      <CardContent sx={{ p: 2 }}>
-                        <Typography noWrap fontWeight={600} title={chat.name}>
-                          {chat.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                          }}
-                        >
-                          <AccessTimeIcon sx={{ fontSize: 14 }} />
-                          {format(
-                            new Date(chat.createdAt),
-                            "dd/MM/yyyy, hh:mm a",
-                          )}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </Stack>
-              )}
-            </>
-          )}
-        </Box>
-      </Box>
-    </Drawer>
+            {tabIndex === "research" && (
+              <>
+                {researchDataLoading && (
+                  <div className="flex h-[100px] items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <p className="ml-2">Loading chats…</p>
+                  </div>
+                )}
+                {researchDataError && (
+                  <p className="text-muted-foreground">No chats found</p>
+                )}
+                {!researchDataLoading && researchData?.length === 0 && (
+                  <div className="mt-4 text-center">
+                    <MessageCircle className="text-muted-foreground mx-auto h-12 w-12" />
+                    <p>No chats yet</p>
+                    <p className="text-muted-foreground text-sm">
+                      Start a new conversation to see it here
+                    </p>
+                  </div>
+                )}
+                {researchData?.length > 0 && (
+                  <div className="flex flex-col space-y-2">
+                    {researchData.map((chat) => (
+                      <Card
+                        key={chat._id}
+                        onClick={() =>
+                          router.push(`/agents/research?id=${chat._id}`)
+                        }
+                        className={cn(
+                          "cursor-pointer border transition-all duration-100",
+                          "hover:bg-accent hover:border-primary",
+                          "active:scale-[0.98]",
+                        )}
+                      >
+                        <CardContent className="p-4">
+                          <p
+                            className="truncate font-semibold"
+                            title={chat.name}
+                          >
+                            {chat.name}
+                          </p>
+                          <p className="text-muted-foreground flex items-center gap-1 text-sm">
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(
+                              new Date(chat.createdAt),
+                              "dd/MM/yyyy, hh:mm a",
+                            )}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
