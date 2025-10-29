@@ -1,28 +1,23 @@
 // components/InputArea.jsx
-import { Close, MoreVert } from "@mui/icons-material";
-import SendIcon from "@mui/icons-material/Send";
+import { Button } from "@/components/ui/button";
 import {
-  Alert,
-  Card,
-  CardContent,
-  Chip,
-  Snackbar,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+import {
   Tooltip,
-  Menu,
-  MenuItem,
-  Modal,
-  Button,
-} from "@mui/material";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import { Grid, useTheme } from "@mui/system";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { MoreVertical, Send, X } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useUploadPresentationFilesMutation } from "../../redux/api/presentation/presentationApi";
-
-const PRIMARY_GREEN = "#07B37A";
 
 export default function InputArea({
   currentAgentType,
@@ -34,10 +29,10 @@ export default function InputArea({
   setFileUrls,
   uploadedFiles,
   fileUrls,
-  onNewChat, // Add onNewChat prop
+  onNewChat,
+  disabled,
+  placeholder,
 }) {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const { user } = useSelector((state) => state.auth);
   const [uploadFiles, { isLoading: isUploading, error: uploadError }] =
     useUploadPresentationFilesMutation();
@@ -48,25 +43,13 @@ export default function InputArea({
     severity: "error",
   });
 
-  // Three-dot menu state
-  const [anchorEl, setAnchorEl] = useState(null);
   const [showNewChatModal, setShowNewChatModal] = useState(false);
 
   const showToast = (message, severity = "error") => {
     setToast({ open: true, message, severity });
   };
 
-  // Three-dot menu handlers
-  const handleThreeDotClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleThreeDotClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleNewChatClick = () => {
-    setAnchorEl(null);
     setShowNewChatModal(true);
   };
 
@@ -207,189 +190,83 @@ export default function InputArea({
 
   return (
     <>
-      <Box
-        sx={{
-          p: 2,
-          bgcolor:
-            theme.palette.mode === "dark"
-              ? theme.palette.background.default
-              : "#f8f9fa",
-        }}
-      >
-        <Box
-          sx={{
-            bgcolor:
-              theme.palette.mode === "dark"
-                ? theme.palette.background.default
-                : "#f8f9fa",
-            borderRadius: 4,
-            p: 3,
-            border: "1px solid #e0e0e0",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            position: "relative",
-          }}
-        >
+      <div className="bg-secondary p-2">
+        <div className="border-border bg-secondary relative rounded-2xl border p-3 shadow-sm">
           {/* uploaded files preview STARTS */}
           {uploadedFiles?.length > 0 && (
-            <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 } }}>
+            <div className="grid grid-cols-1 gap-1 pt-1 sm:grid-cols-2 md:grid-cols-1 md:pt-2 xl:pt-3">
               {uploadedFiles?.map((file, index) => {
                 const extension = getFileExtension(file.filename);
                 const truncatedName = truncateFilename(file.filename);
 
                 return (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    md={12}
+                  <div
                     key={`${file.filename}-${index}`}
+                    className="border-border bg-card hover:border-primary relative max-w-[120px] rounded-lg border p-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
                   >
-                    <Card
-                      sx={{
-                        position: "relative",
-                        bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
-                        border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-                        borderRadius: 2,
-                        transition: "all 0.2s ease-in-out",
-                        "&:hover": {
-                          boxShadow: isDarkMode
-                            ? "0 4px 12px rgba(7, 179, 122, 0.2)"
-                            : "0 4px 12px rgba(0,0,0,0.1)",
-                          borderColor: PRIMARY_GREEN,
-                          transform: "translateY(-2px)",
-                        },
-                        maxWidth: "120px",
-                      }}
+                    {/* Remove button */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveFile(index, file.filename)}
+                      className="bg-muted/50 text-muted-foreground hover:bg-destructive hover:text-destructive-foreground absolute top-2 right-2 h-6 w-6"
                     >
-                      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                        {/* Remove button */}
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveFile(index, file.filename)}
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            color: "#999",
-                            bgcolor: isDarkMode
-                              ? "rgba(255,255,255,0.1)"
-                              : "rgba(0,0,0,0.05)",
-                            width: 24,
-                            height: 24,
-                            "&:hover": {
-                              bgcolor: "#f44336",
-                              color: "white",
-                            },
-                          }}
-                        >
-                          <Close fontSize="small" />
-                        </IconButton>
+                      <X className="h-3 w-3" />
+                    </Button>
 
-                        {/* File icon and info */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            mb: 2,
-                            pr: 2,
-                          }}
-                        >
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Tooltip title={file.filename}>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: isDarkMode ? "#fff" : "#333",
-                                  lineHeight: 1.3,
-                                  mb: 0.5,
-                                  wordBreak: "break-word",
-                                }}
-                              >
+                    {/* File icon and info */}
+                    <div className="mb-2 flex items-start pr-2">
+                      <div className="min-w-0 flex-1">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <p className="text-foreground mb-1 text-sm leading-tight font-semibold break-words">
                                 {truncatedName}
-                              </Typography>
-                            </Tooltip>
-                          </Box>
-                        </Box>
+                              </p>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{file.filename}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
 
-                        {/* File extension chip */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Chip
-                            label={extension.toUpperCase()}
-                            size="small"
-                            sx={{
-                              bgcolor: PRIMARY_GREEN,
-                              color: "white",
-                              fontWeight: 600,
-                              fontSize: "0.7rem",
-                              height: 20,
-                            }}
-                          />
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                    {/* File extension chip */}
+                    <div className="flex items-center justify-between">
+                      <span className="bg-primary text-primary-foreground inline-flex h-5 items-center rounded-sm px-2 text-xs font-semibold">
+                        {extension.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
                 );
               })}
-            </Grid>
+            </div>
           )}
           {/* uploaded files preview ENDS */}
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-            <TextField
-              fullWidth
-              multiline
-              maxRows={4}
+          <div className="mb-2 flex items-center gap-2">
+            <Textarea
               placeholder={
-                currentAgentType === "presentation"
+                placeholder ||
+                (currentAgentType === "presentation"
                   ? "Create a presentation about..."
-                  : "Ask anything, create anything..."
+                  : "Ask anything, create anything...")
               }
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   onSend();
                 }
               }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "transparent",
-                  color: isDarkMode ? "#fff" : "#333",
-                  fontSize: "1rem",
-                  border: "none",
-                  "& fieldset": { border: "none" },
-                  "& input": { color: isDarkMode ? "#fff" : "#333" },
-                  "& textarea": { color: isDarkMode ? "#fff" : "#333" },
-                },
-                "& .MuiOutlinedInput-input::placeholder": {
-                  color: "#999",
-                  opacity: 1,
-                },
-              }}
+              disabled={disabled}
+              className="text-foreground placeholder:text-muted-foreground max-h-[120px] min-h-[60px] resize-none border-none bg-transparent text-base shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-            {/* <IconButton
-            sx={{ color: "#666", "&:hover": { color: PRIMARY_GREEN } }}
-          >
-            <MicIcon />
-          </IconButton> */}
-          </Box>
+          </div>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row-reverse",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className="flex flex-row-reverse items-center justify-between">
             {/* This will be needed later */}
             {/* <input
               id="file-upload-input-slides"
@@ -401,161 +278,108 @@ export default function InputArea({
             />
 
             <Button
-              startIcon={<AttachFile />}
+              variant="ghost"
               onClick={handleClick}
-              sx={{
-                color: "#666",
-                textTransform: "none",
-                "&:hover": {
-                  color: PRIMARY_GREEN,
-                  bgcolor: "rgba(7, 179, 122, 0.1)",
-                },
-              }}
+              className="text-muted-foreground hover:text-primary"
             >
+              <Paperclip className="mr-2 h-4 w-4" />
               Attach
             </Button> */}
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <div className="flex items-center gap-1">
               {/* Three-dot menu button */}
-              <IconButton
-                onClick={handleThreeDotClick}
-                sx={{
-                  color: "#666",
-                  "&:hover": { color: PRIMARY_GREEN },
-                }}
-              >
-                <MoreVert />
-              </IconButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-primary h-10 w-10"
+                  >
+                    <MoreVertical className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleNewChatClick}>
+                    <span className="text-sm">New Chat</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-              <IconButton
+              <Button
                 onClick={() => onSend()}
-                disabled={!inputValue.trim() || isLoading || isUploading}
-                sx={{
-                  bgcolor: PRIMARY_GREEN,
-                  color: "white",
-                  width: 40,
-                  height: 40,
-                  "&:hover": { bgcolor: "#06A36D" },
-                  "&.Mui-disabled": { bgcolor: "#ddd", color: "#999" },
-                }}
+                disabled={
+                  !inputValue.trim() || isLoading || isUploading || disabled
+                }
+                size="icon"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground h-10 w-10"
               >
-                <SendIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-
-      {/* Three-dot menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleThreeDotClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-      >
-        <MenuItem onClick={handleNewChatClick}>
-          <Typography variant="body2">New Chat</Typography>
-        </MenuItem>
-      </Menu>
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* New Chat Modal */}
-      <Box
-        sx={{
-          position: 'relative',
-          display: showNewChatModal ? 'block' : 'none',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: -250, // Position with more bottom space above the input area
-            right: 20, // Align with the right side of the input area
-            width: 320,
-            bgcolor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-            border: '1px solid #e0e0e0',
-            p: 3,
-            zIndex: 1000, // Ensure it appears above other elements
-          }}
-        >
-          {/* Close button */}
-          <IconButton
-            onClick={handleNewChatCancel}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              color: '#999',
-              '&:hover': {
-                color: '#666',
-                bgcolor: 'rgba(0,0,0,0.04)',
-              },
-            }}
-          >
-            <Close fontSize="small" />
-          </IconButton>
-          
-          <Typography id="new-chat-modal-title" variant="h6" component="h2" gutterBottom>
-            Start New Chat
-          </Typography>
-          <Typography id="new-chat-modal-description" variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            This will clear the current conversation and start fresh. Are you sure you want to continue?
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+      {showNewChatModal && (
+        <div className="relative">
+          <div className="border-border bg-background absolute -top-[250px] right-5 z-[1000] w-80 rounded-lg border p-6 shadow-xl">
+            {/* Close button */}
             <Button
+              variant="ghost"
+              size="icon"
               onClick={handleNewChatCancel}
-              variant="outlined"
-              sx={{
-                color: '#666',
-                borderColor: '#ddd',
-                '&:hover': {
-                  borderColor: '#999',
-                  bgcolor: 'rgba(0,0,0,0.04)',
-                },
-              }}
+              className="text-muted-foreground hover:text-foreground absolute top-2 right-2 h-8 w-8"
             >
-              Cancel
+              <X className="h-4 w-4" />
             </Button>
-            <Button
-              onClick={handleNewChatConfirm}
-              variant="contained"
-              sx={{
-                bgcolor: '#666',
-                color: 'white',
-                '&:hover': {
-                  bgcolor: '#555',
-                },
-              }}
-            >
-              New Chat
-            </Button>
-          </Box>
-        </Box>
-      </Box>
 
-      {/* snackbar for toast messages */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={() => setToast((prev) => ({ ...prev, open: false }))}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
+            <h2 className="mb-2 text-xl font-semibold">Start New Chat</h2>
+            <p className="text-muted-foreground mb-6 text-sm">
+              This will clear the current conversation and start fresh. Are you
+              sure you want to continue?
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={handleNewChatCancel}
+                variant="outline"
+                className="text-muted-foreground"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleNewChatConfirm} variant="default">
+                New Chat
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast messages */}
+      {toast.open && (
+        <div className="fixed right-5 bottom-5 z-[9999] w-96">
+          <div
+            className={cn(
+              "relative rounded-lg border p-4 shadow-lg",
+              toast.severity === "error" &&
+                "border-destructive bg-destructive/10 text-destructive",
+              toast.severity === "success" &&
+                "border-primary bg-primary/10 text-primary",
+              toast.severity === "info" &&
+                "border-border bg-background text-foreground",
+            )}
+          >
+            <button
+              onClick={() => setToast((prev) => ({ ...prev, open: false }))}
+              className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="pr-6 text-sm">{toast.message}</p>
+          </div>
+        </div>
+      )}
     </>
   );
 }

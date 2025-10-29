@@ -1,72 +1,59 @@
-import { ExpandMore, Info, Lightbulb } from "@mui/icons-material";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Info, Lightbulb } from "lucide-react";
 
-// Metadata display component (unchanged)
 const MetadataDisplay = ({ metadata }) => {
   if (!metadata) return null;
 
   return (
-    <Box sx={{ mt: 2, p: 0 }}>
-      {metadata.summary && (
-        <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Info color="primary" fontSize="small" />
-              <Typography variant="subtitle2" fontWeight={600}>
-                Summary
-              </Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", lineHeight: 1.6 }}
-            >
-              {metadata.summary}
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-      )}
-      {metadata.keyPoints && metadata.keyPoints.length > 0 && (
-        <Accordion>
-          <AccordionSummary expandIcon={<ExpandMore />}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Lightbulb color="warning" fontSize="small" />
-              <Typography variant="subtitle2" fontWeight={600}>
-                Key Points ({metadata.keyPoints.length})
-              </Typography>
-            </Box>
-          </AccordionSummary>
-          <AccordionDetails>
-            <List dense sx={{ py: 0 }}>
-              {metadata.keyPoints.map((point, index) => (
-                <ListItem key={index} sx={{ px: 0 }}>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="body2"
-                        sx={{ color: "text.secondary", lineHeight: 1.5 }}
-                      >
-                        • {point}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </AccordionDetails>
-        </Accordion>
-      )}
-    </Box>
+    <div className="mt-2">
+      <Accordion type="multiple" defaultValue={["summary"]} className="w-full">
+        {metadata.summary && (
+          <AccordionItem value="summary">
+            <AccordionTrigger className="hover:no-underline">
+              <div className="flex items-center gap-2">
+                <Info className="text-primary h-4 w-4" />
+                <span className="text-sm font-semibold">Summary</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {metadata.summary}
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        {metadata.keyPoints && metadata.keyPoints.length > 0 && (
+          <AccordionItem value="keyPoints">
+            <AccordionTrigger className="hover:no-underline">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="text-primary h-4 w-4" />
+                <span className="text-sm font-semibold">
+                  Key Points ({metadata.keyPoints.length})
+                </span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <ul className="space-y-1">
+                {metadata.keyPoints.map((point, index) => (
+                  <li
+                    key={index}
+                    className="text-muted-foreground text-sm leading-normal"
+                  >
+                    • {point}
+                  </li>
+                ))}
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        )}
+      </Accordion>
+    </div>
   );
 };
 

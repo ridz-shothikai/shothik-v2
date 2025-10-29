@@ -1,20 +1,12 @@
 "use client";
 
-import { CheckCircle, Person } from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Dialog,
-  DialogContent,
-  Snackbar,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Toaster } from "@/components/ui/sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { CheckCircle, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useRegisterUserToBetaListMutation } from "../../redux/api/auth/authApi";
 import EmailModal from "../home/EmailCollectModal";
 import SheetChatArea from "./SheetChatArea";
@@ -24,8 +16,7 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
   const [isLoading, setIsLoading] = useState(false);
   const [optimisticMessages, setOptimisticMessages] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const initialPrompt = sessionStorage.getItem("initialPrompt");
@@ -47,125 +38,51 @@ export default function SheetAgentPage({ specificAgent, sheetId }) {
   const handlePreviewClose = () => setPreviewOpen(false);
 
   return (
-    <Box
-      sx={{
-        height: {
-          xs: "90dvh",
-          lg: "calc(100dvh - 70px)",
-        },
-        bgcolor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
-      >
+    <div className="bg-background text-foreground flex h-[90dvh] flex-col overflow-hidden lg:h-[calc(100dvh-70px)]">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {isMobile ? (
           <>
-            <Box
-              sx={{
-                flex: 1,
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <div className="flex flex-1 flex-col overflow-hidden">
               <SheetChatArea
                 currentAgentType={specificAgent}
                 // isLoading={isLoading}
-                theme={theme}
                 // for mobile preview panel
                 handlePreviewOpen={handlePreviewOpen}
               />
-            </Box>
-            <Dialog
-              open={previewOpen}
-              onClose={handlePreviewClose}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: {
-                  height: "80vh",
-                  maxHeight: "80vh",
-                  position: "relative",
-                  bgcolor: theme.palette.background.default,
-                },
-              }}
-            >
-              <DialogContent sx={{ p: 0, overflow: "hidden" }}>
+            </div>
+            <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+              <DialogContent className="h-[80vh] max-h-[80vh] max-w-3xl overflow-hidden p-0">
                 <SheetDataArea
                   isLoadings={isLoading}
                   sheetId={sheetId}
-                  theme={theme}
                   isMobile={isMobile}
                 />
               </DialogContent>
             </Dialog>
           </>
         ) : (
-          <Box
-            sx={{
-              flex: 1,
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gridTemplateRows: "1fr",
-              overflow: "hidden",
-              minHeight: 0,
-            }}
-          >
-            <Box
-              sx={{
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 0,
-                borderRight: `1px solid ${theme.palette.divider}`,
-              }}
-            >
+          <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-1 overflow-hidden md:grid-cols-2">
+            <div className="border-border flex min-h-0 flex-col overflow-hidden border-r">
               <SheetChatArea
                 currentAgentType={specificAgent}
                 isLoading={isLoading}
-                theme={theme}
               />
-            </Box>
-            <Box
-              sx={{
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 0,
-              }}
-            >
+            </div>
+            <div className="flex min-h-0 flex-col overflow-hidden">
               <SheetDataArea
                 isLoadings={isLoading}
                 sheetId={sheetId}
-                theme={theme}
                 isMobile={isMobile}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
 export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success", // 'success', 'error', 'warning', 'info'
-  });
-
   const [
     registerUserForBetaList,
     { isLoading: registerUserProcessing, isError: registerUserError },
@@ -178,117 +95,57 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
       console.log(result, "result");
 
       // Success toast
-      setToast({
-        open: true,
-        message: "Successfully registered for beta! We'll be in touch soon.",
-        severity: "success",
+      toast.success("Successfully registered for beta!", {
+        description: "We'll be in touch soon.",
       });
 
       // Close the modal
       setShowModal(false);
     } catch (error) {
       // Error toast
-      setToast({
-        open: true,
-        message:
+      toast.error("Registration failed", {
+        description:
           error?.data?.message || "Registration failed. Please try again.",
-        severity: "error",
       });
     }
   };
 
-  const handleCloseToast = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setToast((prev) => ({ ...prev, open: false }));
-  };
-
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "#0D1F0F",
-          color: "white",
-          py: 1.5,
-          px: 2,
-          width: "100%",
-          maxWidth: "1000px",
-        }}
-      >
-        <Container maxWidth="xl">
-          <Stack
-            direction={isMobile ? "column" : "row"}
-            alignItems={isMobile ? "flex-start" : "center"}
-            justifyContent="space-between"
-            flexWrap={"wrap"}
-            gap={isMobile ? 1 : 2}
-            spacing={isMobile ? 2 : 1}
-            sx={{ width: "100%" }}
+      <div className="bg-secondary w-full max-w-[1000px] px-4 py-3">
+        <div className="mx-auto max-w-7xl">
+          <div
+            className={`flex w-full flex-wrap items-center justify-between gap-4 ${
+              isMobile ? "flex-col items-start" : "flex-row"
+            }`}
           >
             {/* Left side - Icon and text */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              spacing={1.5}
-              sx={{ flex: 1 }}
-            >
-              <CheckCircle
-                sx={{
-                  color: "#00AB55",
-                  fontSize: 20,
-                  flexShrink: 0,
-                }}
-              />
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  lineHeight: 1.4,
-                }}
-              >
+            <div className="flex flex-1 items-center gap-3">
+              <CheckCircle className="text-primary h-5 w-5 flex-shrink-0" />
+              <p className="text-foreground text-sm leading-tight font-medium">
                 Shothik task replay completed.
-              </Typography>
-            </Stack>
+              </p>
+            </div>
             {/* Right side - Action buttons */}
-            <Stack
-              direction="row"
-              spacing={1.5}
-              sx={{
-                flexShrink: 0,
-                width: isMobile ? "100%" : "auto",
-              }}
+            <div
+              className={`flex shrink-0 gap-3 ${isMobile ? "w-full" : "w-auto"}`}
             >
               <Button
                 data-umami-event="Modal: Join the waitlist"
-                variant="contained"
-                startIcon={<Person sx={{ fontSize: 18 }} />}
                 onClick={() => {
                   setShowModal(true);
                 }}
-                sx={{
-                  backgroundColor: "#00AB55",
-                  color: "white",
-                  textTransform: "none",
-                  borderRadius: "8px",
-                  px: 2,
-                  py: 0.75,
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  minHeight: "36px",
-                  flex: isMobile ? 1 : "none",
-                  "&:hover": {
-                    backgroundColor: "#008F47",
-                  },
-                }}
+                className={`bg-primary hover:bg-primary/90 text-primary-foreground min-h-9 rounded-lg px-4 py-2 text-sm font-medium ${
+                  isMobile ? "flex-1" : ""
+                }`}
               >
+                <User className="mr-2 h-4 w-4" />
                 Join the waitlist
               </Button>
-            </Stack>
-          </Stack>
-        </Container>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* email modal */}
       <EmailModal
@@ -298,21 +155,7 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
       />
 
       {/* Toast notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
+      <Toaster />
     </>
   );
 };

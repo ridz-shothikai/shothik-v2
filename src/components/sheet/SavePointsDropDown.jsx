@@ -1,30 +1,27 @@
-import React, { useState } from "react";
 import {
-  Box,
-  FormControl,
   Select,
-  MenuItem,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { History, CheckCircle, Error, Schedule } from "@mui/icons-material";
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { AlertCircle, CheckCircle, Clock, History } from "lucide-react";
+import { useState } from "react";
 
 const SavePointsDropdown = ({
   savePoints,
   activeSavePointId,
   onSavePointChange,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDarkMode = theme.palette.mode === "dark";
+  const isMobile = useIsMobile();
 
   const [selectedValue, setSelectedValue] = useState(
     activeSavePointId || "current",
   );
 
-  const handleChange = (event) => {
-    const value = event.target.value;
+  const handleChange = (value) => {
     setSelectedValue(value);
     if (value === "current") return;
 
@@ -37,13 +34,13 @@ const SavePointsDropdown = ({
   const getStatusIcon = (status) => {
     switch (status) {
       case "completed":
-        return <CheckCircle sx={{ fontSize: 18, color: "success.main" }} />;
+        return <CheckCircle className="text-primary h-[18px] w-[18px]" />;
       case "error":
-        return <Error sx={{ fontSize: 18, color: "error.main" }} />;
+        return <AlertCircle className="text-destructive h-[18px] w-[18px]" />;
       case "generating":
-        return <Schedule sx={{ fontSize: 18, color: "warning.main" }} />;
+        return <Clock className="text-primary h-[18px] w-[18px]" />;
       default:
-        return <History sx={{ fontSize: 18, color: "text.secondary" }} />;
+        return <History className="text-muted-foreground h-[18px] w-[18px]" />;
     }
   };
 
@@ -54,98 +51,58 @@ const SavePointsDropdown = ({
   };
 
   return (
-    <FormControl
-      size="small"
-      sx={{
-        minWidth: isMobile ? 160 : 200,
-        maxWidth: 240,
-        "& .MuiOutlinedInput-root": {
-          height: 36,
-          paddingRight: "8px !important",
-          backgroundColor: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-          borderColor: theme.palette.divider,
-        },
-        "& .MuiOutlinedInput-notchedOutline": {
-          borderColor: theme.palette.divider,
-        },
-        "& .MuiSelect-select": {
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          paddingY: "4px !important",
-          paddingX: "8px !important",
-        },
-      }}
-    >
-      <Select
-        value={selectedValue}
-        onChange={handleChange}
-        renderValue={(value) => {
-          const savePoint =
-            value === "current"
-              ? null
-              : savePoints.find((sp) => sp.id === value);
-          const status = savePoint?.generations.find(
-            (g) => g.id === savePoint.activeGenerationId,
-          )?.status;
-
-          return (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                overflow: "hidden",
-              }}
-            >
-              {getStatusIcon(value === "current" ? "completed" : status)}
-              <Typography
-                variant="body2"
-                noWrap
-                sx={{
-                  fontWeight: 500,
-                  flexShrink: 1,
-                  color: theme.palette.text.primary,
-                }}
-              >
-                {getDisplayText(value)}
-              </Typography>
-            </Box>
-          );
-        }}
+    <Select value={selectedValue} onValueChange={handleChange}>
+      <SelectTrigger
+        className={cn(
+          "bg-background text-foreground h-9 gap-2",
+          isMobile ? "min-w-[160px]" : "min-w-[200px]",
+          "max-w-[240px]",
+        )}
       >
-        <MenuItem value="current">
-          <Typography variant="body2" color="text.primary">
-            Current Data
-          </Typography>
-        </MenuItem>
+        <SelectValue>
+          {(() => {
+            const savePoint =
+              selectedValue === "current"
+                ? null
+                : savePoints.find((sp) => sp.id === selectedValue);
+            const status = savePoint?.generations.find(
+              (g) => g.id === savePoint.activeGenerationId,
+            )?.status;
+
+            return (
+              <div className="flex items-center gap-2 overflow-hidden">
+                {getStatusIcon(
+                  selectedValue === "current" ? "completed" : status,
+                )}
+                <span className="text-foreground flex-shrink truncate text-sm font-medium">
+                  {getDisplayText(selectedValue)}
+                </span>
+              </div>
+            );
+          })()}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="current">
+          <span className="text-foreground text-sm">Current Data</span>
+        </SelectItem>
 
         {savePoints.map((sp) => {
           const activeGen = sp.generations.find(
             (g) => g.id === sp.activeGenerationId,
           );
           return (
-            <MenuItem key={sp.id} value={sp.id}>
-              <Box sx={{ overflow: "hidden" }}>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    maxWidth: 180,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    color: theme.palette.text.primary,
-                  }}
-                >
+            <SelectItem key={sp.id} value={sp.id}>
+              <div className="overflow-hidden">
+                <span className="text-foreground block max-w-[180px] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
                   {sp.title}
-                </Typography>
-              </Box>
-            </MenuItem>
+                </span>
+              </div>
+            </SelectItem>
           );
         })}
-      </Select>
-    </FormControl>
+      </SelectContent>
+    </Select>
   );
 };
 

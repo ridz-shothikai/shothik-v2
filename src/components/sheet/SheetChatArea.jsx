@@ -1,15 +1,7 @@
-import PersonIcon from "@mui/icons-material/Person";
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Paper,
-  Typography,
-  useMediaQuery,
-  Button,
-  Tooltip,
-  Fade,
-} from "@mui/material";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,10 +19,6 @@ import InputArea from "../presentation/InputAreas";
 import MetadataDisplay from "./MetaDataDisplay";
 import { FooterCta } from "./SheetAgentPage";
 
-const USER_MESSAGE_COLOR = "#1976d2";
-const PRIMARY_GREEN = "#07B37A";
-
-
 // Updated MessageBubble component
 const MessageBubble = ({
   message,
@@ -38,176 +26,59 @@ const MessageBubble = ({
   timestamp,
   type = "info",
   metadata,
-  theme,
 }) => (
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: isUser ? "flex-end" : "flex-start",
-      mb: 3, // Consistent margin-bottom with ChatArea
-    }}
-  >
-    <Box sx={{ maxWidth: isUser ? "80%" : "90%" }}>
+  <div className={cn("mb-6 flex", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("max-w-[80%]", !isUser && "max-w-[90%]")}>
       {isUser ? (
-        // User message styling (aligned with ChatArea)
+        // User message styling
         <>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mb: 1,
-              justifyContent: "flex-end",
-              opacity: 0.7,
-            }}
-          >
-            <Typography
-              variant="caption"
-              color={theme.palette.text.secondary}
-              sx={{ fontSize: "0.7rem" }}
-            >
-              {/* {new Date(timestamp).toLocaleTimeString()} */}
+          <div className="mb-2 flex items-center justify-end gap-2 opacity-70">
+            <span className="text-muted-foreground text-[0.7rem]">
               {new Date(timestamp).toLocaleTimeString(undefined, {
                 hour: "numeric",
                 minute: "numeric",
                 hour12: true,
               })}
-            </Typography>
-            <Typography
-              variant="caption"
-              color={theme.palette.text.secondary}
-              sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-            >
+            </span>
+            <span className="text-muted-foreground text-xs font-medium">
               You
-            </Typography>
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                bgcolor: USER_MESSAGE_COLOR,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
-            >
-              <PersonIcon sx={{ fontSize: 12, color: "white" }} />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              bgcolor: USER_MESSAGE_COLOR,
-              color: "white",
-              borderRadius: "18px 18px 4px 18px",
-              px: 2,
-              py: 1.5,
-              maxWidth: "100%",
-              wordBreak: "break-word",
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                lineHeight: 1.5,
-                fontSize: "0.95rem",
-              }}
-            >
-              {message}
-            </Typography>
-          </Box>
+            </span>
+            <div className="bg-primary flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
+              <User className="text-primary-foreground h-3 w-3" />
+            </div>
+          </div>
+          <div className="bg-primary text-primary-foreground max-w-full rounded-[18px] rounded-tr-[4px] px-4 py-3 break-words">
+            <p className="text-[0.95rem] leading-normal">{message}</p>
+          </div>
         </>
       ) : (
-        // AI message styling (updated to match ChatArea)
-        <Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mb: 1.5,
-              opacity: 0.7,
-            }}
-          >
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                bgcolor: PRIMARY_GREEN,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "8px",
-                color: "white",
-                fontWeight: "bold",
-                flexShrink: 0,
-              }}
-            >
+        // AI message styling
+        <div>
+          <div className="mb-3 flex items-center gap-2 opacity-70">
+            <div className="bg-primary text-primary-foreground flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-[8px] font-bold">
               AI
-            </Box>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-            >
+            </div>
+            <span className="text-muted-foreground text-xs font-medium">
               Sheet AI
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.disabled"
-              sx={{ fontSize: "0.7rem" }}
-            >
-              {/* {new Date(timestamp).toLocaleTimeString()} */}
+            </span>
+            <span className="text-muted-foreground text-[0.7rem]">
               {new Date(timestamp).toLocaleTimeString(undefined, {
                 hour: "numeric",
                 minute: "numeric",
                 hour12: true,
               })}
-            </Typography>
-          </Box>
-          <Paper
-            elevation={1}
-            sx={{
-              boxShadow: "none",
-              bgcolor:
-                // theme.palette.mode === "dark"
-                theme.palette.background.default,
-              // : "#FAFAFA",
-              // p: 2,
-              // bgcolor:
-              //   type === "error"
-              //     ? "error.light"
-              //     : type === "success"
-              //     ? "success.light"
-              //     : "grey.100",
-              // color:
-              //   type === "error"
-              //     ? "error.contrastText"
-              //     : type === "success"
-              //     ? "success.contrastText"
-              //     : "text.primary",
-              // borderRadius: 2,
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-                lineHeight: 1.6,
-                fontSize: "0.95rem",
-                color: theme.palette.mode === "dark" ? "white" : "text.primary",
-              }}
-            >
+            </span>
+          </div>
+          <div className="bg-background">
+            <p className="text-foreground text-[0.95rem] leading-relaxed break-words whitespace-pre-wrap">
               {message}
-            </Typography>
+            </p>
             {metadata && <MetadataDisplay metadata={metadata} />}
-          </Paper>
-        </Box>
+          </div>
+        </div>
       )}
-    </Box>
-  </Box>
+    </div>
+  </div>
 );
 
 const getStepMessage = (step, data) => {
@@ -238,8 +109,6 @@ const getStepMessage = (step, data) => {
 // Main SheetChatArea component
 export default function SheetChatArea({
   currentAgentType,
-  theme,
-  // isMobile,
   // these are for preview panel on mobile devices
   handlePreviewOpen,
 }) {
@@ -261,13 +130,13 @@ export default function SheetChatArea({
   const [chatHistory, setChatHistory] = useState([]);
   // const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [shouldPoll, setShouldPoll] = useState(false);
-  const [toast, setToast] = useState({
+  const [toastState, setToastState] = useState({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useIsMobile();
 
   const [showModal, setShowModal] = useState(false);
   const [simulationCompleted, setSimulationCompleted] = useState(false);
@@ -735,7 +604,7 @@ export default function SheetChatArea({
       setMessages((prev) => prev.filter((msg) => msg.id !== userMessageId));
 
       // Show toast notification
-      setToast({
+      setToastState({
         open: true,
         message:
           "Your message couldn't be processed. Please try rephrasing your request.",
@@ -860,7 +729,7 @@ export default function SheetChatArea({
               );
 
               // Show meaningful toast notification
-              setToast({
+              setToastState({
                 open: true,
                 message:
                   data.data.error.message ||
@@ -993,7 +862,7 @@ export default function SheetChatArea({
                 dispatch(setSheetStatus("completed"));
 
                 // Show success toast
-                setToast({
+                setToastState({
                   open: true,
                   message: "Spreadsheet generated successfully!",
                   severity: "success",
@@ -1071,7 +940,7 @@ export default function SheetChatArea({
               dispatch(setSheetStatus("completed"));
 
               // Show success toast
-              setToast({
+              setToastState({
                 open: true,
                 message: "Spreadsheet generated successfully!",
                 severity: "success",
@@ -1225,7 +1094,7 @@ export default function SheetChatArea({
       ]);
 
       // Show toast notification
-      setToast({
+      setToastState({
         open: true,
         message: errorMessage,
         severity: errorType,
@@ -1264,27 +1133,27 @@ export default function SheetChatArea({
   // Handle new chat creation - redirect to agents page
   const handleNewChat = () => {
     console.log("New Chat button clicked - starting redirect process");
-    
+
     // Clear all current state
     setMessages([]);
     setError(null);
     setShowNewChatWarning(false);
-    
+
     // Reset Redux state
     dispatch(setSheetData(null));
     dispatch(setSheetStatus("idle"));
     dispatch(setSheetTitle("Ready to Generate"));
     dispatch(setActiveSheetIdForPolling(null));
-    
+
     // Clear session storage
     sessionStorage.removeItem("activeChatId");
     sessionStorage.removeItem("initialSheetPrompt");
-    
+
     // Show success message first
     enqueueSnackbar("Redirecting to AI Sheets for a fresh start!", {
       variant: "success",
     });
-    
+
     // Navigate to agents page with AI Sheets tab selected
     try {
       router.push("/agents?tab=sheets");
@@ -1296,100 +1165,81 @@ export default function SheetChatArea({
   };
 
   useEffect(() => {
-    if (toast.open) {
+    if (toastState.open) {
       const timer = setTimeout(() => {
-        setToast({ ...toast, open: false });
+        setToastState({ ...toastState, open: false });
       }, 6000); // Hide after 6 seconds
 
       return () => clearTimeout(timer);
     }
-  }, [toast.open]);
+  }, [toastState.open]);
 
   if (!isInitialized && error && !isSimulationMode) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">
-          {error}
-          <Box sx={{ mt: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              Make sure you are logged in.
-            </Typography>
-          </Box>
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertDescription>
+            {error}
+            <div className="mt-2">
+              <span className="text-muted-foreground text-xs">
+                Make sure you are logged in.
+              </span>
+            </div>
+          </AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
   if (!isInitialized || isLoadingHistory) {
     return (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-        <CircularProgress size={24} sx={{ mb: 2 }} />
-        <Typography variant="body2" color="text.secondary">
+      <div className="p-6 text-center">
+        <Loader2 className="text-primary mx-auto mb-4 h-6 w-6 animate-spin" />
+        <p className="text-muted-foreground text-sm">
           {isLoadingHistory
             ? "Loading chat history..."
             : isSimulationMode
               ? "Initializing Simulation..."
               : "Initializing Sheet AI..."}
-        </Typography>
-      </Box>
+        </p>
+      </div>
     );
   }
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          borderRight: "1px solid #e0e0e0",
-          bgcolor: theme.palette.background.default,
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
+      <div className="border-border bg-background relative flex h-full flex-col overflow-hidden border-r">
         {error && (
-          <Box sx={{ p: 2 }}>
-            <Alert severity="error" onClose={clearError}>
-              {error}
-            </Alert>
-          </Box>
-        )}
-        <Box
-          sx={{
-            flex: 1,
-            overflowY: "auto",
-            minHeight: 0,
-            scrollBehavior: "smooth",
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-track": { background: "transparent" },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#c1c1c1",
-              borderRadius: "3px",
-              "&:hover": { background: "#a8a8a8" },
-            },
-            scrollbarWidth: "thin",
-            scrollbarColor: "#c1c1c1 transparent",
-          }}
-        >
-          <Box sx={{ p: 3, position: "relative" }}>
-            {messages.length === 0 && !isLoadingHistory ? (
-              <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  Welcome to Sheet Generator
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Describe what kind of spreadsheet you&apos;d like to create.
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1, display: "block" }}
+          <div className="p-4">
+            <Alert variant="destructive" className="relative">
+              <AlertDescription>
+                {error}
+                <button
+                  onClick={clearError}
+                  className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
+                  aria-label="Close"
                 >
+                  ×
+                </button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+        <div className="scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto scroll-smooth">
+          <div className="relative p-6">
+            {messages.length === 0 && !isLoadingHistory ? (
+              <div className="mt-8 text-center">
+                <h2 className="text-muted-foreground mb-2 text-xl font-semibold">
+                  Welcome to Sheet Generator
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  Describe what kind of spreadsheet you&apos;d like to create.
+                </p>
+                <span className="text-muted-foreground mt-2 block text-xs">
                   Example: &quot;Create a budget tracker for personal
                   expenses&quot; or &quot;Generate a student grade sheet&quot;
-                </Typography>
-              </Box>
+                </span>
+              </div>
             ) : (
               <>
                 {messages.map((message) => (
@@ -1400,7 +1250,6 @@ export default function SheetChatArea({
                     timestamp={message.timestamp}
                     type={message.type}
                     metadata={message.metadata}
-                    theme={theme}
                   />
                 ))}
                 {(isLoading ||
@@ -1419,69 +1268,30 @@ export default function SheetChatArea({
               </>
             )}
             <div ref={messagesEndRef} />
-          </Box>
-        </Box>
+          </div>
+        </div>
         {/* for simulation only */}
-        {isSimulationMode && (
-          <Box
-            sx={{
-              pt: "20px",
-            }}
-          ></Box>
-        )}
+        {isSimulationMode && <div className="pt-5"></div>}
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
+        <div className="flex w-full flex-col items-center justify-center">
           {isMobile && (
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                alignItems: "start",
-                gap: "8px",
-                p: 2,
-                border: `1px solid ${theme.palette.divider}`,
-                cursor: "pointer",
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.action.hover
-                    : "#e6f7ee",
-              }}
+            <div
+              className="border-border bg-accent flex w-full cursor-pointer items-start gap-2 border p-4"
               onClick={handlePreviewOpen}
             >
-              <CustomTableChartIcon
-                sx={{ color: theme.palette.primary.main, fontSize: 40 }}
-              />
-              <Box>
-                <Typography variant="h6" sx={{ ml: 0.5 }}>
+              <CustomTableChartIcon className="text-primary text-[40px]" />
+              <div>
+                <h3 className="ml-1 text-lg font-semibold">
                   Preview Sheet Data
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ ml: 0.5 }}
-                >
+                </h3>
+                <p className="text-muted-foreground ml-1 text-sm">
                   Click to open
-                </Typography>
-              </Box>
-            </Box>
+                </p>
+              </div>
+            </div>
           )}
           {!isSimulationMode && (
-            <Box
-              sx={{
-                borderTop: "1px solid #e0e0e0",
-                bgcolor: "white",
-                flexShrink: 0,
-                width: "100%",
-              }}
-            >
+            <div className="border-border bg-background w-full flex-shrink-0 border-t">
               <InputArea
                 currentAgentType={currentAgentType}
                 inputValue={inputValue}
@@ -1505,37 +1315,32 @@ export default function SheetChatArea({
                         : "Describe the spreadsheet you want to create..."
                 }
               />
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
         {/* for simulation only */}
-      </Box>
+      </div>
 
-      {toast.open && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 20,
-            right: 20,
-            zIndex: 9999,
-            maxWidth: "400px",
-            minWidth: "300px",
-          }}
-        >
+      {toastState.open && (
+        <div className="fixed top-5 right-5 z-[9999] max-w-[400px] min-w-[300px]">
           <Alert
-            severity={toast.severity}
-            onClose={() => setToast({ ...toast, open: false })}
-            sx={{
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
-              borderRadius: "8px",
-              "& .MuiAlert-message": {
-                fontSize: "0.875rem",
-              },
-            }}
+            variant={
+              toastState.severity === "error" ? "destructive" : "default"
+            }
+            className="rounded-lg shadow-lg"
           >
-            {toast.message}
+            <AlertDescription className="text-sm">
+              {toastState.message}
+              <button
+                onClick={() => setToastState({ ...toastState, open: false })}
+                className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </AlertDescription>
           </Alert>
-        </Box>
+        </div>
       )}
 
       {/* footer cta */}
@@ -1551,16 +1356,19 @@ export default function SheetChatArea({
   );
 }
 
-const CustomTableChartIcon = ({ sx, ...props }) => (
+const CustomTableChartIcon = ({ className, ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     height="24"
     viewBox="0 0 24 24"
     width="24"
+    className={className}
     {...props}
-    style={{ ...sx }}
   >
     <path d="M0 0h24v24H0z" fill="none" />
-    <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm9 0h-5v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v2h4v-2zm0-4h-4v2h4V9zm0-4h-4v2h4V5z" />
+    <path
+      d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm9 0h-5v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v2h4v-2zm0-4h-4v2h4V9zm0-4h-4v2h4V5z"
+      fill="currentColor"
+    />
   </svg>
 );

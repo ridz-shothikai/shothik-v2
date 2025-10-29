@@ -1,58 +1,63 @@
-import React, { useState, useMemo, useEffect, forwardRef, useCallback } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  Typography,
-  CircularProgress,
-  Alert,
-  Paper,
-  Chip,
-  IconButton,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import {
   Tooltip,
-  LinearProgress,
-  Button,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import {
-  Refresh,
-  Download,
-  Error,
+  AlertCircle,
   CheckCircle,
-  Info,
-  PlayArrow,
-  ArrowDropDown,
-  TableChart,
-  Description,
+  ChevronDown,
+  Download,
   Edit,
-  OpenInNew,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Play,
+  RefreshCw,
   Share,
-} from "@mui/icons-material";
-import { DataGrid, useRowSelection } from "react-data-grid";
+  Table,
+} from "lucide-react";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
+import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
+import * as XLSX from "xlsx";
+import { useSaveEditedSheetDataMutation } from "../../redux/api/sheet/sheetApi";
 import {
   resetSheetState,
   selectActiveSavePoint,
   selectSheet,
   selectSheetStatus,
+  setSheetData,
   setSheetStatus,
   switchToGeneration,
   switchToSavePoint,
-  setSheetData,
 } from "../../redux/slice/sheetSlice";
-import { useSaveEditedSheetDataMutation } from "../../redux/api/sheet/sheetApi";
 import ShareSheetModal from "../share/ShareSheetModal";
 import SavePointsDropdown from "./SavePointsDropDown";
-import * as XLSX from "xlsx";
 
 // Editable Cell Component
-const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) => {
-  const [editValue, setEditValue] = useState(value || '');
+const EditableCell = ({
+  value,
+  onValueChange,
+  row,
+  column,
+  isEditing,
+  onEdit,
+}) => {
+  const [editValue, setEditValue] = useState(value || "");
   const [isLocalEditing, setIsLocalEditing] = useState(false);
 
   const handleSave = () => {
@@ -61,15 +66,15 @@ const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) 
   };
 
   const handleCancel = () => {
-    setEditValue(value || '');
+    setEditValue(value || "");
     setIsLocalEditing(false);
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       e.preventDefault();
       handleCancel();
     }
@@ -77,78 +82,43 @@ const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) 
 
   const handleDoubleClick = () => {
     setIsLocalEditing(true);
-    setEditValue(value || '');
+    setEditValue(value || "");
   };
 
   useEffect(() => {
-    setEditValue(value || '');
+    setEditValue(value || "");
   }, [value]);
 
   if (isLocalEditing || isEditing) {
     return (
-      <TextField
+      <Input
         value={editValue}
         onChange={(e) => setEditValue(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         autoFocus
-        size="small"
-        variant="outlined"
-        sx={{
-          width: '100%',
-          '& .MuiOutlinedInput-root': {
-            padding: '4px 8px',
-            fontSize: '14px',
-            '& fieldset': {
-              borderColor: 'primary.main',
-            },
-          },
-        }}
+        className="border-primary h-8 w-full px-2 text-sm"
       />
     );
   }
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '4px 8px',
-        cursor: 'pointer',
-        '&:hover': {
-          backgroundColor: 'action.hover',
-        },
-      }}
+    <div
+      className="hover:bg-accent flex h-full w-full cursor-pointer items-center px-2 py-1"
       onDoubleClick={handleDoubleClick}
     >
-      <Typography
-        variant="body2"
-        sx={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          width: '100%',
-        }}
-      >
-        {value || '—'}
-      </Typography>
-      <IconButton
-        size="small"
-        sx={{
-          opacity: 0,
-          ml: 1,
-          transition: 'opacity 0.2s',
-          '&:hover': {
-            opacity: 1,
-          },
-        }}
+      <p className="w-full overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+        {value || "—"}
+      </p>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="ml-2 h-6 w-6 opacity-0 transition-opacity hover:opacity-100"
         onClick={handleDoubleClick}
       >
-        <Edit sx={{ fontSize: 14 }} />
-      </IconButton>
-    </Box>
+        <Edit className="h-3.5 w-3.5" />
+      </Button>
+    </div>
   );
 };
 
@@ -160,32 +130,32 @@ const StatusChip = ({ status, title, rowCount = 0 }) => {
     switch (status) {
       case "generating":
         return {
-          color: "warning",
-          icon: <CircularProgress size={16} />,
+          variant: "secondary",
+          icon: <Loader2 className="h-4 w-4 animate-spin" />,
           label: "Generating",
         };
       case "completed":
         return {
-          color: "success",
-          icon: <CheckCircle />,
+          variant: "default",
+          icon: <CheckCircle className="h-4 w-4" />,
           label: `Complete (${rowCount} rows)`,
         };
       case "error":
         return {
-          color: "error",
-          icon: <Error />,
+          variant: "destructive",
+          icon: <AlertCircle className="h-4 w-4" />,
           label: "Error",
         };
       case "cancelled":
         return {
-          color: "default",
-          icon: <Error />,
+          variant: "outline",
+          icon: <AlertCircle className="h-4 w-4" />,
           label: "Cancelled",
         };
       default:
         return {
-          color: "default",
-          icon: <PlayArrow />,
+          variant: "outline",
+          icon: <Play className="h-4 w-4" />,
           label: "Ready",
         };
     }
@@ -194,28 +164,20 @@ const StatusChip = ({ status, title, rowCount = 0 }) => {
   const statusProps = getStatusProps();
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <Chip
-        {...statusProps}
-        size="small"
-        variant="outlined"
-        sx={{ fontWeight: 500 }}
-      />
+    <div className="flex items-center gap-2">
+      <Badge
+        variant={statusProps.variant}
+        className="flex items-center gap-1 font-medium"
+      >
+        {statusProps.icon}
+        {statusProps.label}
+      </Badge>
       {title && (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{
-            maxWidth: 300,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
+        <p className="text-muted-foreground max-w-[300px] overflow-hidden text-sm text-ellipsis whitespace-nowrap">
           {title}
-        </Typography>
+        </p>
       )}
-    </Box>
+    </div>
   );
 };
 
@@ -235,14 +197,13 @@ const CustomRow = forwardRef(function CustomRow(props, ref) {
   return (
     <div
       ref={ref}
-      className={`${className} ${isRowSelected ? "rdg-row-selected" : ""}`}
-      style={{
-        ...style,
-        position: "relative",
-        backgroundColor: isRowSelected ? "rgba(25, 118, 210, 0.08)" : undefined,
-        outline: isRowSelected ? "2px solid #1976d2" : undefined,
-        outlineOffset: "-2px",
-      }}
+      className={cn(
+        className,
+        isRowSelected && "rdg-row-selected",
+        "relative",
+        isRowSelected && "bg-primary/5 ring-primary ring-2 ring-inset",
+      )}
+      style={style}
       onClick={onRowClick}
       {...rest}
     >
@@ -254,12 +215,12 @@ const CustomRow = forwardRef(function CustomRow(props, ref) {
         return (
           <div
             key={key}
-            className={`rdg-cell ${
-              cellIdx === selectedCellIdx ? "rdg-cell-selected" : ""
-            }`}
+            className={cn(
+              "rdg-cell relative",
+              cellIdx === selectedCellIdx && "rdg-cell-selected",
+            )}
             style={{
               gridColumnStart: cellIdx + 1,
-              position: "relative",
             }}
           >
             {renderCell ? renderCell({ row, column }) : value}
@@ -270,25 +231,12 @@ const CustomRow = forwardRef(function CustomRow(props, ref) {
       {/* Action button overlay for selected rows */}
       {isRowSelected && (
         <Button
-          variant="contained"
-          size="small"
+          size="sm"
           onClick={(e) => {
             e.stopPropagation();
             alert(`Action clicked for row ${row.id}`);
           }}
-          sx={{
-            position: "absolute",
-            top: "50%",
-            right: 8,
-            transform: "translateY(-50%)",
-            zIndex: 1001,
-            minWidth: "auto",
-            px: 1,
-            py: 0.5,
-            fontSize: "0.75rem",
-            boxShadow: 2,
-            pointerEvents: "auto",
-          }}
+          className="pointer-events-auto absolute top-1/2 right-2 z-[1001] -translate-y-1/2 px-2 py-1 text-xs shadow-md"
         >
           Action
         </Button>
@@ -362,8 +310,6 @@ export default function SheetDataArea() {
   const [editingCell, setEditingCell] = useState(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
-  const theme = useTheme();
-
   // REDUX
   const sheetState = useSelector(selectSheet);
   const sheetStatus = useSelector(selectSheetStatus);
@@ -374,91 +320,114 @@ export default function SheetDataArea() {
   const dispatch = useDispatch();
 
   // API mutation for saving edited sheet data
-  const [saveEditedSheetData, { isLoading: isSavingData }] = useSaveEditedSheetDataMutation();
+  const [saveEditedSheetData, { isLoading: isSavingData }] =
+    useSaveEditedSheetDataMutation();
 
   // Handle cell value changes
-  const handleCellValueChange = useCallback(async (rowObj, column, newValue) => {
-    // Try multiple approaches to find the row
-    let rowIndex = -1;
-    
-    // First try: Find by ID
-    rowIndex = sheetState.sheet.findIndex(r => r.id === rowObj.id);
-    
-    // Second try: Find by matching all properties (fallback)
-    if (rowIndex === -1) {
-      rowIndex = sheetState.sheet.findIndex(r => {
-        // Compare all properties except the one being edited
-        const keys = Object.keys(r).filter(key => key !== column);
-        return keys.every(key => r[key] === rowObj[key]);
-      });
-    }
-    
-    // Third try: Find by position if we have an index in the rowObj
-    if (rowIndex === -1 && rowObj._index !== undefined) {
-      rowIndex = rowObj._index;
-    }
-    
-    if (rowIndex === -1) {
-      console.error("Row not found in sheet data");
-      return;
-    }
+  const handleCellValueChange = useCallback(
+    async (rowObj, column, newValue) => {
+      // Try multiple approaches to find the row
+      let rowIndex = -1;
 
-    const oldValue = sheetState.sheet[rowIndex]?.[column];
-    
-    const updatedRows = sheetState.sheet.map((r, index) => {
-      if (index === rowIndex) {
-        return { ...r, [column]: newValue };
+      // First try: Find by ID
+      rowIndex = sheetState.sheet.findIndex((r) => r.id === rowObj.id);
+
+      // Second try: Find by matching all properties (fallback)
+      if (rowIndex === -1) {
+        rowIndex = sheetState.sheet.findIndex((r) => {
+          // Compare all properties except the one being edited
+          const keys = Object.keys(r).filter((key) => key !== column);
+          return keys.every((key) => r[key] === rowObj[key]);
+        });
       }
-      return r;
-    });
-    
-    // Update Redux store immediately for UI responsiveness
-    dispatch(setSheetData(updatedRows));
-    setEditingCell(null);
 
-    // Save to API in the background (optional - UI updates immediately)
-    try {
-      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
-      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
-        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
-        const conversationId = currentSavePoint.id.replace('savepoint-', '');
-        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
+      // Third try: Find by position if we have an index in the rowObj
+      if (rowIndex === -1 && rowObj._index !== undefined) {
+        rowIndex = rowObj._index;
+      }
 
-        if (conversationId && chatId) {
-          // Get column order from the current sheet data
-          const columnOrder = Object.keys(sheetState.sheet[0] || {});
-          
-          await saveEditedSheetData({
-            chatId,
-            conversationId,
-            sheetData: updatedRows,
-            columnOrder,
-            rowOrder: updatedRows.map(row => row.id),
-            metadata: {
-              ...activeGeneration?.metadata,
-              lastEdited: new Date().toISOString(),
-              editedBy: 'user',
-              editType: 'cell_edit',
-              editedCell: { row: rowIndex, column, oldValue, newValue }
-            },
-            timestamp: new Date().toISOString()
-          }).unwrap();
-          
-          console.log("Sheet data saved successfully to API");
+      if (rowIndex === -1) {
+        console.error("Row not found in sheet data");
+        return;
+      }
+
+      const oldValue = sheetState.sheet[rowIndex]?.[column];
+
+      const updatedRows = sheetState.sheet.map((r, index) => {
+        if (index === rowIndex) {
+          return { ...r, [column]: newValue };
         }
+        return r;
+      });
+
+      // Update Redux store immediately for UI responsiveness
+      dispatch(setSheetData(updatedRows));
+      setEditingCell(null);
+
+      // Save to API in the background (optional - UI updates immediately)
+      try {
+        const currentSavePoint = sheetState.savePoints?.find(
+          (sp) => sp.id === sheetState.activeSavePointId,
+        );
+        if (currentSavePoint && currentSavePoint.generations?.length > 0) {
+          const activeGeneration = currentSavePoint.generations.find(
+            (g) => g.id === currentSavePoint.activeGenerationId,
+          );
+          const conversationId = currentSavePoint.id.replace("savepoint-", "");
+          const chatId =
+            sessionStorage.getItem("activeChatId") ||
+            window.location.search.match(/id=([^&]+)/)?.[1];
+
+          if (conversationId && chatId) {
+            // Get column order from the current sheet data
+            const columnOrder = Object.keys(sheetState.sheet[0] || {});
+
+            await saveEditedSheetData({
+              chatId,
+              conversationId,
+              sheetData: updatedRows,
+              columnOrder,
+              rowOrder: updatedRows.map((row) => row.id),
+              metadata: {
+                ...activeGeneration?.metadata,
+                lastEdited: new Date().toISOString(),
+                editedBy: "user",
+                editType: "cell_edit",
+                editedCell: { row: rowIndex, column, oldValue, newValue },
+              },
+              timestamp: new Date().toISOString(),
+            }).unwrap();
+
+            console.log("Sheet data saved successfully to API");
+          }
+        }
+      } catch (error) {
+        console.warn(
+          "API endpoint not available yet - changes saved locally only:",
+          error,
+        );
+        // The UI has already been updated, so the user experience is not affected
+        // This is just a warning that the backend API endpoint needs to be implemented
       }
-    } catch (error) {
-      console.warn("API endpoint not available yet - changes saved locally only:", error);
-      // The UI has already been updated, so the user experience is not affected
-      // This is just a warning that the backend API endpoint needs to be implemented
-    }
-  }, [sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData]);
+    },
+    [
+      sheetState.sheet,
+      sheetState.savePoints,
+      sheetState.activeSavePointId,
+      dispatch,
+      saveEditedSheetData,
+    ],
+  );
 
   // Removed reorder functions - no longer needed
 
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
-    return processSheetData(sheetState.sheet, handleCellValueChange, editingCell);
+    return processSheetData(
+      sheetState.sheet,
+      handleCellValueChange,
+      editingCell,
+    );
   }, [sheetState.sheet, handleCellValueChange, editingCell]);
 
   // Check if we have data
@@ -597,11 +566,11 @@ export default function SheetDataArea() {
   // Handle View in New Window
   const handleViewInNewWindow = () => {
     if (!hasData) return;
-    
+
     // Get current sheet data
     const exportData = prepareExportData();
     if (!exportData) return;
-    
+
     // Create HTML content for the new window
     const htmlContent = `
       <!DOCTYPE html>
@@ -609,7 +578,7 @@ export default function SheetDataArea() {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Generated Sheet - ${currentSavePoint?.title || 'Sheet Data'}</title>
+        <title>Generated Sheet - ${currentSavePoint?.title || "Sheet Data"}</title>
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -711,7 +680,7 @@ export default function SheetDataArea() {
       <body>
         <div class="container">
           <div class="header">
-            <h1>${currentSavePoint?.title || 'Generated Sheet Data'}</h1>
+            <h1>${currentSavePoint?.title || "Generated Sheet Data"}</h1>
             <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
           </div>
           
@@ -734,19 +703,21 @@ export default function SheetDataArea() {
             <table>
               <thead>
                 <tr>
-                  ${exportData.headers.map(header => 
-                    `<th>${header}</th>`
-                  ).join('')}
+                  ${exportData.headers
+                    .map((header) => `<th>${header}</th>`)
+                    .join("")}
                 </tr>
               </thead>
               <tbody>
-                ${exportData.dataRows.map(row => `
+                ${exportData.dataRows
+                  .map(
+                    (row) => `
                   <tr>
-                    ${row.map(value => 
-                      `<td>${value || '—'}</td>`
-                    ).join('')}
+                    ${row.map((value) => `<td>${value || "—"}</td>`).join("")}
                   </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -758,21 +729,27 @@ export default function SheetDataArea() {
       </body>
       </html>
     `;
-    
+
     // Open new window with the HTML content
-    const newWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-    
+    const newWindow = window.open(
+      "",
+      "_blank",
+      "width=1200,height=800,scrollbars=yes,resizable=yes",
+    );
+
     if (newWindow) {
       newWindow.document.write(htmlContent);
       newWindow.document.close();
-      
+
       // Focus the new window
       newWindow.focus();
-      
+
       console.log("Opened sheet data in new window");
     } else {
       // Fallback if popup is blocked
-      alert("Please allow popups for this site to view the sheet in a new window.");
+      alert(
+        "Please allow popups for this site to view the sheet in a new window.",
+      );
     }
   };
 
@@ -822,15 +799,14 @@ export default function SheetDataArea() {
       enableVirtualization: rows.length > 100,
       rowHeight: 40,
       headerRowHeight: 45,
-      className: theme.palette.mode === "dark" ? "rdg-dark" : "rdg-light",
+      className: "rdg-light",
       style: {
         height: "100%",
-        border: "1px solid",
-        borderColor: theme.palette.divider,
+        border: "1px solid hsl(var(--border))",
         borderRadius: "4px",
         fontSize: "14px",
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.primary,
+        backgroundColor: "hsl(var(--background))",
+        color: "hsl(var(--foreground))",
       },
       rowKeyGetter: (row) => row.id,
       defaultSortColumns: [],
@@ -845,85 +821,47 @@ export default function SheetDataArea() {
         Row: CustomRow,
       },
     }),
-    [columns, rows, selectedRows, theme.palette],
+    [columns, rows, selectedRows],
   );
 
   // Render generating state
   if (sheetStatus === "generating") {
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          p: 3,
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          Generating Your Sheet
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+        <h2 className="mb-2 text-xl font-semibold">Generating Your Sheet</h2>
+        <p className="text-muted-foreground mb-6 text-sm">
           Please wait while we process your request...
-        </Typography>
-        <LinearProgress sx={{ width: "100%", maxWidth: 400 }} />
-      </Box>
+        </p>
+        <Progress value={undefined} className="w-full max-w-md" />
+      </div>
     );
   }
 
   // Render error state
   if (sheetStatus === "error") {
     return (
-      <Box
-        sx={{
-          p: 3,
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Paper sx={{ p: 4, textAlign: "center", maxWidth: 400 }}>
-          <Error sx={{ fontSize: 48, color: "error.main", mb: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            Generation Failed
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      <div className="flex h-full items-center justify-center p-6">
+        <div className="border-border bg-background max-w-md rounded-lg border p-8 text-center shadow-md">
+          <AlertCircle className="text-destructive mx-auto mb-4 h-12 w-12" />
+          <h2 className="mb-2 text-xl font-semibold">Generation Failed</h2>
+          <p className="text-muted-foreground mb-6 text-sm">
             Something went wrong while generating your sheet. Please try again.
-          </Typography>
-          <IconButton onClick={handleRefresh} color="primary">
-            <Refresh />
-          </IconButton>
-        </Paper>
-      </Box>
+          </p>
+          <Button onClick={handleRefresh} variant="outline">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </div>
+      </div>
     );
   }
 
   // Render data view
   return (
-    <Box
-      sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        p: 2,
-      }}
-    >
+    <div className="flex h-full flex-col overflow-hidden p-4">
       {/* Header */}
-      <Box
-        sx={{
-          mb: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-1 items-center gap-4">
           {sheetState.savePoints?.length > 0 &&
             sheetState.activeSavePointId && (
               <SavePointsDropdown
@@ -933,238 +871,166 @@ export default function SheetDataArea() {
                   dispatch(switchToSavePoint({ savePointId: savePoint.id }));
                 }}
                 currentSheetData={sheetState.sheet}
-                theme={theme}
               />
             )}
-        </Box>
+        </div>
 
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <div className="flex items-center gap-2">
           {/* Edit Mode Toggle */}
-          <Tooltip title="Toggle edit mode - Double-click cells to edit">
-            <Button
-              variant="outlined"
-              startIcon={<Edit />}
-              size="small"
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                borderWidth: 2,
-                "&:hover": {
-                  borderWidth: 2,
-                  transform: "translateY(-1px)",
-                  boxShadow: 2,
-                },
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              Edit Mode
-            </Button>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg border-2 px-4 py-2 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Mode
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Toggle edit mode - Double-click cells to edit</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Removed reorder button - no longer needed */}
 
           {/* View in New Window Button */}
-          <Tooltip title="View generated sheet in new window">
-            <span>
-              <Button
-                variant="outlined"
-                startIcon={<OpenInNew />}
-                onClick={handleViewInNewWindow}
-                disabled={!hasData}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  px: { xs: 1, sm: 2 },
-                  py: 1,
-                  borderWidth: 2,
-                  minWidth: { xs: 44, sm: "auto" },
-                  mr: 1,
-                  "& .MuiButton-startIcon": {
-                    marginRight: { xs: -0.5, sm: 1 },
-                  },
-                  "&:hover": {
-                    borderWidth: 2,
-                    transform: "translateY(-1px)",
-                    boxShadow: 2,
-                  },
-                  transition: "all 0.2s ease-in-out",
-                }}
-              >
-                <Box
-                  component="span"
-                  sx={{ display: { xs: "none", sm: "inline" } }}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleViewInNewWindow}
+                  disabled={!hasData}
+                  className="rounded-lg border-2 px-2 transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-4"
                 >
-                  View in New Window
-                </Box>
-              </Button>
-            </span>
-          </Tooltip>
+                  <ExternalLink className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">View in New Window</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View generated sheet in new window</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Export Button with Dropdown */}
-          <Tooltip title="Export data">
-            <span>
-              <Button
-                variant="outlined"
-                startIcon={<Download />}
-                endIcon={<ArrowDropDown />}
-                onClick={handleExportMenuOpen}
-                disabled={!hasData}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  px: { xs: 1, sm: 2 },
-                  py: 1,
-                  borderWidth: 2,
-                  minWidth: { xs: 44, sm: "auto" },
-                  "& .MuiButton-startIcon": {
-                    marginRight: { xs: -0.5, sm: 1 },
-                  },
-                  "&:hover": {
-                    borderWidth: 2,
-                    transform: "translateY(-1px)",
-                    boxShadow: 2,
-                  },
-                  transition: "all 0.2s ease-in-out",
-                }}
-              >
-                <Box
-                  component="span"
-                  sx={{ display: { xs: "none", sm: "inline" } }}
-                >
-                  Export
-                </Box>
-              </Button>
-            </span>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={!hasData}
+                      className="rounded-lg border-2 px-2 transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-4"
+                    >
+                      <Download className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Export</span>
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleExportOption("csv")}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      <div>
+                        <div className="font-medium">Export as CSV</div>
+                        <div className="text-muted-foreground text-xs">
+                          Normal CSV format
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleExportOption("xlsx")}
+                    >
+                      <Table className="mr-2 h-4 w-4" />
+                      <div>
+                        <div className="font-medium">Export as Excel</div>
+                        <div className="text-muted-foreground text-xs">
+                          Microsoft Excel format
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export data</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Share Button */}
-          <Tooltip title="Share sheet data">
-            <span>
-              <Button
-                variant="outlined"
-                startIcon={<Share />}
-                onClick={() => setShareModalOpen(true)}
-                disabled={!hasData}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  px: { xs: 1, sm: 2 },
-                  py: 1,
-                  borderWidth: 2,
-                  minWidth: { xs: 44, sm: "auto" },
-                  ml: 1,
-                  "& .MuiButton-startIcon": {
-                    marginRight: { xs: -0.5, sm: 1 },
-                  },
-                  "&:hover": {
-                    borderWidth: 2,
-                    transform: "translateY(-1px)",
-                    boxShadow: 2,
-                  },
-                  transition: "all 0.2s ease-in-out",
-                }}
-              >
-                <Box
-                  component="span"
-                  sx={{ display: { xs: "none", sm: "inline" } }}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShareModalOpen(true)}
+                  disabled={!hasData}
+                  className="ml-2 rounded-lg border-2 px-2 transition-all hover:-translate-y-0.5 hover:shadow-md sm:px-4"
                 >
-                  Share
-                </Box>
-              </Button>
-            </span>
-          </Tooltip>
-
-          {/* Export Menu */}
-          <Menu
-            anchorEl={exportMenuAnchor}
-            open={Boolean(exportMenuAnchor)}
-            onClose={handleExportMenuClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            <MenuItem onClick={() => handleExportOption("csv")}>
-              <ListItemIcon>
-                <Description fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>
-                Export as CSV
-                <Typography
-                  variant="caption"
-                  display="block"
-                  color="text.secondary"
-                >
-                  Normal CSV format
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => handleExportOption("xlsx")}>
-              <ListItemIcon>
-                <TableChart fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>
-                Export as Excel
-                <Typography
-                  variant="caption"
-                  display="block"
-                  color="text.secondary"
-                >
-                  Microsoft Excel format
-                </Typography>
-              </ListItemText>
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Box>
+                  <Share className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Share</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Share sheet data</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
 
       {/* Data Grid */}
-      <Box sx={{ flex: 1, minHeight: 0 }}>
+      <div className="min-h-0 flex-1">
         {!hasData ? null : <DataGrid {...gridProps} />}
-      </Box>
+      </div>
 
       {/* Footer */}
-      <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: "divider" }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
-          <Typography variant="caption" color="text.secondary">
-            Last updated:{" "}
-            {new Date().toLocaleTimeString(undefined, {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: true,
-            })}
-          </Typography>
-          
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Edit sx={{ fontSize: 12 }} />
-              Double-click to edit cells
-            </Typography>
-            {isSavingData && (
-              <Typography variant="caption" color="primary.main" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                <CircularProgress size={12} />
-                Saving changes...
-              </Typography>
-            )}
-          </Box>
-        </Box>
-      </Box>
+      <div className="border-border mt-4 flex flex-wrap items-center justify-between gap-2 border-t pt-2">
+        <span className="text-muted-foreground text-xs">
+          Last updated:{" "}
+          {new Date().toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          })}
+        </span>
+
+        <div className="flex items-center gap-4">
+          <span className="text-muted-foreground flex items-center gap-1 text-xs">
+            <Edit className="h-3 w-3" />
+            Double-click to edit cells
+          </span>
+          {isSavingData && (
+            <span className="text-primary flex items-center gap-1 text-xs">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Saving changes...
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Share Sheet Modal */}
       <ShareSheetModal
         open={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
-        sheetId={currentSavePoint?.id || 'sheet-' + Date.now()}
+        sheetId={currentSavePoint?.id || "sheet-" + Date.now()}
         sheetData={sheetState.sheet}
-        chatId={sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1] || null}
+        chatId={
+          sessionStorage.getItem("activeChatId") ||
+          window.location.search.match(/id=([^&]+)/)?.[1] ||
+          null
+        }
       />
-    </Box>
+    </div>
   );
 }

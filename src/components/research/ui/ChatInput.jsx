@@ -1,32 +1,12 @@
-import React, { useState } from "react";
-import {
-  Box,
-  TextField,
-  IconButton,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  Tooltip,
-  useTheme,
-} from "@mui/material";
-import {
-  Send as SendIcon,
-  Link as LinkIcon,
-  GpsFixed as GpsFixedIcon,
-  Close,
-  Mic as MicIcon,
-} from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Send } from "lucide-react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useResearchStream } from "../../../hooks/useResearchStream";
 import { setUserPrompt } from "../../../redux/slice/researchCoreSlice";
 
-const PRIMARY_GREEN = "#07B37A";
-
 const ChatInput = () => {
-  const theme = useTheme();
   const [inputValue, setInputValue] = useState("");
   const [selectedNavItem, setSelectedNavItem] = useState("slides"); // Default to slides for demo
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -116,112 +96,43 @@ const ChatInput = () => {
   const hasFiles = currentFiles.length;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        maxWidth: 1000,
-        margin: "0 auto",
-        py: 2,
-        position: "relative",
-        zIndex: 11,
-        // backgroundColor: "#F4F6F8",
-      }}
-    >
-      <Box
-        sx={{
-          maxWidth: 1000,
-          mx: "auto",
-          bgcolor: theme.palette.background.paper,
-          borderRadius: 4,
-          p: 3,
-          border: `1px solid ${theme.palette.divider}`,
-          boxShadow: theme.shadows[3],
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            mb: 2,
-          }}
-        >
-          <TextField
-            fullWidth
-            multiline
-            maxRows={4}
+    <div className="relative z-[11] mx-auto w-full max-w-[1000px] py-2">
+      <div className="bg-background border-border mx-auto max-w-[1000px] rounded-2xl border p-6 shadow-md">
+        <div className="mb-4 flex items-center gap-4">
+          <Textarea
             placeholder="Enter a new research topic"
             value={inputValue}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
-            // disabled={isStreaming || isUploading}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                bgcolor: "transparent",
-                color: theme.palette.text.primary,
-                fontSize: "1.1rem",
-                border: "none",
-                "& fieldset": {
-                  border: "none",
-                },
-                "& input": {
-                  color: "#333",
-                },
-                "& textarea": {
-                  color: theme.palette.text.primary,
-                },
-              },
-              "& .MuiOutlinedInput-input::placeholder": {
-                color: theme.palette.text.secondary,
-                opacity: 1,
-              },
-            }}
+            className="text-foreground max-h-[120px] min-h-[40px] flex-1 resize-none border-none bg-transparent text-lg shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            rows={1}
           />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          <div className="flex items-center justify-between">
+            <div className="flex flex-wrap gap-2">
               {/* Hidden file input for slide file selection */}
               <input
                 id="file-upload-input"
                 type="file"
                 accept=".pdf,.doc,.docx,.txt"
                 multiple
-                style={{ display: "none" }}
+                className="hidden"
                 onChange={handleFileUpload}
               />
               {/* Attach button will be needed later */}
               {/* {(selectedNavItem === "slides") && (
               <Button
-                startIcon={<LinkIcon />}
+                variant="ghost"
                 onClick={handleClick}
-                sx={{
-                  color: "#666",
-                  textTransform: "none",
-                  "&:hover": {
-                    color: PRIMARY_GREEN,
-                    bgcolor: "rgba(7, 179, 122, 0.1)",
-                  },
-                }}
+                className="text-muted-foreground"
               >
+                <Link className="mr-2 h-4 w-4" />
                 Attach
               </Button>
             )} */}
-            </Box>
+            </div>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <IconButton
+            <div className="flex flex-row-reverse items-center gap-4">
+              <Button
                 onClick={handleSubmit}
                 disabled={
                   !inputValue.trim() ||
@@ -231,137 +142,66 @@ const ChatInput = () => {
                   isInitiatingResearch ||
                   isStreaming
                 }
-                sx={{
-                  bgcolor: theme.palette.success.main,
-                  color: theme.palette.getContrastText(
-                    theme.palette.success.main,
-                  ),
-                  width: 40,
-                  height: 40,
-                  "&:hover": {
-                    bgcolor: theme.palette.success.dark,
-                  },
-                  "&.Mui-disabled": {
-                    bgcolor: theme.palette.action.disabledBackground,
-                    color: theme.palette.action.disabled,
-                  },
-                }}
+                size="icon"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground disabled:bg-muted disabled:text-muted-foreground h-10 w-10 rounded-full"
               >
-                <SendIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Box>
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {/* uploaded files preview STARTS */}
         {/* {hasFiles > 0 && (
-          <Grid container spacing={1} sx={{ pt: { xs: 1, md: 2, xl: 3 } }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-2 md:pt-4 xl:pt-6">
             {currentFiles?.map((file, index) => {
               const extension = getFileExtension(file.filename);
               const truncatedName = truncateFilename(file.filename);
 
               return (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  key={`${file.filename}-${index}`}
-                >
-                  <Card
-                    sx={{
-                      position: "relative",
-                      bgcolor: isDarkMode ? "#1e1e1e" : "#fff",
-                      border: `1px solid ${isDarkMode ? "#333" : "#e0e0e0"}`,
-                      borderRadius: 2,
-                      transition: "all 0.2s ease-in-out",
-                      "&:hover": {
-                        boxShadow: isDarkMode
-                          ? "0 4px 12px rgba(7, 179, 122, 0.2)"
-                          : "0 4px 12px rgba(0,0,0,0.1)",
-                        borderColor: PRIMARY_GREEN,
-                        transform: "translateY(-2px)",
-                      },
-                    }}
-                  >
-                    <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-                      <IconButton
-                        size="small"
+                <div key={`${file.filename}-${index}`}>
+                  <Card className="relative border border-border rounded-lg transition-all duration-200 ease-in-out hover:shadow-lg hover:border-primary hover:-translate-y-0.5">
+                    <CardContent className="p-4">
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleRemoveFile(index, file.filename)}
-                        sx={{
-                          position: "absolute",
-                          top: 8,
-                          right: 8,
-                          color: "#999",
-                          bgcolor: isDarkMode
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.05)",
-                          width: 24,
-                          height: 24,
-                          "&:hover": {
-                            bgcolor: "#f44336",
-                            color: "white",
-                          },
-                        }}
+                        className="absolute top-2 right-2 h-6 w-6 text-muted-foreground bg-muted/50 hover:bg-destructive hover:text-destructive-foreground"
                       >
-                        <Close fontSize="small" />
-                      </IconButton>
+                        <X className="h-4 w-4" />
+                      </Button>
 
-                      
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          mb: 2,
-                        }}
-                      >
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Tooltip title={file.filename}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: 600,
-                                color: isDarkMode ? "#fff" : "#333",
-                                lineHeight: 1.3,
-                                mb: 0.5,
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {truncatedName}
-                            </Typography>
-                          </Tooltip>
-                        </Box>
-                      </Box>
+                      <div className="flex items-start mb-4">
+                        <div className="flex-1 min-w-0">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <p className="text-sm font-semibold text-foreground leading-snug mb-1 break-words">
+                                  {truncatedName}
+                                </p>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{file.filename}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
 
-                      
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Chip
-                          label={extension.toUpperCase()}
-                          size="small"
-                          sx={{
-                            bgcolor: PRIMARY_GREEN,
-                            color: "white",
-                            fontWeight: 600,
-                            fontSize: "0.7rem",
-                            height: 20,
-                          }}
-                        />
-                      </Box>
+                      <div className="flex justify-between items-center">
+                        <Badge className="bg-primary text-primary-foreground font-semibold text-xs h-5">
+                          {extension.toUpperCase()}
+                        </Badge>
+                      </div>
                     </CardContent>
                   </Card>
-                </Grid>
+                </div>
               );
             })}
-          </Grid>
+          </div>
         )} */}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
