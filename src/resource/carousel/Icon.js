@@ -1,23 +1,10 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function LeftIcon() {
-  return (
-    <ChevronLeft
-      sx={{
-        width: 20,
-        height: 20,
-      }}
-    />
-  );
+export function LeftIcon({ className }) {
+  return <ChevronLeft className={cn("h-5 w-5", className)} />;
 }
 
-export function RightIcon() {
-  return (
-    <ChevronRight
-      sx={{
-        width: 20,
-        height: 20,
-      }}
-    />
-  );
+export function RightIcon({ className }) {
+  return <ChevronRight className={cn("h-5 w-5", className)} />;
 }

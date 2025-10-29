@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   Grid2,
-  InputAdornment,
   Skeleton,
   Stack,
   Typography,
@@ -224,28 +223,26 @@ export default function AccountGeneral({ user }) {
                     </Stack>
                   }
                   endAdornment={
-                    <InputAdornment position="end">
-                      {user?.is_verified ? (
-                        <Label
-                          color="primary.main"
-                          startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
-                        >
-                          Verified
-                        </Label>
-                      ) : (
-                        <Label
-                          color="error.main"
-                          startIcon={<ErrorRounded sx={{ fontSize: 16 }} />}
-                        >
-                          Unverified
-                        </Label>
-                      )}
-                    </InputAdornment>
+                    user?.is_verified ? (
+                      <Label
+                        color="primary.main"
+                        startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                      >
+                        Verified
+                      </Label>
+                    ) : (
+                      <Label
+                        color="error.main"
+                        startIcon={<ErrorRounded sx={{ fontSize: 16 }} />}
+                      >
+                        Unverified
+                      </Label>
+                    )
                   }
                   readOnly={true}
                 />
               </Stack>
-              <RHFTextField name="address" label="Address" multiline rows={2} />
+              <RHFTextField name="address" label="Address" />
               <Box
                 rowGap={3}
                 columnGap={2}
@@ -256,11 +253,9 @@ export default function AccountGeneral({ user }) {
                 }}
               >
                 <RHFSelect
-                  native
                   name="country"
                   label="Country"
-                  placeholder="Country"
-                  onChange={(e) => setValue("country", e.target.value)}
+                  placeholder="Select a country"
                 >
                   <option value="" disabled>
                     Select a country
@@ -274,23 +269,25 @@ export default function AccountGeneral({ user }) {
 
                 <RHFTextField
                   name="state"
+                  label="State"
                   placeholder="Please enter your state or region"
                 />
 
                 <RHFTextField
                   name="city"
+                  label="City"
                   placeholder="Please enter your city"
                 />
 
                 <RHFTextField
                   name="zipCode"
+                  label="Zip Code"
                   placeholder="Please enter your zip code"
-                  type="text" // keep text to avoid browser numeric edge cases
-                  restrict="digits" // <-- opt-in sanitization
+                  type="text"
+                  restrict="digits"
                   inputProps={{
-                    inputMode: "numeric", // mobile friendly numeric keyboard
+                    inputMode: "numeric",
                     pattern: "[0-9]*",
-                    // don't add an onChange here — unless you know what you're doing.
                   }}
                 />
               </Box>

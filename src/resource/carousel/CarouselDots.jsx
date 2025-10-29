@@ -1,72 +1,32 @@
-import { Box, Stack } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const StyledRoot = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "rounded",
-})(({ rounded, theme }) => ({
-  zIndex: 9,
-  padding: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: theme.palette.primary.main,
-  "& li": {
-    width: 18,
-    height: 18,
-    opacity: 0.32,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    "&.slick-active": {
-      opacity: 1,
-      ...(rounded && {
-        "& span": {
-          width: 16,
-          borderRadius: 6,
-        },
-      }),
-    },
-  },
-}));
-
-const StyledDot = styled("span")(({ theme }) => ({
-  width: 8,
-  height: 8,
-  borderRadius: "50%",
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.short,
-  }),
-}));
+import { cn } from "@/lib/utils";
 
 // ----------------------------------------------------------------------
 
 export default function CarouselDots(props) {
   const rounded = props?.rounded || false;
-  const sx = props?.sx;
+  const className = props?.className;
 
   return {
     appendDots: (dots) => (
-      <>
-        <StyledRoot component="ul" rounded={rounded} sx={sx} {...props}>
-          {dots}
-        </StyledRoot>
-      </>
+      <ul
+        className={cn(
+          "text-primary z-10 flex items-center justify-center p-0",
+          "[&_li]:flex [&_li]:h-[18px] [&_li]:w-[18px] [&_li]:cursor-pointer [&_li]:items-center [&_li]:justify-center [&_li]:opacity-30",
+          rounded
+            ? "[&_li.slick-active_span]:w-4 [&_li.slick-active_span]:rounded-md"
+            : "",
+          "[&_li.slick-active]:opacity-100",
+          className,
+        )}
+        {...props}
+      >
+        {dots}
+      </ul>
     ),
     customPaging: () => (
-      <Stack
-        component="div"
-        alignItems="center"
-        justifyContent="center"
-        sx={{ width: 1, height: 1 }}
-      >
-        <StyledDot
-          sx={{
-            bgcolor: "currentColor",
-          }}
-        />
-      </Stack>
+      <div className="flex h-full w-full items-center justify-center">
+        <span className="ease-sharp h-2 w-2 rounded-full bg-current transition-all duration-200" />
+      </div>
     ),
   };
 }

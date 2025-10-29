@@ -1,13 +1,4 @@
-import {
-  FormatBold,
-  FormatItalic,
-  FormatListBulleted,
-  FormatListNumbered,
-  FormatQuote,
-  FormatUnderlined,
-  HorizontalRule,
-} from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
 import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
 import BulletList from "@tiptap/extension-bullet-list";
@@ -19,7 +10,16 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import React, { useEffect } from "react";
+import {
+  Bold as BoldIcon,
+  Italic as ItalicIcon,
+  List,
+  ListOrdered,
+  Minus,
+  Quote,
+  Underline as UnderlineIcon,
+} from "lucide-react";
+import { useEffect } from "react";
 
 const TipTapEditor = ({ content, onChange }) => {
   const editor = useEditor({
@@ -49,119 +49,133 @@ const TipTapEditor = ({ content, onChange }) => {
 
   return (
     <div>
-      <Box
-        sx={{
-          display: "flex",
-          gap: 1,
-          py: 1,
-          border: "2px solid",
-          borderBottom: 0,
-          borderColor: "divider",
-          borderTopLeftRadius: "5px",
-          borderTopRightRadius: "5px",
-        }}
-      >
+      <div className="border-border flex gap-2 rounded-t-md border-2 border-b-0 py-2">
         {/* Bold */}
-        <IconButton onClick={() => editor.commands.toggleBold()} size="small">
-          <FormatBold />
-        </IconButton>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => editor.commands.toggleBold()}
+          className="h-8 w-8"
+        >
+          <BoldIcon className="h-4 w-4" />
+        </Button>
 
         {/* Italic */}
-        <IconButton onClick={() => editor.commands.toggleItalic()} size="small">
-          <FormatItalic />
-        </IconButton>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => editor.commands.toggleItalic()}
+          className="h-8 w-8"
+        >
+          <ItalicIcon className="h-4 w-4" />
+        </Button>
 
         {/* Underline */}
-        <IconButton
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.toggleUnderline()}
-          size="small"
+          className="h-8 w-8"
         >
-          <FormatUnderlined />
-        </IconButton>
+          <UnderlineIcon className="h-4 w-4" />
+        </Button>
 
-        {/* p */}
-        <IconButton
+        {/* Paragraph */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.setParagraph({ level: 1 })}
-          size="small"
+          className="h-8 w-8 text-xs font-semibold"
         >
-          <Typography fontWeight={600}>P</Typography>
-        </IconButton>
+          P
+        </Button>
 
         {/* H2 */}
-        <IconButton
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.setHeading({ level: 2 })}
-          size="small"
+          className="h-8 w-8 text-xs font-semibold"
         >
-          <Typography fontWeight={600}>H2</Typography>
-        </IconButton>
+          H2
+        </Button>
 
         {/* H3 */}
-        <IconButton
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.setHeading({ level: 3 })}
-          size="small"
+          className="h-8 w-8 text-xs font-semibold"
         >
-          <Typography fontWeight={600}>H3</Typography>
-        </IconButton>
+          H3
+        </Button>
 
         {/* H4 */}
-        <IconButton
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.setHeading({ level: 4 })}
-          size="small"
+          className="h-8 w-8 text-xs font-semibold"
         >
-          <Typography fontWeight={600}>H4</Typography>
-        </IconButton>
+          H4
+        </Button>
 
-        {/* Ordered List (OL) */}
-        <IconButton
+        {/* Ordered List */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.toggleOrderedList()}
-          size="small"
+          className="h-8 w-8"
         >
-          <FormatListNumbered />
-        </IconButton>
+          <ListOrdered className="h-4 w-4" />
+        </Button>
 
-        {/* Unordered List (UL) */}
-        <IconButton
+        {/* Unordered List */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.toggleBulletList()}
-          size="small"
+          className="h-8 w-8"
         >
-          <FormatListBulleted />
-        </IconButton>
+          <List className="h-4 w-4" />
+        </Button>
 
         {/* Blockquote */}
-        <IconButton
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.toggleBlockquote()}
-          size="small"
+          className="h-8 w-8"
         >
-          <FormatQuote />
-        </IconButton>
+          <Quote className="h-4 w-4" />
+        </Button>
 
-        {/* Divider (Horizontal Rule) */}
-        <IconButton
+        {/* Horizontal Rule */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => editor.commands.setHorizontalRule()}
-          size="small"
+          className="h-8 w-8"
         >
-          <HorizontalRule />
-        </IconButton>
-      </Box>
+          <Minus className="h-4 w-4" />
+        </Button>
+      </div>
 
-      {/* Wrapped Editor Content in Box for Proper Styling */}
-      <Box
-        sx={{
-          border: "2px solid",
-          borderColor: "divider",
-          borderBottomLeftRadius: "5px",
-          borderBottomRightRadius: "5px",
-          minHeight: "100px",
-          transition: "border-color 0.3s ease-in-out",
-          "&:focus-within": {
-            borderTopLeftRadius: "5px",
-            borderTopRightRadius: "5px",
-            borderColor: "primary.main",
-          },
-        }}
-      >
+      {/* Editor Content */}
+      <div className="border-border focus-within:border-primary min-h-[100px] rounded-b-md border-2 transition-colors focus-within:rounded-t-md">
         <EditorContent editor={editor} />
-      </Box>
+      </div>
 
       {/* Global Styles for ProseMirror */}
       <style>{`
@@ -171,7 +185,10 @@ const TipTapEditor = ({ content, onChange }) => {
           font-size: 16px;
           outline: none;
         }
-        .ProseMirror p, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4 {
+        .ProseMirror p,
+        .ProseMirror h2,
+        .ProseMirror h3,
+        .ProseMirror h4 {
           margin: 0;
         }
       `}</style>

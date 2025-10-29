@@ -13,33 +13,8 @@ export default function LoadingScreen() {
   }, []);
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#fff",
-        zIndex: 9999,
-      }}
-    >
-      <div
-        style={{
-          width: "80px",
-          height: "80px",
-          borderRadius: "50%",
-          backgroundColor: "#4caf50",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 8px rgba(76, 175, 80, 0.5)",
-          animation: "scaleIn 0.5s ease-out forwards",
-        }}
-      >
+    <div className="bg-background fixed inset-0 z-[9999] flex items-center justify-center">
+      <div className="animate-in zoom-in flex h-20 w-20 items-center justify-center rounded-full bg-green-500 shadow-lg shadow-green-500/50 duration-500">
         {checkmarkVisible && (
           <svg
             width="48"
@@ -50,16 +25,14 @@ export default function LoadingScreen() {
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{
-              animation: "fadeIn 0.3s ease forwards",
-            }}
+            className="animate-in fade-in duration-300"
           >
             <path
               d="M4 12L9 17L20 6"
+              className="animate-draw-check"
               style={{
                 strokeDasharray: "30",
                 strokeDashoffset: "30",
-                animation: "drawCheck 0.8s ease forwards",
               }}
             />
           </svg>
@@ -67,33 +40,17 @@ export default function LoadingScreen() {
       </div>
 
       <style jsx global>{`
-        @keyframes scaleIn {
-          0% {
-            transform: scale(0);
-            opacity: 0;
-          }
-          100% {
-            transform: scale(1);
-            opacity: 1;
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes drawCheck {
+        @keyframes draw-check {
           0% {
             stroke-dashoffset: 30;
           }
           100% {
             stroke-dashoffset: 0;
           }
+        }
+
+        .animate-draw-check {
+          animation: draw-check 0.8s ease forwards;
         }
       `}</style>
     </div>

@@ -1,37 +1,20 @@
-import { Box, Container, IconButton, Stack, Typography } from "@mui/material";
-import { alpha } from "@mui/material/styles";
-import NextLink from "next/link";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { _socials } from "../_mock/socials";
 import VideoImage from "../components/home/components/VideoImage";
 
 export default function ComingSoon() {
   return (
-    <Container
-      sx={{
-        height: "calc(100vh - 100px)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Box>
-        <Typography
-          variant="h2"
-          sx={{
-            background: "linear-gradient(135deg, #00A76F 0%, #0B4D42 100%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
+    <div className="container flex h-[calc(100vh-100px)] flex-col items-center justify-center">
+      <div className="text-center">
+        <h1 className="from-primary to-primary/60 bg-gradient-to-br bg-clip-text text-4xl font-bold text-transparent">
           Coming Soon
-        </Typography>
+        </h1>
 
-        <Typography sx={{ color: "text.secondary" }}>
+        <p className="text-muted-foreground mt-2">
           We are currently working hard on this page!
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       <VideoImage
         lightImage="/home/hero/hero-light.webp"
@@ -40,28 +23,22 @@ export default function ComingSoon() {
         width={400}
       />
 
-      <Stack
-        spacing={1}
-        alignItems="center"
-        justifyContent="center"
-        direction="row"
-      >
+      <div className="flex items-center justify-center gap-2">
         {_socials.map((social) => (
-          <IconButton
+          <Button
             key={social.value}
-            component={NextLink}
-            href={social.path}
-            sx={{
-              color: social.color,
-              "&:hover": {
-                bgcolor: alpha(social.color, 0.08),
-              },
-            }}
+            variant="ghost"
+            size="icon"
+            asChild
+            className="hover:bg-primary/10"
+            style={{ color: social.color }}
           >
-            <social.icon />
-          </IconButton>
+            <Link href={social.path}>
+              <social.icon />
+            </Link>
+          </Button>
         ))}
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 }

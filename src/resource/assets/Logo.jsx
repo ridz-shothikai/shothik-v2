@@ -1,7 +1,7 @@
 "use client";
-import { Box, Link, useTheme } from "@mui/material";
+import { useTheme } from "next-themes";
 import Image from "next/image";
-import NextLink from "next/link";
+import Link from "next/link";
 import { forwardRef } from "react";
 import { useSelector } from "react-redux";
 import enterprise_dark_logo from "../../../public/logos/enterprise_dark_logo.svg";
@@ -15,8 +15,8 @@ import value_plan_logo from "../../../public/logos/value_plan_logo.svg";
 
 const Logo = forwardRef((_, ref) => {
   const { user } = useSelector((state) => state.auth);
-  const theme = useTheme();
-  const isDark = theme.palette.mode === "dark";
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const logoSrc =
     user?.package === "pro_plan"
@@ -26,7 +26,7 @@ const Logo = forwardRef((_, ref) => {
       : user?.package === "value_plan"
         ? isDark
           ? value_dark_logo
-          : value_plan_logo // No dark mode logo for value_plan
+          : value_plan_logo
         : user?.package === "unlimited"
           ? isDark
             ? unlimited_dark_logo
@@ -38,27 +38,13 @@ const Logo = forwardRef((_, ref) => {
             : isDark
               ? "/shothik_dark_logo.png"
               : "/shothik_light_logo.png";
+
   return (
-    <Link
-      component={NextLink}
-      href="/?utm_source=internal"
-      sx={{ display: "contents" }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "start",
-          alignItems: "center",
-          margin: "10px 2px",
-        }}
-      >
-        <Box
+    <Link href="/?utm_source=internal" className="contents">
+      <div className="mx-0.5 my-2.5 flex items-center justify-start">
+        <div
           ref={ref}
-          component="div"
-          sx={{
-            width: { xs: 100, sm: 100, md: 100, lg: 150 },
-            height: "auto",
-          }}
+          className="h-auto w-[100px] sm:w-[100px] md:w-[100px] lg:w-[150px]"
         >
           <Image
             src={logoSrc}
@@ -66,12 +52,9 @@ const Logo = forwardRef((_, ref) => {
             alt="shothik_logo"
             width={100}
             height={40}
-            style={{
-              width: "100%",
-              height: "auto",
-            }}
+            className="h-auto w-full"
           />
-        </Box>
+        </div>
       </div>
     </Link>
   );

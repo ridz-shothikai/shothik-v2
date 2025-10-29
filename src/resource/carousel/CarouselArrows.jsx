@@ -1,39 +1,6 @@
-import { IconButton, Stack } from "@mui/material";
-import { alpha, styled } from "@mui/material/styles";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { LeftIcon, RightIcon } from "./Icon";
-
-const StyledIconButton = styled(IconButton, {
-  shouldForwardProp: (prop) =>
-    prop !== "filled" && prop !== "hasChildren" && prop !== "shape",
-})(({ filled, shape, hasChildren, theme }) => ({
-  color: "inherit",
-  transition: theme.transitions.create("all", {
-    duration: theme.transitions.duration.shorter,
-  }),
-  ...(shape === "rounded" && {
-    borderRadius: Number(theme.shape.borderRadius) * 1.5,
-  }),
-  ...(!filled && {
-    opacity: 0.48,
-    "&:hover": {
-      opacity: 1,
-    },
-  }),
-  ...(filled && {
-    color: alpha(theme.palette.common.white, 0.8),
-    backgroundColor: alpha(theme.palette.grey[900], 0.48),
-    "&:hover": {
-      color: theme.palette.common.white,
-      backgroundColor: theme.palette.grey[900],
-    },
-  }),
-  ...(hasChildren && {
-    zIndex: 9,
-    top: "50%",
-    position: "absolute",
-    marginTop: theme.spacing(-2.5),
-  }),
-}));
 
 export default function CarouselArrows({
   shape = "circular",
@@ -43,40 +10,52 @@ export default function CarouselArrows({
   children,
   leftButtonProps,
   rightButtonProps,
-  sx,
+  className,
   ...other
 }) {
+  const buttonClasses = cn(
+    "transition-all duration-200",
+    shape === "rounded" ? "rounded-lg" : "rounded-full",
+    filled
+      ? "bg-gray-900/50 text-white/80 hover:bg-gray-900 hover:text-white"
+      : "opacity-50 hover:opacity-100",
+  );
+
+  const positionClasses = children ? "absolute top-1/2 z-10 -mt-5" : "";
+
   return (
-    <Stack sx={sx} {...other}>
-      <StyledIconButton
-        filled={filled}
-        shape={shape}
-        hasChildren={!!children}
+    <div className={cn(className)} {...other}>
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onPrevious}
+        className={cn(
+          buttonClasses,
+          positionClasses,
+          "left-4",
+          leftButtonProps?.className,
+        )}
         {...leftButtonProps}
-        sx={{
-          left: 16,
-          ...leftButtonProps?.sx,
-        }}
       >
         <LeftIcon />
-      </StyledIconButton>
+      </Button>
 
       {children}
 
-      <StyledIconButton
-        filled={filled}
-        shape={shape}
-        hasChildren={!!children}
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={onNext}
+        className={cn(
+          buttonClasses,
+          positionClasses,
+          "right-4",
+          rightButtonProps?.className,
+        )}
         {...rightButtonProps}
-        sx={{
-          right: 16,
-          ...rightButtonProps?.sx,
-        }}
       >
         <RightIcon />
-      </StyledIconButton>
-    </Stack>
+      </Button>
+    </div>
   );
 }

@@ -95,18 +95,12 @@ export default function AboutTeam() {
           shape="rounded"
           onNext={handleNext}
           onPrevious={handlePrev}
-          sx={{ zIndex: -1 }}
+          className="-z-10"
           leftButtonProps={{
-            sx: {
-              left: 24,
-              zIndex: 1,
-            },
+            className: "z-10 left-6",
           }}
           rightButtonProps={{
-            sx: {
-              right: 24,
-              zIndex: 1,
-            },
+            className: "z-10 left-6",
           }}
         >
           <Carousel ref={carouselRef} {...carouselSettings}>
