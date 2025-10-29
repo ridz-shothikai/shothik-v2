@@ -1,4 +1,3 @@
-import { Box, Typography } from "@mui/material";
 import MainLayout from "../../../../components/blog/details/MainLayout";
 
 export async function generateMetadata({ params }) {
@@ -62,22 +61,22 @@ const BlogDetails = async ({ params }) => {
 
     if (!blogData?.data) {
       return (
-        <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-          <Typography variant="h6" color="text.secondary">
+        <div className="py-20 text-center w-full">
+          <h6 className="text-lg text-muted-foreground">
             No blogs found.
-          </Typography>
-        </Box>
+          </h6>
+        </div>
       );
     }
     blog = blogData.data;
   } catch (error) {
     console.error("Error fetching blog data:", error);
     return (
-      <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-        <Typography variant="h6" color="text.secondary">
+      <div className="py-20 text-center w-full">
+        <h6 className="text-lg text-muted-foreground">
           Error loading blog
-        </Typography>
-      </Box>
+        </h6>
+      </div>
     );
   }
 

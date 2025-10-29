@@ -1,4 +1,3 @@
-import { Box, Container, Divider } from "@mui/material";
 import FaqForm from "../../../components/faqPage/FaqForm";
 import FaqsHero from "../../../components/faqPage/FaqHero";
 import FAQ from "../../../components/home/FAG";
@@ -15,22 +14,17 @@ export default function FaqsPage() {
     <>
       <FaqsHero />
 
-      <Container sx={{ pt: 15, pb: 10, position: "relative" }}>
-        <Box sx={{ mb: 10, mt: 0 }}>
+      <div className="container mx-auto px-4 pt-60 pb-40 relative">
+        <div className="mb-40 mt-0">
           <FAQ />
 
-          <Divider />
-        </Box>
+          <div className="border-t border-border my-4" />
+        </div>
 
-        <Box
-          sx={{
-            width: { xs: "100%", sm: "60%" },
-            mx: "auto",
-          }}
-        >
+        <div className="w-full sm:w-3/5 mx-auto">
           <FaqForm />
-        </Box>
-      </Container>
+        </div>
+      </div>
     </>
   );
 }

@@ -105,7 +105,7 @@ export default function DataDeletionPage() {
                 <p className="text-base leading-relaxed">
                   For integration purposes, we provide a secure API endpoint:
                 </p>
-                <div className="rounded-lg bg-gray-100 p-4 font-mono text-sm">
+                <div className="rounded-lg bg-muted p-4 font-mono text-sm">
                   <div>
                     <strong>Endpoint:</strong> POST
                     https://api.shothik.ai/v1/data-deletion
@@ -128,7 +128,7 @@ export default function DataDeletionPage() {
                   </div>
                   <div className="ml-4">{`}`}</div>
                 </div>
-                <p className="text-base leading-relaxed text-yellow-600">
+                <p className="text-base leading-relaxed text-destructive">
                   ⚠️ This method requires technical knowledge and proper
                   authentication.
                 </p>
@@ -212,11 +212,11 @@ export default function DataDeletionPage() {
 
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">3. Data Retention Notes</h2>
-            <div className="rounded-lg border border-yellow-500/25 bg-yellow-500/5 p-4">
-              <p className="text-base leading-relaxed font-semibold text-yellow-800">
+            <div className="rounded-lg border border-border bg-muted/50 p-4">
+              <p className="text-base leading-relaxed font-semibold text-foreground">
                 Important Retention Information:
               </p>
-              <ul className="mt-2 ml-4 list-inside list-disc space-y-2 text-yellow-700">
+              <ul className="mt-2 ml-4 list-inside list-disc space-y-2 text-muted-foreground">
                 <li>
                   <strong>Encrypted Backups:</strong> Some data may remain in
                   our encrypted backups for up to 30 days due to technical

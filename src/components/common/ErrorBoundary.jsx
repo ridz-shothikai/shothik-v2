@@ -32,15 +32,8 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (
-        <div
-          style={{
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <p style={{ fontSize: 1 }}>.</p>
+        <div className="h-screen flex items-center justify-center">
+          <p className="text-[1px]">.</p>
         </div>
       );
     }

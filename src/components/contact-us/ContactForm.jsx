@@ -1,6 +1,6 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
@@ -58,25 +58,23 @@ export default function ContactForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={5}>
-        <Typography
-          component={motion.p}
+      <div className="flex flex-col gap-5">
+        <motion.h3
           initial={{ y: -20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          variant="h3"
+          className="text-3xl font-bold"
         >
           Feel free to contact us. We&apos;ll be glad to hear from you, buddy.
-        </Typography>
+        </motion.h3>
 
-        <Stack
-          component={motion.div}
+        <motion.div
           initial={{ x: -20, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          spacing={3}
+          className="flex flex-col gap-3"
         >
           <RHFTextField fullWidth label="Your name" name="name" />
           <RHFTextField fullWidth label="Your e-mail address" name="email" />
@@ -89,7 +87,7 @@ export default function ContactForm() {
             rows={4}
             name="message"
           />
-        </Stack>
+        </motion.div>
 
         <motion.div
           initial={{ x: -20, opacity: 0 }}
@@ -99,14 +97,14 @@ export default function ContactForm() {
         >
           <Button
             type="submit"
-            size="large"
-            variant="contained"
-            loading={isSubmitting}
+            size="lg"
+            variant="default"
+            disabled={isSubmitting}
           >
             Submit Now
           </Button>
         </motion.div>
-      </Stack>
+      </div>
     </FormProvider>
   );
 }

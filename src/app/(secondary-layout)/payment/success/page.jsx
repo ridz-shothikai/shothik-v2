@@ -1,6 +1,6 @@
-import { CheckCircleRounded } from "@mui/icons-material";
-import { Button, Typography } from "@mui/material";
-import NextLink from "next/link";
+import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import PaymentSuccessAndUpdateUser from "../../../../components/payment/PaymentSuccess";
 
 export async function generateMetadata() {
@@ -12,35 +12,16 @@ export async function generateMetadata() {
 
 export default function PaymentSuccess() {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: 2,
-        textAlign: "center",
-      }}
-    >
-      <CheckCircleRounded
-        sx={{
-          color: "green",
-          height: 60,
-          width: 60,
-        }}
-      />
-      <Typography variant="h4">Payment Successful</Typography>
-      <Typography sx={{ mt: 1, mb: 2 }} variant="body1">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
+      <CheckCircle className="w-16 h-16 text-primary mb-4" />
+      <h1 className="text-3xl font-bold mb-2">Payment Successful</h1>
+      <p className="mt-4 mb-8 text-base">
         Thank you for your payment.
-      </Typography>
-      <Button
-        component={NextLink}
-        href="/?utm_source=internal"
-        size="large"
-        variant="contained"
-      >
-        Go to Home
+      </p>
+      <Button asChild size="lg">
+        <Link href="/?utm_source=internal">
+          Go to Home
+        </Link>
       </Button>
 
       <PaymentSuccessAndUpdateUser />

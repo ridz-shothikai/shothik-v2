@@ -1,4 +1,3 @@
-import { Box, Container } from "@mui/material";
 import Image from "next/image";
 import ContactHero from "../../../components/contact-us/ContacHero";
 import ContactForm from "../../../components/contact-us/ContactForm";
@@ -15,15 +14,8 @@ export default function ContactPage() {
     <>
       <ContactHero />
 
-      <Container sx={{ py: 10 }}>
-        <Box
-          gap={10}
-          display="grid"
-          gridTemplateColumns={{
-            xs: "repeat(1, 1fr)",
-            md: "repeat(2, 1fr)",
-          }}
-        >
+      <div className="container mx-auto px-4 py-40">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-40">
           <ContactForm />
 
           <Image
@@ -31,14 +23,10 @@ export default function ContactPage() {
             height={400}
             width={400}
             alt="Location"
-            style={{
-              borderRadius: "10px",
-              width: "100%",
-              height: "100%",
-            }}
+            className="rounded-lg w-full h-full object-cover"
           />
-        </Box>
-      </Container>
+        </div>
+      </div>
     </>
   );
 }

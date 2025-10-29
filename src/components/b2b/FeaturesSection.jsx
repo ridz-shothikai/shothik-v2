@@ -1,154 +1,71 @@
-import { ArrowForward } from "@mui/icons-material";
-import { Box, Button, Grid2, Typography } from "@mui/material";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import * as motion from "motion/react-client";
 import Link from "next/link";
 
 export const FeaturesSection = ({ features, title, subtitle }) => {
   return (
-    <Box id="services">
-      <Typography
-        component={motion.div}
+    <div id="services">
+      <motion.div
         initial={{ x: -100, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        sx={{
-          textAlign: "center",
-          fontSize: { xs: "2rem", md: "3rem" },
-          fontWeight: 600,
-          lineHeight: { xs: "2.5rem", md: "3.9rem" },
-          width: { xs: "100%", md: "60.625rem" },
-          margin: "0 auto",
-          mb: { xs: "2rem", md: "3rem" },
-        }}
+        className="text-center text-3xl md:text-5xl font-semibold leading-10 md:leading-[3.9rem] w-full md:w-[60.625rem] mx-auto mb-8 md:mb-12"
       >
-        <Typography
-          variant="h2"
-          fontWeight={600}
-          component="span"
-          color="primary.darker"
-        >
+        <span className="font-semibold text-primary">
           {title}
-        </Typography>
+        </span>
         {subtitle}
-      </Typography>
-      <Grid2 container spacing={2}>
+      </motion.div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
         {features?.map((feature, index) => {
           if (feature.image) {
             return (
-              <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+              <div key={index}>
                 <Link href="/b2b">
-                  <Box
-                    sx={{
-                      cursor: "pointer",
-                      p: 3,
-                      height: "100%",
-                      minHeight: 200,
-                      margin: "0 auto",
-                      maxWidth: { xs: "100%", md: "25.98031rem" },
-                      width: "100%",
-                      bgcolor: "background.paper",
+                  <div
+                    className="cursor-pointer p-3 h-full min-h-[200px] mx-auto max-w-full md:max-w-[25.98031rem] w-full bg-card bg-cover bg-center transition-transform duration-300 ease-in-out rounded-lg overflow-hidden"
+                    style={{
                       backgroundImage: feature?.image,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      transition: "transform 0.3s ease-in-out",
-                      borderRadius: 2,
-                      overflow: "hidden",
                     }}
                   />
                 </Link>
-              </Grid2>
+              </div>
             );
           }
           return (
-            <Grid2
-              component={motion.div}
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.2 * (index + 1) }}
               viewport={{ once: true }}
-              size={{ xs: 12, sm: 6, md: 4 }}
               key={index}
-              sx={{
-                bgcolor: "primary.darker",
-                color: "common.white",
-                borderRadius: 1,
-                "&:hover": {
-                  boxShadow: 2,
-                  backgroundColor: "primary.dark",
-                  "& .titleBox::after": {
-                    width: "50%",
-                    borderColor: "primary.light",
-                  },
-                  "& .number": {
-                    color: "#FFF",
-                  },
-                },
-                display: "flex",
-                padding: "1.0135rem 2rem",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                justifyContent: "space-between",
-                gap: "1.5rem",
-                transition: "all 0.3s ease-in-out",
-              }}
+              className="bg-primary/90 text-primary-foreground rounded flex p-4 flex-col items-start justify-between gap-6 transition-all duration-300 ease-in-out hover:shadow-md hover:bg-primary group"
             >
-              <Typography
-                variant="h3"
-                className="number"
-                sx={{
-                  color: "primary.dark",
-                  fontWeight: 700,
-                }}
-              >
+              <h3 className="text-4xl font-bold text-primary-foreground/60 group-hover:text-primary-foreground">
                 {index < 9 ? `0${index + 1}` : index + 1}
-              </Typography>
-              <Box
-                className="titleBox"
-                sx={{
-                  mt: 1,
-                  position: "relative",
-                  "&::after": {
-                    content: '""',
-                    position: "absolute",
-                    width: "10%",
-                    left: ".0631rem",
-                    borderWidth: ".0625rem",
-                    borderStyle: "solid",
-                    borderColor: "primary.dark",
-                  },
-                }}
-              >
-                <Typography variant="h4">{feature.title}</Typography>
-              </Box>
-              <Typography variant="body2">{feature.content}</Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  justifyContent: "flex-end",
-                }}
-              >
+              </h3>
+              <div className="mt-1 relative after:content-[''] after:absolute after:w-[10%] after:left-[0.0631rem] after:border-t-[0.0625rem] after:border-primary-foreground/60 group-hover:after:w-1/2 group-hover:after:border-primary-foreground/80 after:transition-all after:duration-300">
+                <h4 className="text-2xl font-semibold">{feature.title}</h4>
+              </div>
+              <p className="text-sm">{feature.content}</p>
+              <div className="flex w-full justify-end">
                 <Link href={`/b2b/services?slug=${feature.slug}`}>
                   <Button
-                    variant="outlined"
-                    sx={{
-                      backgroundColor: "primary.darker",
-                      borderColor: "primary.dark",
-                      height: 40,
-                      px: 2,
-                    }}
-                    endIcon={<ArrowForward />}
-                    size="large"
+                    variant="outline"
+                    className="bg-primary/90 border-primary-foreground/60 h-10 px-2 hover:bg-primary hover:border-primary-foreground"
+                    size="lg"
                   >
                     Read more
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-              </Box>
-            </Grid2>
+              </div>
+            </motion.div>
           );
         })}
-      </Grid2>
-    </Box>
+      </div>
+    </div>
   );
 };

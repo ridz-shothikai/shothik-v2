@@ -1,53 +1,36 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ChevronDown } from "lucide-react";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Typography,
-} from "@mui/material";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function ToolsSepecigFaq({ tag, data }) {
   return (
-    <Box>
-      <Typography variant="h3" align="center">
+    <div>
+      <h2 className="text-3xl font-bold text-center">
         Frequently Asked Questions
-      </Typography>
+      </h2>
 
-      <Typography
-        variant="body1"
-        align="center"
-        color="text.secondary"
-        sx={{ mb: 5 }}
-      >
+      <p className="text-base text-center text-muted-foreground mb-20">
         {tag}
-      </Typography>
+      </p>
 
-      <Box sx={{ maxWidth: 800, mx: "auto" }}>
-        {data.map((faq, index) => (
-          <Accordion key={index} sx={{ mb: 3 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              sx={{
-                "&.Mui-expanded": {
-                  minHeight: { xs: 64, sm: 64 },
-                },
-              }}
-            >
-              <Typography variant="subtitle1">{faq.question}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography
-                component="div"
-                variant="body1"
-                color="text.secondary"
-              >
+      <div className="max-w-[800px] mx-auto">
+        <Accordion type="single" collapsible className="space-y-12">
+          {data.map((faq, index) => (
+            <AccordionItem key={index} value={`item-${index}`} className="border-b">
+              <AccordionTrigger className="text-left hover:no-underline py-4 sm:py-6">
+                <span className="text-base font-medium">{faq.question}</span>
+              </AccordionTrigger>
+              <AccordionContent className="text-base text-muted-foreground">
                 {faq.answer}
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </Box>
-    </Box>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </div>
   );
 }

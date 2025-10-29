@@ -1,17 +1,12 @@
 "use client";
-import { ArrowRight, Close } from "@mui/icons-material";
+import { ArrowRight, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
-  Box,
-  Button,
-  Card,
   Dialog,
   DialogContent,
-  Grid2,
-  IconButton,
-  Skeleton,
-  Stack,
-  Typography,
-} from "@mui/material";
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import React, { useState } from "react";
 import useResponsive from "../../hooks/useResponsive";
 import { useCategoryQuery } from "../../redux/api/blog/blogApiSlice";
@@ -40,121 +35,69 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
   };
 
   return (
-    <Grid2 size={{ xs: 12, md: 3 }}>
-      <Box sx={{ width: 250 }}>
+    <div className="w-full md:w-[250px]">
+      <div className="w-[250px]">
         {isMobile ? (
           <>
-            <Button variant="contained" size="large" onClick={handleOpen}>
+            <Button variant="default" size="lg" onClick={handleOpen} className="w-full">
               Popular Topics
-              <ArrowRight sx={{ ml: 1 }} />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              fullScreen={isMobile}
-              slotProps={{
-                paper: {
-                  sx: {
-                    width: "100%",
-                    height: isMobile ? "80vh" : "auto",
-                    margin: 0,
-                    maxWidth: "100%",
-                    overflow: "hidden",
-                    position: "fixed",
-                    bottom: 0,
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 16,
-                  },
-                },
-              }}
-            >
-              <DialogContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  height: "100%",
-                  padding: isMobile ? "16px" : "24px",
-                }}
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent 
+                showCloseButton={false}
+                className="fixed bottom-0 left-0 right-0 top-auto max-w-full h-[80vh] rounded-t-2xl p-0 translate-x-0 translate-y-0 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom border-t"
               >
-                <IconButton
-                  onClick={handleClose}
-                  sx={{
-                    alignSelf: "flex-end",
-                    transition: "transform 0.2s",
-                    "&:hover": {
-                      transform: "scale(1.1)",
-                    },
-                  }}
-                >
-                  <Close />
-                </IconButton>
-                <Box sx={{ width: "100%" }}>
-                  <Typography variant="h6" gutterBottom>
-                    All topics
-                  </Typography>
-                  <div>
-                    {categories?.data?.length ? (
-                      categories.data.map((category) => (
-                        <Button
-                          key={category._id}
-                          sx={{
-                            color: (theme) =>
-                              theme.palette.mode === "dark"
-                                ? "rgba(255,255,255,0.7)"
-                                : "rgba(0,0,0,0.87)",
-                            display: "block",
-                            width: "100%",
-                            textAlign: "left",
-                            p: 1,
-                            m: 0,
-                            ":hover": {
-                              bgcolor: (theme) =>
-                                theme.palette.mode === "dark"
-                                  ? "rgba(255,255,255,0.08)"
-                                  : "rgba(0,0,0,0.04)",
-                              textDecoration: "none",
-                              color: (theme) =>
-                                theme.palette.mode === "dark"
-                                  ? "rgba(255,255,255,0.7)"
-                                  : "rgba(0,0,0,0.87)",
-                            },
-                          }}
-                          onClick={() => handleCategoryClick(category)}
-                        >
-                          {category.title}
-                        </Button>
-                      ))
-                    ) : (
-                      <Box>
-                        <Typography>No Category found</Typography>
-                      </Box>
-                    )}
+                <div className="flex flex-col h-full overflow-hidden">
+                  {/* Header with close button */}
+                  <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
+                    <h6 className="text-lg font-semibold">All topics</h6>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleClose}
+                      className="transition-transform hover:scale-110"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
                   </div>
-                </Box>
-                <SideMenu />
 
-                <Box sx={{ mt: 4, p: 2, bgcolor: "#f8f9fa", borderRadius: 1 }}>
-                  <SideCard />
-                </Box>
+                  {/* Scrollable content */}
+                  <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+                    <div className="space-y-1">
+                      {categories?.data?.length ? (
+                        categories.data.map((category) => (
+                          <Button
+                            key={category._id}
+                            variant="ghost"
+                            className="w-full justify-start text-left p-3 hover:bg-accent rounded-lg"
+                            onClick={() => handleCategoryClick(category)}
+                          >
+                            {category.title}
+                          </Button>
+                        ))
+                      ) : (
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground">No Category found</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-6">
+                      <SideMenu />
+                    </div>
+
+                    <div className="mt-6 mb-4 p-4 bg-muted rounded-lg">
+                      <SideCard />
+                    </div>
+                  </div>
+                </div>
               </DialogContent>
             </Dialog>
           </>
         ) : (
-          <Stack sx={{ maxWidth: 500 }}>
-            <Box
-              sx={{
-                bgcolor: "background.paper",
-                borderRadius: 1,
-                display: "flex",
-                flexDirection: "column",
-                overflowY: "auto",
-                "&::-webkit-scrollbar": {
-                  width: 0,
-                },
-              }}
-            >
+          <div className="flex flex-col gap-4 max-w-[500px]">
+            <div className="bg-card rounded flex flex-col overflow-y-auto scrollbar-hide">
               <CategoryBtn
                 selectedCategory={selectedCategory}
                 category={{ title: "All topics", _id: "" }}
@@ -163,19 +106,19 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
               <div>
                 {isLoading ? (
                   <>
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
-                    <Skeleton variant="text" width="100%" height={20} />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="w-full h-5 mb-2" />
                   </>
                 ) : !categories?.data?.length ? (
-                  <Box>
-                    <Typography>No Category found</Typography>
-                  </Box>
+                  <div>
+                    <p className="text-muted-foreground">No Category found</p>
+                  </div>
                 ) : (
                   categories?.data?.map((category) => (
                     <CategoryBtn
@@ -188,14 +131,14 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
                 )}
               </div>
               <SideMenu />
-            </Box>
-            <Card sx={{ mt: 4, p: 2, borderRadius: 1 }}>
+            </div>
+            <Card className="p-2 rounded">
               <SideCard />
             </Card>
-          </Stack>
+          </div>
         )}
-      </Box>
-    </Grid2>
+      </div>
+    </div>
   );
 };
 

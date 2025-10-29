@@ -1,13 +1,12 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import PersonOutlineSharpIcon from "@mui/icons-material/PersonOutlineSharp";
-import { Box, Button, InputAdornment } from "@mui/material";
+import { Mail, User } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
 import { useAffiliateMutation } from "../../redux/api/auth/authApi";
 import RHFTextField from "../../resource/RHFTextField";
+import { Button } from "@/components/ui/button";
 
 export default function WaitlistForm({ userType }) {
   const enqueueSnackbar = useSnackbar();
@@ -60,75 +59,42 @@ export default function WaitlistForm({ userType }) {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: { xs: "100%", sm: "450px" },
-            margin: "0 auto",
-          }}
-        >
+        <div className="w-full max-w-full sm:max-w-[450px] mx-auto">
           <RHFTextField
             name="name"
             placeholder="Full Name"
             startAdornment={
-              <InputAdornment position="start">
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mr: 1,
-                  }}
-                >
-                  <PersonOutlineSharpIcon />
-                </Box>
-              </InputAdornment>
+              <div className="flex items-center justify-center mr-1">
+                <User className="h-5 w-5 text-muted-foreground" />
+              </div>
             }
             error={Boolean(errors.name)}
             helperText={errors.name?.message}
-            sx={{
-              width: "100%",
-              mb: 2,
-            }}
+            className="w-full mb-2"
           />
           <RHFTextField
             name="email"
             placeholder="Email"
             startAdornment={
-              <InputAdornment position="start">
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mr: 1,
-                  }}
-                >
-                  <MailOutlineIcon />
-                </Box>
-              </InputAdornment>
+              <div className="flex items-center justify-center mr-1">
+                <Mail className="h-5 w-5 text-muted-foreground" />
+              </div>
             }
             error={Boolean(errors.email)}
             helperText={errors.email?.message}
-            sx={{
-              width: "100%",
-              mb: 2,
-            }}
+            className="w-full mb-2"
           />
           <Button
             data-umami-event="Form: Join the waitlist"
-            variant="contained"
-            size="large"
+            variant="default"
+            size="lg"
             type="submit"
             disabled={isSubmitting}
-            sx={{
-              width: "100%",
-              fontSize: { xs: "14px", sm: "16px" },
-            }}
+            className="w-full text-sm sm:text-base"
           >
             Join the waitlist
           </Button>
-        </Box>
+        </div>
       </form>
     </FormProvider>
   );

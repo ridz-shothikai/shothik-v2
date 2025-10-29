@@ -1,6 +1,6 @@
-import { WarningRounded } from "@mui/icons-material";
-import { Box, Button, Typography } from "@mui/material";
-import NextLink from "next/link";
+import { AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export async function generateMetadata() {
   return {
@@ -11,40 +11,19 @@ export async function generateMetadata() {
 
 export default function PaymentFailed() {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        padding: 2,
-        textAlign: "center",
-      }}
-    >
-      <>
-        <WarningRounded
-          sx={{
-            color: "red",
-            width: 60,
-            height: 60,
-          }}
-        />
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
+      <AlertCircle className="w-16 h-16 text-destructive mb-4" />
 
-        <Typography variant="h4">Failed</Typography>
-        <Typography sx={{ my: 2 }} variant="body1">
-          We&apos;re sorry, but your payment could not be processed.
-        </Typography>
+      <h1 className="text-3xl font-bold mb-2">Failed</h1>
+      <p className="my-8 text-base">
+        We&apos;re sorry, but your payment could not be processed.
+      </p>
 
-        <Button
-          component={NextLink}
-          href="/?utm_source=internal"
-          size="large"
-          variant="contained"
-        >
+      <Button asChild size="lg">
+        <Link href="/?utm_source=internal">
           Go to Home
-        </Button>
-      </>
-    </Box>
+        </Link>
+      </Button>
+    </div>
   );
 }

@@ -1,4 +1,3 @@
-import { Container, Typography } from "@mui/material";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import PricingLayout from "../../../components/pricing/PricingLayout";
 
@@ -14,29 +13,22 @@ export default function PricingPage() {
     <PricingLayout
       TitleContend={
         <>
-          <Typography
-            variant="h3"
-            align="center"
-            sx={{ color: "error.contrastText" }}
-          >
+          <h1 className="text-3xl font-bold text-center text-primary-foreground">
             Our pricing plan made simple.
-          </Typography>
+          </h1>
 
-          <Typography
-            align="center"
-            sx={{ color: "error.contrastText", maxWidth: "sm" }}
-          >
+          <p className="text-center text-primary-foreground max-w-2xl mx-auto">
             Discover the right plan for your needs and take advantage of
             Shothik.ai&apos;s powerful tools. Whether you&apos;re just getting
             started or need advanced features for your business, we&apos;ve got
             you covered.
-          </Typography>
+          </p>
         </>
       }
     >
-      <Container sx={{ my: { xs: 5, md: 7 } }}>
+      <div className="container mx-auto px-4 my-20 md:my-28">
         <HomeAdvertisement />
-      </Container>
+      </div>
     </PricingLayout>
   );
 }

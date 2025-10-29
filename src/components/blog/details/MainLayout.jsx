@@ -1,16 +1,9 @@
-import { KeyboardDoubleArrowRight } from "@mui/icons-material";
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  Button,
-  Card,
-  Container,
-  Divider,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { ChevronRight } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 import CommentSection from "./CommentSection";
 import { LikeDislike } from "./LikeDislike";
 import ShareIcons from "./ShareIcons";
@@ -21,185 +14,72 @@ export default function MainLayout({ blog }) {
   const hashtags = ["ShothikAI", "AIContent", "Tech"];
 
   return (
-    <Container sx={{ mb: 6 }}>
-      <Box sx={{ marginBottom: "16px" }}>
-        <Typography
-          sx={{
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: "bold",
-            letterSpacing: "1px",
-            lineHeight: "24px",
-            textTransform: "uppercase",
-            color: "rgb(255, 30, 255)",
-            margin: "20px 0px 8px",
-          }}
-        >{`// ${blog?.category?.title} //`}</Typography>
-        <Typography
-          sx={{
-            color: "text.main",
-            fontSize: {
-              xs: "1.2rem",
-              sm: "1.4rem",
-              md: "1.6rem",
-              lg: "1.8rem",
-            },
-            fontStyle: "normal",
-            fontWeight: "bold",
-            letterSpacing: "-0.5px",
-            lineHeight: "40px",
-            wordBreak: "break-word",
-            margin: "0px",
-            padding: "0px",
-          }}
-        >
+    <div className="container mx-auto px-4 mb-6">
+      <div className="mb-4">
+        <p className="text-base font-bold uppercase tracking-wide leading-6 text-primary my-5">
+          {`// ${blog?.category?.title} //`}
+        </p>
+        <h1 className="text-foreground text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-10 break-words m-0 p-0">
           {blog?.title}
-        </Typography>
+        </h1>
 
-        <Typography
-          sx={{
-            color: "text.secondary",
-            fontSize: "16px",
-            lineHeight: "24px",
-            margin: "8px 0px",
-          }}
-        >
+        <p className="text-muted-foreground text-base leading-6 my-2">
           Updated on{" "}
           {new Intl.DateTimeFormat("en-US", {
             year: "numeric",
             month: "long",
             day: "2-digit",
           }).format(new Date(blog?.updatedAt))}
-        </Typography>
-        <Box
-          component={"ul"}
-          sx={{
-            alignItems: "center",
-            color: "rgb(3, 27, 78)",
-            display: "flex",
-            flexFlow: "wrap",
-            margin: "0px auto",
-            padding: "10px 0px",
-            width: "100%",
-          }}
-        ></Box>
-        <Box
-          sx={{
-            alignItems: "center",
-            display: "flex",
-            gap: "10px",
-            marginTop: "16px",
-          }}
-        >
-          <AvatarGroup>
-            <Avatar
-              alt={blog?.author?.name}
-              src="/static/images/avatar/1.jpg"
-            />
-          </AvatarGroup>
-          <Typography
-            sx={{
-              color: "text.secondary",
-              fontSize: "16px",
-              letterSpacing: "0px",
-              lineHeight: "24px",
-              fontWeight: 500,
-            }}
-          >
+        </p>
+        <ul className="flex items-center flex-wrap m-0 p-0 py-2.5 w-full"></ul>
+        <div className="flex items-center gap-2.5 mt-4">
+          <Avatar>
+            <AvatarImage src="/static/images/avatar/1.jpg" alt={blog?.author?.name} />
+            <AvatarFallback>{blog?.author?.name?.[0] || "A"}</AvatarFallback>
+          </Avatar>
+          <p className="text-muted-foreground text-base tracking-normal leading-6 font-medium">
             {blog?.author?.name
               ? blog?.author?.name
               : blog?.editorContent?.name}
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        component="img"
+          </p>
+        </div>
+      </div>
+      <img
         src={blog?.banner}
         alt={blog?.title}
-        sx={{
-          width: "100%",
-          height: "450px",
-          objectFit: "cover",
-          mb: 4,
-          borderRadius: 2,
-          border: "solid 1px",
-          borderColor: "divider",
-        }}
+        className="w-full h-[450px] object-cover mb-4 rounded-lg border border-border"
       />
 
-      <Typography
-        sx={{
-          letterSpacing: "0.1px",
-          fontSize: "18px",
-          fontWeight: 400,
-          "& pre": {
-            padding: "16px",
-            borderRadius: "8px",
-            overflowX: "auto",
-          },
-          "& code": {
-            display: "block",
-            fontSize: "16px",
-          },
-        }}
+      <div
+        className="tracking-wide text-lg font-normal [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_code]:block [&_code]:text-base"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
 
-      <Stack sx={{ my: 10 }} alignItems="center">
-        <Box
-          sx={{
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 3,
-            p: 3,
-            width: { md: "70%", sm: "100%" },
-          }}
-        >
-          <Typography>
+      <div className="my-10 flex flex-col items-center">
+        <div className="border border-border rounded-3xl p-3 w-full md:w-[70%]">
+          <p className="text-base">
             Thank you for being a valued member of the Shothik AI Community!
             Explore our cutting-edge AI solutions for paraphrasing, generating
             human-like content, refining grammar, and summarizing information
             with precision and clarity.
-          </Typography>
-          <Stack
-            sx={{ color: "primary.main", mt: 1 }}
-            flexDirection="row"
-            gap={0.5}
-            alignItems="center"
-          >
-            <Link href="/pricing">Learn more about our products</Link>
-            <KeyboardDoubleArrowRight fontSize="small" color="primary.main" />
-          </Stack>
-        </Box>
-        <Card sx={{ mt: 5, p: 4, width: { md: "70%", sm: "100%" } }}>
-          <Stack
-            flexDirection="row"
-            gap={3}
-            sx={{
-              borderBottom: "1px solid",
-              borderBottomColor: "divider",
-              pb: 2,
-            }}
-            flexWrap="wrap"
-          >
-            <Typography variant="h6">Still looking for an answer?</Typography>
+          </p>
+          <div className="text-primary mt-1 flex flex-row gap-1 items-center">
+            <Link href="/pricing" className="hover:underline">Learn more about our products</Link>
+            <ChevronRight className="h-4 w-4" />
+          </div>
+        </div>
+        <Card className="mt-5 p-4 w-full md:w-[70%]">
+          <div className="flex flex-row gap-3 border-b border-border pb-2 flex-wrap">
+            <h6 className="text-lg font-semibold">Still looking for an answer?</h6>
             <Link href="/blogs">
-              <Button variant="outlined">Search for more help</Button>
+              <Button variant="outline">Search for more help</Button>
             </Link>
-          </Stack>
-          <Stack
-            sx={{ mt: 4 }}
-            flexDirection="row"
-            gap={1}
-            alignItems="center"
-            justifyContent="space-between"
-            flexWrap="wrap"
-            rowGap={2}
-          >
-            <Stack flexDirection="row" gap={1} alignItems="center">
-              <Typography sx={{ mr: 2 }} variant="h6">
+          </div>
+          <div className="mt-4 flex flex-row gap-1 items-center justify-between flex-wrap gap-y-2">
+            <div className="flex flex-row gap-1 items-center">
+              <h6 className="mr-2 text-lg font-semibold">
                 Was this helpful?
-              </Typography>
+              </h6>
               <LikeDislike
                 id={blog?._id}
                 api="/blog"
@@ -207,12 +87,11 @@ export default function MainLayout({ blog }) {
                 dislike={blog?.dislikes}
                 data={blog}
               />
-            </Stack>
+            </div>
 
-            <Divider
-              sx={{ display: { xs: "none", sm: "block" } }}
+            <Separator
               orientation="vertical"
-              flexItem
+              className="hidden sm:block h-6"
             />
 
             <ShareIcons
@@ -221,11 +100,11 @@ export default function MainLayout({ blog }) {
               hashtags={hashtags}
               content={blog.content}
             />
-          </Stack>
+          </div>
         </Card>
-      </Stack>
+      </div>
 
       <CommentSection data={blog} comments={blog?.comments} />
-    </Container>
+    </div>
   );
 }

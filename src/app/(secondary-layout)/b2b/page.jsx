@@ -1,4 +1,3 @@
-import { Container, Stack } from "@mui/material";
 import { clientImages } from "../../../_mock/b2b/clientImages";
 import { features } from "../../../_mock/b2b/features";
 import { BookACall } from "../../../components/b2b/BookACall";
@@ -18,8 +17,8 @@ export async function generateMetadata() {
 
 const B2B = () => {
   return (
-    <Container sx={{ py: 4 }}>
-      <Stack spacing={7}>
+    <div className="container mx-auto px-4 py-16">
+      <div className="flex flex-col gap-28">
         <HeroSection />
         <StatsSection />
         <WhyChooseUsSection />
@@ -36,8 +35,8 @@ const B2B = () => {
         />
         <TestimonialsSection />
         <BookACall />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 };
 

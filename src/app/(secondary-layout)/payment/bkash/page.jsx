@@ -1,4 +1,3 @@
-import { Box, Container, Typography } from "@mui/material";
 import BkashPyament from "../../../../components/payment/BkashPayment";
 
 export async function generateMetadata() {
@@ -10,32 +9,19 @@ export async function generateMetadata() {
 
 const BkashPyamentPage = () => {
   return (
-    <Container
-      sx={{
-        pt: 10,
-        pb: 10,
-        minHeight: 1,
-      }}
-    >
-      <Typography variant="h3" align="center">
+    <div className="container mx-auto px-4 pt-40 pb-40 min-h-screen">
+      <h1 className="text-3xl font-bold text-center">
         {`Let's finish powering you up!`}
-      </Typography>
+      </h1>
 
-      <Typography align="center" sx={{ color: "text.secondary", mb: 5 }}>
+      <p className="text-center text-muted-foreground mb-20">
         Professional plan is right for you.
-      </Typography>
+      </p>
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div className="flex flex-col items-center justify-center">
         <BkashPyament />
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

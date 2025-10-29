@@ -1,4 +1,3 @@
-import { Container, Stack } from "@mui/material";
 import { Suspense } from "react";
 import { BookACall } from "../../../../components/b2b/BookACall";
 import ServicesContend from "../../../../components/b2b/services/ServicesContend";
@@ -12,14 +11,14 @@ export async function generateMetadata() {
 
 const Services = () => {
   return (
-    <Container>
-      <Stack spacing={5}>
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col gap-20">
         <Suspense fallback={null}>
           <ServicesContend />
         </Suspense>
         <BookACall />
-      </Stack>
-    </Container>
+      </div>
+    </div>
   );
 };
 
