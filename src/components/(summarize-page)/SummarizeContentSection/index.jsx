@@ -7,10 +7,6 @@ import useLoadingText from "@/hooks/useLoadingText";
 import useSnackbar from "@/hooks/useSnackbar";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
-import {
-  FormatListBulleted,
-  FormatTextdirectionLToRRounded,
-} from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import TopNavigation from "./TopNavigation";
@@ -22,7 +18,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, List, Pilcrow } from "lucide-react";
 
 import ButtonInsertDocumentText from "@/components/buttons/ButtonInsertDocumentText";
 import useScreenSize from "@/hooks/ui/useScreenSize";
@@ -32,12 +28,12 @@ import OutputActions from "./OutputActions";
 
 const modes = [
   {
-    icon: <FormatListBulleted fontSize="small" />,
-    name: "Key Sentences",
+    icon: <Pilcrow className="size-[1em]" />,
+    name: "Paragraph",
   },
   {
-    icon: <FormatTextdirectionLToRRounded fontSize="small" />,
-    name: "Paragraph",
+    icon: <List className="size-[1em]" />,
+    name: "Key Sentences",
   },
 ];
 
@@ -170,7 +166,10 @@ const TiptapEditor = ({
 
   return (
     <div className={cn("tiptap-wrapper", className)}>
-      <EditorContent className="h-full w-full flex-1" editor={editor} />
+      <EditorContent
+        className="!text-foreground h-full w-full flex-1"
+        editor={editor}
+      />
       <style jsx global>{`
         .tiptap-content mark,
         .tiptap-content .highlighted-keyword {
@@ -182,6 +181,11 @@ const TiptapEditor = ({
         .tiptap-content mark:hover,
         .tiptap-content .highlighted-keyword:hover {
           filter: brightness(0.95);
+        }
+
+        .tiptap-content {
+          background-color: transparent !important;
+          color: currentColor !important;
         }
 
         .ProseMirror {
