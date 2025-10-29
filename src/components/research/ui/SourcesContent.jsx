@@ -1,27 +1,16 @@
 "use client";
 
-import { Box, Typography, Card, CardContent, Grid, Link } from "@mui/material";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function SourcesContent({ sources }) {
   if (!sources || sources.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 300,
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h6" color="text.secondary">
-          No Sources Available
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+      <div className="flex min-h-[300px] flex-col items-center justify-center text-center">
+        <h6 className="text-muted-foreground text-lg">No Sources Available</h6>
+        <p className="text-muted-foreground text-sm">
           No sources were found for this research query
-        </Typography>
-      </Box>
+        </p>
+      </div>
     );
   }
 
@@ -32,73 +21,41 @@ export default function SourcesContent({ sources }) {
   );
 
   return (
-    <Box
-      sx={{
-        px: 2,
-        py: 3,
-        mb: { xs: 17, sm: 7, md: 5 },
-      }}
-    >
-      <Grid container spacing={1}>
+    <div className="mb-[4.25rem] px-2 py-3 sm:mb-7 md:mb-5">
+      <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {uniqueSources.map((source, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={source._id || index}>
-            <Card
-              variant="outlined"
-              sx={{
-                borderRadius: 2,
-                transition: "all 0.2s",
-                cursor: "pointer",
-                "&:hover": { boxShadow: 3 },
-              }}
-              onClick={() => window.open(source.url, "_blank")}
-            >
-              <CardContent>
-                <Typography
-                  variant="body1"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    overflowWrap: "anywhere",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {source.title}
-                </Typography>
+          <Card
+            key={source._id || index}
+            className="cursor-pointer rounded-lg transition-all duration-200 hover:shadow-lg"
+            onClick={() => window.open(source.url, "_blank")}
+          >
+            <CardContent className="p-4">
+              <p className="flex items-center gap-1 text-base break-words">
+                {source.title}
+              </p>
 
-                {(() => {
-                  const displayUrl = source.resolved_url || source.url;
-                  const hostname = new URL(displayUrl).hostname.replace(
-                    "www.",
-                    "",
-                  );
-                  return (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                    >
-                      <img
-                        src={`https://www.google.com/s2/favicons?sz=32&domain_url=${displayUrl}`}
-                        alt=""
-                        width={16}
-                        height={16}
-                      />
-                      <span
-                        style={{
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {hostname}
-                      </span>
-                    </Typography>
-                  );
-                })()}
-              </CardContent>
-            </Card>
-          </Grid>
+              {(() => {
+                const displayUrl = source.resolved_url || source.url;
+                const hostname = new URL(displayUrl).hostname.replace(
+                  "www.",
+                  "",
+                );
+                return (
+                  <div className="text-muted-foreground flex items-center gap-1 text-sm">
+                    <img
+                      src={`https://www.google.com/s2/favicons?sz=32&domain_url=${displayUrl}`}
+                      alt=""
+                      width={16}
+                      height={16}
+                    />
+                    <span className="break-words">{hostname}</span>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 }

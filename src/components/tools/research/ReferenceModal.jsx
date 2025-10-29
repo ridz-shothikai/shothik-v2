@@ -1,29 +1,40 @@
 "use client";
 
-import {
-  Popover,
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Avatar,
-  useTheme,
-  Backdrop,
-} from "@mui/material";
-import { OpenInNew as OpenInNewIcon } from "@mui/icons-material";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 const ReferenceModal = ({ open, onClose, reference, sources, anchorEl }) => {
-  const theme = useTheme();
+  const modalRef = useRef(null);
 
-  console.log('ReferenceModal props:', { open, reference, sources: sources?.length, anchorEl });
+  console.log("ReferenceModal props:", {
+    open,
+    reference,
+    sources: sources?.length,
+    anchorEl,
+  });
+
+  // Handle click outside to close modal
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [open, onClose]);
 
   if (!reference || !sources) return null;
 
   // Find sources that match this reference number
   const matchingSources = sources.filter(
-    (source) => source.reference === reference
+    (source) => source.reference === reference,
   );
 
   const handleOpenUrl = (url) => {
@@ -33,7 +44,7 @@ const ReferenceModal = ({ open, onClose, reference, sources, anchorEl }) => {
   // Function to get domain from URL
   const getDomain = (url) => {
     try {
-      return new URL(url).hostname.replace('www.', '');
+      return new URL(url).hostname.replace("www.", "");
     } catch {
       return url;
     }
@@ -52,159 +63,83 @@ const ReferenceModal = ({ open, onClose, reference, sources, anchorEl }) => {
   // Function to get domain abbreviation
   const getDomainAbbr = (url) => {
     try {
-      const domain = new URL(url).hostname.replace('www.', '');
-      const parts = domain.split('.');
+      const domain = new URL(url).hostname.replace("www.", "");
+      const parts = domain.split(".");
       if (parts.length >= 2) {
         return parts[0].substring(0, 2).toUpperCase();
       }
       return domain.substring(0, 2).toUpperCase();
     } catch {
-      return '??';
+      return "??";
     }
   };
 
-  return (
-    <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={onClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        disableRestoreFocus
-        slotProps={{
-          paper: {
-            sx: {
-              mt: 0.5,
-              position: "fixed",
-            },
-          },
-        }}
-        sx={{
-          zIndex: 1300,
-          "& .MuiPopover-paper": {
-            backgroundColor: "#ffffff",
-            borderRadius: 1,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-            minWidth: 280,
-            maxWidth: 350,
-            maxHeight: 250,
-          },
-        }}
-      >
-        <Box sx={{ p: 0 }}>
-          <Box
-            sx={{
-              px: 2,
-              py: 1.5,
-              borderBottom: 1,
-              borderColor: "rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: "black",
-                fontWeight: 600,
-                fontSize: "0.8rem",
-              }}
-            >
-              Sources {matchingSources.length}
-            </Typography>
-          </Box>
+  if (!open) return null;
 
-          {matchingSources.length === 0 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 120,
-                textAlign: "center",
-                p: 2,
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                No sources found
-              </Typography>
-            </Box>
-          ) : (
-            <List sx={{ p: 0, maxHeight: 200, overflow: "auto" }}>
-              {matchingSources.map((source, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    cursor: "pointer",
-                    px: 2,
-                    py: 0.8,
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.05)",
-                    },
-                    borderBottom: index < matchingSources.length - 1 ? "1px solid rgba(0, 0, 0, 0.08)" : "none",
-                  }}
-                  onClick={() => handleOpenUrl(source.url)}
-                >
-                  <ListItemIcon sx={{ minWidth: 28 }}>
-                    <Avatar
-                      sx={{
-                        width: 18,
-                        height: 18,
-                        fontSize: "0.6rem",
-                        backgroundColor: "rgba(0, 0, 0, 0.1)",
-                        color: "black",
-                      }}
-                      src={getFaviconUrl(source.url)}
-                    >
-                      {getDomainAbbr(source.url)}
-                    </Avatar>
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 400,
-                          display: "-webkit-box",
-                          WebkitLineClamp: 1,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          lineHeight: 1.2,
-                          color: "black",
-                          fontSize: "0.75rem",
-                        }}
-                      >
-                        {source.title || "Untitled Source"}
-                      </Typography>
-                    }
-                    secondary={
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: "rgba(0, 0, 0, 0.6)",
-                          fontSize: "0.65rem",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {getDomain(source.url)}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </Box>
-      </Popover>
+  const getPosition = () => {
+    if (!anchorEl || !anchorEl.getBoundingClientRect)
+      return { top: 0, left: 0 };
+    const rect = anchorEl.getBoundingClientRect();
+    return {
+      top: rect.bottom + 4,
+      left: rect.left,
+    };
+  };
+
+  const position = getPosition();
+
+  return (
+    <div
+      ref={modalRef}
+      className="fixed z-[1300]"
+      style={{ top: `${position.top}px`, left: `${position.left}px` }}
+      onMouseLeave={onClose}
+    >
+      <div className="border-border bg-popover max-h-[250px] max-w-[350px] min-w-[280px] rounded-md border shadow-lg">
+        <div className="border-border border-b px-2 py-1.5">
+          <span className="text-foreground text-xs font-semibold">
+            Sources {matchingSources.length}
+          </span>
+        </div>
+
+        {matchingSources.length === 0 ? (
+          <div className="flex min-h-[120px] flex-col items-center justify-center p-2 text-center">
+            <span className="text-muted-foreground text-sm">
+              No sources found
+            </span>
+          </div>
+        ) : (
+          <div className="max-h-[200px] overflow-auto p-0">
+            {matchingSources.map((source, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "hover:bg-accent flex cursor-pointer items-center gap-2 px-2 py-2",
+                  index < matchingSources.length - 1 &&
+                    "border-border/50 border-b",
+                )}
+                onClick={() => handleOpenUrl(source.url)}
+              >
+                <Avatar className="h-[18px] w-[18px]">
+                  <AvatarImage src={getFaviconUrl(source.url)} />
+                  <AvatarFallback className="bg-muted text-foreground text-[0.6rem]">
+                    {getDomainAbbr(source.url)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="text-foreground line-clamp-1 text-xs leading-tight font-normal">
+                    {source.title || "Untitled Source"}
+                  </span>
+                  <span className="text-muted-foreground truncate text-[0.65rem]">
+                    {getDomain(source.url)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

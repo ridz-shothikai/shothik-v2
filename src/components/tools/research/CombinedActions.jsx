@@ -1,53 +1,40 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  IconButton,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Tooltip,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import {
-  Share as ShareIcon,
-  FileDownload as ExportIcon,
-  Refresh as RewriteIcon,
-  PictureAsPdf as PdfIcon,
-  Link as LinkIcon,
-  ContentCopy as CopyIcon,
-  ThumbUp as ThumbUpIcon,
-  ThumbDown as ThumbDownIcon,
-  Email as EmailIcon,
-  Public as PublicIcon,
-} from "@mui/icons-material";
-import { useState } from "react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
+import {
+  Download,
+  FileText,
+  Globe,
+  Mail,
+  RotateCw,
+  Share2,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
+import { useState } from "react";
 import ShareAgentModal from "../../share/ShareAgentModal";
 
 const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
-  const theme = useTheme();
-  const [shareMenuAnchor, setShareMenuAnchor] = useState(null);
-  const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareModalDefaultTab, setShareModalDefaultTab] = useState(0);
-
-  const handleShareClick = (event) => {
-    setShareMenuAnchor(event.currentTarget);
-  };
-
-  const handleExportClick = (event) => {
-    setExportMenuAnchor(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setShareMenuAnchor(null);
-    setExportMenuAnchor(null);
-  };
 
   const handleCopyLink = async () => {
     try {
@@ -57,14 +44,13 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
     } catch (err) {
       console.error("Failed to copy link:", err);
     }
-    handleMenuClose();
+    setShareMenuOpen(false);
   };
 
   const handleShare = (shareResult) => {
     console.log("Share created:", shareResult);
-    handleMenuClose();
+    setShareMenuOpen(false);
   };
-
 
   // ===== LOAD SHOTHIK AI LOGO FROM FILE =====
   const loadShothikLogo = () => {
@@ -117,10 +103,10 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         throw new Error("Missing PDF generation libraries");
       }
 
-       // ===== LOAD LOGO FOR PDF =====
-       console.log("Loading logo for PDF...");
-       const logoBase64 = await loadShothikLogo();
-       console.log("Logo ready:", logoBase64 ? "Yes" : "No");
+      // ===== LOAD LOGO FOR PDF =====
+      console.log("Loading logo for PDF...");
+      const logoBase64 = await loadShothikLogo();
+      console.log("Logo ready:", logoBase64 ? "Yes" : "No");
 
       const doc = new jsPDF({
         orientation: "portrait",
@@ -141,7 +127,10 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
       let currentLineCount = 0;
 
       const markdownContent = content || "";
-      const html = typeof marked === "function" ? marked(markdownContent) : marked.marked(markdownContent);
+      const html =
+        typeof marked === "function"
+          ? marked(markdownContent)
+          : marked.marked(markdownContent);
       const cleanHtml = DOMPurify.sanitize(html);
 
       const tempDiv = document.createElement("div");
@@ -150,36 +139,36 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
       const imgs = tempDiv.querySelectorAll("img");
       imgs.forEach((img) => img.remove());
 
-       // ===== ADD HEADER WITH LOGO TO FIRST PAGE =====
-       if (logoBase64) {
-         try {
-           console.log("Adding logo to PDF at position:", margin, yPosition);
-           // Logo size to match AI Detection Report (width: 120, increased height for better proportion)
-           doc.addImage(logoBase64, 'PNG', margin, yPosition, 120, 40);
-           yPosition += 50; // Increased spacing after logo for better margin bottom
-           currentLineCount += 2;
-           console.log("Logo added successfully!");
-         } catch (error) {
-           console.error("Error adding logo image:", error);
-           // Fallback: Add text logo if image fails
-           doc.setFontSize(16);
-           doc.setFont("helvetica", "bold");
-           doc.setTextColor("#1a1a1a");
-           doc.text("SHOTHIK AI", margin, yPosition + 15);
-           yPosition += 30;
-           currentLineCount += 2;
-         }
-       } else {
-         console.warn("Logo not available, using text fallback");
-         // Fallback: Add text logo if image loading fails
-         doc.setFontSize(16);
-         doc.setFont("helvetica", "bold");
-         doc.setTextColor("#1a1a1a");
-         doc.text("SHOTHIK AI", margin, yPosition + 15);
-         yPosition += 30;
-         currentLineCount += 2;
-       }
-      
+      // ===== ADD HEADER WITH LOGO TO FIRST PAGE =====
+      if (logoBase64) {
+        try {
+          console.log("Adding logo to PDF at position:", margin, yPosition);
+          // Logo size to match AI Detection Report (width: 120, increased height for better proportion)
+          doc.addImage(logoBase64, "PNG", margin, yPosition, 120, 40);
+          yPosition += 50; // Increased spacing after logo for better margin bottom
+          currentLineCount += 2;
+          console.log("Logo added successfully!");
+        } catch (error) {
+          console.error("Error adding logo image:", error);
+          // Fallback: Add text logo if image fails
+          doc.setFontSize(16);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#1a1a1a");
+          doc.text("SHOTHIK AI", margin, yPosition + 15);
+          yPosition += 30;
+          currentLineCount += 2;
+        }
+      } else {
+        console.warn("Logo not available, using text fallback");
+        // Fallback: Add text logo if image loading fails
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor("#1a1a1a");
+        doc.text("SHOTHIK AI", margin, yPosition + 15);
+        yPosition += 30;
+        currentLineCount += 2;
+      }
+
       // Add "Research Results" title with AI detector-style spacing
       const queryTitle = title || "Research Results";
       doc.setFontSize(16); // Match AI detector title size
@@ -213,7 +202,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
       doc.setDrawColor("#e5e5e5");
       doc.setLineWidth(0.5);
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
-       yPosition += 20; // Increased spacing after separator for better content separation
+      yPosition += 20; // Increased spacing after separator for better content separation
       currentLineCount += 1;
 
       const addNewPage = () => {
@@ -238,22 +227,28 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         }
       };
 
-      const addTextWithInlineReferences = (text, fontSize = 11, fontStyle = "normal", color = "#000000", customMargin = margin) => {
+      const addTextWithInlineReferences = (
+        text,
+        fontSize = 11,
+        fontStyle = "normal",
+        color = "#000000",
+        customMargin = margin,
+      ) => {
         doc.setFontSize(fontSize);
         doc.setFont("helvetica", fontStyle);
-        
+
         const maxWidth = contentWidth - (customMargin - margin);
-        
+
         const referenceRegex = /(\[[\d,\s]+\])/g;
-        const parts = text.split(referenceRegex).filter(p => p);
-        
+        const parts = text.split(referenceRegex).filter((p) => p);
+
         let words = [];
-        
-        parts.forEach(part => {
+
+        parts.forEach((part) => {
           if (/^\[[\d,\s]+\]$/.test(part)) {
             words.push({ text: part, isRef: true });
           } else {
-            part.split(/\s+/).forEach(word => {
+            part.split(/\s+/).forEach((word) => {
               if (word) words.push({ text: word, isRef: false });
             });
           }
@@ -295,9 +290,11 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
           if (word.isRef) {
             const refMatch = word.text.match(/\[(\d+(?:,\s*\d+)*)\]/);
             if (refMatch) {
-              const refNumbers = refMatch[1].split(',').map(n => parseInt(n.trim()));
+              const refNumbers = refMatch[1]
+                .split(",")
+                .map((n) => parseInt(n.trim()));
               const firstRef = refNumbers[0];
-              const source = sources.find(s => s.reference === firstRef);
+              const source = sources.find((s) => s.reference === firstRef);
 
               doc.setTextColor("#000000");
               doc.setFont("helvetica", "normal");
@@ -305,9 +302,15 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
 
               if (source && source.url) {
                 const textWidth = doc.getTextWidth(word.text);
-                doc.link(currentX, yPosition - fontSize, textWidth, fontSize + 2, {
-                  url: source.url,
-                });
+                doc.link(
+                  currentX,
+                  yPosition - fontSize,
+                  textWidth,
+                  fontSize + 2,
+                  {
+                    url: source.url,
+                  },
+                );
               }
 
               currentX += doc.getTextWidth(word.text);
@@ -315,7 +318,8 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
           } else {
             doc.setTextColor(defaultColor);
             doc.setFont("helvetica", "normal");
-            const wordText = index < words.length - 1 ? word.text + " " : word.text;
+            const wordText =
+              index < words.length - 1 ? word.text + " " : word.text;
             doc.text(wordText, currentX, yPosition);
             currentX += doc.getTextWidth(wordText);
           }
@@ -329,7 +333,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         if (!textContent) return;
 
         switch (tagName) {
-          case 'h1':
+          case "h1":
             checkPageBreak(3);
             addSpacing(2.5);
             doc.setFontSize(22);
@@ -346,7 +350,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             addSpacing(2.5); // Increased spacing after main title for better content separation
             break;
 
-          case 'h2':
+          case "h2":
             checkPageBreak(2);
             addSpacing(0.8);
             doc.setFontSize(18);
@@ -362,7 +366,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             addSpacing(0.8);
             break;
 
-          case 'h3':
+          case "h3":
             checkPageBreak(2);
             addSpacing(0.6);
             doc.setFontSize(15);
@@ -378,7 +382,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             addSpacing(0.6);
             break;
 
-          case 'h4':
+          case "h4":
             checkPageBreak(2);
             addSpacing(0.5);
             doc.setFontSize(13);
@@ -394,7 +398,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             addSpacing(0.5);
             break;
 
-          case 'p':
+          case "p":
             if (textContent) {
               checkPageBreak(2);
               addTextWithInlineReferences(textContent, 11, "normal", "#333333");
@@ -402,39 +406,51 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             }
             break;
 
-          case 'li':
+          case "li":
             checkPageBreak(2);
             const bulletIndent = 18;
             const textIndent = 12;
             const totalIndent = bulletIndent + textIndent;
-            
+
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
             doc.setTextColor("#333333");
             doc.text("•", margin + bulletIndent, yPosition);
-            
-            addTextWithInlineReferences(textContent, 11, "normal", "#333333", margin + totalIndent);
-            
+
+            addTextWithInlineReferences(
+              textContent,
+              11,
+              "normal",
+              "#333333",
+              margin + totalIndent,
+            );
+
             addSpacing(0.6);
             break;
 
-          case 'strong':
-          case 'b':
+          case "strong":
+          case "b":
             addTextWithInlineReferences(textContent, 11, "bold", "#1a1a1a");
             break;
 
-          case 'em':
-          case 'i':
+          case "em":
+          case "i":
             addTextWithInlineReferences(textContent, 11, "italic", "#555555");
             break;
 
-          case 'blockquote':
+          case "blockquote":
             checkPageBreak(2);
             doc.setDrawColor("#e5e5e5");
             doc.setLineWidth(1);
             doc.line(margin + 12, yPosition - 8, margin + 12, yPosition + 12);
             addSpacing(0.5);
-            addTextWithInlineReferences(textContent, 11, "italic", "#666666", margin + 25);
+            addTextWithInlineReferences(
+              textContent,
+              11,
+              "italic",
+              "#666666",
+              margin + 25,
+            );
             addSpacing(1);
             break;
 
@@ -446,7 +462,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         }
       };
 
-      const allElements = tempDiv.querySelectorAll('*');
+      const allElements = tempDiv.querySelectorAll("*");
       const processedElements = new Set();
 
       allElements.forEach((element) => {
@@ -461,7 +477,8 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         }
 
         if (shouldProcess && !processedElements.has(element)) {
-          const hasProcessableChildren = element.querySelectorAll('h1, h2, h3, p, li').length > 0;
+          const hasProcessableChildren =
+            element.querySelectorAll("h1, h2, h3, p, li").length > 0;
           if (!hasProcessableChildren) {
             processElement(element);
             processedElements.add(element);
@@ -474,12 +491,15 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         NodeFilter.SHOW_ELEMENT,
         {
           acceptNode: (node) => {
-            if (['H1', 'H2', 'H3', 'P', 'LI'].includes(node.tagName) && !processedElements.has(node)) {
+            if (
+              ["H1", "H2", "H3", "P", "LI"].includes(node.tagName) &&
+              !processedElements.has(node)
+            ) {
               return NodeFilter.FILTER_ACCEPT;
             }
             return NodeFilter.FILTER_SKIP;
           },
-        }
+        },
       );
 
       let node;
@@ -494,16 +514,16 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
       if (sources && sources.length > 0) {
         checkPageBreak(4);
         addSpacing(1.5);
-        
+
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.setTextColor("#1a1a1a");
         doc.text(`Sources (${sources.length})`, margin, yPosition);
         yPosition += lineHeight;
         currentLineCount++;
-        
+
         addSpacing(0.8);
-        
+
         doc.setDrawColor("#e5e5e5");
         doc.setLineWidth(0.5);
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
@@ -512,18 +532,21 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
 
         sources.forEach((s, index) => {
           checkPageBreak(2);
-          
+
           const sourceTitle = s.title || s.resolved_url || s.url || "Source";
           const sourceUrl = s.url || s.resolved_url || "";
-          
+
           doc.setFontSize(11);
           doc.setFont("helvetica", "bold");
           doc.setTextColor("#1a1a1a");
           doc.text(`${index + 1}.`, margin, yPosition);
-          
+
           const titleWidth = doc.getTextWidth(`${index + 1}. `);
-          const titleLines = doc.splitTextToSize(sourceTitle, contentWidth - titleWidth - 15);
-          
+          const titleLines = doc.splitTextToSize(
+            sourceTitle,
+            contentWidth - titleWidth - 15,
+          );
+
           titleLines.forEach((line) => {
             checkPageBreak(1);
             doc.setFont("helvetica", "normal");
@@ -531,26 +554,36 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
             yPosition += lineHeight;
             currentLineCount++;
           });
-          
+
           if (sourceUrl) {
             yPosition += 4;
             doc.setFontSize(9);
             doc.setFont("helvetica", "normal");
             doc.setTextColor("#000000");
-            const urlLines = doc.splitTextToSize(sourceUrl, contentWidth - titleWidth - 15);
+            const urlLines = doc.splitTextToSize(
+              sourceUrl,
+              contentWidth - titleWidth - 15,
+            );
             urlLines.forEach((line) => {
               checkPageBreak(1);
               doc.text(line, margin + titleWidth, yPosition);
-              
+
               // Add clickable link
               const lineWidth = doc.getTextWidth(line);
-              doc.link(margin + titleWidth, yPosition - 9, lineWidth, 9, { url: sourceUrl });
-              
+              doc.link(margin + titleWidth, yPosition - 9, lineWidth, 9, {
+                url: sourceUrl,
+              });
+
               // Add underline to URL
               doc.setDrawColor("#000000");
               doc.setLineWidth(0.5);
-              doc.line(margin + titleWidth, yPosition + 1, margin + titleWidth + lineWidth, yPosition + 1);
-              
+              doc.line(
+                margin + titleWidth,
+                yPosition + 1,
+                margin + titleWidth + lineWidth,
+                yPosition + 1,
+              );
+
               yPosition += lineHeight - 2;
               currentLineCount++;
             });
@@ -562,36 +595,36 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
 
       // ===== ADD FOOTER WITH LOGO TO ALL PAGES =====
       const totalPages = doc.internal.getNumberOfPages();
-      
+
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
-        
+
         // Add separator line
         doc.setDrawColor("#e5e5e5");
         doc.setLineWidth(0.5);
         doc.line(margin, pageHeight - 40, pageWidth - margin, pageHeight - 40);
-        
-         // Add SHOTHIK AI logo to footer
-         if (logoBase64) {
-           try {
-             // Footer logo size proportional to header (smaller but increased height for better proportion)
-             doc.addImage(logoBase64, 'PNG', margin, pageHeight - 35, 80, 26);
-           } catch (error) {
-             console.error("Failed to add logo to footer on page", i, error);
-             // Fallback: Add text logo if image fails
-             doc.setFontSize(10);
-             doc.setFont("helvetica", "bold");
-             doc.setTextColor("#1a1a1a");
-             doc.text("SHOTHIK AI", margin, pageHeight - 25);
-           }
-         } else {
-           // Fallback: Add text logo if image loading fails
-           doc.setFontSize(10);
-           doc.setFont("helvetica", "bold");
-           doc.setTextColor("#1a1a1a");
-           doc.text("SHOTHIK AI", margin, pageHeight - 25);
-         }
-        
+
+        // Add SHOTHIK AI logo to footer
+        if (logoBase64) {
+          try {
+            // Footer logo size proportional to header (smaller but increased height for better proportion)
+            doc.addImage(logoBase64, "PNG", margin, pageHeight - 35, 80, 26);
+          } catch (error) {
+            console.error("Failed to add logo to footer on page", i, error);
+            // Fallback: Add text logo if image fails
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor("#1a1a1a");
+            doc.text("SHOTHIK AI", margin, pageHeight - 25);
+          }
+        } else {
+          // Fallback: Add text logo if image loading fails
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#1a1a1a");
+          doc.text("SHOTHIK AI", margin, pageHeight - 25);
+        }
+
         // Add page number on the right
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
@@ -600,31 +633,30 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
         const pageTextWidth = doc.getTextWidth(pageText);
         doc.text(pageText, pageWidth - margin - pageTextWidth, pageHeight - 18);
       }
-      
-      doc.save(`${title || 'research-results'}.pdf`);
+
+      doc.save(`${title || "research-results"}.pdf`);
     } catch (err) {
       console.error("Failed to export PDF:", err);
     }
-    handleMenuClose();
+    setExportMenuOpen(false);
   };
 
   const handleRewrite = () => {
     console.log("Rewrite requested");
-    handleMenuClose();
   };
 
   const handleFeedback = async (type) => {
     if (isSubmitting) return;
-    
+
     setIsSubmitting(true);
     setFeedback(type);
-    
+
     try {
       if (onFeedback) {
         await onFeedback(type);
       }
       console.log(`Feedback submitted: ${type}`);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     } catch (error) {
       console.error("Failed to submit feedback:", error);
       setFeedback(null);
@@ -634,203 +666,148 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-        py: 1,
-        px: 2,
-        borderTop: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper,
-        justifyContent: "space-between",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-        }}
-      >
-        <Tooltip title="Share">
-          <IconButton
-            size="small"
-            onClick={handleShareClick}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            <ShareIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+    <div className="border-border bg-background flex items-center justify-between gap-2 border-t px-2 py-1">
+      <div className="flex items-center gap-1">
+        <TooltipProvider>
+          <DropdownMenu open={shareMenuOpen} onOpenChange={setShareMenuOpen}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:bg-accent h-8 w-8"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Share</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="start">
+              {agentId ? (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setShareMenuOpen(false);
+                      setShareModalDefaultTab(0);
+                      setShareModalOpen(true);
+                    }}
+                  >
+                    <Mail className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span>Share via Email</span>
+                      <span className="text-muted-foreground text-xs">
+                        Send to specific people
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setShareMenuOpen(false);
+                      setShareModalDefaultTab(1);
+                      setShareModalOpen(true);
+                    }}
+                  >
+                    <Globe className="mr-2 h-4 w-4" />
+                    <div className="flex flex-col">
+                      <span>Create Public Link</span>
+                      <span className="text-muted-foreground text-xs">
+                        Anyone with link can view
+                      </span>
+                    </div>
+                  </DropdownMenuItem>
+                </>
+              ) : null}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <Tooltip title="Export">
-          <IconButton
-            size="small"
-            onClick={handleExportClick}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            <ExportIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+          <DropdownMenu open={exportMenuOpen} onOpenChange={setExportMenuOpen}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:bg-accent h-8 w-8"
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Export</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={handleExportPDF}>
+                <FileText className="mr-2 h-4 w-4" />
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        <Tooltip title="Rewrite">
-          <IconButton
-            size="small"
-            onClick={handleRewrite}
-            sx={{
-              color: theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
-            }}
-          >
-            <RewriteIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleRewrite}
+                className="text-muted-foreground hover:bg-accent h-8 w-8"
+              >
+                <RotateCw className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Rewrite</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            color: theme.palette.text.secondary,
-            fontSize: "0.875rem",
-            mr: 1,
-          }}
-        >
+      <div className="flex items-center gap-1">
+        <span className="text-muted-foreground mr-1 text-sm">
           Was this helpful?
-        </Typography>
-        
-        <Tooltip title="Yes, helpful">
-          <IconButton
-            size="small"
-            onClick={() => handleFeedback('helpful')}
-            disabled={isSubmitting}
-            sx={{
-              color: feedback === 'helpful' 
-                ? theme.palette.success.main 
-                : theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-                color: theme.palette.success.main,
-              },
-              "&:disabled": {
-                color: feedback === 'helpful' 
-                  ? theme.palette.success.main 
-                  : theme.palette.text.disabled,
-              },
-            }}
-          >
-            <ThumbUpIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        
-        <Tooltip title="No, not helpful">
-          <IconButton
-            size="small"
-            onClick={() => handleFeedback('not-helpful')}
-            disabled={isSubmitting}
-            sx={{
-              color: feedback === 'not-helpful' 
-                ? theme.palette.error.main 
-                : theme.palette.text.secondary,
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-                color: theme.palette.error.main,
-              },
-              "&:disabled": {
-                color: feedback === 'not-helpful' 
-                  ? theme.palette.error.main 
-                  : theme.palette.text.disabled,
-              },
-            }}
-          >
-            <ThumbDownIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      
+        </span>
 
-      <Menu
-        anchorEl={shareMenuAnchor}
-        open={Boolean(shareMenuAnchor)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        {agentId ? [
-            <MenuItem key="email" onClick={() => {
-              handleMenuClose();
-              setShareModalDefaultTab(0); // Private (Email) tab
-              setShareModalOpen(true);
-            }}>
-              <ListItemIcon>
-                <EmailIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText 
-                primary="Share via Email" 
-                secondary="Send to specific people"
-              />
-            </MenuItem>,
-            <MenuItem key="public" onClick={() => {
-              handleMenuClose();
-              setShareModalDefaultTab(1); // Public Link tab
-              setShareModalOpen(true);
-            }}>
-              <ListItemIcon>
-                <PublicIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText 
-                primary="Create Public Link" 
-                secondary="Anyone with link can view"
-              />
-            </MenuItem>
-          ] : []}
-      </Menu>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleFeedback("helpful")}
+                disabled={isSubmitting}
+                className={cn(
+                  "h-8 w-8",
+                  feedback === "helpful"
+                    ? "text-green-600 hover:text-green-600"
+                    : "text-muted-foreground hover:bg-accent hover:text-green-600",
+                )}
+              >
+                <ThumbsUp className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Yes, helpful</TooltipContent>
+          </Tooltip>
 
-      <Menu
-        anchorEl={exportMenuAnchor}
-        open={Boolean(exportMenuAnchor)}
-        onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        <MenuItem onClick={handleExportPDF}>
-          <ListItemIcon>
-            <PdfIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Export as PDF</ListItemText>
-        </MenuItem>
-      </Menu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleFeedback("not-helpful")}
+                disabled={isSubmitting}
+                className={cn(
+                  "h-8 w-8",
+                  feedback === "not-helpful"
+                    ? "text-red-600 hover:text-red-600"
+                    : "text-muted-foreground hover:bg-accent hover:text-red-600",
+                )}
+              >
+                <ThumbsDown className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>No, not helpful</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
       {/* Share Agent Modal */}
       {agentId && (
@@ -842,7 +819,7 @@ const CombinedActions = ({ content, sources, title, onFeedback, agentId }) => {
           defaultTab={shareModalDefaultTab}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

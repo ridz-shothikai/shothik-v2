@@ -1,206 +1,88 @@
 "use client";
 
-import { Box, Typography, Paper, Chip, useTheme } from "@mui/material";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { marked } from "marked";
 import { useSelector } from "react-redux";
-import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 import { researchChatState } from "../../../redux/slice/researchChatSlice";
+import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 import ResearchContentWithReferences from "../../tools/research/ResearchContentWithReferences";
 
-const MessageBubble = ({ message, isLastData, isDataGenerating, theme }) => (
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "flex-start",
-      width: "100%", // Ensure container takes full width
-    }}
-  >
-    <Paper
-      elevation={1}
-      sx={{
-        flex: 1,
-        py: 2,
-        px: 3,
-        mb: { xs: isLastData && isDataGenerating ? 2 : 19, sm: 9, md: 2 },
-        bgcolor: theme?.palette.mode === "dark" ? "#161C24" : "#F4F6F8",
-        border: "none",
-        boxShadow: "none",
-        width: "100%", // Ensure paper takes full width
-        maxWidth: "100%", // Prevent overflow
-        boxSizing: "border-box", // Include padding in width calculation
-      }}
+const MessageBubble = ({ message, isLastData, isDataGenerating }) => (
+  <div className="flex w-full items-start">
+    <div
+      className={cn(
+        "bg-muted box-border w-full max-w-full flex-1 border-none px-3 py-2 shadow-none",
+        isLastData && isDataGenerating
+          ? "mb-2 sm:mb-9 md:mb-2"
+          : "mb-[4.75rem] sm:mb-9 md:mb-2",
+      )}
     >
-      <Box
-        sx={{
-          "& p": {
-            mb: 1,
-            wordWrap: "break-word", // Break long words
-            overflowWrap: "break-word", // Modern browsers
-            wordBreak: "break-word", // Break words if needed
-            hyphens: "auto", // Add hyphens when breaking words
-            maxWidth: "100%",
-          },
-          "& p:last-child": { mb: 0 },
-          // Handle various markdown elements
-          "& h1, & h2, & h3, & h4, & h5, & h6": {
-            wordWrap: "break-word",
-            overflowWrap: "break-word",
-            wordBreak: "break-word",
-            maxWidth: "100%",
-            mb: 1,
-          },
-          "& ul, & ol": {
-            paddingLeft: { xs: "1rem", sm: "1.5rem" }, // Reduce padding on mobile
-            maxWidth: "100%",
-          },
-          "& li": {
-            wordWrap: "break-word",
-            overflowWrap: "break-word",
-            wordBreak: "break-word",
-            maxWidth: "100%",
-            mb: 0.5,
-          },
-          "& a": {
-            wordWrap: "break-word",
-            overflowWrap: "break-word",
-            wordBreak: "break-all", // Break URLs aggressively
-            color: "primary.main",
-            textDecoration: "underline",
-          },
-          "& code": {
-            backgroundColor: "rgba(0,0,0,0.1)",
-            padding: "2px 4px",
-            borderRadius: "4px",
-            fontSize: "0.875em",
-            wordWrap: "break-word",
-            overflowWrap: "break-word",
-            wordBreak: "break-all",
-            whiteSpace: "pre-wrap", // Allow wrapping in code
-          },
-          "& pre": {
-            backgroundColor: "rgba(0,0,0,0.1)",
-            padding: "12px",
-            borderRadius: "8px",
-            overflow: "auto", // Add scrollbar for long code blocks
-            maxWidth: "100%",
-            "& code": {
-              backgroundColor: "transparent",
-              padding: 0,
-              whiteSpace: "pre-wrap", // Allow wrapping
-              wordBreak: "break-all",
-            },
-          },
-          "& blockquote": {
-            borderLeft: "4px solid #ddd",
-            paddingLeft: { xs: "8px", sm: "16px" },
-            margin: "16px 0",
-            fontStyle: "italic",
-            color: "text.secondary",
-            wordWrap: "break-word",
-            overflowWrap: "break-word",
-          },
-          "& table": {
-            width: "100%",
-            maxWidth: "100%",
-            overflowX: "auto",
-            display: "block",
-            whiteSpace: "nowrap",
-            "& td, & th": {
-              padding: { xs: "4px", sm: "8px" },
-              fontSize: { xs: "0.8rem", sm: "1rem" },
-              wordWrap: "break-word",
-            },
-          },
-          "& img": {
-            maxWidth: "100%",
-            height: "auto",
-            display: "block",
-          },
-          // Ensure all content respects container bounds
-          "& *": {
-            maxWidth: "100%",
-            boxSizing: "border-box",
-          },
-        }}
+      <div
+        className={cn(
+          "w-full max-w-full",
+          "[&_p]:mb-4 [&_p]:max-w-full [&_p]:break-words [&_p]:hyphens-auto",
+          "[&_p:last-child]:mb-0",
+          "[&_h1]:mb-4 [&_h1]:max-w-full [&_h1]:break-words",
+          "[&_h2]:mb-4 [&_h2]:max-w-full [&_h2]:break-words",
+          "[&_h3]:mb-4 [&_h3]:max-w-full [&_h3]:break-words",
+          "[&_h4]:mb-4 [&_h4]:max-w-full [&_h4]:break-words",
+          "[&_h5]:mb-4 [&_h5]:max-w-full [&_h5]:break-words",
+          "[&_h6]:mb-4 [&_h6]:max-w-full [&_h6]:break-words",
+          "[&_ul]:max-w-full [&_ul]:pl-4 sm:[&_ul]:pl-6",
+          "[&_ol]:max-w-full [&_ol]:pl-4 sm:[&_ol]:pl-6",
+          "[&_li]:mb-2 [&_li]:max-w-full [&_li]:break-words",
+          "[&_a]:text-primary [&_a]:break-all [&_a]:underline",
+          "[&_code]:bg-muted-foreground/10 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:break-all [&_code]:whitespace-pre-wrap",
+          "[&_pre]:bg-muted-foreground/10 [&_pre]:max-w-full [&_pre]:overflow-auto [&_pre]:rounded-lg [&_pre]:p-3",
+          "[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:break-all [&_pre_code]:whitespace-pre-wrap",
+          "[&_blockquote]:border-border [&_blockquote]:text-muted-foreground [&_blockquote]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:pl-2 [&_blockquote]:break-words [&_blockquote]:italic sm:[&_blockquote]:pl-4",
+          "[&_table]:block [&_table]:w-full [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:whitespace-nowrap",
+          "[&_td]:p-1 [&_td]:text-xs [&_td]:break-words sm:[&_td]:p-2 sm:[&_td]:text-base",
+          "[&_th]:p-1 [&_th]:text-xs [&_th]:break-words sm:[&_th]:p-2 sm:[&_th]:text-base",
+          "[&_img]:block [&_img]:h-auto [&_img]:max-w-full",
+          "[&_*]:box-border [&_*]:max-w-full",
+        )}
       >
-        <Box
-          sx={{
-            "& p": { mb: 1 },
-            "& p:last-child": { mb: 0 },
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden", // Prevent any overflow
-          }}
+        <div
+          className="w-full max-w-full overflow-hidden [&_p]:mb-4 [&_p:last-child]:mb-0"
           dangerouslySetInnerHTML={{ __html: marked(message) }}
         />
-      </Box>
+      </div>
 
       {message.sources && message.sources.length > 0 && (
-        <Box sx={{ mt: 2, width: "100%", maxWidth: "100%" }}>
-          <Typography
-            variant="caption"
-            sx={{ color: "text.secondary", mb: 1, display: "block" }}
-          >
+        <div className="mt-2 w-full max-w-full">
+          <span className="text-muted-foreground mb-1 block text-xs">
             Sources:
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 0.5,
-              width: "100%",
-              maxWidth: "100%",
-            }}
-          >
+          </span>
+          <div className="flex w-full max-w-full flex-wrap gap-1">
             {message.sources.slice(0, 5).map((source, index) => (
-              <Chip
+              <Badge
                 key={index}
-                label={`[${source.reference}] ${source.title}`}
-                size="small"
-                variant="outlined"
-                sx={{
-                  fontSize: { xs: "0.6rem", sm: "0.7rem" }, // Smaller on mobile
-                  height: "24px",
-                  maxWidth: { xs: "150px", sm: "none" }, // Limit width on mobile
-                  "& .MuiChip-label": {
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                  },
-                }}
+                variant="outline"
+                className="h-6 max-w-[150px] cursor-pointer overflow-hidden text-[0.6rem] text-ellipsis whitespace-nowrap sm:max-w-none sm:text-[0.7rem]"
                 onClick={() => window.open(source.url, "_blank")}
-                clickable
-              />
+              >
+                [{source.reference}] {source.title}
+              </Badge>
             ))}
             {message.sources.length > 5 && (
-              <Chip
-                label={`+${message.sources.length - 5} more`}
-                size="small"
-                variant="outlined"
-                sx={{
-                  fontSize: { xs: "0.6rem", sm: "0.7rem" },
-                  height: "24px",
-                }}
-              />
+              <Badge
+                variant="outline"
+                className="h-6 text-[0.6rem] sm:text-[0.7rem]"
+              >
+                +{message.sources.length - 5} more
+              </Badge>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
 
-      <Typography
-        variant="caption"
-        sx={{
-          color: "text.secondary",
-          mt: 1,
-          display: "block",
-          textAlign: "right",
-          fontSize: { xs: "0.6rem", sm: "0.75rem" }, // Smaller on mobile
-        }}
-      >
+      <span className="text-muted-foreground mt-1 block text-right text-[0.6rem] sm:text-xs">
         {/* {new Date(message.timestamp).toLocaleTimeString()} */}
-      </Typography>
-    </Paper>
-  </Box>
+      </span>
+    </div>
+  </div>
 );
 
 export default function ResearchContent({ currentResearch, isLastData }) {
@@ -210,32 +92,34 @@ export default function ResearchContent({ currentResearch, isLastData }) {
   const researchCore = useSelector(researchCoreState);
   const researchChat = useSelector(researchChatState);
 
-  const theme = useTheme();
-
   // Check if we have sources to use the new component with references
-  const hasSources = currentResearch?.sources && currentResearch.sources.length > 0;
+  const hasSources =
+    currentResearch?.sources && currentResearch.sources.length > 0;
 
   // Get the current agent ID for sharing functionality
   const agentId = researchChat?.currentChatId;
 
   return (
-    <Box sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
+    <div className="w-full max-w-full overflow-hidden">
       {hasSources ? (
         <ResearchContentWithReferences
           content={researchResult}
           sources={currentResearch.sources}
           isLastData={isLastData}
-          isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
+          isDataGenerating={
+            researchCore?.isStreaming || researchCore?.isPolling
+          }
           agentId={agentId}
         />
       ) : (
         <MessageBubble
           message={researchResult}
           isLastData={isLastData}
-          isDataGenerating={researchCore?.isStreaming || researchCore?.isPolling}
-          theme={theme}
+          isDataGenerating={
+            researchCore?.isStreaming || researchCore?.isPolling
+          }
         />
       )}
-    </Box>
+    </div>
   );
 }

@@ -1,26 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
-import {
-  Box,
-  Typography,
-  Chip,
-  Paper,
-  Stack,
-  Card,
-  CardContent,
-  Divider,
-} from "@mui/material";
-import {
-  Timeline,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  timelineItemClasses,
-} from "@mui/lab";
-import useTitleSx from "./useTittleSx";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 /**
  * Timeline UI with clickable sources and a "shine" animation on the last message title.
@@ -132,136 +116,78 @@ const ProcessTimelineItem = ({ ev, isLast, isActive }) => {
     badges.push(`${ev.data.search_queries.length} queries`);
   if (ev.data?.images_found !== undefined)
     badges.push(`${ev.data.images_found} images`);
-  // if (ev.data?.position !== undefined) badges.push(`#${ev.data.position + 1}`);
-
-  // Title SX: apply shine overlay only when this is the last timeline item
-  const titleSx = {
-    position: "relative",
-    overflow: "hidden",
-    display: "inline-block",
-    // ensure text is above the shine
-    zIndex: 1,
-    ...(isLast && {
-      // pseudo-element used for the moving white glow
-      "&::after": {
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: "-140%",
-        width: "140%",
-        height: "100%",
-        // semi-transparent white band in the middle
-        background:
-          "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.65) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.65) 55%, rgba(255,255,255,0) 100%)",
-        transform: "skewX(-20deg)",
-        pointerEvents: "none",
-        animation: "shineMove 1800ms linear infinite",
-        mixBlendMode: "screen",
-      },
-      // keyframes for the shine
-      "@keyframes shineMove": {
-        "0%": { left: "-140%" },
-        "100%": { left: "140%" },
-      },
-    }),
-  };
 
   return (
-    <TimelineItem>
-      <TimelineSeparator>
-        <TimelineDot
-          sx={{
-            width: 10,
-            height: 10,
-            boxShadow: "none",
-            bgcolor: isActive ? "primary.main" : "grey.400",
-            ...(isActive && {
-              animation: "blink 2s ease-in-out infinite",
-              "@keyframes blink": {
-                "0%, 100%": { opacity: 1, transform: "scale(1)" },
-                "50%": { opacity: 0.5, transform: "scale(1.5)" },
-              },
-            }),
-          }}
+    <div className="relative flex gap-3 pb-4">
+      {/* Timeline Line */}
+      <div className="flex flex-col items-center">
+        <div
+          className={cn(
+            "h-2.5 w-2.5 rounded-full shadow-none",
+            isActive ? "bg-primary animate-pulse" : "bg-muted-foreground/40",
+          )}
         />
-        {!isLast && <TimelineConnector sx={{ bgcolor: "grey.300" }} />}
-      </TimelineSeparator>
+        {!isLast && <div className="bg-border w-0.5 flex-1" />}
+      </div>
 
-      <TimelineContent sx={{ py: 1 }}>
-        <Card variant="outlined" sx={{ borderRadius: 1, mb: 1 }}>
-          <CardContent sx={{ pb: "12px !important", pt: 1 }}>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", gap: 2 }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  {/* title wrapper receives the shine styling when isLast === true */}
-                  <Box component="span" sx={titleSx}>
+      {/* Timeline Content */}
+      <div className="flex-1 py-1">
+        <Card className="mb-1 rounded">
+          <CardContent className="pt-1 pb-3">
+            <div className="flex justify-between gap-2">
+              <div className="flex-1">
+                <p className="text-sm font-semibold">
+                  <span
+                    className={cn(
+                      "relative z-10 inline-block overflow-hidden",
+                      isLast && "animate-shine",
+                    )}
+                  >
                     {stepLabel}
-                  </Box>
-                </Typography>
+                  </span>
+                </p>
 
                 {message && (
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 0.5, color: "text.secondary" }}
-                  >
+                  <p className="text-muted-foreground mt-0.5 text-sm">
                     {shortText(message, 260)}
-                  </Typography>
+                  </p>
                 )}
 
                 {Array.isArray(ev.data?.search_query) &&
                   ev.data.search_query.length > 0 && (
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ mt: 1, flexWrap: "wrap", gap: 1 }}
-                    >
+                    <div className="mt-1 flex flex-wrap gap-1">
                       {ev.data.search_query.slice(0, 3).map((q, i) => (
-                        <Chip
-                          key={i}
-                          size="small"
-                          label={shortText(q, 40)}
-                          variant="outlined"
-                        />
+                        <Badge key={i} variant="outline">
+                          {shortText(q, 40)}
+                        </Badge>
                       ))}
                       {ev.data.search_query.length > 3 && (
-                        <Chip
-                          size="small"
-                          label={`+${ev.data.search_query.length - 3} more`}
-                        />
+                        <Badge variant="default">
+                          +{ev.data.search_query.length - 3} more
+                        </Badge>
                       )}
-                    </Stack>
+                    </div>
                   )}
-              </Box>
+              </div>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                  ml: 1,
-                }}
-              >
-                <Typography variant="caption" color="text.secondary">
+              <div className="ml-1 flex flex-col items-end">
+                <span className="text-muted-foreground text-xs">
                   {timestamp}
-                </Typography>
+                </span>
 
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  sx={{ mt: 0.5, flexWrap: "wrap", justifyContent: "flex-end" }}
-                >
+                <div className="mt-0.5 flex flex-wrap justify-end gap-0.5">
                   {badges.slice(0, 3).map((b, i) => (
-                    <Chip key={i} label={b} size="small" variant="outlined" />
+                    <Badge key={i} variant="outline">
+                      {b}
+                    </Badge>
                   ))}
-                </Stack>
-              </Box>
-            </Box>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
-      </TimelineContent>
-    </TimelineItem>
+      </div>
+    </div>
   );
 };
 
@@ -312,167 +238,124 @@ const ResearchProcessLogs = ({
     "Research Process";
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <div className="mb-3">
       {/* Header */}
-      <Paper variant="outlined" sx={{ p: 2, borderRadius: 1, mb: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
-          {mainTitle}
-        </Typography>
+      <Card className="mb-2 rounded border">
+        <CardContent className="p-2">
+          <h6 className="mb-0.5 text-lg font-bold">{mainTitle}</h6>
 
-        <Stack
-          direction="row"
-          spacing={1}
-          alignItems="center"
-          sx={{ mb: 1, flexWrap: "wrap" }}
-        >
-          <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-            Searching
-          </Typography>
+          <div className="mb-1 flex flex-wrap items-center gap-1">
+            <span className="text-muted-foreground mr-1 text-sm">
+              Searching
+            </span>
 
-          {queries && queries.length > 0 ? (
-            <>
-              {queries.slice(0, 3).map((q, i) => (
-                <Chip
-                  key={i}
-                  label={shortText(q, 36)}
-                  size="small"
-                  variant="outlined"
-                />
-              ))}
-              {queries.length > 3 && (
-                <Chip label={`+${queries.length - 3} more`} size="small" />
-              )}
-            </>
-          ) : (
-            <Chip label="no queries yet" size="small" variant="outlined" />
-          )}
-
-          <Box
-            sx={{
-              ml: "auto",
-              display: "flex",
-              gap: 1,
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            {summary.totalSources > 0 && (
-              <Chip label={`${summary.totalSources} sources`} size="small" />
+            {queries && queries.length > 0 ? (
+              <>
+                {queries.slice(0, 3).map((q, i) => (
+                  <Badge key={i} variant="outline">
+                    {shortText(q, 36)}
+                  </Badge>
+                ))}
+                {queries.length > 3 && (
+                  <Badge variant="default">+{queries.length - 3} more</Badge>
+                )}
+              </>
+            ) : (
+              <Badge variant="outline">no queries yet</Badge>
             )}
-            {summary.totalQueries > 0 && (
-              <Chip label={`${summary.totalQueries} queries`} size="small" />
-            )}
-            {summary.researchLoops > 0 && (
-              <Chip label={`${summary.researchLoops} loops`} size="small" />
-            )}
-          </Box>
-        </Stack>
 
-        <Divider sx={{ my: 1 }} />
-
-        {/* Sources preview block with clickable links */}
-        <Box sx={{ mt: 1 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Reviewing sources — {uniqueSources.length}
-          </Typography>
-
-          <Paper
-            variant="outlined"
-            sx={{ p: 1, borderRadius: 1, maxHeight: 160, overflow: "auto" }}
-          >
-            <Stack spacing={1}>
-              {uniqueSources.length === 0 && (
-                <Typography variant="caption" color="text.secondary">
-                  No sources found yet.
-                </Typography>
+            <div className="ml-auto flex flex-wrap items-center gap-1">
+              {summary.totalSources > 0 && (
+                <Badge variant="default">{summary.totalSources} sources</Badge>
               )}
-
-              {uniqueSources.slice(0, 8).map((s, i) => {
-                const title =
-                  s.title || s.name || s.label || s.url || "Untitled";
-                const domain = (() => {
-                  try {
-                    return s.url
-                      ? new URL(s.url).hostname.replace("www.", "")
-                      : "";
-                  } catch {
-                    return "";
-                  }
-                })();
-
-                return (
-                  <Box
-                    key={i}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      gap: 1,
-                      alignItems: "center",
-                    }}
-                  >
-                    {s.url ? (
-                      <Typography
-                        component="a"
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        variant="body2"
-                        sx={{
-                          fontSize: 13,
-                          fontWeight: 500,
-                          textDecoration: "none",
-                          "&:hover": { textDecoration: "underline" },
-                        }}
-                      >
-                        {shortText(title, 60)}
-                      </Typography>
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        sx={{ fontSize: 13, fontWeight: 500 }}
-                      >
-                        {shortText(title, 60)}
-                      </Typography>
-                    )}
-
-                    <Typography variant="caption" color="text.secondary">
-                      {domain}
-                    </Typography>
-                  </Box>
-                );
-              })}
-
-              {uniqueSources.length > 8 && (
-                <Typography variant="caption" color="text.secondary">
-                  +{uniqueSources.length - 8} more...
-                </Typography>
+              {summary.totalQueries > 0 && (
+                <Badge variant="default">{summary.totalQueries} queries</Badge>
               )}
-            </Stack>
-          </Paper>
-        </Box>
-      </Paper>
+              {summary.researchLoops > 0 && (
+                <Badge variant="default">{summary.researchLoops} loops</Badge>
+              )}
+            </div>
+          </div>
+
+          <Separator className="my-1" />
+
+          {/* Sources preview block with clickable links */}
+          <div className="mt-1">
+            <p className="text-muted-foreground mb-1 text-sm">
+              Reviewing sources — {uniqueSources.length}
+            </p>
+
+            <div className="border-border max-h-40 overflow-auto rounded border p-1">
+              <div className="space-y-1">
+                {uniqueSources.length === 0 && (
+                  <span className="text-muted-foreground text-xs">
+                    No sources found yet.
+                  </span>
+                )}
+
+                {uniqueSources.slice(0, 8).map((s, i) => {
+                  const title =
+                    s.title || s.name || s.label || s.url || "Untitled";
+                  const domain = (() => {
+                    try {
+                      return s.url
+                        ? new URL(s.url).hostname.replace("www.", "")
+                        : "";
+                    } catch {
+                      return "";
+                    }
+                  })();
+
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between gap-1"
+                    >
+                      {s.url ? (
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[13px] font-medium no-underline hover:underline"
+                        >
+                          {shortText(title, 60)}
+                        </a>
+                      ) : (
+                        <span className="text-[13px] font-medium">
+                          {shortText(title, 60)}
+                        </span>
+                      )}
+
+                      <span className="text-muted-foreground text-xs">
+                        {domain}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {uniqueSources.length > 8 && (
+                  <span className="text-muted-foreground text-xs">
+                    +{uniqueSources.length - 8} more...
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Timeline */}
-      <Box>
-        <Timeline
-          sx={{
-            [`& .${timelineItemClasses.root}:before`]: {
-              flex: 0,
-              padding: 0,
-            },
-          }}
-        >
-          {steps.map((ev, idx) => (
-            <ProcessTimelineItem
-              key={`${ev.step}-${ev.timestamp || idx}-${idx}`}
-              ev={ev}
-              isLast={idx === steps.length - 1}
-              isActive={ev.isActive}
-            />
-          ))}
-        </Timeline>
-      </Box>
-    </Box>
+      <div>
+        {steps.map((ev, idx) => (
+          <ProcessTimelineItem
+            key={`${ev.step}-${ev.timestamp || idx}-${idx}`}
+            ev={ev}
+            isLast={idx === steps.length - 1}
+            isActive={ev.isActive}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
