@@ -1,7 +1,7 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import FooterServerComponent from "../../components/navigation/components/FooterServerComponent";
@@ -11,7 +11,6 @@ import {
   useGetUserQuery,
 } from "../../redux/api/auth/authApi";
 import LoadingScreen from "../../resource/LoadingScreen";
-import { useSelector } from "react-redux";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -36,9 +35,7 @@ export default function SecondaryLayout({ children }) {
     >
       <SecondaryHeader />
 
-      <Box component="main" sx={{ minHeight: "calc(100vh - 100px)" }}>
-        {children}
-      </Box>
+      <main>{children}</main>
 
       <FooterServerComponent />
     </ProgressProvider>

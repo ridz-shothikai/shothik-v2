@@ -2,11 +2,10 @@
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
-import { usePathname } from "next/navigation";
+import AnalyticsLoader from "../components/analytics/AnalyticsProvider";
 import store from "../redux/store";
 import MUIProvider from "./MUIProvider";
 import { NotificationProvider } from "./NotificationProvider";
-import AnalyticsLoader from "../components/analytics/AnalyticsProvider";
 
 function ConditionalGoogleProvider({ children }) {
   const hasGoogleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -29,9 +28,7 @@ export default function Providers({ children }) {
       <AnalyticsLoader />
       <MUIProvider>
         <NotificationProvider>
-          <ConditionalGoogleProvider>
-            {children}
-          </ConditionalGoogleProvider>
+          <ConditionalGoogleProvider>{children}</ConditionalGoogleProvider>
         </NotificationProvider>
       </MUIProvider>
     </Provider>

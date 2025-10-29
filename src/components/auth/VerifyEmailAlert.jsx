@@ -1,5 +1,6 @@
-import { Alert, Button } from "@mui/material";
-import { Box } from "@mui/system";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -36,28 +37,27 @@ const VerifyEmailAlert = () => {
     }
   };
 
-  return email && showVerifyModal ? (
-    <Box sx={{ position: "relative", px: { xs: 2, sm: 0 }, mb: 2 }}>
-      <Alert
-        severity="warning"
-        action={
+  if (!email || !showVerifyModal) return null;
+
+  return (
+    <div className="relative mb-4 px-4 sm:px-0">
+      <Alert variant="default" className="border-amber-500 bg-amber-50">
+        <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="flex items-center justify-between gap-4">
+          <span className="flex-1 whitespace-normal">{message}</span>
           <Button
-            color="warning"
-            variant="contained"
-            size="small"
+            variant="default"
+            size="sm"
             disabled={isLoading}
             onClick={handleVerify}
-            sx={{ zIndex: 1000 }}
+            className="z-[1000] shrink-0 bg-amber-500 hover:bg-amber-600"
           >
-            {action}
+            {isLoading ? "Sending..." : action}
           </Button>
-        }
-        sx={{ "& .MuiAlert-message": { whiteSpace: "wrap" } }}
-      >
-        {message}
+        </AlertDescription>
       </Alert>
-    </Box>
-  ) : null;
+    </div>
+  );
 };
 
 export default VerifyEmailAlert;

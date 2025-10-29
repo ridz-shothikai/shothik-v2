@@ -212,7 +212,7 @@ function MemberCard({ member, isFirst }) {
         }}
       >
         {member.social.map((link, index) => {
-          const Icon = _socials[index];
+          const social = _socials[index];
           return (
             <IconButton
               key={index}
@@ -220,7 +220,7 @@ function MemberCard({ member, isFirst }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {Icon ? <Icon.icon sx={{ color: Icon.color }} /> : null}
+              {social ? <social.icon sx={{ color: social.color }} /> : null}
             </IconButton>
           );
         })}

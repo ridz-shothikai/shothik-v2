@@ -1,5 +1,4 @@
 "use client";
-import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useGeolocation from "../../hooks/useGeolocation";
@@ -19,49 +18,26 @@ export default function RegisterContent() {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "background.paper",
-          borderRadius: 2,
-          marginBottom: 1,
-          paddingBottom: { xs: 2 },
-          padding: { sm: "2rem 2.5rem" },
-        }}
-      >
+      <div className="bg-background mb-2 rounded-lg pb-4 sm:p-10 sm:pb-10">
         <AuthRegisterForm country={location} loading={loading} />
         <AuthWithSocial title="up" loading={loading} setLoading={setLoading} />
-      </Box>
+      </div>
 
-      <Stack direction="row" justifyContent="center" spacing={0.5}>
-        <Typography
-          variant="body2"
-          sx={{
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-            color: "text.secondary",
-          }}
-        >
+      <div className="flex justify-center gap-1">
+        <span className="text-muted-foreground text-sm leading-5">
           Already have an account?
-        </Typography>
+        </span>
 
-        <Typography
+        <button
           onClick={() => {
             dispatch(setShowRegisterModal(false));
             dispatch(setShowLoginModal(true));
           }}
-          variant="body2"
-          sx={{
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-            color: "#00AB55",
-            fontWeight: "600",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
+          className="text-primary cursor-pointer text-sm leading-5 font-semibold underline"
         >
           Sign In
-        </Typography>
-      </Stack>
+        </button>
+      </div>
     </>
   );
 }

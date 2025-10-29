@@ -1,52 +1,43 @@
-import { Box, Stack } from "@mui/material";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { useSelector } from "react-redux";
-import { NAV } from "../../config/config/nav";
 import navConfig from "../../config/config/navConfig";
-import ShothikCheckMark from "../../resource/assets/Check_Mark_Logo";
-import { hideScrollbarX } from "../../resource/cssStyles";
 import NavSectionMini from "./components/NavSectionMini";
 import NavToggleButton from "./components/toggleButton";
-// ----------------------------------------------------------------------
 
-export default function NavMini({ isDarkMode }) {
+export default function NavMini() {
   const { user } = useSelector((state) => state.auth);
-  const plan = user.package;
 
   return (
-    <Box
-      component="nav"
-      sx={{
-        flexShrink: 0,
-        width: NAV.W_DASHBOARD_MINI,
-        position: "fixed",
-        left: 0,
-        top: 0,
-        bottom: 0,
-        bgcolor: isDarkMode ? "#242526" : "background.paper",
-        zIndex: (theme) => theme.zIndex.drawer,
-      }}
+    <nav
+      className={cn(
+        "fixed top-0 bottom-0 left-0 z-50 flex-shrink-0",
+        "bg-background border-border relative border-r border-dashed",
+        "w-24",
+      )}
     >
-      <NavToggleButton
-        sx={{
-          top: 50,
-          left: NAV.W_DASHBOARD_MINI - 12,
-        }}
-      />
+      <NavToggleButton className="absolute top-12 -right-4" />
 
-      <Stack
-        sx={{
-          pb: 2,
-          height: "100%",
-          width: NAV.W_DASHBOARD_MINI,
-          borderRight: "1px dashed",
-          borderColor: "divider",
-          ...hideScrollbarX,
-        }}
+      <div
+        className={cn(
+          "h-full w-full pb-2",
+          "flex flex-col items-center",
+          "overflow-x-hidden overflow-y-auto",
+        )}
       >
-        <ShothikCheckMark sx={{ mx: "auto", my: 2 }} />
+        <div className="mx-auto my-2 w-full">
+          <Image
+            src="/moscot.png"
+            priority
+            alt="shothik_logo"
+            width={100}
+            height={40}
+            className="mx-auto h-auto w-1/2 object-contain"
+          />
+        </div>
 
         <NavSectionMini data={navConfig} user={user} />
-      </Stack>
-    </Box>
+      </div>
+    </nav>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -17,48 +16,26 @@ const LoginContend = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          backgroundColor: "background.paper",
-          padding: { sm: "2rem 2.5rem" },
-          borderRadius: 2,
-          marginBottom: 1,
-        }}
-      >
+      <div className="bg-background mb-2 rounded-lg p-0 sm:p-10">
         <AuthLoginForm loading={loading} setLoading={setLoading} />
         <AuthWithSocial loading={loading} setLoading={setLoading} />
-      </Box>
+      </div>
 
-      <Stack direction="row" justifyContent="center" spacing={0.5}>
-        <Typography
-          variant="body2"
-          sx={{
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-            color: "text.secondary",
-          }}
-        >
+      <div className="flex justify-center gap-1">
+        <span className="text-muted-foreground text-sm leading-5">
           Don&apos;t have an account?
-        </Typography>
+        </span>
 
-        <Typography
+        <button
           onClick={() => {
             dispatch(setShowLoginModal(false));
             dispatch(setShowRegisterModal(true));
           }}
-          variant="body2"
-          sx={{
-            fontSize: "0.875rem",
-            lineHeight: "1.25rem",
-            color: "#00AB55",
-            fontWeight: "600",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
+          className="text-primary cursor-pointer text-sm leading-5 font-semibold underline"
         >
           Sign Up
-        </Typography>
-      </Stack>
+        </button>
+      </div>
       {showForgotPasswordModal && <ForgetPasswordModal />}
     </>
   );
