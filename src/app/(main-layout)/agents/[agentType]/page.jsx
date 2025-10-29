@@ -1,9 +1,7 @@
 "use client";
-import { useMediaQuery, useTheme } from "@mui/material";
-import Box from "@mui/material/Box";
 import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AgentPage from "../../../../../components/agents/AgentPage";
 import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
@@ -43,8 +41,7 @@ const ResearchAgentPage = dynamic(
 );
 
 export default function SpecificAgentPage() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [isMobile, setIsMobile] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const params = useParams();
   const agentType = params.agentType;
@@ -60,6 +57,18 @@ export default function SpecificAgentPage() {
   const [loadingResearchHistory, setLoadingResearchHistory] = useState(true);
 
   const { isSimulating, simulationStatus } = useSelector(researchCoreState);
+
+  // Media query hook for responsive design
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const handleMediaQueryChange = (e) => setIsMobile(e.matches);
+
+    setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+    return () =>
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+  }, []);
 
   // Function to render the appropriate component based on agentType
   const renderComponent = () => {
@@ -92,54 +101,31 @@ export default function SpecificAgentPage() {
 
   return (
     <AgentContextProvider>
-      <Box
-        sx={{
-          minHeight: "calc(100dvh - 200px)",
-          overflowY: "auto",
-          position: "relative",
-        }}
-      >
+      <div className="relative min-h-[calc(100dvh-200px)] overflow-y-auto">
         {renderComponent()}
 
         {/* chat input for research agents */}
         {agentType === "research" && !isResarchSimulating && (
           <>
             {!loadingResearchHistory && (
-              <Box
-                sx={{
-                  position: "absolute",
-                  bottom: 1,
-                  left: 0,
-                  width: "100%",
-                  px: { xs: 2, sm: 0 },
-                }}
-              >
+              <div className="absolute bottom-1 left-0 w-full px-2 sm:px-0">
                 <ChatInput />
-              </Box>
+              </div>
             )}
           </>
         )}
 
         {/* join the beta list footer cta for research only now */}
         {!isSimulating && simulationStatus === "completed" && (
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className="absolute bottom-0 flex w-full items-center justify-center">
             <FooterCta
               isMobile={isMobile}
               showModal={showModal}
               setShowModal={setShowModal}
             />
-          </Box>
+          </div>
         )}
-      </Box>
+      </div>
     </AgentContextProvider>
   );
 }

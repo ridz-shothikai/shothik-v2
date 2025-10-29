@@ -763,7 +763,7 @@ export default function AgentLandingPage() {
         )}
 
         <Card className="mx-auto max-w-3xl rounded-2xl border shadow-md">
-          <CardContent className="p-6">
+          <CardContent>
             <div className="mb-4 flex items-center gap-3">
               <Textarea
                 placeholder={
@@ -779,7 +779,7 @@ export default function AgentLandingPage() {
                     handleSubmit();
                   }
                 }}
-                className="max-h-32 min-h-[60px] resize-none border-none text-base focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="max-h-32 min-h-[60px] resize-none border-none text-base shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
 
