@@ -1,7 +1,7 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { selectPresentation } from "@/redux/slice/presentationSlice";
-import { Box, useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import usePresentationOrchestrator from "../../hooks/orchestrator/usePresentationOrchestrator";
 import PreviewPanel from "./PreviewPanel";
@@ -9,7 +9,6 @@ import PresentationLogsUi from "./v2/PresentationLogsUi";
 
 export default function PresentationAgentPageV2({ presentationId }) {
   const presentationState = useSelector(selectPresentation);
-  const theme = useTheme();
 
   // Initialize orchestrator - handles all status-based logic
   const { hookStatus, error, retry, currentStatus, socketConnected } =
@@ -48,58 +47,19 @@ export default function PresentationAgentPageV2({ presentationId }) {
    */
 
   return (
-    <Box
-      sx={{
-        height: {
-          xs: "90dvh",
-          lg: "calc(100dvh - 70px)",
-        },
-        bgcolor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
+    <div
+      className={cn(
+        "h-[90dvh] lg:h-[calc(100dvh-70px)]",
+        "bg-background text-foreground",
+        "flex flex-col overflow-hidden",
+      )}
     >
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
-      >
-        <Box
-          sx={{
-            flex: 1,
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-            gridTemplateRows: "1fr",
-            overflow: "hidden",
-            minHeight: 0,
-          }}
-        >
-          <Box
-            sx={{
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              minHeight: 0,
-              borderRight: `1px solid ${theme.palette.divider}`,
-              height: "100%",
-            }}
-          >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-1 overflow-hidden md:grid-cols-2">
+          <div className="border-border flex h-full min-h-0 flex-col overflow-hidden border-r">
             <PresentationLogsUi logs={presentationState.logs} />
-          </Box>
-          <Box
-            sx={{
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              minHeight: 0,
-            }}
-          >
+          </div>
+          <div className="flex min-h-0 flex-col overflow-hidden">
             <PreviewPanel
               currentAgentType={"presentation"}
               slidesData={presentationState.slides}
@@ -107,9 +67,9 @@ export default function PresentationAgentPageV2({ presentationId }) {
               presentationId={presentationState.slideCurrentId}
               title={presentationState.title}
             />
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

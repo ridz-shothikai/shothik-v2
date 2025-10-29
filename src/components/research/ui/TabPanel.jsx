@@ -1,84 +1,9 @@
 "use client";
 
-import { Tabs, Tab, Box, Badge, styled, useTheme } from "@mui/material";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
-
-// Custom styled tabs container
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    minHeight: "46px",
-  },
-  [theme.breakpoints.up("md")]: {
-    minHeight: "56px",
-  },
-  "& .MuiTabs-flexContainer": {
-    height: "46px",
-  },
-  "& .MuiTabs-indicator": {
-    backgroundColor: theme.palette.success.main, // ✅ theme-aware
-    height: "3px",
-    bottom: 0,
-  },
-  "& .MuiTab-root": {
-    textTransform: "none",
-    minWidth: "auto",
-    fontWeight: 400,
-    color: theme.palette.text.secondary, // ✅ adapts to dark mode
-    [theme.breakpoints.up("xs")]: {
-      padding: "0px 12px",
-      fontSize: "10px",
-    },
-    [theme.breakpoints.up("md")]: {
-      padding: "4px 16px",
-      fontSize: "12px",
-    },
-    [theme.breakpoints.up("lg")]: {
-      padding: "6px 14px",
-      fontSize: "12px",
-    },
-    [theme.breakpoints.up("xl")]: {
-      padding: "12px 20px",
-      fontSize: "14px",
-    },
-    "&.Mui-selected": {
-      color: theme.palette.success.main, // ✅ adaptive highlight
-      fontWeight: 500,
-    },
-    "&:hover": {
-      color: theme.palette.success.main,
-      opacity: 0.8,
-    },
-  },
-}));
-
-// Tab with icon + text
-const TabWithIcon = styled(Tab)(({ theme }) => ({
-  minWidth: "0 !important",
-  margin: 0,
-  marginRight: "10px !important",
-  "& .MuiTab-iconWrapper": {
-    marginBottom: "4px",
-    marginRight: "8px",
-  },
-  "& .tab-content": {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  "& .tab-icon": {
-    position: "relative",
-    width: 20,
-    height: 20,
-    [theme.breakpoints.up("lg")]: {
-      width: 22,
-      height: 22,
-    },
-    [theme.breakpoints.up("xl")]: {
-      width: 28,
-      height: 28,
-    },
-  },
-}));
 
 export default function TabsPanel({
   selectedTab,
@@ -86,10 +11,8 @@ export default function TabsPanel({
   images,
   onTabChange,
 }) {
-  const theme = useTheme();
-
-  const handleChange = (event, newValue) => {
-    onTabChange(newValue);
+  const handleChange = (newValue) => {
+    onTabChange(Number(newValue));
   };
 
   // Count unique sources
@@ -102,32 +25,34 @@ export default function TabsPanel({
 
   const imagesCount = images ? images.length : 0;
 
-  // Helper: choose icon variant based on theme + tab state
+  // Helper: choose icon variant based on tab state
   const getIconSrc = (base, activeBase, isActive) => {
     if (isActive) return activeBase; // use active icon
-    return theme.palette.mode === "dark" ? `${base}.svg` : `${base}.svg`;
+    return `${base}.svg`;
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        borderBottom: 1,
-        borderColor: "divider",
-        bgcolor: theme.palette.mode === "dark" && "#161C24",
-      }}
-    >
-      <StyledTabs
-        value={selectedTab}
-        onChange={handleChange}
-        aria-label="navigation tabs"
-        scrollButtons="off"
-      >
-        {/* Research */}
-        <TabWithIcon
-          label={
-            <div className="tab-content">
-              <div className="tab-icon">
+    <div className="border-border w-fit border-b">
+      <Tabs value={String(selectedTab)} onValueChange={handleChange}>
+        <TabsList
+          className={cn(
+            "h-[46px] min-h-[46px] w-full justify-start rounded-none border-b-0 bg-transparent p-0",
+            "md:min-h-[56px]",
+          )}
+        >
+          {/* Research */}
+          <TabsTrigger
+            value="0"
+            className={cn(
+              "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+              "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+              "md:px-4 md:py-1 md:text-xs",
+              "lg:px-3.5 lg:py-1.5 lg:text-xs",
+              "xl:px-5 xl:py-3 xl:text-sm",
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                 <Image
                   src={getIconSrc(
                     "/agents/ans",
@@ -140,14 +65,21 @@ export default function TabsPanel({
               </div>
               <span>Research</span>
             </div>
-          }
-        />
+          </TabsTrigger>
 
-        {/* Images */}
-        <TabWithIcon
-          label={
-            <div className="tab-content">
-              <div className="tab-icon">
+          {/* Images */}
+          <TabsTrigger
+            value="1"
+            className={cn(
+              "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+              "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+              "md:px-4 md:py-1 md:text-xs",
+              "lg:px-3.5 lg:py-1.5 lg:text-xs",
+              "xl:px-5 xl:py-3 xl:text-sm",
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                 <Image
                   src={getIconSrc(
                     "/agents/img",
@@ -158,28 +90,33 @@ export default function TabsPanel({
                   fill
                 />
               </div>
-              <Badge
-                badgeContent={imagesCount > 0 ? imagesCount : null}
-                color="primary"
-                sx={{
-                  "& .MuiBadge-badge": {
-                    fontSize: "0.6rem",
-                    minWidth: "16px",
-                    height: "16px",
-                  },
-                }}
-              >
+              <div className="relative">
                 <span>Images</span>
-              </Badge>
+                {imagesCount > 0 && (
+                  <Badge
+                    variant="default"
+                    className="ml-1 h-4 min-w-4 px-1 text-[0.6rem]"
+                  >
+                    {imagesCount}
+                  </Badge>
+                )}
+              </div>
             </div>
-          }
-        />
+          </TabsTrigger>
 
-        {/* Sources */}
-        <TabWithIcon
-          label={
-            <div className="tab-content">
-              <div className="tab-icon">
+          {/* Sources */}
+          <TabsTrigger
+            value="2"
+            className={cn(
+              "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+              "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+              "md:px-4 md:py-1 md:text-xs",
+              "lg:px-3.5 lg:py-1.5 lg:text-xs",
+              "xl:px-5 xl:py-3 xl:text-sm",
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                 <Image
                   src={getIconSrc(
                     "/agents/sources",
@@ -190,25 +127,21 @@ export default function TabsPanel({
                   fill
                 />
               </div>
-              <Badge
-                badgeContent={
-                  uniqueSourcesCount > 0 ? uniqueSourcesCount : null
-                }
-                color="primary"
-                sx={{
-                  "& .MuiBadge-badge": {
-                    fontSize: "0.6rem",
-                    minWidth: "16px",
-                    height: "16px",
-                  },
-                }}
-              >
+              <div className="relative">
                 <span>Sources</span>
-              </Badge>
+                {uniqueSourcesCount > 0 && (
+                  <Badge
+                    variant="default"
+                    className="ml-1 h-4 min-w-4 px-1 text-[0.6rem]"
+                  >
+                    {uniqueSourcesCount}
+                  </Badge>
+                )}
+              </div>
             </div>
-          }
-        />
-      </StyledTabs>
-    </Box>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+    </div>
   );
 }

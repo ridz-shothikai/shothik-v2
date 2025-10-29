@@ -1,13 +1,12 @@
 "use client";
 
 import useResponsive from "@/hooks/useResponsive";
-import { Box, Typography, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import InputArea from "../InputAreas";
 import MessageBubble from "./MessageBubble";
 
 export default function PresentationLogsUi({ logs = [] }) {
-  const theme = useTheme();
   const scrollContainerRef = useRef(null);
 
   const isMobile = useResponsive("down", "md");
@@ -30,44 +29,22 @@ export default function PresentationLogsUi({ logs = [] }) {
 
   return (
     // Container: column flex so logs area can be flex:1 and input stays fixed at bottom
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%", // must inherit from parent (PresentationAgentPageV2 ensures that)
-        minHeight: 0, // allow children to shrink properly
-        bgcolor: theme.palette.background.default,
-      }}
-    >
+    <div className="bg-background flex h-full min-h-0 flex-col">
       {/* Scrollable logs area */}
-      <Box
+      <div
         ref={scrollContainerRef}
-        sx={{
-          flex: 1, // take remaining space
-          overflowY: "auto",
-          overflowX: "hidden",
-          minHeight: 0,
-          scrollBehavior: "smooth",
-          p: 3,
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
-            borderRadius: "3px",
-            "&:hover": {
-              background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
-            },
-          },
-          scrollbarWidth: "thin",
-          scrollbarColor:
-            theme.palette.mode === "dark"
-              ? "#555 transparent"
-              : "#c1c1c1 transparent",
-        }}
+        className={cn(
+          "min-h-0 flex-1 overflow-x-hidden overflow-y-auto p-3",
+          "scroll-smooth",
+          "[&::-webkit-scrollbar]:w-1.5",
+          "[&::-webkit-scrollbar-track]:bg-transparent",
+          "[&::-webkit-scrollbar-thumb]:bg-muted-foreground/20",
+          "[&::-webkit-scrollbar-thumb]:rounded-sm",
+          "[&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/30",
+          "scrollbar-thin",
+        )}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <div className="flex flex-col gap-1">
           {logs?.length ? (
             logs.map((l, idx) => (
               // <Typography
@@ -80,24 +57,13 @@ export default function PresentationLogsUi({ logs = [] }) {
               <MessageBubble key={l.id || idx} logs={l} />
             ))
           ) : (
-            <Typography sx={{ color: theme.palette.text.secondary }}>
-              No logs yet
-            </Typography>
+            <p className="text-muted-foreground">No logs yet</p>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Input area pinned to bottom */}
-      <Box
-        sx={{
-          borderTop: `1px solid ${theme.palette.divider}`,
-          flexShrink: 0,
-          bgcolor:
-            theme.palette.mode === "light"
-              ? "white"
-              : theme.palette.background.paper,
-        }}
-      >
+      <div className="border-border bg-card flex-shrink-0 border-t">
         <InputArea
           currentAgentType={"presentation"}
           inputValue={inputValue}
@@ -109,7 +75,7 @@ export default function PresentationLogsUi({ logs = [] }) {
           uploadedFiles={uploadedFiles}
           fileUrls={fileUrls}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }

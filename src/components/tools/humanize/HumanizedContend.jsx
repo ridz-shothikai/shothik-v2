@@ -1,16 +1,11 @@
 "use client";
 
-import {
-  Box,
-  Card,
-  IconButton,
-  Stack,
-  SwipeableDrawer,
-  TextField,
-  Typography,
-} from "@mui/material";
-
-import { MoreVert } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -278,69 +273,36 @@ const HumanizedContend = () => {
   }, [model, currentLength, language]);
 
   return (
-    <Stack sx={{ pt: 2 }}>
-      <Box
-        sx={{
-          display: "flex",
-          width: "100%",
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Box
-              sx={{
-                width: { xs: "100%", md: "50%" },
-              }}
-            >
+    <div className="flex flex-col pt-2">
+      <div className="flex w-full">
+        <div className="w-full">
+          <div className="flex items-center">
+            <div className="w-full md:w-1/2">
               <LanguageMenu
                 isLoading={isLoading}
                 setLanguage={setLanguage}
                 language={language}
               />
-            </Box>
+            </div>
 
-            <Box
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              <IconButton
-                size="small"
-                onClick={() => setMobileMenuOpen((prev) => !prev)}
-              >
-                <MoreVert fontSize="small" />
-              </IconButton>
-            </Box>
-          </Box>
+            <div className="block md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setMobileMenuOpen((prev) => !prev)}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+              </Sheet>
+            </div>
+          </div>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
-              gap: 2,
-            }}
-          >
-            <Box>
-              <Card
-                sx={{
-                  position: "relative",
-                  height: 420,
-                  display: "flex",
-                  flexDirection: "column",
-                  overflow: "visible",
-                  borderRadius: "0 12px 12px 12px",
-                  border: (theme) => `1px solid ${theme.palette.divider}`,
-                }}
-              >
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+            <div>
+              <Card className="border-border relative flex h-[420px] flex-col overflow-visible rounded-none rounded-r-xl rounded-bl-xl border pt-0">
                 <TopNavigation
                   model={model}
                   setModel={setModel}
@@ -350,33 +312,17 @@ const HumanizedContend = () => {
                   currentLength={currentLength}
                   setCurrentLength={setCurrentLength}
                 />
-                <TextField
+                <Textarea
                   name="input"
-                  variant="outlined"
                   rows={13}
-                  fullWidth
-                  multiline
                   placeholder="Enter your text here..."
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   disabled={showShalowAlert}
-                  sx={{
-                    flexGrow: 1,
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        border: "none",
-                      },
-                      "& textarea": {
-                        textAlign: "left",
-                        whiteSpace: "normal",
-                        wordWrap: "break-word",
-                        overflowWrap: "break-word",
-                      },
-                    },
-                    "& .MuiInputBase-root": {
-                      paddingY: "4px",
-                    },
-                  }}
+                  className={cn(
+                    "flex-grow resize-none border-0 focus-visible:ring-0",
+                    "text-left break-words whitespace-normal",
+                  )}
                 />
                 {!userInput ? (
                   <UserActionInput
@@ -422,19 +368,11 @@ const HumanizedContend = () => {
                   showIndex={showIndex}
                 />
               ) : null}
-            </Box>
+            </div>
 
-            <Box>
+            <div>
               {/* output */}
-              <Card
-                sx={{
-                  height: 420,
-                  overflowY: "auto",
-                  padding: 2,
-                  border: (theme) => `1px solid ${theme.palette.divider}`,
-                  position: "relative",
-                }}
-              >
+              <Card className="border-border relative h-[420px] overflow-y-auto border p-4">
                 {/* Restored from history indicator */}
                 {/* {isRestoredFromHistory && outputContent.length > 0 && (
                   <Box
@@ -456,32 +394,17 @@ const HumanizedContend = () => {
                 )} */}
 
                 {outputContent[showIndex] ? (
-                  <Typography
-                    sx={{
-                      whiteSpace: "pre-line",
-                      // mt: isRestoredFromHistory ? 4 : 0,
-                      mt: 0,
-                    }}
-                  >
+                  <p className="whitespace-pre-line">
                     {outputContent[showIndex].text}
-                  </Typography>
+                  </p>
                 ) : (
                   <>
                     {isLoading ? (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: "100%",
-                        }}
-                      >
+                      <div className="flex h-full items-center justify-center">
                         <AnimatedLoader />
-                      </Box>
+                      </div>
                     ) : (
-                      <Typography sx={{ color: "text.disabled" }}>
-                        Humanized Contend
-                      </Typography>
+                      <p className="text-muted-foreground">Humanized Content</p>
                     )}
                   </>
                 )}
@@ -500,52 +423,34 @@ const HumanizedContend = () => {
                   loadingAi={loadingAi}
                 />
               ) : null}
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
 
         {/* GPT options (e.g: history, settings) */}
         {/* This will be for DESKTOP */}
-        <Box
-          sx={{
-            flex: "0 0 auto",
-            width: "min-content",
-            ml: 2,
-            display: { xs: "none", md: "block" },
-          }}
-        >
+        <div className="ml-2 hidden w-min flex-none md:block">
           <GPTsettings
             handleHistorySelect={handleHistorySelect}
             allHumanizeHistory={allHumanizeHistory?.data}
             refetchHistory={refetchAllHumanizeHistory}
           />
-        </Box>
+        </div>
 
         {/* Mobile menu for options */}
-        <SwipeableDrawer
-          anchor="bottom"
-          open={mobileMenuOpen}
-          onOpen={() => setMobileMenuOpen(true)}
-          onClose={() => setMobileMenuOpen(false)}
-        >
-          <Box sx={{ px: 4, pt: 1, pb: 2 }}>
-            <Box
-              sx={{
-                flex: "0 0 auto",
-                width: "min-content",
-                ml: 2,
-              }}
-            >
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="bottom" className="px-4 pt-1 pb-2">
+            <div className="ml-2 w-min flex-none">
               <GPTsettings
                 handleHistorySelect={handleHistorySelect}
                 allHumanizeHistory={allHumanizeHistory?.data}
                 refetchHistory={refetchAllHumanizeHistory}
               />
-            </Box>
-          </Box>
-        </SwipeableDrawer>
-      </Box>
-    </Stack>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </div>
   );
 };
 

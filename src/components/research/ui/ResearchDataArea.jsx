@@ -1,8 +1,7 @@
 "use client";
 
-import { Box } from "@mui/material";
-import ResearchContent from "./ResearchContent";
 import ImagesContent from "./ImagesContent";
+import ResearchContent from "./ResearchContent";
 import SourcesContent from "./SourcesContent";
 
 export default function ResearchDataArea({
@@ -30,5 +29,5 @@ export default function ResearchDataArea({
     }
   };
 
-  return <Box>{renderContent()}</Box>;
+  return <div>{renderContent()}</div>;
 }

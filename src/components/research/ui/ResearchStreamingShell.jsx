@@ -1,104 +1,21 @@
 "use client";
 
-import {
-  Badge,
-  Box,
-  Button,
-  Tab,
-  Tabs,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 import ResearchProcessLogs from "./ResearchProcessLogs";
 
-// Styled components matching the real components
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  [theme.breakpoints.up("xs")]: {
-    minHeight: "46px",
-  },
-  [theme.breakpoints.up("md")]: {
-    minHeight: "56px",
-  },
-  "& .MuiTabs-flexContainer": {
-    height: "46px",
-  },
-  "& .MuiTabs-indicator": {
-    backgroundColor: "#07B37A",
-    height: "3px",
-    bottom: 0,
-  },
-  "& .MuiTab-root": {
-    textTransform: "none",
-    minWidth: "auto",
-    fontWeight: 400,
-    color: "#929CA7",
-    [theme.breakpoints.up("xs")]: {
-      padding: "0px 12px",
-      fontSize: "10px",
-    },
-    [theme.breakpoints.up("md")]: {
-      padding: "4px 16px",
-      fontSize: "12px",
-    },
-    [theme.breakpoints.up("lg")]: {
-      padding: "6px 14px",
-      fontSize: "12px",
-    },
-    [theme.breakpoints.up("xl")]: {
-      padding: "12px 20px",
-      fontSize: "14px",
-    },
-    "&.Mui-selected": {
-      color: "#07B37A",
-      fontWeight: 500,
-    },
-    "&:hover": {
-      color: "#07B37A",
-      opacity: 0.8,
-    },
-  },
-}));
-
-const TabWithIcon = styled(Tab)(({ theme }) => ({
-  minWidth: "0 !important",
-  margin: 0,
-  marginRight: "10px !important",
-  "& .MuiTab-iconWrapper": {
-    marginBottom: "4px",
-    marginRight: "8px",
-  },
-  "& .tab-content": {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  "& .tab-icon": {
-    position: "relative",
-    width: 20,
-    height: 20,
-    [theme.breakpoints.up("lg")]: {
-      width: 22,
-      height: 22,
-    },
-    [theme.breakpoints.up("xl")]: {
-      width: 28,
-      height: 28,
-    },
-  },
-}));
-
 const ResearchStreamingShell = ({
   streamEvents = [],
   isStreaming = false,
   userQuery = "",
 }) => {
-  const theme = useTheme();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState("0");
   const [titleCharCount, setTitleCharCount] = useState(100);
   const researchCoreData = useSelector(researchCoreState);
 
@@ -116,7 +33,7 @@ const ResearchStreamingShell = ({
     return text.slice(0, maxChars) + "…";
   };
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (newValue) => {
     setSelectedTab(newValue);
   };
 
@@ -148,101 +65,67 @@ const ResearchStreamingShell = ({
   const imageCount = getImageCount();
 
   return (
-    <Box sx={{ width: "100%", mb: 3 }}>
-      <Box
-        sx={{
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-          bgcolor: theme.palette.mode === "dark" ? "#161C24" : "#F4F6F8",
-        }}
-      >
+    <div className="mb-3 w-full">
+      <div className="bg-muted sticky top-0 z-10">
         {/* Header Section - Matches HeaderTitle */}
-        <Box
-          sx={{
-            mb: { xl: 1 },
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 4,
-            padding: 1,
-            position: "relative",
-          }}
-        >
-          <Typography
-            variant="h1"
-            sx={{
-              fontSize: {
-                xs: "16px",
-                sm: "16px",
-                md: "20px",
-                lg: "22px",
-                xl: "30px",
-              },
-              fontWeight: "700",
-              cursor: "pointer",
-              "&:hover": { opacity: 0.8 },
-            }}
+        <div className="relative flex items-center justify-between gap-4 p-1 xl:mb-1">
+          <h1
+            className={cn(
+              "cursor-pointer text-base font-bold hover:opacity-80",
+              "sm:text-base md:text-xl lg:text-[22px] xl:text-[30px]",
+            )}
           >
             {getTruncatedTitle(displayQuery, titleCharCount)}
-          </Typography>
+          </h1>
 
           {/* Download button placeholder - matches HeaderTitle */}
           <Button
             disabled
-            sx={{
-              backgroundColor:
-                theme.palette.mode === "dark"
-                  ? theme.palette.grey[800]
-                  : theme.palette.grey[100],
-              borderRadius: "6px",
-              width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-              height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-              minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-              minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-              padding: { xs: "4px", lg: "8px", xl: "12px" },
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              opacity: 0.5,
-            }}
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "bg-accent flex items-center justify-center rounded-md opacity-50 shadow-sm",
+              "h-6 min-h-6 w-6 min-w-6 p-1",
+              "md:h-7 md:min-h-7 md:w-7 md:min-w-7",
+              "lg:h-9 lg:min-h-9 lg:w-9 lg:min-w-9 lg:p-2",
+              "xl:h-12 xl:min-h-12 xl:w-12 xl:min-w-12 xl:p-3",
+            )}
           >
             <Image
               src={"/agents/edit.svg"}
               alt={"Download"}
               width={24}
               height={24}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "100%",
-                objectFit: "contain",
-                filter:
-                  theme.palette.mode === "dark"
-                    ? "invert(1) brightness(0.9)"
-                    : "none",
-              }}
+              className="h-full w-full object-contain"
             />
           </Button>
-        </Box>
+        </div>
 
         {/* Tab Panel - Matches TabsPanel */}
-        <Box
-          sx={{ width: "100%", borderBottom: 1, borderColor: "divider", mb: 2 }}
-        >
-          <StyledTabs
-            value={selectedTab}
-            onChange={handleTabChange}
-            aria-label="research tabs"
-            scrollButtons="off"
-          >
-            <TabWithIcon
-              label={
-                <div className="tab-content">
-                  <div className="tab-icon">
+        <div className="border-border mb-2 w-full border-b">
+          <Tabs value={selectedTab} onValueChange={handleTabChange}>
+            <TabsList
+              className={cn(
+                "h-[46px] min-h-[46px] w-fit justify-start rounded-none border-b-0 bg-transparent p-0",
+                "md:min-h-[56px]",
+              )}
+            >
+              {/* Research Tab */}
+              <TabsTrigger
+                value="0"
+                className={cn(
+                  "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+                  "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+                  "md:px-4 md:py-1 md:text-xs",
+                  "lg:px-3.5 lg:py-1.5 lg:text-xs",
+                  "xl:px-5 xl:py-3 xl:text-sm",
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                     <Image
                       src={
-                        selectedTab === 0
+                        selectedTab === "0"
                           ? "/agents/ans-active.svg"
                           : "/agents/ans.svg"
                       }
@@ -252,15 +135,24 @@ const ResearchStreamingShell = ({
                   </div>
                   <span>Research</span>
                 </div>
-              }
-            />
-            <TabWithIcon
-              label={
-                <div className="tab-content">
-                  <div className="tab-icon">
+              </TabsTrigger>
+
+              {/* Images Tab */}
+              <TabsTrigger
+                value="1"
+                className={cn(
+                  "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+                  "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+                  "md:px-4 md:py-1 md:text-xs",
+                  "lg:px-3.5 lg:py-1.5 lg:text-xs",
+                  "xl:px-5 xl:py-3 xl:text-sm",
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                     <Image
                       src={
-                        selectedTab === 1
+                        selectedTab === "1"
                           ? "/agents/img-active.svg"
                           : "/agents/img.svg"
                       }
@@ -268,29 +160,36 @@ const ResearchStreamingShell = ({
                       fill
                     />
                   </div>
-                  <Badge
-                    badgeContent={imageCount > 0 ? imageCount : null}
-                    color="primary"
-                    sx={{
-                      "& .MuiBadge-badge": {
-                        fontSize: "0.6rem",
-                        minWidth: "16px",
-                        height: "16px",
-                      },
-                    }}
-                  >
+                  <div className="relative">
                     <span>Images</span>
-                  </Badge>
+                    {imageCount > 0 && (
+                      <Badge
+                        variant="default"
+                        className="ml-1 h-4 min-w-4 px-1 text-[0.6rem]"
+                      >
+                        {imageCount}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-              }
-            />
-            <TabWithIcon
-              label={
-                <div className="tab-content">
-                  <div className="tab-icon">
+              </TabsTrigger>
+
+              {/* Sources Tab */}
+              <TabsTrigger
+                value="2"
+                className={cn(
+                  "text-muted-foreground hover:text-primary relative mr-2.5 min-w-0 rounded-none border-x-0 border-t-0 border-b-[3px] border-transparent bg-transparent px-3 py-0 text-[10px] font-normal transition-none hover:opacity-80",
+                  "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:shadow-none",
+                  "md:px-4 md:py-1 md:text-xs",
+                  "lg:px-3.5 lg:py-1.5 lg:text-xs",
+                  "xl:px-5 xl:py-3 xl:text-sm",
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="relative h-5 w-5 lg:h-[22px] lg:w-[22px] xl:h-7 xl:w-7">
                     <Image
                       src={
-                        selectedTab === 2
+                        selectedTab === "2"
                           ? "/agents/sources-active.svg"
                           : "/agents/sources.svg"
                       }
@@ -298,25 +197,23 @@ const ResearchStreamingShell = ({
                       fill
                     />
                   </div>
-                  <Badge
-                    badgeContent={sourceCount > 0 ? sourceCount : null}
-                    color="primary"
-                    sx={{
-                      "& .MuiBadge-badge": {
-                        fontSize: "0.6rem",
-                        minWidth: "16px",
-                        height: "16px",
-                      },
-                    }}
-                  >
+                  <div className="relative">
                     <span>Sources</span>
-                  </Badge>
+                    {sourceCount > 0 && (
+                      <Badge
+                        variant="default"
+                        className="ml-1 h-4 min-w-4 px-1 text-[0.6rem]"
+                      >
+                        {sourceCount}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-              }
-            />
-          </StyledTabs>
-        </Box>
-      </Box>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </div>
 
       {/* Research Process Timeline */}
       {streamEvents.length > 0 && (
@@ -326,7 +223,7 @@ const ResearchStreamingShell = ({
           isStreaming={isStreaming}
         />
       )}
-    </Box>
+    </div>
   );
 };
 

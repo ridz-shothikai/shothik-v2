@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,14 +31,12 @@ export default function ResearchAgentPage({
   loadingResearchHistory,
   setLoadingResearchHistory,
 }) {
-  const theme = useTheme();
   const scrollRef = useRef(null);
   const researchRefs = useRef({}); // Ref to store individual research item DOM elements
   const [isInitializingResearch, setIsInitializingResearch] = useState(true);
   const [headerHeight, setHeaderHeight] = useState(20); // default
   const [isSimulationCompleted, setIsSimulationCompleted] = useState(false);
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useDispatch();
   //   const { headerHeight } = useSelector((state) => state.ui);
   const { currentChatId } = useChat();
@@ -185,71 +183,28 @@ export default function ResearchAgentPage({
   }
 
   return (
-    <Box
+    <div
       ref={scrollRef}
-      sx={{
-        maxWidth: { xs: "1000px" },
-        minHeight: {
-          xs: "calc(100dvh - 180px)",
-          sm: "calc(100dvh - 200px)",
-          md: "calc(100dvh - 230px)",
-          lg: "calc(100dvh - 250px)",
-          xl: "calc(100dvh - 270px)",
-        },
-        maxHeight: {
-          xs: isSimulationMode
-            ? "calc(100dvh - 130px)"
-            : "calc(100dvh - 155px)",
-          sm: isSimulationMode
-            ? "calc(100dvh - 100px)"
-            : "calc(100dvh - 170px)",
-          md: isSimulationMode
-            ? "calc(100dvh - 130px)"
-            : "calc(100dvh - 200px)",
-          lg: isSimulationMode
-            ? "calc(100dvh - 150px)"
-            : "calc(100dvh - 220px)",
-          xl: isSimulationMode
-            ? "calc(100dvh - 170px)"
-            : "calc(100dvh - 220px)",
-        },
-        marginInline: "auto",
-        position: "relative",
-        backgroundColor: "#F4F6F8",
-        overflowY: "auto",
-        px: { xs: 2, sm: 0 },
-        marginBottom: {
-          xs: isSimulationMode ? "0px" : "20px",
-          sm: isSimulationMode ? "35px" : "105px",
-          md: isSimulationMode ? "60px" : "130px",
-          lg: isSimulationMode ? "80px" : "150px",
-          xl: isSimulationMode ? "100px" : "150px",
-        },
-        bgcolor: theme.palette.mode === "dark" && "#161C24",
-      }}
+      className={cn(
+        "bg-muted relative mx-auto max-w-[1000px] overflow-y-auto px-4 sm:px-0",
+        "min-h-[calc(100dvh-180px)] sm:min-h-[calc(100dvh-200px)] md:min-h-[calc(100dvh-230px)] lg:min-h-[calc(100dvh-250px)] xl:min-h-[calc(100dvh-270px)]",
+        isSimulationMode
+          ? "max-h-[calc(100dvh-130px)] sm:max-h-[calc(100dvh-100px)] md:max-h-[calc(100dvh-130px)] lg:max-h-[calc(100dvh-150px)] xl:max-h-[calc(100dvh-170px)]"
+          : "max-h-[calc(100dvh-155px)] sm:max-h-[calc(100dvh-170px)] md:max-h-[calc(100dvh-200px)] lg:max-h-[calc(100dvh-220px)] xl:max-h-[calc(100dvh-220px)]",
+        isSimulationMode
+          ? "mb-0 sm:mb-[35px] md:mb-[60px] lg:mb-[80px] xl:mb-[100px]"
+          : "mb-5 sm:mb-[105px] md:mb-[130px] lg:mb-[150px] xl:mb-[150px]",
+      )}
     >
       {/* research data */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
+      <div className="flex flex-col gap-4">
         {researchCore?.researches.length > 0 &&
           researchCore?.researches?.map((research, idx) => (
-            <Box
+            <div
               key={research._id}
               ref={(el) => (researchRefs.current[research._id] = el)} // Assign ref to each research item
             >
-              <Box
-                sx={{
-                  position: "sticky",
-                  top: 0,
-                  zIndex: 10,
-                  backgroundColor: "#F4F6F8",
-                }}
-              >
+              <div className="bg-muted sticky top-0 z-10">
                 <HeaderTitle
                   headerHeight={headerHeight}
                   setHeaderHeight={setHeaderHeight}
@@ -276,7 +231,7 @@ export default function ResearchAgentPage({
                     }
                   }}
                 />
-              </Box>
+              </div>
 
               {/* data area */}
               <ResearchDataArea
@@ -284,9 +239,9 @@ export default function ResearchAgentPage({
                 research={research}
                 isLastData={idx === researchCore?.researches?.length - 1}
               />
-            </Box>
+            </div>
           ))}
-      </Box>
+      </div>
 
       {/* when streaming */}
       {/* {(researchCore?.isStreaming || researchCore?.isPolling) && (
@@ -310,6 +265,6 @@ export default function ResearchAgentPage({
           userQuery={initialUserPrompt}
         />
       )}
-    </Box>
+    </div>
   );
 }

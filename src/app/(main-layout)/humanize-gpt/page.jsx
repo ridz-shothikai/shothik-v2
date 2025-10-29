@@ -1,4 +1,3 @@
-import { Container } from "@mui/material";
 import { humanizeFaq } from "../../../_mock/tools/humanizefaq";
 import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
@@ -35,14 +34,7 @@ export async function generateMetadata() {
 
 const Humanize = () => {
   return (
-    <Container
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: { md: 12, xs: 10 },
-        maxWidth: "100% !important",
-      }}
-    >
+    <div className="flex max-w-full flex-col gap-10 md:gap-12">
       <ErrorBoundary>
         <HumanizedContend />
       </ErrorBoundary>
@@ -97,7 +89,7 @@ const Humanize = () => {
           a free trial today and elevate your content to new heights.
         </p>
       </div>
-    </Container>
+    </div>
   );
 };
 

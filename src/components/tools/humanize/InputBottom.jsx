@@ -1,5 +1,5 @@
-import { DeleteRounded } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
 import useWordLimit from "../../../hooks/useWordLimit";
 
@@ -28,53 +28,20 @@ const InputBottom = ({
   }, [userInput]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingX: 2,
-        borderTop: "1px solid",
-        borderTopColor: "divider",
-      }}
-    >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography
-          sx={{
-            fontSize: { xs: 12, sm: 15, md: 16 },
-            color: `${userInputInfo.words > wordLimit ? "error.main" : ""}`,
-          }}
-        >
-          {userInputInfo.words} /{" "}
-          {wordLimit === 9999 ? (
-            <Typography component="span" sx={{ color: "primary.main" }}>
-              Unlimited
-            </Typography>
-          ) : (
-            wordLimit
-          )}{" "}
-          Words
-        </Typography>
-        <Typography color="gray">|</Typography>
-        <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
-          {userInputInfo.charecters} {isMobile ? "Char" : "Characters"}
-        </Typography>
-        <Typography color="gray">|</Typography>
-        <Typography sx={{ fontSize: { xs: 12, sm: 15, md: 16 } }}>
-          {userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}
-        </Typography>
-      </Box>
-      <IconButton
-        aria-label="delete"
-        size={isMobile ? "small" : "large"}
-        variant={miniLabel ? "soft" : "outlined"}
-        color="inherit"
-        disabled={isLoading}
-        onClick={handleClear}
-      >
-        <DeleteRounded sx={{ color: "text.secondary" }} />
-      </IconButton>
-    </Box>
+    <div className="flex items-center justify-between border-t border-border px-2">
+      <div className="flex items-center gap-2">
+        <span className={`text-sm sm:text-base md:text-base ${userInputInfo.words > wordLimit ? "text-destructive" : ""}`}>
+          {userInputInfo.words} / {wordLimit === 9999 ? <span className="text-primary">Unlimited</span> : wordLimit} Words
+        </span>
+        <span className="text-muted-foreground">|</span>
+        <span className="text-sm sm:text-base md:text-base">{userInputInfo.charecters} {isMobile ? "Char" : "Characters"}</span>
+        <span className="text-muted-foreground">|</span>
+        <span className="text-sm sm:text-base md:text-base">{userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}</span>
+      </div>
+      <Button variant="ghost" size={isMobile ? "sm" : "default"} className="h-9" disabled={isLoading} onClick={handleClear}>
+        <Trash2 className="h-4 w-4 text-muted-foreground" />
+      </Button>
+    </div>
   );
 };
 

@@ -1,160 +1,69 @@
 "use client";
-import React from "react";
-import { Box, Container, Skeleton, Paper, Stack } from "@mui/material";
-import { styled } from "@mui/material/styles";
-
-const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(3),
-  // Remove any inherited text decorations
-  textDecoration: "none",
-  "& *": {
-    textDecoration: "none",
-  },
-}));
-
-const HeaderSection = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: theme.spacing(3),
-}));
-
-const TabSection = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-const ContentCard = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  backgroundColor: "#fafafa",
-  // Fix for skeleton black lines
-  "& .MuiSkeleton-root": {
-    textDecoration: "none",
-    borderBottom: "none",
-    textDecorationLine: "none",
-    textUnderlineOffset: "unset",
-    textDecorationColor: "transparent",
-    // Ensure clean background
-    backgroundColor: theme.palette.action.hover,
-    "&::before": {
-      textDecoration: "none",
-    },
-    "&::after": {
-      textDecoration: "none",
-    },
-  },
-  "& .MuiSkeleton-text": {
-    textDecoration: "none !important",
-    borderBottom: "none !important",
-    textDecorationLine: "none !important",
-  },
-}));
-
-// Custom Skeleton component with fixed styles
-const CleanSkeleton = styled(Skeleton)(({ theme }) => ({
-  textDecoration: "none !important",
-  borderBottom: "none !important",
-  textDecorationLine: "none !important",
-  textUnderlineOffset: "unset !important",
-  textDecorationColor: "transparent !important",
-  "&::before": {
-    textDecoration: "none !important",
-    borderBottom: "none !important",
-  },
-  "&::after": {
-    textDecoration: "none !important",
-    borderBottom: "none !important",
-  },
-}));
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ResearchPageSkeletonLoader() {
   return (
-    <StyledContainer maxWidth="lg">
+    <div className="mx-auto max-w-5xl px-4 py-3">
       {/* Header Section */}
-      <HeaderSection>
-        <CleanSkeleton variant="text" width={300} height={40} />
-        <CleanSkeleton variant="circular" width={40} height={40} />
-      </HeaderSection>
+      <div className="mb-3 flex items-center justify-between">
+        <Skeleton className="h-10 w-[300px]" />
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </div>
 
       {/* Tab Navigation */}
-      <TabSection>
-        <Stack direction="row" spacing={4} sx={{ mb: 2 }}>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <CleanSkeleton variant="circular" width={20} height={20} />
-            <CleanSkeleton variant="text" width={80} height={24} />
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <CleanSkeleton variant="rectangular" width={20} height={20} />
-            <CleanSkeleton variant="text" width={60} height={24} />
-            <CleanSkeleton variant="circular" width={20} height={20} />
-          </Stack>
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <CleanSkeleton variant="circular" width={20} height={20} />
-            <CleanSkeleton variant="text" width={70} height={24} />
-            <CleanSkeleton variant="circular" width={20} height={20} />
-          </Stack>
-        </Stack>
-      </TabSection>
+      <div className="border-border mb-3 border-b">
+        <div className="mb-2 flex gap-4">
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-5 w-5" />
+            <Skeleton className="h-6 w-[60px]" />
+            <Skeleton className="h-5 w-5 rounded-full" />
+          </div>
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-6 w-[70px]" />
+            <Skeleton className="h-5 w-5 rounded-full" />
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <ContentCard
-        elevation={0}
-        sx={{
-          bgcolor: (theme) => theme.palette.mode === "dark" && "#161C24",
-        }}
-      >
+      <div className="bg-muted mb-2 p-3">
         {/* Title */}
-        <CleanSkeleton
-          variant="text"
-          width="60%"
-          height={45}
-          sx={{ mb: 3 }}
-          animation="wave"
-        />
+        <Skeleton className="mb-3 h-[45px] w-[60%]" />
 
         {/* Introduction Section */}
-        <Box sx={{ mb: 4 }}>
-          <CleanSkeleton
-            variant="text"
-            width={120}
-            height={28}
-            sx={{ mb: 2 }}
-            animation="wave"
-          />
+        <div className="mb-4">
+          <Skeleton className="mb-2 h-7 w-[120px]" />
 
           {/* Paragraph skeletons */}
-          <Stack spacing={1}>
-            <CleanSkeleton variant="text" width="100%" animation="wave" />
-            <CleanSkeleton variant="text" width="95%" animation="wave" />
-            <CleanSkeleton variant="text" width="88%" animation="wave" />
-            <CleanSkeleton variant="text" width="92%" animation="wave" />
-            <CleanSkeleton variant="text" width="85%" animation="wave" />
-            <CleanSkeleton variant="text" width="90%" animation="wave" />
-            <CleanSkeleton variant="text" width="75%" animation="wave" />
-          </Stack>
-        </Box>
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-[95%]" />
+            <Skeleton className="h-4 w-[88%]" />
+            <Skeleton className="h-4 w-[92%]" />
+            <Skeleton className="h-4 w-[85%]" />
+            <Skeleton className="h-4 w-[90%]" />
+            <Skeleton className="h-4 w-[75%]" />
+          </div>
+        </div>
 
         {/* Section 1 */}
-        <Box sx={{ mb: 4 }}>
-          <CleanSkeleton
-            variant="text"
-            width="70%"
-            height={32}
-            sx={{ mb: 2 }}
-            animation="wave"
-          />
+        <div className="mb-4">
+          <Skeleton className="mb-2 h-8 w-[70%]" />
 
           {/* Section content */}
-          <Stack spacing={1} sx={{ mb: 3 }}>
-            <CleanSkeleton variant="text" width="100%" animation="wave" />
-            <CleanSkeleton variant="text" width="93%" animation="wave" />
-            <CleanSkeleton variant="text" width="88%" animation="wave" />
-            <CleanSkeleton variant="text" width="45%" animation="wave" />
-          </Stack>
-        </Box>
-      </ContentCard>
-    </StyledContainer>
+          <div className="mb-3 space-y-1">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-[93%]" />
+            <Skeleton className="h-4 w-[88%]" />
+            <Skeleton className="h-4 w-[45%]" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

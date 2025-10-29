@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  Button,
-  Typography,
-  Menu,
-  MenuItem,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { SaveIcon } from "lucide-react";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import NextImage from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 // NOTE: This component expects a `researchItem` prop shaped like the sample data
 // you included. If you keep a different shape, adapt the helpers below.
@@ -24,8 +22,17 @@ export default function HeaderTitleWithDownload({
 }) {
   const titleRef = useRef(null);
   const [titleCharCount, setTitleCharCount] = useState(60);
-  const theme = useTheme();
-  const isMd = useMediaQuery(theme.breakpoints.down("md"));
+  const [isMd, setIsMd] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMd(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (isMd) {
@@ -69,14 +76,11 @@ export default function HeaderTitleWithDownload({
     (str || "research").replace(/[^a-z0-9\-_.() ]/gi, "_").slice(0, 150);
 
   // --------- Download handlers ---------
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleButtonClick = (e) => setAnchorEl(e.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const [open, setOpen] = useState(false);
 
   // Raw markdown download using FileSaver API
   const downloadMarkdown = async () => {
-    handleClose();
+    setOpen(false);
     const md = buildMarkdown(researchItem);
 
     // Use native blob download (no extra deps required)
@@ -127,16 +131,16 @@ export default function HeaderTitleWithDownload({
 
   // PDF generation using CombinedActions design with logo and proper spacing
   const downloadPdfFromMarkdown = async () => {
-    handleClose();
+    setOpen(false);
 
     try {
       // Validate researchItem data
       if (!researchItem) {
         throw new Error("No research data available for PDF generation");
       }
-      
+
       const md = buildMarkdown(researchItem, false);
-      
+
       if (!md || md.trim().length === 0) {
         throw new Error("No content available for PDF generation");
       }
@@ -213,7 +217,7 @@ export default function HeaderTitleWithDownload({
         try {
           console.log("Adding logo to PDF at position:", margin, yPosition);
           // Logo size to match AI Detection Report (width: 120, increased height for better proportion)
-          doc.addImage(logoBase64, 'PNG', margin, yPosition, 120, 40);
+          doc.addImage(logoBase64, "PNG", margin, yPosition, 120, 40);
           yPosition += 50; // Increased spacing after logo for better margin bottom
           currentLineCount += 2;
           console.log("Logo added successfully!");
@@ -237,7 +241,7 @@ export default function HeaderTitleWithDownload({
         yPosition += 30;
         currentLineCount += 2;
       }
-      
+
       // Add "Research Results" title with AI detector-style spacing
       const queryTitle = query || researchItem?.query || "Research Results";
       doc.setFontSize(16); // Match AI detector title size
@@ -300,22 +304,28 @@ export default function HeaderTitleWithDownload({
       };
 
       // Helper function to add text with inline references (same as CombinedActions)
-      const addTextWithInlineReferences = (text, fontSize = 11, fontStyle = "normal", color = "#000000", customMargin = margin) => {
+      const addTextWithInlineReferences = (
+        text,
+        fontSize = 11,
+        fontStyle = "normal",
+        color = "#000000",
+        customMargin = margin,
+      ) => {
         doc.setFontSize(fontSize);
         doc.setFont("helvetica", fontStyle);
-        
+
         const maxWidth = contentWidth - (customMargin - margin);
-        
+
         const referenceRegex = /(\[[\d,\s]+\])/g;
-        const parts = text.split(referenceRegex).filter(p => p);
-        
+        const parts = text.split(referenceRegex).filter((p) => p);
+
         let words = [];
-        
-        parts.forEach(part => {
+
+        parts.forEach((part) => {
           if (/^\[[\d,\s]+\]$/.test(part)) {
             words.push({ text: part, isRef: true });
           } else {
-            part.split(/\s+/).forEach(word => {
+            part.split(/\s+/).forEach((word) => {
               if (word) words.push({ text: word, isRef: false });
             });
           }
@@ -357,9 +367,13 @@ export default function HeaderTitleWithDownload({
           if (word.isRef) {
             const refMatch = word.text.match(/\[(\d+(?:,\s*\d+)*)\]/);
             if (refMatch) {
-              const refNumbers = refMatch[1].split(',').map(n => parseInt(n.trim()));
+              const refNumbers = refMatch[1]
+                .split(",")
+                .map((n) => parseInt(n.trim()));
               const firstRef = refNumbers[0];
-              const source = researchItem?.sources?.find(s => s.reference === firstRef);
+              const source = researchItem?.sources?.find(
+                (s) => s.reference === firstRef,
+              );
 
               doc.setTextColor("#000000");
               doc.setFont("helvetica", "normal");
@@ -367,9 +381,15 @@ export default function HeaderTitleWithDownload({
 
               if (source && source.url) {
                 const textWidth = doc.getTextWidth(word.text);
-                doc.link(currentX, yPosition - fontSize, textWidth, fontSize + 2, {
-                  url: source.url,
-                });
+                doc.link(
+                  currentX,
+                  yPosition - fontSize,
+                  textWidth,
+                  fontSize + 2,
+                  {
+                    url: source.url,
+                  },
+                );
               }
 
               currentX += doc.getTextWidth(word.text);
@@ -377,7 +397,8 @@ export default function HeaderTitleWithDownload({
           } else {
             doc.setTextColor(defaultColor);
             doc.setFont("helvetica", "normal");
-            const wordText = index < words.length - 1 ? word.text + " " : word.text;
+            const wordText =
+              index < words.length - 1 ? word.text + " " : word.text;
             doc.text(wordText, currentX, yPosition);
             currentX += doc.getTextWidth(wordText);
           }
@@ -392,7 +413,7 @@ export default function HeaderTitleWithDownload({
         if (!textContent) return;
 
         switch (tagName) {
-          case 'h1':
+          case "h1":
             checkPageBreak(3);
             addSpacing(2.5);
             doc.setFontSize(22);
@@ -409,7 +430,7 @@ export default function HeaderTitleWithDownload({
             addSpacing(2.5); // Increased spacing after main title for better content separation
             break;
 
-          case 'h2':
+          case "h2":
             checkPageBreak(2);
             addSpacing(0.8);
             doc.setFontSize(18);
@@ -425,7 +446,7 @@ export default function HeaderTitleWithDownload({
             addSpacing(0.8);
             break;
 
-          case 'h3':
+          case "h3":
             checkPageBreak(2);
             addSpacing(0.6);
             doc.setFontSize(15);
@@ -441,7 +462,7 @@ export default function HeaderTitleWithDownload({
             addSpacing(0.6);
             break;
 
-          case 'h4':
+          case "h4":
             checkPageBreak(2);
             addSpacing(0.5);
             doc.setFontSize(13);
@@ -457,7 +478,7 @@ export default function HeaderTitleWithDownload({
             addSpacing(0.5);
             break;
 
-          case 'p':
+          case "p":
             if (textContent) {
               checkPageBreak(2);
               addTextWithInlineReferences(textContent, 11, "normal", "#333333");
@@ -465,39 +486,51 @@ export default function HeaderTitleWithDownload({
             }
             break;
 
-          case 'li':
+          case "li":
             checkPageBreak(2);
             const bulletIndent = 18;
             const textIndent = 12;
             const totalIndent = bulletIndent + textIndent;
-            
+
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
             doc.setTextColor("#333333");
             doc.text("•", margin + bulletIndent, yPosition);
-            
-            addTextWithInlineReferences(textContent, 11, "normal", "#333333", margin + totalIndent);
-            
+
+            addTextWithInlineReferences(
+              textContent,
+              11,
+              "normal",
+              "#333333",
+              margin + totalIndent,
+            );
+
             addSpacing(0.6);
             break;
 
-          case 'strong':
-          case 'b':
+          case "strong":
+          case "b":
             addTextWithInlineReferences(textContent, 11, "bold", "#1a1a1a");
             break;
 
-          case 'em':
-          case 'i':
+          case "em":
+          case "i":
             addTextWithInlineReferences(textContent, 11, "italic", "#555555");
             break;
 
-          case 'blockquote':
+          case "blockquote":
             checkPageBreak(2);
             doc.setDrawColor("#e5e5e5");
             doc.setLineWidth(1);
             doc.line(margin + 12, yPosition - 8, margin + 12, yPosition + 12);
             addSpacing(0.5);
-            addTextWithInlineReferences(textContent, 11, "italic", "#666666", margin + 25);
+            addTextWithInlineReferences(
+              textContent,
+              11,
+              "italic",
+              "#666666",
+              margin + 25,
+            );
             addSpacing(1);
             break;
 
@@ -510,7 +543,7 @@ export default function HeaderTitleWithDownload({
       };
 
       // Process all elements (same as CombinedActions)
-      const allElements = tempDiv.querySelectorAll('*');
+      const allElements = tempDiv.querySelectorAll("*");
       const processedElements = new Set();
 
       allElements.forEach((element) => {
@@ -525,7 +558,8 @@ export default function HeaderTitleWithDownload({
         }
 
         if (shouldProcess && !processedElements.has(element)) {
-          const hasProcessableChildren = element.querySelectorAll('h1, h2, h3, p, li').length > 0;
+          const hasProcessableChildren =
+            element.querySelectorAll("h1, h2, h3, p, li").length > 0;
           if (!hasProcessableChildren) {
             processElement(element);
             processedElements.add(element);
@@ -538,12 +572,15 @@ export default function HeaderTitleWithDownload({
         NodeFilter.SHOW_ELEMENT,
         {
           acceptNode: (node) => {
-            if (['H1', 'H2', 'H3', 'P', 'LI'].includes(node.tagName) && !processedElements.has(node)) {
+            if (
+              ["H1", "H2", "H3", "P", "LI"].includes(node.tagName) &&
+              !processedElements.has(node)
+            ) {
               return NodeFilter.FILTER_ACCEPT;
             }
             return NodeFilter.FILTER_SKIP;
           },
-        }
+        },
       );
 
       let node;
@@ -558,16 +595,16 @@ export default function HeaderTitleWithDownload({
       if (researchItem?.sources?.length > 0) {
         checkPageBreak(4);
         addSpacing(1.5);
-        
+
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.setTextColor("#1a1a1a");
         doc.text(`Sources (${researchItem.sources.length})`, margin, yPosition);
         yPosition += lineHeight;
         currentLineCount++;
-        
+
         addSpacing(0.8);
-        
+
         doc.setDrawColor("#e5e5e5");
         doc.setLineWidth(0.5);
         doc.line(margin, yPosition, pageWidth - margin, yPosition);
@@ -576,18 +613,21 @@ export default function HeaderTitleWithDownload({
 
         researchItem.sources.forEach((s, index) => {
           checkPageBreak(2);
-          
+
           const sourceTitle = s.title || s.resolved_url || s.url || "Source";
           const sourceUrl = s.url || s.resolved_url || "";
-          
+
           doc.setFontSize(11);
           doc.setFont("helvetica", "bold");
           doc.setTextColor("#1a1a1a");
           doc.text(`${index + 1}.`, margin, yPosition);
-          
+
           const titleWidth = doc.getTextWidth(`${index + 1}. `);
-          const titleLines = doc.splitTextToSize(sourceTitle, contentWidth - titleWidth - 15);
-          
+          const titleLines = doc.splitTextToSize(
+            sourceTitle,
+            contentWidth - titleWidth - 15,
+          );
+
           titleLines.forEach((line) => {
             checkPageBreak(1);
             doc.setFont("helvetica", "normal");
@@ -595,26 +635,36 @@ export default function HeaderTitleWithDownload({
             yPosition += lineHeight;
             currentLineCount++;
           });
-          
+
           if (sourceUrl) {
             yPosition += 4;
             doc.setFontSize(9);
             doc.setFont("helvetica", "normal");
             doc.setTextColor("#000000");
-            const urlLines = doc.splitTextToSize(sourceUrl, contentWidth - titleWidth - 15);
+            const urlLines = doc.splitTextToSize(
+              sourceUrl,
+              contentWidth - titleWidth - 15,
+            );
             urlLines.forEach((line) => {
               checkPageBreak(1);
               doc.text(line, margin + titleWidth, yPosition);
-              
+
               // Add clickable link
               const lineWidth = doc.getTextWidth(line);
-              doc.link(margin + titleWidth, yPosition - 9, lineWidth, 9, { url: sourceUrl });
-              
+              doc.link(margin + titleWidth, yPosition - 9, lineWidth, 9, {
+                url: sourceUrl,
+              });
+
               // Add underline to URL
               doc.setDrawColor("#000000");
               doc.setLineWidth(0.5);
-              doc.line(margin + titleWidth, yPosition + 1, margin + titleWidth + lineWidth, yPosition + 1);
-              
+              doc.line(
+                margin + titleWidth,
+                yPosition + 1,
+                margin + titleWidth + lineWidth,
+                yPosition + 1,
+              );
+
               yPosition += lineHeight - 2;
               currentLineCount++;
             });
@@ -626,36 +676,36 @@ export default function HeaderTitleWithDownload({
 
       // ===== ADD FOOTER WITH LOGO TO ALL PAGES =====
       const totalPages = doc.internal.getNumberOfPages();
-      
+
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
-        
+
         // Add separator line
         doc.setDrawColor("#e5e5e5");
         doc.setLineWidth(0.5);
         doc.line(margin, pageHeight - 40, pageWidth - margin, pageHeight - 40);
-        
-         // Add SHOTHIK AI logo to footer
-         if (logoBase64) {
-           try {
-             // Footer logo size proportional to header (smaller but increased height for better proportion)
-             doc.addImage(logoBase64, 'PNG', margin, pageHeight - 35, 80, 26);
-           } catch (error) {
-             console.error("Failed to add logo to footer on page", i, error);
-             // Fallback: Add text logo if image fails
-             doc.setFontSize(10);
-             doc.setFont("helvetica", "bold");
-             doc.setTextColor("#1a1a1a");
-             doc.text("SHOTHIK AI", margin, pageHeight - 25);
-           }
-         } else {
-           // Fallback: Add text logo if image loading fails
-           doc.setFontSize(10);
-           doc.setFont("helvetica", "bold");
-           doc.setTextColor("#1a1a1a");
-           doc.text("SHOTHIK AI", margin, pageHeight - 25);
-         }
-        
+
+        // Add SHOTHIK AI logo to footer
+        if (logoBase64) {
+          try {
+            // Footer logo size proportional to header (smaller but increased height for better proportion)
+            doc.addImage(logoBase64, "PNG", margin, pageHeight - 35, 80, 26);
+          } catch (error) {
+            console.error("Failed to add logo to footer on page", i, error);
+            // Fallback: Add text logo if image fails
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor("#1a1a1a");
+            doc.text("SHOTHIK AI", margin, pageHeight - 25);
+          }
+        } else {
+          // Fallback: Add text logo if image loading fails
+          doc.setFontSize(10);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#1a1a1a");
+          doc.text("SHOTHIK AI", margin, pageHeight - 25);
+        }
+
         // Add page number on the right
         doc.setFontSize(9);
         doc.setFont("helvetica", "normal");
@@ -672,123 +722,73 @@ export default function HeaderTitleWithDownload({
       console.error("Error details:", {
         message: err.message,
         stack: err.stack,
-        name: err.name
+        name: err.name,
       });
-      
+
       // Show user-friendly error message
-      alert(`PDF generation failed: ${err.message}\n\nPlease try downloading the Markdown file instead.`);
-      
+      alert(
+        `PDF generation failed: ${err.message}\n\nPlease try downloading the Markdown file instead.`,
+      );
+
       // Automatically fallback to markdown download
       try {
         downloadMarkdown();
       } catch (e) {
         console.error("Markdown download also failed:", e);
-        alert("Both PDF and Markdown downloads failed. Please try again later.");
+        alert(
+          "Both PDF and Markdown downloads failed. Please try again later.",
+        );
       }
     }
   };
 
   return (
-    <Box
-      sx={{
-        pb: { xl: 1 },
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 4,
-        padding: 1,
-        position: "relative",
-        bgcolor: theme.palette.mode === "dark" && "#161C24",
-      }}
-    >
-      <Typography
+    <div className="relative flex items-center justify-between gap-4 p-1 xl:pb-1">
+      <h1
         ref={titleRef}
-        variant="h1"
-        sx={{
-          fontSize: {
-            xs: "16px",
-            sm: "16px",
-            md: "20px",
-            lg: "22px",
-            xl: "30px",
-          },
-          fontWeight: "700",
-          cursor: "pointer",
-          color: "text.primary",
-          "&:hover": { opacity: 0.8 },
-        }}
+        className={cn(
+          "text-foreground cursor-pointer text-base font-bold hover:opacity-80",
+          "sm:text-base md:text-xl lg:text-[22px] xl:text-[30px]",
+        )}
       >
         {getTruncatedTitle(
           query || researchItem?.query || "Untitled",
           titleCharCount,
         )}
-      </Typography>
+      </h1>
 
       {/* Download button that opens a small menu */}
-      <Button
-        onClick={handleButtonClick}
-        aria-controls={open ? "download-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        sx={{
-          backgroundColor: "background.paper",
-          borderRadius: "6px",
-          width: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          height: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          minWidth: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          minHeight: { xs: "24px", md: "28px", lg: "36px", xl: "48px" },
-          padding: { xs: "4px", lg: "8px", xl: "12px" },
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          "&:hover": {
-            backgroundColor:
-              theme.palette.mode === "dark"
-                ? theme.palette.grey[800]
-                : theme.palette.grey[100],
-            boxShadow: "0 4px 8px rgba(0,0,0,0.15)",
-          },
-        }}
-      >
-        <NextImage
-          src={"/agents/edit.svg"}
-          alt={"Download"}
-          width={24}
-          height={24}
-          style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            objectFit: "contain",
-            filter:
-              theme.palette.mode === "dark"
-                ? "invert(1) brightness(0.9)"
-                : "none",
-          }}
-        />
-      </Button>
-
-      <Menu
-        id="download-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "download-button",
-        }}
-        sx={{
-          mt: 1,
-          "& .MuiPaper-root": {
-            backgroundColor: "background.paper",
-            color: "text.primary",
-          },
-        }}
-      >
-        <MenuItem onClick={downloadPdfFromMarkdown}>Download PDF</MenuItem>
-        <MenuItem onClick={downloadMarkdown}>
-          Download Raw Markdown (.md)
-        </MenuItem>
-      </Menu>
-    </Box>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "bg-background hover:bg-accent flex items-center justify-center rounded-md shadow-sm hover:shadow-md",
+              "h-6 min-h-6 w-6 min-w-6 p-1",
+              "md:h-7 md:min-h-7 md:w-7 md:min-w-7",
+              "lg:h-9 lg:min-h-9 lg:w-9 lg:min-w-9 lg:p-2",
+              "xl:h-12 xl:min-h-12 xl:w-12 xl:min-w-12 xl:p-3",
+            )}
+          >
+            <NextImage
+              src={"/agents/edit.svg"}
+              alt={"Download"}
+              width={24}
+              height={24}
+              className="h-full w-full object-contain"
+            />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="mt-1">
+          <DropdownMenuItem onClick={downloadPdfFromMarkdown}>
+            Download PDF
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={downloadMarkdown}>
+            Download Raw Markdown (.md)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

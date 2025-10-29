@@ -1,165 +1,109 @@
 "use client";
 
-import CloseIcon from "@mui/icons-material/Close";
-import ImageIcon from "@mui/icons-material/Image";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Chip,
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTitle,
-  Grid,
-  IconButton,
-  Link,
-  Typography,
-} from "@mui/material";
+} from "@/components/ui/dialog";
+import { ExternalLink, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
 
 const ImageCard = ({ image, onClick }) => (
   <Card
-    sx={{
-      cursor: "pointer",
-      transition: "transform 0.2s, box-shadow 0.2s",
-      "&:hover": {
-        transform: "translateY(-2px)",
-        boxShadow: 3,
-      },
-    }}
+    className="cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
     onClick={() => onClick(image)}
   >
-    <CardMedia
-      component="img"
-      height="200"
-      image={image.thumbnail_url || image.url}
-      alt={image.alt_text || image.title}
-      sx={{
-        objectFit: "cover",
-        backgroundColor: "#f5f5f5",
-        maxHeight: "200px",
-        objectPosition: "center center",
-      }}
-      onError={(e) => {
-        e.target.src = "/placeholder-image.png"; // Add a placeholder image
-      }}
-    />
-    <CardContent sx={{ p: 2 }}>
-      <Typography
-        variant="body2"
-        sx={{
-          fontWeight: 500,
-          mb: 1,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
+    <div className="bg-muted relative h-[200px] overflow-hidden">
+      <img
+        src={image.thumbnail_url || image.url}
+        alt={image.alt_text || image.title}
+        className="h-full w-full object-cover object-center"
+        onError={(e) => {
+          e.target.src = "/placeholder-image.png";
         }}
-      >
-        {image.title}
-      </Typography>
+      />
+    </div>
+    <CardContent className="p-2">
+      <p className="mb-1 line-clamp-2 text-sm font-medium">{image.title}</p>
 
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{
-          display: "block",
-          mb: 1,
-        }}
-      >
+      <p className="text-muted-foreground mb-1 block text-xs">
         Source: {image.source}
-      </Typography>
+      </p>
 
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Chip
-          label={`${image.width} × ${image.height}`}
-          size="small"
-          variant="outlined"
-          sx={{ fontSize: "0.7rem" }}
-        />
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="text-[0.7rem]">
+          {image.width} × {image.height}
+        </Badge>
 
-        <IconButton
-          size="small"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
           onClick={(e) => {
             e.stopPropagation();
             window.open(image.context_url, "_blank");
           }}
         >
-          <OpenInNewIcon fontSize="small" />
-        </IconButton>
-      </Box>
+          <ExternalLink className="h-4 w-4" />
+        </Button>
+      </div>
     </CardContent>
   </Card>
 );
 
 const ImageModal = ({ image, open, onClose }) => (
-  <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-    <DialogTitle
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Typography variant="h6" component="div">
-        {image?.title}
-      </Typography>
-      <IconButton onClick={onClose}>
-        <CloseIcon />
-      </IconButton>
-    </DialogTitle>
+  <Dialog open={open} onOpenChange={onClose}>
+    <DialogContent className="max-w-4xl">
+      <DialogHeader>
+        <DialogTitle className="flex items-center justify-between pr-6">
+          {image?.title}
+        </DialogTitle>
+      </DialogHeader>
 
-    <DialogContent>
       {image && (
-        <Box>
+        <div>
           <img
             src={image.url}
             alt={image.alt_text || image.title}
-            style={{
-              width: "100%",
-              height: "auto",
-              maxHeight: "70vh",
-              objectFit: "contain",
-              backgroundColor: "#f5f5f5",
-              borderRadius: "8px",
-            }}
+            className="bg-muted h-auto max-h-[70vh] w-full rounded-lg object-contain"
             onError={(e) => {
               e.target.src = "/placeholder-image.png";
             }}
           />
 
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+          <div className="mt-2 space-y-1">
+            <p className="text-muted-foreground text-sm">
               <strong>Source:</strong> {image.source}
-            </Typography>
+            </p>
 
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <p className="text-muted-foreground text-sm">
               <strong>Dimensions:</strong> {image.width} × {image.height}
-            </Typography>
+            </p>
 
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <p className="text-muted-foreground text-sm">
               <strong>Context:</strong>{" "}
-              <Link href={image.context_url} target="_blank" rel="noopener">
+              <a
+                href={image.context_url}
+                target="_blank"
+                rel="noopener"
+                className="text-primary underline hover:opacity-80"
+              >
                 View original page
-              </Link>
-            </Typography>
+              </a>
+            </p>
 
             {image.relevance_score && (
-              <Typography variant="body2" color="text.secondary">
+              <p className="text-muted-foreground text-sm">
                 <strong>Relevance:</strong>{" "}
                 {Math.round(image.relevance_score * 100)}%
-              </Typography>
+              </p>
             )}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
     </DialogContent>
   </Dialog>
@@ -181,71 +125,33 @@ export default function ImagesContent({ images }) {
 
   if (!images || images.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 300,
-          textAlign: "center",
-        }}
-      >
-        <ImageIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-        <Typography variant="h6" color="text.secondary">
-          No Images Available
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+      <div className="flex min-h-[300px] flex-col items-center justify-center text-center">
+        <ImageIcon className="text-muted-foreground mb-2 h-16 w-16" />
+        <h6 className="text-muted-foreground text-lg">No Images Available</h6>
+        <p className="text-muted-foreground text-sm">
           No images were found for this research query
-        </Typography>
-      </Box>
+        </p>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        px: 2,
-        py: 3,
-        mb: { xs: 17, sm: 7, md: 5 },
-        minHeight: {
-          xs: "calc(100dvh - 180px)",
-          sm: "calc(100dvh - 200px)",
-          md: "calc(100dvh - 230px)",
-          lg: "calc(100dvh - 250px)",
-          xl: "calc(100dvh - 270px)",
-        },
-        maxHeight: {
-          xs: "calc(100dvh - 155px)",
-          sm: "calc(100dvh - 170px)",
-          md: "calc(100dvh - 200px)",
-          lg: "calc(100dvh - 220px)",
-          xl: "calc(100dvh - 220px)",
-        },
-      }}
-    >
-      {/* <Box sx={{ my: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Research Images ({images.length})
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Images related to your research query
-        </Typography>
-      </Box> */}
-
-      <Grid container spacing={2}>
+    <div className="mb-[4.25rem] max-h-[calc(100dvh-155px)] min-h-[calc(100dvh-180px)] px-2 py-3 sm:mb-7 sm:max-h-[calc(100dvh-170px)] sm:min-h-[calc(100dvh-200px)] md:mb-5 md:max-h-[calc(100dvh-200px)] md:min-h-[calc(100dvh-230px)] lg:max-h-[calc(100dvh-220px)] lg:min-h-[calc(100dvh-250px)] xl:max-h-[calc(100dvh-220px)] xl:min-h-[calc(100dvh-270px)]">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
         {images.map((image, index) => (
-          <Grid item xs={12} sm={6} md={4} key={image._id || index}>
-            <ImageCard image={image} onClick={handleImageClick} />
-          </Grid>
+          <ImageCard
+            key={image._id || index}
+            image={image}
+            onClick={handleImageClick}
+          />
         ))}
-      </Grid>
+      </div>
 
       <ImageModal
         image={selectedImage}
         open={modalOpen}
         onClose={handleCloseModal}
       />
-    </Box>
+    </div>
   );
 }
