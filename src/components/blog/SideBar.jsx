@@ -44,41 +44,52 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent className="fixed bottom-0 left-0 right-0 max-w-full h-[80vh] rounded-t-2xl p-0">
-                <div className="flex flex-col justify-between items-start h-full p-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleClose}
-                    className="self-end transition-transform hover:scale-110"
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                  <div className="w-full">
-                    <h6 className="text-lg font-semibold mb-4">All topics</h6>
-                    <div>
+              <DialogContent 
+                showCloseButton={false}
+                className="fixed bottom-0 left-0 right-0 top-auto max-w-full h-[80vh] rounded-t-2xl p-0 translate-x-0 translate-y-0 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom border-t"
+              >
+                <div className="flex flex-col h-full overflow-hidden">
+                  {/* Header with close button */}
+                  <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
+                    <h6 className="text-lg font-semibold">All topics</h6>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleClose}
+                      className="transition-transform hover:scale-110"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+
+                  {/* Scrollable content */}
+                  <div className="flex-1 overflow-y-auto overscroll-contain p-4">
+                    <div className="space-y-1">
                       {categories?.data?.length ? (
                         categories.data.map((category) => (
                           <Button
                             key={category._id}
                             variant="ghost"
-                            className="w-full justify-start text-left p-2 hover:bg-accent"
+                            className="w-full justify-start text-left p-3 hover:bg-accent rounded-lg"
                             onClick={() => handleCategoryClick(category)}
                           >
                             {category.title}
                           </Button>
                         ))
                       ) : (
-                        <div>
+                        <div className="text-center py-8">
                           <p className="text-muted-foreground">No Category found</p>
                         </div>
                       )}
                     </div>
-                  </div>
-                  <SideMenu />
 
-                  <div className="mt-4 p-2 bg-muted rounded w-full">
-                    <SideCard />
+                    <div className="mt-6">
+                      <SideMenu />
+                    </div>
+
+                    <div className="mt-6 mb-4 p-4 bg-muted rounded-lg">
+                      <SideCard />
+                    </div>
                   </div>
                 </div>
               </DialogContent>
