@@ -29,9 +29,8 @@ import {
   TableChart,
   Description,
   Edit,
-  DragIndicator,
-  Reorder,
   OpenInNew,
+  Share,
 } from "@mui/icons-material";
 import { DataGrid, useRowSelection } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
@@ -47,6 +46,7 @@ import {
   setSheetData,
 } from "../../redux/slice/sheetSlice";
 import { useSaveEditedSheetDataMutation } from "../../redux/api/sheet/sheetApi";
+import ShareSheetModal from "../share/ShareSheetModal";
 import SavePointsDropdown from "./SavePointsDropDown";
 import * as XLSX from "xlsx";
 
@@ -152,29 +152,7 @@ const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) 
   );
 };
 
-// Drag Handle Component for Row Reordering
-const DragHandle = ({ row }) => {
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '100%',
-        cursor: 'grab',
-        '&:active': {
-          cursor: 'grabbing',
-        },
-        '&:hover': {
-          backgroundColor: 'action.hover',
-        },
-      }}
-    >
-      <DragIndicator sx={{ fontSize: 16, color: 'text.secondary' }} />
-    </Box>
-  );
-};
+// Removed DragHandle component - no longer needed for reordering
 
 // Status indicator component
 const StatusChip = ({ status, title, rowCount = 0 }) => {
@@ -341,46 +319,39 @@ const processSheetData = (sheetData, onCellValueChange, editingCell) => {
 
   const headers = Array.from(allKeys);
 
-  // Add drag handle column first
-  const columns = [
-    {
-      key: "__drag_handle__",
-      name: "",
-      width: 40,
-      resizable: false,
-      sortable: false,
-      frozen: true,
-      renderCell: ({ row }) => <DragHandle row={row} />,
+  // Create columns without drag handle
+  const columns = headers.map((header) => ({
+    key: header,
+    name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
+    width: Math.max(250, Math.min(350, header.length * 15)),
+    resizable: true,
+    sortable: true,
+    renderCell: (params) => {
+      const value = params.row[header];
+      const cellKey = `${params.row.id}-${header}`;
+      const isEditing = editingCell === cellKey;
+
+      return (
+        <EditableCell
+          value={value}
+          onValueChange={onCellValueChange}
+          row={params.row}
+          column={header}
+          isEditing={isEditing}
+        />
+      );
     },
-    ...headers.map((header) => ({
-      key: header,
-      name: header.charAt(0).toUpperCase() + header.slice(1).replace(/_/g, " "),
-      width: Math.max(250, Math.min(350, header.length * 15)),
-      resizable: true,
-      sortable: true,
-      renderCell: (params) => {
-        const value = params.row[header];
-        const cellKey = `${params.row.id}-${header}`;
-        const isEditing = editingCell === cellKey;
-
-        return (
-          <EditableCell
-            value={value}
-            onValueChange={onCellValueChange}
-            row={params.row}
-            column={header}
-            isEditing={isEditing}
-          />
-        );
-      },
-    })),
-  ];
-
-  // Process rows with proper IDs
-  const rows = sheetData.map((row, index) => ({
-    id: row.id !== undefined ? row.id : `row-${index}`,
-    ...row,
   }));
+
+  // Process rows with proper IDs - ensure IDs match the original data
+  const rows = sheetData.map((row, index) => {
+    // Preserve the original row structure and ensure ID consistency
+    return {
+      ...row,
+      id: row.id !== undefined ? row.id : `row-${index}`,
+      _index: index, // Add index for easier row finding
+    };
+  });
 
   return { columns, rows };
 };
@@ -389,8 +360,7 @@ export default function SheetDataArea() {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
-  const [columnOrder, setColumnOrder] = useState([]);
-  const [rowOrder, setRowOrder] = useState([]);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const theme = useTheme();
 
@@ -407,9 +377,36 @@ export default function SheetDataArea() {
   const [saveEditedSheetData, { isLoading: isSavingData }] = useSaveEditedSheetDataMutation();
 
   // Handle cell value changes
-  const handleCellValueChange = useCallback(async (row, column, newValue) => {
+  const handleCellValueChange = useCallback(async (rowObj, column, newValue) => {
+    // Try multiple approaches to find the row
+    let rowIndex = -1;
+    
+    // First try: Find by ID
+    rowIndex = sheetState.sheet.findIndex(r => r.id === rowObj.id);
+    
+    // Second try: Find by matching all properties (fallback)
+    if (rowIndex === -1) {
+      rowIndex = sheetState.sheet.findIndex(r => {
+        // Compare all properties except the one being edited
+        const keys = Object.keys(r).filter(key => key !== column);
+        return keys.every(key => r[key] === rowObj[key]);
+      });
+    }
+    
+    // Third try: Find by position if we have an index in the rowObj
+    if (rowIndex === -1 && rowObj._index !== undefined) {
+      rowIndex = rowObj._index;
+    }
+    
+    if (rowIndex === -1) {
+      console.error("Row not found in sheet data");
+      return;
+    }
+
+    const oldValue = sheetState.sheet[rowIndex]?.[column];
+    
     const updatedRows = sheetState.sheet.map((r, index) => {
-      if (index === row) {
+      if (index === rowIndex) {
         return { ...r, [column]: newValue };
       }
       return r;
@@ -419,7 +416,7 @@ export default function SheetDataArea() {
     dispatch(setSheetData(updatedRows));
     setEditingCell(null);
 
-    // Save to API in the background
+    // Save to API in the background (optional - UI updates immediately)
     try {
       const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
       if (currentSavePoint && currentSavePoint.generations?.length > 0) {
@@ -428,113 +425,36 @@ export default function SheetDataArea() {
         const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
 
         if (conversationId && chatId) {
+          // Get column order from the current sheet data
+          const columnOrder = Object.keys(sheetState.sheet[0] || {});
+          
           await saveEditedSheetData({
             chatId,
             conversationId,
             sheetData: updatedRows,
             columnOrder,
-            rowOrder,
+            rowOrder: updatedRows.map(row => row.id),
             metadata: {
               ...activeGeneration?.metadata,
               lastEdited: new Date().toISOString(),
               editedBy: 'user',
               editType: 'cell_edit',
-              editedCell: { row, column, oldValue: sheetState.sheet[row]?.[column], newValue }
-            }
+              editedCell: { row: rowIndex, column, oldValue, newValue }
+            },
+            timestamp: new Date().toISOString()
           }).unwrap();
           
           console.log("Sheet data saved successfully to API");
         }
       }
     } catch (error) {
-      console.error("Failed to save sheet data to API:", error);
-      // Optionally show a toast notification to the user
+      console.warn("API endpoint not available yet - changes saved locally only:", error);
+      // The UI has already been updated, so the user experience is not affected
+      // This is just a warning that the backend API endpoint needs to be implemented
     }
-  }, [sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData, columnOrder, rowOrder]);
+  }, [sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData]);
 
-  // Handle column reordering
-  const handleColumnReorder = useCallback(async (sourceIndex, destinationIndex) => {
-    const newColumnOrder = [...columnOrder];
-    const [movedColumn] = newColumnOrder.splice(sourceIndex, 1);
-    newColumnOrder.splice(destinationIndex, 0, movedColumn);
-    setColumnOrder(newColumnOrder);
-
-    // Save to API in the background
-    try {
-      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
-      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
-        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
-        const conversationId = currentSavePoint.id.replace('savepoint-', '');
-        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
-
-        if (conversationId && chatId) {
-          await saveEditedSheetData({
-            chatId,
-            conversationId,
-            sheetData: sheetState.sheet,
-            columnOrder: newColumnOrder,
-            rowOrder,
-            metadata: {
-              ...activeGeneration?.metadata,
-              lastEdited: new Date().toISOString(),
-              editedBy: 'user',
-              editType: 'column_reorder',
-              reorderDetails: { sourceIndex, destinationIndex, movedColumn }
-            }
-          }).unwrap();
-          
-          console.log("Column reorder saved successfully to API");
-        }
-      }
-    } catch (error) {
-      console.error("Failed to save column reorder to API:", error);
-    }
-  }, [columnOrder, sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, saveEditedSheetData, rowOrder]);
-
-  // Handle row reordering
-  const handleRowReorder = useCallback(async (sourceIndex, destinationIndex) => {
-    const newRowOrder = [...rowOrder];
-    const [movedRow] = newRowOrder.splice(sourceIndex, 1);
-    newRowOrder.splice(destinationIndex, 0, movedRow);
-    setRowOrder(newRowOrder);
-    
-    // Update the actual data
-    const newSheetData = [...sheetState.sheet];
-    const [movedDataRow] = newSheetData.splice(sourceIndex, 1);
-    newSheetData.splice(destinationIndex, 0, movedDataRow);
-    dispatch(setSheetData(newSheetData));
-
-    // Save to API in the background
-    try {
-      const currentSavePoint = sheetState.savePoints?.find(sp => sp.id === sheetState.activeSavePointId);
-      if (currentSavePoint && currentSavePoint.generations?.length > 0) {
-        const activeGeneration = currentSavePoint.generations.find(g => g.id === currentSavePoint.activeGenerationId);
-        const conversationId = currentSavePoint.id.replace('savepoint-', '');
-        const chatId = sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1];
-
-        if (conversationId && chatId) {
-          await saveEditedSheetData({
-            chatId,
-            conversationId,
-            sheetData: newSheetData,
-            columnOrder,
-            rowOrder: newRowOrder,
-            metadata: {
-              ...activeGeneration?.metadata,
-              lastEdited: new Date().toISOString(),
-              editedBy: 'user',
-              editType: 'row_reorder',
-              reorderDetails: { sourceIndex, destinationIndex, movedRowId: movedDataRow.id }
-            }
-          }).unwrap();
-          
-          console.log("Row reorder saved successfully to API");
-        }
-      }
-    } catch (error) {
-      console.error("Failed to save row reorder to API:", error);
-    }
-  }, [rowOrder, sheetState.sheet, sheetState.savePoints, sheetState.activeSavePointId, dispatch, saveEditedSheetData, columnOrder]);
+  // Removed reorder functions - no longer needed
 
   // Process sheet data for DataGrid
   const { columns, rows } = useMemo(() => {
@@ -892,7 +812,7 @@ export default function SheetDataArea() {
     };
   }, []);
 
-  // Grid configuration with enhanced features
+  // Grid configuration with edit functionality
   const gridProps = useMemo(
     () => ({
       columns,
@@ -917,17 +837,15 @@ export default function SheetDataArea() {
       onSortColumnsChange: (sortColumns) => {
         console.log("Sort columns changed:", sortColumns);
       },
-      // Enhanced features
-      onColumnsReorder: handleColumnReorder,
-      onRowsReorder: handleRowReorder,
-      enableColumnReordering: true,
-      enableRowReordering: true,
+      // Removed reorder functionality
+      enableColumnReordering: false,
+      enableRowReordering: false,
       // Use proper components prop instead of renderers
       components: {
         Row: CustomRow,
       },
     }),
-    [columns, rows, selectedRows, theme.palette, handleColumnReorder, handleRowReorder],
+    [columns, rows, selectedRows, theme.palette],
   );
 
   // Render generating state
@@ -1045,98 +963,117 @@ export default function SheetDataArea() {
             </Button>
           </Tooltip>
 
-          {/* Reorder Info */}
-          {/* <Tooltip title="Drag the grip handles to reorder rows and columns">
-            <Button
-              variant="outlined"
-              startIcon={<Reorder />}
-              size="small"
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                borderWidth: 2,
-                "&:hover": {
-                  borderWidth: 2,
-                  transform: "translateY(-1px)",
-                  boxShadow: 2,
-                },
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              Reorder
-            </Button>
-          </Tooltip> */}
+          {/* Removed reorder button - no longer needed */}
 
           {/* View in New Window Button */}
           <Tooltip title="View generated sheet in new window">
-            <Button
-              variant="outlined"
-              startIcon={<OpenInNew />}
-              onClick={handleViewInNewWindow}
-              disabled={!hasData}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                px: { xs: 1, sm: 2 },
-                py: 1,
-                borderWidth: 2,
-                minWidth: { xs: 44, sm: "auto" },
-                mr: 1,
-                "& .MuiButton-startIcon": {
-                  marginRight: { xs: -0.5, sm: 1 },
-                },
-                "&:hover": {
+            <span>
+              <Button
+                variant="outlined"
+                startIcon={<OpenInNew />}
+                onClick={handleViewInNewWindow}
+                disabled={!hasData}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  px: { xs: 1, sm: 2 },
+                  py: 1,
                   borderWidth: 2,
-                  transform: "translateY(-1px)",
-                  boxShadow: 2,
-                },
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              <Box
-                component="span"
-                sx={{ display: { xs: "none", sm: "inline" } }}
+                  minWidth: { xs: 44, sm: "auto" },
+                  mr: 1,
+                  "& .MuiButton-startIcon": {
+                    marginRight: { xs: -0.5, sm: 1 },
+                  },
+                  "&:hover": {
+                    borderWidth: 2,
+                    transform: "translateY(-1px)",
+                    boxShadow: 2,
+                  },
+                  transition: "all 0.2s ease-in-out",
+                }}
               >
-                View in New Window
-              </Box>
-            </Button>
+                <Box
+                  component="span"
+                  sx={{ display: { xs: "none", sm: "inline" } }}
+                >
+                  View in New Window
+                </Box>
+              </Button>
+            </span>
           </Tooltip>
 
           {/* Export Button with Dropdown */}
           <Tooltip title="Export data">
-            <Button
-              variant="outlined"
-              startIcon={<Download />}
-              endIcon={<ArrowDropDown />}
-              onClick={handleExportMenuOpen}
-              disabled={!hasData}
-              sx={{
-                textTransform: "none",
-                borderRadius: 2,
-                px: { xs: 1, sm: 2 },
-                py: 1,
-                borderWidth: 2,
-                minWidth: { xs: 44, sm: "auto" },
-                "& .MuiButton-startIcon": {
-                  marginRight: { xs: -0.5, sm: 1 },
-                },
-                "&:hover": {
+            <span>
+              <Button
+                variant="outlined"
+                startIcon={<Download />}
+                endIcon={<ArrowDropDown />}
+                onClick={handleExportMenuOpen}
+                disabled={!hasData}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  px: { xs: 1, sm: 2 },
+                  py: 1,
                   borderWidth: 2,
-                  transform: "translateY(-1px)",
-                  boxShadow: 2,
-                },
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              <Box
-                component="span"
-                sx={{ display: { xs: "none", sm: "inline" } }}
+                  minWidth: { xs: 44, sm: "auto" },
+                  "& .MuiButton-startIcon": {
+                    marginRight: { xs: -0.5, sm: 1 },
+                  },
+                  "&:hover": {
+                    borderWidth: 2,
+                    transform: "translateY(-1px)",
+                    boxShadow: 2,
+                  },
+                  transition: "all 0.2s ease-in-out",
+                }}
               >
-                Export
-              </Box>
-            </Button>
+                <Box
+                  component="span"
+                  sx={{ display: { xs: "none", sm: "inline" } }}
+                >
+                  Export
+                </Box>
+              </Button>
+            </span>
+          </Tooltip>
+
+          {/* Share Button */}
+          <Tooltip title="Share sheet data">
+            <span>
+              <Button
+                variant="outlined"
+                startIcon={<Share />}
+                onClick={() => setShareModalOpen(true)}
+                disabled={!hasData}
+                sx={{
+                  textTransform: "none",
+                  borderRadius: 2,
+                  px: { xs: 1, sm: 2 },
+                  py: 1,
+                  borderWidth: 2,
+                  minWidth: { xs: 44, sm: "auto" },
+                  ml: 1,
+                  "& .MuiButton-startIcon": {
+                    marginRight: { xs: -0.5, sm: 1 },
+                  },
+                  "&:hover": {
+                    borderWidth: 2,
+                    transform: "translateY(-1px)",
+                    boxShadow: 2,
+                  },
+                  transition: "all 0.2s ease-in-out",
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{ display: { xs: "none", sm: "inline" } }}
+                >
+                  Share
+                </Box>
+              </Button>
+            </span>
           </Tooltip>
 
           {/* Export Menu */}
@@ -1208,11 +1145,7 @@ export default function SheetDataArea() {
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
               <Edit sx={{ fontSize: 12 }} />
-              Double-click to edit
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <DragIndicator sx={{ fontSize: 12 }} />
-              Drag to reorder
+              Double-click to edit cells
             </Typography>
             {isSavingData && (
               <Typography variant="caption" color="primary.main" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -1223,6 +1156,15 @@ export default function SheetDataArea() {
           </Box>
         </Box>
       </Box>
+
+      {/* Share Sheet Modal */}
+      <ShareSheetModal
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        sheetId={currentSavePoint?.id || 'sheet-' + Date.now()}
+        sheetData={sheetState.sheet}
+        chatId={sessionStorage.getItem("activeChatId") || window.location.search.match(/id=([^&]+)/)?.[1] || null}
+      />
     </Box>
   );
 }

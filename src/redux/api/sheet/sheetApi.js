@@ -111,19 +111,20 @@ export const sheetApiSlice = createApi({
       providesTags: ["MyChats"],
     }),
     
-    // Save edited sheet data
+    // Save edited sheet data - try multiple approaches
     saveEditedSheetData: builder.mutation({
       query: ({ chatId, conversationId, sheetData, columnOrder, rowOrder, metadata }) => ({
-        url: "/conversation/save_edited_sheet_data",
-        method: "POST",
+        url: "/conversation/update_conversation/" + conversationId,
+        method: "PUT",
         body: {
-          chatId,
-          conversationId,
-          sheetData,
-          columnOrder,
-          rowOrder,
-          metadata,
-          timestamp: new Date().toISOString(),
+          columns: columnOrder || Object.keys(sheetData[0] || {}),
+          rows: sheetData,
+          metadata: {
+            ...metadata,
+            chatId,
+            lastEdited: new Date().toISOString(),
+            editType: 'cell_edit'
+          }
         },
       }),
       invalidatesTags: ["ChatHistory"],
