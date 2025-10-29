@@ -1,50 +1,32 @@
-import { Box, Breadcrumbs, Stack, Typography } from "@mui/material";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Breadcrumb({ links, heading, activeLast }) {
   return (
-    <Stack direction="row" alignItems="center">
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h5" gutterBottom>
-          {heading}
-        </Typography>
+    <div className="flex items-center">
+      <div className="flex-grow">
+        <h1 className="mb-2 text-2xl font-semibold">{heading}</h1>
 
         {/* BREADCRUMBS */}
-        <Breadcrumbs separator={<Separator />}>
+        <nav className="flex items-center space-x-2 text-sm">
           {links.map((link, idx) => (
-            <Typography
-              key={idx}
-              sx={{
-                typography: "body2",
-                alignItems: "center",
-                color: "text.primary",
-                display: "inline-flex",
-                textTransform: "capitalize",
-                ...(activeLast === link.name && {
-                  cursor: "default",
-                  pointerEvents: "none",
-                  color: "text.disabled",
-                }),
-              }}
-            >
-              {link.name}
-            </Typography>
+            <div key={idx} className="flex items-center">
+              <span
+                className={cn(
+                  "text-foreground capitalize",
+                  activeLast === link.name &&
+                    "text-muted-foreground pointer-events-none",
+                )}
+              >
+                {link.name}
+              </span>
+              {idx < links.length - 1 && (
+                <ChevronRight className="text-muted-foreground mx-2 h-4 w-4" />
+              )}
+            </div>
           ))}
-        </Breadcrumbs>
-      </Box>
-    </Stack>
-  );
-}
-
-export function Separator() {
-  return (
-    <Box
-      component="span"
-      sx={{
-        width: 4,
-        height: 4,
-        borderRadius: "50%",
-        bgcolor: "text.disabled",
-      }}
-    />
+        </nav>
+      </div>
+    </div>
   );
 }

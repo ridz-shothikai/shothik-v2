@@ -1,18 +1,30 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import { CheckCircle, ErrorRounded, Info } from "@mui/icons-material";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
-  Box,
-  Button,
-  Card,
-  Grid2,
-  InputAdornment,
-  Skeleton,
-  Stack,
-  Typography,
-} from "@mui/material";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CheckCircle, Info, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { countries } from "../../_mock/countries";
 import useResponsive from "../../hooks/useResponsive";
@@ -22,36 +34,18 @@ import {
   useUploadImageMutation,
 } from "../../redux/api/auth/authApi";
 import { getUser, setUser } from "../../redux/slice/auth";
-import FormProvider from "../../resource/FormProvider";
-import { RHFSelect } from "../../resource/RHFSelect";
-import RHFTextField from "../../resource/RHFTextField";
-import { RHFUploadAvatar } from "../../resource/RHFUploadAvatar";
-// ----------------------------------------------------------------------
 
-export const Label = ({
+const StatusBadge = ({
   children,
-  color = "default",
-  fontColor = "white",
-  startIcon,
-  sx,
+  variant = "default",
+  icon: Icon,
+  className,
 }) => {
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      gap={0.5}
-      sx={{
-        backgroundColor: color,
-        color: fontColor,
-        px: 1.5,
-        py: 0.5,
-        borderRadius: 1.5,
-        ...sx,
-      }}
-    >
-      {startIcon}
-      <Typography sx={{ fontSize: 13, fontWeight: 600 }}>{children}</Typography>
-    </Stack>
+    <Badge variant={variant} className={cn("gap-1", className)}>
+      {Icon && <Icon className="h-3 w-3" />}
+      {children}
+    </Badge>
   );
 };
 
@@ -61,8 +55,6 @@ export default function AccountGeneral({ user }) {
   const [uploadImage] = useUploadImageMutation();
   const isMobile = useResponsive("down", "sm");
   const dispatch = useDispatch();
-
-  console.log(user, "account general");
 
   const UpdateUserSchema = Yup.object().shape({
     name: Yup.string()
@@ -97,9 +89,10 @@ export default function AccountGeneral({ user }) {
     city: user?.city || "",
     zipCode: user?.zipCode != null ? String(user.zipCode) : "",
   };
+
   const [loading, setLoading] = useState(false);
 
-  const methods = useForm({
+  const form = useForm({
     resolver: yupResolver(UpdateUserSchema),
     defaultValues,
   });
@@ -109,7 +102,7 @@ export default function AccountGeneral({ user }) {
     handleSubmit,
     formState: { isSubmitting },
     reset,
-  } = methods;
+  } = form;
 
   useEffect(() => {
     if (user) {
@@ -171,139 +164,233 @@ export default function AccountGeneral({ user }) {
     enqueueSnackbar(errorMessage, { variant: "error" });
   };
 
+  const handleFileSelect = (event) => {
+    const files = event.target.files;
+    if (files && files[0]) {
+      handleDrop(files[0]);
+    }
+  };
+
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Grid2 container spacing={3}>
-        <Grid2 size={{ xs: 12, md: 4 }}>
-          <Card sx={{ py: 10, px: 3, textAlign: "center" }}>
-            {loading ? (
-              <Stack alignItems="center" height={180}>
-                <Skeleton
-                  variant="circular"
-                  width={isMobile ? 126 : 144}
-                  height={isMobile ? 126 : 144}
-                />
-              </Stack>
-            ) : (
-              <RHFUploadAvatar
-                name="image"
-                onDrop={handleDrop}
-                loading={loading}
-                helperText={
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      mt: 2,
-                      mx: "auto",
-                      display: "block",
-                      textAlign: "center",
-                      color: "text.secondary",
-                    }}
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="md:col-span-4">
+            <Card className="p-8 text-center">
+              {loading ? (
+                <div className="flex h-48 flex-col items-center">
+                  <Skeleton
+                    className={cn(
+                      "rounded-full",
+                      isMobile ? "h-32 w-32" : "h-36 w-36",
+                    )}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Avatar
+                    className={cn(
+                      "mx-auto",
+                      isMobile ? "h-32 w-32" : "h-36 w-36",
+                    )}
                   >
+                    <AvatarImage src={form.watch("image")} />
+                    <AvatarFallback className="text-2xl">
+                      {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Input
+                    type="file"
+                    accept=".jpeg,.jpg,.png,.gif"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      document.getElementById("avatar-upload").click()
+                    }
+                  >
+                    Change Avatar
+                  </Button>
+                  <p className="text-muted-foreground mt-2 text-xs">
                     Allowed *.jpeg, *.jpg, *.png, *.gif
-                  </Typography>
-                }
-              />
-            )}
-          </Card>
-        </Grid2>
+                  </p>
+                </div>
+              )}
+            </Card>
+          </div>
 
-        <Grid2 item size={{ xs: 12, md: 8 }}>
-          <Card sx={{ p: 3 }}>
-            <Stack gap={3}>
-              <Stack direction="row" gap={2}>
-                <RHFTextField name="name" label="Name" />
+          <div className="md:col-span-8">
+            <Card className="p-6">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <RHFTextField
-                  name="email"
-                  label="Email Address"
-                  helperText={
-                    <Stack direction="row" gap={1}>
-                      <Info fontSize="small" /> Email can not be changed after
-                      sign up.
-                    </Stack>
-                  }
-                  endAdornment={
-                    <InputAdornment position="end">
-                      {user?.is_verified ? (
-                        <Label
-                          color="primary.main"
-                          startIcon={<CheckCircle sx={{ fontSize: 16 }} />}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input {...field} readOnly className="pr-32" />
+                            <div className="absolute top-1/2 right-2 -translate-y-1/2 transform">
+                              {user?.is_verified ? (
+                                <StatusBadge
+                                  variant="default"
+                                  icon={CheckCircle}
+                                  className="bg-primary text-primary-foreground"
+                                >
+                                  Verified
+                                </StatusBadge>
+                              ) : (
+                                <StatusBadge
+                                  variant="destructive"
+                                  icon={XCircle}
+                                >
+                                  Unverified
+                                </StatusBadge>
+                              )}
+                            </div>
+                          </div>
+                        </FormControl>
+                        <div className="text-muted-foreground mt-1 flex items-center gap-2 text-xs">
+                          <Info className="h-3 w-3" />
+                          Email can not be changed after sign up.
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <textarea
+                          {...field}
+                          rows={2}
+                          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
                         >
-                          Verified
-                        </Label>
-                      ) : (
-                        <Label
-                          color="error.main"
-                          startIcon={<ErrorRounded sx={{ fontSize: 16 }} />}
-                        >
-                          Unverified
-                        </Label>
-                      )}
-                    </InputAdornment>
-                  }
-                  readOnly={true}
-                />
-              </Stack>
-              <RHFTextField name="address" label="Address" multiline rows={2} />
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: "repeat(1, 1fr)",
-                  sm: "repeat(2, 1fr)",
-                }}
-              >
-                <RHFSelect
-                  native
-                  name="country"
-                  label="Country"
-                  placeholder="Country"
-                  onChange={(e) => setValue("country", e.target.value)}
-                >
-                  <option value="" disabled>
-                    Select a country
-                  </option>
-                  {countries.map(({ code, label }) => (
-                    <option key={code} value={code}>
-                      {label}
-                    </option>
-                  ))}
-                </RHFSelect>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a country" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {countries.map(({ code, label }) => (
+                              <SelectItem key={code} value={code}>
+                                {label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <RHFTextField
-                  name="state"
-                  placeholder="Please enter your state or region"
-                />
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>State/Region</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Please enter your state or region"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <RHFTextField
-                  name="city"
-                  placeholder="Please enter your city"
-                />
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Please enter your city"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <RHFTextField
-                  name="zipCode"
-                  placeholder="Please enter your zip code"
-                  type="text" // keep text to avoid browser numeric edge cases
-                  restrict="digits" // <-- opt-in sanitization
-                  inputProps={{
-                    inputMode: "numeric", // mobile friendly numeric keyboard
-                    pattern: "[0-9]*",
-                    // don't add an onChange here — unless you know what you're doing.
-                  }}
-                />
-              </Box>
-            </Stack>
+                  <FormField
+                    control={form.control}
+                    name="zipCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Zip Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Please enter your zip code"
+                            {...field}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
 
-            <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <Button type="submit" variant="contained" loading={isSubmitting}>
-                Save Changes
-              </Button>
-            </Stack>
-          </Card>
-        </Grid2>
-      </Grid2>
-    </FormProvider>
+              <div className="mt-6 flex justify-end">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </form>
+    </Form>
   );
 }

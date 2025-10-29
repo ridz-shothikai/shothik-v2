@@ -1,172 +1,123 @@
-import { Box, Button, Card, Grid2, Typography, useTheme } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Diamond } from "lucide-react";
 import Link from "next/link";
 import { useGetTransectionHistoryQuery } from "../../redux/api/auth/authApi";
-import SvgColor from "../../resource/SvgColor";
 
 export default function AccountBilling({ user }) {
   const { data } = useGetTransectionHistoryQuery();
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
 
   if (!user) return null;
 
   return (
-    <Grid2 container spacing={3}>
-      <Grid2 size={{ xs: 12, md: 5, lg: 4 }}>
-        <Card sx={{ p: 2 }}>
-          <Typography
-            variant="overline"
-            sx={{ mb: 3, display: "block", color: "text.secondary" }}
-          >
-            Your Plan
-          </Typography>
-
-          {user?.package ? (
-            <Box
-              sx={{
-                my: 3,
-                display: "flex",
-                gap: 1,
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography
-                color="primary"
-                sx={{
-                  fontSize: 20,
-                  textTransform: "capitalize",
-                  fontWeight: 600,
-                }}
-              >
-                {user?.package.replace("_", " ")}
-              </Typography>
-              {user?.package !== "unlimited" ? (
-                <Box>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="lg:col-span-5 xl:col-span-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
+              Your Plan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {user?.package ? (
+              <div className="my-4 flex flex-col items-center gap-3">
+                <h3 className="text-primary text-xl font-semibold capitalize">
+                  {user?.package.replace("_", " ")}
+                </h3>
+                {user?.package !== "unlimited" ? (
                   <Link href="/pricing">
-                    <Button
-                      color="primary"
-                      size="small"
-                      variant="contained"
-                      rel="noopener"
-                      startIcon={
-                        <SvgColor
-                          src="/navbar/diamond.svg"
-                          sx={{
-                            width: { xs: 16, md: 20 },
-                            height: { xs: 16, md: 20 },
-                          }}
-                        />
-                      }
-                    >
+                    <Button className="gap-2">
+                      <Diamond className="h-4 w-4 md:h-5 md:w-5" />
                       Upgrade Plan
                     </Button>
                   </Link>
-                </Box>
-              ) : null}
-            </Box>
-          ) : null}
-          <Typography textAlign="center">
-            Check out{" "}
-            <Typography
-              color="primary"
-              sx={{ textDecoration: "none" }}
-              component={Link}
-              href="/pricing"
-            >
-              our plans
-            </Typography>{" "}
-            and find your perfect fit.
-          </Typography>
+                ) : null}
+              </div>
+            ) : null}
+            <p className="text-center text-sm">
+              Check out{" "}
+              <Link href="/pricing" className="text-primary hover:underline">
+                our plans
+              </Link>{" "}
+              and find your perfect fit.
+            </p>
+          </CardContent>
         </Card>
-      </Grid2>
-      <Grid2 size={{ xs: 12, lg: 6 }}>
-        {data?.length ? (
-          <Card sx={{ p: 2 }}>
-            <Typography
-              variant="overline"
-              sx={{ mb: 3, display: "block", color: "text.secondary" }}
-            >
-              Invoice History
-            </Typography>
+      </div>
 
-            {data.map((invoice) => (
-              <Card
-                sx={{
-                  backgroundColor: dark ? "#3e524c" : "#ebf8f4",
-                  color: dark ? "#c3d0db" : "#637381",
-                }}
-                key={invoice._id}
-              >
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{
-                    px: 2,
-                    py: 1,
-                    borderBottom: "1px solid",
-                    borderBottomColor: "divider",
-                    fontWeight: 600,
-                  }}
+      <div className="lg:col-span-7">
+        {data?.length ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
+                Invoice History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-4">
+              {data.map((invoice) => (
+                <Card
+                  key={invoice._id}
+                  className={cn(
+                    "bg-muted/50 text-muted-foreground",
+                    "border-border overflow-hidden",
+                  )}
                 >
-                  <Typography
-                    sx={{
-                      textTransform: "capitalize",
-                      color: dark ? "white" : "black",
-                    }}
+                  <div
+                    className={cn(
+                      "flex items-center justify-between",
+                      "border-border border-b px-4 py-3",
+                      "font-semibold",
+                    )}
                   >
-                    {user?.package?.replace("_", " ")}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "primary.main",
-                      backgroundColor: "white",
-                      borderRadius: 10,
-                      paddingY: 0.5,
-                      paddingX: 1.5,
-                    }}
-                  >
-                    {invoice.status === "success" ? "Active" : invoice.status}
-                  </Typography>
-                </Stack>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  sx={{ px: 2, py: 1 }}
-                >
-                  <Box>
-                    <Typography>
-                      Payment date:{" "}
-                      <Typography fontWeight={500} component="span">
-                        {new Date(invoice._date).toLocaleDateString()}
-                      </Typography>{" "}
-                    </Typography>
-                    <Typography>
-                      Expired date:{" "}
-                      <Typography fontWeight={500} component="span">
-                        {new Date(invoice.validTil).toLocaleDateString()}
-                      </Typography>{" "}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography fontWeight={500} textAlign="center">
-                      {invoice.amount}
-                      {invoice.paymentMethod === "bkash"
-                        ? "৳"
-                        : invoice.paymentMethod === "razorpay"
-                          ? "₹"
-                          : "$"}
-                    </Typography>
-                    {/* <Button variant='text'>Download</Button> */}
-                  </Box>
-                </Stack>
-              </Card>
-            ))}
+                    <span className="text-foreground capitalize">
+                      {user?.package?.replace("_", " ")}
+                    </span>
+                    <Badge
+                      variant={
+                        invoice.status === "success" ? "default" : "secondary"
+                      }
+                      className={cn(
+                        invoice.status === "success" &&
+                          "bg-background text-primary",
+                      )}
+                    >
+                      {invoice.status === "success" ? "Active" : invoice.status}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div className="space-y-1">
+                      <p className="text-sm">
+                        Payment date:{" "}
+                        <span className="font-medium">
+                          {new Date(invoice._date).toLocaleDateString()}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        Expired date:{" "}
+                        <span className="font-medium">
+                          {new Date(invoice.validTil).toLocaleDateString()}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">
+                        {invoice.amount}
+                        {invoice.paymentMethod === "bkash"
+                          ? "৳"
+                          : invoice.paymentMethod === "razorpay"
+                            ? "₹"
+                            : "$"}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </CardContent>
           </Card>
         ) : null}
-      </Grid2>
-    </Grid2>
+      </div>
+    </div>
   );
 }
