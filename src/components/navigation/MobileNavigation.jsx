@@ -86,7 +86,7 @@ const MobileNavigation = () => {
             iconPosition="top"
             icon={
               <SvgColor
-                sx={{ width: 30, height: 30 }}
+                className="h-[30px] w-[30px]"
                 color={tab.iconColor}
                 src={tab.iconSrc}
               />

@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import {
   Box,
   Button,
   Menu,
   MenuItem,
   Typography,
-  useTheme,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { KeyboardArrowDown, Search } from "@mui/icons-material";
-import SvgColor from "../../src/resource/SvgColor";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { useSelector } from "react-redux";
+import SvgColor from "../../src/resource/SvgColor";
 
 const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -33,7 +32,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   // Check if user has premium access
   const userPackage = user?.package || "free";
   const isPremiumUser = ["value_plan", "pro_plan", "unlimited"].includes(
-    userPackage
+    userPackage,
   );
 
   const handleClick = (event) => {
@@ -185,7 +184,7 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
                   item.level,
                   item.model,
                   item.topLevel,
-                  item.isPremium
+                  item.isPremium,
                 )
               }
               selected={selectedLevel === item.level}
@@ -235,9 +234,8 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
                   >
                     <SvgColor
                       src={item.icon}
-                      sx={{
-                        width: { xs: 18, md: 20 },
-                        height: { xs: 18, md: 20 },
+                      className="h-5 w-5"
+                      style={{
                         color:
                           selectedLevel === item.level ? "#00c851" : "#333",
                       }}
@@ -287,17 +285,11 @@ const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
                   <Button
                     onClick={handleUpgradeClick}
                     color="primary"
-                    size={isMd ? "medium" : "small"}
+                    size={"small"}
                     variant="contained"
                     rel="noopener"
                     startIcon={
-                      <SvgColor
-                        src="/navbar/diamond.svg"
-                        sx={{
-                          width: { xs: 18, md: 20 },
-                          height: { xs: 18, md: 20 },
-                        }}
-                      />
+                      <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
                     }
                     sx={{
                       backgroundColor: "#07B37A",

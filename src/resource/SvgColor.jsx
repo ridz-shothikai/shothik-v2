@@ -1,23 +1,17 @@
-import { Box } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
 // ----------------------------------------------------------------------
 
-const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
-  <Box
-    component="span"
-    className="svg-color"
+const SvgColor = forwardRef(({ src, className, ...props }, ref) => (
+  <span
     ref={ref}
-    sx={{
-      width: 24,
-      height: 24,
-      display: "inline-block",
-      bgcolor: "currentcolor",
+    className={cn("inline-block h-6 w-6", "bg-current", className)}
+    style={{
       mask: `url(${src}) no-repeat center / contain`,
       WebkitMask: `url(${src}) no-repeat center / contain`,
-      ...sx,
     }}
-    {...other}
+    {...props}
   />
 ));
 

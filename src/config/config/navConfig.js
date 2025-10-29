@@ -2,7 +2,7 @@ import SvgColor from "../../resource/SvgColor";
 import { PATH_ACCOUNT, PATH_TOOLS } from "./route";
 
 const icon = (name) => (
-  <SvgColor src={`/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+  <SvgColor src={`/navbar/${name}.svg`} className="h-full w-full" />
 );
 
 const ICONS = {

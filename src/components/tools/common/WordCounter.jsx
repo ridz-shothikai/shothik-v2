@@ -347,10 +347,7 @@ const Contend = ({
               sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
               variant="contained"
               startIcon={
-                <SvgColor
-                  src="/navbar/diamond.svg"
-                  sx={{ width: { xs: 20, md: 20 }, height: { xs: 20, md: 20 } }}
-                />
+                <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
               }
             >
               Upgrade
