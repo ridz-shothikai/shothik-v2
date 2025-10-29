@@ -13,11 +13,11 @@ export default function PricingPage() {
     <PricingLayout
       TitleContend={
         <>
-          <h1 className="text-3xl text-white font-bold text-center text-destructive-foreground">
+          <h1 className="text-3xl font-bold text-center text-primary-foreground">
             Our pricing plan made simple.
           </h1>
 
-          <p className="text-center text-white text-destructive-foreground max-w-2xl mx-auto">
+          <p className="text-center text-primary-foreground max-w-2xl mx-auto">
             Discover the right plan for your needs and take advantage of
             Shothik.ai&apos;s powerful tools. Whether you&apos;re just getting
             started or need advanced features for your business, we&apos;ve got

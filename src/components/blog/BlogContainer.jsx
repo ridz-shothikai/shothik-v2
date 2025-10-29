@@ -1,5 +1,4 @@
 "use client";
-import { Grid2 } from "@mui/material";
 import { useState } from "react";
 import BottomCard from "./BottomCard";
 import MainContend from "./MainContend";
@@ -16,21 +15,25 @@ const BlogContainer = () => {
   };
 
   return (
-    <Grid2 container spacing={5}>
-      <SideBar
-        onCategoryClick={handleCategoryClick}
-        selectedCategory={selectedCategory}
-      />
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+      <div className="md:col-span-3">
+        <SideBar
+          onCategoryClick={handleCategoryClick}
+          selectedCategory={selectedCategory}
+        />
+      </div>
 
-      <MainContend
-        page={page}
-        selectedCategory={selectedCategory}
-        setPage={setPage}
-      >
-        <NewsLetter />
-        <BottomCard />
-      </MainContend>
-    </Grid2>
+      <div className="md:col-span-9">
+        <MainContend
+          page={page}
+          selectedCategory={selectedCategory}
+          setPage={setPage}
+        >
+          <NewsLetter />
+          <BottomCard />
+        </MainContend>
+      </div>
+    </div>
   );
 };
 

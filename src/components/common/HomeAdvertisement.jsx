@@ -1,104 +1,64 @@
-import { KeyboardDoubleArrowRightRounded } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import * as motion from "motion/react-client";
 import Image from "next/image";
+import Link from "next/link";
 import { PATH_PAGE, PATH_TOOLS } from "../../config/config/route";
 
 export default function HomeAdvertisement() {
   return (
-    <Stack
-      alignItems="center"
-      direction={{ xs: "column", md: "row" }}
-      sx={{
-        background: "linear-gradient(135deg,#00AB55,#007B55)",
-        borderRadius: 2,
-        py: { xs: 5, md: 8 },
-        mb: 5,
-      }}
-    >
+    <div className="flex flex-col md:flex-row items-center justify-between bg-gradient-to-br from-primary to-primary/80 rounded-3xl py-16 md:py-24 px-8 md:px-16 mb-20">
       <Content />
       <Description />
-    </Stack>
+    </div>
   );
 }
 
 function Description() {
   return (
-    <Box
-      sx={{
-        width: { xs: "100%", md: 1 / 2 },
-        textAlign: {
-          xs: "center",
-          md: "left",
-        },
-      }}
-    >
-      <Typography
-        component={motion.p}
+    <div className="w-full md:w-1/2 text-center md:text-left px-4 md:px-8">
+      <motion.h2
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        variant="h2"
-        sx={{ color: "common.white", mb: 5 }}
+        className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-10 leading-tight"
       >
         Get started with
         <br />
         Shothik.ai today
-      </Typography>
+      </motion.h2>
 
       <motion.div
         initial={{ x: 30, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
-        style={{ display: "flex", justifyContent: "center" }}
+        className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
       >
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          justifyContent={{ xs: "center", md: "center" }}
-          flexWrap="wrap"
-          gap={2}
+        <Button
+          size="lg"
+          variant="secondary"
+          asChild
+          className="min-w-[160px] font-semibold"
         >
-          <Button
-            color="inherit"
-            size="large"
-            variant="contained"
-            rel="noopener"
-            href={PATH_PAGE.pricing}
-            sx={{
-              color: "grey.800",
-              bgcolor: "common.white",
-              width: { xs: 200, md: "auto" },
-              margin: "0 auto",
-            }}
-          >
-            Upgrade to pro
-          </Button>
-          <Button
-            color="inherit"
-            size="large"
-            variant="outlined"
-            target="_blank"
-            rel="noopener"
-            href={PATH_TOOLS.discord}
-            endIcon={
-              <KeyboardDoubleArrowRightRounded
-                fontSize="small"
-                sx={{ mr: 0.5 }}
-              />
-            }
-            sx={{
-              color: "common.white",
-              // width: { xs: 100, md: "auto" },
-              "&:hover": { borderColor: "currentColor" },
-            }}
-          >
-            Join us on Discord
-          </Button>
-        </Stack>
+          <Link href={PATH_PAGE.pricing} rel="noopener">
+            Upgrade To Pro
+          </Link>
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          asChild
+          className="min-w-[180px] border-2 border-primary-foreground/60 bg-transparent text-primary-foreground hover:bg-transparent hover:border-primary-foreground hover:text-primary-foreground font-semibold"
+        >
+          <Link href={PATH_TOOLS.discord} target="_blank" rel="noopener">
+            Join Us On Discord
+            <ChevronRight className="ml-1 h-5 w-5" />
+          </Link>
+        </Button>
       </motion.div>
-    </Box>
+    </div>
   );
 }
 
@@ -106,28 +66,27 @@ function Description() {
 
 function Content() {
   return (
-    <Stack
-      component={motion.div}
+    <motion.div
       initial={{ x: -50, opacity: 0 }}
       whileInView={{ x: 0, opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      sx={{ width: 1 / 2 }}
-      alignItems="center"
+      className="w-full md:w-1/2 flex items-center justify-center mb-8 md:mb-0"
     >
       <motion.div
         animate={{ y: [-20, 0, -20] }}
         transition={{ duration: 4, repeat: Infinity }}
+        className="w-full max-w-[320px] md:max-w-[400px]"
       >
         <Image
           height={400}
           width={400}
-          style={{ width: "100%", height: "auto" }}
-          alt="rocket"
+          className="w-full h-auto"
+          alt="Shothik AI Mascot"
           src="/moscot.png"
-          sx={{ maxWidth: 460 }}
+          priority
         />
       </motion.div>
-    </Stack>
+    </motion.div>
   );
 }

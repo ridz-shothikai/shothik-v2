@@ -1,4 +1,3 @@
-import { Container } from "@mui/material";
 import { transtorFaq } from "../../../_mock/tools/translator";
 import ErrorBoundary from "../../../components/common/ErrorBoundary";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
@@ -15,9 +14,7 @@ export async function generateMetadata() {
 
 const Translatorpage = () => {
   return (
-    <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
-    >
+    <div className="container mx-auto max-w-7xl px-4 flex flex-col gap-20 md:gap-28">
       <ErrorBoundary>
         <Translator />
       </ErrorBoundary>
@@ -27,7 +24,7 @@ const Translatorpage = () => {
       />
       <ToolsCTA toolType="translator" />
       <HomeAdvertisement />
-    </Container>
+    </div>
   );
 };
 

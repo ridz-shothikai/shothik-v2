@@ -1,6 +1,6 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import useSnackbar from "../../hooks/useSnackbar";
@@ -58,17 +58,10 @@ export default function FaqForm() {
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3}>
-        <Typography
-          variant="h4"
-          sx={{
-            background: "linear-gradient(135deg, #00A76F 30%, #0B4D42 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
+      <div className="flex flex-col gap-3">
+        <h4 className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent">
           Haven&apos;t found the right help?
-        </Typography>
+        </h4>
 
         <RHFTextField fullWidth label="Your name" name="name" />
 
@@ -84,13 +77,13 @@ export default function FaqForm() {
         />
         <Button
           type="submit"
-          size="large"
-          variant="contained"
-          loading={isSubmitting}
+          size="lg"
+          variant="default"
+          disabled={isSubmitting}
         >
           Submit Now
         </Button>
-      </Stack>
+      </div>
     </FormProvider>
   );
 }

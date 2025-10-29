@@ -1,5 +1,4 @@
 "use client";
-import { Stack } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import { features } from "../../../_mock/b2b/features";
@@ -16,11 +15,11 @@ const ServicesContend = () => {
   });
 
   return (
-    <Stack spacing={5}>
+    <div className="flex flex-col gap-5">
       <HeroSection slug={slug} />
       <ProjectSection slug={slug} />
       <FeaturesSection features={data} title="Other Services" />
-    </Stack>
+    </div>
   );
 };
 

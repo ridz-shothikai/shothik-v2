@@ -1,4 +1,4 @@
-import { Box, Grid2, LinearProgress, Typography } from "@mui/material";
+import { Progress } from "@/components/ui/progress";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 
@@ -23,20 +23,11 @@ const keyPoints = [
 
 export default function AboutWhat() {
   return (
-    <Box
-      sx={{
-        textAlign: { xs: "center", sm: "left" },
-        paddingTop: 20,
-        paddingBottom: 10,
-      }}
-    >
-      <Grid2 container spacing={3} justifyContent="center" alignItems="center">
-        <Grid2
-          size={{ xs: 12, md: 6, lg: 7 }}
-          sx={{ pr: { md: 7 }, display: { xs: "none", md: "block" } }}
-        >
-          <Grid2 container spacing={3} alignItems="flex-end">
-            <Grid2 size={{ xs: 6 }}>
+    <div className="text-center sm:text-left pt-20 pb-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 justify-center items-center">
+        <div className="hidden md:block md:col-span-1 lg:col-span-7 pr-0 md:pr-7">
+          <div className="grid grid-cols-2 gap-3 items-end">
+            <div>
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
@@ -54,8 +45,8 @@ export default function AboutWhat() {
                   }}
                 />
               </motion.div>
-            </Grid2>
-            <Grid2 size={{ xs: 6 }}>
+            </div>
+            <div>
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
@@ -70,27 +61,27 @@ export default function AboutWhat() {
                   style={{ borderRadius: "20px" }}
                 />
               </motion.div>
-            </Grid2>
-          </Grid2>
-        </Grid2>
-        <Grid2 size={{ xs: 12, md: 6, lg: 5 }}>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-1 md:col-span-1 lg:col-span-5">
           <motion.div
             initial={{ x: 30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <Typography variant="h2" sx={{ mb: 3 }}>
+            <h2 className="text-4xl font-bold mb-3">
               What is Shothik AI?
-            </Typography>
-            <Typography sx={{ color: "text.secondary" }}>
+            </h2>
+            <p className="text-muted-foreground">
               The ultimate writing tool powered by AI. From rephrasing sentences
               to improving grammar and vocabulary, Shothik AI helps you produce
               polished, professional-grade writing every time.
-            </Typography>
+            </p>
           </motion.div>
 
-          <Box sx={{ my: 5 }}>
+          <div className="my-5">
             {keyPoints.map((progress, i) => (
               <motion.div
                 initial={{ x: 30, opacity: 0 }}
@@ -102,10 +93,10 @@ export default function AboutWhat() {
                 <ProgressItem progress={progress} />
               </motion.div>
             ))}
-          </Box>
-        </Grid2>
-      </Grid2>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -113,22 +104,15 @@ function ProgressItem({ progress }) {
   const { label, value } = progress;
 
   return (
-    <Box sx={{ mt: 3 }}>
-      <Box sx={{ mb: 1.5, display: "flex", alignItems: "center" }}>
-        <Typography variant="subtitle2">{label}&nbsp;-&nbsp;</Typography>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+    <div className="mt-3">
+      <div className="mb-1.5 flex items-center">
+        <p className="text-sm font-semibold">{label}&nbsp;-&nbsp;</p>
+        <p className="text-sm text-muted-foreground">
           {value}%
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
-      <LinearProgress
-        variant="determinate"
-        value={value}
-        sx={{
-          "& .MuiLinearProgress-bar": { bgcolor: "success.main" },
-          "&.MuiLinearProgress-determinate": { bgcolor: "divider" },
-        }}
-      />
-    </Box>
+      <Progress value={value} className="h-2" />
+    </div>
   );
 }

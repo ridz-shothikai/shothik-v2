@@ -1,19 +1,11 @@
-import { Box, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 const brands = ["IBM", "lya", "spotify", "netflix", "hbo", "amazon"];
 
 export default function AboutVision() {
   return (
-    <Box sx={{ mt: 10, mb: 5 }}>
-      <Box
-        sx={{
-          mb: 10,
-          borderRadius: 2,
-          overflow: "hidden",
-          position: "relative",
-        }}
-      >
+    <div className="mt-10 mb-5">
+      <div className="mb-10 rounded-lg overflow-hidden relative">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -32,19 +24,7 @@ export default function AboutVision() {
           />
         </motion.div>
 
-        <Stack
-          direction="row"
-          flexWrap="wrap"
-          alignItems="center"
-          justifyContent="center"
-          spacing={3}
-          sx={{
-            bottom: { xs: 24, md: 40 },
-            width: 1,
-            opacity: 0.48,
-            position: "absolute",
-          }}
-        >
+        <div className="flex flex-row flex-wrap items-center justify-center gap-3 absolute bottom-6 md:bottom-10 w-full opacity-50">
           {brands.map((logo, i) => (
             <motion.div
               initial={{ y: 30, opacity: 0 }}
@@ -61,22 +41,19 @@ export default function AboutVision() {
               />
             </motion.div>
           ))}
-        </Stack>
-      </Box>
+        </div>
+      </div>
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
       >
-        <Typography
-          variant="h3"
-          sx={{ textAlign: "center", maxWidth: 800, mx: "auto" }}
-        >
+        <h3 className="text-3xl font-bold text-center max-w-[800px] mx-auto">
           Our vision is to revolutionize writing with powerful AI-driven
           assistance, Shothik AI.
-        </Typography>
+        </h3>
       </motion.div>
-    </Box>
+    </div>
   );
 }

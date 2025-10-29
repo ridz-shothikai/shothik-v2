@@ -1,71 +1,34 @@
-import { Box, Container, Typography } from "@mui/material";
-
 const WaitingpageContainer = ({ children, title }) => {
   return (
-    <Container sx={{ py: 10 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
+    <div className="container mx-auto px-4 py-10">
+      <div className="flex flex-col items-center gap-2">
         {/* Logo */}
-        <Box
-          component="img"
+        <img
           src="/moscot.png"
           alt="Logo"
-          sx={{ mb: 2 }}
           height={80}
+          className="mb-2"
         />
 
         {/* Subtitle */}
-        <Typography
-          variant="subtitle2"
-          sx={{
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            mb: 1,
-            color: "text.secondary",
-          }}
-        >
+        <p className="text-sm uppercase tracking-widest mb-1 text-muted-foreground">
           Shothik AI
-        </Typography>
+        </p>
 
         {/* Main Heading */}
-        <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              fontWeight: 500,
-              color: "text.primary",
-            }}
-          >
+        <div className="text-center mb-4">
+          <h1 className="text-2xl font-medium text-foreground">
             Join the waitlist for the <br />
-            <Box
-              component="span"
-              sx={{
-                background: "linear-gradient(90deg, #00A76F 50%, #0B4D42 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: {
-                  xs: 32,
-                  sm: 40,
-                  md: 48,
-                  lg: 52,
-                },
-                fontWeight: 700,
-              }}
+            <span
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent"
             >
               {title}
-            </Box>
-          </Typography>
-        </Box>
+            </span>
+          </h1>
+        </div>
         {children}
-      </Box>
-    </Container>
+      </div>
+    </div>
   );
 };
 

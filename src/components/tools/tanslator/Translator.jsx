@@ -1,5 +1,6 @@
 "use client";
-import { Card, Grid2, TextField } from "@mui/material";
+import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trySamples } from "../../../_mock/trySamples";
@@ -140,14 +141,7 @@ const Translator = () => {
   }
 
   return (
-    <Card
-      sx={{
-        mt: 1,
-        paddingX: 2,
-        paddingTop: 2,
-        border: (theme) => `1px solid ${theme.palette.divider}`,
-      }}
-    >
+    <Card className="mt-4 p-8 border rounded-xl shadow-sm">
       <LanguageMenu
         isLoading={isLoading || isHumanizing}
         userInput={userInput}
@@ -156,39 +150,15 @@ const Translator = () => {
         setTranslateLang={handleLanguageChange}
       />
 
-      <Grid2 container spacing={2}>
-        <Grid2
-          sx={{
-            minHeight: { xs: 400, sm: 480 },
-            // maxHeight: { xs: 400, sm: 480 },
-            overflowY: "auto",
-            position: "relative",
-          }}
-          size={{ xs: 12, md: 6 }}
-        >
-          <TextField
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div className="min-h-[400px] sm:min-h-[480px] overflow-y-auto relative">
+          <Textarea
             name="input"
-            variant="outlined"
             rows={isMobile ? 15 : 19}
-            fullWidth
-            multiline
-            placeholder={"Input your text here..."}
+            placeholder="Input your text here..."
             value={userInput}
             onChange={handleInput}
-            sx={{
-              flexGrow: 1,
-              "& .MuiOutlinedInput-root": {
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-              },
-            }}
+            className="w-full h-full min-h-[400px] sm:min-h-[480px] resize-none border-border focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg p-4"
           />
           {isMobile && (
             <BottomBar
@@ -209,46 +179,20 @@ const Translator = () => {
               sampleText={sampleText}
             />
           ) : null}
-        </Grid2>
+        </div>
         {isMobile && !userInput ? null : (
-          <Grid2
-            sx={{ height: { xs: 400, sm: 480 }, overflowY: "auto" }}
-            size={{ xs: 12, md: 6 }}
-          >
-            <TextField
+          <div className="h-[400px] sm:h-[480px] overflow-y-auto">
+            <Textarea
               name="output"
-              variant="outlined"
               rows={isMobile ? 15 : 19}
-              fullWidth
-              multiline
-              placeholder={"Translated text"}
+              placeholder="Translated text"
               value={loadingText ? loadingText : outputContend}
               disabled
-              sx={{
-                flexGrow: 1,
-                color: "text.primary",
-                "& .MuiOutlinedInput-root": {
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
-                  },
-                  "& .MuiInputBase-input.Mui-disabled": {
-                    color: "inherit",
-                    WebkitTextFillColor: "inherit",
-                    opacity: 1,
-                  },
-                  color: "text.primary",
-                },
-              }}
+              className="w-full h-full min-h-[400px] sm:min-h-[480px] resize-none border-border text-foreground disabled:opacity-100 disabled:cursor-default rounded-lg p-4"
             />
-          </Grid2>
+          </div>
         )}
-      </Grid2>
+      </div>
 
       {!isMobile && (
         <BottomBar

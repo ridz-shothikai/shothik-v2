@@ -1,5 +1,6 @@
 "use client";
-import { Box, Container, Stack, Switch, Typography } from "@mui/material";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useGeolocation from "../../hooks/useGeolocation";
@@ -16,8 +17,6 @@ export default function PricingLayout({ children, TitleContend }) {
   const { location } = useGeolocation();
   const isMobile = useResponsive("down", "sm");
 
-  // console.log(location, "location data on pricing layout");
-
   useEffect(() => {
     const haveValue = localStorage.getItem("isMonthly");
     if (haveValue) {
@@ -31,58 +30,31 @@ export default function PricingLayout({ children, TitleContend }) {
   };
 
   return (
-    <Box sx={{ pt: { xs: 4, md: 0 }, mt: -2 }}>
-      <Box
-        sx={{
+    <div className="pt-4 md:pt-0 -mt-2">
+      <div
+        className="bg-cover bg-no-repeat bg-center h-[35rem] pt-6 md:pt-8 px-2 md:px-0 flex flex-col items-center"
+        style={{
           backgroundImage: `url(/pricing_bg_img.webp)`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          height: "35rem",
-          pt: { xs: 6, md: 8 },
-          px: { xs: 2, md: 0 },
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
         }}
       >
         {TitleContend}
 
-        <Box sx={{ my: 4 }}>
-          <Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Typography
-              variant="overline"
-              sx={{ mr: 1.5, color: "error.contrastText" }}
-            >
+        <div className="my-4">
+          <div className="flex flex-row items-center justify-end gap-2">
+            <Label htmlFor="yearly-switch" className="text-sm uppercase tracking-wide text-primary-foreground">
               MONTHLY
-            </Typography>
-            <Switch checked={isMonthly} onClick={handleIsMonthly} />
-            <Typography
-              variant="overline"
-              sx={{ ml: { xs: 0, sm: 1.5 }, color: "error.contrastText" }}
-            >
+            </Label>
+            <Switch id="yearly-switch" checked={isMonthly} onCheckedChange={handleIsMonthly} />
+            <Label htmlFor="yearly-switch" className="text-sm uppercase tracking-wide text-primary-foreground ml-0 sm:ml-1.5">
               YEARLY (save 2 months)
-            </Typography>
-          </Stack>
-        </Box>
-      </Box>
+            </Label>
+          </div>
+        </div>
+      </div>
 
-      <Container maxWidth="xl">
-        <Box
-          gap={{ xl: 5, md: 3, xs: 3 }}
-          display="grid"
-          gridTemplateColumns={{
-            xs: "repeat(1, 1fr)",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(3, 1fr)",
-            xl: "repeat(4, 1fr)",
-          }}
-          sx={{
-            mt: { xs: "-15rem", sm: "-17rem", md: "-15rem" },
-            px: { xs: 2, md: 0 },
-            mx: "auto",
-          }}
-          className="pricing_card_style"
+      <div className="container mx-auto px-4 max-w-screen-xl">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xl:gap-5 -mt-60 sm:-mt-68 md:-mt-60 px-2 md:px-0 mx-auto pricing_card_style"
         >
           {isLoading
             ? Array.from({ length: 4 }).map((_, index) => (
@@ -105,12 +77,9 @@ export default function PricingLayout({ children, TitleContend }) {
                   country={location}
                 />
               ))}
-        </Box>
+        </div>
         {!isLoading && data?.data ? (
-          <Stack
-            spacing={10}
-            sx={{ my: { xs: 5, md: "56px" }, mx: { xs: 2, md: "140px" } }}
-          >
+          <div className="flex flex-col gap-10 my-5 md:my-14 mx-2 md:mx-[140px]">
             {isMobile && (
               <PricingSlider
                 data={data?.data}
@@ -126,23 +95,10 @@ export default function PricingLayout({ children, TitleContend }) {
                 user={user}
               />
             )}
-            {/* <PricingTable
-            user={user}
-            data={data?.data}
-            yearly={isMonthly}
-            paymentMethod={
-              location === "bangladesh"
-                ? "bkash"
-                : location === "india"
-                ? "razor"
-                : "stripe"
-            }
-            country={location}
-          /> */}
-          </Stack>
+          </div>
         ) : null}
         {children}
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }

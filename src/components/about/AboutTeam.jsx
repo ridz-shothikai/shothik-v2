@@ -1,5 +1,6 @@
 "use client";
-import { Box, Card, IconButton, Stack, Typography } from "@mui/material";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -44,20 +45,16 @@ export default function AboutTeam() {
   };
 
   return (
-    <Box sx={{ pb: 10, textAlign: "center" }}>
+    <div className="pb-10 text-center">
       <motion.div
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
       >
-        <Typography
-          component="p"
-          variant="overline"
-          sx={{ color: "text.disabled" }}
-        >
+        <p className="text-sm uppercase tracking-wider text-muted-foreground">
           DREAM TEAM
-        </Typography>
+        </p>
       </motion.div>
 
       <motion.div
@@ -66,9 +63,9 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
       >
-        <Typography variant="h2" sx={{ my: 2 }}>
+        <h2 className="text-4xl font-bold my-2">
           Great team is the key
-        </Typography>
+        </h2>
       </motion.div>
 
       <motion.div
@@ -77,19 +74,13 @@ export default function AboutTeam() {
         transition={{ duration: 0.6, delay: 0.6 }}
         viewport={{ once: true }}
       >
-        <Typography
-          sx={{
-            mx: "auto",
-            maxWidth: 640,
-            color: "text.secondary",
-          }}
-        >
+        <p className="mx-auto max-w-[640px] text-muted-foreground">
           Shothik will provide you support if you have any problems, our support
           team will reply within a day and we also have detailed documentation.
-        </Typography>
+        </p>
       </motion.div>
 
-      <Box sx={{ position: "relative", mt: 0 }}>
+      <div className="relative mt-0">
         <CarouselArrows
           filled
           shape="rounded"
@@ -111,14 +102,14 @@ export default function AboutTeam() {
         >
           <Carousel ref={carouselRef} {...carouselSettings}>
             {team.map((member, index) => (
-              <Box key={index} component={motion.div} sx={{ px: 1, py: 10 }}>
+              <div key={index} className="px-1 py-10">
                 <MemberCard member={member} isFirst={index === 0} />
-              </Box>
+              </div>
             ))}
           </Carousel>
         </CarouselArrows>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
@@ -126,25 +117,7 @@ function MemberCard({ member, isFirst }) {
   const { name, designation, image } = member;
 
   return (
-    <Card
-      sx={{
-        width: 280,
-        height: 430,
-        mx: "auto",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        p: 2,
-        borderRadius: 2,
-        boxShadow: 2,
-        position: "relative",
-        transition: "all 0.3s ease",
-        "&:hover": {
-          boxShadow: 5,
-          transform: "translateY(-5px)",
-        },
-      }}
-    >
+    <Card className="w-[280px] h-[430px] mx-auto flex flex-col items-center p-2 rounded-lg shadow-md relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <Image
         alt={name}
         src={image}
@@ -158,73 +131,48 @@ function MemberCard({ member, isFirst }) {
         width={250}
       />
 
-      <Typography variant="subtitle1" sx={{ mt: 4, mb: 0.5 }}>
+      <p className="text-base font-semibold mt-4 mb-1">
         {name}
-      </Typography>
+      </p>
 
-      <Typography variant="body2" sx={{ color: "text.secondary" }}>
+      <p className="text-sm text-muted-foreground">
         {designation}
-      </Typography>
+      </p>
 
       {isFirst && (
-        <Box
-          sx={{
-            "&:hover": {
-              backgroundColor: "#00A76F",
-            },
-          }}
-        >
+        <div className="hover:bg-primary">
           <a
             href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1-0YrraZrcWyTUUrowfsWSDMKPOj57Lt8u9X-NcjC2Oz522EPBGzsD4SjjpkUzwHJOMePNPnbw?gv=true"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              width: "200px",
-              padding: "8px 16px",
-              backgroundColor: "#00A76F",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              textDecoration: "none",
-              position: "absolute",
-              top: "63%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              fontWeight: 600,
-            }}
+            className="absolute top-[63%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] px-4 py-2 bg-primary text-primary-foreground rounded font-semibold no-underline cursor-pointer"
           >
             Book an appointment
           </a>
-        </Box>
+        </div>
       )}
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        sx={{
-          position: "absolute",
-          bottom: 5,
-          left: 0,
-          right: 0,
-          p: 1,
-        }}
-      >
+      <div className="flex flex-row items-center justify-center absolute bottom-1 left-0 right-0 p-1">
         {member.social.map((link, index) => {
           const Icon = _socials[index];
           return (
-            <IconButton
+            <Button
               key={index}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
+              variant="ghost"
+              size="icon"
+              asChild
             >
-              {Icon ? <Icon.icon sx={{ color: Icon.color }} /> : null}
-            </IconButton>
+              <a
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {Icon ? <Icon.icon style={{ color: Icon.color }} /> : null}
+              </a>
+            </Button>
           );
         })}
-      </Stack>
+      </div>
     </Card>
   );
 }

@@ -1,56 +1,41 @@
-import { Container, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 
 export default function FaqsHero() {
   return (
-    <Stack
-      sx={{
-        position: "relative",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+    <div
+      className="relative bg-cover bg-center px-4 sm:px-6 md:px-10 py-10 h-[560px] flex items-end"
+      style={{
         backgroundImage: "url(/overlay_1.svg), url(/secondary/hero.jpg)",
-        paddingX: { xs: 4, sm: 6, md: 10 },
-        paddingY: 10,
-        height: 560,
       }}
-      justifyContent="end"
     >
-      <Container>
-        <Stack direction="row" alignItems="center" spacing={0.2}>
+      <div className="container mx-auto">
+        <div className="flex flex-row items-center gap-1">
           {["H", "o", "w"].map((w, i) => (
-            <Typography
+            <motion.h1
               key={w}
-              component={motion.p}
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
-              variant="h1"
-              color="primary.main"
+              className="text-6xl font-bold text-primary"
             >
               {w}
-            </Typography>
+            </motion.h1>
           ))}
-        </Stack>
-        <Stack
-          spacing={2}
-          display="inline-flex"
-          direction="row"
-          sx={{ color: "common.white" }}
-        >
+        </div>
+        <div className="inline-flex flex-row gap-2 text-primary-foreground">
           {["can", "we", "help", "you?"].map((w, i) => (
-            <Typography
+            <motion.h1
               key={w}
-              component={motion.p}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (i + 1) }}
-              variant="h1"
+              className="text-6xl font-bold"
             >
               {w}
-            </Typography>
+            </motion.h1>
           ))}
-        </Stack>
-      </Container>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
-import { ChevronRight } from "@mui/icons-material";
-import { Box, Button, Grid2, Typography } from "@mui/material";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import * as motion from "motion/react-client";
 import { toolsCta } from "../../../_mock/toolsCta";
 import CTAImages from "./CTAImages";
@@ -12,23 +12,13 @@ export default function ToolsCTA({ toolType }) {
   }
 
   return (
-    <Box
-      sx={{
-        overflow: "hidden",
-        position: "relative",
-        width: "100%",
-        boxShadow: `0px 7px 88px 19px #22C55E36 inset`,
-        backgroundColor: "background.neutral",
-        paddingY: 5,
-        paddingX: 2,
-      }}
-    >
-      <Grid2 container spacing={3} alignItems="center">
-        <Grid2 size={{ xs: 12, md: 6 }}>
+    <div className="w-full bg-gradient-to-br from-primary/5 to-primary/10 py-16 px-6 md:py-24 md:px-12 rounded-3xl">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="w-full">
           <Description config={toolConfig} />
-        </Grid2>
+        </div>
 
-        <Grid2 size={{ xs: 12, md: 6 }}>
+        <div className="w-full flex justify-center">
           <CTAImages
             title={toolConfig.title}
             lightImage={toolConfig.image.light}
@@ -42,72 +32,44 @@ export default function ToolsCTA({ toolType }) {
               },
             }}
           />
-        </Grid2>
-      </Grid2>
-
-      <TriangleShape />
-      <TriangleShape anchor="bottom" />
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function Description({ config }) {
   return (
-    <Box
-      sx={{
-        top: 0,
-        left: 0,
-        zIndex: 8,
-        width: "100%",
-        height: "100%",
-        textAlign: { xs: "center", md: "left" },
-        position: "relative",
-        paddingTop: 2,
-        padding: 3,
-      }}
-    >
-      <Typography
-        component={motion.p}
+    <div className="w-full text-center md:text-left">
+      <motion.p
         initial={{ x: -35, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        variant="overline"
-        sx={{
-          textAlign: { md: "left", xs: "center" },
-          color: "text.disabled",
-        }}
+        className="text-xs uppercase tracking-wider text-primary/80 mb-4"
       >
         {config.title}
-      </Typography>
+      </motion.p>
 
-      <Typography
-        component={motion.div}
+      <motion.h2
         initial={{ x: -40, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
-        variant="h3"
-        sx={{
-          my: 3,
-        }}
+        className="text-3xl md:text-4xl font-bold mb-6 text-foreground"
       >
         {config.heading}
-      </Typography>
+      </motion.h2>
 
-      <Typography
-        component={motion.div}
+      <motion.div
         initial={{ x: -45, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.6 }}
         viewport={{ once: true }}
-        sx={{
-          mb: 5,
-          color: "text.secondary",
-        }}
+        className="mb-8 text-muted-foreground leading-relaxed"
       >
         {config.description}
-      </Typography>
+      </motion.div>
 
       <motion.div
         initial={{ x: -50, opacity: 0 }}
@@ -116,54 +78,17 @@ function Description({ config }) {
         viewport={{ once: true }}
       >
         <Button
-          color="inherit"
-          size="large"
-          variant="contained"
-          href={config.buttonLink}
-          endIcon={<ChevronRight />}
-          sx={{
-            bgcolor: "primary.main",
-            color: "common.white",
-            "&:hover": {
-              bgcolor: "primary.dark",
-            },
-          }}
+          size="lg"
+          variant="default"
+          asChild
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg"
         >
-          {config.buttonText}
+          <a href={config.buttonLink}>
+            {config.buttonText}
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </a>
         </Button>
       </motion.div>
-    </Box>
-  );
-}
-
-function TriangleShape({ anchor = "top" }) {
-  return (
-    <Box
-      sx={{
-        top: 0,
-        left: 0,
-        width: 1,
-        position: "absolute",
-        color: "background.svg",
-        zIndex: { xs: 0, md: 9 },
-        height: { xs: 40, md: 64 },
-        ...(anchor === "bottom" && {
-          zIndex: 9,
-          bottom: 0,
-          top: "unset",
-          color: "background.svg",
-          transform: "scale(-1)",
-        }),
-      }}
-    >
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 1440 64"
-        preserveAspectRatio="none"
-      >
-        <path d="M1440 0H0L1440 64V0Z" fill="currentColor" />
-      </svg>
-    </Box>
+    </div>
   );
 }

@@ -1,11 +1,12 @@
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  Box,
-  Card,
-  CardContent,
-  Grid2,
   Pagination,
-  Typography,
-} from "@mui/material";
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import Link from "next/link";
 import { useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
@@ -21,15 +22,13 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
   const totalPages = blogs?.totalPages || 1;
 
   return (
-    <Grid2 size={{ xs: 12, md: 9 }}>
+    <div className="w-full flex-1">
       <BlogHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Results
-      </Typography>
+      <h5 className="text-xl font-semibold mb-6">Results</h5>
 
       {/* Blog Cards */}
-      <Grid2 container spacing={3}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           <BlogLoading />
         ) : !blogs.data?.length ? (
@@ -37,72 +36,70 @@ const MainContend = ({ selectedCategory, page, setPage, children }) => {
         ) : (
           blogs.data?.map((blog) => <BlogCard key={blog._id} blog={blog} />)
         )}
-      </Grid2>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 ? (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(e, value) => setPage(value)}
-            color="primary"
-          />
-        </Box>
+        <div className="flex justify-center my-8">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => page > 1 && setPage(page - 1)}
+                  className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink
+                    onClick={() => setPage(pageNum)}
+                    isActive={page === pageNum}
+                    className="cursor-pointer"
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => page < totalPages && setPage(page + 1)}
+                  className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       ) : null}
 
       {children}
-    </Grid2>
+    </div>
   );
 };
 
 function BlogCard({ blog }) {
   return (
-    <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={blog._id}>
-      <Link href={`/blogs/${blog.slag}`} style={{ textDecoration: "none" }}>
-        <Card
-          sx={{
-            height: "100%",
-            boxShadow: 3,
-            borderRadius: 2,
-            overflow: "hidden",
-            transition: "transform 0.3s",
-            "&:hover": { transform: "scale(1.05)" },
-          }}
-        >
-          <CardContent>
-            {/* <Typography
-              variant="body2"
-              color="primary.main"
-              fontWeight="bold"
-              marginBottom={2}
-            >
-              // {blog.category?.title || "Blog"} //
-            </Typography> */}
-            <Typography variant="h6" gutterBottom>
-              {blog.title}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {new Intl.DateTimeFormat("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "2-digit",
-              }).format(new Date(blog.updatedAt))}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Link>
-    </Grid2>
+    <Link href={`/blogs/${blog.slag}`} className="no-underline">
+      <Card className="h-full shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-105">
+        <CardContent className="p-4">
+          <h6 className="text-lg font-semibold mb-2">{blog.title}</h6>
+          <p className="text-sm text-muted-foreground">
+            {new Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "2-digit",
+            }).format(new Date(blog.updatedAt))}
+          </p>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
 function NoBlogFound() {
   return (
-    <Box sx={{ py: 5, textAlign: "center", width: "100%" }}>
-      <Typography variant="h6" color="text.secondary">
-        No blogs found.
-      </Typography>
-    </Box>
+    <div className="py-12 text-center w-full col-span-full">
+      <h6 className="text-lg text-muted-foreground">No blogs found.</h6>
+    </div>
   );
 }
 
