@@ -1,4 +1,3 @@
-import { Container } from "@mui/material";
 import BlogContainer from "../../../components/blog/BlogContainer";
 
 export async function generateMetadata() {
@@ -10,13 +9,8 @@ export async function generateMetadata() {
 
 export default function Blogs() {
   return (
-    <Container
-      sx={{
-        py: 4,
-        mb: 4,
-      }}
-    >
+    <div className="container mx-auto px-4 py-16 mb-16">
       <BlogContainer />
-    </Container>
+    </div>
   );
 }

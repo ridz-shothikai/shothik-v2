@@ -341,7 +341,7 @@ export default function TermsPage() {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-yellow-500/25 bg-yellow-500/5 p-4">
+            <div className="rounded-lg border border-border bg-muted/50 p-4">
               <p className="text-base leading-relaxed">
                 <strong>Important:</strong> Violations of Meta's Advertising
                 Policies may result in your Meta ad account being suspended. We

@@ -1,6 +1,5 @@
 "use client";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
@@ -36,9 +35,9 @@ export default function SecondaryLayout({ children }) {
     >
       <SecondaryHeader />
 
-      <Box component="main" sx={{ minHeight: "calc(100vh - 100px)" }}>
+      <main className="min-h-[calc(100vh-100px)]">
         {children}
-      </Box>
+      </main>
 
       <FooterServerComponent />
     </ProgressProvider>

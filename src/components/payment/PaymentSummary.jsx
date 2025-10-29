@@ -25,7 +25,7 @@ export default function PaymentSummary({
 }) {
   const { data: modeResult, isLoading } = useGetAppModeQuery();
 
-  const { title, bn, global, amount_monthly, amount_yearly } = plan;
+  const { title, bn, global, amount_monthly, amount_yearly } = plan || {};
 
   let {
     amount_monthly: price = 0,
@@ -64,7 +64,7 @@ export default function PaymentSummary({
     setTotalBill(billtopaid);
   }, [monthly, billtopaid]);
 
-  if (isLoading)
+  if (isLoading || !plan || !title)
     return (
       <Box
         sx={{

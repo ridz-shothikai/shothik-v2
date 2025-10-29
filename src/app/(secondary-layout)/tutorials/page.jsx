@@ -1,73 +1,16 @@
 "use client";
 
-import { Box, Paper, Tab, Tabs } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { toolsData } from "../../../_mock/tutorials";
 import TutorialSection, {
   IconWrapper,
 } from "../../../components/tutorial/TutorialSection";
 import useYoutubeSubscriber from "../../../hooks/useYoutubeSubcriber";
 
-// Styled components
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  "& .MuiTab-root": {
-    textTransform: "none",
-    minWidth: "auto",
-  },
-}));
-
-// Custom hook for tab management
-const useTabManagement = (defaultTab) => {
-  const [currentTab, setCurrentTab] = useState(defaultTab);
-
-  const handleTabChange = (event, newValue) => {
-    setCurrentTab(newValue);
-  };
-
-  return {
-    currentTab,
-    handleTabChange,
-  };
-};
-
-// Tab navigation component
-const TutorialTabs = ({ currentTab, onTabChange, toolsData }) => {
-  return (
-    <StyledTabs
-      value={currentTab}
-      onChange={onTabChange}
-      variant="scrollable"
-      scrollButtons="auto"
-      aria-label="tutorial navigation tabs"
-      sx={{
-        "@media (min-width: 600px)": {
-          paddingLeft: 3,
-        },
-        pt: 3,
-      }}
-    >
-      {Object.entries(toolsData).map(([key, tool]) => (
-        <Tab
-          key={key}
-          value={key}
-          label={
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconWrapper sx={{ color: tool.iconColor }}>
-                {tool.icon}
-              </IconWrapper>
-              {tool.name}
-            </Box>
-          }
-          aria-label={`${tool.name} tutorial tab`}
-        />
-      ))}
-    </StyledTabs>
-  );
-};
-
 const Tutorials = () => {
-  const { currentTab, handleTabChange } = useTabManagement("paraphrase");
+  const [currentTab, setCurrentTab] = useState("paraphrase");
   const { subscriberCount, loading, handleSubscribe, formatSubscriberCount } =
     useYoutubeSubscriber();
 
@@ -76,29 +19,40 @@ const Tutorials = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 1200, margin: "0 auto", pb: 10 }}>
-      <Paper
-        sx={{
-          bgcolor: "transparent",
-          backgroundImage: "none",
-        }}
-      >
-        <TutorialTabs
-          currentTab={currentTab}
-          onTabChange={handleTabChange}
-          toolsData={toolsData}
-        />
+    <div className="max-w-[1200px] mx-auto pb-40">
+      <div className="bg-transparent">
+        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+          <TabsList className="w-full justify-start h-auto flex-wrap bg-transparent border-b rounded-none sm:pl-12 pt-12">
+            {Object.entries(toolsData).map(([key, tool]) => (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className="flex items-center gap-2 capitalize data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                aria-label={`${tool.name} tutorial tab`}
+              >
+                <span className={cn("inline-flex", tool.iconColor && `text-[${tool.iconColor}]`)}>
+                  {tool.icon}
+                </span>
+                {tool.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        <TutorialSection
-          tool={toolsData[currentTab]}
-          onVideoClick={handleVideoClick}
-          subscriberCount={subscriberCount}
-          loading={loading}
-          handleSubscribe={handleSubscribe}
-          formatSubscriberCount={formatSubscriberCount}
-        />
-      </Paper>
-    </Box>
+          {Object.entries(toolsData).map(([key, tool]) => (
+            <TabsContent key={key} value={key} className="mt-0">
+              <TutorialSection
+                tool={tool}
+                onVideoClick={handleVideoClick}
+                subscriberCount={subscriberCount}
+                loading={loading}
+                handleSubscribe={handleSubscribe}
+                formatSubscriberCount={formatSubscriberCount}
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </div>
   );
 };
 
