@@ -16,7 +16,7 @@ export default function NavVertical({ openNav, onCloseNav }) {
   const isDesktop = useResponsive("up", "sm");
 
   return (
-    <nav className={cn("bg-background", "flex-shrink-0", "sm:w-60")}>
+    <nav className={cn("bg-background relative", "flex-shrink-0", "sm:w-60")}>
       <NavToggleButton className="absolute top-12 -right-4" />
 
       {isDesktop ? (

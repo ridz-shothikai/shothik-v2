@@ -1,10 +1,7 @@
 // LanguageMenu.jsx
 "use client";
 import LanguageMenus from "@/components/tools/common/LanguageMenus";
-import {
-  ExpandMoreOutlined,
-  KeyboardArrowUpOutlined,
-} from "@mui/icons-material";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 const LanguageMenu = ({ language, setLanguage, isLoading }) => {
@@ -25,8 +22,12 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         onClick={handleOpen}
         disabled={isLoading}
       >
-        <span>{language}</span>{" "}
-        {showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />}
+        <span>{language}</span>
+        {showMenu ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
+          <ChevronDown className="h-4 w-4" />
+        )}
       </button>
       <LanguageMenus
         selectedLanguage={language}

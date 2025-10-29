@@ -37,18 +37,17 @@ const GrammarSidebar = ({ handleAccept, handleIgnore, handleAcceptAll }) => {
             >
               <ChevronsRight />
             </button>
-            <div
+            {/* <div
               className={cn(
                 "flex aspect-square h-8 items-center justify-center rounded-md border bg-red-500/15 px-2 text-xs",
               )}
             >
               {score || 0}/100
             </div>
-            <p className="text-xs">Writing score</p>
+            <p className="text-xs">Writing score</p> */}
           </div>
-          <div className="text-primary flex cursor-pointer items-center text-xs">
-            View Details
-          </div>
+          {/* <div className="text-primary flex cursor-pointer items-center text-xs"> */}
+          <div className="flex items-center text-xs">Grammar Details</div>
         </div>
 
         <div className="flex items-center px-4">

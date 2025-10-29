@@ -3,6 +3,24 @@
 import { trySamples } from "@/_mock/trySamples";
 import BookIcon from "@/components/icons/BookIcon";
 import { downloadFile } from "@/components/tools/common/downloadfile";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { detectLanguage } from "@/hooks/languageDitector";
 import useDebounce from "@/hooks/useDebounce";
 import useResponsive from "@/hooks/useResponsive";
@@ -29,7 +47,6 @@ import {
   fetchGrammarSections,
   grammarCheck,
 } from "@/services/grammar-checker.service";
-import { Button, Menu, Popover, Tooltip } from "@mui/material";
 import { Mark, mergeAttributes } from "@tiptap/core";
 import { Placeholder } from "@tiptap/extensions";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -154,9 +171,6 @@ const GrammarCheckerContentSection = () => {
   const enqueueSnackbar = useSnackbar();
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const [anchorEl3, setAnchorEl3] = useState(null);
-
   const [isCurrentSection, setIsCurrentSection] = useState(false);
 
   const {
@@ -647,29 +661,22 @@ const GrammarCheckerContentSection = () => {
                         <EditorToolbar editor={editor} />
                       </div>
                       <div className="md:hidden">
-                        <button
-                          onClick={(event) => setAnchorEl3(event.currentTarget)}
-                          className="hover:bg-muted flex h-8 w-4 items-center justify-center rounded"
-                        >
-                          <MoreVertical className="size-4" />
-                        </button>
-                        <Menu
-                          anchorEl={anchorEl3}
-                          open={Boolean(anchorEl3)}
-                          onClose={() => setAnchorEl3(null)}
-                          anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "center",
-                          }}
-                          transformOrigin={{
-                            vertical: "bottom",
-                            horizontal: "center",
-                          }}
-                        >
-                          <div className="bg-card flex items-center gap-1 px-2 py-1">
-                            <EditorToolbar editor={editor} />
-                          </div>
-                        </Menu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="center">
+                            <div className="flex items-center gap-1 px-2 py-1">
+                              <EditorToolbar editor={editor} />
+                            </div>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 md:gap-2">
@@ -695,127 +702,127 @@ const GrammarCheckerContentSection = () => {
                   </div>
                   <div className="flex items-center gap-1 lg:hidden">
                     <div className="flex items-center gap-1">
-                      <Button
-                        onClick={(event) => setAnchorEl2(event.currentTarget)}
-                        className="!min-w-auto px-2!"
-                      >
-                        <span>
-                          {(selectedTab === "grammar" ||
-                            selectedTab === "all") &&
-                            (issues?.length || 0)}
-                          {selectedTab === "recommendation" &&
-                            (recommendations?.length || 0)}
-                        </span>
-                        <ChevronUp />
-                      </Button>
-                      <Menu
-                        anchorEl={anchorEl2}
-                        open={Boolean(anchorEl2)}
-                        onClose={() => setAnchorEl2(null)}
-                        anchorOrigin={{
-                          vertical: "top",
-                          horizontal: "center",
-                        }}
-                        transformOrigin={{
-                          vertical: "bottom",
-                          horizontal: "center",
-                        }}
-                      >
-                        <div
-                          onClick={() => dispatch(setSelectedTab("grammar"))}
-                          className={cn(
-                            "flex cursor-pointer items-center gap-1.5 border-b border-b-transparent px-2 py-1",
-                            {
-                              "text-primary bg-primary/10":
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="min-w-0 gap-1 px-2"
+                          >
+                            <span>
+                              {(selectedTab === "grammar" ||
+                                selectedTab === "all") &&
+                                (issues?.length || 0)}
+                              {selectedTab === "recommendation" &&
+                                (recommendations?.length || 0)}
+                            </span>
+                            <ChevronUp className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="center">
+                          <DropdownMenuItem
+                            onClick={() => dispatch(setSelectedTab("grammar"))}
+                            className={cn({
+                              "bg-primary/10 text-primary":
                                 selectedTab === "grammar" ||
                                 selectedTab === "all",
-                            },
-                          )}
-                        >
-                          <span className="shrink-0">
-                            {issues?.length ? (
-                              <span className="rounded-full bg-red-500/15 p-1 text-xs text-red-500">
-                                {issues.length}
-                              </span>
-                            ) : (
-                              <Image
-                                className="shrink-0"
-                                alt="check"
-                                src="/favicon.png"
-                                height={16}
-                                width={16}
-                              />
-                            )}
-                          </span>
-                          <span className="text-xs capitalize">Grammar</span>
-                        </div>
-                        <div
-                          onClick={() =>
-                            dispatch(setSelectedTab("recommendation"))
-                          }
-                          className={cn(
-                            "flex cursor-pointer items-center gap-1.5 border-b border-b-transparent px-2 py-1",
-                            {
-                              "text-primary bg-primary/10":
+                            })}
+                          >
+                            <span className="shrink-0">
+                              {issues?.length ? (
+                                <span className="rounded-full bg-red-500/15 p-1 text-xs text-red-500">
+                                  {issues.length}
+                                </span>
+                              ) : (
+                                <Image
+                                  className="shrink-0"
+                                  alt="check"
+                                  src="/favicon.png"
+                                  height={16}
+                                  width={16}
+                                />
+                              )}
+                            </span>
+                            <span className="ml-2 text-xs capitalize">
+                              Grammar
+                            </span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              dispatch(setSelectedTab("recommendation"))
+                            }
+                            className={cn({
+                              "bg-primary/10 text-primary":
                                 selectedTab === "recommendation",
-                            },
-                          )}
-                        >
-                          <span className="shrink-0">
-                            {recommendations?.length ? (
-                              <span className="bg-primary/10 text-primary rounded-full p-1 text-xs">
-                                {recommendations.length}
-                              </span>
-                            ) : (
-                              <Image
-                                className="shrink-0"
-                                alt="check"
-                                src="/favicon.png"
-                                height={16}
-                                width={16}
-                              />
-                            )}
-                          </span>
-                          <span className="text-xs capitalize">
-                            Recommendation
-                          </span>
-                        </div>
-                      </Menu>
+                            })}
+                          >
+                            <span className="shrink-0">
+                              {recommendations?.length ? (
+                                <span className="bg-primary/10 text-primary rounded-full p-1 text-xs">
+                                  {recommendations.length}
+                                </span>
+                              ) : (
+                                <Image
+                                  className="shrink-0"
+                                  alt="check"
+                                  src="/favicon.png"
+                                  height={16}
+                                  width={16}
+                                />
+                              )}
+                            </span>
+                            <span className="ml-2 text-xs capitalize">
+                              Recommendation
+                            </span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                     <div className="flex items-center gap-1">
                       {(selectedTab === "grammar" || selectedTab === "all") && (
-                        <Tooltip title="Accept All Grammar" placement="top">
-                          <Button
-                            size="small"
-                            variant="contained"
-                            className="!gap-2 rounded"
-                            disabled={!issues?.length}
-                            onClick={handleAcceptAllCorrections}
-                          >
-                            <span className="shrink-0">Fix Grammar</span>
-                            <span className="shrink-0">
-                              ({issues?.length || 0})
-                            </span>
-                          </Button>
-                        </Tooltip>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="gap-2 rounded"
+                                disabled={!issues?.length}
+                                onClick={handleAcceptAllCorrections}
+                              >
+                                <span className="shrink-0">Fix Grammar</span>
+                                <span className="shrink-0">
+                                  ({issues?.length || 0})
+                                </span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Accept All Grammar</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                       {selectedTab === "recommendation" && (
-                        <Tooltip
-                          title="Accept All Recommendations"
-                          placement="top"
-                        >
-                          <Button
-                            size="small"
-                            variant="contained"
-                            className="!gap-2 rounded"
-                            disabled={true}
-                          >
-                            <span className="shrink-0">Accept</span>
-                            <span className="shrink-0">
-                              ({recommendations?.length || 0})
-                            </span>
-                          </Button>
-                        </Tooltip>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="gap-2 rounded"
+                                disabled={true}
+                              >
+                                <span className="shrink-0">Accept</span>
+                                <span className="shrink-0">
+                                  ({recommendations?.length || 0})
+                                </span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Accept All Recommendations</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
                   </div>
@@ -956,33 +963,32 @@ const GrammarCheckerContentSection = () => {
         removeSectionId={removeSectionId}
       />
 
-      <Popover
-        open={
-          (Boolean(anchorEl) && !isSidebarOpen && !isMobile) ||
-          (Boolean(anchorEl) && isMobile)
-        }
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
-        }}
-      >
-        {selectedIssue && Object.keys(selectedIssue).length > 0 && (
-          <div>
+      {selectedIssue && Object.keys(selectedIssue).length > 0 && (
+        <Popover
+          open={
+            (Boolean(anchorEl) && !isSidebarOpen && !isMobile) ||
+            (Boolean(anchorEl) && isMobile)
+          }
+          onOpenChange={(open) => {
+            if (!open) setAnchorEl(null);
+          }}
+        >
+          <PopoverTrigger asChild>
+            <div
+              ref={anchorEl ? () => anchorEl : undefined}
+              className="hidden"
+            />
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="center" side="bottom">
             <GrammarIssueCard
               issue={selectedIssue}
               handleAccept={handleAcceptCorrection}
               handleIgnore={handleIgnoreError}
               isCollapsed={true}
             />
-          </div>
-        )}
-      </Popover>
+          </PopoverContent>
+        </Popover>
+      )}
     </>
   );
 };

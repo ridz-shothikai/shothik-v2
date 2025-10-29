@@ -84,12 +84,6 @@ const AiDetectorSectionbar = ({
   };
 
   // Menu handlers
-  const handleMenuOpen = (event, item) => {
-    event.stopPropagation();
-    setSelectedItem(item);
-    setMenuOpen(true);
-  };
-
   const handleMenuClose = () => {
     setMenuOpen(false);
     setSelectedItem(null);
@@ -102,7 +96,9 @@ const AiDetectorSectionbar = ({
     handleMenuClose();
   };
 
-  const handleRenameClick = () => {
+  const handleRenameClick = (event) => {
+    event.stopPropagation();
+
     if (selectedItem) {
       setNewTitle(selectedItem.title || "");
       setRenameDialogOpen(true);
@@ -110,14 +106,18 @@ const AiDetectorSectionbar = ({
     handleMenuClose();
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (event) => {
+    event.stopPropagation();
+
     if (selectedItem) {
       handleDelete(selectedItem._id);
     }
     handleMenuClose();
   };
 
-  const handleRenameSubmit = async () => {
+  const handleRenameSubmit = async (event) => {
+    event.stopPropagation();
+
     if (selectedItem && newTitle.trim()) {
       await handleRename(selectedItem?._id, newTitle.trim());
       setRenameDialogOpen(false);
@@ -248,57 +248,58 @@ const AiDetectorSectionbar = ({
                 <>
                   <ul className="divide-border divide-y">
                     {sections?.map((item) => (
-                      <li
-                        key={item._id}
-                        onClick={() => handleSectionClick(item)}
-                        className={cn(
-                          "hover:bg-accent flex items-center py-2 transition-colors",
-                          {
-                            "bg-primary/15": sectionId === item._id,
-                          },
-                        )}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">
-                            {item.title || "Unnamed File"}
-                          </p>
-                          <p className="text-muted-foreground truncate text-xs">
-                            {formatTime(item.timestamp)}
-                          </p>
-                        </div>
-
-                        <div className="ml-2 flex shrink-0 items-center gap-1">
-                          {downloadingId === item._id && (
-                            <Loader2 className="h-5 w-5 animate-spin" />
+                      <li key={item._id} className="py-1 first:pt-0 last:pb-0">
+                        <div
+                          onClick={() => handleSectionClick(item)}
+                          className={cn(
+                            "hover:bg-accent my-1 flex cursor-pointer items-center rounded-md px-2 py-1.5 transition-colors",
+                            {
+                              "bg-primary/15": sectionId === item._id,
+                            },
                           )}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedItem(item);
-                                }}
-                                className="h-8 w-8"
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={handleRenameClick}>
-                                <Edit2 className="mr-2 h-4 w-4" />
-                                Rename
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={handleDeleteClick}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium">
+                              {item.title || "Unnamed File"}
+                            </p>
+                            <p className="text-muted-foreground truncate text-xs">
+                              {formatTime(item.timestamp)}
+                            </p>
+                          </div>
+
+                          <div className="ml-2 flex shrink-0 items-center gap-1">
+                            {downloadingId === item._id && (
+                              <Loader2 className="h-5 w-5 animate-spin" />
+                            )}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedItem(item);
+                                  }}
+                                  className="h-8 w-auto"
+                                >
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={handleRenameClick}>
+                                  <Edit2 className="mr-2 h-4 w-4" />
+                                  Rename
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={handleDeleteClick}
+                                  className="text-destructive"
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </div>
                       </li>
                     ))}

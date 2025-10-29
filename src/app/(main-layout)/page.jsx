@@ -116,7 +116,9 @@ const Home = () => {
         </p>
       </div>
 
-      <HomeContent />
+      <main className="container">
+        <HomeContent />
+      </main>
     </>
   );
 };

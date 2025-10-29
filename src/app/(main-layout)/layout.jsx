@@ -1,4 +1,5 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
@@ -8,7 +9,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
-import Main from "../../components/layout/Main";
 import MainHeader from "../../components/navigation/MainHeader";
 import NavMini from "../../components/navigation/NavMini";
 import NavVertical from "../../components/navigation/NavVertical";
@@ -40,7 +40,7 @@ export default function MainLayout({ children }) {
   });
   useGetUserLimitQuery();
 
-  const isDarkMode = false; // Theme switching handled internally by shadcn
+  const isDarkMode = false;
 
   const [login] = useLoginMutation();
 
@@ -107,12 +107,12 @@ export default function MainLayout({ children }) {
               onCloseNav={() => dispatch(setOpen(false))}
             />
           )}
-          <Main>
+          <main>
             <VerifyEmailAlert />
             {children}
             <AuthSuccessPopup />
             <AlertDialog />
-          </Main>
+          </main>
         </div>
       </div>
     </ProgressProvider>
