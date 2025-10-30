@@ -1,5 +1,5 @@
 // src/components/tools/paraphrase/CustomModeContent.jsx
-import { Add, Close, Delete, Edit } from "@mui/icons-material";
+import { Add, Delete, Edit } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -7,7 +7,6 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  IconButton,
   Stack,
   TextField,
   Typography,
@@ -97,11 +96,6 @@ const CustomModeContent = ({
           <Typography variant="h6" fontWeight={600}>
             {mode === "create" ? "Create Custom Mode" : "Edit Custom Mode"}
           </Typography>
-          {onClose && (
-            <IconButton size="small" onClick={onClose}>
-              <Close fontSize="small" />
-            </IconButton>
-          )}
         </Box>
       )}
 

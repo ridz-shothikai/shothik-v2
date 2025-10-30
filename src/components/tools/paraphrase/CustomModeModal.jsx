@@ -1,5 +1,6 @@
 // src/components/tools/paraphrase/CustomModeModal.jsx
-import { Dialog, DialogContent, useMediaQuery, useTheme } from "@mui/material";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import CustomModeContent from "./CustomModeContent";
 
 /**
@@ -14,9 +15,6 @@ const CustomModeModal = ({
   error,
   isLoading,
 }) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
   const handleSubmit = (modeName) => {
     onSubmit(modeName);
     // Modal will be closed by parent component after successful submission
@@ -25,18 +23,20 @@ const CustomModeModal = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
-      fullScreen={fullScreen}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: fullScreen ? 0 : 2,
-          maxHeight: "fit-content",
-        },
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose?.();
       }}
     >
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent
+        className={cn(
+          // spacing equivalent to MUI p:3 (24px)
+          "p-6",
+          // width and rounding similar to maxWidth=\"sm\" and fullWidth
+          "w-full sm:max-w-[640px]",
+          // full-screen feel on small screens, rounded on larger
+          "rounded-none sm:rounded-lg",
+        )}
+      >
         <CustomModeContent
           mode="create"
           recentModes={recentModes}
