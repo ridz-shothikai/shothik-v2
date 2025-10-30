@@ -1,8 +1,8 @@
-import { ArrowForward } from "@mui/icons-material";
-import { Box, Button, Grid2, Stack, Typography } from "@mui/material";
+import { ArrowRight } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const stats = [
   { value: "10+", label: "Years of Experience" },
@@ -12,123 +12,84 @@ const stats = [
 
 export const StatsSection = () => {
   return (
-    <Grid2 container>
-      <Grid2
-        size={{ xs: 12, md: 6 }}
-        sx={{
-          borderRight: { md: 1 },
-          borderColor: { md: "divider" },
-          alignContent: "center",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          gap: "2rem",
-          paddingRight: { md: 2 },
-        }}
-      >
-        <Stack direction="column" justifyContent="center" gap={1}>
-          <Typography
-            component={motion.p}
+    <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="flex flex-col items-start justify-center gap-8 border-b md:border-b-0 md:border-r border-border pr-0 md:pr-2">
+        <div className="flex flex-col gap-2">
+          <motion.p
             initial={{ x: -20, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            variant="h3"
+            className="text-2xl font-semibold text-foreground md:text-3xl"
           >
             Powering Smarter, Safer & More Efficient Business Operations
-          </Typography>
-          <Typography
-            component={motion.p}
+          </motion.p>
+          <motion.p
             initial={{ x: -20, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
-            variant="body1"
+            className="text-base text-muted-foreground"
           >
             At Shothik.ai, we don&apos;t just offer solutions—we transform
             businesses with AI-driven efficiency, security, and innovation.
             Whether it&apos;s travel, fashion, trade, or healthcare, we ensure
             seamless automation, data-driven decision-making, and operational
             excellence.
-          </Typography>
-          <Box
-            component={motion.p}
+          </motion.p>
+          <motion.div
             initial={{ x: -20, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
           >
-            <Link href="#services">
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: "primary.darker" }}
-                endIcon={<ArrowForward />}
-                size="large"
-              >
+            <Link href="#services" className="no-underline">
+              <Button className="bg-primary text-primary-foreground" size="lg">
                 Services
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-          </Box>
-        </Stack>
-        <Grid2 container>
+          </motion.div>
+        </div>
+        <div className="grid w-full grid-cols-3">
           {stats.map((stat, index) => (
-            <Grid2
-              component={motion.div}
+            <motion.div
+              key={stat.value}
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
               viewport={{ once: true }}
-              size={{ xs: 4 }}
-              key={stat.value}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRight: index !== stats.length - 1 ? 1 : 0,
-                borderColor: "divider",
-                py: { xs: 2, md: 0 },
-              }}
+              className={
+                index !== stats.length - 1
+                  ? "flex flex-col items-center justify-center border-r border-border py-2 md:py-0"
+                  : "flex flex-col items-center justify-center py-2 md:py-0"
+              }
             >
-              <Typography variant="h3" align="center">
+              <p className="text-2xl font-semibold text-foreground md:text-3xl">
                 {stat.value}
-              </Typography>
-              <Typography variant="body2" align="center">
-                {stat.label}
-              </Typography>
-            </Grid2>
+              </p>
+              <p className="text-sm text-muted-foreground">{stat.label}</p>
+            </motion.div>
           ))}
-        </Grid2>
-      </Grid2>
-      <Grid2
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-        size={{ xs: 12, md: 6 }}
-      >
-        <Stack
-          component={motion.div}
+        </div>
+      </div>
+      <div className="flex items-center justify-center">
+        <motion.div
           initial={{ x: 20, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          sx={{
-            width: { xs: "100%", sm: "80%" },
-            height: { xs: "100%", sm: "80%" },
-            borderRadius: { xs: 2, sm: 5 },
-            overflow: "hidden",
-            mt: { xs: 2, md: 0 },
-          }}
+          className="mt-2 h-full w-full overflow-hidden rounded-md sm:mt-0 sm:h-4/5 sm:w-4/5"
         >
           <Image
             src="/b2b/image1.png"
             alt="Business solutions"
-            width={450}
-            height={450}
-            objectFit="cover"
-            style={{ width: "100%", height: "100%" }}
+            width={1200}
+            height={1200}
+            className="h-full w-full object-cover"
           />
-        </Stack>
-      </Grid2>
-    </Grid2>
+        </motion.div>
+      </div>
+    </div>
   );
 };

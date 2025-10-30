@@ -1,15 +1,15 @@
 "use client";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import Carousel from "react-slick";
+import * as motion from "motion/react-client";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { carousels } from "../../_mock/b2b/carousels";
-import useResponsive from "../../hooks/useResponsive";
 
 export const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const isMobile = useResponsive("down", "sm");
 
   const sliderSettings = {
     dots: true,
@@ -20,140 +20,80 @@ export const HeroSection = () => {
     autoplay: true,
     autoplaySpeed: 4000,
     arrows: false,
-    beforeChange: (_, newIndex) => setCurrentSlide(newIndex),
+    beforeChange: (_idx, newIndex) => setCurrentSlide(newIndex),
     appendDots: (dots) => (
-      <Box
-        sx={{
-          position: "absolute",
-          backgroundColor: "transparent",
-          borderRadius: "16px",
-          padding: { xs: "5px 10px", sm: "10px 20px" },
-          width: { xs: "100%", sm: "20%", md: "12%" },
-          position: "absolute",
-          top: "95%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      >
-        <ul
-          style={{
-            margin: 0,
-            padding: 0,
-            display: "flex",
-            gap: ".3125rem",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {dots}
-        </ul>
-      </Box>
+      <div className="absolute inset-x-0 bottom-10 z-30 flex justify-center">
+        <ul className="m-0 flex list-none items-center justify-center gap-2 p-0 drop-shadow">{dots}</ul>
+      </div>
     ),
     customPaging: (i) => (
-      <Box
-        sx={{
-          width: { xs: 8, sm: 12 },
-          height: { xs: 8, sm: 12 },
-          backgroundColor: i === currentSlide ? "common.white" : "gray",
-          borderRadius: "50%",
-          display: "inline-block",
-          transition: "background-color 0.3s ease",
-          position: "relative",
-        }}
+      <span
+        className={cn(
+          "block h-2.5 w-2.5 rounded-full transition-colors duration-300 sm:h-3 sm:w-3",
+          i === currentSlide ? "bg-foreground" : "bg-foreground/30"
+        )}
       />
     ),
   };
 
   return (
-    <Carousel {...sliderSettings}>
+    <div className="relative">
+      <Carousel {...sliderSettings}>
       {carousels.map((item, index) => (
-        <Box
+        <div
           key={index}
-          sx={{
-            height: 500,
-            py: { xs: 2, sm: 3, md: 0 },
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${item?.image})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            flexShrink: 0,
-          }}
+          className="relative flex h-[500px] flex-shrink-0 items-center py-2 sm:py-3 md:py-0"
         >
-          <Stack
-            direction="column"
-            justifyContent="center"
-            gap={2}
-            sx={{
-              px: { xs: 2, sm: 4 },
-              py: { xs: 2, sm: 5 },
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <Typography
-              sx={{
-                color: "common.white",
-                fontFamily: "Public Sans",
-                fontSize: { xs: "1.75rem", sm: "2.5rem", md: "3.875rem" },
-                fontStyle: "normal",
-                fontWeight: "700",
-                lineHeight: { xs: "1.2", md: "normal" },
-              }}
+          {/* Background image */}
+          <img
+            src={item?.image}
+            alt="slide"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Overlay to improve text contrast */}
+          <div className="absolute inset-0 bg-foreground/70 z-10" />
+
+          <div className="relative z-20 flex h-full w-full flex-col justify-center gap-4 px-6 sm:px-10 py-6 sm:py-10">
+            <motion.p
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-sans text-3xl font-bold leading-snug text-primary-foreground sm:text-5xl md:text-6xl"
             >
               {item?.title}
-            </Typography>
-            <Typography
-              sx={{
-                color: "common.white",
-                fontFamily: "Public Sans",
-                fontSize: { xs: "0.875rem", sm: "0.9375rem", md: "1rem" },
-                fontStyle: "normal",
-                fontWeight: "400",
-                lineHeight: { xs: "1.5", md: "normal" },
-                paddingRight: { xs: 0, sm: "8rem", md: "16rem" },
-              }}
+            </motion.p>
+
+            <motion.p
+              initial={{ y: -10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="pr-0 font-sans text-sm font-normal leading-relaxed text-primary-foreground/90 sm:text-base md:text-base sm:pr-32 md:pr-64"
             >
               {item.description}
-            </Typography>
-            <Stack direction="row" alignItems="center" flexWrap="wrap" gap={2}>
+            </motion.p>
+
+            <div className="mt-2 flex flex-wrap items-center gap-3">
               {item.buttons.map((button, buttonIndex) => (
-                <Link
-                  key={buttonIndex}
-                  href={button.href}
-                  style={{
-                    textDecoration: "none",
-                    width: isMobile ? "100%" : "auto",
-                  }}
-                >
+                <Link key={buttonIndex} href={button.href} className="no-underline">
                   <Button
-                    key={buttonIndex}
-                    variant={button.variant}
-                    sx={{
-                      ...(button.primary && {
-                        backgroundColor: "primary.darker",
-                        color: "common.white",
-                      }),
-                      ...(!button.primary && {
-                        color: "common.white",
-                        borderColor: "common.white",
-                        "&:hover": { borderColor: "primary.darker" },
-                      }),
-                      width: { xs: "8.375rem", sm: "12.625rem" },
-                      padding: { xs: "0.625rem", sm: "1rem" },
-                      color: "common.white",
-                    }}
-                    endIcon={button.primary ? <ArrowForwardIcon /> : null}
+                    variant={button.primary ? "default" : "ghost"}
+                    className={cn(
+                      "h-10 px-4 sm:px-6",
+                      button.primary
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                    )}
                   >
                     {button.label}
+                    {button.primary ? <ArrowRight className="ml-2 h-4 w-4" /> : null}
                   </Button>
                 </Link>
               ))}
-            </Stack>
-          </Stack>
-        </Box>
+            </div>
+          </div>
+        </div>
       ))}
-    </Carousel>
+      </Carousel>
+    </div>
   );
 };

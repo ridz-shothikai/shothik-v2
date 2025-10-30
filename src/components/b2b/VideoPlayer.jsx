@@ -1,5 +1,4 @@
 "use client";
-import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 
 export const VideoPlayer = ({
@@ -14,95 +13,43 @@ export const VideoPlayer = ({
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        maxWidth: "34.95288rem",
-        maxHeight: "34.19956rem",
-        overflow: "hidden",
-        borderRadius: "0.14319rem",
-        cursor: isShowPlayIcon ? "pointer" : "default",
-        ...sx,
-      }}
-    >
+    <div className={`relative max-w-[34.95288rem] max-h-[34.19956rem] overflow-hidden rounded cursor-${
+      isShowPlayIcon ? "pointer" : "default"
+    }`}>
       {isPlaying ? (
         <video
           src={videoSrc}
           controls
           autoPlay
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: "center",
-            aspectRatio: "1/1",
-          }}
+          className="h-full w-full object-cover object-center [aspect-ratio:1/1]"
         />
       ) : (
         <>
           <img
             src={thumbnailSrc}
             alt="Video Thumbnail"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              aspectRatio: "1/1",
-            }}
+            className="h-full w-full object-cover object-center [aspect-ratio:1/1]"
           />
           {isShowPlayIcon && (
             <img
               onClick={() => setIsPlaying(true)}
               src="/b2b/play.svg"
               alt="Play"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                cursor: "pointer",
-              }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
             />
           )}
         </>
       )}
       {!isPlaying && isShowInfo && (
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 10,
-            left: 10,
-          }}
-        >
-          <Typography
-            sx={{
-              color: "white",
-              fontFamily: "Public Sans",
-              fontSize: "1rem",
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: "165%",
-              textTransform: "uppercase",
-            }}
-          >
+        <div className="absolute bottom-2 left-2">
+          <p className="font-sans text-base font-bold uppercase leading-[1.65] text-primary-foreground">
             {name}
-          </Typography>
-          <Typography
-            sx={{
-              color: "#FFF",
-              fontFamily: "Public Sans",
-              fontSize: "0.5625rem",
-              fontStyle: "normal",
-              fontWeight: "400",
-              lineHeight: "0.859rem",
-              letterSpacing: "0.01688rem",
-            }}
-          >
+          </p>
+          <p className="font-sans text-[0.5625rem] font-normal leading-[0.859rem] tracking-[0.01688rem] text-primary-foreground">
             {title}
-          </Typography>
-        </Box>
+          </p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };

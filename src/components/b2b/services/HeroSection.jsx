@@ -1,109 +1,65 @@
 "use client";
-import { Box, Grid2, Link, Typography, useTheme } from "@mui/material";
 import * as motion from "motion/react-client";
 import React from "react";
+import Link from "next/link";
 import { headerInformation } from "../../../_mock/b2b/headerInformantion";
 import { informations } from "../../../_mock/b2b/informations";
 
 export const HeroSection = ({ slug }) => {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const information = informations[slug];
   const headerInfo = headerInformation[slug];
 
   return (
-    <Box>
-      <Typography
-        component={motion.p}
+    <div>
+      <motion.p
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        textAlign="center"
-        variant="h2"
-        mb={1}
-        sx={{ color: isDarkMode ? "common.white" : "#005249" }}
+        className="mb-1 text-center text-3xl font-semibold text-primary md:text-5xl"
       >
         {headerInfo?.title}
-      </Typography>
+      </motion.p>
 
-      {/* Image Section */}
       {headerInfo?.img && (
-        <Box
-          component={motion.p}
+        <motion.div
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          sx={{
-            width: "100%",
-            display: "block",
-            height: {
-              xs: "12rem",
-              sm: "25rem",
-              md: "35rem",
-            },
-            alignSelf: "stretch",
-            overflow: "hidden",
-          }}
+          className="block h-48 w-full overflow-hidden sm:h-[25rem] md:h-[35rem]"
         >
           <img
             src={headerInfo?.img}
             alt="Workspace"
-            style={{
-              width: "100%",
-              display: "block",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-            }}
+            className="block h-full w-full object-cover object-center"
           />
-        </Box>
+        </motion.div>
       )}
 
-      {/* Info Section */}
-      <Box sx={{ paddingX: 3, paddingY: 2 }}>
-        <Grid2 container>
+      <div className="px-3 py-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           {information?.map((item, index) => (
-            <Grid2
-              component={motion.div}
+            <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
               viewport={{ once: true }}
-              size={{ xs: 12, sm: 6, md: 3 }}
               key={index}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRight: information.length - 1 !== index ? 2 : 0,
-                borderRightColor: "primary.main",
-              }}
+              className="flex flex-col items-center justify-center border-r border-primary last:border-r-0 py-4"
             >
               {item.description && (
-                <Typography
-                  variant="h5"
-                  fontSize={24}
-                  sx={{ color: "primary.main" }}
-                >
-                  {item.description}
-                </Typography>
+                <p className="text-xl font-semibold text-primary">{item.description}</p>
               )}
               {item.isLink ? (
-                <Link href="#">{item.title}</Link>
-              ) : (
-                <Typography
-                  variant="h5"
-                  fontSize={24}
-                  sx={{ color: "primary.main" }}
-                >
+                <Link href="#" className="text-primary underline">
                   {item.title}
-                </Typography>
+                </Link>
+              ) : (
+                <p className="text-xl font-semibold text-primary">{item.title}</p>
               )}
-            </Grid2>
+            </motion.div>
           ))}
-        </Grid2>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
