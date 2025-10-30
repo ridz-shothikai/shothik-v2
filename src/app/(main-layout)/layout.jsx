@@ -93,21 +93,20 @@ export default function MainLayout({ children }) {
         <MainHeader />
         <div
           className={cn(
-            "bg-background",
-            "sm:flex",
-            "min-h-screen",
-            "overflow-hidden",
+            "bg-background min-h-screen w-full overflow-hidden sm:flex",
           )}
         >
-          {!isMobile && isNavMini ? (
-            <NavMini isDarkMode={isDarkMode} />
-          ) : (
-            <NavVertical
-              openNav={open}
-              onCloseNav={() => dispatch(setOpen(false))}
-            />
-          )}
-          <main>
+          <div>
+            {!isMobile && isNavMini ? (
+              <NavMini isDarkMode={isDarkMode} />
+            ) : (
+              <NavVertical
+                openNav={open}
+                onCloseNav={() => dispatch(setOpen(false))}
+              />
+            )}
+          </div>
+          <main className="flex-1 pt-20 sm:pt-24">
             <VerifyEmailAlert />
             {children}
             <AuthSuccessPopup />

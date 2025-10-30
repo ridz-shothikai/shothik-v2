@@ -116,7 +116,7 @@ const Home = () => {
         </p>
       </div>
 
-      <main className="container">
+      <main className="container mx-auto">
         <HomeContent />
       </main>
     </>
