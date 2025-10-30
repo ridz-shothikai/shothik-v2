@@ -1,70 +1,115 @@
-import Header from "@/components/partials/header";
-import Sidebar from "@/components/partials/navigation-sidebar";
-import useSetting from "@/hooks/states/useSetting";
-import { useSidebar } from "@/hooks/ui/useSidebar";
-import { cn } from "@/lib/utils";
+"use client";
 
-const CommonLayout = ({ children }) => {
-  const { setting } = useSetting();
+import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
+import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
+import MainHeader from "@/components/navigation/MainHeader";
+import NavMini from "@/components/navigation/NavMini";
+import NavVertical from "@/components/navigation/NavVertical";
+import AlertDialog from "@/components/tools/common/AlertDialog";
+import { useSidebar } from "@/hooks/ui/useSidebar";
+import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
+import {
+  useGetUserLimitQuery,
+  useGetUserQuery,
+  useLoginMutation,
+} from "@/redux/api/auth/authApi";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
+import { setOpen } from "@/redux/slice/settings";
+import LoadingScreen from "@/resource/LoadingScreen";
+import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
+import { useGoogleOneTapLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+export default function PrimaryLayout({ children }) {
+  const { open, themeLayout } = useSelector((state) => state.settings);
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const pathname = usePathname();
+  const isSharedPage = pathname?.startsWith("/shared");
+  const isMobile = useResponsive("down", "sm");
+  const isCompact = themeLayout === "mini";
+  const dispatch = useDispatch();
+  const { user, accessToken } = useSelector((state) => state.auth);
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
+  useGetUserLimitQuery();
+
+  const [login] = useLoginMutation();
+
+  useEffect(() => {
+    setIsLoadingPage(false);
+  }, []);
+
+  useGoogleOneTapLogin({
+    onSuccess: async (res) => {
+      try {
+        const { email, name } = jwtDecode(res.credential);
+
+        const response = await login({
+          auth_type: "google",
+          googleToken: res.credential,
+          oneTapLogin: true,
+          oneTapUser: {
+            email,
+            name,
+          },
+        });
+
+        if (response?.data) {
+          dispatch(setShowRegisterModal(false));
+          dispatch(setShowLoginModal(false));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    flow: "auth-code",
+    onError: (err) => {
+      console.error(err);
+    },
+    scope: "email profile",
+    disabled: isLoading || user?.email || isSharedPage, // Disable on shared pages
+  });
+
   const { isMobileOpen, toggleMobile, closeMobile } = useSidebar();
 
-  const isCompact = setting.sidebar === "compact";
+  if (isLoadingPage) return <LoadingScreen />;
 
   return (
-    <div className="bg-background flex h-screen w-screen overflow-hidden">
-      {/* Mobile Overlay */}
-      <div
-        className={cn(
-          "fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-          isMobileOpen
-            ? "pointer-events-auto opacity-100"
-            : "pointer-events-none opacity-0",
-        )}
-        onClick={closeMobile}
-        aria-hidden="true"
-      />
-
-      {/* Sidebar Container */}
-      <div className="relative z-50 lg:z-0">
-        <aside
+    <ProgressProvider
+      color={"#00AB55"}
+      options={{ showSpinner: false }}
+      shallowRouting
+    >
+      <div>
+        <MainHeader />
+        <div
           className={cn(
-            "group/sidebar bg-card text-card-foreground fixed start-0 top-0 bottom-0 h-full border-r shadow-lg",
-            "transform transition-transform duration-300 ease-in-out",
-            "w-full max-w-80 lg:relative lg:translate-x-0 lg:shadow-none",
-            // Desktop compact behavior
-            "lg:w-80 lg:transition-[width] lg:duration-300",
-            {
-              "lg:w-20 lg:hover:w-80": isCompact,
-              "lg:hover:shadow-xl": isCompact,
-            },
-            // Mobile behavior
-            {
-              "-translate-x-full": !isMobileOpen,
-              "translate-x-0": isMobileOpen,
-            },
-            {
-              dark: setting.theme === "semi-dark",
-            },
+            "bg-background min-h-screen w-full overflow-hidden sm:flex",
           )}
         >
-          <Sidebar onClose={closeMobile} />
-        </aside>
+          <div>
+            {!isMobile && isCompact ? (
+              <NavMini />
+            ) : (
+              <NavVertical
+                openNav={open}
+                onCloseNav={() => dispatch(setOpen(false))}
+              />
+            )}
+          </div>
+          <main className="flex-1 pt-20 sm:pt-24">
+            <VerifyEmailAlert />
+            {children}
+            <AuthSuccessPopup />
+            <AlertDialog />
+          </main>
+        </div>
       </div>
-
-      {/* Main Content Area */}
-      <div className="bg-background flex min-w-0 flex-1 flex-col">
-        <Header
-          isMobileOpen={isMobileOpen}
-          onToggleMobile={toggleMobile}
-          className="flex-shrink-0"
-        />
-
-        <main className="flex-1 overflow-y-auto">
-          <div className="min-h-full w-full px-4 py-6 lg:px-6">{children}</div>
-        </main>
-      </div>
-    </div>
+    </ProgressProvider>
   );
-};
-
-export default CommonLayout;
+}
