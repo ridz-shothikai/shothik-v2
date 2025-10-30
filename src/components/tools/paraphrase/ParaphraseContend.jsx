@@ -1878,7 +1878,7 @@ const ParaphraseContend = () => {
           </Card>
 
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetContent side="bottom" className="px-2 pt-1 pb-2">
+            <SheetContent side="right" className="!max-w-[5rem] px-2 pt-1 pb-2">
               <VerticalMenu
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -1896,7 +1896,7 @@ const ParaphraseContend = () => {
                 setHighlightSentence={setHighlightSentence}
                 plainOutput={extractPlainText(result)}
                 selectedSynonymLevel={selectedSynonyms}
-                mobile={true}
+                mobile={false}
                 fetchFileHistories={fetchFileHistories}
               />
             </SheetContent>
@@ -1904,29 +1904,27 @@ const ParaphraseContend = () => {
         </div>
       </div>
 
-      {!isMobile && (
-        <div className="ml-2 w-min flex-0 transition-[width] duration-200 lg:mt-7">
-          <VerticalMenu
-            selectedMode={selectedMode}
-            outputText={result}
-            setOutputText={setResult}
-            setSelectedMode={setSelectedMode}
-            freezeWords={[
-              ...(frozenWords?.values || []),
-              ...(frozenPhrases?.values || []),
-            ]
-              .filter(Boolean)
-              .join(", ")}
-            plainOutput={extractPlainText(result)}
-            text={userInput}
-            selectedLang={language}
-            highlightSentence={highlightSentence}
-            setHighlightSentence={setHighlightSentence}
-            selectedSynonymLevel={selectedSynonyms}
-            fetchFileHistories={fetchFileHistories}
-          />
-        </div>
-      )}
+      <div className="ml-2 hidden w-min flex-0 transition-[width] duration-200 md:block lg:mt-7">
+        <VerticalMenu
+          selectedMode={selectedMode}
+          outputText={result}
+          setOutputText={setResult}
+          setSelectedMode={setSelectedMode}
+          freezeWords={[
+            ...(frozenWords?.values || []),
+            ...(frozenPhrases?.values || []),
+          ]
+            .filter(Boolean)
+            .join(", ")}
+          plainOutput={extractPlainText(result)}
+          text={userInput}
+          selectedLang={language}
+          highlightSentence={highlightSentence}
+          setHighlightSentence={setHighlightSentence}
+          selectedSynonymLevel={selectedSynonyms}
+          fetchFileHistories={fetchFileHistories}
+        />
+      </div>
 
       <MultipleFileUpload
         isMobile={isMobile}

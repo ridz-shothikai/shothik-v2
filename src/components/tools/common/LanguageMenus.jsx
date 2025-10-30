@@ -1,16 +1,16 @@
 import { languages } from "@/_mock/tools/languages";
-import useResponsive from "@/hooks/useResponsive";
-import { Check, Close, Search } from "@mui/icons-material";
 import {
-  Box,
-  Drawer,
-  FormControl,
-  InputAdornment,
-  Menu,
-  OutlinedInput,
-  Stack,
-  Typography,
-} from "@mui/material";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
+import { Check, Search, X } from "lucide-react";
 import { useState } from "react";
 
 const RenderLanguages = ({
@@ -25,88 +25,45 @@ const RenderLanguages = ({
   );
 
   return (
-    <Box id="language_menu">
-      {/* Sticky search bar with secondary‐colored icon */}
-      <FormControl
-        variant="outlined"
-        sx={{
-          p: { xs: 2, md: 1 },
-          width: "100%",
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-          backgroundColor: "background.paper",
-        }}
-      >
-        <OutlinedInput
-          size="small"
-          placeholder="Search language..."
-          value={filterTerm}
-          onChange={(e) => setFilterTerm(e.target.value)}
-          endAdornment={
-            <InputAdornment
-              position="end"
-              sx={{ color: "text.secondary" }} // ensure the icon uses theme.secondary
-            >
-              <Search />
-            </InputAdornment>
-          }
-        />
-      </FormControl>
+    <div id="language_menu">
+      {/* Sticky search bar */}
+      <div className="bg-background sticky top-0 z-50 w-full p-2 md:p-1">
+        <div className="relative">
+          <Input
+            placeholder="Search language..."
+            value={filterTerm}
+            onChange={(e) => setFilterTerm(e.target.value)}
+            className="pr-9"
+          />
+          <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+        </div>
+      </div>
 
       {/* 3-column grid of languages */}
-      <Box
-        sx={{
-          maxHeight: { xs: "60vh", md: "50vh" },
-          overflowY: "auto",
-          p: { xs: 2, md: 1 },
-        }}
-      >
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2,1fr)",
-              md: "repeat(3,1fr)",
-            },
-            gap: 1,
-          }}
-        >
+      <ScrollArea className="max-h-[60vh] overflow-y-auto p-2 md:max-h-[50vh] md:p-1">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
           {filtered.map((lang, index) => {
             const isSelected = lang.name === selectedLanguage;
             return (
-              <Box
-                key={`${lang.name}-${index}`} // append index to guarantee uniqueness
+              <div
+                key={`${lang.name}-${index}`}
                 onClick={() => {
                   handleLanguageMenu(lang.name);
                   handleClose();
                 }}
-                sx={{
-                  cursor: "pointer",
-                  p: 1,
-                  borderRadius: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  backgroundColor: isSelected ? "success.light" : "transparent",
-                  "&:hover": {
-                    backgroundColor: isSelected
-                      ? "success.light"
-                      : "action.hover",
-                  },
-                }}
-              >
-                <Typography variant="body2">{lang.name}</Typography>
-                {isSelected && (
-                  <Check sx={{ fontSize: 16, color: "success.main" }} />
+                className={cn(
+                  "flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors",
+                  isSelected ? "bg-primary/10" : "hover:bg-accent",
                 )}
-              </Box>
+              >
+                <span className="text-sm">{lang.name}</span>
+                {isSelected && <Check className="text-primary h-4 w-4" />}
+              </div>
             );
           })}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 
@@ -122,58 +79,34 @@ const LanguageMenus = ({
   return (
     <>
       {isMobile ? (
-        <Drawer
-          anchor="bottom"
-          open={open}
-          onClose={handleClose}
-          sx={{
-            "& .MuiPaper-root": {
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-            },
-          }}
-        >
-          <Box sx={{ height: "60vh" }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ pt: 2, px: 2 }}
-            >
-              <Typography variant="subtitle1">Select language</Typography>
-              <Close
-                color="secondary"
-                onClick={handleClose}
-                sx={{ cursor: "pointer" }}
-              />
-            </Stack>
+        <Sheet open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
+          <SheetContent side="bottom" className="h-[60vh] rounded-t-2xl p-0">
+            <div className="flex items-center justify-between px-4 pt-4">
+              <h3 className="text-base font-semibold">Select language</h3>
+              <button onClick={handleClose} className="text-muted-foreground">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
             <RenderLanguages
               handleLanguageMenu={handleLanguageMenu}
               handleClose={handleClose}
               selectedLanguage={selectedLanguage}
             />
-          </Box>
-        </Drawer>
+          </SheetContent>
+        </Sheet>
       ) : (
-        <Menu
-          id="language-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          slotProps={{
-            list: {
-              role: "listbox",
-              "aria-labelledby": "language-button",
-            },
-            paper: { style: { width: 550 } },
-          }}
-        >
-          <RenderLanguages
-            handleLanguageMenu={handleLanguageMenu}
-            handleClose={handleClose}
-            selectedLanguage={selectedLanguage}
-          />
-        </Menu>
+        <Dialog open={open} onOpenChange={(o) => (!o ? handleClose() : null)}>
+          <DialogContent className="w-[550px] p-0">
+            <DialogHeader className="px-4 pt-4">
+              <DialogTitle className="text-base">Select language</DialogTitle>
+            </DialogHeader>
+            <RenderLanguages
+              handleLanguageMenu={handleLanguageMenu}
+              handleClose={handleClose}
+              selectedLanguage={selectedLanguage}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

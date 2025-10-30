@@ -1,7 +1,14 @@
 "use client";
 
-import { Popover, Typography, Button } from "@mui/material";
-import { Diamond } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { Gem } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function UpgradePopover({
@@ -14,49 +21,28 @@ export default function UpgradePopover({
   const open = Boolean(anchorEl);
 
   return (
-    <Popover
-      id="upgrade-popover"
-      open={open}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "center",
-      }}
-      disableRestoreFocus
-      PaperProps={{
-        sx: {
-          p: 2,
-          borderRadius: 2,
-          boxShadow: 3,
-          width: 300,
-          textAlign: "center",
-        },
-      }}
-    >
-      <Typography
-        variant="body2"
-        sx={{ mt: 1, mb: 2, color: "text.secondary" }}
-      >
-        {message}
-      </Typography>
-      <Button
-        variant="contained"
-        color="success"
-        size="small"
-        startIcon={<Diamond />}
-        sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-        onClick={() => {
-          router.push(redirectPath);
-          onClose();
-        }}
-      >
-        Upgrade To Premium
-      </Button>
-    </Popover>
+    <Dialog open={open} onOpenChange={(o) => (!o ? onClose() : null)}>
+      <DialogContent className={cn("w-[300px] p-4 sm:max-w-[360px]")}>
+        <DialogHeader>
+          <DialogTitle className="text-center text-base font-medium">
+            Upgrade Required
+          </DialogTitle>
+        </DialogHeader>
+        <p className="text-muted-foreground mt-1 mb-3 text-center text-sm">
+          {message}
+        </p>
+        <div className="flex justify-center">
+          <Button
+            size="sm"
+            onClick={() => {
+              router.push(redirectPath);
+              onClose();
+            }}
+          >
+            <Gem className="mr-2 h-4 w-4" /> Upgrade To Premium
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

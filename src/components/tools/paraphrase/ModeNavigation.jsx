@@ -105,7 +105,7 @@ const ModeNavigation = ({
   }, [customModes]);
 
   // Determine how many tabs to show before collapsing
-  const visibleCount = isXs ? 2 : isSm ? 3 : isLg ? 5 : 7;
+  const visibleCount = isXs ? 2 : isSm ? 3 : 5;
 
   const initialModes = allModes.slice(0, visibleCount);
   const extraModes = allModes.slice(visibleCount);
@@ -319,7 +319,7 @@ const ModeNavigation = ({
     <>
       <div className="flex items-center justify-between gap-2 pr-2">
         {/* Modes */}
-        <div className="relative z-[1600] flex items-center gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap sm:gap-2 md:gap-3">
+        <div className="relative z-[50] flex items-center gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-2 md:gap-3 [&::-webkit-scrollbar]:hidden">
           <Tabs
             value={tabsValue}
             onValueChange={(v) => {

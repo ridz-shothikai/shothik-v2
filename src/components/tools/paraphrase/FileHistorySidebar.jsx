@@ -1,41 +1,47 @@
 "use client";
 
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import SearchIcon from "@mui/icons-material/Search";
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  Button,
-  CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  Drawer,
-  IconButton,
-  InputAdornment,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Skeleton,
-  TextField,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
   Tooltip,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { Download, Edit2, Trash2 } from "lucide-react";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import {
+  BookOpen,
+  Download,
+  Edit2,
+  Loader2,
+  MoreVertical,
+  Plus,
+  Search,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UpgradePopover from "../common/UpgradePopover"; // Import UpgradePopover
 
 export default function FileHistorySidebar({ fetchFileHistories }) {
-  const theme = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [downloadingId, setDownloadingId] = useState(null);
@@ -240,343 +246,230 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
 
   return (
     <>
-      <Box
+      <div
         id="file_history_buttons"
-        sx={{
-          bgcolor: theme.palette.background.paper,
-          borderRadius: 2,
-          p: { xs: "3px", md: 1 },
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-          border:
-            theme.palette.mode === "dark"
-              ? `1px solid ${theme.palette.divider}`
-              : "none",
-        }}
+        className={cn(
+          "border-border bg-card flex flex-col gap-1 rounded-md border p-1.5 md:p-2",
+        )}
       >
-        <Tooltip title="Saved document" placement="right">
-          <IconButton
-            id="file_history_view_button"
-            size="small"
-            onClick={handleBookClick}
-          >
-            <Image
-              src={"/icons/file.svg"}
-              alt="file"
-              width={24}
-              height={24}
-              className="h-5 w-5 lg:h-6 lg:w-6"
-            />
-            <Typography
-              variant="caption"
-              sx={{
-                display: { md: "none" },
-                ml: 2,
-                color: "#242426",
-              }}
-            >
-              Saved Files
-            </Typography>
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          title="Add new document"
-          placement="right"
-          sx={{
-            display: { xs: "none", md: "block" },
-          }}
-        >
-          <IconButton size="small" onClick={handleAddClick}>
-            <AddOutlinedIcon sx={{ color: theme.palette.text.primary }} />
-          </IconButton>
-        </Tooltip>
-      </Box>
-
-      <Drawer
-        anchor="left"
-        open={isSidebarOpen}
-        onClose={handleCloseSidebar}
-        variant="temporary"
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: { xs: "100vw", sm: 360 },
-            boxSizing: "border-box",
-            bgcolor: theme.palette.background.default,
-            color: theme.palette.text.primary,
-          },
-        }}
-      >
-        <Box
-          id="file_history_view"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            p: 2,
-            height: "100%",
-            bgcolor: theme.palette.background.default,
-          }}
-        >
-          <Button
-            sx={{ opacity: 0, zIndex: -1 }}
-            onClick={handleCloseSidebar}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
-            }}
-          >
-            <Typography variant="h6">Documents</Typography>
-            <IconButton
-              id="file_history_close_button"
-              size="small"
-              onClick={handleCloseSidebar}
-            >
-              <RemoveCircleOutlineIcon />
-            </IconButton>
-          </Box>
-
-          {/* Search Input */}
-          <TextField
-            fullWidth
-            placeholder="Search documents..."
-            value={search}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-              endAdornment: search && (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={clearSearch}
-                    sx={{ visibility: search ? "visible" : "hidden" }}
-                  >
-                    <RemoveCircleOutlineIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-              },
-            }}
-            size="small"
-          />
-
-          <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-            {isLoading || searchLoading ? (
-              <Box sx={{ p: 2 }}>
-                {[...Array(5)]?.map((_, i) => (
-                  <Skeleton
-                    key={i}
-                    variant="rectangular"
-                    height={60}
-                    sx={{
-                      mb: i < 2 ? 1 : 0,
-                      bgcolor: theme.palette.action.hover,
-                    }}
-                  />
-                ))}
-              </Box>
-            ) : fileHistories?.length > 0 ? (
-              <>
-                <List>
-                  {fileHistories?.map((item) => (
-                    <ListItem
-                      key={item._id}
-                      disablePadding
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        py: 1,
-                        px: 0,
-                        "&:last-of-type": { borderBottom: "none" },
-                        borderBottom: `1px solid ${theme.palette.divider}`,
-                      }}
-                    >
-                      <ListItemIcon sx={{ minWidth: 0, mr: 1 }}>
-                        {getIconPath(item.file_type) && (
-                          <Box
-                            component="img"
-                            src={getIconPath(item.file_type)}
-                            alt="icon"
-                            sx={{ width: 24, height: 24 }}
-                          />
-                        )}
-                      </ListItemIcon>
-                      <Box sx={{ flex: "1 1 auto", minWidth: 0 }}>
-                        <ListItemText
-                          primary={item.filename || "Unnamed File"}
-                          secondary={formatTime(item.timestamp)}
-                          sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          flexShrink: 0,
-                          ml: 1,
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {item.is_download && downloadingId === item._id ? (
-                          <CircularProgress size={20} />
-                        ) : null}
-
-                        <IconButton
-                          size="small"
-                          onClick={(e) => handleMenuOpen(e, item)}
-                          sx={{ ml: 0.5 }}
-                        >
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </ListItem>
-                  ))}
-                </List>
-
-                {/* Load More Button - Only show if not searching and has more */}
-                {hasMore && !search && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      mt: 2,
-                      mb: 2,
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      onClick={handleLoadMore}
-                      disabled={isLoading}
-                      sx={{
-                        textTransform: "none",
-                        borderRadius: 2,
-                        px: 3,
-                      }}
-                    >
-                      {isLoading ? <CircularProgress size={20} /> : "Read More"}
-                    </Button>
-                  </Box>
-                )}
-
-                {/* Search results info */}
-                {search && fileHistories?.length > 0 && (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ textAlign: "center", mt: 1, mb: 1 }}
-                  >
-                    Found {fileHistories?.length} result(s) for ({search})
-                  </Typography>
-                )}
-              </>
-            ) : (
-              <Box sx={{ textAlign: "center", p: 2 }}>
-                <MenuBookOutlinedIcon
-                  sx={{ fontSize: 48, color: theme.palette.success.main }}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                id="file_history_view_button"
+                variant="ghost"
+                size="icon"
+                onClick={handleBookClick}
+                className="h-8 w-8"
+              >
+                <Image
+                  src={"/icons/file.svg"}
+                  alt="file"
+                  width={24}
+                  height={24}
+                  className="h-5 w-5 lg:h-6 lg:w-6"
                 />
-                <Typography color="text.secondary" sx={{ mt: 2 }}>
-                  {search
-                    ? `No documents found for "${search}"`
-                    : "All of your stored documents can be found here."}
-                </Typography>
-                {search && (
-                  <Button
-                    variant="outlined"
-                    onClick={clearSearch}
-                    sx={{ mt: 2 }}
-                  >
-                    Clear Search
-                  </Button>
-                )}
-              </Box>
-            )}
-          </Box>
+                <span className="sr-only">Saved Files</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Saved document</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleAddClick}
+                className="hidden h-8 w-8 md:inline-flex"
+              >
+                <Plus className="h-5 w-5" />
+                <span className="sr-only">Add new document</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Add new document</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
-          <Button
-            variant="contained"
-            color="success"
-            startIcon={<AddOutlinedIcon />}
-            onClick={handleNewClick}
-            sx={{ mt: 2 }}
-          >
-            New
-          </Button>
-        </Box>
-      </Drawer>
-
-      {/* Options Menu */}
-      <Menu
-        anchorEl={menuAnchorEl}
-        open={Boolean(menuAnchorEl)}
-        onClose={handleMenuClose}
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            boxShadow: theme.shadows[8],
-          },
-        }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
+      <Sheet
+        open={isSidebarOpen}
+        onOpenChange={(open) =>
+          !open ? handleCloseSidebar() : setIsSidebarOpen(open)
+        }
       >
-        <MenuItem
-          onClick={handleDownloadClick}
-          disabled={!selectedItem?.is_download}
-        >
-          <Box component="span" sx={{ mr: 1.5, fontSize: 20 }}>
-            <Download size={20} />
-          </Box>
-          Download
-        </MenuItem>
-        <MenuItem onClick={handleRenameClick}>
-          <Box component="span" sx={{ mr: 1.5, fontSize: 20 }}>
-            <Edit2 size={20} />
-          </Box>
-          Rename
-        </MenuItem>
-        <MenuItem
-          onClick={handleDeleteClick}
-          sx={{ color: theme.palette.error.main }}
-        >
-          <Box component="span" sx={{ mr: 1.5, fontSize: 20 }}>
-            <Trash2 size={20} />
-          </Box>
-          Delete
-        </MenuItem>
-      </Menu>
+        <SheetContent side="left" className="w-[100vw] p-0 sm:w-[360px]">
+          <div
+            id="file_history_view"
+            className="bg-background flex h-full flex-col p-4"
+          >
+            <button onClick={handleCloseSidebar} className="sr-only" />
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Documents</h3>
+              <Button
+                id="file_history_close_button"
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseSidebar}
+              >
+                <XCircle className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative mb-2">
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Input
+                placeholder="Search documents..."
+                value={search}
+                onChange={handleSearchChange}
+                className="pr-9 pl-9"
+              />
+              {search ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearSearch}
+                  className="absolute top-0 right-0 h-9 w-9"
+                >
+                  <XCircle className="h-4 w-4" />
+                </Button>
+              ) : null}
+            </div>
+
+            <ScrollArea className="flex-1">
+              {isLoading || searchLoading ? (
+                <div className="space-y-2 p-2">
+                  {[...Array(5)]?.map((_, i) => (
+                    <Skeleton key={i} className="h-14 w-full" />
+                  ))}
+                </div>
+              ) : fileHistories?.length > 0 ? (
+                <>
+                  <div className="divide-border divide-y">
+                    {fileHistories?.map((item) => (
+                      <div key={item._id} className="flex items-center py-2">
+                        <div className="mr-2 shrink-0">
+                          {getIconPath(item.file_type) && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={getIconPath(item.file_type)}
+                              alt="icon"
+                              className="h-6 w-6"
+                            />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm font-medium">
+                            {item.filename || "Unnamed File"}
+                          </div>
+                          <div className="text-muted-foreground text-xs">
+                            {formatTime(item.timestamp)}
+                          </div>
+                        </div>
+                        <div className="ml-2 flex items-center">
+                          {item.is_download && downloadingId === item._id ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : null}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => handleMenuOpen(e, item)}
+                                className="ml-1"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={handleDownloadClick}
+                                disabled={!selectedItem?.is_download}
+                              >
+                                <Download className="mr-2 h-4 w-4" /> Download
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={handleRenameClick}>
+                                <Edit2 className="mr-2 h-4 w-4" /> Rename
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={handleDeleteClick}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Load More Button - Only show if not searching and has more */}
+                  {hasMore && !search && (
+                    <div className="mt-2 mb-2 flex justify-center">
+                      <Button
+                        variant="outline"
+                        onClick={handleLoadMore}
+                        disabled={isLoading}
+                        className="px-4"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          "Read More"
+                        )}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Search results info */}
+                  {search && fileHistories?.length > 0 && (
+                    <p className="text-muted-foreground mt-1 mb-1 text-center text-sm">
+                      Found {fileHistories?.length} result(s) for ({search})
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="p-4 text-center">
+                  <BookOpen className="text-primary mx-auto h-12 w-12" />
+                  <p className="text-muted-foreground mt-2">
+                    {search
+                      ? `No documents found for "${search}"`
+                      : "All of your stored documents can be found here."}
+                  </p>
+                  {search && (
+                    <Button
+                      variant="outline"
+                      onClick={clearSearch}
+                      className="mt-2"
+                    >
+                      Clear Search
+                    </Button>
+                  )}
+                </div>
+              )}
+            </ScrollArea>
+
+            <Button onClick={handleNewClick} className="mt-2">
+              <Plus className="mr-2 h-4 w-4" /> New
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Options Menu is integrated per-item via DropdownMenu above */}
 
       {/* Rename Dialog */}
-      <Dialog
-        open={renameDialogOpen}
-        onClose={() => setRenameDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Rename File</DialogTitle>
-        <DialogContent>
-          <TextField
+      <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>Rename File</DialogTitle>
+          </DialogHeader>
+          <Input
             autoFocus
-            fullWidth
             value={newFilename}
             onChange={(e) => setNewFilename(e.target.value)}
             onKeyPress={(e) => {
@@ -584,19 +477,17 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
                 handleRenameSubmit();
               }
             }}
-            sx={{ mt: 1 }}
+            className="mt-2"
           />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRenameDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleRenameSubmit} disabled={!newFilename.trim()}>
+              Rename
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setRenameDialogOpen(false)}>Cancel</Button>
-          <Button
-            onClick={handleRenameSubmit}
-            variant="contained"
-            disabled={!newFilename.trim()}
-          >
-            Rename
-          </Button>
-        </DialogActions>
       </Dialog>
 
       <UpgradePopover
