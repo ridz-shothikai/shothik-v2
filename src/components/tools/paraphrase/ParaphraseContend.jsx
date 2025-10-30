@@ -1,21 +1,17 @@
 "use client";
-import { InsertDriveFile, MoreVert } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
-  Box,
-  Button,
-  Card,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  Divider,
-  Grid2,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { File as FileIcon, MoreVertical } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
@@ -1665,124 +1661,47 @@ const ParaphraseContend = () => {
   }, [userInputValue, stableFrozenWords]); // This effect runs whenever userInput, frozenWords changes
 
   return (
-    <Box sx={{ display: "flex", width: "100%", overflow: "hidden", pt: 2 }}>
+    <div className="flex w-full overflow-hidden pt-2">
       {!isMobile && (
-        <Box
-          sx={{
-            flex: "0 0 auto",
-            width: "min-content",
-            mr: 2,
-            transition: "width 200ms",
-            // when collapsed you could toggle a class to shrink to e.g. 40px
-          }}
-        >
+        <div className="mr-2 w-min flex-0 transition-[width] duration-200">
           <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
-        </Box>
+        </div>
       )}
 
-      <Box
-        sx={{
-          flex: "1 1 auto", // can grow & shrink
-          minWidth: 0, // allow inner overflow hidden
-          display: "flex",
-          flexDirection: "column",
-          gap: 0,
-        }}
-      >
+      <div className="flex min-w-0 flex-1 flex-col gap-0">
         {showDemo ? <Onboarding /> : null}
 
-        {/* desktop: language tabs outside card; hide on mobile */}
-        <Box
-          sx={{
-            display: { xs: "none", md: "flex" },
-            alignItems: "center",
-            width: "100%", // match card width
-            flex: "0 0 auto",
-            // padding: '0 20px'
-          }}
-        >
+        <div className="hidden w-full flex-none items-center md:flex">
           <LanguageMenu
             isLoading={isLoading || processing.loading}
             setLanguage={setLanguage}
             language={language}
           />
-          <Box
-            sx={{
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              gap: {
-                xs: 1,
-                lg: 2,
-              },
-            }}
-          >
+          <div className="ml-auto hidden items-center gap-2 md:flex lg:gap-4">
             <AutoFreezeSettings />
             <AutoParaphraseSettings />
-          </Box>
-        </Box>
+          </div>
+        </div>
 
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            overflow: "visible",
-            flex: "1 1 auto", // ← allow this wrapper to grow/shrink
-            minWidth: 0, // ← so its children can shrink
-            width: "100%", // ← match the language menu’s 100%
-          }}
-        >
-          <Card
-            sx={{
-              flex: "1 1 auto", // fill remaining height
-              minWidth: 0, // allow it to shrink
-              width: "100%",
-              mt: 0,
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "0 12px 12px 12px",
-              overflow: "visible",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            {/* <Card */}
-            {/*   sx={{ */}
-            {/*     flex: "1 1 0%", */}
-            {/*     minWidth: 0, */}
-            {/*     width: "100%", */}
-            {/*     mt: 0, */}
-            {/*     border: "1px solid", */}
-            {/*     borderColor: "divider", */}
-            {/*     borderRadius: "12px", */}
-            {/*     overflow: "visible", */}
-            {/*   }} */}
-            {/* > */}
-            {/* mobile: selected language button in card header */}
-            <Box
-              sx={{
-                display: { xs: "flex", md: "none" },
-                borderBottom: 1,
-                borderColor: "divider",
-                px: 2,
-                py: 1,
-              }}
-            >
+        <div className="flex w-full min-w-0 flex-1 gap-2 overflow-visible">
+          <Card className="border-border mt-0 flex w-full min-w-0 flex-1 flex-col gap-0 overflow-visible rounded-[12px] rounded-tl-none border py-0">
+            <div className="border-border flex items-center border-b px-2 py-1 md:hidden">
               <LanguageMenu
                 isLoading={isLoading}
                 setLanguage={setLanguage}
                 language={language}
               />
-              {/* three-dots overflow menu for mobile */}
-              <IconButton size="small" onClick={() => setMobileMenuOpen(true)}>
-                <MoreVert fontSize="small" />
-              </IconButton>
-            </Box>
-            {/* {!isMobile ? ( */}
-            <Box
-              sx={{
-                display: { xs: "none", lg: "block" },
-              }}
-            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-auto"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="hidden lg:block">
               <ModeNavigation
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -1796,45 +1715,18 @@ const ParaphraseContend = () => {
                 dispatch={dispatch}
                 setShowLoginModal={setShowLoginModal}
               />
-            </Box>
-            {/* ) : ( */}
-            {/* <ModeNavigationForMobile
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                initialFrozenWords={initialFrozenWords}
-                frozenWords={frozenWords}
-                userPackage={user?.package}
-                isLoading={processing.loading}
-              /> */}
-            {/* )} */}
+            </div>
 
-            <Divider
-              sx={{
-                display: { xs: "none", lg: "block" },
-                borderBottom: "2px solid",
-                borderColor: "divider",
-              }}
-            />
+            <Separator className="hidden py-0 lg:block" />
 
-            <Grid2 container>
-              <Grid2
-                sx={{
-                  height: {
-                    xs: "400px",
-                    md: "450px",
-                    lg: "530px",
-                  },
-                  position: "relative",
-                  borderRight: { lg: "2px solid" },
-                  borderRightColor: { lg: "divider" },
-                  borderBottom: { xs: "2px solid", lg: "0px" },
-                  borderBottomColor: { xs: "divider", lg: "transparent" },
-                  // padding: 2,
-                  paddingBottom: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-                size={{ xs: 12, lg: 6 }}
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              <div
+                className={cn(
+                  "relative flex flex-col pb-1",
+                  "border-b lg:border-r lg:border-b-0",
+                  "border-border",
+                  "h-[400px] md:h-[450px] lg:h-[530px]",
+                )}
               >
                 <UserInputBox
                   wordLimit={wordLimit}
@@ -1870,6 +1762,7 @@ const ParaphraseContend = () => {
                     disableTrySample={!hasSampleText}
                   />
                 ) : null}
+
                 <WordCounter
                   freeze_props={{
                     recommendedWords: recommendedFreezeWords,
@@ -1894,8 +1787,7 @@ const ParaphraseContend = () => {
                   userInput={userInput}
                   userPackage={user?.package}
                   toolName="paraphrase"
-                  btnIcon={isMobile ? null : <InsertDriveFile />}
-                  sx={{ py: { md: 1 } }}
+                  btnIcon={isMobile ? null : <FileIcon className="h-4 w-4" />}
                   dontDisable={true}
                   sticky={320}
                   freeze_modal={true}
@@ -1903,61 +1795,25 @@ const ParaphraseContend = () => {
                 />
 
                 {showLanguageDetect && (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    component={Paper}
-                    gap={2}
-                    sx={{
-                      position: "absolute",
-                      bottom: 80,
-                      left: 20,
-                      padding: 1,
-                    }}
-                  >
-                    <Typography>Detected Language: </Typography>
-                    <Button variant="outlined">{language}</Button>
-                  </Stack>
+                  <div className="border-border bg-background absolute bottom-20 left-5 flex items-center gap-2 rounded-md border p-2">
+                    <p className="text-sm">Detected Language:</p>
+                    <Button variant="outline" size="sm">
+                      {language}
+                    </Button>
+                  </div>
                 )}
-              </Grid2>
+              </div>
 
-              <Grid2
-                size={{ xs: 12, lg: 6 }}
+              <div
                 ref={outputRef}
-                sx={{
-                  height: {
-                    xs: "480px",
-                    sm: "450px",
-                    lg: "530px",
-                  },
-                  overflow: "hidden",
-                  borderTop: { xs: "2px solid", md: "none" },
-                  borderTopColor: { xs: "divider", md: undefined },
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
+                className={cn(
+                  "relative flex flex-col",
+                  "h-[480px] sm:h-[450px] lg:h-[530px]",
+                  "overflow-hidden",
+                  "border-border border-t md:border-t-0",
+                )}
               >
-                {/* <div style={{ color: "darkgray", paddingLeft: 15 }}>
-                  {isLoading ? (
-                    <ViewInputInOutAsDemo
-                      input={userInput}
-                      wordLimit={wordLimit}
-                    />
-                  ) : !result.length ? (
-                    <p>Paraphrased Text</p>
-                  ) : null}
-                </div> */}
-                <Box
-                  sx={{
-                    display: {
-                      xs: "block",
-                      lg: "none",
-                      borderBottom: "1px solid",
-                      borderBottomColor: "#F4F6F8",
-                    },
-                  }}
-                >
+                <div className="border-border block border-b lg:hidden">
                   <ModeNavigation
                     selectedMode={selectedMode}
                     setSelectedMode={setSelectedMode}
@@ -1971,7 +1827,7 @@ const ParaphraseContend = () => {
                     dispatch={dispatch}
                     setShowLoginModal={setShowLoginModal}
                   />
-                </Box>
+                </div>
 
                 <ParaphraseOutput
                   data={result}
@@ -1995,66 +1851,34 @@ const ParaphraseContend = () => {
                   setProcessing={setProcessing}
                   eventId={eventId}
                   setEventId={setEventId}
-                  paraphraseRequestCounter={paraphraseRequestCounter} // Pass the counter
+                  paraphraseRequestCounter={paraphraseRequestCounter}
                 />
 
                 {result?.length ? (
-                  <>
-                    {/* <ParaphraseOutput
-                      data={result}
-                      setData={setResult}
-                      synonymLevel={selectedSynonyms}
-                      dataModes={modes}
-                      userPackage={user?.package}
-                      selectedLang={language}
-                      highlightSentence={highlightSentence}
-                      setHighlightSentence={setHighlightSentence}
-                      setOutputHistory={setOutputHistory}
-                      input={userInput}
-                      freezeWords={
-                        frozenWords.size > 0
-                          ? frozenWords.values.join(", ")
-                          : frozenPhrases.size > 0
-                          ? frozenPhrases.values.join(", ")
-                          : ""
-                      }
-                      socketId={socketId}
-                      language={language}
-                      setProcessing={setProcessing}
-                      eventId={eventId}
-                      setEventId={setEventId}
-                    /> */}
-                    <OutputBotomNavigation
-                      handleClear={() => handleClear("", "output")}
-                      highlightSentence={highlightSentence}
-                      outputContend={outputContend}
-                      outputHistory={outputHistory}
-                      outputHistoryIndex={outputHistoryIndex}
-                      outputWordCount={outputWordCount}
-                      proccessing={processing}
-                      sentenceCount={result.length - 1}
-                      setHighlightSentence={setHighlightSentence}
-                      setOutputHistoryIndex={setOutputHistoryIndex}
-                    />
-                  </>
+                  <OutputBotomNavigation
+                    handleClear={() => handleClear("", "output")}
+                    highlightSentence={highlightSentence}
+                    outputContend={outputContend}
+                    outputHistory={outputHistory}
+                    outputHistoryIndex={outputHistoryIndex}
+                    outputWordCount={outputWordCount}
+                    proccessing={processing}
+                    sentenceCount={result.length - 1}
+                    setHighlightSentence={setHighlightSentence}
+                    setOutputHistoryIndex={setOutputHistoryIndex}
+                  />
                 ) : null}
 
                 {showMessage.show &&
                 isModeLockedForUser(showMessage.Component, user?.package) ? (
                   <UpdateComponent Component={showMessage.Component} />
                 ) : null}
-              </Grid2>
-            </Grid2>
+              </div>
+            </div>
           </Card>
 
-          <SwipeableDrawer
-            anchor="bottom"
-            open={mobileMenuOpen}
-            onOpen={() => setMobileMenuOpen(true)}
-            onClose={() => setMobileMenuOpen(false)}
-          >
-            {/* you can wrap in a Box to add padding if you like */}
-            <Box sx={{ px: 2, pt: 1, pb: 2 }}>
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetContent side="bottom" className="px-2 pt-1 pb-2">
               <VerticalMenu
                 selectedMode={selectedMode}
                 setSelectedMode={setSelectedMode}
@@ -2075,20 +1899,13 @@ const ParaphraseContend = () => {
                 mobile={true}
                 fetchFileHistories={fetchFileHistories}
               />
-            </Box>
-          </SwipeableDrawer>
-        </Box>
-      </Box>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
       {!isMobile && (
-        <Box
-          sx={{
-            flex: "0 0 auto",
-            width: "min-content",
-            ml: 2,
-            transition: "width 200ms",
-            mt: { lg: 7 },
-          }}
-        >
+        <div className="ml-2 w-min flex-0 transition-[width] duration-200 lg:mt-7">
           <VerticalMenu
             selectedMode={selectedMode}
             outputText={result}
@@ -2108,7 +1925,7 @@ const ParaphraseContend = () => {
             selectedSynonymLevel={selectedSynonyms}
             fetchFileHistories={fetchFileHistories}
           />
-        </Box>
+        </div>
       )}
 
       <MultipleFileUpload
@@ -2122,52 +1939,49 @@ const ParaphraseContend = () => {
 
       <Dialog
         open={confirmationDialog.open}
-        onClose={() =>
-          setConfirmationDialog({
-            open: false,
-            word: "",
-            count: 0,
-            action: null,
-          })
+        onOpenChange={(open) =>
+          setConfirmationDialog(
+            open
+              ? confirmationDialog
+              : { open: false, word: "", count: 0, action: null },
+          )
         }
-        maxWidth="sm"
-        fullWidth
       >
-        <DialogTitle>Freeze Multiple Occurrences?</DialogTitle>
         <DialogContent>
-          <Typography>
-            The word/phrase appears{" "}
-            <strong>{confirmationDialog.count} times</strong> in your text.
-          </Typography>
-          <Typography sx={{ mt: 2 }}>
-            Freezing this will prevent all {confirmationDialog.count}{" "}
-            occurrences from being paraphrased. Do you want to continue?
-          </Typography>
+          <DialogHeader>
+            <DialogTitle>Freeze Multiple Occurrences?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 text-sm">
+            <p>
+              The word/phrase appears{" "}
+              <strong>{confirmationDialog.count} times</strong> in your text.
+            </p>
+            <p>
+              Freezing this will prevent all {confirmationDialog.count}{" "}
+              occurrences from being paraphrased. Do you want to continue?
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() =>
+                setConfirmationDialog({
+                  open: false,
+                  word: "",
+                  count: 0,
+                  action: null,
+                })
+              }
+            >
+              Cancel
+            </Button>
+            <Button onClick={confirmationDialog.action}>
+              Freeze All {confirmationDialog.count}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              setConfirmationDialog({
-                open: false,
-                word: "",
-                count: 0,
-                action: null,
-              })
-            }
-            color="inherit"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmationDialog.action}
-            variant="contained"
-            color="primary"
-          >
-            Freeze All {confirmationDialog.count}
-          </Button>
-        </DialogActions>
       </Dialog>
-    </Box>
+    </div>
   );
 };
 

@@ -313,7 +313,7 @@ const ModeNavigation = ({
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ pr: 2, pt: 1 }}
+        sx={{ pr: 2 }}
         spacing={2}
       >
         {/* Modes */}

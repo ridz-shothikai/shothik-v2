@@ -1,4 +1,3 @@
-import { Container } from "@mui/material";
 import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
 import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
 import ToolsCTA from "../../../components/tools/common/ToolsCTA";
@@ -41,14 +40,7 @@ export async function generateMetadata() {
 
 const Paraphrase = () => {
   return (
-    <Container
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: { md: 12, xs: 10 },
-        maxWidth: "100% !important",
-      }}
-    >
+    <div className="flex max-w-full flex-col gap-10 md:gap-12">
       <ParaphraseContend />
       <ToolsSepecigFaq
         tag="All you need to know about Paraphrase feature"
@@ -63,7 +55,7 @@ const Paraphrase = () => {
         <h2>How to Humanize AI Text for 100% Human Score</h2>
         <h2>Unique AI Paraphrasing that Maintains Original Meaning</h2>
       </div>
-    </Container>
+    </div>
   );
 };
 
