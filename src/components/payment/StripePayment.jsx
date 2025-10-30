@@ -1,9 +1,9 @@
 "use client";
+import { PAYMENT } from "@/config/config/route";
+import useSnackbar from "@/hooks/useSnackbar";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { PAYMENT } from "../../config/config/route";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useStripePaymentMutation } from "../../redux/api/pricing/pricingApi";
 import PaymentLayout from "./PaymentLayout";
 

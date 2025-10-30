@@ -1,39 +1,39 @@
 "use client";
+import AgentPage from "@/../components/agents/AgentPage";
+import { AgentContextProvider } from "@/../components/agents/shared/AgentContextProvider";
+import ChatInput from "@/components/research/ui/ChatInput";
+import ResearchPageSkeletonLoader from "@/components/research/ui/ResearchPageSkeletonLoader";
+import { FooterCta } from "@/components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
 import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import AgentPage from "../../../../../components/agents/AgentPage";
-import { AgentContextProvider } from "../../../../../components/agents/shared/AgentContextProvider";
-import ChatInput from "../../../../components/research/ui/ChatInput";
-import ResearchPageSkeletonLoader from "../../../../components/research/ui/ResearchPageSkeletonLoader";
-import { FooterCta } from "../../../../components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
 import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
-// import PresentationAgentPage from "../../../../components/presentation/PresentationAgentPage";
-// import ResearchAgentPage from "../../../../components/research/ResearchAgentPage";
+// import PresentationAgentPage from "@/components/presentation/PresentationAgentPage";
+// import ResearchAgentPage from "@/components/research/ResearchAgentPage";
 const PresentationAgentPage = dynamic(
-  () => import("../../../../components/presentation/PresentationAgentPage"),
+  () => import("@/components/presentation/PresentationAgentPage"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
   },
 );
 const PresentationAgentPageV2 = dynamic(
-  () => import("../../../../components/presentation/PresentationAgentPageV2"),
+  () => import("@/components/presentation/PresentationAgentPageV2"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
   },
 );
 const SheetAgentPage = dynamic(
-  () => import("../../../../components/sheet/SheetAgentPage"),
+  () => import("@/components/sheet/SheetAgentPage"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,
   },
 );
 const ResearchAgentPage = dynamic(
-  () => import("../../../../components/research/ResearchAgentPage"),
+  () => import("@/components/research/ResearchAgentPage"),
   {
     loading: () => <ResearchPageSkeletonLoader />,
     ssr: false,

@@ -1,5 +1,7 @@
 "use client";
 
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
   Box,
   Container,
@@ -10,8 +12,6 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { Brain, FileText, Globe, Shield } from "lucide-react";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
 
 const BenefitIconContainer = styled(Box)(({ theme }) => ({
   width: "64px",

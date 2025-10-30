@@ -1,11 +1,11 @@
 "use client";
 
 // components/analytics/AnalyticsLoader.jsx
+import { useAnalytics } from "@/hooks/useAnalytics";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Script from "next/script";
 import { markScriptsLoaded } from "../../redux/slice/analyticsSlice";
-import { useAnalytics } from "../../hooks/useAnalytics";
 
 export default function AnalyticsLoader() {
   const dispatch = useDispatch();

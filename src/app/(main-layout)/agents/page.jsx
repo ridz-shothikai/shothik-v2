@@ -1,9 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import { AgentContextProvider } from "../../../../components/agents/shared/AgentContextProvider";
-import AgentLandingPage from "../../../../components/agents/AgentLandingPage";
-import AgentTutorialOverlay from "../../../../components/agents/shared/AgentTutorialOverlay";
+import AgentLandingPage from "@/../components/agents/AgentLandingPage";
+import { AgentContextProvider } from "@/../components/agents/shared/AgentContextProvider";
 
 export default function AgentsPage() {
   // const [tutorialOpen, setTutorialOpen] = useState(false);

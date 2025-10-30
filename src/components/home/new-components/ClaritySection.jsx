@@ -1,25 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
+  Alert,
   Box,
-  Container,
-  Typography,
-  Chip,
   Button,
+  Chip,
+  Container,
   Grid,
   Paper,
-  useTheme,
-  useMediaQuery,
   Snackbar,
-  Alert,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import EmailModal from "../EmailCollectModal";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
+import EmailModal from "../EmailCollectModal";
 
 // Styled components to match Tailwind styles
 const StyledChip = styled(Chip)(({ theme }) => ({

@@ -1,3 +1,4 @@
+import useResponsive from "@/hooks/useResponsive";
 import {
   CalendarToday,
   ChevronLeft,
@@ -28,7 +29,6 @@ import {
 } from "@mui/material";
 import * as motion from "motion/react-client";
 import React from "react";
-import useResponsive from "../../../hooks/useResponsive";
 
 const PREVIEW_IMAGE_COUNT = 3;
 

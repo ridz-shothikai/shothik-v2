@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import useSnackbar from "@/hooks/useSnackbar";
+import RHFTextField from "@/resource/RHFTextField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Mail, User } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useAffiliateMutation } from "../../redux/api/auth/authApi";
-import RHFTextField from "../../resource/RHFTextField";
 
 export default function WaitlistForm({ userType }) {
   const enqueueSnackbar = useSnackbar();

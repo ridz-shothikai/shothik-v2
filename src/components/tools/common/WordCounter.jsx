@@ -1,3 +1,5 @@
+import useWordLimit from "@/hooks/useWordLimit";
+import SvgColor from "@/resource/SvgColor";
 import {
   Box,
   Button,
@@ -13,8 +15,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import useWordLimit from "../../../hooks/useWordLimit";
-import SvgColor from "../../../resource/SvgColor";
 import FreezeWordsContent from "../paraphrase/FreezeWordsContent";
 function WordCounter({
   freeze_modal = false,

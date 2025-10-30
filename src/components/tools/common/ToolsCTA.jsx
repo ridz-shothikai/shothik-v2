@@ -1,7 +1,7 @@
-import { ChevronRight } from "lucide-react";
+import { toolsCta } from "@/_mock/toolsCta";
 import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
 import * as motion from "motion/react-client";
-import { toolsCta } from "../../../_mock/toolsCta";
 import CTAImages from "./CTAImages";
 
 export default function ToolsCTA({ toolType }) {
@@ -12,13 +12,13 @@ export default function ToolsCTA({ toolType }) {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-primary/5 to-primary/10 py-16 px-6 md:py-24 md:px-12 rounded-3xl">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div className="from-primary/5 to-primary/10 w-full rounded-3xl bg-gradient-to-br px-6 py-16 md:px-12 md:py-24">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 md:grid-cols-2">
         <div className="w-full">
           <Description config={toolConfig} />
         </div>
 
-        <div className="w-full flex justify-center">
+        <div className="flex w-full justify-center">
           <CTAImages
             title={toolConfig.title}
             lightImage={toolConfig.image.light}
@@ -46,7 +46,7 @@ function Description({ config }) {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        className="text-xs uppercase tracking-wider text-primary/80 mb-4"
+        className="text-primary/80 mb-4 text-xs tracking-wider uppercase"
       >
         {config.title}
       </motion.p>
@@ -56,7 +56,7 @@ function Description({ config }) {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
-        className="text-3xl md:text-4xl font-bold mb-6 text-foreground"
+        className="text-foreground mb-6 text-3xl font-bold md:text-4xl"
       >
         {config.heading}
       </motion.h2>
@@ -66,7 +66,7 @@ function Description({ config }) {
         whileInView={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.6 }}
         viewport={{ once: true }}
-        className="mb-8 text-muted-foreground leading-relaxed"
+        className="text-muted-foreground mb-8 leading-relaxed"
       >
         {config.description}
       </motion.div>

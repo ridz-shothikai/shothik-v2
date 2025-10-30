@@ -1,4 +1,4 @@
-import GrammarCheckerContentSection from "@/components/(grammar-checker-page)/GrammarCheckerContentSection";
+import GrammarCheckerContentSection from "@/components/(primary-layout)/(grammar-checker-page)/GrammarCheckerContentSection";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import { Container } from "@mui/material";
 

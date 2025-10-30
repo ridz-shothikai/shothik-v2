@@ -1,19 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
   Box,
-  Container,
-  Typography,
-  Grid,
   Card,
   CardContent,
-  useTheme,
+  Container,
+  Grid,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { Brain, Palette, Zap, Languages, Shield, Rocket } from "lucide-react";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { motion } from "framer-motion";
+import { Brain, Languages, Palette, Rocket, Shield, Zap } from "lucide-react";
 
 const features = [
   {

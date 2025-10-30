@@ -3,9 +3,10 @@
 import { cn } from "@/lib/utils";
 import { Chart, registerables } from "chart.js";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import AppLink from "../common/AppLink";
+import { Button } from "../ui/button";
 import SlidePreview from "./SlidePreview";
 
 // Register Chart.js components
@@ -75,16 +76,19 @@ export default function PreviewPanel({
                     slidesData?.status === "saved") && (
                     <div className="text-muted-foreground text-[0.8rem] sm:text-[0.9rem] md:text-base">
                       {!hasReplay && (
-                        <AppLink
-                          href={`/slides?project_id=${presentationId}`}
-                          newTab
-                          underline="hover"
-                          color="primary"
-                          fontSize="14px"
-                          whiteSpace="nowrap"
+                        <Button
+                          asChild
+                          variant="link"
+                          className="text-primary h-auto p-0 text-[14px] whitespace-nowrap hover:underline"
                         >
-                          View & Export
-                        </AppLink>
+                          <Link
+                            href={`/slides?project_id=${presentationId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View & Export
+                          </Link>
+                        </Button>
                       )}
                     </div>
                   )}

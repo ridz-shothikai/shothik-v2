@@ -1,6 +1,6 @@
-import AnalysisClientSections from "@/components/(marketing-automation-page)/(project-analysis-page)/AnalysisClientSections";
-import TitleAndUrlSection from "@/components/(marketing-automation-page)/(project-analysis-page)/TitleAndUrlSection";
-import PageHeader from "@/components/(marketing-automation-page)/PageHeader";
+import AnalysisClientSections from "@/components/(primary-layout)/(marketing-automation-page)/(project-analysis-page)/AnalysisClientSections";
+import TitleAndUrlSection from "@/components/(primary-layout)/(marketing-automation-page)/(project-analysis-page)/TitleAndUrlSection";
+import PageHeader from "@/components/(primary-layout)/(marketing-automation-page)/PageHeader";
 
 const project = {
   name: "Project 1",

@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from "@/lib/api";
 
 // Check
 export const aiDetectorCheck = async (payload = {}, signal) => {

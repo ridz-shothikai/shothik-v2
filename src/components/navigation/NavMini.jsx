@@ -1,7 +1,7 @@
+import navConfig from "@/config/config/navConfig";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import navConfig from "../../config/config/navConfig";
 import NavSectionMini from "./components/NavSectionMini";
 import NavToggleButton from "./components/toggleButton";
 

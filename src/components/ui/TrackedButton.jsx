@@ -1,5 +1,5 @@
+import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { Button } from "@mui/material";
-import { useComponentTracking } from "../../hooks/useComponentTracking";
 
 const TrackedButton = forwardRef(
   (

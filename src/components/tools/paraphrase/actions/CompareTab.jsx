@@ -1,8 +1,8 @@
 "use client";
+import { modes } from "@/_mock/tools/paraphrase";
+import useSnackbar from "@/hooks/useSnackbar";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { modes } from "../../../../_mock/tools/paraphrase";
-import useSnackbar from "../../../../hooks/useSnackbar";
 
 import { ContentCopy, Refresh, Replay } from "@mui/icons-material";
 import {

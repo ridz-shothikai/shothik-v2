@@ -1,8 +1,8 @@
 "use client";
+import useResponsive from "@/hooks/useResponsive";
+import SvgColor from "@/resource/SvgColor";
 import { Box, Tab, Tabs } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import useResponsive from "../../hooks/useResponsive";
-import SvgColor from "../../resource/SvgColor";
 
 const links = [
   {

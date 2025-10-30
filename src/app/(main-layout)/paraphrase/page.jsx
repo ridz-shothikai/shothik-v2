@@ -1,9 +1,9 @@
+import { paraphraseFaq } from "@/_mock/tools/paraphrasefaq";
+import HomeAdvertisement from "@/components/common/HomeAdvertisement";
+import ToolsCTA from "@/components/tools/common/ToolsCTA";
+import ToolsSepecigFaq from "@/components/tools/common/ToolsSepecigFaq";
+import ParaphraseContend from "@/components/tools/paraphrase/ParaphraseContend";
 import { Container } from "@mui/material";
-import { paraphraseFaq } from "../../../_mock/tools/paraphrasefaq";
-import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
-import ToolsCTA from "../../../components/tools/common/ToolsCTA";
-import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
-import ParaphraseContend from "../../../components/tools/paraphrase/ParaphraseContend";
 
 export async function generateMetadata() {
   return {

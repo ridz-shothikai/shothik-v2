@@ -1,3 +1,5 @@
+import { ai_agent_list } from "@/config/config/agents";
+import useResponsive from "@/hooks/useResponsive";
 import { keyframes } from "@emotion/react";
 import {
   ArrowBackIos,
@@ -15,8 +17,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { ai_agent_list } from "../../config/config/agents";
-import useResponsive from "../../hooks/useResponsive";
 
 export const loadingSpin = keyframes`
     from {

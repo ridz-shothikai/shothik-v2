@@ -1,3 +1,4 @@
+import useGlobalPlagiarismCheck from "@/hooks/useGlobalPlagiarismCheck";
 import { ExpandMore, Refresh } from "@mui/icons-material";
 import {
   Box,
@@ -10,7 +11,6 @@ import {
 } from "@mui/material";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import useGlobalPlagiarismCheck from "../../../../hooks/useGlobalPlagiarismCheck";
 
 const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
   const { demo } = useSelector((s) => s.settings);

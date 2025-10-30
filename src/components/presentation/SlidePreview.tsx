@@ -9,10 +9,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import createEnhancedIframeContent from "@/libs/presentationEditScripts";
 import html2canvas from "html2canvas";
 import { Check, Copy } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import createEnhancedIframeContent from "../../libs/presentationEditScripts";
 
 // Original slide dimensions
 const SLIDE_WIDTH = 1280;

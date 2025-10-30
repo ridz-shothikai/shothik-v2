@@ -1,5 +1,5 @@
 import { aidetectorFaq } from "@/_mock/tools/aidetectorFaq";
-import AiDetectorContentSection from "@/components/(ai-detector-page)/AiDetectorContentSection";
+import AiDetectorContentSection from "@/components/(primary-layout)/(ai-detector-page)/AiDetectorContentSection";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import HomeAdvertisement from "@/components/common/HomeAdvertisement";
 import ToolsCTA from "@/components/tools/common/ToolsCTA";

@@ -1,4 +1,4 @@
-import HomeContent from "../../components/common/HomeContent";
+import HomeContentSection from "@/components/(primary-layout)/(home-page)/HomeContentSection";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -117,7 +117,7 @@ const Home = () => {
       </div>
 
       <main className="container mx-auto">
-        <HomeContent />
+        <HomeContentSection />
       </main>
     </>
   );

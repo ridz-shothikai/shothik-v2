@@ -1,5 +1,5 @@
 import { summarizeFaq } from "@/_mock/tools/summarizefaq";
-import SummarizeContentSection from "@/components/(summarize-page)/SummarizeContentSection";
+import SummarizeContentSection from "@/components/(primary-layout)/(summarize-page)/SummarizeContentSection";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import HomeAdvertisement from "@/components/common/HomeAdvertisement";
 import ToolsCTA from "@/components/tools/common/ToolsCTA";
@@ -8,7 +8,7 @@ import { Container } from "@mui/material";
 
 export async function generateMetadata() {
   return {
-    title: "Summarize | Shothik AI",
+    title: "Summarize || Shothik AI",
     description: "This is Summarize page",
   };
 }

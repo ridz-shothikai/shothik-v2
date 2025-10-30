@@ -1,6 +1,6 @@
+import useSnackbar from "@/hooks/useSnackbar";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useNewsletterMutation } from "../../redux/api/blog/blogApiSlice";
 
 const NewsLetter = () => {

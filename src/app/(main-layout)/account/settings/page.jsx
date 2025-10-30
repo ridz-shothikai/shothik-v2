@@ -1,4 +1,6 @@
 "use client";
+import AccountBilling from "@/components/acount/AccountBilling";
+import AccountGeneral from "@/components/acount/AccountGeneral";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,13 +10,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PATH_ACCOUNT } from "@/config/config/route";
 import { CreditCard, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import AccountBilling from "../../../../components/acount/AccountBilling";
-import AccountGeneral from "../../../../components/acount/AccountGeneral";
-import { PATH_ACCOUNT } from "../../../../config/config/route";
 
 export default function AccountSettings() {
   const { push } = useRouter();

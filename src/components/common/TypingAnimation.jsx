@@ -1,41 +1,23 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
-/**
- * @param {text: String}
- */
-
+import { cn } from "@/lib/utils";
 import { memo } from "react";
 
 const TypingAnimation = memo(({ text = "Thinking..." }) => (
-  <Box sx={{ display: "flex", alignItems: "center", gap: 1, py: 2, px: 1 }}>
-    <Box sx={{ display: "flex", gap: 0.5 }}>
+  <div className="flex items-center gap-2 px-2 py-4">
+    <div className="flex gap-1">
       {[0, 1, 2].map((i) => (
-        <Box
+        <div
           key={i}
-          sx={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            bgcolor: "#07B37A",
-            animation: "typing 1s infinite",
+          className={cn("bg-primary h-1.5 w-1.5 rounded-full", "animate-pulse")}
+          style={{
             animationDelay: `${i * 0.2}s`,
-            "@keyframes typing": {
-              "0%, 60%, 100%": { opacity: 0.3, transform: "scale(0.8)" },
-              "30%": { opacity: 1, transform: "scale(1)" },
-            },
           }}
         />
       ))}
-    </Box>
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      sx={{ fontStyle: "italic" }}
-    >
-      {text}
-    </Typography>
-  </Box>
+    </div>
+    <p className="text-muted-foreground text-sm italic">{text}</p>
+  </div>
 ));
 
 TypingAnimation.displayName = "TypingAnimation";

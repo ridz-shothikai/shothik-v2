@@ -1,4 +1,4 @@
-import PlagiarismCheckerContentSection from "@/components/(plagiarism-checker)/PlagiarismCheckerContentSection";
+import PlagiarismCheckerContentSection from "@/components/(primary-layout)/(plagiarism-checker)/PlagiarismCheckerContentSection";
 
 const PlagiarismCheckerPage = () => {
   return (

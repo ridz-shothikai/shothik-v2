@@ -1,3 +1,4 @@
+import { modes } from "@/_mock/tools/paraphrase";
 import styled from "@emotion/styled";
 import { Close, Diamond, Lock } from "@mui/icons-material";
 import {
@@ -21,7 +22,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { Fragment } from "react";
-import { modes } from "../../../_mock/tools/paraphrase";
 
 export default function RephraseSentences(props) {
   const {

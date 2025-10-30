@@ -1,3 +1,6 @@
+import { LINKS } from "@/_mock/footer";
+import { _socials } from "@/_mock/socials";
+import Logo from "@/resource/assets/Logo";
 import {
   Box,
   Container,
@@ -10,9 +13,6 @@ import {
 } from "@mui/material";
 import NextLink from "next/link";
 import { Fragment } from "react";
-import { LINKS } from "../../_mock/footer";
-import { _socials } from "../../_mock/socials";
-import Logo from "../../resource/assets/Logo";
 
 export default function Footer() {
   const simpleFooter = (

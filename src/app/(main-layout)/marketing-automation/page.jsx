@@ -1,4 +1,4 @@
-import MarketingAutomationClientSections from "@/components/(marketing-automation-page)/(root-page)/MarketingAutomationClientSections";
+import MarketingAutomationClientSections from "@/components/(primary-layout)/(marketing-automation-page)/(root-page)/MarketingAutomationClientSections";
 
 const MarketingAutomationPage = () => {
   return (

@@ -1,5 +1,7 @@
 "use client";
 
+import ChatArea from "@/components/presentation/ChatArea";
+import PreviewPanel from "@/components/presentation/PreviewPanel";
 import {
   Box,
   Dialog,
@@ -9,8 +11,6 @@ import {
 } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import ChatArea from "../../../../components/presentation/ChatArea";
-import PreviewPanel from "../../../../components/presentation/PreviewPanel";
 
 const PRIMARY_GREEN = "#07B37A";
 

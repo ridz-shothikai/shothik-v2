@@ -1,4 +1,4 @@
-import ComingSoon from "../../../resource/ComingSoon";
+import ComingSoon from "@/resource/ComingSoon";
 
 export async function generateMetadata() {
   return {

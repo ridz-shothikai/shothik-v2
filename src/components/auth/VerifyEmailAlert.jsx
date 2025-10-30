@@ -1,10 +1,10 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import useSnackbar from "@/hooks/useSnackbar";
 import { AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useSendVerifyEmailMutation } from "../../redux/api/auth/authApi";
 
 const VerifyEmailAlert = () => {

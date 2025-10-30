@@ -1,5 +1,5 @@
 // optimizedDetectLanguage.js
-import { languages } from "../_mock/tools/languages";
+import { languages } from "@/_mock/tools/languages";
 
 /**
  * detectLanguage with early-exit short-circuit.

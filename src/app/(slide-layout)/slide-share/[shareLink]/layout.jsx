@@ -1,4 +1,4 @@
-import { PresentationProvider } from "../../../../components/slide/context/SlideContextProvider";
+import { PresentationProvider } from "@/components/slide/context/SlideContextProvider";
 
 export default function SlideShareLayout({ children }) {
   return (
@@ -9,4 +9,3 @@ export default function SlideShareLayout({ children }) {
     </>
   );
 }
-

@@ -1,8 +1,8 @@
+import AuthForgotPasswordForm from "@/components/auth/AuthForgotPasswordForm";
+import ReturnToHome from "@/components/auth/components/ReturnToHome";
+import Logo from "@/resource/assets/Logo";
+import PasswordIcon from "@/resource/assets/PasswordIcon";
 import { Box, Stack, Typography } from "@mui/material";
-import AuthForgotPasswordForm from "../../../../components/auth/AuthForgotPasswordForm";
-import ReturnToHome from "../../../../components/auth/components/ReturnToHome";
-import Logo from "../../../../resource/assets/Logo";
-import PasswordIcon from "../../../../resource/assets/PasswordIcon";
 
 // ----------------------------------------------------------------------
 export async function generateMetadata() {

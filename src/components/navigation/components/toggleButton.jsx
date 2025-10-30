@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
+import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import useResponsive from "../../../hooks/useResponsive";
 import { toggleThemeLayout } from "../../../redux/slice/settings";
 import { setIsNavVertical } from "../../../redux/slice/tools";
 

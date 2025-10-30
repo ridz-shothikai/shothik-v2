@@ -1,3 +1,6 @@
+import { modes } from "@/_mock/tools/paraphrase";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import useSnackbar from "@/hooks/useSnackbar";
 import styled from "@emotion/styled";
 import {
   AssistantPhotoRounded,
@@ -31,9 +34,6 @@ import {
 } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { modes } from "../../../_mock/tools/paraphrase";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,

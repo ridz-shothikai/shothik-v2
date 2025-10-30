@@ -1,3 +1,4 @@
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import {
   AssistantPhotoRounded,
   InsertDriveFileRounded,
@@ -11,7 +12,6 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export default function RephraseSentenceNav({
   open,

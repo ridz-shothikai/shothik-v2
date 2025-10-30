@@ -1,5 +1,7 @@
 "use client";
 
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
   Alert,
   Box,
@@ -26,8 +28,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
 import EmailModal from "../EmailCollectModal";
 import AgentThinkingLoader from "./AgentThinkingLoader";

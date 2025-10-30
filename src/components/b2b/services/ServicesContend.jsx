@@ -1,7 +1,6 @@
 "use client";
+import { features } from "@/_mock/b2b/features";
 import { useSearchParams } from "next/navigation";
-import React from "react";
-import { features } from "../../../_mock/b2b/features";
 import { FeaturesSection } from "../FeaturesSection";
 import { HeroSection } from "./HeroSection";
 import { ProjectSection } from "./ProjectSection";

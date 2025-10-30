@@ -1,11 +1,11 @@
 "use client";
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import navConfig from "@/config/config/navConfig";
+import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
+import Logo from "@/resource/assets/Logo";
 import { useSelector } from "react-redux";
-import navConfig from "../../config/config/navConfig";
-import useResponsive from "../../hooks/useResponsive";
-import Logo from "../../resource/assets/Logo";
 import NavigantionIcons from "./components/NavigationIcons";
 import NavSectionVertical from "./components/NavSectionVertical";
 import NavToggleButton from "./components/toggleButton";

@@ -1,4 +1,7 @@
 // src/components/tools/paraphrase/ModeNavigation.jsx
+import { modes } from "@/_mock/tools/paraphrase";
+import { useCustomModes } from "@/hooks/useCustomModes";
+import useSnackbar from "@/hooks/useSnackbar";
 import { Add, Diamond, Edit, ExpandMore, Lock } from "@mui/icons-material";
 import {
   Badge,
@@ -16,9 +19,6 @@ import {
   useTheme,
 } from "@mui/material";
 import React from "react";
-import { modes } from "../../../_mock/tools/paraphrase";
-import { useCustomModes } from "../../../hooks/useCustomModes";
-import useSnackbar from "../../../hooks/useSnackbar";
 import CustomModeModal from "./CustomModeModal";
 import CustomModePopover from "./CustomModePopover";
 

@@ -1,9 +1,8 @@
+import { detectLanguageV2 } from "@/hooks/languageDitectorV2";
+import { FluentMdl2Switch } from "@/resource/assets/LanguageToggleSwitch";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { Button, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { detectLanguage } from "../../../hooks/languageDitector";
-import { detectLanguageV2 } from "../../../hooks/languageDitectorV2";
-import { FluentMdl2Switch } from "../../../resource/assets/LanguageToggleSwitch";
+import { useEffect, useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";
 
 const LanguageMenu = ({

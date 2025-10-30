@@ -1,5 +1,5 @@
-import Breadcrumb from "../../../../components/acount/BreadCrumbs";
-import BackgroundContainer from "../../../../components/secondaryPages/BackgroundContainer";
+import Breadcrumb from "@/components/acount/BreadCrumbs";
+import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
 
 export async function generateMetadata() {
   return {
@@ -17,23 +17,21 @@ export default function PaymentPolicy() {
       />
 
       {/* Main content for Payment Policy */}
-      <div className="py-12 space-y-6">
-        <h2 className="text-2xl font-semibold mb-4">
-          Payment Methods
-        </h2>
+      <div className="space-y-6 py-12">
+        <h2 className="mb-4 text-2xl font-semibold">Payment Methods</h2>
 
         <p className="text-base leading-relaxed">
           Shothik AI accepts the following payment methods:
         </p>
 
-        <h3 className="text-xl font-medium mb-2">
+        <h3 className="mb-2 text-xl font-medium">
           Payment Methods for Bangladesh
         </h3>
         <p className="text-base leading-relaxed">
           For users in Bangladesh, we offer a local and convenient payment
           solution:
         </p>
-        <ul className="pl-16 space-y-2">
+        <ul className="space-y-2 pl-16">
           <li className="text-base leading-relaxed">
             <strong>bKash</strong>: Payments can be made via the widely used
             bKash mobile financial service. All payments will be processed in
@@ -42,13 +40,11 @@ export default function PaymentPolicy() {
           </li>
         </ul>
 
-        <h3 className="text-xl font-medium mb-2">
-          Payment Methods for India
-        </h3>
+        <h3 className="mb-2 text-xl font-medium">Payment Methods for India</h3>
         <p className="text-base leading-relaxed">
           For users in India, we offer a local payment gateway:
         </p>
-        <ul className="pl-16 space-y-2">
+        <ul className="space-y-2 pl-16">
           <li className="text-base leading-relaxed">
             <strong>Paytm</strong>: Indian users can pay through Paytm, one of
             the most popular payment gateways in the country. All payments will
@@ -57,77 +53,72 @@ export default function PaymentPolicy() {
           </li>
         </ul>
 
-        <h3 className="text-xl font-medium mb-2">
+        <h3 className="mb-2 text-xl font-medium">
           Payment Methods for International Users
         </h3>
         <p className="text-base leading-relaxed">
           For international users, we provide the following payment options:
         </p>
-        <ul className="pl-16 space-y-2">
+        <ul className="space-y-2 pl-16">
           <li className="text-base leading-relaxed">
             <strong>Credit Card</strong>: We accept major credit cards,
             including:
           </li>
-          <ul className="pl-16 space-y-1">
+          <ul className="space-y-1 pl-16">
             <li className="text-base leading-relaxed">Visa</li>
             <li className="text-base leading-relaxed">Mastercard</li>
             <li className="text-base leading-relaxed">American Express</li>
           </ul>
         </ul>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
-          Pricing and Fees
-        </h2>
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">Pricing and Fees</h2>
         <p className="text-base leading-relaxed">
           Our services operate on a subscription model. The following plans are
           available:
         </p>
-        <ul className="pl-16 space-y-4">
+        <ul className="space-y-4 pl-16">
           <li className="text-base leading-relaxed">
             <strong>Free Plan</strong>: Ideal for freelance writers, bloggers,
-            and small business owners. This plan allows you to paraphrase up
-            to 1,080 words, translate text up to 1,000 words (basic &
-            humanized), fix basic grammar errors up to 1,000 words, summarize
-            texts up to 1,000 words, and translate text up to 1,000 words
-            (basic). Additionally, you can detect AI-generated content up to
-            10,000 words.
+            and small business owners. This plan allows you to paraphrase up to
+            1,080 words, translate text up to 1,000 words (basic & humanized),
+            fix basic grammar errors up to 1,000 words, summarize texts up to
+            1,000 words, and translate text up to 1,000 words (basic).
+            Additionally, you can detect AI-generated content up to 10,000
+            words.
           </li>
 
           <li className="text-base leading-relaxed">
-            <strong>Value Plan</strong>: You&apos;ll get unlimited access to
-            our paraphrasing tool, humanize GPT up to 5,000 words per day,
-            advanced grammar checks without any word limit, summarizer with no
-            word limit, and basic & humanized translation without any word
-            limit, plus 150,000 words with AI Detector.
+            <strong>Value Plan</strong>: You&apos;ll get unlimited access to our
+            paraphrasing tool, humanize GPT up to 5,000 words per day, advanced
+            grammar checks without any word limit, summarizer with no word
+            limit, and basic & humanized translation without any word limit,
+            plus 150,000 words with AI Detector.
           </li>
 
           <li className="text-base leading-relaxed">
-            <strong>Pro Plan</strong>: You can unlock maximum potential with
-            our Pro Plan. Enjoy unlimited access to our paraphrasing tool,
-            humanize GPT up to 20,000 words with Raven Model, unlimited Panda
-            Model for Humanize GPT, advanced grammar checks without any word
-            limit, 300,000 words with the AI Detector, summarizer with no word
-            limit, and basic & humanized translation without any word limit.
+            <strong>Pro Plan</strong>: You can unlock maximum potential with our
+            Pro Plan. Enjoy unlimited access to our paraphrasing tool, humanize
+            GPT up to 20,000 words with Raven Model, unlimited Panda Model for
+            Humanize GPT, advanced grammar checks without any word limit,
+            300,000 words with the AI Detector, summarizer with no word limit,
+            and basic & humanized translation without any word limit.
           </li>
 
           <li className="text-base leading-relaxed">
             <strong>Unlimited Plan</strong>: You can unlock maximum potential
-            with our Unlimited Plan. Enjoy unlimited access to our
-            paraphrasing tool, unlimited Panda Model for Humanize GPT,
-            unlimited Raven Model for Humanize GPT, 500,000 words with the AI
-            Detector, summarizer with no word limit, advanced grammar checks
-            without any word limit, and basic & humanized translation without
-            any word limit.
+            with our Unlimited Plan. Enjoy unlimited access to our paraphrasing
+            tool, unlimited Panda Model for Humanize GPT, unlimited Raven Model
+            for Humanize GPT, 500,000 words with the AI Detector, summarizer
+            with no word limit, advanced grammar checks without any word limit,
+            and basic & humanized translation without any word limit.
           </li>
         </ul>
-        <p className="text-base leading-relaxed mt-4">
+        <p className="mt-4 text-base leading-relaxed">
           The cost of each plan is displayed during the purchase process. All
           fees are non-refundable except in specific cases outlined below.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
-          Automatic Renewal
-        </h2>
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">Automatic Renewal</h2>
         <p className="text-base leading-relaxed">
           All subscriptions are subject to automatic renewal unless canceled by
           the user at least 10 days before the renewal date. Users will receive
@@ -136,7 +127,7 @@ export default function PaymentPolicy() {
           is taken by the user.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">
           Changes in Subscription Fees
         </h2>
         <p className="text-base leading-relaxed">
@@ -146,7 +137,7 @@ export default function PaymentPolicy() {
           notice, you agree to the updated fees.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">
           Payment Authorization
         </h2>
         <p className="text-base leading-relaxed">
@@ -156,9 +147,7 @@ export default function PaymentPolicy() {
           right to suspend access to your account until payment is received.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
-          Taxes
-        </h2>
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">Taxes</h2>
         <p className="text-base leading-relaxed">
           All applicable taxes, including VAT or sales tax, will be added to the
           price of purchases as required by law.

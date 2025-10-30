@@ -1,6 +1,6 @@
+import ContactHero from "@/components/contact-us/ContacHero";
+import ContactForm from "@/components/contact-us/ContactForm";
 import Image from "next/image";
-import ContactHero from "../../../components/contact-us/ContacHero";
-import ContactForm from "../../../components/contact-us/ContactForm";
 
 export async function generateMetadata() {
   return {
@@ -15,7 +15,7 @@ export default function ContactPage() {
       <ContactHero />
 
       <div className="container mx-auto px-4 py-40">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-40">
+        <div className="grid grid-cols-1 gap-40 md:grid-cols-2">
           <ContactForm />
 
           <Image
@@ -23,7 +23,7 @@ export default function ContactPage() {
             height={400}
             width={400}
             alt="Location"
-            className="rounded-lg w-full h-full object-cover"
+            className="h-full w-full rounded-lg object-cover"
           />
         </div>
       </div>

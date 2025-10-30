@@ -1,9 +1,9 @@
-import { humanizeFaq } from "../../../_mock/tools/humanizefaq";
-import ErrorBoundary from "../../../components/common/ErrorBoundary";
-import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
-import ToolsCTA from "../../../components/tools/common/ToolsCTA";
-import ToolsSepecigFaq from "../../../components/tools/common/ToolsSepecigFaq";
-import HumanizedContend from "../../../components/tools/humanize/HumanizedContend";
+import { humanizeFaq } from "@/_mock/tools/humanizefaq";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
+import HomeAdvertisement from "@/components/common/HomeAdvertisement";
+import ToolsCTA from "@/components/tools/common/ToolsCTA";
+import ToolsSepecigFaq from "@/components/tools/common/ToolsSepecigFaq";
+import HumanizedContend from "@/components/tools/humanize/HumanizedContend";
 
 export async function generateMetadata() {
   return {

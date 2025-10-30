@@ -1,8 +1,8 @@
+import DotFlashing from "@/resource/DotFlashing";
 import { Box, Typography } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import Slider from "react-slick";
 import { useGetAppModeQuery } from "../../redux/api/pricing/pricingApi";
-import DotFlashing from "../../resource/DotFlashing";
 import PricingButton from "./PricingButton";
 
 const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {

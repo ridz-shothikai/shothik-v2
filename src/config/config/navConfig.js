@@ -1,4 +1,4 @@
-import SvgColor from "../../resource/SvgColor";
+import SvgColor from "@/resource/SvgColor";
 import { PATH_ACCOUNT, PATH_TOOLS } from "./route";
 
 const icon = (name) => (

@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
 import Box from "@mui/material/Box";
-import { useComponentTracking } from "../../hooks/useComponentTracking";
+import { useEffect, useRef } from "react";
 
 export default function HeroVideo() {
   const { componentRef, trackClick } = useComponentTracking("hero_video", {

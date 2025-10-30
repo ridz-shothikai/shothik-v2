@@ -1,4 +1,5 @@
 "use client";
+import { testimonials } from "@/_mock/testimonials";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
@@ -12,7 +13,6 @@ import {
 import { Stack } from "@mui/system";
 import * as motion from "motion/react-client";
 import { useState } from "react";
-import { testimonials } from "../../_mock/testimonials";
 
 const StyledDot = styled(Box, {
   shouldForwardProp: (prop) => prop !== "active",

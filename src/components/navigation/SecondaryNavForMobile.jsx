@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { NAV } from "@/config/config/nav";
+import Logo from "@/resource/assets/Logo";
 import { Menu } from "@mui/icons-material";
 import {
   Box,
@@ -12,8 +14,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { NAV } from "../../config/config/nav";
-import Logo from "../../resource/assets/Logo";
 
 // ----------------------------------------------------------------------
 

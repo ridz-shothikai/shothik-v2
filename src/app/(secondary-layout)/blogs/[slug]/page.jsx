@@ -1,4 +1,4 @@
-import MainLayout from "../../../../components/blog/details/MainLayout";
+import MainLayout from "@/components/blog/details/MainLayout";
 
 export async function generateMetadata({ params }) {
   try {
@@ -61,10 +61,8 @@ const BlogDetails = async ({ params }) => {
 
     if (!blogData?.data) {
       return (
-        <div className="py-20 text-center w-full">
-          <h6 className="text-lg text-muted-foreground">
-            No blogs found.
-          </h6>
+        <div className="w-full py-20 text-center">
+          <h6 className="text-muted-foreground text-lg">No blogs found.</h6>
         </div>
       );
     }
@@ -72,10 +70,8 @@ const BlogDetails = async ({ params }) => {
   } catch (error) {
     console.error("Error fetching blog data:", error);
     return (
-      <div className="py-20 text-center w-full">
-        <h6 className="text-lg text-muted-foreground">
-          Error loading blog
-        </h6>
+      <div className="w-full py-20 text-center">
+        <h6 className="text-muted-foreground text-lg">Error loading blog</h6>
       </div>
     );
   }

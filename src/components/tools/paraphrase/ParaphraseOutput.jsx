@@ -1,6 +1,6 @@
+import useSnackbar from "@/hooks/useSnackbar";
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,

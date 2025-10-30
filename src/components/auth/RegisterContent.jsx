@@ -1,7 +1,7 @@
 "use client";
+import useGeolocation from "@/hooks/useGeolocation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import useGeolocation from "../../hooks/useGeolocation";
 import {
   setShowLoginModal,
   setShowRegisterModal,

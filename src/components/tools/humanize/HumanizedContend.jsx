@@ -1,21 +1,21 @@
 "use client";
 
+import { trySamples } from "@/_mock/trySamples";
+import { trackEvent } from "@/analysers/eventTracker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import useDebounce from "@/hooks/useDebounce";
+import useLoadingText from "@/hooks/useLoadingText";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
+import useWordLimit from "@/hooks/useWordLimit";
 import { cn } from "@/lib/utils";
 import { MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { trySamples } from "../../../_mock/trySamples";
-import { trackEvent } from "../../../analysers/eventTracker";
-import useDebounce from "../../../hooks/useDebounce";
-import useLoadingText from "../../../hooks/useLoadingText";
-import useResponsive from "../../../hooks/useResponsive";
-import useSnackbar from "../../../hooks/useSnackbar";
-import useWordLimit from "../../../hooks/useWordLimit";
 import { useGetAllHistoryQuery } from "../../../redux/api/humanizeHistory/humanizeHistory";
 import { useHumanizeContendMutation } from "../../../redux/api/tools/toolsApi";
 import { setShowLoginModal } from "../../../redux/slice/auth";

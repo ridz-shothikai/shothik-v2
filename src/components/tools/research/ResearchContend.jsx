@@ -1,9 +1,9 @@
 "use client";
+import useSnackbar from "@/hooks/useSnackbar";
 import { Box, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useGetResearchQuestionMutation,
   useResearchTrendingQuery,
@@ -13,7 +13,6 @@ import RenderPart from "./RenderPart";
 import Suggestion from "./Suggestion";
 import { SuggestionCards } from "./SuggetionCard";
 import UserMessage from "./UserMessage";
-import ResearchContentWithReferences from "./ResearchContentWithReferences";
 
 const ResearchContend = () => {
   const [selectedModel, setSelectedModel] = useState("shothik-brain-1.0");
@@ -83,12 +82,18 @@ const ResearchContend = () => {
               if (index === prev.length - 1) {
                 if (cleanedValue) {
                   // Ensure content is a string before concatenating
-                  const currentContent = typeof item.content === 'string' 
-                    ? item.content 
-                    : (typeof item.content === 'object' && item.content !== null)
-                      ? (item.content.text || item.content.content || item.content.result || item.content.answer || '')
-                      : String(item.content || '');
-                  
+                  const currentContent =
+                    typeof item.content === "string"
+                      ? item.content
+                      : typeof item.content === "object" &&
+                          item.content !== null
+                        ? item.content.text ||
+                          item.content.content ||
+                          item.content.result ||
+                          item.content.answer ||
+                          ""
+                        : String(item.content || "");
+
                   return {
                     ...item,
                     content: currentContent + cleanedValue,

@@ -1,13 +1,13 @@
 "use client";
+import { _socials } from "@/_mock/socials";
+import { team } from "@/_mock/team";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import CarouselArrows from "@/resource/carousel/CarouselArrows";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import Carousel from "react-slick";
-import { _socials } from "../../_mock/socials";
-import { team } from "../../_mock/team";
-import CarouselArrows from "../../resource/carousel/CarouselArrows";
 
 export default function AboutTeam() {
   const [_, setCurrentSlide] = useState(0);

@@ -1,17 +1,17 @@
+import { officeAddress } from "@/_mock/officeAdress";
 import * as motion from "motion/react-client";
-import { officeAddress } from "../../_mock/officeAdress";
 
 export default function ContactHero() {
   return (
     <div
-      className="relative bg-cover bg-center px-4 sm:px-6 md:px-10 py-10 h-auto sm:h-[560px]"
+      className="relative h-auto bg-cover bg-center px-4 py-10 sm:h-[560px] sm:px-6 md:px-10"
       style={{
         backgroundImage: "url(/overlay_1.svg), url(/cotact-hero.jpg)",
       }}
     >
       <div className="container mx-auto">
         <div>
-          <div className="flex flex-row text-primary">
+          <div className="text-primary flex flex-row">
             {["W", "h", "e", "r", "e"].map((w, i) => (
               <motion.h1
                 key={i}
@@ -25,7 +25,7 @@ export default function ContactHero() {
             ))}
           </div>
 
-          <div className="inline-flex flex-row gap-2 text-primary-foreground">
+          <div className="text-primary-foreground inline-flex flex-row gap-2">
             {["to", "find", "us?"].map((w, i) => (
               <motion.p
                 key={i}
@@ -39,7 +39,7 @@ export default function ContactHero() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-3 text-primary-foreground">
+          <div className="text-primary-foreground mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {officeAddress.map((office, i) => (
               <motion.div
                 key={office.name}

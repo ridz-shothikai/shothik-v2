@@ -1,7 +1,7 @@
-import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
-import useWordLimit from "../../../hooks/useWordLimit";
+import useWordLimit from "@/hooks/useWordLimit";
+import { Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const InputBottom = ({
   userInput,
@@ -28,18 +28,36 @@ const InputBottom = ({
   }, [userInput]);
 
   return (
-    <div className="flex items-center justify-between border-t border-border px-2">
+    <div className="border-border flex items-center justify-between border-t px-2">
       <div className="flex items-center gap-2">
-        <span className={`text-sm sm:text-base md:text-base ${userInputInfo.words > wordLimit ? "text-destructive" : ""}`}>
-          {userInputInfo.words} / {wordLimit === 9999 ? <span className="text-primary">Unlimited</span> : wordLimit} Words
+        <span
+          className={`text-sm sm:text-base md:text-base ${userInputInfo.words > wordLimit ? "text-destructive" : ""}`}
+        >
+          {userInputInfo.words} /{" "}
+          {wordLimit === 9999 ? (
+            <span className="text-primary">Unlimited</span>
+          ) : (
+            wordLimit
+          )}{" "}
+          Words
         </span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-sm sm:text-base md:text-base">{userInputInfo.charecters} {isMobile ? "Char" : "Characters"}</span>
+        <span className="text-sm sm:text-base md:text-base">
+          {userInputInfo.charecters} {isMobile ? "Char" : "Characters"}
+        </span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-sm sm:text-base md:text-base">{userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}</span>
+        <span className="text-sm sm:text-base md:text-base">
+          {userInputInfo.sentences} {isMobile ? "Sen" : "Sentences"}
+        </span>
       </div>
-      <Button variant="ghost" size={isMobile ? "sm" : "default"} className="h-9" disabled={isLoading} onClick={handleClear}>
-        <Trash2 className="h-4 w-4 text-muted-foreground" />
+      <Button
+        variant="ghost"
+        size={isMobile ? "sm" : "default"}
+        className="h-9"
+        disabled={isLoading}
+        onClick={handleClear}
+      >
+        <Trash2 className="text-muted-foreground h-4 w-4" />
       </Button>
     </div>
   );

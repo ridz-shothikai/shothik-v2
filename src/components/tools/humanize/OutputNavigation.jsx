@@ -1,7 +1,12 @@
-import { ChevronLeft, ChevronRight, Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import useSnackbar from "../../../hooks/useSnackbar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import useSnackbar from "@/hooks/useSnackbar";
+import { ChevronLeft, ChevronRight, Copy, Download } from "lucide-react";
 import { downloadFile } from "../common/downloadfile";
 
 const OutputNavigation = ({
@@ -29,13 +34,25 @@ const OutputNavigation = ({
     <div className="flex flex-row flex-wrap items-center justify-between gap-1">
       <div className="mt-2 flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <Button variant={isMobile ? "ghost" : "outline"} size={isMobile ? "icon" : "default"} disabled={!showIndex} onClick={() => setShowIndex((prev) => prev - 1)}>
+          <Button
+            variant={isMobile ? "ghost" : "outline"}
+            size={isMobile ? "icon" : "default"}
+            disabled={!showIndex}
+            onClick={() => setShowIndex((prev) => prev - 1)}
+          >
             {isMobile ? <ChevronLeft className="h-4 w-4" /> : "Previous"}
           </Button>
 
-          <span className="whitespace-nowrap text-sm">Draft {showIndex + 1} of {outputs}</span>
+          <span className="text-sm whitespace-nowrap">
+            Draft {showIndex + 1} of {outputs}
+          </span>
 
-          <Button variant={isMobile ? "ghost" : "outline"} size={isMobile ? "icon" : "default"} disabled={showIndex === outputs - 1} onClick={() => setShowIndex((prev) => prev + 1)}>
+          <Button
+            variant={isMobile ? "ghost" : "outline"}
+            size={isMobile ? "icon" : "default"}
+            disabled={showIndex === outputs - 1}
+            onClick={() => setShowIndex((prev) => prev + 1)}
+          >
             {isMobile ? <ChevronRight className="h-4 w-4" /> : "Next"}
           </Button>
         </div>
@@ -43,7 +60,12 @@ const OutputNavigation = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={handleDownload} aria-label="download">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDownload}
+                aria-label="download"
+              >
                 <Download className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -58,8 +80,14 @@ const OutputNavigation = ({
         </Button>
       </div>
 
-      <Button onClick={() => handleAiDetectors(selectedContend)} disabled={loadingAi} className="mt-2 h-10 border-2 sm:border-0">
-        {loadingAi && <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />}
+      <Button
+        onClick={() => handleAiDetectors(selectedContend)}
+        disabled={loadingAi}
+        className="mt-2 h-10 border-2 sm:border-0"
+      >
+        {loadingAi && (
+          <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        )}
         Detect AI
       </Button>
     </div>

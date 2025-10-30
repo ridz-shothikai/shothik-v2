@@ -296,12 +296,12 @@ const marks = {
 // 3. Build your custom serializer
 const customMarkdownSerializer = new MarkdownSerializer(nodes, marks);
 
+import useSnackbar from "@/hooks/useSnackbar";
 import { Box, Button, Popover } from "@mui/material";
 import Placeholder from "@tiptap/extension-placeholder";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
-import useSnackbar from "../../../hooks/useSnackbar";
 import "./editor.css";
 import { CombinedHighlighting } from "./extentions";
 

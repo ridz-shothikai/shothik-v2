@@ -1,6 +1,6 @@
+import { BookACall } from "@/components/b2b/BookACall";
+import ServicesContend from "@/components/b2b/services/ServicesContend";
 import { Suspense } from "react";
-import { BookACall } from "../../../../components/b2b/BookACall";
-import ServicesContend from "../../../../components/b2b/services/ServicesContend";
 
 export async function generateMetadata() {
   return {

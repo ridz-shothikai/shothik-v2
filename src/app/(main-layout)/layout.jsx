@@ -1,30 +1,27 @@
 "use client";
 
+import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
+import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
+import MainHeader from "@/components/navigation/MainHeader";
+import NavMini from "@/components/navigation/NavMini";
+import NavVertical from "@/components/navigation/NavVertical";
+import AlertDialog from "@/components/tools/common/AlertDialog";
+import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
+import {
+  useGetUserLimitQuery,
+  useGetUserQuery,
+  useLoginMutation,
+} from "@/redux/api/auth/authApi";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
+import { setOpen } from "@/redux/slice/settings";
+import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AuthSuccessPopup from "../../components/auth/AuthSuccessPopoup";
-import VerifyEmailAlert from "../../components/auth/VerifyEmailAlert";
-import MainHeader from "../../components/navigation/MainHeader";
-import NavMini from "../../components/navigation/NavMini";
-import NavVertical from "../../components/navigation/NavVertical";
-import AlertDialog from "../../components/tools/common/AlertDialog";
-import useResponsive from "../../hooks/useResponsive";
-import {
-  useGetUserLimitQuery,
-  useGetUserQuery,
-  useLoginMutation,
-} from "../../redux/api/auth/authApi";
-import {
-  setShowLoginModal,
-  setShowRegisterModal,
-} from "../../redux/slice/auth";
-import { setOpen } from "../../redux/slice/settings";
-import LoadingScreen from "../../resource/LoadingScreen";
 
 export default function MainLayout({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);

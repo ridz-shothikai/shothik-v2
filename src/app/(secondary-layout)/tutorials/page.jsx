@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toolsData } from "@/_mock/tutorials";
+import TutorialSection from "@/components/tutorial/TutorialSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useYoutubeSubscriber from "@/hooks/useYoutubeSubcriber";
 import { cn } from "@/lib/utils";
-import { toolsData } from "../../../_mock/tutorials";
-import TutorialSection, {
-  IconWrapper,
-} from "../../../components/tutorial/TutorialSection";
-import useYoutubeSubscriber from "../../../hooks/useYoutubeSubcriber";
+import { useState } from "react";
 
 const Tutorials = () => {
   const [currentTab, setCurrentTab] = useState("paraphrase");
@@ -19,18 +17,27 @@ const Tutorials = () => {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto pb-40">
+    <div className="mx-auto max-w-[1200px] pb-40">
       <div className="bg-transparent">
-        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-          <TabsList className="w-full justify-start h-auto flex-wrap bg-transparent border-b rounded-none sm:pl-12 pt-12">
+        <Tabs
+          value={currentTab}
+          onValueChange={setCurrentTab}
+          className="w-full"
+        >
+          <TabsList className="h-auto w-full flex-wrap justify-start rounded-none border-b bg-transparent pt-12 sm:pl-12">
             {Object.entries(toolsData).map(([key, tool]) => (
               <TabsTrigger
                 key={key}
                 value={key}
-                className="flex items-center gap-2 capitalize data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
+                className="data-[state=active]:border-primary flex items-center gap-2 rounded-none capitalize data-[state=active]:border-b-2 data-[state=active]:bg-transparent"
                 aria-label={`${tool.name} tutorial tab`}
               >
-                <span className={cn("inline-flex", tool.iconColor && `text-[${tool.iconColor}]`)}>
+                <span
+                  className={cn(
+                    "inline-flex",
+                    tool.iconColor && `text-[${tool.iconColor}]`,
+                  )}
+                >
                   {tool.icon}
                 </span>
                 {tool.name}
