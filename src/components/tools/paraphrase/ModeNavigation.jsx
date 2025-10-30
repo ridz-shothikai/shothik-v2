@@ -1,23 +1,25 @@
 // src/components/tools/paraphrase/ModeNavigation.jsx
 import { modes } from "@/_mock/tools/paraphrase";
-import { useCustomModes } from "@/hooks/useCustomModes";
-import useSnackbar from "@/hooks/useSnackbar";
-import { Add, Diamond, Edit, ExpandMore, Lock } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
 import {
-  Badge,
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  Slider,
-  Stack,
-  Tab,
-  Tabs,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useCustomModes } from "@/hooks/useCustomModes";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Gem, Lock, Pencil, Plus } from "lucide-react";
 import React from "react";
 import CustomModeModal from "./CustomModeModal";
 import CustomModePopover from "./CustomModePopover";
@@ -35,10 +37,12 @@ const ModeNavigation = ({
   dispatch,
   setShowLoginModal,
 }) => {
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isSm = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  const isLg = useMediaQuery(theme.breakpoints.between("lg", "xl"));
+  // Responsive flags (approximate original behavior)
+  const isXs = useResponsive("down", "sm");
+  const isSm = useResponsive("down", "md") && !isXs; // between sm and md
+  const isLgBetween = useResponsive("between", "lg-xl");
+  const isLgUp = useResponsive("up", "lg");
+  const isLg = isLgBetween || isLgUp;
   const enqueueSnackbar = useSnackbar();
 
   // Custom modes hook
@@ -113,10 +117,7 @@ const ModeNavigation = ({
   // console.log(extraModes, "extraModes 2");
 
   // Menu state for "More"
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleMoreClick = (e) => setAnchorEl(e.currentTarget);
-  const handleMoreClose = () => setAnchorEl(null);
+  const [moreOpen, setMoreOpen] = React.useState(false);
 
   // Unified mode-change logic
   const changeMode = (value, isCustomMode = false, customModeId = null) => {
@@ -160,7 +161,7 @@ const ModeNavigation = ({
       // Add optional chaining
       setExtraMode(value);
     }
-    handleMoreClose();
+    setMoreOpen(false);
   };
 
   // Build list of tabs
@@ -309,284 +310,147 @@ const ModeNavigation = ({
 
   return (
     <>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ pr: 2 }}
-        spacing={2}
-      >
+      <div className="flex items-center justify-between gap-2 pr-2">
         {/* Modes */}
-        <Box
-          sx={{
-            position: "relative",
-            zIndex: 1600,
-            display: "flex",
-            alignItems: "center",
-            gap: { xs: 0.5, sm: 1, md: 2, lg: 3 },
-            overflowX: { xs: "auto", sm: "auto", md: "hidden" },
-            overflowY: "hidden",
-            whiteSpace: "nowrap",
-            "&::-webkit-scrollbar": { height: 4 },
-            "&::-webkit-scrollbar-thumb": {
-              borderRadius: 2,
-              backgroundColor: "rgba(0,0,0,0.2)",
-            },
-          }}
-        >
+        <div className="relative z-[1600] flex items-center gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap sm:gap-2 md:gap-3">
           <Tabs
             value={tabsValue}
-            onChange={(_, v) => {
+            onValueChange={(v) => {
               const mode = displayedModes.find((m) => m?.value === v);
               if (mode) {
                 changeMode(v, mode?.isCustom, mode?.id);
               }
             }}
-            variant="scrollable"
-            scrollButtons={false}
-            disabled={isLoading}
-            sx={{
-              flexWrap: "nowrap",
-              overflowX: "auto",
-              "& .MuiTabs-flexContainer": {
-                gap: 0,
-              },
-              "& .MuiButtonBase-root": {
-                minWidth: 0,
-              },
-              "& .MuiTabs-indicator": { display: "none" },
-              "& .MuiTab-root:not(:last-of-type)": {
-                mr: "0px !important",
-              },
-            }}
-            textColor="primary"
           >
-            {displayedModes.map((mode, idx) => (
-              <Tab
-                key={mode.id || idx}
-                value={mode.value}
-                onClick={(e) => handleTabClick(e, mode)}
-                sx={{
-                  px: { xs: 1.5, md: 2, xl: 2.5 },
-                  position: "relative",
-                }}
-                label={
-                  <Tooltip
-                    title={
-                      mode.isCustom
-                        ? "Custom mode - Click to edit"
-                        : freezeTooltip
-                    }
-                    arrow
-                    enterDelay={300}
-                    slotProps={{
-                      tooltip: {
-                        sx: {
-                          maxWidth: 190,
-                          width: 190,
-                          minHeight: 40,
-                          padding: "10px 12px",
-                          fontSize: 13,
-                          lineHeight: "1.2",
-                          backgroundColor: "#222",
-                        },
-                      },
-                      arrow: {
-                        sx: {
-                          color: "#222",
-                        },
-                      },
-                    }}
-                    placement="bottom"
-                  >
-                    <span>
-                      <Stack direction="row" alignItems="center" spacing={0.5}>
-                        {!mode.package.includes(userPackage || "free") && (
-                          <Lock sx={{ width: 12, height: 12 }} />
+            <TabsList className="h-auto gap-0 bg-transparent p-0">
+              {displayedModes.map((mode, idx) => (
+                <TooltipProvider key={mode.id || idx}>
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger
+                        value={mode.value}
+                        onClick={(e) => handleTabClick(e, mode)}
+                        className={cn(
+                          "group relative px-3 text-sm md:px-4 xl:px-5",
+                          "font-normal text-[#637381]",
+                          "cursor-pointer py-3 data-[state=active]:bg-transparent data-[state=active]:text-[#00AB55] data-[state=active]:shadow-none",
                         )}
-                        {mode.isCustom && (
-                          <Badge
-                            badgeContent={
-                              <Edit sx={{ width: 10, height: 10 }} />
-                            }
-                            color="primary"
-                            sx={{
-                              "& .MuiBadge-badge": {
-                                right: -8,
-                                top: -4,
-                                minWidth: 16,
-                                height: 16,
-                                padding: "0 2px",
-                              },
-                            }}
-                          >
-                            <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
-                              {mode.value}
-                            </Typography>
-                          </Badge>
-                        )}
-                        {!mode.isCustom && (
-                          <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
-                            {mode.value}
-                          </Typography>
-                        )}
-                      </Stack>
-                    </span>
+                        disabled={isLoading}
+                      >
+                        <span
+                          className={`inline-flex items-center gap-1 ${mode.value === selectedMode ? "text-[#00AB55]" : "text-[#637381]"}`}
+                        >
+                          {!mode.package.includes(userPackage || "free") && (
+                            <Lock className="h-3 w-3" />
+                          )}
+                          {mode.value}
+                          {mode.isCustom && <Pencil className="h-3 w-3" />}
+                        </span>
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[190px]">
+                      <p className="text-sm">
+                        {mode.isCustom
+                          ? "Custom mode - Click to edit"
+                          : freezeTooltip}
+                      </p>
+                    </TooltipContent>
                   </Tooltip>
-                }
-              />
-            ))}
+                </TooltipProvider>
+              ))}
+            </TabsList>
           </Tabs>
 
-          {/* "More" button - only show if there are extra modes OR always show for custom mode access */}
-          <Box id="mode_more_section" sx={{ flexShrink: 0 }}>
-            <Button
-              id="mode_more"
-              aria-controls={open ? "mode-more-menu" : undefined}
-              aria-haspopup="true"
-              onClick={handleMoreClick}
-              sx={{ textTransform: "none", color: "text.secondary" }}
-              endIcon={<ExpandMore />}
-              disabled={isLoading}
-            >
-              More
-            </Button>
-            <Menu
-              id="mode-more-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleMoreClose}
-              MenuListProps={{ "aria-labelledby": "mode_more" }}
-            >
-              {extraModes.map((mode) => (
-                <MenuItem
-                  key={mode.id || mode.value}
-                  onClick={() => changeMode(mode.value, mode.isCustom, mode.id)}
+          {/* More */}
+          <div id="mode_more_section" className="flex-shrink-0">
+            <DropdownMenu open={moreOpen} onOpenChange={setMoreOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="text-muted-foreground cursor-pointer"
                 >
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    {!mode.package.includes(userPackage || "free") && (
-                      <Lock sx={{ width: 12, height: 12 }} />
-                    )}
-                    {mode.isCustom && (
-                      <Edit
-                        sx={{ width: 12, height: 12, color: "primary.main" }}
-                      />
-                    )}
-                    <Typography>{mode.value}</Typography>
-                  </Stack>
-                </MenuItem>
-              ))}
-
-              {/* Custom mode creation item */}
-              <MenuItem
-                onClick={handleOpenCustomModeModal}
-                sx={{
-                  borderTop: extraModes.length > 0 ? "1px solid" : "none",
-                  borderColor: "divider",
-                  mt: extraModes.length > 0 ? 1 : 0,
-                  pt: extraModes.length > 0 ? 1 : 0,
-                  color: canCreateCustomModes
-                    ? "primary.main"
-                    : "text.disabled",
-                }}
-              >
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <Add sx={{ width: 16, height: 16 }} />
-                  <Typography>Create Custom Mode</Typography>
-                  {!canCreateCustomModes && (
-                    <Lock sx={{ width: 12, height: 12, ml: 0.5 }} />
+                  More
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[220px]">
+                {extraModes.map((mode) => (
+                  <DropdownMenuItem
+                    key={mode.id || mode.value}
+                    onClick={() =>
+                      changeMode(mode.value, mode.isCustom, mode.id)
+                    }
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      {!mode.package.includes(userPackage || "free") && (
+                        <Lock className="h-3 w-3" />
+                      )}
+                      {mode.isCustom && (
+                        <Pencil className="text-primary h-3 w-3" />
+                      )}
+                      <span>{mode.value}</span>
+                    </span>
+                  </DropdownMenuItem>
+                ))}
+                <div
+                  className={cn(
+                    "mt-1 border-t pt-1",
+                    extraModes.length === 0 && "hidden",
                   )}
-                </Stack>
-              </MenuItem>
-            </Menu>
-          </Box>
-        </Box>
+                ></div>
+                <DropdownMenuItem
+                  onClick={handleOpenCustomModeModal}
+                  disabled={!canCreateCustomModes}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    <span>Create Custom Mode</span>
+                    {!canCreateCustomModes && <Lock className="h-3 w-3" />}
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
 
         {/* Synonyms slider */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          sx={{ width: "150px", position: "relative", zIndex: 1600 }}
-        >
-          <Slider
-            aria-label="Synonyms"
-            getAriaValueText={(v) => SYNONYMS[v]}
-            value={Math.min(
-              Object.keys(SYNONYMS).find(
-                (k) => SYNONYMS[k] === selectedSynonyms,
-              ) || maxAllowedSynonymValue,
-              maxAllowedSynonymValue,
+        <div className="relative z-[1600] flex w-[150px] items-center gap-2">
+          <div className="flex-1">
+            <Slider
+              value={[
+                Math.min(
+                  Number(
+                    Object.keys(SYNONYMS).find(
+                      (k) => SYNONYMS[k] === selectedSynonyms,
+                    ) || maxAllowedSynonymValue,
+                  ),
+                  maxAllowedSynonymValue,
+                ),
+              ]}
+              step={20}
+              min={20}
+              max={80}
+              onValueChange={([v]) => {
+                const newValue = Number(v);
+                if (newValue <= maxAllowedSynonymValue) {
+                  setSelectedSynonyms(SYNONYMS[newValue]);
+                } else {
+                  enqueueSnackbar(
+                    "Upgrade your plan to access higher synonym levels.",
+                    { variant: "warning" },
+                  );
+                  setSelectedSynonyms(SYNONYMS[maxAllowedSynonymValue]);
+                }
+              }}
+            />
+          </div>
+          <span className="inline-flex items-center">
+            {userPackage !== "unlimited" && userPackage !== "pro_plan" && (
+              <Gem className="text-primary h-5 w-5" />
             )}
-            marks
-            step={20}
-            min={20}
-            max={80}
-            valueLabelDisplay="auto"
-            valueLabelFormat={selectedSynonyms}
-            onChange={(_, v) => {
-              const newValue = Number(v);
-              if (newValue <= maxAllowedSynonymValue) {
-                setSelectedSynonyms(SYNONYMS[newValue]);
-              } else {
-                enqueueSnackbar(
-                  "Upgrade your plan to access higher synonym levels.",
-                  {
-                    variant: "warning",
-                  },
-                );
-                setSelectedSynonyms(SYNONYMS[maxAllowedSynonymValue]);
-              }
-            }}
-            sx={{
-              mt: { xs: 2, sm: 1 },
-              width: "100%",
-              "& .MuiSlider-mark": {
-                backgroundColor: (theme) => {
-                  return theme.palette.background.paper;
-                },
-                "&[data-index]": {
-                  "&:nth-of-type(n+5)": {
-                    backgroundColor:
-                      maxAllowedSynonymValue < 60
-                        ? theme.palette.action.disabled
-                        : theme.palette.background.paper,
-                  },
-                  "&:nth-of-type(n+6)": {
-                    backgroundColor:
-                      maxAllowedSynonymValue < 80
-                        ? theme.palette.action.disabled
-                        : theme.palette.background.paper,
-                  },
-                },
-              },
-              "& .MuiSlider-valueLabel": {
-                zIndex: 1500,
-                fontSize: "12px",
-                borderRadius: "4px",
-                backgroundColor: "#212B36",
-                padding: "2px 6px",
-                top: "100%",
-                transform: "translateY(8px)",
-                "&.MuiSlider-valueLabelOpen": {
-                  transform: "translateY(8px)",
-                },
-                "&:before": {
-                  width: "6px",
-                  height: "6px",
-                  top: "-3px",
-                  bottom: "auto",
-                  left: "calc(50% - 3px)",
-                  transform: "rotate(45deg)",
-                },
-              },
-            }}
-          />
-          {userPackage !== "unlimited" && userPackage !== "pro_plan" && (
-            <Diamond sx={{ color: "primary.main", width: 24, height: 24 }} />
-          )}
-        </Stack>
-      </Stack>
+          </span>
+        </div>
+      </div>
 
       {/* Custom Mode Creation Modal */}
       <CustomModeModal
@@ -607,9 +471,12 @@ const ModeNavigation = ({
         anchorEl={popoverAnchor}
         open={Boolean(popoverAnchor) && Boolean(editingCustomMode)}
         onClose={() => {
-          setPopoverAnchor(null);
-          setEditingCustomMode(null);
-          clearError();
+          // Delay clearing anchor to avoid popover snapping to top-left before unmount
+          setTimeout(() => {
+            setPopoverAnchor(null);
+            setEditingCustomMode(null);
+            clearError();
+          }, 120);
         }}
         modeName={editingCustomMode?.name || ""}
         recentModes={recentModes}

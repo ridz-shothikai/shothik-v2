@@ -45,9 +45,7 @@ export const useCustomModes = () => {
     isLoading: isLoadingApi,
     error: apiError,
     refetch,
-  } = useGetCustomModesQuery(undefined, {
-    skip: !accessToken,
-  });
+  } = useGetCustomModesQuery();
 
   const [saveCustomModesMutation] = useSaveCustomModesMutation();
   const [updateCustomModeMutation, { isLoading: isUpdating }] =
