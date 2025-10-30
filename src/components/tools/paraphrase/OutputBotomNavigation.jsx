@@ -1,5 +1,6 @@
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
+import { setActiveHistory } from "@/redux/slice/paraphraseHistorySlice";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,7 +27,6 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveHistory } from "../../../redux/slice/paraphraseHistorySlice";
 import { downloadFile } from "../common/downloadfile";
 
 const OutputBotomNavigation = ({

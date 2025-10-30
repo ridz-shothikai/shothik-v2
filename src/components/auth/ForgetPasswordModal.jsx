@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { setShowForgotPasswordModal } from "@/redux/slice/auth";
 import PasswordIcon from "@/resource/assets/PasswordIcon";
 import { ChevronLeft } from "lucide-react";
 import Head from "next/head";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowForgotPasswordModal } from "../../redux/slice/auth";
 import AuthResetPasswordForm from "./AuthResetPasswordForm";
 
 // ----------------------------------------------------------------------

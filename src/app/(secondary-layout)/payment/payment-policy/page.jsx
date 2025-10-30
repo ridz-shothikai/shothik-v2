@@ -1,5 +1,4 @@
-import Breadcrumb from "@/components/acount/BreadCrumbs";
-import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
+import AccountBreadcrumbsSection from "@/components/(primary-layout)/(account-page)/AccountBreadcrumbsSection";
 
 export async function generateMetadata() {
   return {
@@ -10,8 +9,8 @@ export async function generateMetadata() {
 
 export default function PaymentPolicy() {
   return (
-    <BackgroundContainer>
-      <Breadcrumb
+    <div className="bg-muted container mx-auto px-4">
+      <AccountBreadcrumbsSection
         heading="Payment Policy"
         links={[{ name: "Legal" }, { name: "Payment Policy" }]}
       />
@@ -153,6 +152,6 @@ export default function PaymentPolicy() {
           price of purchases as required by law.
         </p>
       </div>
-    </BackgroundContainer>
+    </div>
   );
 }

@@ -1,7 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
-
-import Breadcrumb from "@/components/acount/BreadCrumbs";
-import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
+import AccountBreadcrumbsSection from "@/components/(primary-layout)/(account-page)/AccountBreadcrumbsSection";
 
 export async function generateMetadata() {
   return {
@@ -14,8 +11,8 @@ export default function PrivacyPage() {
   const full_name = "Shothik AI";
 
   return (
-    <BackgroundContainer>
-      <Breadcrumb
+    <div className="bg-muted container mx-auto px-4">
+      <AccountBreadcrumbsSection
         heading="Privacy Policy"
         links={[{ name: "Legal" }, { name: "Privacy Policy" }]}
       />
@@ -1016,6 +1013,6 @@ export default function PrivacyPage() {
           binding.
         </p>
       </div>
-    </BackgroundContainer>
+    </div>
   );
 }

@@ -2,6 +2,10 @@
 
 import { useAgentContext } from "@/../components/agents/shared/AgentContextProvider";
 import {
+  selectPresentation,
+  setPresentationState,
+} from "@/redux/slice/presentationSlice";
+import {
   Alert,
   Button,
   Dialog,
@@ -16,10 +20,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
-import {
-  selectPresentation,
-  setPresentationState,
-} from "../../redux/slice/presentationSlice";
 import ChatArea from "./ChatArea";
 import PreviewPanel from "./PreviewPanel";
 

@@ -1,11 +1,8 @@
 "use client";
 import useGeolocation from "@/hooks/useGeolocation";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  setShowLoginModal,
-  setShowRegisterModal,
-} from "../../redux/slice/auth";
 import AuthRegisterForm from "./AuthRegisterForm";
 import AuthWithSocial from "./AuthWithSocial";
 

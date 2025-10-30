@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { CheckCircle, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useRegisterUserToBetaListMutation } from "../../redux/api/auth/authApi";
-import EmailModal from "../home/EmailCollectModal";
+// import EmailModal from "../home/EmailCollectModal";
+import EmailModal from "@/components/(primary-layout)/(home-v2-page)/(home-components)/EmailCollectModal";
 import SheetChatArea from "./SheetChatArea";
 import SheetDataArea from "./SheetDataArea";
 

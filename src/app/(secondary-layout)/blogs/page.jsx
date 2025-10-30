@@ -1,4 +1,4 @@
-import BlogContainer from "@/components/blog/BlogContainer";
+import BlogContainer from "@/components/(secondary-layout)/(blogs-page)/BlogContainer";
 
 export async function generateMetadata() {
   return {

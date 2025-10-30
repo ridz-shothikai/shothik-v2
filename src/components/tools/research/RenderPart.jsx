@@ -1,6 +1,6 @@
+import CopyButton from "@/components/(secondary-layout)/(blogs-page)/details/CopyButton";
 import { AutoAwesome } from "@mui/icons-material";
 import { Box, Stack, Typography } from "@mui/material";
-import CopyButon from "../../blog/details/CopyButon";
 import { AcademicLoadingState } from "./AcademicLoadingState";
 import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -26,7 +26,7 @@ const RenderPart = ({ data, group, isLoading, userQuestion }) => {
               </Typography>
             </Stack>
             <Box>
-              <CopyButon
+              <CopyButton
                 text={
                   typeof data.content === "string"
                     ? data.content

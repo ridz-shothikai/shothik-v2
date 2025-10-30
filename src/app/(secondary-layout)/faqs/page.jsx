@@ -1,6 +1,6 @@
-import FaqForm from "@/components/faqPage/FaqForm";
-import FaqsHero from "@/components/faqPage/FaqHero";
-import FAQ from "@/components/home/FAG";
+import FaqFAG from "@/components/(secondary-layout)/(faqs-page)/FaqFAG";
+import FaqForm from "@/components/(secondary-layout)/(faqs-page)/FaqForm";
+import FaqsHero from "@/components/(secondary-layout)/(faqs-page)/FaqHero";
 
 export async function generateMetadata() {
   return {
@@ -16,7 +16,7 @@ export default function FaqsPage() {
 
       <div className="relative container mx-auto px-4 pt-60 pb-40">
         <div className="mt-0 mb-40">
-          <FAQ />
+          <FaqFAG />
 
           <div className="border-border my-4 border-t" />
         </div>

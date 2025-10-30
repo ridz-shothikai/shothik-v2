@@ -14,10 +14,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useUploadPresentationFilesMutation } from "@/redux/api/presentation/presentationApi";
 import { MoreVertical, Send, X } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useUploadPresentationFilesMutation } from "../../redux/api/presentation/presentationApi";
 
 export default function InputArea({
   currentAgentType,

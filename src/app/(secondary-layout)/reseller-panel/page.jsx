@@ -3,7 +3,7 @@ import WaitingpageContainer from "@/components/waitingPages/WaitingpageContainer
 
 export async function generateMetadata() {
   return {
-    title: "Reseller Panel | Shothik AI",
+    title: "Reseller Panel || Shothik AI",
     description: "This is our Reseller Panel page",
   };
 }

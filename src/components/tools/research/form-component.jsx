@@ -1,5 +1,6 @@
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
+import { useUploadImageMutation } from "@/redux/api/auth/authApi";
 import styled from "@emotion/styled";
 import { ArrowUpward, Attachment, CloudUpload } from "@mui/icons-material";
 import {
@@ -16,7 +17,6 @@ import {
 } from "@mui/material";
 import * as motion from "motion/react-client";
 import { useCallback, useRef, useState } from "react";
-import { useUploadImageMutation } from "../../../redux/api/auth/authApi";
 import AttachmentPreview from "./AttachmentPreview";
 import ModelSwitcher from "./ModelSwitcher";
 import { searchGroups } from "./utils";

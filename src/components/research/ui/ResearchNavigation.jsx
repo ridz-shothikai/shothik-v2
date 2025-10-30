@@ -1,7 +1,6 @@
+import { setActiveResearch } from "@/redux/slice/researchCoreSlice";
 import { Box, Tabs } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { setActiveResearch } from "../../../redux/slice/researchCoreSlice";
-import { Tab } from "@mui/icons-material";
 
 export default function ResearchNavigation() {
   const { researches, activeResearchIndex } = useSelector(

@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { toggleHumanizeOption } from "@/redux/slice/settings";
 import { Info } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleHumanizeOption } from "../../../redux/slice/settings";
 
 export default function GPTsettingsSidebar() {
   const dispatch = useDispatch();
@@ -24,16 +24,21 @@ export default function GPTsettingsSidebar() {
   const interfaceOptionsMeta = [
     { key: "useYellowHighlight", label: "Use yellow highlight", info: false },
   ];
-  
+
   return (
     <div className="p-4" id="settings_tab">
-      <h2 className="text-xl font-bold mb-4">Settings</h2>
+      <h2 className="mb-4 text-xl font-bold">Settings</h2>
 
       {/* Humanize Section */}
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">Humanize</h3>
+      <h3 className="text-muted-foreground mb-2 text-sm font-medium">
+        Humanize
+      </h3>
       <div className="space-y-2">
         {humanizeOptionsMeta.map(({ key, label, info }) => (
-          <div key={key} className="flex items-center justify-between space-x-2">
+          <div
+            key={key}
+            className="flex items-center justify-between space-x-2"
+          >
             <div className="flex items-center space-x-2">
               <Checkbox
                 id={key}
@@ -42,14 +47,14 @@ export default function GPTsettingsSidebar() {
               />
               <label
                 htmlFor={key}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 {label}
               </label>
             </div>
             {info && (
               <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Info className="h-4 w-4 text-muted-foreground" />
+                <Info className="text-muted-foreground h-4 w-4" />
               </Button>
             )}
           </div>
@@ -58,10 +63,15 @@ export default function GPTsettingsSidebar() {
 
       <Separator className="my-4" />
 
-      <h3 className="text-sm font-medium text-muted-foreground mb-2">Interface</h3>
+      <h3 className="text-muted-foreground mb-2 text-sm font-medium">
+        Interface
+      </h3>
       <div className="space-y-2">
         {interfaceOptionsMeta.map(({ key, label, info }) => (
-          <div key={key} className="flex items-center justify-between space-x-2">
+          <div
+            key={key}
+            className="flex items-center justify-between space-x-2"
+          >
             <div className="flex items-center space-x-2">
               <Checkbox
                 id={key}
@@ -71,7 +81,7 @@ export default function GPTsettingsSidebar() {
               <label
                 htmlFor={key}
                 className={cn(
-                  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  "text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
                 )}
               >
                 {label}
@@ -79,7 +89,7 @@ export default function GPTsettingsSidebar() {
             </div>
             {info && (
               <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Info className="h-4 w-4 text-muted-foreground" />
+                <Info className="text-muted-foreground h-4 w-4" />
               </Button>
             )}
           </div>

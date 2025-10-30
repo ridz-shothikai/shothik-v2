@@ -1,4 +1,4 @@
-import BkashPyament from "@/components/payment/BkashPayment";
+import BkashPyament from "@/components/(secondary-layout)/(payment-page)/BkashPayment";
 
 export async function generateMetadata() {
   return {

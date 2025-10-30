@@ -4,6 +4,11 @@ import { handleNativePptxExport } from "@/libs/nativePresentationExporter";
 import { handlePDFExport } from "@/libs/pdfPresentationExporter";
 import { handleAdvancedPptxExport } from "@/libs/presentationExporter";
 import {
+  useGenerateShareLinkMutation,
+  useGetShareAnalyticsQuery,
+  useUpdateShareSettingsMutation,
+} from "@/redux/api/share/shareApi";
+import {
   Check,
   ContentCopy,
   Description,
@@ -57,11 +62,6 @@ import {
 } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  useGenerateShareLinkMutation,
-  useGetShareAnalyticsQuery,
-  useUpdateShareSettingsMutation,
-} from "../../redux/api/share/shareApi";
 import { usePresentation } from "./context/SlideContextProvider";
 
 export default function SlidePreviewNavbar({

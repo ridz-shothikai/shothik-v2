@@ -1,51 +1,59 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-  Chip,
-  IconButton,
-  Switch,
-  FormControlLabel,
-  Alert,
-  CircularProgress,
-  Snackbar,
-  Tooltip,
-  InputAdornment,
-} from "@mui/material";
-import {
-  Close as CloseIcon,
-  ContentCopy as CopyIcon,
-  Email as EmailIcon,
-  Link as LinkIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
-  Settings as SettingsIcon,
-} from "@mui/icons-material";
 import {
   useCreatePrivateShareMutation,
   useCreatePublicShareMutation,
-} from "../../redux/api/shareAgent/shareAgentApi";
+} from "@/redux/api/shareAgent/shareAgentApi";
+import {
+  Add as AddIcon,
+  Close as CloseIcon,
+  ContentCopy as CopyIcon,
+  Delete as DeleteIcon,
+  Email as EmailIcon,
+  Link as LinkIcon,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  Snackbar,
+  Switch,
+  Tab,
+  Tabs,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 
-const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) => {
+const ShareAgentModal = ({
+  open,
+  onClose,
+  agentId,
+  agentData,
+  defaultTab = 0,
+}) => {
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [emails, setEmails] = useState([]);
   const [currentEmail, setCurrentEmail] = useState("");
   const [message, setMessage] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [shareLink, setShareLink] = useState("");
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   // Advanced settings
   const [settings, setSettings] = useState({
@@ -57,8 +65,10 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
     expiryDate: "",
   });
 
-  const [createPrivateShare, { isLoading: isPrivateLoading }] = useCreatePrivateShareMutation();
-  const [createPublicShare, { isLoading: isPublicLoading }] = useCreatePublicShareMutation();
+  const [createPrivateShare, { isLoading: isPrivateLoading }] =
+    useCreatePrivateShareMutation();
+  const [createPublicShare, { isLoading: isPublicLoading }] =
+    useCreatePublicShareMutation();
 
   // Reset tab when modal opens
   useEffect(() => {
@@ -141,7 +151,7 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
         setShareLink(response.data.shareLink);
         showSnackbar(
           `Successfully sent to ${response.data.emailsSent} recipient(s)!`,
-          "success"
+          "success",
         );
         // Don't close the modal so user can copy the link
       }
@@ -149,7 +159,7 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
       console.error("Error creating private share:", error);
       showSnackbar(
         error?.data?.error || "Failed to create private share",
-        "error"
+        "error",
       );
     }
   };
@@ -175,7 +185,7 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
       console.error("Error creating public share:", error);
       showSnackbar(
         error?.data?.error || "Failed to create public share",
-        "error"
+        "error",
       );
     }
   };
@@ -183,7 +193,10 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
   const handleSettingChange = (setting) => (event) => {
     setSettings({
       ...settings,
-      [setting]: event.target.type === "checkbox" ? event.target.checked : event.target.value,
+      [setting]:
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value,
     });
   };
 
@@ -243,11 +256,7 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
               label="Private (Email)"
               iconPosition="start"
             />
-            <Tab
-              icon={<LinkIcon />}
-              label="Public Link"
-              iconPosition="start"
-            />
+            <Tab icon={<LinkIcon />} label="Public Link" iconPosition="start" />
           </Tabs>
         </Box>
 
@@ -320,7 +329,8 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
             <Box>
               <Alert severity="info" sx={{ mb: 3 }}>
                 <Typography variant="body2">
-                  Anyone with this link can view your research. You can customize access settings below.
+                  Anyone with this link can view your research. You can
+                  customize access settings below.
                 </Typography>
               </Alert>
 
@@ -474,9 +484,17 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
               variant="contained"
               onClick={handlePrivateShare}
               disabled={isPrivateLoading || emails.length === 0}
-              startIcon={isPrivateLoading ? <CircularProgress size={20} /> : <EmailIcon />}
+              startIcon={
+                isPrivateLoading ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  <EmailIcon />
+                )
+              }
             >
-              {isPrivateLoading ? "Sending..." : `Send to ${emails.length} recipient(s)`}
+              {isPrivateLoading
+                ? "Sending..."
+                : `Send to ${emails.length} recipient(s)`}
             </Button>
           )}
           {activeTab === 1 && (
@@ -484,7 +502,9 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
               variant="contained"
               onClick={handlePublicShare}
               disabled={isPublicLoading}
-              startIcon={isPublicLoading ? <CircularProgress size={20} /> : <LinkIcon />}
+              startIcon={
+                isPublicLoading ? <CircularProgress size={20} /> : <LinkIcon />
+              }
             >
               {isPublicLoading ? "Creating..." : "Generate Public Link"}
             </Button>
@@ -511,4 +531,3 @@ const ShareAgentModal = ({ open, onClose, agentId, agentData, defaultTab = 0 }) 
 };
 
 export default ShareAgentModal;
-

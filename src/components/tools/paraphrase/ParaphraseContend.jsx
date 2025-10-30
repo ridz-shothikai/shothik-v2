@@ -20,12 +20,12 @@ import useSetState from "@/hooks/useSetState";
 import useSnackbar from "@/hooks/useSnackbar";
 import useWordLimit from "@/hooks/useWordLimit";
 import { cn } from "@/lib/utils";
+import { setShowLoginModal } from "@/redux/slice/auth";
+import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
 import { File as FileIcon, MoreVertical } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
-import { setShowLoginModal } from "../../../redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 // import LanguageMenu from "../common/LanguageMenu";
 import UserActionInput from "../common/UserActionInput";
 import WordCounter from "../common/WordCounter";
@@ -41,8 +41,8 @@ import VerticalMenu from "./VerticalMenu";
 
 import { useAutoFreeze } from "@/hooks/useAutoFreeze";
 import useKeyboardShortcuts from "@/hooks/useKeyboardShortcuts";
-import { useParaphrasedMutation } from "../../../redux/api/tools/toolsApi";
-import { setParaphraseValues } from "../../../redux/slice/inputOutput";
+import { useParaphrasedMutation } from "@/redux/api/tools/toolsApi";
+import { setParaphraseValues } from "@/redux/slice/inputOutput";
 import {
   setActiveHistory,
   setFileHistories,
@@ -51,7 +51,7 @@ import {
   setHistories,
   setHistoryGroups,
   setIsFileHistoryLoading,
-} from "../../../redux/slice/paraphraseHistorySlice";
+} from "@/redux/slice/paraphraseHistorySlice";
 import MultipleFileUpload from "../common/MultipleFileUpload";
 import AutoFreezeSettings from "./AutoFreezeSettings";
 import AutoParaphraseSettings from "./AutoParaphraseSettings";

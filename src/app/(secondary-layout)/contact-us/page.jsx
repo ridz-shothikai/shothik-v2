@@ -1,5 +1,5 @@
-import ContactHero from "@/components/contact-us/ContacHero";
-import ContactForm from "@/components/contact-us/ContactForm";
+import ContactHero from "@/components/(secondary-layout)/(contact-us-page)/ContacHero";
+import ContactForm from "@/components/(secondary-layout)/(contact-us-page)/ContactForm";
 import Image from "next/image";
 
 export async function generateMetadata() {

@@ -9,13 +9,13 @@ import { useDispatch } from "react-redux";
 import { z } from "zod";
 
 import { trackEvent } from "@/analysers/eventTracker";
-import { useLoginMutation } from "../../redux/api/auth/authApi";
+import { useLoginMutation } from "@/redux/api/auth/authApi";
 import {
   logout,
   setShowForgotPasswordModal,
   setShowLoginModal,
   setShowRegisterModal,
-} from "../../redux/slice/auth";
+} from "@/redux/slice/auth";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

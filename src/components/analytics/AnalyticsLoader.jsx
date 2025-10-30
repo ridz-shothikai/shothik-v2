@@ -2,10 +2,10 @@
 
 // components/analytics/AnalyticsLoader.jsx
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { markScriptsLoaded } from "@/redux/slice/analyticsSlice";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { markScriptsLoaded } from "../../redux/slice/analyticsSlice";
 
 export default function AnalyticsLoader() {
   const dispatch = useDispatch();

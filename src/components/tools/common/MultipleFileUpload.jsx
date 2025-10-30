@@ -1,5 +1,6 @@
 "use client";
 
+import { toggleUpdateFileHistory } from "@/redux/slice/paraphraseHistorySlice";
 import {
   Close as CloseIcon,
   CloudUploadOutlined,
@@ -22,7 +23,6 @@ import {
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleUpdateFileHistory } from "../../../redux/slice/paraphraseHistorySlice";
 import CustomUiButton from "../../ui/CustomUiButton";
 import UpgradePopover from "./UpgradePopover";
 

@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { setDemo } from "@/redux/slice/settings.js";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import "./Onboarding.css";
-import { useDispatch, useSelector } from "react-redux";
-import { setDemo } from "../../../redux/slice/settings.js";
 export default function Onboarding() {
   const dispatch = useDispatch();
   const driverRef = useRef(null);

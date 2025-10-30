@@ -1,16 +1,16 @@
 "use client";
+import FooterServerComponent from "@/components/navigation/components/FooterServerComponent";
+import SecondaryHeader from "@/components/navigation/SecondaryHeader";
+import {
+  useGetUserLimitQuery,
+  useGetUserQuery,
+} from "@/redux/api/auth/authApi";
 import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
-import FooterServerComponent from "../../components/navigation/components/FooterServerComponent";
-import SecondaryHeader from "../../components/navigation/SecondaryHeader";
-import {
-  useGetUserLimitQuery,
-  useGetUserQuery,
-} from "../../redux/api/auth/authApi";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);

@@ -7,16 +7,16 @@ import NavMini from "@/components/navigation/NavMini";
 import NavVertical from "@/components/navigation/NavVertical";
 import AlertDialog from "@/components/tools/common/AlertDialog";
 import useResponsive from "@/hooks/useResponsive";
+import {
+  useGetUserLimitQuery,
+  useGetUserQuery,
+} from "@/redux/api/auth/authApi";
+import { setOpen } from "@/redux/slice/settings";
 import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { Box, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  useGetUserLimitQuery,
-  useGetUserQuery,
-} from "../../../redux/api/auth/authApi";
-import { setOpen } from "../../../redux/slice/settings";
 
 export default function SharedAgentLayout({ children }) {
   const { open, themeLayout } = useSelector((state) => state.settings);
