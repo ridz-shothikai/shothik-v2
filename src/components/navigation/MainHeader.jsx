@@ -1,5 +1,7 @@
 import { HEADER, NAV } from "@/config/config/nav";
 import useResponsive from "@/hooks/useResponsive";
+import { useGetUserQuery } from "@/redux/api/auth/authApi";
+import { setOpen } from "@/redux/slice/settings";
 import DotFlashing from "@/resource/DotFlashing";
 import SvgColor from "@/resource/SvgColor";
 import Logo from "@/resource/assets/Logo";
@@ -16,8 +18,6 @@ import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetUserQuery } from "../../redux/api/auth/authApi";
-import { setOpen } from "../../redux/slice/settings";
 import AccountPopover from "./components/AccountProper";
 
 export default function MainHeader() {

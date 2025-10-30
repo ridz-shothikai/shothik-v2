@@ -6,6 +6,12 @@ import NavMini from "@/components/navigation/NavMini";
 import NavVertical from "@/components/navigation/NavVertical";
 import useResponsive from "@/hooks/useResponsive";
 import {
+  useCreateAgentReplicaMutation,
+  useLazyVerifySharedAgentQuery,
+} from "@/redux/api/shareAgent/shareAgentApi";
+import { setShowLoginModal } from "@/redux/slice/auth";
+import { setOpen } from "@/redux/slice/settings";
+import {
   ArrowDropDown,
   Download,
   Edit,
@@ -31,12 +37,6 @@ import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
-import {
-  useCreateAgentReplicaMutation,
-  useLazyVerifySharedAgentQuery,
-} from "../../../redux/api/shareAgent/shareAgentApi";
-import { setShowLoginModal } from "../../../redux/slice/auth";
-import { setOpen } from "../../../redux/slice/settings";
 
 // Editable Cell Component for shared sheets
 const EditableCell = ({

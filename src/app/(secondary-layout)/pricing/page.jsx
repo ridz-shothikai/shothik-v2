@@ -1,5 +1,5 @@
+import PricingLayout from "@/components/(secondary-layout)/(pricing-page)/PricingLayout";
 import HomeAdvertisement from "@/components/common/HomeAdvertisement";
-import PricingLayout from "@/components/pricing/PricingLayout";
 
 export async function generateMetadata() {
   return {

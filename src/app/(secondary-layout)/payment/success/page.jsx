@@ -1,4 +1,4 @@
-import PaymentSuccessAndUpdateUser from "@/components/payment/PaymentSuccess";
+import PaymentSuccessAndUpdateUser from "@/components/(secondary-layout)/(payment-page)/PaymentSuccess";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";

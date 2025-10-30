@@ -1,5 +1,5 @@
-import { BookACall } from "@/components/b2b/BookACall";
-import ServicesContend from "@/components/b2b/services/ServicesContend";
+import { BookACall } from "@/components/(secondary-layout)/(b2b-page)/BookACall";
+import ServicesContend from "@/components/(secondary-layout)/(b2b-page)/services/ServicesContend";
 import { Suspense } from "react";
 
 export async function generateMetadata() {

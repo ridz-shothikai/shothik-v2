@@ -14,13 +14,13 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Copy, Link, Mail, Share } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 import {
   useCreatePrivateShareMutation,
   useCreatePublicShareMutation,
-} from "../../redux/api/shareAgent/shareAgentApi";
+} from "@/redux/api/shareAgent/shareAgentApi";
+import { Copy, Link, Mail, Share } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId }) => {
   const [activeTab, setActiveTab] = useState("private");

@@ -1,4 +1,4 @@
-import StripePayment from "@/components/payment/StripePayment";
+import StripePayment from "@/components/(secondary-layout)/(payment-page)/StripePayment";
 
 export async function generateMetadata() {
   return {

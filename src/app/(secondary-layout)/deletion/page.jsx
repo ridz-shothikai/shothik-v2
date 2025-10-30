@@ -1,7 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
-
-import Breadcrumb from "@/components/acount/BreadCrumbs";
-import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
+import AccountBreadcrumbsSection from "@/components/(primary-layout)/(account-page)/AccountBreadcrumbsSection";
 
 export async function generateMetadata() {
   return {
@@ -13,8 +10,8 @@ export async function generateMetadata() {
 
 export default function DataDeletionPage() {
   return (
-    <BackgroundContainer>
-      <Breadcrumb
+    <div className="bg-muted container mx-auto px-4">
+      <AccountBreadcrumbsSection
         heading="Data Deletion Policy"
         links={[{ name: "Legal" }, { name: "Data Deletion Policy" }]}
       />
@@ -105,7 +102,7 @@ export default function DataDeletionPage() {
                 <p className="text-base leading-relaxed">
                   For integration purposes, we provide a secure API endpoint:
                 </p>
-                <div className="rounded-lg bg-muted p-4 font-mono text-sm">
+                <div className="bg-muted rounded-lg p-4 font-mono text-sm">
                   <div>
                     <strong>Endpoint:</strong> POST
                     https://api.shothik.ai/v1/data-deletion
@@ -128,7 +125,7 @@ export default function DataDeletionPage() {
                   </div>
                   <div className="ml-4">{`}`}</div>
                 </div>
-                <p className="text-base leading-relaxed text-destructive">
+                <p className="text-destructive text-base leading-relaxed">
                   ⚠️ This method requires technical knowledge and proper
                   authentication.
                 </p>
@@ -212,11 +209,11 @@ export default function DataDeletionPage() {
 
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">3. Data Retention Notes</h2>
-            <div className="rounded-lg border border-border bg-muted/50 p-4">
-              <p className="text-base leading-relaxed font-semibold text-foreground">
+            <div className="border-border bg-muted/50 rounded-lg border p-4">
+              <p className="text-foreground text-base leading-relaxed font-semibold">
                 Important Retention Information:
               </p>
-              <ul className="mt-2 ml-4 list-inside list-disc space-y-2 text-muted-foreground">
+              <ul className="text-muted-foreground mt-2 ml-4 list-inside list-disc space-y-2">
                 <li>
                   <strong>Encrypted Backups:</strong> Some data may remain in
                   our encrypted backups for up to 30 days due to technical
@@ -379,6 +376,6 @@ export default function DataDeletionPage() {
         </p>
         <p className="mt-2">Last updated: October 20, 2025</p>
       </div>
-    </BackgroundContainer>
+    </div>
   );
 }

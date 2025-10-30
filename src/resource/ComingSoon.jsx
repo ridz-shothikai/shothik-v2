@@ -1,7 +1,34 @@
+"use client";
+
 import { _socials } from "@/_mock/socials";
 import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
-import VideoImage from "../components/home/components/VideoImage";
+
+import { motion } from "motion/react";
+import Image from "next/image";
+import { useSelector } from "react-redux";
+
+const VideoImage = ({ lightImage, darkImage, width, height }) => {
+  const { themeMode } = useSelector((state) => state.settings);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="relative z-0 h-[380px] w-[300px] overflow-hidden rounded-[70px] lg:h-[480px] lg:w-[400px]"
+    >
+      <Image
+        src={themeMode === "dark" ? darkImage : lightImage}
+        className="h-full max-w-full rounded-[70px] bg-transparent object-cover"
+        alt="Hero video"
+        unoptimized
+        width={width}
+        height={height}
+      />
+    </motion.div>
+  );
+};
 
 export default function ComingSoon() {
   return (

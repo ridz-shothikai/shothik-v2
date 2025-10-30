@@ -1,9 +1,9 @@
 "use client";
 
 import useSnackbar from "@/hooks/useSnackbar";
+import { useVerifyEmailMutation } from "@/redux/api/auth/authApi";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useVerifyEmailMutation } from "../../../../redux/api/auth/authApi";
 
 export default function VerifyEmailPage() {
   const { token } = useParams();

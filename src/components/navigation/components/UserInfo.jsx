@@ -5,16 +5,16 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 
-import DotFlashing from "@/resource/DotFlashing";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useTheme } from "@mui/material/styles";
-import { useRouter } from "next/navigation";
-import { useGetUserQuery } from "../../../redux/api/auth/authApi";
+import { useGetUserQuery } from "@/redux/api/auth/authApi";
 import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
-} from "../../../redux/slice/auth";
+} from "@/redux/slice/auth";
+import DotFlashing from "@/resource/DotFlashing";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useTheme } from "@mui/material/styles";
+import { useRouter } from "next/navigation";
 import CustomAvatar from "./Avater";
 // ----------------------------------------------------------------------
 

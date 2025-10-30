@@ -1,3 +1,4 @@
+import { useGetResearchMetaDataQuery } from "@/redux/api/tools/toolsApi";
 import { Check, ContentCopy } from "@mui/icons-material";
 import {
   Box,
@@ -14,7 +15,6 @@ import {
 import Marked from "marked-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { useGetResearchMetaDataQuery } from "../../../redux/api/tools/toolsApi";
 
 const isValidUrl = (str) => {
   try {
@@ -210,20 +210,21 @@ const RenderHoverCard = ({ href, text, isCitation = false }) => {
 
 const MarkdownRenderer = ({ content }) => {
   let linkItem = 0;
-  
+
   // Handle content - it might be an object with text property or a string
-  let contentStr = '';
-  if (typeof content === 'string') {
+  let contentStr = "";
+  if (typeof content === "string") {
     contentStr = content;
-  } else if (typeof content === 'object' && content !== null) {
+  } else if (typeof content === "object" && content !== null) {
     // If content is an object, try to extract the text content
-    contentStr = content.text || content.content || content.result || content.answer || '';
+    contentStr =
+      content.text || content.content || content.result || content.answer || "";
   } else {
-    contentStr = String(content || '');
+    contentStr = String(content || "");
   }
-  
+
   // Clean any [object Object] strings from the content
-  contentStr = contentStr.replace(/\[object Object\]/g, '');
+  contentStr = contentStr.replace(/\[object Object\]/g, "");
 
   const CodeBlock = ({ language, children }) => {
     const [isCopied, setIsCopied] = useState(false);
@@ -307,15 +308,27 @@ const MarkdownRenderer = ({ content }) => {
   const safeRenderChildren = (children) => {
     if (Array.isArray(children)) {
       return children.map((child, index) => {
-        if (typeof child === 'object' && child !== null) {
+        if (typeof child === "object" && child !== null) {
           // If it's an object, try to extract text or convert to string
-          return child.text || child.content || child.result || child.answer || String(child);
+          return (
+            child.text ||
+            child.content ||
+            child.result ||
+            child.answer ||
+            String(child)
+          );
         }
         return child;
       });
     }
-    if (typeof children === 'object' && children !== null) {
-      return children.text || children.content || children.result || children.answer || String(children);
+    if (typeof children === "object" && children !== null) {
+      return (
+        children.text ||
+        children.content ||
+        children.result ||
+        children.answer ||
+        String(children)
+      );
     }
     return children;
   };
@@ -325,7 +338,11 @@ const MarkdownRenderer = ({ content }) => {
       return text;
     },
     paragraph(children) {
-      return <Typography key={this.elementId}>{safeRenderChildren(children)}</Typography>;
+      return (
+        <Typography key={this.elementId}>
+          {safeRenderChildren(children)}
+        </Typography>
+      );
     },
     code(children, language) {
       return (

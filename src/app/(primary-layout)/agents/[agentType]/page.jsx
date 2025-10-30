@@ -4,11 +4,11 @@ import { AgentContextProvider } from "@/../components/agents/shared/AgentContext
 import ChatInput from "@/components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "@/components/research/ui/ResearchPageSkeletonLoader";
 import { FooterCta } from "@/components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
+import { researchCoreState } from "@/redux/slice/researchCoreSlice";
 import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { researchCoreState } from "../../../../redux/slice/researchCoreSlice";
 // import PresentationAgentPage from "@/components/presentation/PresentationAgentPage";
 // import ResearchAgentPage from "@/components/research/ResearchAgentPage";
 const PresentationAgentPage = dynamic(

@@ -4,12 +4,12 @@ import { PresentationMode } from "@/components/presentation/PresentationMode";
 import { SlideCard } from "@/components/presentation/SlideCard";
 import { usePresentation } from "@/components/slide/context/SlideContextProvider";
 import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
+import { useFetchSlidesQuery } from "@/redux/api/presentation/presentationApi";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useFetchSlidesQuery } from "../../../redux/api/presentation/presentationApi";
 
 // --- Main Page Component ---
 export default function SlidesPreviewPage() {

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useGetUsesLimitQuery } from "@/redux/api/tools/toolsApi";
 import SvgColor from "@/resource/SvgColor";
 import Link from "next/link";
 import { useEffect } from "react";
-import { useGetUsesLimitQuery } from "../../../redux/api/tools/toolsApi";
 
 function formatNumber(number) {
   if (!number) return 0;

@@ -1,13 +1,13 @@
 // SettingsTab.jsx
 import useResponsive from "@/hooks/useResponsive";
+import {
+  toggleInterfaceOption,
+  toggleParaphraseOption,
+} from "@/redux/slice/settings";
 import { Info as InfoIcon } from "@mui/icons-material";
 import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  toggleInterfaceOption,
-  toggleParaphraseOption,
-} from "../../../../redux/slice/settings";
 
 const SettingsTab = () => {
   const dispatch = useDispatch();

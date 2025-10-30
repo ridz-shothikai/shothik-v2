@@ -1,6 +1,6 @@
 "use client";
-import AccountBilling from "@/components/acount/AccountBilling";
-import AccountGeneral from "@/components/acount/AccountGeneral";
+import AccountBillingSection from "@/components/(primary-layout)/(account-page)/AccountBillingSection";
+import AccountGeneral from "@/components/(primary-layout)/(account-page)/AccountGeneralFormSection";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -77,7 +77,7 @@ export default function AccountSettings() {
         </TabsContent>
 
         <TabsContent value="billing" className="my-8">
-          <AccountBilling user={user} />
+          <AccountBillingSection user={user} />
         </TabsContent>
       </Tabs>
     </div>

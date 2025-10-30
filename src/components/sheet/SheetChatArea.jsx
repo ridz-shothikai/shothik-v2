@@ -2,18 +2,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
-import { Loader2, User } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
+import { useGetChatHistoryQuery } from "@/redux/api/sheet/sheetApi";
 import {
   selectSheet,
   setActiveSheetIdForPolling,
   setSheetData,
   setSheetStatus,
   setSheetTitle,
-} from "../../redux/slice/sheetSlice";
+} from "@/redux/slice/sheetSlice";
+import { Loader2, User } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import TypingAnimation from "../common/TypingAnimation";
 import InputArea from "../presentation/InputAreas";
 import MetadataDisplay from "./MetaDataDisplay";

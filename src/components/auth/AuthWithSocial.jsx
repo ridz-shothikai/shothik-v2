@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { useGoogleLoginMutation } from "@/redux/api/auth/authApi";
+import {
+  logout,
+  setShowLoginModal,
+  setShowRegisterModal,
+} from "@/redux/slice/auth";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useGoogleLoginMutation } from "../../redux/api/auth/authApi";
-import {
-  logout,
-  setShowLoginModal,
-  setShowRegisterModal,
-} from "../../redux/slice/auth";
 // ----------------------------------------------------------------------
 
 export default function AuthWithSocial({ loading, setLoading, title = "in" }) {

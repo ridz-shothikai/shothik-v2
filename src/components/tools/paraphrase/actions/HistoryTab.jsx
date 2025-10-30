@@ -1,14 +1,14 @@
 // HistoryTab.jsx
+import {
+  setActiveHistory,
+  setHistories,
+  setHistoryGroups,
+} from "@/redux/slice/paraphraseHistorySlice";
 import { historyGroupsByPeriod } from "@/utils/historyGroupsByPeriod";
 import { Delete, ExpandLess, ExpandMore, Refresh } from "@mui/icons-material";
 import { Button, IconButton } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setActiveHistory,
-  setHistories,
-  setHistoryGroups,
-} from "../../../../redux/slice/paraphraseHistorySlice";
 
 const HistoryTab = ({ onClose }) => {
   const dispatch = useDispatch();

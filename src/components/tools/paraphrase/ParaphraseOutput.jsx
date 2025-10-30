@@ -1,10 +1,10 @@
 import useSnackbar from "@/hooks/useSnackbar";
-import { Box, useTheme } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
-} from "../../../redux/api/tools/toolsApi";
+} from "@/redux/api/tools/toolsApi";
+import { Box, useTheme } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import EditableOutput from "./EditableOutput";
 import RephraseSentenceNav from "./RephraseSentenceNav";
 import RephraseSentences from "./RephraseSentences";

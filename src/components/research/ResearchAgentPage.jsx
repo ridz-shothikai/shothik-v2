@@ -5,22 +5,22 @@ import { useResearchHistory } from "@/hooks/useResearchHistory";
 import { useResearchSimulation } from "@/hooks/useResearchSimulation";
 import { useResearchStream } from "@/hooks/useResearchStream";
 import { cn } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   clearResearchChatState,
   researchChatState,
   setCurrentChat,
-} from "../../redux/slice/researchChatSlice";
+} from "@/redux/slice/researchChatSlice";
 import {
   researchCoreState,
   resetResearchCore,
   setIsSimulating,
   setResearchSelectedTab,
   setSimulationStatus,
-} from "../../redux/slice/researchCoreSlice";
-import { clearResearchUiState } from "../../redux/slice/researchUiSlice";
+} from "@/redux/slice/researchCoreSlice";
+import { clearResearchUiState } from "@/redux/slice/researchUiSlice";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import HeaderTitle from "./ui/HeaderTitle";
 import ResearchDataArea from "./ui/ResearchDataArea";
 import ResearchPageSkeletonLoader from "./ui/ResearchPageSkeletonLoader";

@@ -1,4 +1,4 @@
-import RazorPayPayment from "@/components/payment/RazorPayPayment";
+import RazorPayPayment from "@/components/(secondary-layout)/(payment-page)/RazorPayPayment";
 
 export async function generateMetadata() {
   return {

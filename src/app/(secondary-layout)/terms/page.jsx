@@ -1,7 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
-
-import Breadcrumb from "@/components/acount/BreadCrumbs";
-import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
+import AccountBreadcrumbsSection from "@/components/(primary-layout)/(account-page)/AccountBreadcrumbsSection";
 
 export async function generateMetadata() {
   return {
@@ -12,8 +9,8 @@ export async function generateMetadata() {
 
 export default function TermsPage() {
   return (
-    <BackgroundContainer>
-      <Breadcrumb
+    <div className="bg-muted container mx-auto px-4">
+      <AccountBreadcrumbsSection
         heading="Terms & Conditions"
         links={[{ name: "Legal" }, { name: "Terms & Conditions" }]}
       />
@@ -341,7 +338,7 @@ export default function TermsPage() {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-border bg-muted/50 p-4">
+            <div className="border-border bg-muted/50 rounded-lg border p-4">
               <p className="text-base leading-relaxed">
                 <strong>Important:</strong> Violations of Meta's Advertising
                 Policies may result in your Meta ad account being suspended. We
@@ -883,6 +880,6 @@ export default function TermsPage() {
           understood, and agree to be bound by these Terms of Service.
         </p>
       </div>
-    </BackgroundContainer>
+    </div>
   );
 }

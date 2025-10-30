@@ -1,12 +1,12 @@
 import { clientImages } from "@/_mock/b2b/clientImages";
 import { features } from "@/_mock/b2b/features";
-import { BookACall } from "@/components/b2b/BookACall";
-import { ClientsSection } from "@/components/b2b/ClientsSection";
-import { FeaturesSection } from "@/components/b2b/FeaturesSection";
-import { HeroSection } from "@/components/b2b/HeroSection";
-import { StatsSection } from "@/components/b2b/StatsSection";
-import { TestimonialsSection } from "@/components/b2b/TestimonialsSection";
-import { WhyChooseUsSection } from "@/components/b2b/WhyChooseUsSection";
+import { BookACall } from "@/components/(secondary-layout)/(b2b-page)/BookACall";
+import { ClientsSection } from "@/components/(secondary-layout)/(b2b-page)/ClientsSection";
+import { FeaturesSection } from "@/components/(secondary-layout)/(b2b-page)/FeaturesSection";
+import { HeroSection } from "@/components/(secondary-layout)/(b2b-page)/HeroSection";
+import { StatsSection } from "@/components/(secondary-layout)/(b2b-page)/StatsSection";
+import { TestimonialsSection } from "@/components/(secondary-layout)/(b2b-page)/TestimonialsSection";
+import { WhyChooseUsSection } from "@/components/(secondary-layout)/(b2b-page)/WhyChooseUsSection";
 
 export async function generateMetadata() {
   return {

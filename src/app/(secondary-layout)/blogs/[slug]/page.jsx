@@ -1,4 +1,4 @@
-import MainLayout from "@/components/blog/details/MainLayout";
+import MainLayout from "@/components/(secondary-layout)/(blogs-page)/details/MainLayout";
 
 export async function generateMetadata({ params }) {
   try {

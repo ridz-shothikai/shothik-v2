@@ -1,10 +1,7 @@
 "use client";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setShowLoginModal,
-  setShowRegisterModal,
-} from "../../redux/slice/auth";
 import AuthLoginForm from "./AuthLoginForm";
 import AuthWithSocial from "./AuthWithSocial";
 import ForgetPasswordModal from "./ForgetPasswordModal";

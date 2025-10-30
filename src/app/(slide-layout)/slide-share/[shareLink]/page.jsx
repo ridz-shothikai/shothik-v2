@@ -5,6 +5,10 @@ import { SlideCard } from "@/components/presentation/SlideCard";
 import { usePresentation } from "@/components/slide/context/SlideContextProvider";
 import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
 import {
+  useFetchSharedSlidesQuery,
+  useTrackViewMutation,
+} from "@/redux/api/share/shareApi";
+import {
   Alert,
   Box,
   Button,
@@ -19,10 +23,6 @@ import {
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  useFetchSharedSlidesQuery,
-  useTrackViewMutation,
-} from "../../../../redux/api/share/shareApi";
 
 export default function SharedSlidesPage() {
   const { shareLink } = useParams();

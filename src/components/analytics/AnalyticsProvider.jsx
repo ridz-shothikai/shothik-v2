@@ -1,9 +1,9 @@
 "use client";
 
-import { useDispatch, useSelector } from "react-redux";
-import { setSessionId, setUserId } from "../../redux/slice/analyticsSlice";
-import AnalyticsLoader from "./AnalyticsLoader";
+import { setSessionId, setUserId } from "@/redux/slice/analyticsSlice";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import AnalyticsLoader from "./AnalyticsLoader";
 
 export default function AnalyticsProvider({ children }) {
   const dispatch = useDispatch();

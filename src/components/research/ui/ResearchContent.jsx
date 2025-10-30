@@ -2,10 +2,10 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { researchChatState } from "@/redux/slice/researchChatSlice";
+import { researchCoreState } from "@/redux/slice/researchCoreSlice";
 import { marked } from "marked";
 import { useSelector } from "react-redux";
-import { researchChatState } from "../../../redux/slice/researchChatSlice";
-import { researchCoreState } from "../../../redux/slice/researchCoreSlice";
 import ResearchContentWithReferences from "../../tools/research/ResearchContentWithReferences";
 
 const MessageBubble = ({ message, isLastData, isDataGenerating }) => (

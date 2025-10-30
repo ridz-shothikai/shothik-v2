@@ -1,7 +1,7 @@
-import AboutHero from "@/components/about/AboutHero";
-import AboutTeam from "@/components/about/AboutTeam";
-import AboutVision from "@/components/about/AboutVision";
-import AboutWhat from "@/components/about/AboutWhat";
+import AboutHero from "@/components/(secondary-layout)/(about-page)/AboutHero";
+import AboutTeam from "@/components/(secondary-layout)/(about-page)/AboutTeam";
+import AboutVision from "@/components/(secondary-layout)/(about-page)/AboutVision";
+import AboutWhat from "@/components/(secondary-layout)/(about-page)/AboutWhat";
 
 export async function generateMetadata() {
   return {
