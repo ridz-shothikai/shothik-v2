@@ -66,6 +66,7 @@ const ModeNavigation = ({
   // Popover state for editing custom modes
   const [popoverAnchor, setPopoverAnchor] = React.useState(null);
   const [editingCustomMode, setEditingCustomMode] = React.useState(null);
+  const [popoverAnchorRect, setPopoverAnchorRect] = React.useState(null);
 
   // Tooltip text for tabs
   const freezeTooltip =
@@ -271,8 +272,8 @@ const ModeNavigation = ({
           setSelectedMode("Standard");
         }
 
-        setEditingCustomMode(null);
-        setPopoverAnchor(null);
+        // Don't clear state here - let onClose handler do it with delay
+        // This prevents popover from snapping to top-left during exit animation
       }
     } catch (err) {
       enqueueSnackbar("Failed to delete mode", {
@@ -287,6 +288,12 @@ const ModeNavigation = ({
 
     if (mode.isCustom && mode.value === selectedMode) {
       setPopoverAnchor(event.currentTarget);
+      try {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setPopoverAnchorRect(rect);
+      } catch (_) {
+        // ignore
+      }
       setEditingCustomMode(customModes.find((cm) => cm._id === mode.id));
     }
   };
@@ -301,7 +308,7 @@ const ModeNavigation = ({
     }
     clearError();
     setCustomModeModalOpen(true);
-    handleMoreClose(); // Close the More menu
+    // handleMoreClose(); // Close the More menu
   };
 
   // console.log(extraModes, "extraModes");
@@ -468,13 +475,19 @@ const ModeNavigation = ({
 
       {/* Custom Mode Edit Popover */}
       <CustomModePopover
-        anchorEl={popoverAnchor}
-        open={Boolean(popoverAnchor) && Boolean(editingCustomMode)}
+        anchorEl={
+          popoverAnchor ||
+          (popoverAnchorRect
+            ? { getBoundingClientRect: () => popoverAnchorRect }
+            : null)
+        }
+        open={Boolean(editingCustomMode)}
         onClose={() => {
           // Delay clearing anchor to avoid popover snapping to top-left before unmount
           setTimeout(() => {
             setPopoverAnchor(null);
             setEditingCustomMode(null);
+            setPopoverAnchorRect(null);
             clearError();
           }, 120);
         }}

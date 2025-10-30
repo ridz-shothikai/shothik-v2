@@ -1,16 +1,12 @@
 // src/components/tools/paraphrase/CustomModeContent.jsx
-import { Add, Delete, Edit } from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 /**
@@ -83,135 +79,127 @@ const CustomModeContent = ({
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <div className="w-full">
       {showHeader && (
-        <Box
-          sx={{
-            mb: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography variant="h6" fontWeight={600}>
+        <div className="mb-2 flex items-center justify-between">
+          <div className="text-base font-semibold">
             {mode === "create" ? "Create Custom Mode" : "Edit Custom Mode"}
-          </Typography>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Input Field */}
-      <Box sx={{ mb: 3 }}>
-        <TextField
-          fullWidth
-          label="Mode Name"
-          placeholder="e.g., Conversational, Technical"
-          value={modeName}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          error={Boolean(localError)}
-          helperText={
-            localError || "Enter a descriptive name for your custom mode"
-          }
-          autoFocus
-          disabled={isLoading}
-          InputProps={{
-            endAdornment: isLoading && <CircularProgress size={20} />,
-          }}
-        />
-      </Box>
+      <div className="mb-6">
+        <Label htmlFor="mode-name">Mode Name</Label>
+        <div className="relative mt-2">
+          <Input
+            id="mode-name"
+            placeholder="e.g., Conversational, Technical"
+            value={modeName}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            autoFocus
+            disabled={isLoading}
+            className={cn(
+              Boolean(localError) &&
+                "border-destructive focus-visible:ring-destructive",
+            )}
+          />
+          {isLoading && (
+            <Loader2 className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin" />
+          )}
+        </div>
+        <p
+          className={cn(
+            "mt-2 text-xs",
+            localError ? "text-destructive" : "text-muted-foreground",
+          )}
+        >
+          {localError || "Enter a descriptive name for your custom mode"}
+        </p>
+      </div>
 
       {/* Error Alert */}
       {localError && (
-        <Alert
-          severity="error"
-          sx={{ mb: 2 }}
-          onClose={() => setLocalError(null)}
-        >
-          {localError}
-        </Alert>
+        <div className="mb-2">
+          <Alert
+            variant="destructive"
+            className="flex items-start justify-between"
+          >
+            <AlertDescription className="pr-6">{localError}</AlertDescription>
+            <button
+              type="button"
+              onClick={() => setLocalError(null)}
+              className="hover:bg-destructive/20 ml-2 inline-flex h-5 w-5 items-center justify-center rounded-sm"
+              aria-label="Dismiss"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </Alert>
+        </div>
       )}
 
       {/* Recent Modes */}
       {recentModes.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="subtitle2"
-            color="text.secondary"
-            sx={{ mb: 1, fontSize: 12 }}
-          >
+        <div className="mb-6">
+          <div className="text-muted-foreground mb-1 text-[12px]">
             Recently Used
-          </Typography>
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          </div>
+          <div className="flex flex-row flex-wrap gap-2">
             {recentModes.map((recent, index) => (
-              <Chip
+              <Badge
                 key={index}
-                label={recent}
-                size="small"
                 onClick={() => handleQuickSelect(recent)}
-                sx={{
-                  cursor: "pointer",
-                  "&:hover": { bgcolor: "primary.lighter" },
-                }}
-              />
+                className="hover:bg-primary/10 cursor-pointer"
+              >
+                {recent}
+              </Badge>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Recommended Modes */}
       {recommendedModes.length > 0 && (
-        <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="subtitle2"
-            color="text.secondary"
-            sx={{ mb: 1, fontSize: 12 }}
-          >
+        <div className="mb-6">
+          <div className="text-muted-foreground mb-1 text-[12px]">
             Recommended Modes
-          </Typography>
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          </div>
+          <div className="flex flex-row flex-wrap gap-2">
             {recommendedModes.map((recommended, index) => (
-              <Chip
+              <Badge
                 key={index}
-                label={recommended}
-                size="small"
-                variant="outlined"
+                variant="outline"
                 onClick={() => handleQuickSelect(recommended)}
-                icon={<Add fontSize="small" />}
-                sx={{
-                  cursor: "pointer",
-                  "&:hover": {
-                    bgcolor: "primary.lighter",
-                    borderColor: "primary.main",
-                  },
-                }}
-              />
+                className="hover:bg-primary/10 hover:border-primary cursor-pointer"
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" /> {recommended}
+              </Badge>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Action Buttons */}
       {showActions && (
         <>
-          <Divider sx={{ my: 2 }} />
-          <Stack direction="row" spacing={1} justifyContent="space-between">
-            <Box>
+          <Separator className="my-2" />
+          <div className="flex items-center justify-between gap-2">
+            <div>
               {mode === "edit" && onDelete && (
                 <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Delete />}
+                  variant="destructive"
                   onClick={onDelete}
                   disabled={isLoading}
                 >
-                  Delete
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete
                 </Button>
               )}
-            </Box>
-            <Stack direction="row" spacing={1}>
+            </div>
+            <div className="flex items-center gap-2">
               {onClose && (
                 <Button
-                  variant="outlined"
+                  variant="outline"
                   onClick={onClose}
                   disabled={isLoading}
                 >
@@ -219,18 +207,24 @@ const CustomModeContent = ({
                 </Button>
               )}
               <Button
-                variant="contained"
-                startIcon={mode === "create" ? <Add /> : <Edit />}
                 onClick={handleSubmit}
                 disabled={!modeName.trim() || isLoading}
               >
-                {mode === "create" ? "Create Mode" : "Update Mode"}
+                {mode === "create" ? (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" /> Create Mode
+                  </>
+                ) : (
+                  <>
+                    <Pencil className="mr-2 h-4 w-4" /> Update Mode
+                  </>
+                )}
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         </>
       )}
-    </Box>
+    </div>
   );
 };
 
