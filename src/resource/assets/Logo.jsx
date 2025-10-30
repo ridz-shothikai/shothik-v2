@@ -1,4 +1,5 @@
 "use client";
+import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import unlimited_plan_logo from "../../../public/logos/unlimited_plan_logo.svg";
 import value_dark_logo from "../../../public/logos/value_dark_logo.svg";
 import value_plan_logo from "../../../public/logos/value_plan_logo.svg";
 
-const Logo = forwardRef((_, ref) => {
+const Logo = forwardRef(({ className }, ref) => {
   const { user } = useSelector((state) => state.auth);
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -40,7 +41,7 @@ const Logo = forwardRef((_, ref) => {
               : "/shothik_light_logo.png";
 
   return (
-    <Link href="/?utm_source=internal" className="contents">
+    <Link href="/?utm_source=internal" className={cn("contents", className)}>
       <div className="mx-0.5 my-2.5 flex items-center justify-start">
         <div
           ref={ref}

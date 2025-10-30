@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,19 +20,7 @@ const UserActionButton = ({ setShowModal, trackClick }) => {
       viewport={{ once: true }}
     >
       <Button
-        variant="contained"
-        size="large"
-        sx={{
-          maxWidth: "fit-content",
-          borderRadius: "0.5rem",
-          textTransform: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          px: 3,
-          py: 1.3,
-          bgcolor: "#00AB55",
-        }}
+        className="h-11 rounded-md px-4"
         onClick={() => {
           // if (user?.email) {
           //   router.push("/paraphrase");
@@ -50,24 +38,7 @@ const UserActionButton = ({ setShowModal, trackClick }) => {
           });
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: "1rem",
-              lineHeight: "1.5rem",
-              letterSpacing: "-2%",
-            }}
-          >
-            {userMsg}
-          </Typography>
-          {/* <ArrowForward style={{ height: "1.25rem", width: "1.25rem" }} /> */}
-        </Box>
+        <span className="text-base leading-6 tracking-tight">{userMsg}</span>
       </Button>
     </motion.div>
   );

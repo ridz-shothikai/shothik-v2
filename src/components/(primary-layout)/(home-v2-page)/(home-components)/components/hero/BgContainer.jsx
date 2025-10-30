@@ -1,27 +1,16 @@
 "use client";
-import { Box, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import React from "react";
 
-const BgContainer = ({ children, image, sx, ref }) => {
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
-
+const BgContainer = React.forwardRef(function BgContainer(
+  { children, className },
+  ref,
+) {
   return (
-    <Box
-      ref={ref}
-      sx={{
-        marginBottom: theme.spacing(6),
-        backgroundImage: dark ? "none" : image,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        zIndex: -1,
-        ...sx,
-      }}
-    >
+    <div ref={ref} className={cn("mb-6", className)}>
       {children}
-    </Box>
+    </div>
   );
-};
+});
 
 export default BgContainer;

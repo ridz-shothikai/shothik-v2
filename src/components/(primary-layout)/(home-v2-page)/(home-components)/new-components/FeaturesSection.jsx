@@ -1,17 +1,8 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { trackingList } from "@/libs/trackingList";
-import {
-  Box,
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
 import { motion } from "framer-motion";
 import { Brain, Languages, Palette, Rocket, Shield, Zap } from "lucide-react";
 
@@ -21,48 +12,36 @@ const features = [
     title: "Write Like You, Not a Robot",
     description:
       "Transform AI-generated text into authentic writing that sounds like your natural voice. Pass every human review.",
-    color: "#065f46", // emerald-700
-    bgColor: "#d1fae5", // emerald-100
   },
   {
     icon: Palette,
     title: "Freeze What Matters",
     description:
       "Protect your critical ideas, citations, and technical terms while improving everything else. You control what changes.",
-    color: "#1d4ed8", // blue-700
-    bgColor: "#dbeafe", // blue-100
   },
   {
     icon: Zap,
     title: "From Panic to Perfect",
     description:
       "Turn hours of rewriting into minutes. Meet every deadline without sacrificing quality or pulling all-nighters.",
-    color: "#a16207", // yellow-700
-    bgColor: "#fef3c7", // yellow-100
   },
   {
     icon: Languages,
     title: "Research in Any Language",
     description:
       "Access global research in 100+ languages. Write your papers in perfect English, regardless of your background.",
-    color: "#7c3aed", // purple-700
-    bgColor: "#e9d5ff", // purple-100
   },
   {
     icon: Shield,
     title: "Never Get Flagged Again",
     description:
       "Your work passes every plagiarism check and AI detector. Submit with complete confidence.",
-    color: "#0f766e", // teal-700
-    bgColor: "#ccfbf1", // teal-100
   },
   {
     icon: Rocket,
     title: "Academic to Professional",
     description:
       "One platform that grows with you from student assignments to career success. Build skills that last.",
-    color: "#4338ca", // indigo-700
-    bgColor: "#e0e7ff", // indigo-100
   },
 ];
 
@@ -91,26 +70,14 @@ const itemVariants = {
 };
 
 export default function FeaturesSection() {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-
   const { componentRef } = useComponentTracking(trackingList.FEATURE_SECTION);
 
   return (
-    <Box
+    <section
       ref={componentRef}
-      component="section"
-      sx={{
-        pt: { xs: 4, sm: 6, xl: 8 },
-        pb: { xs: 8, sm: 12, xl: 15 },
-        backgroundColor: isDarkMode
-          ? theme.palette.background.default
-          : "#f8fafc", // gray-50
-      }}
+      className="pt-4 pb-8 sm:pt-6 sm:pb-12 xl:pt-8 xl:pb-15"
     >
-      <Container maxWidth="lg">
+      <div className="mx-auto max-w-screen-lg px-4 sm:px-6 md:px-8">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -118,145 +85,54 @@ export default function FeaturesSection() {
           variants={containerVariants}
         >
           {/* Header Section */}
-          <Box
-            sx={{
-              textAlign: "center",
-              mb: { xs: 4, sm: 6, md: 10 },
-              maxWidth: "4xl",
-              mx: "auto",
-            }}
-          >
+          <div className="mx-auto mb-4 max-w-4xl text-center sm:mb-6 md:mb-10">
             <motion.div variants={itemVariants}>
-              <Typography
-                variant="h2"
-                component="h2"
-                sx={{
-                  fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-                  fontWeight: 800,
-                  color: isDarkMode ? "white" : "#111827", // gray-900
-                  mb: 4,
-                  lineHeight: 1.2,
-                }}
-              >
+              <h2 className="text-foreground mb-4 text-[2rem] leading-[1.2] font-extrabold sm:text-[2.5rem] md:text-[3rem]">
                 Powerful Features for Better Writing
-              </Typography>
+              </h2>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Typography
-                variant="h6"
-                component="p"
-                sx={{
-                  fontSize: { xs: "1.125rem", md: "1.25rem" },
-                  color: isDarkMode ? theme.palette.text.secondary : "#6b7280", // gray-500
-                  fontWeight: 400,
-                  lineHeight: 1.6,
-                  maxWidth: "42rem",
-                  mx: "auto",
-                }}
-              >
+              <p className="text-muted-foreground mx-auto max-w-[42rem] text-[1.125rem] leading-7 md:text-[1.25rem] md:leading-8">
                 Discover how Shothik AI transforms your writing process with
                 intelligent features designed for creators, marketers, and
                 professionals.
-              </Typography>
+              </p>
             </motion.div>
-          </Box>
+          </div>
 
           {/* Features Grid */}
-          <Grid container spacing={{ xs: 3, sm: 4, md: 4 }}>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-4 lg:grid-cols-3">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
-
               return (
-                <Grid item xs={12} sm={6} lg={4} key={index}>
-                  <motion.div
-                    variants={itemVariants}
-                    whileHover={{
-                      y: -8,
-                      transition: { duration: 0.2 },
-                    }}
-                    style={{ height: "100%" }}
-                  >
-                    <Card
-                      sx={{
-                        height: "100%",
-                        p: { xs: 3, sm: 4 },
-                        // border: "1px solid #e5e7eb", // gray-200
-                        borderRadius: "24px",
-                        // boxShadow:
-                        // "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)", // shadow-sm
-                        boxShadow: isDarkMode
-                          ? "0 12px 24px -4px rgba(0, 0, 0, 0.3)"
-                          : "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
-                        backgroundColor: theme.palette.background.paper,
-                        transition: "all 0.2s ease-in-out",
-                      }}
-                    >
-                      <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-                        {/* Icon */}
-                        <Box
-                          sx={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 48,
-                            height: 48,
-                            borderRadius: "8px",
-                            backgroundColor: isDarkMode
-                              ? theme.palette.action.hover
-                              : feature.bgColor,
-                            mb: 3,
-                          }}
-                        >
-                          <IconComponent
-                            size={24}
-                            style={{
-                              color: isDarkMode
-                                ? theme.palette.text.primary
-                                : feature.color,
-                            }}
-                          />
-                        </Box>
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  className="h-full"
+                >
+                  <Card className="h-full rounded-2xl p-4 transition-all sm:p-6">
+                    <CardContent className="p-0">
+                      <div className="bg-muted mb-3 inline-flex h-12 w-12 items-center justify-center rounded-md">
+                        <IconComponent className="text-foreground h-6 w-6" />
+                      </div>
 
-                        {/* Title */}
-                        <Typography
-                          variant="h6"
-                          component="h3"
-                          sx={{
-                            fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                            fontWeight: 700,
-                            color: isDarkMode
-                              ? theme.palette.text.primary
-                              : "#111827", // gray-900
-                            mb: 2,
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          {feature.title}
-                        </Typography>
+                      <h3 className="text-foreground mb-2 text-[1.125rem] leading-snug font-bold sm:text-[1.25rem]">
+                        {feature.title}
+                      </h3>
 
-                        {/* Description */}
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            color: isDarkMode
-                              ? theme.palette.text.secondary
-                              : "#6b7280", // gray-500
-                            lineHeight: 1.6,
-                            fontSize: { xs: "0.875rem", sm: "1rem" },
-                          }}
-                        >
-                          {feature.description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Grid>
+                      <p className="text-muted-foreground text-sm leading-6 sm:text-base">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               );
             })}
-          </Grid>
+          </div>
         </motion.div>
-      </Container>
-    </Box>
+      </div>
+    </section>
   );
 }

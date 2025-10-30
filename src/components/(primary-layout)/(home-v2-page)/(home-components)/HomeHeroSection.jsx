@@ -1,12 +1,9 @@
 "use client";
 
-// import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { trackingList } from "@/libs/trackingList";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Container, Grid2 } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import { ArrowRight, Play } from "lucide-react";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
 import HeroVideo from "./HeroVideo";
@@ -19,38 +16,10 @@ export default function HomeHeroSection() {
   return (
     <BgContainer
       ref={componentRef}
-      // sx={{ backgroundColor: alpha("#00A76F", 0.08), mb:0 }}
-      sx={{
-        maxWidth: "xl",
-        mx: "auto",
-        pt: { xl: "50px" },
-      }}
+      className="mx-auto max-w-screen-xl xl:pt-[50px]"
     >
-      <Container
-        sx={{
-          pt: 6,
-          pb: { xs: 2, sm: 2, md: 8, lg: 10, xl: 10 },
-          px: { xs: 2, sm: 4, md: 6 },
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: { xs: "30px", sm: "44px", md: "52px", lg: "72px", xl: "80px" },
-          position: "relative",
-        }}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            zIndex: 1, // Or -1 if it should be in the background
-            pointerEvents: "none", // Avoid blocking clicks
-            overflow: "hidden",
-          }}
-        >
+      <div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-center gap-8 px-4 pt-6 sm:px-6 md:gap-13 md:px-8 md:pt-8 lg:gap-18 lg:pb-10 xl:gap-20 xl:pb-10">
+        <div className="pointer-events-none absolute top-0 left-0 z-[1] h-[100vh] w-[100vw] overflow-hidden">
           {/* <Image
             src="/pattern.svg"
             alt="pattern"
@@ -64,95 +33,33 @@ export default function HomeHeroSection() {
             }}
             priority={true}
           /> */}
-        </Box>
+        </div>
 
         {/* Details Section - Shows first on mobile, left on desktop */}
-        {/* <Grid2
-          size={{ xs: 12, md: 6 }}
-          sx={{
-            order: { xs: 1, md: 1 },
-            pr: { md: 2, lg: 3 },
-          }}
-        > */}
         <Details trackClick={trackClick} />
 
         {/* Video Section - Shows second on mobile, right on desktop */}
-        <Grid2
-          size={{ xs: 12, md: 6 }}
-          sx={{
-            order: { xs: 2, md: 2 },
-            width: "100%",
-            // pl: { md: 2, lg: 3 },
-          }}
-        >
-          <Box
-            sx={{
-              position: "relative",
-              width: "100%",
-              zIndex: 12,
-            }}
-          >
-            <Box
-              sx={{
-                position: "relative",
-                width: "100%",
-                height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 },
-                borderRadius: 2,
-                overflow: "hidden",
-                bgcolor: "#f5f5f5",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+        <div className="z-[12] order-2 w-full">
+          <div className="bg-muted relative flex h-[250px] w-full items-center justify-center overflow-hidden rounded-lg sm:h-[300px] md:h-[380px] lg:h-[420px] xl:h-[550px]">
+            <HeroVideo />
+
+            {/* Play overlay */}
+            <div
+              className="border-primary bg-background/90 absolute top-1/2 left-1/2 flex h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border transition-transform hover:scale-110"
+              onClick={(e) => {
+                const video =
+                  e.currentTarget.parentElement.querySelector("video");
+                if (video && video.paused) {
+                  video.play();
+                  e.currentTarget.style.display = "none";
+                }
               }}
             >
-              <HeroVideo />
-
-              {/* Custom play button overlay */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 60,
-                  height: 60,
-                  borderRadius: "50%",
-                  border: "1.5px solid #00A76F",
-                  bgcolor: "rgba(255, 255, 255, 0.9)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    bgcolor: "rgba(255, 255, 255, 1)",
-                    transform: "translate(-50%, -50%) scale(1.1)",
-                  },
-                }}
-                onClick={(e) => {
-                  const video =
-                    e.currentTarget.parentElement.querySelector("video");
-                  if (video.paused) {
-                    video.play();
-                    e.currentTarget.style.display = "none";
-                  }
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 0,
-                    height: 0,
-                    borderLeft: "12px solid #00A76F",
-                    borderTop: "8px solid transparent",
-                    borderBottom: "8px solid transparent",
-                    marginLeft: "2px",
-                  }}
-                />
-              </Box>
-            </Box>
-          </Box>
-        </Grid2>
-      </Container>
+              <Play className="text-primary h-5 w-5" />
+            </div>
+          </div>
+        </div>
+      </div>
     </BgContainer>
   );
 }
@@ -160,34 +67,9 @@ export default function HomeHeroSection() {
 // Signin Button Renderer
 export function SigninButtonRenderer({ title }) {
   return (
-    <>
-      <Button
-        onClick={() => {
-          dispatch(setIsSignUpModalOpen(false));
-          dispatch(setIsSignInModalOpen(true));
-        }}
-        variant="contained"
-        size="large"
-        sx={{
-          maxWidth: 202,
-          borderRadius: "0.5rem",
-          textTransform: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "1rem",
-          "&::after": {
-            content: '"›"',
-            color: "#00A76F",
-            flexShrink: 0,
-          },
-        }}
-      >
-        {title}
-        <ArrowForwardIcon
-          style={{ height: "1.25rem", width: "1.25rem", marginLeft: "0.5rem" }}
-        />
-      </Button>
-    </>
+    <Button className="h-11 max-w-[202px] text-base">
+      {title}
+      <ArrowRight className="ml-2 h-5 w-5" />
+    </Button>
   );
 }
