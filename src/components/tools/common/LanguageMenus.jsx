@@ -1,3 +1,5 @@
+import { languages } from "@/_mock/tools/languages";
+import useResponsive from "@/hooks/useResponsive";
 import { Check, Close, Search } from "@mui/icons-material";
 import {
   Box,
@@ -10,8 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { languages } from "../../../_mock/tools/languages";
-import useResponsive from "../../../hooks/useResponsive";
 
 const RenderLanguages = ({
   handleLanguageMenu,

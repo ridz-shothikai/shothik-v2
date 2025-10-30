@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  useTheme,
-  Stack,
-  Snackbar,
   Alert,
+  Box,
+  Button,
+  Container,
+  Snackbar,
+  Stack,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import { CheckCircle, Shield, Globe } from "lucide-react";
-import EmailModal from "../EmailCollectModal";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { motion } from "framer-motion";
+import { CheckCircle, Globe, Shield } from "lucide-react";
+import { useState } from "react";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
+import EmailModal from "../EmailCollectModal";
 
 export default function CTASection() {
   const theme = useTheme();

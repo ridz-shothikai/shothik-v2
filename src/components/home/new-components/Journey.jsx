@@ -1,5 +1,7 @@
 "use client";
 
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
   AccountBalance,
   CheckCircle,
@@ -15,8 +17,6 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
 
 const timelineData = [
   {

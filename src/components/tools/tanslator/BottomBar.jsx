@@ -1,7 +1,7 @@
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
 import { ContentCopy, VerticalAlignBottom } from "@mui/icons-material";
 import { IconButton, Stack, Tooltip } from "@mui/material";
-import useResponsive from "../../../hooks/useResponsive";
-import useSnackbar from "../../../hooks/useSnackbar";
 import WordCounter from "../common/WordCounter";
 import { downloadFile } from "../common/downloadfile";
 

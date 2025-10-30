@@ -1,48 +1,52 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import Main from "@/components/layout/Main";
+import MainHeader from "@/components/navigation/MainHeader";
+import NavMini from "@/components/navigation/NavMini";
+import NavVertical from "@/components/navigation/NavVertical";
+import useResponsive from "@/hooks/useResponsive";
 import {
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
-  Alert,
-  Paper,
-  Chip,
-  IconButton,
-  Tooltip,
-  Snackbar,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import {
-  ContentCopy as CopyIcon,
-  Save as SaveIcon,
-  Download,
   ArrowDropDown,
-  TableChart,
-  OpenInNew,
+  Download,
   Edit,
+  OpenInNew,
+  Save as SaveIcon,
   Share,
 } from "@mui/icons-material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Snackbar,
+  Typography,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { use, useEffect, useState } from "react";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
-import { useLazyVerifySharedAgentQuery, useCreateAgentReplicaMutation } from "../../../redux/api/shareAgent/shareAgentApi";
-import { useSelector, useDispatch } from "react-redux";
-import { setShowLoginModal } from "../../../redux/slice/auth";
+import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
-import MainHeader from "../../../components/navigation/MainHeader";
-import NavMini from "../../../components/navigation/NavMini";
-import NavVertical from "../../../components/navigation/NavVertical";
-import Main from "../../../components/layout/Main";
-import useResponsive from "../../../hooks/useResponsive";
-import { useTheme } from "@mui/material/styles";
+import {
+  useCreateAgentReplicaMutation,
+  useLazyVerifySharedAgentQuery,
+} from "../../../redux/api/shareAgent/shareAgentApi";
+import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setOpen } from "../../../redux/slice/settings";
 
 // Editable Cell Component for shared sheets
-const EditableCell = ({ value, onValueChange, row, column, isEditing, onEdit }) => {
+const EditableCell = ({
+  value,
+  onValueChange,
+  row,
+  column,
+  isEditing,
+  onEdit,
+}) => {
   const [editValue, setEditValue] = useState(value || "");
 
   useEffect(() => {
@@ -108,7 +112,7 @@ const processSheetData = (sheetData, onCellValueChange, editingCell) => {
 
   // Get all unique column headers
   const headers = Array.from(
-    new Set(sheetData.flatMap((row) => Object.keys(row)))
+    new Set(sheetData.flatMap((row) => Object.keys(row))),
   );
 
   // Create columns
@@ -157,7 +161,11 @@ export default function SharedSheetPage({ params }) {
   const [error, setError] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
   const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const [pendingSaveAction, setPendingSaveAction] = useState(false);
 
   // All hooks must be at the top before any conditional returns
@@ -167,14 +175,20 @@ export default function SharedSheetPage({ params }) {
   const isMobile = useResponsive("down", "sm");
   const isNavMini = themeLayout === "mini";
   const isDarkMode = theme.palette.mode === "dark";
-  
+
   // Fallback: try to get user from localStorage if Redux state is not available
   const [localUser, setLocalUser] = useState(null);
-  
+
   useEffect(() => {
     // Try to get user info from multiple possible locations in localStorage
-    const possibleUserKeys = ['user', 'userData', 'authUser', 'currentUser', 'userInfo'];
-    
+    const possibleUserKeys = [
+      "user",
+      "userData",
+      "authUser",
+      "currentUser",
+      "userInfo",
+    ];
+
     for (const key of possibleUserKeys) {
       const userFromStorage = localStorage.getItem(key);
       if (userFromStorage) {
@@ -184,29 +198,34 @@ export default function SharedSheetPage({ params }) {
           setLocalUser(parsedUser);
           break; // Use the first valid user found
         } catch (e) {
-          console.error(`Error parsing user from localStorage key '${key}':`, e);
+          console.error(
+            `Error parsing user from localStorage key '${key}':`,
+            e,
+          );
         }
       }
     }
-    
+
     // Also try to get user ID directly from access token or other sources
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem("accessToken");
     if (accessToken && !localUser) {
       try {
         // Try to decode JWT token to get user info
-        const tokenPayload = JSON.parse(atob(accessToken.split('.')[1]));
+        const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
         if (tokenPayload && tokenPayload.userId) {
-          console.log('Found user ID from access token:', tokenPayload);
+          console.log("Found user ID from access token:", tokenPayload);
           setLocalUser({ id: tokenPayload.userId, ...tokenPayload });
         }
       } catch (e) {
-        console.log('Could not decode access token:', e);
+        console.log("Could not decode access token:", e);
       }
     }
   }, []);
   const dispatch = useDispatch();
-  const [verifySharedAgent, { isLoading: isVerifying }] = useLazyVerifySharedAgentQuery();
-  const [createAgentReplica, { isLoading: isReplicating }] = useCreateAgentReplicaMutation();
+  const [verifySharedAgent, { isLoading: isVerifying }] =
+    useLazyVerifySharedAgentQuery();
+  const [createAgentReplica, { isLoading: isReplicating }] =
+    useCreateAgentReplicaMutation();
 
   useEffect(() => {
     const fetchSharedData = async () => {
@@ -214,9 +233,9 @@ export default function SharedSheetPage({ params }) {
         setLoading(true);
         console.log("Fetching shared data for shareId:", shareId);
         const result = await verifySharedAgent({ shareId }).unwrap();
-        
+
         console.log("Shared data response:", result);
-        
+
         if (result.success && result.data) {
           setSharedData(result.data);
           console.log("Shared data set:", result.data);
@@ -257,168 +276,196 @@ export default function SharedSheetPage({ params }) {
   };
 
   const handleSaveAndCopy = async () => {
-    console.log('🚀 handleSaveAndCopy function called!');
-    
+    console.log("🚀 handleSaveAndCopy function called!");
+
     // Check if user is authenticated
     const currentUser = user || localUser;
-    const accessToken = localStorage.getItem('accessToken');
-    
+    const accessToken = localStorage.getItem("accessToken");
+
     // More robust authentication check - user must have either user data OR accessToken
-    if (!currentUser || (Object.keys(currentUser).length === 0 && !accessToken)) {
-      console.log('❌ User not authenticated, opening login modal');
-      console.log('   currentUser:', currentUser);
-      console.log('   accessToken:', accessToken ? 'exists' : 'missing');
-      
+    if (
+      !currentUser ||
+      (Object.keys(currentUser).length === 0 && !accessToken)
+    ) {
+      console.log("❌ User not authenticated, opening login modal");
+      console.log("   currentUser:", currentUser);
+      console.log("   accessToken:", accessToken ? "exists" : "missing");
+
       // Set pending flag so we can retry after login
       setPendingSaveAction(true);
-      
+
       // Show login modal
       dispatch(setShowLoginModal(true));
-      
+
       // Show info message
       showSnackbar("Please log in to save this sheet to your account", "info");
       return;
     }
-    
-    console.log('✅ User authenticated:', currentUser);
+
+    console.log("✅ User authenticated:", currentUser);
 
     try {
       // Extract chat ObjectId from shared data
       // The correct path is: sharedData.agent.metadata.chatId (or originalChatId)
-      let chatId = sharedData?.agent?.metadata?.chatId || 
-                   sharedData?.agent?.metadata?.originalChatId;
-      
-      console.log('🔍 Extracted chat ID from agent.metadata:', chatId);
-      
+      let chatId =
+        sharedData?.agent?.metadata?.chatId ||
+        sharedData?.agent?.metadata?.originalChatId;
+
+      console.log("🔍 Extracted chat ID from agent.metadata:", chatId);
+
       // Validate that we have a valid MongoDB ObjectId
       const isValidObjectId = chatId && /^[0-9a-fA-F]{24}$/.test(chatId);
-      
+
       if (!chatId || !isValidObjectId) {
-        console.error('❌ Invalid or missing chat ID');
-        console.error('sharedData.agent.metadata:', sharedData?.agent?.metadata);
-        showSnackbar("Unable to find the original chat ID. This link may be invalid.", "error");
+        console.error("❌ Invalid or missing chat ID");
+        console.error(
+          "sharedData.agent.metadata:",
+          sharedData?.agent?.metadata,
+        );
+        showSnackbar(
+          "Unable to find the original chat ID. This link may be invalid.",
+          "error",
+        );
         return;
       }
-      
-      console.log('✅ Using valid Chat ID:', chatId);
-      
+
+      console.log("✅ Using valid Chat ID:", chatId);
+
       // Get user ID
-      let userId = currentUser?.id || 
-                   currentUser?.userId || 
-                   currentUser?._id || 
-                   currentUser?.user_id;
-      
+      let userId =
+        currentUser?.id ||
+        currentUser?.userId ||
+        currentUser?._id ||
+        currentUser?.user_id;
+
       // Try to get user ID from access token if not found
       if (!userId) {
-        const accessToken = localStorage.getItem('accessToken');
+        const accessToken = localStorage.getItem("accessToken");
         if (accessToken) {
           try {
-            const tokenPayload = JSON.parse(atob(accessToken.split('.')[1]));
+            const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
             userId = tokenPayload.userId || tokenPayload.id || tokenPayload.sub;
           } catch (e) {
-            console.error('Could not decode access token:', e);
+            console.error("Could not decode access token:", e);
           }
         }
       }
-      
+
       if (!userId) {
-        console.error('User ID is missing');
+        console.error("User ID is missing");
         showSnackbar("User ID is missing. Please log in again.", "error");
         return;
       }
-      
-      console.log('Replicating chat:', { chatId, userId });
-      
+
+      console.log("Replicating chat:", { chatId, userId });
+
       // Get base URL from environment
       const baseUrl = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX;
-      console.log('🌐 Environment base URL:', baseUrl);
-      
+      console.log("🌐 Environment base URL:", baseUrl);
+
       if (!baseUrl) {
-        console.error('API base URL not configured - NEXT_PUBLIC_API_URI_WITHOUT_PREFIX is missing');
+        console.error(
+          "API base URL not configured - NEXT_PUBLIC_API_URI_WITHOUT_PREFIX is missing",
+        );
         showSnackbar("Configuration error. Please contact support.", "error");
         return;
       }
-      
+
       // Construct the API URL
       // NEXT_PUBLIC_API_URI_WITHOUT_PREFIX = https://api-qa.shothik.ai
       // We need to add: /sheet/chat/replicate_chat
       // Remove trailing slash if present
-      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      const cleanBaseUrl = baseUrl.endsWith("/")
+        ? baseUrl.slice(0, -1)
+        : baseUrl;
       const apiUrl = `${cleanBaseUrl}/sheet/chat/replicate_chat`;
-      
-      console.log('🔗 Constructed API URL:', apiUrl);
-      console.log('✅ Expected URL:', 'https://api-qa.shothik.ai/sheet/chat/replicate_chat');
-      
+
+      console.log("🔗 Constructed API URL:", apiUrl);
+      console.log(
+        "✅ Expected URL:",
+        "https://api-qa.shothik.ai/sheet/chat/replicate_chat",
+      );
+
       // Prepare the request payload
       const requestPayload = {
         chat: chatId,
-        replicate_to: userId
+        replicate_to: userId,
       };
-      
-      const accessToken = localStorage.getItem('accessToken');
+
+      const accessToken = localStorage.getItem("accessToken");
       const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       };
-      
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📡 COMPLETE API REQUEST DETAILS');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('🔗 URL:', apiUrl);
-      console.log('📍 Method: POST');
-      console.log('');
-      console.log('📦 Headers:');
+
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("📡 COMPLETE API REQUEST DETAILS");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("🔗 URL:", apiUrl);
+      console.log("📍 Method: POST");
+      console.log("");
+      console.log("📦 Headers:");
       Object.entries(headers).forEach(([key, value]) => {
-        if (key === 'Authorization') {
-          console.log(`   ${key}: Bearer ${value.split(' ')[1]?.substring(0, 30)}...`);
+        if (key === "Authorization") {
+          console.log(
+            `   ${key}: Bearer ${value.split(" ")[1]?.substring(0, 30)}...`,
+          );
         } else {
           console.log(`   ${key}: ${value}`);
         }
       });
-      console.log('');
-      console.log('📝 Request Body:');
-      console.log('   Raw Object:', requestPayload);
-      console.log('   JSON String:', JSON.stringify(requestPayload));
-      console.log('   Formatted:');
+      console.log("");
+      console.log("📝 Request Body:");
+      console.log("   Raw Object:", requestPayload);
+      console.log("   JSON String:", JSON.stringify(requestPayload));
+      console.log("   Formatted:");
       console.log(JSON.stringify(requestPayload, null, 2));
-      console.log('');
-      console.log('🔍 Payload Validation:');
-      console.log('   chat ID:', chatId);
-      console.log('   chat ID type:', typeof chatId);
-      console.log('   chat ID length:', chatId?.length);
-      console.log('   chat ID is valid ObjectId:', /^[0-9a-fA-F]{24}$/.test(chatId));
-      console.log('   replicate_to ID:', userId);
-      console.log('   replicate_to ID type:', typeof userId);
-      console.log('   replicate_to ID length:', userId?.length);
-      console.log('   replicate_to ID is valid ObjectId:', /^[0-9a-fA-F]{24}$/.test(userId));
-      console.log('');
-      console.log('✅ POSTMAN EQUIVALENT (copy this to test):');
+      console.log("");
+      console.log("🔍 Payload Validation:");
+      console.log("   chat ID:", chatId);
+      console.log("   chat ID type:", typeof chatId);
+      console.log("   chat ID length:", chatId?.length);
+      console.log(
+        "   chat ID is valid ObjectId:",
+        /^[0-9a-fA-F]{24}$/.test(chatId),
+      );
+      console.log("   replicate_to ID:", userId);
+      console.log("   replicate_to ID type:", typeof userId);
+      console.log("   replicate_to ID length:", userId?.length);
+      console.log(
+        "   replicate_to ID is valid ObjectId:",
+        /^[0-9a-fA-F]{24}$/.test(userId),
+      );
+      console.log("");
+      console.log("✅ POSTMAN EQUIVALENT (copy this to test):");
       console.log(`curl -X POST '${apiUrl}' \\`);
       console.log(`  -H 'Content-Type: application/json' \\`);
-      console.log(`  -H 'Authorization: Bearer ${accessToken?.substring(0, 30)}...' \\`);
+      console.log(
+        `  -H 'Authorization: Bearer ${accessToken?.substring(0, 30)}...' \\`,
+      );
       console.log(`  -d '${JSON.stringify(requestPayload)}'`);
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: "POST",
         headers: headers,
         body: JSON.stringify(requestPayload),
       });
 
-      console.log('');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📨 RESPONSE DETAILS');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📊 Status:', response.status, response.statusText);
-      console.log('🔗 URL:', response.url);
-      console.log('✓ OK:', response.ok);
-      console.log('📋 Type:', response.type);
-      console.log('');
-      console.log('📦 Response Headers:');
+      console.log("");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("📨 RESPONSE DETAILS");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("📊 Status:", response.status, response.statusText);
+      console.log("🔗 URL:", response.url);
+      console.log("✓ OK:", response.ok);
+      console.log("📋 Type:", response.type);
+      console.log("");
+      console.log("📦 Response Headers:");
       response.headers.forEach((value, key) => {
         console.log(`   ${key}: ${value}`);
       });
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
       if (!response.ok) {
         let errorData;
@@ -429,32 +476,42 @@ export default function SharedSheetPage({ params }) {
         }
         console.error("❌ API Error Response:", errorData);
         console.error("❌ Response Headers:", [...response.headers.entries()]);
-        showSnackbar(errorData.message || `Failed to save sheet (${response.status}). Please try again.`, "error");
+        showSnackbar(
+          errorData.message ||
+            `Failed to save sheet (${response.status}). Please try again.`,
+          "error",
+        );
         return;
       }
-      
+
       const result = await response.json();
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('✅ REPLICA CREATED SUCCESSFULLY!');
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('📊 Response:', result);
-      console.log('🆔 Replicated Chat ID:', result.data?.replicatedChatId || result.replicatedChatId || chatId);
-      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("✅ REPLICA CREATED SUCCESSFULLY!");
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      console.log("📊 Response:", result);
+      console.log(
+        "🆔 Replicated Chat ID:",
+        result.data?.replicatedChatId || result.replicatedChatId || chatId,
+      );
+      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
       // Show success message
-      showSnackbar("Sheet saved to your account successfully! Redirecting...", "success");
-      
+      showSnackbar(
+        "Sheet saved to your account successfully! Redirecting...",
+        "success",
+      );
+
       // Redirect to the replicated chat page after a short delay
       setTimeout(() => {
-        const replicatedChatId = result.data?.replicatedChatId || result.replicatedChatId || chatId;
-        
+        const replicatedChatId =
+          result.data?.replicatedChatId || result.replicatedChatId || chatId;
+
         // Redirect to the agents sheets page with the replicated chat ID
         const redirectUrl = `/agents/sheets?id=${replicatedChatId}`;
-        
-        console.log('🔗 Redirecting to:', redirectUrl);
+
+        console.log("🔗 Redirecting to:", redirectUrl);
         window.location.href = redirectUrl;
       }, 1500);
-      
     } catch (err) {
       console.error("Error creating replica:", err);
       showSnackbar("Failed to create a copy. Please try again.", "error");
@@ -464,11 +521,11 @@ export default function SharedSheetPage({ params }) {
   // Watch for user login and retry save action if pending
   useEffect(() => {
     const currentUser = user || localUser;
-    const accessToken = localStorage.getItem('accessToken');
-    
+    const accessToken = localStorage.getItem("accessToken");
+
     // If user just logged in and there's a pending save action
     if (pendingSaveAction && (currentUser || accessToken)) {
-      console.log('✅ User logged in! Retrying save action...');
+      console.log("✅ User logged in! Retrying save action...");
       setPendingSaveAction(false);
       // Retry the save action
       setTimeout(() => {
@@ -505,11 +562,13 @@ export default function SharedSheetPage({ params }) {
 
   const convertToCSV = (data) => {
     if (!data || data.length === 0) return "";
-    
+
     const headers = Object.keys(data[0]);
     const csvRows = [
       headers.join(","),
-      ...data.map(row => headers.map(header => `"${row[header] || ""}"`).join(","))
+      ...data.map((row) =>
+        headers.map((header) => `"${row[header] || ""}"`).join(","),
+      ),
     ];
     return csvRows.join("\n");
   };
@@ -589,7 +648,7 @@ export default function SharedSheetPage({ params }) {
     // Handle the case where data is directly in rows
     sheetData = sharedData.rows;
   }
-  
+
   // If no data found, create sample data for testing
   if (sheetData.length === 0) {
     sheetData = [
@@ -597,11 +656,15 @@ export default function SharedSheetPage({ params }) {
       { Rank: 2, RestaurantName: "Carbone", Rating: "4.8/5" },
       { Rank: 3, RestaurantName: "Trattoria Da Vittorio", Rating: "4.7/5" },
       { Rank: 4, RestaurantName: "Pizzeria Bianco", Rating: "4.7/5" },
-      { Rank: 5, RestaurantName: "Il Posto", Rating: "4.6/5" }
+      { Rank: 5, RestaurantName: "Il Posto", Rating: "4.6/5" },
     ];
   }
-  
-  const { columns, rows } = processSheetData(sheetData, handleCellValueChange, editingCell);
+
+  const { columns, rows } = processSheetData(
+    sheetData,
+    handleCellValueChange,
+    editingCell,
+  );
   const hasData = rows.length > 0 && columns.length > 0;
 
   return (
@@ -672,7 +735,7 @@ export default function SharedSheetPage({ params }) {
             >
               Edit Mode
             </Button>
-            
+
             <Button
               variant="outlined"
               startIcon={<OpenInNew />}
@@ -691,7 +754,7 @@ export default function SharedSheetPage({ params }) {
             >
               View in New Window
             </Button>
-            
+
             <Button
               variant="outlined"
               startIcon={<Download />}
@@ -713,7 +776,7 @@ export default function SharedSheetPage({ params }) {
             >
               Export
             </Button>
-            
+
             <Button
               variant="outlined"
               startIcon={<Share />}
@@ -736,7 +799,9 @@ export default function SharedSheetPage({ params }) {
             {/* Save and Copy Button */}
             <Button
               variant="contained"
-              startIcon={isReplicating ? <CircularProgress size={20} /> : <SaveIcon />}
+              startIcon={
+                isReplicating ? <CircularProgress size={20} /> : <SaveIcon />
+              }
               onClick={handleSaveAndCopy}
               disabled={isReplicating}
               sx={{
@@ -804,59 +869,70 @@ export default function SharedSheetPage({ params }) {
           </Box>
 
           {/* Footer */}
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Box
+            sx={{
+              mt: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Typography variant="caption" color="text.secondary">
               Last updated: {new Date().toLocaleTimeString()}
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+            >
               <Edit sx={{ fontSize: 12 }} />
               Double-click to edit cells
             </Typography>
-      </Box>
+          </Box>
 
-      {/* Export Menu */}
-      <Menu
-        anchorEl={exportMenuAnchor}
-        open={Boolean(exportMenuAnchor)}
-        onClose={handleExportMenuClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem onClick={handleExportCSV}>
-          <ListItemIcon>
-            <Download fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Export as CSV</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleExportExcel}>
-          <ListItemIcon>
-            <Download fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Export as Excel</ListItemText>
-        </MenuItem>
-      </Menu>
+          {/* Export Menu */}
+          <Menu
+            anchorEl={exportMenuAnchor}
+            open={Boolean(exportMenuAnchor)}
+            onClose={handleExportMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem onClick={handleExportCSV}>
+              <ListItemIcon>
+                <Download fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Export as CSV</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleExportExcel}>
+              <ListItemIcon>
+                <Download fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Export as Excel</ListItemText>
+            </MenuItem>
+          </Menu>
 
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+          {/* Snackbar */}
+          <Snackbar
+            open={snackbar.open}
+            autoHideDuration={4000}
+            onClose={handleCloseSnackbar}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity={snackbar.severity}
+              sx={{ width: "100%" }}
+            >
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
         </Main>
       </Box>
     </Box>

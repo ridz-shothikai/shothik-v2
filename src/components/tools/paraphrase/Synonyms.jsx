@@ -1,6 +1,6 @@
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { ChevronRight } from "@mui/icons-material";
 import { List, ListItemButton, ListItemText, Popper } from "@mui/material";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 
 export default function Synonyms({
   synonyms,

@@ -1,4 +1,5 @@
 "use client";
+import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -10,7 +11,6 @@ import {
   useGetUserLimitQuery,
   useGetUserQuery,
 } from "../../redux/api/auth/authApi";
-import LoadingScreen from "../../resource/LoadingScreen";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);

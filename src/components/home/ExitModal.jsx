@@ -1,5 +1,8 @@
 "use client";
 
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { useExitIntent } from "@/hooks/useExitIntent";
+import { trackingList } from "@/libs/trackingList";
 import { Close } from "@mui/icons-material";
 import {
   Box,
@@ -13,9 +16,6 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import { useComponentTracking } from "../../hooks/useComponentTracking";
-import { useExitIntent } from "../../hooks/useExitIntent";
-import { trackingList } from "../../libs/trackingList";
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialog-paper": {

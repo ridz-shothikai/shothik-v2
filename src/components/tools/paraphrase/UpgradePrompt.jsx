@@ -1,6 +1,6 @@
+import SvgColor from "@/resource/SvgColor";
 import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
-import SvgColor from "../../../resource/SvgColor";
 
 const UpgradePrompt = ({ onClose }) => {
   return (

@@ -1,16 +1,15 @@
 "use client";
 
 // import { SmartToy, Speed, VolumeUp } from "@mui/icons-material";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Container, Grid2 } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";
-import { useComponentTracking } from "../../hooks/useComponentTracking";
-import { trackingList } from "../../libs/trackingList";
 import HeroVideo from "./HeroVideo";
-import Image from "next/image";
 
 export default function HomeHeroSection() {
   const { componentRef, trackClick } = useComponentTracking(

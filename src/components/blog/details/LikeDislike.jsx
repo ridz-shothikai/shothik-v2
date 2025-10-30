@@ -1,4 +1,5 @@
 "use client";
+import useSnackbar from "@/hooks/useSnackbar";
 import {
   ThumbDownAlt,
   ThumbDownOffAlt,
@@ -9,7 +10,6 @@ import { Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { refetchBlogDetails } from "../../../app/actions";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   useDisLikeContendMutation,
   useLikeContendMutation,

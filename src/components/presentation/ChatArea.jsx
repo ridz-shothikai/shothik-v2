@@ -1,6 +1,13 @@
 "use client";
 
 // components/ChatArea.tsx
+import InteractiveChatMessage from "@/../components/agents/shared/InteractiveChatMessage";
+import useResponsive from "@/hooks/useResponsive";
+import {
+  formatAgentName,
+  formatTimestamp,
+  useStreamingLogs,
+} from "@/hooks/useStreamingLogs";
 import PaletteIcon from "@mui/icons-material/Palette";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,13 +26,6 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import InteractiveChatMessage from "../../../components/agents/shared/InteractiveChatMessage";
-import useResponsive from "../../hooks/useResponsive";
-import {
-  formatAgentName,
-  formatTimestamp,
-  useStreamingLogs,
-} from "../../hooks/useStreamingLogs";
 import TypingAnimation from "../common/TypingAnimation";
 import { FooterCta } from "../sheet/SheetAgentPage";
 import { CustomSlideshowIcon } from "../ui/CustomSlideshowIcon";

@@ -4,12 +4,12 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
   getSimulationPrompt,
   isValidSimulation,
   SIMULATION_CONFIG,
-} from "../libs/simulationHelper";
+} from "@/libs/simulationHelper";
+import { useEffect, useRef, useState } from "react";
 
 // Simulation detection and execution
 export const useSimulation = (

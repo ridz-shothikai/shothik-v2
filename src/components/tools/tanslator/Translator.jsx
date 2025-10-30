@@ -1,13 +1,13 @@
 "use client";
+import { trySamples } from "@/_mock/trySamples";
+import { trackEvent } from "@/analysers/eventTracker";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import useLoadingText from "@/hooks/useLoadingText";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { trySamples } from "../../../_mock/trySamples";
-import { trackEvent } from "../../../analysers/eventTracker";
-import useLoadingText from "../../../hooks/useLoadingText";
-import useResponsive from "../../../hooks/useResponsive";
-import useSnackbar from "../../../hooks/useSnackbar";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
 import UserActionInput from "../common/UserActionInput";
@@ -141,7 +141,7 @@ const Translator = () => {
   }
 
   return (
-    <Card className="mt-4 p-8 border rounded-xl shadow-sm">
+    <Card className="mt-4 rounded-xl border p-8 shadow-sm">
       <LanguageMenu
         isLoading={isLoading || isHumanizing}
         userInput={userInput}
@@ -150,15 +150,15 @@ const Translator = () => {
         setTranslateLang={handleLanguageChange}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-        <div className="min-h-[400px] sm:min-h-[480px] overflow-y-auto relative">
+      <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="relative min-h-[400px] overflow-y-auto sm:min-h-[480px]">
           <Textarea
             name="input"
             rows={isMobile ? 15 : 19}
             placeholder="Input your text here..."
             value={userInput}
             onChange={handleInput}
-            className="w-full h-full min-h-[400px] sm:min-h-[480px] resize-none border-border focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg p-4"
+            className="border-border h-full min-h-[400px] w-full resize-none rounded-lg p-4 focus-visible:ring-0 focus-visible:ring-offset-0 sm:min-h-[480px]"
           />
           {isMobile && (
             <BottomBar
@@ -181,14 +181,14 @@ const Translator = () => {
           ) : null}
         </div>
         {isMobile && !userInput ? null : (
-          <div className="h-[400px] sm:h-[480px] overflow-y-auto">
+          <div className="h-[400px] overflow-y-auto sm:h-[480px]">
             <Textarea
               name="output"
               rows={isMobile ? 15 : 19}
               placeholder="Translated text"
               value={loadingText ? loadingText : outputContend}
               disabled
-              className="w-full h-full min-h-[400px] sm:min-h-[480px] resize-none border-border text-foreground disabled:opacity-100 disabled:cursor-default rounded-lg p-4"
+              className="border-border text-foreground h-full min-h-[400px] w-full resize-none rounded-lg p-4 disabled:cursor-default disabled:opacity-100 sm:min-h-[480px]"
             />
           </div>
         )}

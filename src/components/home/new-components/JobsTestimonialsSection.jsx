@@ -1,5 +1,7 @@
 "use client";
 
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
   Avatar,
   Box,
@@ -23,8 +25,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
 
 const studentStories = [

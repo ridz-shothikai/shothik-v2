@@ -1,7 +1,7 @@
+import { tools } from "@/config/config/navConfig";
 import { alpha, Box, Card, Grid2, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import Link from "next/link";
-import { tools } from "../../config/config/navConfig";
 import BgContainer from "./components/hero/BgContainer";
 import UserActionButton from "./components/hero/UserActionButton";
 

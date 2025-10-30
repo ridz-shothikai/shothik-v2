@@ -1,12 +1,12 @@
-import { clientImages } from "../../../_mock/b2b/clientImages";
-import { features } from "../../../_mock/b2b/features";
-import { BookACall } from "../../../components/b2b/BookACall";
-import { ClientsSection } from "../../../components/b2b/ClientsSection";
-import { FeaturesSection } from "../../../components/b2b/FeaturesSection";
-import { HeroSection } from "../../../components/b2b/HeroSection";
-import { StatsSection } from "../../../components/b2b/StatsSection";
-import { TestimonialsSection } from "../../../components/b2b/TestimonialsSection";
-import { WhyChooseUsSection } from "../../../components/b2b/WhyChooseUsSection";
+import { clientImages } from "@/_mock/b2b/clientImages";
+import { features } from "@/_mock/b2b/features";
+import { BookACall } from "@/components/b2b/BookACall";
+import { ClientsSection } from "@/components/b2b/ClientsSection";
+import { FeaturesSection } from "@/components/b2b/FeaturesSection";
+import { HeroSection } from "@/components/b2b/HeroSection";
+import { StatsSection } from "@/components/b2b/StatsSection";
+import { TestimonialsSection } from "@/components/b2b/TestimonialsSection";
+import { WhyChooseUsSection } from "@/components/b2b/WhyChooseUsSection";
 
 export async function generateMetadata() {
   return {

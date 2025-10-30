@@ -1,10 +1,10 @@
 "use client";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import useGeolocation from "@/hooks/useGeolocation";
+import useResponsive from "@/hooks/useResponsive";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import useGeolocation from "../../hooks/useGeolocation";
-import useResponsive from "../../hooks/useResponsive";
 import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
 import PricingPlanCard from "./PricingPlanCard";
 import PricingSlider from "./PricingSlider";
@@ -30,9 +30,9 @@ export default function PricingLayout({ children, TitleContend }) {
   };
 
   return (
-    <div className="pt-4 md:pt-0 -mt-2">
+    <div className="-mt-2 pt-4 md:pt-0">
       <div
-        className="bg-cover bg-no-repeat bg-center h-[35rem] pt-6 md:pt-8 px-2 md:px-0 flex flex-col items-center"
+        className="flex h-[35rem] flex-col items-center bg-cover bg-center bg-no-repeat px-2 pt-6 md:px-0 md:pt-8"
         style={{
           backgroundImage: `url(/pricing_bg_img.webp)`,
         }}
@@ -41,21 +41,29 @@ export default function PricingLayout({ children, TitleContend }) {
 
         <div className="my-4">
           <div className="flex flex-row items-center justify-end gap-2">
-            <Label htmlFor="yearly-switch" className="text-sm uppercase tracking-wide text-primary-foreground">
+            <Label
+              htmlFor="yearly-switch"
+              className="text-primary-foreground text-sm tracking-wide uppercase"
+            >
               MONTHLY
             </Label>
-            <Switch id="yearly-switch" checked={isMonthly} onCheckedChange={handleIsMonthly} />
-            <Label htmlFor="yearly-switch" className="text-sm uppercase tracking-wide text-primary-foreground ml-0 sm:ml-1.5">
+            <Switch
+              id="yearly-switch"
+              checked={isMonthly}
+              onCheckedChange={handleIsMonthly}
+            />
+            <Label
+              htmlFor="yearly-switch"
+              className="text-primary-foreground ml-0 text-sm tracking-wide uppercase sm:ml-1.5"
+            >
               YEARLY (save 2 months)
             </Label>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 max-w-screen-xl">
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 xl:gap-5 -mt-60 sm:-mt-68 md:-mt-60 px-2 md:px-0 mx-auto pricing_card_style"
-        >
+      <div className="container mx-auto max-w-screen-xl px-4">
+        <div className="pricing_card_style mx-auto -mt-60 grid grid-cols-1 gap-3 px-2 sm:-mt-68 md:-mt-60 md:grid-cols-2 md:px-0 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
           {isLoading
             ? Array.from({ length: 4 }).map((_, index) => (
                 <PricingPlanCardSkeleton key={`skeleton-${index}`} />
@@ -79,7 +87,7 @@ export default function PricingLayout({ children, TitleContend }) {
               ))}
         </div>
         {!isLoading && data?.data ? (
-          <div className="flex flex-col gap-10 my-5 md:my-14 mx-2 md:mx-[140px]">
+          <div className="mx-2 my-5 flex flex-col gap-10 md:mx-[140px] md:my-14">
             {isMobile && (
               <PricingSlider
                 data={data?.data}

@@ -1,12 +1,12 @@
 "use client";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
+import useSnackbar from "@/hooks/useSnackbar";
+import FormProvider from "@/resource/FormProvider";
+import RHFTextField from "@/resource/RHFTextField";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useContactMutation } from "../../redux/api/auth/authApi";
-import FormProvider from "../../resource/FormProvider";
-import RHFTextField from "../../resource/RHFTextField";
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ export default function FaqForm() {
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-3">
-        <h4 className="text-2xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent">
+        <h4 className="from-primary to-primary/70 bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent">
           Haven&apos;t found the right help?
         </h4>
 

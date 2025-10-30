@@ -68,6 +68,9 @@ export default [
 
       // /* Next.js Rules */
       // "@next/next/no-img-element": "off",
+
+      // /* React.js Rules */
+      "react/no-unescaped-entities": "off",
     },
   },
 

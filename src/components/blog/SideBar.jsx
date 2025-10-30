@@ -1,14 +1,11 @@
 "use client";
-import { ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import React, { useState } from "react";
-import useResponsive from "../../hooks/useResponsive";
+import useResponsive from "@/hooks/useResponsive";
+import { ArrowRight, X } from "lucide-react";
+import { useState } from "react";
 import { useCategoryQuery } from "../../redux/api/blog/blogApiSlice";
 import CategoryBtn from "./CategoryBtn";
 import SideCard from "./SideCard";
@@ -39,18 +36,23 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
       <div className="w-[250px]">
         {isMobile ? (
           <>
-            <Button variant="default" size="lg" onClick={handleOpen} className="w-full">
+            <Button
+              variant="default"
+              size="lg"
+              onClick={handleOpen}
+              className="w-full"
+            >
               Popular Topics
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent 
+              <DialogContent
                 showCloseButton={false}
-                className="fixed bottom-0 left-0 right-0 top-auto max-w-full h-[80vh] rounded-t-2xl p-0 translate-x-0 translate-y-0 data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom border-t"
+                className="data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom fixed top-auto right-0 bottom-0 left-0 h-[80vh] max-w-full translate-x-0 translate-y-0 rounded-t-2xl border-t p-0"
               >
-                <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex h-full flex-col overflow-hidden">
                   {/* Header with close button */}
-                  <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
+                  <div className="flex flex-shrink-0 items-center justify-between border-b p-4">
                     <h6 className="text-lg font-semibold">All topics</h6>
                     <Button
                       variant="ghost"
@@ -70,15 +72,17 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
                           <Button
                             key={category._id}
                             variant="ghost"
-                            className="w-full justify-start text-left p-3 hover:bg-accent rounded-lg"
+                            className="hover:bg-accent w-full justify-start rounded-lg p-3 text-left"
                             onClick={() => handleCategoryClick(category)}
                           >
                             {category.title}
                           </Button>
                         ))
                       ) : (
-                        <div className="text-center py-8">
-                          <p className="text-muted-foreground">No Category found</p>
+                        <div className="py-8 text-center">
+                          <p className="text-muted-foreground">
+                            No Category found
+                          </p>
                         </div>
                       )}
                     </div>
@@ -87,7 +91,7 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
                       <SideMenu />
                     </div>
 
-                    <div className="mt-6 mb-4 p-4 bg-muted rounded-lg">
+                    <div className="bg-muted mt-6 mb-4 rounded-lg p-4">
                       <SideCard />
                     </div>
                   </div>
@@ -96,8 +100,8 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
             </Dialog>
           </>
         ) : (
-          <div className="flex flex-col gap-4 max-w-[500px]">
-            <div className="bg-card rounded flex flex-col overflow-y-auto scrollbar-hide">
+          <div className="flex max-w-[500px] flex-col gap-4">
+            <div className="bg-card scrollbar-hide flex flex-col overflow-y-auto rounded">
               <CategoryBtn
                 selectedCategory={selectedCategory}
                 category={{ title: "All topics", _id: "" }}
@@ -106,14 +110,14 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
               <div>
                 {isLoading ? (
                   <>
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
-                    <Skeleton className="w-full h-5 mb-2" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
+                    <Skeleton className="mb-2 h-5 w-full" />
                   </>
                 ) : !categories?.data?.length ? (
                   <div>
@@ -132,7 +136,7 @@ const SideBar = ({ onCategoryClick, selectedCategory }) => {
               </div>
               <SideMenu />
             </div>
-            <Card className="p-2 rounded">
+            <Card className="rounded p-2">
               <SideCard />
             </Card>
           </div>

@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import SvgColor from "@/resource/SvgColor";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useGetUsesLimitQuery } from "../../../redux/api/tools/toolsApi";
-import SvgColor from "../../../resource/SvgColor";
 
 function formatNumber(number) {
   if (!number) return 0;
@@ -52,18 +52,26 @@ const Navigations = ({
       <div className="ml-1 flex flex-row items-center gap-2 md:ml-0">
         <Button
           onClick={handleSubmit}
-          disabled={!userInput || wordCount > wordLimit || (!/pro_plan|unlimited/.test(userPackage) && model === "Raven")}
+          disabled={
+            !userInput ||
+            wordCount > wordLimit ||
+            (!/pro_plan|unlimited/.test(userPackage) && model === "Raven")
+          }
           className="h-10 px-4"
         >
           {isLoading ? (
             <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
           ) : (
-            <SvgColor src="/navbar/bypass-svgrepo-com.svg" className="mr-2 h-5 w-5" />
+            <SvgColor
+              src="/navbar/bypass-svgrepo-com.svg"
+              className="mr-2 h-5 w-5"
+            />
           )}
           {!hasOutput ? "Humanize" : "Re humanize"}
         </Button>
 
-        {((model === "Raven" && !/pro_plan|unlimited/.test(userPackage)) || wordCount > wordLimit) && (
+        {((model === "Raven" && !/pro_plan|unlimited/.test(userPackage)) ||
+          wordCount > wordLimit) && (
           <Link href="/pricing">
             <Button className="h-10">
               <SvgColor src="/navbar/diamond.svg" className="mr-2 h-5 w-5" />
@@ -78,12 +86,15 @@ const Navigations = ({
           {userLimit?.totalWordLimit === 99999 ? (
             <>
               <Progress value={100} className="h-2" />
-              <p className="text-sm text-primary">Unlimited</p>
+              <p className="text-primary text-sm">Unlimited</p>
             </>
           ) : (
             <>
               <Progress value={progressPercentage()} className="h-2" />
-              <p className="text-sm">{formatNumber(userLimit?.totalWordLimit)} words / {formatNumber(userLimit?.remainingWord)} words left</p>
+              <p className="text-sm">
+                {formatNumber(userLimit?.totalWordLimit)} words /{" "}
+                {formatNumber(userLimit?.remainingWord)} words left
+              </p>
             </>
           )}
         </div>

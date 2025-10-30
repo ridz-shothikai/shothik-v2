@@ -1,17 +1,15 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
-import { useFetchSlidesQuery } from "../../../redux/api/presentation/presentationApi";
-import { usePresentation } from "../../../components/slide/context/SlideContextProvider";
-import SlidePreviewNavbar from "../../../components/slide/SlidePreviewNavbar";
+import { PresentationMode } from "@/components/presentation/PresentationMode";
+import { SlideCard } from "@/components/presentation/SlideCard";
+import { usePresentation } from "@/components/slide/context/SlideContextProvider";
+import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
 import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
-import { PresentationMode } from "../../../components/presentation/PresentationMode";
-import { SlideCard } from "../../../components/presentation/SlideCard";
+import Typography from "@mui/material/Typography";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useFetchSlidesQuery } from "../../../redux/api/presentation/presentationApi";
 
 // --- Main Page Component ---
 export default function SlidesPreviewPage() {

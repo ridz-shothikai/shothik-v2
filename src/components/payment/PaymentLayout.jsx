@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+import useGeolocation from "@/hooks/useGeolocation";
+import LoadingScreen from "@/resource/LoadingScreen";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import useGeolocation from "../../hooks/useGeolocation";
 import { useGetPricingPlansQuery } from "../../redux/api/pricing/pricingApi";
-import LoadingScreen from "../../resource/LoadingScreen";
 import PaymentSummary from "./PaymentSummary";
 
 export default function PaymentLayout({

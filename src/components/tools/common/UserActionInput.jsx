@@ -1,7 +1,7 @@
 "use client";
+import useResponsive from "@/hooks/useResponsive";
 import { Box, Stack, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
-import useResponsive from "../../../hooks/useResponsive";
 import CustomUiButton from "../../ui/CustomUiButton";
 const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
 const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), {

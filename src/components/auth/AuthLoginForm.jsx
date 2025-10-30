@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { z } from "zod";
 
-import { trackEvent } from "../../analysers/eventTracker";
+import { trackEvent } from "@/analysers/eventTracker";
 import { useLoginMutation } from "../../redux/api/auth/authApi";
 import {
   logout,

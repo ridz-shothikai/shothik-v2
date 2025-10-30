@@ -1,4 +1,5 @@
 "use client";
+import { faqData } from "@/_mock/fag";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Accordion,
@@ -12,7 +13,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { faqData } from "../../_mock/fag";
 
 export default function FAQ() {
   const [activeTab, setActiveTab] = useState("general");

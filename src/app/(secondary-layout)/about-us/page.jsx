@@ -1,7 +1,7 @@
-import AboutHero from "../../../components/about/AboutHero";
-import AboutTeam from "../../../components/about/AboutTeam";
-import AboutVision from "../../../components/about/AboutVision";
-import AboutWhat from "../../../components/about/AboutWhat";
+import AboutHero from "@/components/about/AboutHero";
+import AboutTeam from "@/components/about/AboutTeam";
+import AboutVision from "@/components/about/AboutVision";
+import AboutWhat from "@/components/about/AboutWhat";
 
 export async function generateMetadata() {
   return {
@@ -17,8 +17,8 @@ export default function AboutPage() {
       <div className="container mx-auto px-4">
         <AboutWhat />
         <AboutVision />
-        <div className="mt-12 mb-2 mx-auto w-[100px] h-0.5 bg-border" />
-        <div className="mb-12 mx-auto w-[100px] h-0.5 bg-border" />
+        <div className="bg-border mx-auto mt-12 mb-2 h-0.5 w-[100px]" />
+        <div className="bg-border mx-auto mb-12 h-0.5 w-[100px]" />
         <AboutTeam />
       </div>
     </>

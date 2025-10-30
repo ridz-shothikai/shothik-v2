@@ -1,3 +1,4 @@
+import { countries } from "@/_mock/countries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import useResponsive from "@/hooks/useResponsive";
+import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckCircle, Info, XCircle } from "lucide-react";
@@ -26,9 +29,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
-import { countries } from "../../_mock/countries";
-import useResponsive from "../../hooks/useResponsive";
-import useSnackbar from "../../hooks/useSnackbar";
 import {
   useUpdateProfileMutation,
   useUploadImageMutation,

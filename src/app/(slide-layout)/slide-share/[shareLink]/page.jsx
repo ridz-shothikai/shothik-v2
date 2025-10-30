@@ -1,28 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { PresentationMode } from "@/components/presentation/PresentationMode";
+import { SlideCard } from "@/components/presentation/SlideCard";
+import { usePresentation } from "@/components/slide/context/SlideContextProvider";
+import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
   useFetchSharedSlidesQuery,
   useTrackViewMutation,
 } from "../../../../redux/api/share/shareApi";
-import SlidePreviewNavbar from "../../../../components/slide/SlidePreviewNavbar";
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Alert,
-} from "@mui/material";
-import { PresentationMode } from "../../../../components/presentation/PresentationMode";
-import { SlideCard } from "../../../../components/presentation/SlideCard";
-import { usePresentation } from "../../../../components/slide/context/SlideContextProvider";
-import { useSelector } from "react-redux";
 
 export default function SharedSlidesPage() {
   const { shareLink } = useParams();
@@ -261,4 +261,3 @@ export default function SharedSlidesPage() {
     </>
   );
 }
-

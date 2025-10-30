@@ -1,4 +1,4 @@
-import { PresentationProvider } from "../../../components/slide/context/SlideContextProvider";
+import { PresentationProvider } from "@/components/slide/context/SlideContextProvider";
 
 export default function SlidePreviewLayout({ children }) {
   return (

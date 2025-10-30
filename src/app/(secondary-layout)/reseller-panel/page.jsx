@@ -1,5 +1,5 @@
-import WaitlistForm from "../../../components/resellerPanel/WaitingForm";
-import WaitingpageContainer from "../../../components/waitingPages/WaitingpageContainer";
+import WaitlistForm from "@/components/resellerPanel/WaitingForm";
+import WaitingpageContainer from "@/components/waitingPages/WaitingpageContainer";
 
 export async function generateMetadata() {
   return {

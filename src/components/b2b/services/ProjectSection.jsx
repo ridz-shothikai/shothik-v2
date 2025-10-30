@@ -1,7 +1,5 @@
 "use client";
-import React from "react";
-import * as motion from "motion/react-client";
-import { projectDetails } from "../../../_mock/b2b/projectDetails";
+import { projectDetails } from "@/_mock/b2b/projectDetails";
 import { VideoPlayer } from "../VideoPlayer";
 
 const detectListStyle = (items) => {
@@ -17,13 +15,9 @@ export const ProjectSection = ({ slug }) => {
 
   const getPrefix = (index, style) => {
     if (style === "number") {
-      return (
-        <span className="font-bold text-foreground/80">{index + 1}.</span>
-      );
+      return <span className="text-foreground/80 font-bold">{index + 1}.</span>;
     } else if (style === "dot") {
-      return (
-        <span className="font-bold text-foreground/80">•</span>
-      );
+      return <span className="text-foreground/80 font-bold">•</span>;
     }
     return null;
   };
@@ -36,14 +30,17 @@ export const ProjectSection = ({ slug }) => {
           return (
             <div key={index} className="flex flex-col gap-2 text-justify">
               {section.paragraphs?.map((paragraph, pIndex) => (
-                <p key={pIndex} className="text-lg font-medium text-foreground">
+                <p key={pIndex} className="text-foreground text-lg font-medium">
                   {paragraph}
                 </p>
               ))}
               {section.listItems && (
-                <ul className="space-y-2 text-xl font-medium text-foreground">
+                <ul className="text-foreground space-y-2 text-xl font-medium">
                   {section.listItems.map((item, lIndex) => {
-                    const cleanedItem = item.replace(/^(?:\s*(?:\d+\.|•))\s*/, "");
+                    const cleanedItem = item.replace(
+                      /^(?:\s*(?:\d+\.|•))\s*/,
+                      "",
+                    );
                     const parts = cleanedItem.split(" – ");
                     const formattedText =
                       parts.length > 1 ? (
@@ -58,7 +55,9 @@ export const ProjectSection = ({ slug }) => {
 
                     return (
                       <li key={lIndex} className="flex">
-                        <span className="mr-2">{getPrefix(lIndex, computedListStyle)}</span>
+                        <span className="mr-2">
+                          {getPrefix(lIndex, computedListStyle)}
+                        </span>
                         <span>{formattedText}</span>
                       </li>
                     );

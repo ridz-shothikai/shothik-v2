@@ -1,12 +1,12 @@
 // LanguageMenu.jsx
 "use client";
+import useResponsive from "@/hooks/useResponsive";
 import {
   ExpandMoreOutlined,
   KeyboardArrowUpOutlined,
 } from "@mui/icons-material";
 import { Box, Button, Tab, Tabs, useTheme } from "@mui/material";
 import { useState } from "react";
-import useResponsive from "../../../hooks/useResponsive";
 import LanguageMenus from "../common/LanguageMenus";
 
 const initLanguage = [

@@ -1,5 +1,5 @@
-import Breadcrumb from "../../../../components/acount/BreadCrumbs";
-import BackgroundContainer from "../../../../components/secondaryPages/BackgroundContainer";
+import Breadcrumb from "@/components/acount/BreadCrumbs";
+import BackgroundContainer from "@/components/secondaryPages/BackgroundContainer";
 
 export async function generateMetadata() {
   return {
@@ -17,12 +17,12 @@ export default function PaymentPolicy() {
       />
 
       {/* Main content for Return and Cancellation Policy */}
-      <div className="py-12 space-y-6">
-        <h1 className="text-3xl font-bold mb-6">
+      <div className="space-y-6 py-12">
+        <h1 className="mb-6 text-3xl font-bold">
           Shothik AI Return and Cancellation Policy
         </h1>
 
-        <h2 className="text-2xl font-semibold mb-4">
+        <h2 className="mb-4 text-2xl font-semibold">
           1. Subscription Cancellation
         </h2>
         <p className="text-base leading-relaxed">
@@ -33,13 +33,11 @@ export default function PaymentPolicy() {
           unless otherwise specified in the refund policy below.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
-          2. Refund Policy
-        </h2>
-        <p className="text-base leading-relaxed mb-4">
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">2. Refund Policy</h2>
+        <p className="mb-4 text-base leading-relaxed">
           Refunds are only available under the following conditions:
         </p>
-        <ul className="pl-16 pb-8 space-y-3">
+        <ul className="space-y-3 pb-8 pl-16">
           <li className="text-base leading-relaxed">
             <strong>Technical Issues</strong>: If Shothik AI services are not
             accessible due to technical problems on our side, users may request
@@ -54,14 +52,17 @@ export default function PaymentPolicy() {
         </ul>
         <p className="text-base leading-relaxed">
           All refund requests must be submitted via email to{" "}
-          <a href="mailto:support@shothik.ai" className="text-primary hover:underline">
+          <a
+            href="mailto:support@shothik.ai"
+            className="text-primary hover:underline"
+          >
             support@shothik.ai
-          </a>. Refunds
-          will be processed within 14 days of receiving the request and will be
-          credited to the original payment method.
+          </a>
+          . Refunds will be processed within 14 days of receiving the request
+          and will be credited to the original payment method.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">
           3. Termination by Shothik AI
         </h2>
         <p className="text-base leading-relaxed">
@@ -70,9 +71,7 @@ export default function PaymentPolicy() {
           cases of termination due to misuse or policy violations.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4 mt-8">
-          4. Chargebacks
-        </h2>
+        <h2 className="mt-8 mb-4 text-2xl font-semibold">4. Chargebacks</h2>
         <p className="text-base leading-relaxed">
           If a chargeback is initiated for any transaction, access to the
           services will be immediately suspended. Users must resolve the

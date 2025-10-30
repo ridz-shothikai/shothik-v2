@@ -1,4 +1,4 @@
-import { languages } from "../_mock/tools/languages";
+import { languages } from "@/_mock/tools/languages";
 
 export const detectLanguage = (input) => {
   if (!input) return "Auto Detect";

@@ -1,3 +1,5 @@
+import { trackEvent } from "@/analysers/eventTracker";
+import DotFlashing from "@/resource/DotFlashing";
 import { ShieldRounded } from "@mui/icons-material";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -5,12 +7,10 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { trackEvent } from "../../analysers/eventTracker";
 import {
   useGetAppModeQuery,
   useGetTransactionQuery,
 } from "../../redux/api/pricing/pricingApi";
-import DotFlashing from "../../resource/DotFlashing";
 import { Label } from "../acount/AccountGeneral";
 
 export default function PaymentSummary({

@@ -1,4 +1,4 @@
-import RazorPayPayment from "../../../../components/payment/RazorPayPayment";
+import RazorPayPayment from "@/components/payment/RazorPayPayment";
 
 export async function generateMetadata() {
   return {
@@ -9,12 +9,12 @@ export async function generateMetadata() {
 
 const RazorPyamentPage = () => {
   return (
-    <div className="container mx-auto px-4 pt-40 pb-40 min-h-screen">
-      <h1 className="text-3xl font-bold text-center">
+    <div className="container mx-auto min-h-screen px-4 pt-40 pb-40">
+      <h1 className="text-center text-3xl font-bold">
         {`Let's finish powering you up!`}
       </h1>
 
-      <p className="text-center text-muted-foreground mb-20">
+      <p className="text-muted-foreground mb-20 text-center">
         Professional plan is right for you.
       </p>
 

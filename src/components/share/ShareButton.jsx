@@ -1,41 +1,44 @@
 "use client";
 
-import React, { useState } from 'react';
+import { useShare } from "@/hooks/useShare";
 import {
+  ContentCopy as CopyIcon,
+  Public as PublicIcon,
+  Settings as SettingsIcon,
+  Share as ShareIcon,
+} from "@mui/icons-material";
+import {
+  Box,
+  Divider,
   IconButton,
-  Tooltip,
-  Menu,
-  MenuItem,
   ListItemIcon,
   ListItemText,
-  Box,
+  Menu,
+  MenuItem,
   Typography,
-  Divider
-} from '@mui/material';
-import {
-  Share as ShareIcon,
-  Link as LinkIcon,
-  ContentCopy as CopyIcon,
-  Settings as SettingsIcon,
-  Public as PublicIcon,
-  Lock as LockIcon
-} from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
-import ShareModal from './ShareModal';
-import { useShare } from '../../hooks/useShare';
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
+import ShareModal from "./ShareModal";
 
-const ShareButton = ({ 
-  shareData, 
-  contentType = 'research',
-  title = 'Share',
-  variant = 'icon', // 'icon', 'button', 'menu'
-  size = 'medium',
+const ShareButton = ({
+  shareData,
+  contentType = "research",
+  title = "Share",
+  variant = "icon", // 'icon', 'button', 'menu'
+  size = "medium",
   onShare,
-  disabled = false
+  disabled = false,
 }) => {
   const theme = useTheme();
-  const { shareResearch, shareChat, shareDocument, copyToClipboard, isLoading } = useShare();
-  
+  const {
+    shareResearch,
+    shareChat,
+    shareDocument,
+    copyToClipboard,
+    isLoading,
+  } = useShare();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [quickShareLoading, setQuickShareLoading] = useState(false);
@@ -43,7 +46,7 @@ const ShareButton = ({
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
-    if (variant === 'menu') {
+    if (variant === "menu") {
       setAnchorEl(event.currentTarget);
     } else {
       handleQuickShare();
@@ -60,48 +63,51 @@ const ShareButton = ({
       // Direct client-side sharing - no backend dependency
       const shareId = Math.random().toString(36).substring(2, 15);
       const frontendUrl = window.location.origin;
-      
-      if (contentType === 'research') {
+
+      if (contentType === "research") {
         const shareUrl = `${frontendUrl}/shared/${contentType}/${shareId}`;
-        
+
         // Store data in sessionStorage
         const shareDataToStore = {
           shareId,
           contentType,
           content: shareData,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         };
-        
-        sessionStorage.setItem(`share_${shareId}`, JSON.stringify(shareDataToStore));
-        
+
+        sessionStorage.setItem(
+          `share_${shareId}`,
+          JSON.stringify(shareDataToStore),
+        );
+
         // Copy the shareable URL to clipboard
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(shareUrl);
         } else {
-          const textArea = document.createElement('textarea');
+          const textArea = document.createElement("textarea");
           textArea.value = shareUrl;
-          textArea.style.position = 'fixed';
-          textArea.style.left = '-999999px';
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
           document.body.appendChild(textArea);
           textArea.focus();
           textArea.select();
-          document.execCommand('copy');
+          document.execCommand("copy");
           document.body.removeChild(textArea);
         }
-        
+
         // Open the proper shareable URL directly
-        window.open(shareUrl, '_blank');
-        
-        alert('Share link copied to clipboard and opened in new tab!');
-        
+        window.open(shareUrl, "_blank");
+
+        alert("Share link copied to clipboard and opened in new tab!");
+
         if (onShare) {
           onShare({ data: { shareUrl } });
         }
       } else {
-        throw new Error('Only research content sharing is supported');
+        throw new Error("Only research content sharing is supported");
       }
     } catch (error) {
-      console.error('Share failed:', error);
+      console.error("Share failed:", error);
       alert(`Failed to create share link: ${error.message}`);
     } finally {
       setQuickShareLoading(false);
@@ -119,7 +125,7 @@ const ShareButton = ({
       await copyToClipboard(currentUrl);
       handleClose();
     } catch (error) {
-      console.error('Failed to copy link:', error);
+      console.error("Failed to copy link:", error);
     }
   };
 
@@ -134,13 +140,13 @@ const ShareButton = ({
       size={size}
       sx={{
         color: theme.palette.text.secondary,
-        '&:hover': {
+        "&:hover": {
           backgroundColor: theme.palette.action.hover,
           color: theme.palette.primary.main,
         },
       }}
     >
-      <ShareIcon fontSize={size === 'small' ? 'small' : 'medium'} />
+      <ShareIcon fontSize={size === "small" ? "small" : "medium"} />
     </IconButton>
   );
 
@@ -149,23 +155,26 @@ const ShareButton = ({
       onClick={handleClick}
       disabled={disabled || isLoading || quickShareLoading}
       sx={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         gap: 1,
-        padding: '8px 16px',
+        padding: "8px 16px",
         borderRadius: 1,
-        cursor: disabled || isLoading || quickShareLoading ? 'not-allowed' : 'pointer',
+        cursor:
+          disabled || isLoading || quickShareLoading
+            ? "not-allowed"
+            : "pointer",
         backgroundColor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
         opacity: disabled || isLoading || quickShareLoading ? 0.6 : 1,
-        '&:hover': {
+        "&:hover": {
           backgroundColor: theme.palette.action.hover,
         },
       }}
     >
       <ShareIcon fontSize="small" />
       <Typography variant="body2">
-        {isLoading || quickShareLoading ? 'Sharing...' : title}
+        {isLoading || quickShareLoading ? "Sharing..." : title}
       </Typography>
     </Box>
   );
@@ -178,48 +187,51 @@ const ShareButton = ({
         open={open}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         PaperProps={{
           sx: {
             minWidth: 200,
             mt: 1,
-          }
+          },
         }}
       >
-        <MenuItem onClick={handleQuickShare} disabled={isLoading || quickShareLoading}>
+        <MenuItem
+          onClick={handleQuickShare}
+          disabled={isLoading || quickShareLoading}
+        >
           <ListItemIcon>
             <PublicIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText 
-            primary="Quick Share" 
+          <ListItemText
+            primary="Quick Share"
             secondary="Share publicly with default settings"
           />
         </MenuItem>
-        
+
         <MenuItem onClick={handleAdvancedShare}>
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText 
-            primary="Advanced Share" 
+          <ListItemText
+            primary="Advanced Share"
             secondary="Customize sharing options"
           />
         </MenuItem>
-        
+
         <Divider />
-        
+
         <MenuItem onClick={handleCopyLink}>
           <ListItemIcon>
             <CopyIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText 
-            primary="Copy Page Link" 
+          <ListItemText
+            primary="Copy Page Link"
             secondary="Copy current page URL"
           />
         </MenuItem>
@@ -229,8 +241,12 @@ const ShareButton = ({
 
   return (
     <>
-      {variant === 'menu' ? renderMenu() : variant === 'button' ? renderButton() : renderIconButton()}
-      
+      {variant === "menu"
+        ? renderMenu()
+        : variant === "button"
+          ? renderButton()
+          : renderIconButton()}
+
       <ShareModal
         open={shareModalOpen}
         onClose={handleShareModalClose}

@@ -1,42 +1,42 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import {
+  ArrowForward,
+  AutoAwesome,
+  Bolt,
+  CheckCircle,
+  Code,
+  People,
+  Phone,
+  PlayArrow,
+  Psychology,
+  Public,
+  Schedule,
+  SmartToy,
+} from "@mui/icons-material";
+import {
+  Alert,
   Box,
-  Container,
-  Typography,
   Button,
+  Card,
+  CardContent,
+  Container,
+  Fade,
   Grid,
   IconButton,
   Paper,
-  Card,
-  CardContent,
-  useTheme,
-  useMediaQuery,
-  Fade,
   Slide,
   Snackbar,
-  Alert,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import {
-  SmartToy,
-  Phone,
-  People,
-  AutoAwesome,
-  ArrowForward,
-  PlayArrow,
-  Schedule,
-  Bolt,
-  Psychology,
-  CheckCircle,
-  Public,
-  Code,
-} from "@mui/icons-material";
-import EmailModal from "../EmailCollectModal";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { useEffect, useState } from "react";
 import { useRegisterUserToBetaListMutation } from "../../../redux/api/auth/authApi";
+import EmailModal from "../EmailCollectModal";
 
 // Styled components for custom styling
 const GradientBox = styled(Box)(({ gradient }) => ({

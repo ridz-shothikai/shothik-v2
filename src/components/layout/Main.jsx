@@ -1,10 +1,10 @@
 "use client";
+import { HEADER, NAV } from "@/config/config/nav";
+import useResponsive from "@/hooks/useResponsive";
 import { Box, Container, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HEADER, NAV } from "../../config/config/nav";
-import useResponsive from "../../hooks/useResponsive";
 import { loadSettingsFromLocalStorage } from "../../redux/slice/settings";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 import MobileNavigation from "../navigation/MobileNavigation";

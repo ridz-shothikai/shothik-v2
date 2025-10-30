@@ -1,12 +1,11 @@
 "use client";
 
-import { ThemeProvider } from "@mui/material/styles";
+import { LoginModal, RegisterModal } from "@/components/auth/AuthModal";
+import { Login } from "@/components/auth/components/Login";
+import { Register } from "@/components/auth/components/Register";
 import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme } from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { LoginModal, RegisterModal } from "../../../components/auth/AuthModal";
-import { Login } from "../../../components/auth/components/Login";
-import { Register } from "../../../components/auth/components/Register";
 
 // Create a theme for shared pages
 const theme = createTheme({

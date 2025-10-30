@@ -1,8 +1,8 @@
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 import { Box, Fade, Popper, Snackbar } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContentEditable from "react-contenteditable";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import style from "./editor.module.css";
 
 const ParaphraseEditor = ({

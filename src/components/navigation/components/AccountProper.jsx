@@ -1,4 +1,8 @@
 "use client";
+import { PATH_ACCOUNT } from "@/config/config/route";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import useSnackbar from "@/hooks/useSnackbar";
+import Discord from "@/resource/assets/Discord";
 import Brightness4OutlinedIcon from "@mui/icons-material/Brightness4Outlined";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LoginIcon from "@mui/icons-material/Login";
@@ -17,16 +21,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PATH_ACCOUNT } from "../../../config/config/route";
-import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../../redux/slice/auth";
 import { toggleThemeMode } from "../../../redux/slice/settings";
-import Discord from "../../../resource/assets/Discord";
 
 // ----------------------------------------------------------------------
 

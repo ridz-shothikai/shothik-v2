@@ -1,5 +1,6 @@
 "use client";
 
+import { ICON } from "@/config/config/nav";
 import {
   ListItemButton,
   ListItemIcon,
@@ -9,7 +10,6 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ICON } from "../../../config/config/nav";
 
 // ----------------------------------------------------------------------
 

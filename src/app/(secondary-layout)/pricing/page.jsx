@@ -1,5 +1,5 @@
-import HomeAdvertisement from "../../../components/common/HomeAdvertisement";
-import PricingLayout from "../../../components/pricing/PricingLayout";
+import HomeAdvertisement from "@/components/common/HomeAdvertisement";
+import PricingLayout from "@/components/pricing/PricingLayout";
 
 export async function generateMetadata() {
   return {
@@ -13,11 +13,11 @@ export default function PricingPage() {
     <PricingLayout
       TitleContend={
         <>
-          <h1 className="text-3xl font-bold text-center text-primary-foreground">
+          <h1 className="text-primary-foreground text-center text-3xl font-bold">
             Our pricing plan made simple.
           </h1>
 
-          <p className="text-center text-primary-foreground max-w-2xl mx-auto">
+          <p className="text-primary-foreground mx-auto max-w-2xl text-center">
             Discover the right plan for your needs and take advantage of
             Shothik.ai&apos;s powerful tools. Whether you&apos;re just getting
             started or need advanced features for your business, we&apos;ve got
@@ -26,7 +26,7 @@ export default function PricingPage() {
         </>
       }
     >
-      <div className="container mx-auto px-4 my-20 md:my-28">
+      <div className="container mx-auto my-20 px-4 md:my-28">
         <HomeAdvertisement />
       </div>
     </PricingLayout>

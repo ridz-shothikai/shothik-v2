@@ -1,28 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
+import {
+  EmojiEvents,
+  FormatQuote,
+  Pause,
+  People,
+  PlayArrow,
+  Star,
+} from "@mui/icons-material";
 import {
   Box,
-  Container,
-  Grid,
-  Typography,
   Button,
   Chip,
+  Container,
+  Grid,
   IconButton,
-  useTheme,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import {
-  PlayArrow,
-  Pause,
-  FormatQuote,
-  Star,
-  People,
-  EmojiEvents,
-} from "@mui/icons-material";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 export default function FounderVideoSection() {
   const { componentRef, trackClick } = useComponentTracking(

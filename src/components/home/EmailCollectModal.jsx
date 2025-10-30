@@ -8,11 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { cn } from "@/lib/utils";
+import { trackingList } from "@/libs/trackingList";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useComponentTracking } from "../../hooks/useComponentTracking";
-import { trackingList } from "../../libs/trackingList";
 
 export default function EmailModal({ open, onClose, onSubmit }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 
+import DotFlashing from "@/resource/DotFlashing";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
@@ -14,7 +15,6 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "../../../redux/slice/auth";
-import DotFlashing from "../../../resource/DotFlashing";
 import CustomAvatar from "./Avater";
 // ----------------------------------------------------------------------
 

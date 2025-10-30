@@ -1,9 +1,8 @@
 "use client";
+import { headerInformation } from "@/_mock/b2b/headerInformantion";
+import { informations } from "@/_mock/b2b/informations";
 import * as motion from "motion/react-client";
-import React from "react";
 import Link from "next/link";
-import { headerInformation } from "../../../_mock/b2b/headerInformantion";
-import { informations } from "../../../_mock/b2b/informations";
 
 export const HeroSection = ({ slug }) => {
   const information = informations[slug];
@@ -15,7 +14,7 @@ export const HeroSection = ({ slug }) => {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="mb-1 text-center text-3xl font-semibold text-primary md:text-5xl"
+        className="text-primary mb-1 text-center text-3xl font-semibold md:text-5xl"
       >
         {headerInfo?.title}
       </motion.p>
@@ -44,17 +43,21 @@ export const HeroSection = ({ slug }) => {
               transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
               viewport={{ once: true }}
               key={index}
-              className="flex flex-col items-center justify-center border-r border-primary last:border-r-0 py-4"
+              className="border-primary flex flex-col items-center justify-center border-r py-4 last:border-r-0"
             >
               {item.description && (
-                <p className="text-xl font-semibold text-primary">{item.description}</p>
+                <p className="text-primary text-xl font-semibold">
+                  {item.description}
+                </p>
               )}
               {item.isLink ? (
                 <Link href="#" className="text-primary underline">
                   {item.title}
                 </Link>
               ) : (
-                <p className="text-xl font-semibold text-primary">{item.title}</p>
+                <p className="text-primary text-xl font-semibold">
+                  {item.title}
+                </p>
               )}
             </motion.div>
           ))}

@@ -1,3 +1,5 @@
+import { modes } from "@/_mock/tools/paraphrase";
+import SvgColor from "@/resource/SvgColor";
 import { Close, Lock } from "@mui/icons-material";
 import {
   Box,
@@ -10,8 +12,6 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
-import { modes } from "../../../_mock/tools/paraphrase";
-import SvgColor from "../../../resource/SvgColor";
 
 const ModeModal = ({
   showModeModal,

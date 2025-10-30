@@ -1,4 +1,5 @@
 "use client";
+import SvgColor from "@/resource/SvgColor";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowLoginModal } from "../../../redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "../../../redux/slice/tools";
-import SvgColor from "../../../resource/SvgColor";
 
 export default function AlertDialog() {
   const { showAlert, alertMessage } = useSelector((state) => state.tools);

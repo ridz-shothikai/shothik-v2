@@ -1,9 +1,9 @@
 "use client";
 
+import usePresentationOrchestrator from "@/hooks/orchestrator/usePresentationOrchestrator";
 import { cn } from "@/lib/utils";
 import { selectPresentation } from "@/redux/slice/presentationSlice";
 import { useSelector } from "react-redux";
-import usePresentationOrchestrator from "../../hooks/orchestrator/usePresentationOrchestrator";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 

@@ -1,8 +1,8 @@
+import useResponsive from "@/hooks/useResponsive";
+import DotFlashing from "@/resource/DotFlashing";
 import { Description, Task } from "@mui/icons-material";
 import { Box, Drawer, Stack, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
-import useResponsive from "../../hooks/useResponsive";
-import DotFlashing from "../../resource/DotFlashing";
 
 const SessionHistoryModal = ({
   open,

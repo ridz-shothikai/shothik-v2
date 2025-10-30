@@ -1,4 +1,6 @@
 "use client";
+import useSnackbar from "@/hooks/useSnackbar";
+import TipTapEditor from "@/resource/editor/TipTapEditor";
 import { DeleteOutline } from "@mui/icons-material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -13,12 +15,10 @@ import {
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { refetchBlogDetails } from "../../../app/actions";
-import useSnackbar from "../../../hooks/useSnackbar";
 import {
   usePostCommentMutation,
   useRemoveCommentMutation,
 } from "../../../redux/api/blog/blogApiSlice";
-import TipTapEditor from "../../../resource/editor/TipTapEditor";
 import { LikeDislike } from "./LikeDislike";
 
 export default function CommentSection({ comments, data }) {

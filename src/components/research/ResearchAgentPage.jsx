@@ -1,13 +1,13 @@
 "use client";
 
+import { useChat } from "@/hooks/useChat";
+import { useResearchHistory } from "@/hooks/useResearchHistory";
+import { useResearchSimulation } from "@/hooks/useResearchSimulation";
+import { useResearchStream } from "@/hooks/useResearchStream";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useChat } from "../../hooks/useChat";
-import { useResearchHistory } from "../../hooks/useResearchHistory";
-import { useResearchSimulation } from "../../hooks/useResearchSimulation";
-import { useResearchStream } from "../../hooks/useResearchStream";
 import {
   clearResearchChatState,
   researchChatState,

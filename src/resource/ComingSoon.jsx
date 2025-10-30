@@ -1,6 +1,6 @@
+import { _socials } from "@/_mock/socials";
 import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
-import { _socials } from "../_mock/socials";
 import VideoImage from "../components/home/components/VideoImage";
 
 export default function ComingSoon() {

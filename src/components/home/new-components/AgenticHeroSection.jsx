@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
-import { Box, Typography, Chip, Container, useTheme } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/libs/trackingList";
 import StarIcon from "@mui/icons-material/Star";
-import { useComponentTracking } from "../../../hooks/useComponentTracking";
-import { trackingList } from "../../../libs/trackingList";
+import { Box, Chip, Container, Typography, useTheme } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 const StyledChip = styled(Chip)(({ theme }) => ({
   backgroundColor: "#0F766E", // Teal-700

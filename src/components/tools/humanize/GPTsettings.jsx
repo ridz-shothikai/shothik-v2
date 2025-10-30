@@ -1,10 +1,10 @@
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import useResponsive from "@/hooks/useResponsive";
 import { History, Keyboard, MessageSquare, Settings } from "lucide-react";
-import React, { useState } from "react";
-import useResponsive from "../../../hooks/useResponsive";
+import { useState } from "react";
 import SettingsSidebar from "../paraphrase/settings/SettingsSidebar";
 import GPTsettingSidebar from "./GPTsettingSidebar";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 
 export default function GPTsettings({
   handleHistorySelect,
@@ -138,7 +138,7 @@ function ActionButton({
           <img
             src="/premium_crown.svg"
             alt="premium crown"
-            className={`pointer-events-none ${mobile ? "absolute -bottom-1 -right-1" : "absolute bottom-2 right-3"}`}
+            className={`pointer-events-none ${mobile ? "absolute -right-1 -bottom-1" : "absolute right-3 bottom-2"}`}
             width={16}
             height={16}
           />
@@ -147,7 +147,7 @@ function ActionButton({
 
       {/* split title into separate lines */}
       <span
-        className={`text-foreground ${mobile ? "ml-2 whitespace-nowrap" : "whitespace-pre-line text-center"}`}
+        className={`text-foreground ${mobile ? "ml-2 whitespace-nowrap" : "text-center whitespace-pre-line"}`}
         style={{ fontSize: 12, lineHeight: 1.2 }}
       >
         {mobile ? title : words.join("\n")}

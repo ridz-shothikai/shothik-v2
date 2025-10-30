@@ -1,3 +1,8 @@
+import { HEADER } from "@/config/config/nav";
+import { PATH_PAGE } from "@/config/config/route";
+import useResponsive from "@/hooks/useResponsive";
+import Logo from "@/resource/assets/Logo";
+import { bgBlur } from "@/resource/cssStyles";
 import { Home, MonetizationOn } from "@mui/icons-material";
 import {
   AppBar,
@@ -13,11 +18,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { HEADER } from "../../config/config/nav";
-import { PATH_PAGE } from "../../config/config/route";
-import useResponsive from "../../hooks/useResponsive";
-import Logo from "../../resource/assets/Logo";
-import { bgBlur } from "../../resource/cssStyles";
 import AccountPopover from "./components/AccountProper";
 import SecondaryNavForMobile from "./SecondaryNavForMobile";
 

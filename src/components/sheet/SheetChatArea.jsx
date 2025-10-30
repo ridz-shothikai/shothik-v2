@@ -1,11 +1,11 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
+import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import { Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useSnackbar from "../../hooks/useSnackbar";
 import { useGetChatHistoryQuery } from "../../redux/api/sheet/sheetApi";
 import {
   selectSheet,

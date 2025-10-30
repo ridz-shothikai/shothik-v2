@@ -1,8 +1,8 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import useResponsive from "@/hooks/useResponsive";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import useResponsive from "../../../../hooks/useResponsive";
 
 export default function AnimatedText() {
   const [currentIndex, setCurrentIndex] = useState(0);
