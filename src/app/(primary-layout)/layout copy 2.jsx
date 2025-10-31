@@ -1,14 +1,13 @@
 import Header from "@/components/partials/header";
 import Sidebar from "@/components/partials/navigation-sidebar";
-import useSetting from "@/hooks/states/useSetting";
 import { useSidebar } from "@/hooks/ui/useSidebar";
 import { cn } from "@/lib/utils";
 
 const CommonLayout = ({ children }) => {
-  const { setting } = useSetting();
+  const settings = useSelector((state) => state.settings);
   const { isMobileOpen, toggleMobile, closeMobile } = useSidebar();
 
-  const isCompact = setting.sidebar === "compact";
+  const isCompact = settings.sidebar === "compact";
 
   return (
     <div className="bg-background flex h-screen w-screen overflow-hidden">
@@ -43,7 +42,7 @@ const CommonLayout = ({ children }) => {
               "translate-x-0": isMobileOpen,
             },
             {
-              dark: setting.theme === "semi-dark",
+              dark: settings.theme === "semi-dark",
             },
           )}
         >

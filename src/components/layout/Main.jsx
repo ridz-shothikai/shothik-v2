@@ -1,10 +1,8 @@
 "use client";
 import { HEADER, NAV } from "@/config/config/nav";
 import useResponsive from "@/hooks/useResponsive";
-import { loadSettingsFromLocalStorage } from "@/redux/slice/settings";
 import { Box, Container, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 import MobileNavigation from "../navigation/MobileNavigation";
@@ -12,8 +10,8 @@ import MobileNavigation from "../navigation/MobileNavigation";
 const SPACING = 8;
 
 export default function Main({ children }) {
-  const { themeLayout } = useSelector((state) => state.settings);
-  const isNavMini = themeLayout === "mini";
+  const { sidebar } = useSelector((state) => state.settings);
+  const isNavMini = sidebar === "compact";
   const isDesktop = useResponsive("up", "sm");
   const dispatch = useDispatch();
   const pathName = usePathname();
@@ -32,12 +30,6 @@ export default function Main({ children }) {
   ].includes(pathName)
     ? "100%"
     : "xl";
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      dispatch(loadSettingsFromLocalStorage());
-    }
-  }, [dispatch]);
 
   return (
     <Box

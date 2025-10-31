@@ -1,7 +1,7 @@
 "use client";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useResponsive from "@/hooks/useResponsive";
 import SvgColor from "@/resource/SvgColor";
-import { Box, Tab, Tabs } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 
 const links = [
@@ -73,30 +73,26 @@ const MobileNavigation = () => {
     : false;
 
   return (
-    <Box>
-      <Tabs
-        sx={{ mt: -1, paddingX: 2, justifyContent: "center" }}
-        onChange={(e, newValue) => push(newValue)}
-        scrollButtons={true}
-        value={validPath}
-      >
-        {links.map((tab) => (
-          <Tab
-            key={tab.link}
-            iconPosition="top"
-            icon={
+    <div className="-mt-1 px-2">
+      <Tabs value={validPath} onValueChange={(v) => push(v)}>
+        <TabsList className="grid w-full grid-cols-4 overflow-x-auto">
+          {links.map((tab) => (
+            <TabsTrigger
+              key={tab.link}
+              value={tab.link}
+              className="flex flex-col items-center gap-1 py-2"
+            >
               <SvgColor
                 className="h-[30px] w-[30px]"
                 color={tab.iconColor}
                 src={tab.iconSrc}
               />
-            }
-            value={tab.link}
-            label={tab.title}
-          />
-        ))}
+              <span className="text-xs">{tab.title}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
-    </Box>
+    </div>
   );
 };
 

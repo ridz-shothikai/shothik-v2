@@ -41,7 +41,7 @@ function formatNumber(number) {
 
 const AiDetector = () => {
   const [openSampleDrawer, setOpenSampleDrawer] = useState(false);
-  const { themeLayout } = useSelector((state) => state.settings);
+  const { sidebar } = useSelector((state) => state.settings);
   const [showShareModal, setshowShareModal] = useState(false);
   const [outputContend, setOutputContend] = useState(null);
   const [scanAidetector] = useScanAidetectorMutation();
@@ -52,7 +52,7 @@ const AiDetector = () => {
   const isMobile = useResponsive("down", "sm");
   const isMd = useResponsive("down", "md");
   const enqueueSnackbar = useSnackbar();
-  const isMini = themeLayout === "mini";
+  const isMini = sidebar === "compact";
   const params = useSearchParams();
   const share_id = params.get("share_id");
   const dispatch = useDispatch();

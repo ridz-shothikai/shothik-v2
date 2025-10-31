@@ -1,19 +1,9 @@
 import { HEADER } from "@/config/config/nav";
 import { PATH_PAGE } from "@/config/config/route";
 import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
 import Logo from "@/resource/assets/Logo";
-import { bgBlur } from "@/resource/cssStyles";
-import { Home, MonetizationOn } from "@mui/icons-material";
-import {
-  AppBar,
-  Container,
-  ListItemButton,
-  ListItemText,
-  Stack,
-  Toolbar,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Home } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -39,7 +29,6 @@ export default function SecondaryHeader() {
   const [showShadow, setShowShadow] = useState(false);
   const isDesktop = useResponsive("up", "md");
   const router = usePathname();
-  const theme = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,88 +47,48 @@ export default function SecondaryHeader() {
   }, []);
 
   return (
-    <AppBar
-      sx={{
-        display: "block",
-        position: "sticky",
-        height: {
-          xs: HEADER.H_MOBILE,
-          md: HEADER.H_MAIN_DESKTOP,
-        },
-        transition: theme.transitions.create(["height", "background-color"], {
-          easing: theme.transitions.easing.easeInOut,
-          duration: theme.transitions.duration.shorter,
-        }),
-        ...bgBlur({ color: theme.palette.background.default }),
-        height: {
-          md: HEADER.H_MAIN_DESKTOP - 16,
-        },
-        boxShadow: showShadow ? 4 : 0,
+    <header
+      className={cn(
+        "bg-background/80 sticky top-0 z-40 w-full backdrop-blur-sm",
+        showShadow ? "shadow-sm" : "",
+      )}
+      style={{
+        height: isDesktop ? HEADER.H_MAIN_DESKTOP - 16 : HEADER.H_MOBILE,
       }}
     >
-      <Toolbar sx={{ height: 1 }}>
-        <Container
-          maxWidth="100%"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <div className="flex h-full w-full items-center px-4">
+        <div className="flex w-full items-center justify-between">
           <Logo />
 
-          <Stack component="nav" direction="row" spacing={1}>
+          <nav className="flex items-center gap-2">
             {isDesktop ? (
-              <>
-                {navConfig?.map((link) => (
-                  <ListItemButton
-                    key={link.path}
-                    component={Link}
-                    href={link.path}
-                    sx={(theme) => {
-                      const isLight = theme.palette.mode === "light";
-                      const activeStyle = {
-                        color: !isLight ? "primary.light" : "primary.main",
-                      };
-                      const isActive = router === link.path;
-
-                      return {
-                        position: "relative",
-                        textTransform: "capitalize",
-                        marginLeft: 0,
-                        marginRight: 0,
-                        px: 1,
-                        color: "text.secondary",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                        ...(isActive && {
-                          ...activeStyle,
-                        }),
-                      };
-                    }}
-                  >
-                    <ListItemText>
-                      <Typography
-                        sx={{
-                          fontSize: 14,
-                          textAlign: "center",
-                        }}
-                        variant="subtitle2"
-                      >
-                        {link.title}
-                      </Typography>
-                    </ListItemText>
-                  </ListItemButton>
-                ))}
-              </>
+              <div className="flex items-center gap-2">
+                {navConfig?.map((link) => {
+                  const isActive = router === link.path;
+                  const Icon = link.icon;
+                  return (
+                    <Link
+                      key={link.path}
+                      href={link.path}
+                      className={cn(
+                        "inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm",
+                        isActive ? "text-primary" : "text-muted-foreground",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{link.title}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             ) : (
               <SecondaryNavForMobile data={navConfig} />
             )}
+
             <AccountPopover accessToken={accessToken} user={user} />
-          </Stack>
-        </Container>
-      </Toolbar>
-    </AppBar>
+          </nav>
+        </div>
+      </div>
+    </header>
   );
 }

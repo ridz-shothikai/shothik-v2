@@ -10,7 +10,6 @@ import {
   Paper,
   Popover,
   Typography,
-  useTheme,
 } from "@mui/material";
 import Marked from "marked-react";
 import Image from "next/image";
@@ -228,8 +227,6 @@ const MarkdownRenderer = ({ content }) => {
 
   const CodeBlock = ({ language, children }) => {
     const [isCopied, setIsCopied] = useState(false);
-    const themeMode = useTheme();
-    const theme = themeMode.palette.mode;
 
     const handleCopy = useCallback(async () => {
       await navigator.clipboard.writeText(children);

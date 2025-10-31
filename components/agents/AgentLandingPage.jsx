@@ -198,7 +198,6 @@ export default function AgentLandingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const sidebarOpen = useSelector((state) => state.tools.agentHistoryMenu);
-  const isNavbarExpanded = useSelector((state) => state.tools.isNavVertical);
   const { accessToken, sheetToken } = useSelector((state) => state.auth);
 
   const {
@@ -272,10 +271,6 @@ export default function AgentLandingPage() {
     // You can trigger file picker logic here
     handleClose();
   };
-
-  // console.log(slidesChats, "slides data");
-  // const [sidebarOpen, setSidebarOpen] = useState(false);
-  // console.log(isNavbarExpanded, "isNavbarExpanded");
 
   const toggleDrawer = (open) => () => {
     dispatch(setAgentHistoryMenu(open)); // will be used on Navbar to handle navbar expansion
@@ -607,7 +602,6 @@ export default function AgentLandingPage() {
         sidebarOpen={sidebarOpen}
         toggleDrawer={toggleDrawer}
         isMobile={isMobile}
-        isNavbarExpanded={isNavbarExpanded}
         isLoading={SheetDataLoading}
         error={error}
         router={router}

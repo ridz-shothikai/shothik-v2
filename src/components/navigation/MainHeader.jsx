@@ -14,8 +14,8 @@ import AccountPopover from "./components/AccountProper";
 
 export default function MainHeader() {
   const { accessToken, user } = useSelector((state) => state.auth);
-  const { themeLayout } = useSelector((state) => state.settings);
-  const isCompact = themeLayout === "mini";
+  const { sidebar } = useSelector((state) => state.settings);
+  const isCompact = sidebar === "compact";
   const { isLoading } = useGetUserQuery(undefined, {
     skip: !accessToken,
   });
@@ -65,19 +65,17 @@ export default function MainHeader() {
             >
               <Menu className="text-primary h-5 w-5" />
             </Button>
-            <Logo />
+            <Logo className="block lg:hidden" />
           </div>
 
           <div className={cn("flex w-full items-center justify-between gap-4")}>
             {isCompact && <Logo className="hidden lg:block" />}
 
-            {isMd && (
-              <div className="flex grow justify-center">
-                <h5 className="text-muted-foreground text-base font-medium">
-                  {title()}
-                </h5>
-              </div>
-            )}
+            <div className="flex grow justify-center lg:hidden">
+              <h5 className="text-muted-foreground text-base font-medium">
+                {title()}
+              </h5>
+            </div>
 
             <div className="flex items-center gap-2 md:gap-3">
               {isLoading ? (
@@ -87,16 +85,10 @@ export default function MainHeader() {
                   <Link href={"/pricing?redirect=" + pathname}>
                     <Button
                       data-umami-event="Nav: Upgrade To Premium"
-                      className={cn("h-9 px-3", isMd ? "text-sm" : "text-xs")}
+                      className={cn("h-9 px-3 text-xs lg:text-sm")}
                     >
                       <Gem className="mr-2 h-5 w-5 md:h-6 md:w-6" />
-                      {user?.email
-                        ? isMobile
-                          ? "Upgrade"
-                          : "Upgrade Plan"
-                        : isMobile
-                          ? "Premium"
-                          : "Upgrade your plan"}
+                      {user?.email ? "Upgrade" : "Premium"}
                     </Button>
                   </Link>
                 )

@@ -1,16 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { NAV } from "@/config/config/nav";
 import Logo from "@/resource/assets/Logo";
-import { Menu } from "@mui/icons-material";
-import {
-  Box,
-  Drawer,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -37,75 +30,46 @@ export default function SecondaryNavForMobile({ data }) {
 
   return (
     <>
-      <IconButton onClick={handleOpen}>
-        <Menu />
-      </IconButton>
+      <Button variant="ghost" size="icon" onClick={handleOpen}>
+        <Menu className="h-5 w-5" />
+      </Button>
 
-      <Drawer
-        open={open}
-        onClose={handleClose}
-        slotProps={{
-          paper: {
-            sx: {
-              pb: 5,
-              width: NAV.W_BASE,
-            },
-          },
-        }}
-      >
-        <Box>
-          <Box sx={{ mx: 2.5, my: 3 }}>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="left"
+          className="w-[var(--nav-width)] p-0"
+          style={{
+            // provide runtime nav width
+            ["--nav-width"]: `${NAV.W_BASE}px`,
+          }}
+        >
+          <div className="px-4 py-3">
             <Logo />
-          </Box>
+          </div>
 
-          <List component="nav" disablePadding>
-            {data.map((link) => (
-              <ListItemButton
-                key={link.path}
-                component={Link}
-                href={link.path}
-                sx={(theme) => {
-                  const isLight = theme.palette.mode === "light";
-                  const activeStyle = {
-                    color: !isLight ? "primary.light" : "primary.main",
-                  };
-                  const isActive = pathname === link.path;
-
-                  return {
-                    position: "relative",
-                    textTransform: "capitalize",
-                    marginLeft: 0,
-                    marginRight: 0,
-                    px: 1,
-                    color: "text.secondary",
-                    "&:hover": {
-                      backgroundColor: "transparent",
-                    },
-                    ...(isActive && {
-                      ...activeStyle,
-                    }),
-                  };
-                }}
-              >
-                <ListItemText>
-                  <Box
-                    sx={{
-                      fontSize: 14,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      pl: 1,
-                    }}
-                  >
-                    <link.icon />
-                    <Typography variant="subtitle2">{link.title}</Typography>
-                  </Box>
-                </ListItemText>
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+          <nav className="flex flex-col">
+            {data.map((link) => {
+              const isActive = pathname === link.path;
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.path}
+                  href={link.path}
+                  className={
+                    isActive
+                      ? "text-primary inline-flex items-center gap-2 px-4 py-2"
+                      : "text-muted-foreground inline-flex items-center gap-2 px-4 py-2"
+                  }
+                  onClick={handleClose}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">{link.title}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

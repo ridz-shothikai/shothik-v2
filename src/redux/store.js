@@ -22,12 +22,10 @@ import presentationSlice from "./slice/presentationSlice";
 import researchChatReducer from "./slice/researchChatSlice";
 import researchCoreReducer from "./slice/researchCoreSlice";
 import researchUiSlice from "./slice/researchUiSlice";
+import settingReducer from "./slice/setting-slice";
 import settings from "./slice/settings";
 import sheetSlice from "./slice/sheetSlice";
 import tools from "./slice/tools";
-
-// Development vs Production configuration
-const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Custom RTK Query error handler
 const rtkQueryErrorHandler = (api, options) => (next) => (action) => {
@@ -56,6 +54,7 @@ const rtkQueryErrorHandler = (api, options) => (next) => (action) => {
 
 const store = configureStore({
   reducer: {
+    setting: settingReducer,
     auth,
     inputOutput,
     settings,

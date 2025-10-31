@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useSelector } from "react-redux";
 
 const VideoImage = ({ lightImage, darkImage, width, height }) => {
-  const { themeMode } = useSelector((state) => state.settings);
+  const { theme } = useSelector((state) => state.settings);
 
   return (
     <motion.div
@@ -19,7 +19,7 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
       className="relative z-0 h-[380px] w-[300px] overflow-hidden rounded-[70px] lg:h-[480px] lg:w-[400px]"
     >
       <Image
-        src={themeMode === "dark" ? darkImage : lightImage}
+        src={theme === "dark" ? darkImage : lightImage}
         className="h-full max-w-full rounded-[70px] bg-transparent object-cover"
         alt="Hero video"
         unoptimized

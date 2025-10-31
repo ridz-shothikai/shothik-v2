@@ -1,196 +1,119 @@
 import { LINKS } from "@/_mock/footer";
 import { _socials } from "@/_mock/socials";
 import Logo from "@/resource/assets/Logo";
-import {
-  Box,
-  Container,
-  Divider,
-  Grid2,
-  IconButton,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
-import NextLink from "next/link";
+import Link from "next/link";
 import { Fragment } from "react";
 
 export default function Footer() {
   const simpleFooter = (
-    <Box
-      component="footer"
-      sx={{
-        py: 5,
-        bgcolor: "background.default",
-        display: "flex",
-        flexDirection: { xs: "column", sm: "column", md: "row" },
-        justifyContent: "space-around",
-      }}
-    >
-      <Box
-        component="footer"
-        sx={{
-          bgcolor: "background.default",
-          display: { xs: "flex", sm: "flex", md: "block" },
-          justifyContent: { xs: "center", sm: "center" },
-        }}
-      >
-        <Container
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "column", md: "row" },
-            alignItems: "flex-start",
-            gap: { xs: 1, sm: 1, md: 4 },
-          }}
-        >
+    <footer className="bg-background flex flex-col items-center justify-around gap-4 py-5 md:flex-row">
+      <div className="bg-background flex justify-center md:block">
+        <div className="flex flex-col items-start gap-1 md:flex-row md:items-start md:gap-4">
           <Logo />
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <Typography>© 2025 All rights reserved.</Typography>
-            <Stack
-              direction={{ xs: "column", sm: "column", md: "row" }}
-              spacing={1}
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Link href="/terms" color="inherit">
+          <div className="flex flex-col gap-1">
+            <span className="text-foreground text-sm">
+              © 2025 All rights reserved.
+            </span>
+            <div className="flex flex-col items-start justify-start gap-1 md:flex-row">
+              <Link
+                href="/terms"
+                className="text-muted-foreground hover:text-foreground text-sm"
+              >
                 Terms of Service
               </Link>
-              <Link href="/privacy" color="inherit">
+              <Link
+                href="/privacy"
+                className="text-muted-foreground hover:text-foreground text-sm"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/deletion" color="inherit">
+              <Link
+                href="/deletion"
+                className="text-muted-foreground hover:text-foreground text-sm"
+              >
                 Deletion Policy
               </Link>
-              <Link href="/copyright" color="inherit">
+              <Link
+                href="/copyright"
+                className="text-muted-foreground hover:text-foreground text-sm"
+              >
                 Copyright, Community Guidelines
               </Link>
-            </Stack>
-            <Typography>
+            </div>
+            <span className="text-muted-foreground text-sm">
               This site is protected by reCAPTCHA and the Google Privacy Policy
               and Terms of Service apply
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
-      <Typography
-        variant="caption"
-        component="div"
-        sx={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "center",
-        }}
-      >
-        Developed by  <Link href="/?utm_source=internal">Shothik AI</Link>
-      </Typography>
-    </Box>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="text-muted-foreground flex items-center justify-center text-center text-xs">
+        Developed by 
+        <Link
+          href="/?utm_source=internal"
+          className="underline-offset-4 hover:underline"
+        >
+          Shothik AI
+        </Link>
+      </div>
+    </footer>
   );
 
   const mainFooter = (
-    <Box
-      component="footer"
-      sx={{
-        position: "relative",
-        bgcolor: "background.default",
-      }}
-    >
-      <Divider />
+    <footer className="bg-background relative">
+      <div className="border-border border-t" />
 
-      <Container sx={{ py: 10 }}>
-        <Grid2 container>
-          <Grid2 container spacing={4}>
-            {LINKS.map((list) => (
-              <Grid2 key={list.headline} size={{ xs: 6, sm: 6, md: 3 }}>
-                <Stack
-                  spacing={{ xs: 1, md: 2 }}
-                  alignItems={{
-                    xs: "flex-start",
-                    sm: "flex-start",
-                    md: "flex-start",
-                  }}
-                  sx={{ width: "100%" }}
+      <div className="mx-auto max-w-screen-xl px-4 py-10 sm:px-6 md:px-8">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4">
+          {LINKS.map((list) => (
+            <div key={list.headline} className="flex w-full flex-col gap-2">
+              <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+                {list.headline}
+              </span>
+              {list.children.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground text-sm"
                 >
-                  <Typography
-                    component="div"
-                    variant="overline"
-                    sx={{ fontSize: 14 }}
-                  >
-                    {list.headline}
-                  </Typography>
-
-                  {list.children.map((link) => (
-                    <Link
-                      key={link.name}
-                      component={NextLink}
-                      href={link.href}
-                      color="inherit"
-                    >
-                      {link.name.split("\n").map((line, index) => (
-                        <Fragment key={index}>
-                          {line}
-                          {index !== link.name.split("\n").length - 1 && <br />}
-                        </Fragment>
-                      ))}
-                    </Link>
+                  {link.name.split("\n").map((line, index) => (
+                    <Fragment key={index}>
+                      {line}
+                      {index !== link.name.split("\n").length - 1 && <br />}
+                    </Fragment>
                   ))}
-                </Stack>
-              </Grid2>
-            ))}
+                </Link>
+              ))}
+            </div>
+          ))}
 
-            {/* Social Section */}
-            <Grid2
-              sx={{
-                mt: 4,
-                ml: 4,
-              }}
-            >
-              <Stack
-                spacing={4}
-                direction={{ xs: "column", sm: "column", md: "row" }}
-                justifyContent={{
-                  xs: "center",
-                  sm: "center",
-                  md: "space-between",
-                }}
-                alignItems="center"
-              >
-                <Box>
-                  <Typography
-                    variant="overline"
-                    fontSize={14}
-                    textAlign={{ xs: "center", sm: "center", md: "left" }}
+          <div className="col-span-2 mt-4 sm:col-span-2 md:col-span-4">
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+              <div className="text-muted-foreground text-center text-xs font-semibold tracking-wide uppercase md:text-left">
+                Get to Know Us
+              </div>
+              <div className="mb-5 -ml-1 flex justify-center md:mb-0 md:justify-start">
+                {_socials.map((Social) => (
+                  <Link
+                    key={Social.name}
+                    href={Social.path}
+                    target="_blank"
+                    className="border-border text-muted-foreground hover:text-foreground mr-2 inline-flex h-9 w-9 items-center justify-center rounded-md border"
                   >
-                    Get to Know Us
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    justifyContent={{
-                      xs: "center",
-                      sm: "center",
-                      md: "flex-start",
-                    }}
-                    sx={{ mb: { xs: 5, md: 0 }, ml: { xs: -1, md: -1 } }}
-                  >
-                    {_socials.map((Social) => (
-                      <IconButton
-                        key={Social.name}
-                        component={NextLink}
-                        target="_blank"
-                        href={Social.path}
-                      >
-                        <Social.icon sx={{ color: Social.color }} />
-                      </IconButton>
-                    ))}
-                  </Stack>
-                </Box>
-              </Stack>
-            </Grid2>
-          </Grid2>
-        </Grid2>
-      </Container>
-    </Box>
+                    {/* Prefer Lucide; if icon is not Lucide, fall back to text */}
+                    {Social.icon ? (
+                      <Social.icon />
+                    ) : (
+                      <span className="text-xs">{Social.name}</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 
   return (

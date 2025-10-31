@@ -13,8 +13,6 @@ export default function ChatSidebar({
   sidebarOpen,
   toggleDrawer,
   isMobile,
-  isNavbarExpanded,
-  isDarkMode,
   isLoading,
   error,
   router,
@@ -41,12 +39,7 @@ export default function ChatSidebar({
       <SheetContent
         side="left"
         className={cn(
-          "absolute w-screen overflow-hidden p-0 sm:w-80 sm:max-w-[calc(100vw-320px)] md:w-[360px]",
-          isMobile
-            ? "left-0"
-            : isNavbarExpanded
-              ? "left-[273px]"
-              : "left-[100px]",
+          "absolute left-0 w-screen overflow-hidden p-0 sm:w-80 sm:max-w-[calc(100vw-320px)] md:left-[100px] md:w-[360px]",
         )}
         style={{ zIndex: 1102 }}
       >

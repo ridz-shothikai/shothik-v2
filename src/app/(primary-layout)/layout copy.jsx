@@ -25,12 +25,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function PrimaryLayout({ children }) {
-  const { open, themeLayout } = useSelector((state) => state.settings);
+  const { open, sidebar } = useSelector((state) => state.settings);
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const pathname = usePathname();
   const isSharedPage = pathname?.startsWith("/shared");
   const isMobile = useResponsive("down", "sm");
-  const isCompact = themeLayout === "mini";
+  const isCompact = sidebar === "compact";
   const dispatch = useDispatch();
   const { user, accessToken } = useSelector((state) => state.auth);
   const { isLoading } = useGetUserQuery(undefined, {
