@@ -14,8 +14,8 @@ import AccountPopover from "./components/AccountProper";
 
 export default function MainHeader() {
   const { accessToken, user } = useSelector((state) => state.auth);
-  const { themeLayout } = useSelector((state) => state.settings);
-  const isCompact = themeLayout === "mini";
+  const { sidebar } = useSelector((state) => state.settings);
+  const isCompact = sidebar === "compact";
   const { isLoading } = useGetUserQuery(undefined, {
     skip: !accessToken,
   });

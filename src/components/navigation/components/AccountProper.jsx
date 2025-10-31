@@ -7,21 +7,13 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "@/redux/slice/auth";
-import { toggleThemeMode } from "@/redux/slice/settings";
+
 import Discord from "@/resource/assets/Discord";
-import Brightness4OutlinedIcon from "@mui/icons-material/Brightness4Outlined";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LoginIcon from "@mui/icons-material/Login";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PersonOutlineSharpIcon from "@mui/icons-material/PersonOutlineSharp";
-import {
-  Box,
-  MenuItem,
-  Popover,
-  Stack,
-  Switch,
-  Typography,
-} from "@mui/material";
+import { Box, MenuItem, Popover, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 // ----------------------------------------------------------------------
 
 export default function AccountPopover({ accessToken, user }) {
-  const { themeMode } = useSelector((state) => state.settings);
+  const { theme } = useSelector((state) => state.settings);
   const [openPopover, setOpenPopover] = useState(null);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
@@ -204,22 +196,6 @@ export default function AccountPopover({ accessToken, user }) {
             </Stack>
           </MenuItem>
         )}
-
-        <MenuItem
-          onClick={() => dispatch(toggleThemeMode())}
-          sx={{
-            "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
-            py: 0,
-          }}
-        >
-          <Stack direction="row" alignItems="center" spacing={1} pl={1.5}>
-            <Brightness4OutlinedIcon sx={{ width: 20, height: 20 }} />
-            <Typography variant="body2" sx={{ pl: 0, ml: "0 !important" }}>
-              Dark mode
-            </Typography>
-            <Switch checked={themeMode === "dark"} size="medium" />
-          </Stack>
-        </MenuItem>
 
         <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
           <Link

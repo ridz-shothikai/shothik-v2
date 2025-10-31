@@ -1,16 +1,11 @@
 "use client";
 
 import Main from "@/components/layout/Main";
-import MainHeader from "@/components/navigation/MainHeader";
-import NavMini from "@/components/navigation/NavMini";
-import NavVertical from "@/components/navigation/NavVertical";
-import useResponsive from "@/hooks/useResponsive";
 import {
   useCreateAgentReplicaMutation,
   useLazyVerifySharedAgentQuery,
 } from "@/redux/api/shareAgent/shareAgentApi";
 import { setShowLoginModal } from "@/redux/slice/auth";
-import { setOpen } from "@/redux/slice/settings";
 import {
   ArrowDropDown,
   Download,
@@ -31,7 +26,6 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { use, useEffect, useState } from "react";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
@@ -167,14 +161,7 @@ export default function SharedSheetPage({ params }) {
     severity: "success",
   });
   const [pendingSaveAction, setPendingSaveAction] = useState(false);
-
-  // All hooks must be at the top before any conditional returns
-  const theme = useTheme();
   const { user } = useSelector((state) => state.auth);
-  const { open, themeLayout } = useSelector((state) => state.settings);
-  const isMobile = useResponsive("down", "sm");
-  const isNavMini = themeLayout === "mini";
-  const isDarkMode = theme.palette.mode === "dark";
 
   // Fallback: try to get user from localStorage if Redux state is not available
   const [localUser, setLocalUser] = useState(null);
@@ -668,273 +655,247 @@ export default function SharedSheetPage({ params }) {
   const hasData = rows.length > 0 && columns.length > 0;
 
   return (
-    <Box sx={{ minHeight: "100vh" }}>
-      {/* Real Main Header */}
-      <MainHeader />
+    <Main>
+      {/* Sheet Title/Dropdown */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+        <Box
+          sx={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            bgcolor: "#07B37A",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: "12px",
+          }}
+        >
+          ✓
+        </Box>
+        <Typography variant="h6" sx={{ color: "#333", fontWeight: 500 }}>
+          List top 5 Italian restaurant...
+        </Typography>
+      </Box>
 
-      {/* Main Layout with Sidebar */}
-      <Box
-        sx={{
-          bgcolor: isDarkMode ? "#212121" : "background.neutral",
-          display: { sm: "flex" },
-          minHeight: { sm: 1 },
-          overflow: "hidden",
-        }}
-      >
-        {/* Sidebar Navigation */}
-        {!isMobile && isNavMini ? (
-          <NavMini isDarkMode={isDarkMode} />
-        ) : (
-          <NavVertical
-            openNav={open}
-            onCloseNav={() => dispatch(setOpen(false))}
+      {/* Action Buttons */}
+      <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
+        <Button
+          variant="outlined"
+          startIcon={<Edit />}
+          sx={{
+            borderColor: "#07B37A",
+            color: "#07B37A",
+            textTransform: "none",
+            borderRadius: 2,
+            px: 2,
+            py: 1,
+            "&:hover": {
+              borderColor: "#07B37A",
+              bgcolor: "#f0f9f6",
+            },
+          }}
+        >
+          Edit Mode
+        </Button>
+
+        <Button
+          variant="outlined"
+          startIcon={<OpenInNew />}
+          sx={{
+            borderColor: "#07B37A",
+            color: "#07B37A",
+            textTransform: "none",
+            borderRadius: 2,
+            px: 2,
+            py: 1,
+            "&:hover": {
+              borderColor: "#07B37A",
+              bgcolor: "#f0f9f6",
+            },
+          }}
+        >
+          View in New Window
+        </Button>
+
+        <Button
+          variant="outlined"
+          startIcon={<Download />}
+          endIcon={<ArrowDropDown />}
+          onClick={handleExportMenuOpen}
+          disabled={!hasData}
+          sx={{
+            borderColor: "#07B37A",
+            color: "#07B37A",
+            textTransform: "none",
+            borderRadius: 2,
+            px: 2,
+            py: 1,
+            "&:hover": {
+              borderColor: "#07B37A",
+              bgcolor: "#f0f9f6",
+            },
+          }}
+        >
+          Export
+        </Button>
+
+        <Button
+          variant="outlined"
+          startIcon={<Share />}
+          sx={{
+            borderColor: "#07B37A",
+            color: "#07B37A",
+            textTransform: "none",
+            borderRadius: 2,
+            px: 2,
+            py: 1,
+            "&:hover": {
+              borderColor: "#07B37A",
+              bgcolor: "#f0f9f6",
+            },
+          }}
+        >
+          Share
+        </Button>
+
+        {/* Save and Copy Button */}
+        <Button
+          variant="contained"
+          startIcon={
+            isReplicating ? <CircularProgress size={20} /> : <SaveIcon />
+          }
+          onClick={handleSaveAndCopy}
+          disabled={isReplicating}
+          sx={{
+            bgcolor: "#07B37A",
+            color: "white",
+            textTransform: "none",
+            borderRadius: 2,
+            px: 3,
+            py: 1.5,
+            ml: 1,
+            fontWeight: 600,
+            fontSize: "0.875rem",
+            "&:hover": {
+              bgcolor: "#059669",
+            },
+            "&:disabled": {
+              bgcolor: "#e0e0e0",
+              color: "#9e9e9e",
+            },
+          }}
+        >
+          {isReplicating ? "Saving..." : "Save as Copy to My Chat"}
+        </Button>
+      </Box>
+
+      {/* Data Table */}
+      <Box sx={{ height: "calc(100vh - 300px)", minHeight: 400 }}>
+        {hasData ? (
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            defaultColumnOptions={{
+              resizable: true,
+              sortable: true,
+            }}
+            style={{
+              border: "1px solid #e0e0e0",
+              borderRadius: 8,
+              fontFamily: "inherit",
+              backgroundColor: "white",
+            }}
+            className="rdg-light"
+            headerRowHeight={40}
+            rowHeight={40}
           />
-        )}
-
-        {/* Main Content Area */}
-        <Main>
-          {/* Sheet Title/Dropdown */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                bgcolor: "#07B37A",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: "12px",
-              }}
-            >
-              ✓
-            </Box>
-            <Typography variant="h6" sx={{ color: "#333", fontWeight: 500 }}>
-              List top 5 Italian restaurant...
-            </Typography>
-          </Box>
-
-          {/* Action Buttons */}
-          <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
-            <Button
-              variant="outlined"
-              startIcon={<Edit />}
-              sx={{
-                borderColor: "#07B37A",
-                color: "#07B37A",
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                "&:hover": {
-                  borderColor: "#07B37A",
-                  bgcolor: "#f0f9f6",
-                },
-              }}
-            >
-              Edit Mode
-            </Button>
-
-            <Button
-              variant="outlined"
-              startIcon={<OpenInNew />}
-              sx={{
-                borderColor: "#07B37A",
-                color: "#07B37A",
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                "&:hover": {
-                  borderColor: "#07B37A",
-                  bgcolor: "#f0f9f6",
-                },
-              }}
-            >
-              View in New Window
-            </Button>
-
-            <Button
-              variant="outlined"
-              startIcon={<Download />}
-              endIcon={<ArrowDropDown />}
-              onClick={handleExportMenuOpen}
-              disabled={!hasData}
-              sx={{
-                borderColor: "#07B37A",
-                color: "#07B37A",
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                "&:hover": {
-                  borderColor: "#07B37A",
-                  bgcolor: "#f0f9f6",
-                },
-              }}
-            >
-              Export
-            </Button>
-
-            <Button
-              variant="outlined"
-              startIcon={<Share />}
-              sx={{
-                borderColor: "#07B37A",
-                color: "#07B37A",
-                textTransform: "none",
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                "&:hover": {
-                  borderColor: "#07B37A",
-                  bgcolor: "#f0f9f6",
-                },
-              }}
-            >
-              Share
-            </Button>
-
-            {/* Save and Copy Button */}
-            <Button
-              variant="contained"
-              startIcon={
-                isReplicating ? <CircularProgress size={20} /> : <SaveIcon />
-              }
-              onClick={handleSaveAndCopy}
-              disabled={isReplicating}
-              sx={{
-                bgcolor: "#07B37A",
-                color: "white",
-                textTransform: "none",
-                borderRadius: 2,
-                px: 3,
-                py: 1.5,
-                ml: 1,
-                fontWeight: 600,
-                fontSize: "0.875rem",
-                "&:hover": {
-                  bgcolor: "#059669",
-                },
-                "&:disabled": {
-                  bgcolor: "#e0e0e0",
-                  color: "#9e9e9e",
-                },
-              }}
-            >
-              {isReplicating ? "Saving..." : "Save as Copy to My Chat"}
-            </Button>
-          </Box>
-
-          {/* Data Table */}
-          <Box sx={{ height: "calc(100vh - 300px)", minHeight: 400 }}>
-            {hasData ? (
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                defaultColumnOptions={{
-                  resizable: true,
-                  sortable: true,
-                }}
-                style={{
-                  border: "1px solid #e0e0e0",
-                  borderRadius: 8,
-                  fontFamily: "inherit",
-                  backgroundColor: "white",
-                }}
-                className="rdg-light"
-                headerRowHeight={40}
-                rowHeight={40}
-              />
-            ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                  flexDirection: "column",
-                  gap: 2,
-                  bgcolor: "white",
-                  borderRadius: 2,
-                  border: "1px solid #e0e0e0",
-                }}
-              >
-                <Typography variant="h6" color="text.secondary">
-                  No data available
-                </Typography>
-              </Box>
-            )}
-          </Box>
-
-          {/* Footer */}
+        ) : (
           <Box
             sx={{
-              mt: 2,
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "center",
               alignItems: "center",
+              height: "100%",
+              flexDirection: "column",
+              gap: 2,
+              bgcolor: "white",
+              borderRadius: 2,
+              border: "1px solid #e0e0e0",
             }}
           >
-            <Typography variant="caption" color="text.secondary">
-              Last updated: {new Date().toLocaleTimeString()}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-            >
-              <Edit sx={{ fontSize: 12 }} />
-              Double-click to edit cells
+            <Typography variant="h6" color="text.secondary">
+              No data available
             </Typography>
           </Box>
-
-          {/* Export Menu */}
-          <Menu
-            anchorEl={exportMenuAnchor}
-            open={Boolean(exportMenuAnchor)}
-            onClose={handleExportMenuClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            <MenuItem onClick={handleExportCSV}>
-              <ListItemIcon>
-                <Download fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Export as CSV</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={handleExportExcel}>
-              <ListItemIcon>
-                <Download fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Export as Excel</ListItemText>
-            </MenuItem>
-          </Menu>
-
-          {/* Snackbar */}
-          <Snackbar
-            open={snackbar.open}
-            autoHideDuration={4000}
-            onClose={handleCloseSnackbar}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={snackbar.severity}
-              sx={{ width: "100%" }}
-            >
-              {snackbar.message}
-            </Alert>
-          </Snackbar>
-        </Main>
+        )}
       </Box>
-    </Box>
+
+      {/* Footer */}
+      <Box
+        sx={{
+          mt: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="caption" color="text.secondary">
+          Last updated: {new Date().toLocaleTimeString()}
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+        >
+          <Edit sx={{ fontSize: 12 }} />
+          Double-click to edit cells
+        </Typography>
+      </Box>
+
+      {/* Export Menu */}
+      <Menu
+        anchorEl={exportMenuAnchor}
+        open={Boolean(exportMenuAnchor)}
+        onClose={handleExportMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <MenuItem onClick={handleExportCSV}>
+          <ListItemIcon>
+            <Download fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Export as CSV</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleExportExcel}>
+          <ListItemIcon>
+            <Download fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Export as Excel</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Main>
   );
 }

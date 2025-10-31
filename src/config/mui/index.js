@@ -4,7 +4,6 @@ import {
   ThemeProvider as MUIThemeProvider,
   StyledEngineProvider,
 } from "@mui/material/styles";
-import * as React from "react";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import customShadows from "./customShadows";
@@ -17,24 +16,24 @@ import typography from "./typography";
 // ----------------------------------------------------------------------
 
 export default function ThemeProvider({ children }) {
-  const { themeMode } = useSelector((state) => state.settings);
+  const { theme } = useSelector((state) => state.settings);
   const themeOptions = useMemo(
     () => ({
-      palette: palette(themeMode),
+      palette: palette(theme),
       typography,
       shape: { borderRadius: 8 },
-      shadows: shadows(themeMode),
-      customShadows: customShadows(themeMode),
+      shadows: shadows(theme),
+      customShadows: customShadows(theme),
     }),
-    [themeMode],
+    [theme],
   );
 
-  const theme = createTheme(themeOptions);
+  const muitheme = createTheme(themeOptions);
 
-  theme.components = componentsOverride(theme);
+  muitheme.components = componentsOverride(muitheme);
 
   return (
-    <MUIThemeProvider theme={theme}>
+    <MUIThemeProvider theme={muitheme}>
       <StyledEngineProvider injectFirst>
         <CssBaseline />
         <GlobalStyles />

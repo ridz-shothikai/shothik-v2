@@ -6,10 +6,10 @@ export default function useStickyBottom(height) {
   const isMobile = useResponsive("down", "sm");
   const isMd = useResponsive("down", "md");
   const [isSticky, setIsSticky] = useState(false);
-  const { themeLayout } = useSelector((state) => state.settings);
+  const { sidebar } = useSelector((state) => state.settings);
   const [elementRef, setElementRef] = useState(null);
   const [originalPosition, setOriginalPosition] = useState(null);
-  const isMini = themeLayout === "mini";
+  const isMini = sidebar === "compact";
 
   // Function to calculate and store the element's original position
   const measureElement = useCallback(() => {

@@ -67,7 +67,11 @@ function NavSectionMini({ data, user }) {
             }}
           >
             {itemsToRender.map((list) => (
-              <NavList key={list.title + list.path} data={list} layout="mini" />
+              <NavList
+                key={list.title + list.path}
+                data={list}
+                layout="compact"
+              />
             ))}
 
             {/* Show "More" button after the last visible item */}

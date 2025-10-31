@@ -126,7 +126,7 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId }) => {
         // Convert the share link to point to shared-sheet page
         const baseUrl =
           process.env.NEXT_PUBLIC_FRONTEND_URL || window.location.origin;
-        const shareLink = `${baseUrl}/shared-sheet/${response.data.shareId}`;
+        const shareLink = `${baseUrl}/agents/shared-sheet/${response.data.shareId}`;
         setShareLink(shareLink);
         toast.success(
           `Successfully sent to ${response.data.emailsSent} recipient(s)!`,

@@ -2,11 +2,10 @@
 import { Box } from "@mui/material";
 import { motion } from "motion/react";
 import Image from "next/image";
-import React from "react";
 import { useSelector } from "react-redux";
 
 const VideoImage = ({ lightImage, darkImage, width, height }) => {
-  const { themeMode } = useSelector((state) => state.settings);
+  const { theme } = useSelector((state) => state.settings);
 
   return (
     <Box
@@ -24,7 +23,7 @@ const VideoImage = ({ lightImage, darkImage, width, height }) => {
       }}
     >
       <Image
-        src={themeMode === "dark" ? darkImage : lightImage}
+        src={theme === "dark" ? darkImage : lightImage}
         style={{
           maxWidth: "100%",
           height: "100%",

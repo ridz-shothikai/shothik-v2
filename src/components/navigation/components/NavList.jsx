@@ -41,14 +41,14 @@ export default function NavList({ data, layout, onCloseNav }) {
         return {
           position: "relative",
           textTransform: "capitalize",
-          px: layout === "mini" ? 0.5 : 2,
+          px: layout === "compact" ? 0.5 : 2,
           mb: 0.5,
           color: "text.secondary",
-          width: layout === "mini" ? 72 : "100%",
-          minWidth: layout === "mini" ? 72 : "100%",
+          width: layout === "compact" ? 72 : "100%",
+          minWidth: layout === "compact" ? 72 : "100%",
           borderRadius: 1,
           display: "flex",
-          flexDirection: layout === "mini" ? "column" : "row",
+          flexDirection: layout === "compact" ? "column" : "row",
           // flexWrap: "wrap",
           justifyContent: "center",
           alignItems: "center",
@@ -68,7 +68,7 @@ export default function NavList({ data, layout, onCloseNav }) {
             width: ICON.NAV_ITEM,
             height: ICON.NAV_ITEM,
             color: iconColor,
-            marginRight: layout === "mini" ? 0 : "16px",
+            marginRight: layout === "compact" ? 0 : "16px",
           }}
         >
           {icon}
@@ -78,10 +78,10 @@ export default function NavList({ data, layout, onCloseNav }) {
       <ListItemText>
         <Typography
           sx={{
-            fontSize: layout === "mini" ? 12 : 16,
-            textAlign: layout === "mini" ? "center" : "start",
+            fontSize: layout === "compact" ? 12 : 16,
+            textAlign: layout === "compact" ? "center" : "start",
             flexGrow: 1,
-            whiteSpace: layout === "mini" ? "wrap" : "nowrap",
+            whiteSpace: layout === "compact" ? "wrap" : "nowrap",
           }}
           variant={isActive ? "subtitle2" : "body2"}
         >
@@ -90,7 +90,7 @@ export default function NavList({ data, layout, onCloseNav }) {
               AI
               <br
                 style={{
-                  display: `${layout === "mini" ? "block" : "none"}`,
+                  display: `${layout === "compact" ? "block" : "none"}`,
                 }}
               />{" "}
               Detector

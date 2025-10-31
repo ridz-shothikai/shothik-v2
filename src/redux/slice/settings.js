@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const getInitialState = () => ({
-  themeMode: "light",
-  themeLayout: "mini",
+  theme: "light",
+  sidebar: "compact",
+  header: "expanded",
+  layout: "vertical",
+  language: "en",
+
   open: false,
   demo: false,
   paraphraseOptions: {
@@ -15,7 +19,6 @@ const getInitialState = () => ({
   interfaceOptions: {
     useYellowHighlight: false,
     showTooltips: true,
-    // showLegend: false,
     showChangedWords: true,
     showStructuralChanges: false,
     showLongestUnchangedWords: false,
@@ -62,44 +65,71 @@ const settingsSlice = createSlice({
       }
     },
 
-    setThemeMode: (state, action) => {
-      state.themeMode = action.payload;
-      localStorage.setItem("themeMode", action.payload);
+    updateTheme: (state, action) => {
+      state.theme = action.payload;
+      localStorage.setItem("theme", action.payload);
     },
-    setThemeLayout: (state, action) => {
-      state.themeLayout = action.payload;
-      localStorage.setItem("themeLayout", action.payload);
+
+    toggleTheme(state) {
+      const order = ["light", "dark", "system"];
+      const nextIndex = (order.indexOf(state.theme) + 1) % order.length;
+      const nextTheme = order[nextIndex];
+      state.theme = nextTheme;
+      localStorage.setItem("theme", nextTheme);
     },
+
+    updateSidebar: (state, action) => {
+      state.sidebar = action.payload;
+      localStorage.setItem("sidebar", action.payload);
+    },
+
+    toggleSidebar(state) {
+      const nextSidebar = state.sidebar === "expanded" ? "compact" : "expanded";
+      state.sidebar = nextSidebar;
+      localStorage.setItem("sidebar", nextSidebar);
+    },
+
+    updateHeader(state, action) {
+      state.header = action.payload;
+      localStorage.setItem("header", action.payload);
+    },
+    toggleHeader(state) {
+      const nextHeader = state.header === "expanded" ? "compact" : "expanded";
+      state.header = nextHeader;
+      localStorage.setItem("header", nextHeader);
+    },
+
+    updateLayout(state, action) {
+      state.layout = action.payload;
+      localStorage.setItem("layout", action.payload);
+    },
+
+    toggleLayout(state) {
+      const nextLayout =
+        state.layout === "vertical" ? "horizontal" : "vertical";
+      state.layout = nextLayout;
+      localStorage.setItem("layout", nextLayout);
+    },
+
+    updateLanguage(state, action) {
+      state.language = action.payload;
+      localStorage.setItem("language", action.payload);
+    },
+
+    toggleLanguage(state) {
+      const nextLanguage = state.language === "en" ? "bn" : "en";
+      state.language = nextLanguage;
+      localStorage.setItem("language", nextLanguage);
+    },
+
     setOpen: (state, action) => {
       state.open = action.payload;
       localStorage.setItem("open", action.payload);
     },
-    toggleThemeMode: (state) => {
-      state.themeMode = state.themeMode === "light" ? "dark" : "light";
-      localStorage.setItem("themeMode", state.themeMode);
-    },
-    toggleThemeLayout: (state) => {
-      state.themeLayout =
-        state.themeLayout === "vertical" ? "mini" : "vertical";
-    },
-    loadSettingsFromLocalStorage: (state) => {
-      state.themeMode = localStorage.getItem("themeMode") || "light";
-      state.open = localStorage.getItem("open") === "true";
 
-      const storedParaphraseOptions = localStorage.getItem("paraphraseOptions");
-      if (storedParaphraseOptions) {
-        state.paraphraseOptions = JSON.parse(storedParaphraseOptions);
-      }
-
-      const storedInterfaceOptions = localStorage.getItem("interfaceOptions");
-      if (storedInterfaceOptions) {
-        state.interfaceOptions = JSON.parse(storedInterfaceOptions);
-      }
-
-      const storedHumanizeOptions = localStorage.getItem("humanizeOptions");
-      if (storedHumanizeOptions) {
-        state.humanizeOptions = JSON.parse(storedHumanizeOptions);
-      }
+    toggleOpen: (state) => {
+      state.open = !state.open;
+      localStorage.setItem("open", state.open);
     },
 
     setDemo: (state, action) => {
@@ -109,13 +139,19 @@ const settingsSlice = createSlice({
 });
 
 export const {
-  setThemeMode,
-  setDemo,
-  setThemeLayout,
+  updateTheme,
+  toggleTheme,
+  updateHeader,
+  toggleHeader,
+  updateLayout,
+  toggleLayout,
+  updateLanguage,
+  toggleLanguage,
+  updateSidebar,
+  toggleSidebar,
   setOpen,
-  toggleThemeMode,
-  toggleThemeLayout,
-  loadSettingsFromLocalStorage,
+  toggleOpen,
+  setDemo,
   toggleParaphraseOption,
   toggleInterfaceOption,
   toggleHumanizeOption,

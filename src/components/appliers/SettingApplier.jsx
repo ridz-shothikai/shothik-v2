@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 const SettingApplier = () => {
   const direction = useSelector((state) => state.settings.direction);
-  const theme = useSelector((state) => state.settings.themeMode);
+  const theme = useSelector((state) => state.settings.theme);
   const language = useSelector((state) => state.settings.language);
 
   // Apply direction
