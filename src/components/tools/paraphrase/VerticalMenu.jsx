@@ -1,16 +1,16 @@
 "use client";
-import { Box, Drawer, IconButton, Tooltip, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React, { memo, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import compare from "../../../../public/icons/compare-modes.svg";
-import feedback from "../../../../public/icons/feedback.svg";
-import history from "../../../../public/icons/history.svg";
-import hotkeys from "../../../../public/icons/hotkeys.svg";
-import plagiarism from "../../../../public/icons/plagiarism.svg";
-import settings from "../../../../public/icons/settings.svg";
-import tone from "../../../../public/icons/tone.svg";
 import FileHistorySidebar from "./FileHistorySidebar";
 import PlagiarismSidebar from "./PlagiarismSidebar";
 import SettingsSidebar from "./settings/SettingsSidebar";
@@ -28,105 +28,52 @@ const ActionButton = memo(
     showTooltip = false,
     tooltipText,
   }) => {
-    const theme = useTheme();
     const words = useMemo(() => title.split(" "), [title]);
 
-    const containerStyles = useMemo(
-      () =>
-        mobile
-          ? {
-              flexDirection: "row",
-              flexWrap: "nowrap",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: theme.spacing(1),
-              padding: theme.spacing(1),
-            }
-          : { flexDirection: "column", gap: 1 },
-      [mobile, theme],
-    );
-
     const content = (
-      <Box
+      <div
         onClick={!disabled ? onClick : undefined}
-        sx={{
-          width: mobile ? "100%" : "3.9rem",
-          height: "auto",
-          display: "flex",
-          ...containerStyles,
-          justifyContent: mobile ? "flex-start" : "center",
-          cursor: disabled ? "not-allowed" : "pointer",
-          transition: "background-color 0.2s",
-          userSelect: "none",
-        }}
+        className={cn(
+          "w-full select-none",
+          "flex flex-row items-center md:flex-col",
+          mobile ? "justify-between gap-3 p-2" : "justify-between gap-2",
+          disabled ? "cursor-not-allowed" : "cursor-pointer",
+        )}
       >
-        <Box
-          sx={{
-            position: "relative",
-            mb: mobile ? 0 : 0.5,
-            mr: mobile ? 1 : 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <IconButton
+        <div className="relative flex shrink-0 items-center justify-center">
+          <Button
             id={id}
-            size="large"
+            variant="ghost"
+            size="icon"
+            className="text-foreground h-5 w-5 p-0"
+            disabled={disabled}
             onClick={(e) => {
               e.stopPropagation();
               if (!disabled) onClick();
             }}
-            disabled={disabled}
-            disableRipple
-            disableTouchRipple
-            sx={{
-              p: 0,
-              color: theme.palette.text.primary,
-            }}
           >
-            {/* ✅ Use priority and unoptimized for static assets */}
-            <Image
-              src={icon}
-              priority
-              width={20}
-              height={20}
-              alt=""
-              style={{ width: 20, height: 20 }}
-            />
-          </IconButton>
+            <Image src={icon} alt="" width={20} height={20} classNmae="" />
+          </Button>
           {crown && (
-            <Box
-              component="img"
+            <Image
               src="/premium_crown.svg"
               alt="premium crown"
-              sx={{
-                position: "absolute",
-                ...(mobile
-                  ? {
-                      bottom: 0,
-                      right: 0,
-                      transform: "translate(50%, 50%)",
-                    }
-                  : { bottom: "-6px", right: "10px", transform: "none" }),
-                width: 16,
-                height: 16,
-                pointerEvents: "none",
-              }}
+              width={16}
+              height={16}
+              className={cn(
+                "pointer-events-none absolute",
+                mobile
+                  ? "right-0 bottom-0 translate-x-1/2 translate-y-1/2"
+                  : "-right-1 -bottom-1",
+              )}
             />
           )}
-        </Box>
+        </div>
 
-        <Typography
-          variant="caption"
-          align="center"
-          sx={{
-            fontSize: 12,
-            color: theme.palette.text.primary,
-            whiteSpace: mobile ? "nowrap" : "pre-line",
-            lineHeight: 1.2,
-          }}
+        <span
+          className={cn(
+            "text-foreground inline-block flex-1 text-start text-xs leading-tight whitespace-nowrap md:text-center md:whitespace-pre-line",
+          )}
         >
           {mobile
             ? title
@@ -136,15 +83,20 @@ const ActionButton = memo(
                   {i < words.length - 1 && "\n"}
                 </React.Fragment>
               ))}
-        </Typography>
-      </Box>
+        </span>
+      </div>
     );
 
     if (showTooltip) {
       return (
-        <Tooltip title={tooltipText || title} placement="right">
-          {content}
-        </Tooltip>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>{content}</TooltipTrigger>
+            <TooltipContent side="right">
+              <p className="text-sm">{tooltipText || title}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     }
 
@@ -224,35 +176,27 @@ const VerticalMenu = ({
 
   return (
     <>
-      <Box
-        sx={{
-          maxHeight: { xs: "90vh", lg: "638px" },
-          mt: 1,
-          width: mobile ? "100%" : "fit-content",
-          px: mobile ? 2 : 0,
-          display: "flex",
-          flexDirection: "column",
-          gap: { xs: 3.5, lg: 5.5 },
-          zIndex: 10,
-          position: "relative",
-          bottom: 0,
-        }}
+      <div
+        className={cn(
+          "relative z-10",
+          "mt-1",
+          mobile ? "max-h-[90vh] w-full px-2" : "max-h-[638px] w-full px-0",
+          "flex flex-col",
+          mobile ? "gap-3.5" : "gap-5.5",
+        )}
       >
         {/* Center icons */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: { xs: 2, lg: 3 },
-            alignItems: mobile ? "flex-start" : "center",
-            width: mobile ? "100%" : "auto",
-          }}
+        <div
+          className={cn(
+            "flex flex-col",
+            mobile ? "w-full items-start gap-2" : "w-auto items-center gap-3",
+          )}
         >
-          <Box id="paraphrase_plagiarism">
+          <div id="paraphrase_plagiarism" className="w-full">
             <ActionButton
               id="paraphrase_plagiarism_button"
               title="Check Plagiarism"
-              icon={plagiarism}
+              icon="/icons/plagiarism.svg"
               onClick={() => setShowSidebar("plagiarism")}
               disabled={disableActions}
               crown={true}
@@ -260,23 +204,23 @@ const VerticalMenu = ({
               showTooltip={true}
               tooltipText={"Paraphrase text to see plagiarism."}
             />
-          </Box>
-          <Box id="paraphrase_history">
+          </div>
+          <div id="paraphrase_history" className="w-full">
             <ActionButton
               id="paraphrase_history_button"
               title="History"
-              icon={history}
+              icon="/icons/history.svg"
               onClick={() => setShowSidebar("history")}
               disabled={false}
               crown={true}
               mobile={mobile}
             />
-          </Box>
-          <Box id="paraphrase_compare">
+          </div>
+          <div id="paraphrase_compare" className="w-full">
             <ActionButton
               id="paraphrase_compare_button"
               title="Compare Modes"
-              icon={compare}
+              icon="/icons/compare-modes.svg"
               onClick={() => setShowSidebar("compare")}
               disabled={disableActions}
               crown={true}
@@ -284,12 +228,12 @@ const VerticalMenu = ({
               showTooltip={true}
               tooltipText="Paraphrase text to see compare mode."
             />
-          </Box>
-          <Box id="paraphrase_tone">
+          </div>
+          <div id="paraphrase_tone" className="w-full">
             <ActionButton
               id="paraphrase_tone_button"
               title="Tone"
-              icon={tone}
+              icon="/icons/tone.svg"
               onClick={() => setShowSidebar("tone")}
               disabled={disableActions}
               crown={true}
@@ -297,107 +241,100 @@ const VerticalMenu = ({
               showTooltip={true}
               tooltipText="Paraphrase text to see tone."
             />
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* Bottom icons */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: { xs: 2, lg: 3 },
-            mt: 2,
-            alignItems: mobile ? "flex-start" : "center",
-            width: mobile ? "100%" : "auto",
-          }}
+        <div
+          className={cn(
+            "mt-2 flex flex-col",
+            mobile ? "w-full items-start gap-2" : "w-auto items-center gap-3",
+          )}
         >
           {mobile && (
             <FileHistorySidebar fetchFileHistories={fetchFileHistories} />
           )}
-          <Box id="paraphrase_settings">
+          <div id="paraphrase_settings" className="w-full">
             <ActionButton
               title="Settings"
               id="paraphrase_settings_button"
-              icon={settings}
+              icon="/icons/settings.svg"
               onClick={() => setShowSidebar("settings")}
               disabled={false}
               mobile={mobile}
               showTooltip={true}
             />
-          </Box>
-          <Box id="paraphrase_feedback">
+          </div>
+          <div id="paraphrase_feedback" className="w-full">
             <ActionButton
               id="paraphrase_feedback_button"
               title="Feedback"
-              icon={feedback}
+              icon="/icons/feedback.svg"
               onClick={() => setShowSidebar("feedback")}
               disabled={false}
               mobile={mobile}
               showTooltip={true}
             />
-          </Box>
-          <Box id="paraphrase_shortcuts">
+          </div>
+          <div id="paraphrase_shortcuts" className="w-full">
             <ActionButton
               id="paraphrase_shortcuts_button"
               title="Hotkeys"
-              icon={hotkeys}
+              icon="/icons/hotkeys.svg"
               onClick={() => setShowSidebar("shortcuts")}
               disabled={false}
               mobile={mobile}
               showTooltip={true}
             />
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
 
-      {/* Material-UI Drawer Component */}
-      <Drawer
-        anchor="right"
-        open={!!showSidebar}
-        onClose={() => setShowSidebar(false)}
-        variant="temporary"
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: mobile ? "100%" : "auto",
-            maxWidth: mobile ? "100%" : "380px",
-            minWidth: mobile ? "100%" : "400px",
-          },
-        }}
-      >
-        {["plagiarism", "history", "tone", "compare"].includes(showSidebar) && (
-          <PlagiarismSidebar
-            open={showSidebar}
-            onClose={() => setShowSidebar((prev) => !prev)}
-            active={showSidebar}
-            setActive={setShowSidebar}
-            score={mockPlagiarismData.score}
-            results={mockPlagiarismData.results}
-            selectedMode={selectedMode}
-            setSelectedMode={setSelectedMode}
-            outputText={outputText}
-            setOutputText={setOutputText}
-            text={text}
-            freezeWords={freezeWords}
-            selectedLang={selectedLang}
-            sentence={currentSentence}
-            selectedSynonymLevel={selectedSynonymLevel}
-            highlightSentence={highlightSentence}
-            plainOutput={plainOutput}
-            mobile={mobile}
-            disableActions={disableActions}
-          />
-        )}
+      {/* Sheet to replace Drawer */}
+      <Sheet open={!!showSidebar} onOpenChange={() => setShowSidebar(false)}>
+        <SheetContent
+          side="right"
+          className={cn(
+            mobile ? "w-full max-w-full" : "max-w-[380px] min-w-[400px]",
+          )}
+        >
+          {["plagiarism", "history", "tone", "compare"].includes(
+            showSidebar,
+          ) && (
+            <PlagiarismSidebar
+              open={showSidebar}
+              onClose={() => setShowSidebar((prev) => !prev)}
+              active={showSidebar}
+              setActive={setShowSidebar}
+              score={mockPlagiarismData.score}
+              results={mockPlagiarismData.results}
+              selectedMode={selectedMode}
+              setSelectedMode={setSelectedMode}
+              outputText={outputText}
+              setOutputText={setOutputText}
+              text={text}
+              freezeWords={freezeWords}
+              selectedLang={selectedLang}
+              sentence={currentSentence}
+              selectedSynonymLevel={selectedSynonymLevel}
+              highlightSentence={highlightSentence}
+              plainOutput={plainOutput}
+              mobile={mobile}
+              disableActions={disableActions}
+            />
+          )}
 
-        {["settings", "feedback", "shortcuts"].includes(showSidebar) && (
-          <SettingsSidebar
-            open={showSidebar}
-            onClose={() => setShowSidebar((prev) => !prev)}
-            tab={showSidebar}
-            setTab={setShowSidebar}
-            mobile={mobile}
-          />
-        )}
-      </Drawer>
+          {["settings", "feedback", "shortcuts"].includes(showSidebar) && (
+            <SettingsSidebar
+              open={showSidebar}
+              onClose={() => setShowSidebar((prev) => !prev)}
+              tab={showSidebar}
+              setTab={setShowSidebar}
+              mobile={mobile}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </>
   );
 };

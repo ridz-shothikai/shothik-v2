@@ -11,8 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { detectLanguage } from "@/hooks/languageDitector";
 import useDebounce from "@/hooks/useDebounce";
 import useResponsive from "@/hooks/useResponsive";
@@ -131,7 +136,7 @@ const ParaphraseContend = () => {
     automaticStartParaphrasing,
     useYellowHighlight,
   } = useSelector((state) => state.settings.paraphraseOptions);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [showDemo, setShowDemo] = useState(false);
   useEffect(() => {
     const shown = localStorage.getItem("onboarding") || false;
@@ -1691,14 +1696,38 @@ const ParaphraseContend = () => {
                 setLanguage={setLanguage}
                 language={language}
               />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="ml-auto"
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
+              <Menubar className="ml-auto border-0 bg-transparent p-0 shadow-none">
+                <MenubarMenu>
+                  <MenubarTrigger className="p-2">
+                    <MoreVertical className="h-4 w-4" />
+                  </MenubarTrigger>
+                  <MenubarContent
+                    align="end"
+                    className="!max-w-[5rem] px-2 pt-1 pb-2"
+                  >
+                    <VerticalMenu
+                      selectedMode={selectedMode}
+                      setSelectedMode={setSelectedMode}
+                      outputText={result}
+                      setOutputText={setResult}
+                      freezeWords={[
+                        ...(frozenWords?.values || []),
+                        ...(frozenPhrases?.values || []),
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                      text={userInput}
+                      selectedLang={language}
+                      highlightSentence={highlightSentence}
+                      setHighlightSentence={setHighlightSentence}
+                      plainOutput={extractPlainText(result)}
+                      selectedSynonymLevel={selectedSynonyms}
+                      mobile={false}
+                      fetchFileHistories={fetchFileHistories}
+                    />
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
             </div>
 
             <div className="hidden lg:block">
@@ -1877,30 +1906,7 @@ const ParaphraseContend = () => {
             </div>
           </Card>
 
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetContent side="right" className="!max-w-[5rem] px-2 pt-1 pb-2">
-              <VerticalMenu
-                selectedMode={selectedMode}
-                setSelectedMode={setSelectedMode}
-                outputText={result}
-                setOutputText={setResult}
-                freezeWords={[
-                  ...(frozenWords?.values || []),
-                  ...(frozenPhrases?.values || []),
-                ]
-                  .filter(Boolean)
-                  .join(", ")}
-                text={userInput}
-                selectedLang={language}
-                highlightSentence={highlightSentence}
-                setHighlightSentence={setHighlightSentence}
-                plainOutput={extractPlainText(result)}
-                selectedSynonymLevel={selectedSynonyms}
-                mobile={false}
-                fetchFileHistories={fetchFileHistories}
-              />
-            </SheetContent>
-          </Sheet>
+          {/* Mobile menu moved to DropdownMenu in header */}
         </div>
       </div>
 

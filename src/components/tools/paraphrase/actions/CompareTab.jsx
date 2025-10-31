@@ -4,20 +4,11 @@ import useSnackbar from "@/hooks/useSnackbar";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { ContentCopy, Refresh, Replay } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
-  IconButton,
-  Skeleton,
-  Slider,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { Copy, RefreshCcw, RotateCcw } from "lucide-react";
 
 const SYNONYMS = {
   20: "Basic",
@@ -40,7 +31,6 @@ const SuggestionCard = ({
   handleSelect,
   enqueueSnackbar,
   selectedMode,
-  theme,
 }) => {
   const { label, plain, loading, selected, sliderValue, history } = card;
   const onSelect = () => handleSelect(plain, label);
@@ -50,82 +40,76 @@ const SuggestionCard = ({
   };
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        mb: 2,
-        borderRadius: "14px",
-        border: "1px solid",
-        borderColor: theme.palette.divider,
-        overflow: "visible",
-      }}
-    >
-      <CardContent sx={{ pb: 0 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography variant="subtitle2" color="text.secondary">
+    <Card className="border-border mb-2 rounded-[14px] border">
+      <CardContent className="pb-0">
+        <div className="flex items-center justify-between">
+          <div className="text-muted-foreground text-xs font-medium">
             {label}
-          </Typography>
-          <Slider
-            size="small"
-            aria-label="Synonyms"
-            getAriaValueText={(v) => SYNONYMS[v]}
-            value={sliderValue}
-            min={minStep}
-            max={maxStep}
-            step={minStep}
-            marks
-            valueLabelDisplay="on"
-            valueLabelFormat={(val) => SYNONYMS[val]}
-            onChange={(_, val) => handleLocalSliderChange(idx, val)}
-            onChangeCommitted={(_, val) => handleSliderChange(idx, val)}
-            sx={{ width: 120 }}
-          />
-        </Box>
+          </div>
+          <div className="flex items-center gap-2">
+            <Slider
+              aria-label="Synonyms"
+              value={[sliderValue]}
+              min={minStep}
+              max={maxStep}
+              step={minStep}
+              className="w-28"
+              onValueChange={(val) => handleLocalSliderChange(idx, val[0])}
+              onPointerUp={() => handleSliderChange(idx, sliderValue)}
+            />
+            <div className="text-muted-foreground text-[11px]">
+              {SYNONYMS[sliderValue]}
+            </div>
+          </div>
+        </div>
         {loading ? (
-          <Skeleton variant="text" width="100%" />
+          <Skeleton className="mt-1 h-5 w-full" />
         ) : (
-          <Typography variant="body2" sx={{ fontSize: "14px", mt: 1 }}>
-            {plain}
-          </Typography>
+          <div className="mt-1 text-sm">{plain}</div>
         )}
       </CardContent>
-      <CardActions sx={{ justifyContent: "space-between" }}>
-        <Box>
-          <IconButton
-            size="small"
+      <CardFooter className="justify-between">
+        <div>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => handleRefresh(idx)}
             disabled={loading}
+            aria-label="Refresh suggestion"
           >
-            <Refresh fontSize="small" />
-          </IconButton>
-          <IconButton
-            size="small"
+            <RefreshCcw className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => handleReplay(idx)}
             disabled={history.length === 0}
+            aria-label="Replay suggestion"
           >
-            <Replay fontSize="small" />
-          </IconButton>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+            <RotateCcw className="size-4" />
+          </Button>
+        </div>
+        <div className="flex items-center">
           <Button
-            size="small"
-            variant={selected ? "contained" : "outlined"}
+            size="sm"
+            variant={selected ? "default" : "outline"}
             onClick={onSelect}
             disabled={loading}
           >
             {selected ? "Selected" : "Select"}
           </Button>
-          <IconButton size="small" onClick={onCopy} disabled={loading}>
-            <ContentCopy fontSize="small" />
-          </IconButton>
-        </Box>
-      </CardActions>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onCopy}
+            disabled={loading}
+            aria-label="Copy suggestion"
+            className="ml-1"
+          >
+            <Copy className="size-4" />
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 };
@@ -141,7 +125,6 @@ const CompareTab = ({
   freezeWords,
   selectedSynonymLevel,
 }) => {
-  const theme = useTheme();
   const { accessToken } = useSelector((state) => state.auth);
   const enqueueSnackbar = useSnackbar();
 
@@ -309,62 +292,53 @@ const CompareTab = ({
   };
 
   return (
-    <Box id="compare_tab" sx={{ px: 2, py: 1 }}>
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
-        Compare Modes
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
+    <div id="compare_tab" className="px-2 py-1">
+      <div className="text-base font-semibold">Compare Modes</div>
+      <div className="border-border mb-2 border-b" />
 
       {/* Original Sentence Card */}
-      <Card
-        variant="outlined"
-        sx={{
-          mb: 2,
-          borderRadius: "14px",
-          border: "1px solid",
-          borderColor: theme.palette.divider,
-          backgroundColor: "#919EAB0D",
-        }}
-      >
+      <Card className="border-border bg-muted mb-2 rounded-[14px] border">
         <CardContent>
-          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          <div className="text-muted-foreground mb-1 text-xs font-medium">
             Original Sentence
-          </Typography>
-          <Typography variant="body2" sx={{ fontSize: "14px" }}>
-            {sentence}
-          </Typography>
+          </div>
+          <div className="text-sm">{sentence}</div>
         </CardContent>
-        <CardActions sx={{ justifyContent: "space-between" }}>
-          <IconButton
-            size="small"
+        <CardFooter className="justify-between">
+          <Button
+            size="icon-sm"
+            variant="ghost"
             onClick={() => {
               navigator.clipboard.writeText(sentence);
               enqueueSnackbar("Copied to clipboard", { variant: "success" });
             }}
+            aria-label="Copy original sentence"
           >
-            <ContentCopy fontSize="small" />
-          </IconButton>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Copy className="size-4" />
+          </Button>
+          <div className="flex items-center gap-1.5">
             <Button
-              size="small"
+              size="sm"
               variant={
-                selectedMode === "OriginalSentence" ? "contained" : "outlined"
+                selectedMode === "OriginalSentence" ? "default" : "outline"
               }
               onClick={() => handleSelect(sentence, "Original Sentence")}
             >
               {selectedMode === "Original Sentence" ? "Selected" : "Select"}
             </Button>
-            <IconButton
-              size="small"
+            <Button
+              size="icon-sm"
+              variant="ghost"
               onClick={() => {
                 navigator.clipboard.writeText(sentence);
                 enqueueSnackbar("Copied to clipboard", { variant: "success" });
               }}
+              aria-label="Copy original sentence"
             >
-              <ContentCopy fontSize="small" />
-            </IconButton>
-          </Box>
-        </CardActions>
+              <Copy className="size-4" />
+            </Button>
+          </div>
+        </CardFooter>
       </Card>
 
       {/* Suggestion Cards */}
@@ -383,10 +357,9 @@ const CompareTab = ({
           handleSelect={handleSelect}
           enqueueSnackbar={enqueueSnackbar}
           selectedMode={selectedMode}
-          theme={theme}
         />
       ))}
-    </Box>
+    </div>
   );
 };
 

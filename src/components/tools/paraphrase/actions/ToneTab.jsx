@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -26,7 +18,6 @@ const METRICS = [
 ];
 
 const ToneTab = ({ text, plainOutput }) => {
-  const theme = useTheme();
   const { accessToken } = useSelector((state) => state.auth);
 
   const originalText = text;
@@ -71,69 +62,35 @@ const ToneTab = ({ text, plainOutput }) => {
   }, [originalText, paraphrasedText, accessToken]);
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        px: { xs: 1, sm: 2, md: 3 },
-        py: { xs: 1, sm: 2 },
-      }}
-    >
+    <div className="w-full px-2 py-1">
       {/* Header */}
-      <Typography sx={{ fontSize: 14, fontWeight: "bold", mb: 1 }}>
-        Tone
-      </Typography>
+      <div className="mb-1 text-sm font-bold">Tone</div>
 
       {/* Legend */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          mb: 2,
-          flexWrap: "wrap",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              bgcolor: theme.palette.grey[700],
-            }}
-          />
-          <Typography sx={{ fontSize: 14 }}>Original</Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box
-            sx={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              bgcolor: theme.palette.success.main,
-            }}
-          />
-          <Typography sx={{ fontSize: 14 }}>Paraphrased</Typography>
-        </Box>
-      </Box>
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1">
+          <div className="bg-muted-foreground size-2 rounded-full" />
+          <div className="text-sm">Original</div>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="bg-primary size-2 rounded-full" />
+          <div className="text-sm">Paraphrased</div>
+        </div>
+      </div>
 
       {/* Loading */}
       {loading && (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-          <CircularProgress size={24} />
-        </Box>
+        <div className="flex justify-center py-4">
+          <div className="border-muted-foreground/30 border-t-primary inline-block size-6 animate-spin rounded-full border-2" />
+        </div>
       )}
 
       {/* Error */}
-      {error && (
-        <Typography color="error" sx={{ fontSize: 12 }}>
-          {error}
-        </Typography>
-      )}
+      {error && <div className="text-destructive text-xs">{error}</div>}
 
       {/* Score Cards */}
       {scores && (
-        <Stack spacing={2}>
+        <div className="flex flex-col gap-2">
           {METRICS?.map(({ key, labels }) => {
             // Expect scores in range 0–100
             const origScore = Math.max(
@@ -146,70 +103,40 @@ const ToneTab = ({ text, plainOutput }) => {
             );
 
             return (
-              <Card key={key} variant="outlined" sx={{ borderRadius: 2 }}>
-                <CardContent sx={{ px: 2, py: 1.5 }}>
-                  <Stack spacing={1}>
+              <Card key={key} className="rounded-lg border">
+                <CardContent className="px-2 py-1.5">
+                  <div className="flex flex-col gap-1">
                     {/* Original bar */}
-                    <Box
-                      sx={{
-                        position: "relative",
-                        height: 8,
-                        borderRadius: "4px",
-                        bgcolor: theme.palette.grey[200],
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          height: "100%",
-                          width: `${origScore}%`,
-                          bgcolor: theme.palette.grey[700],
-                        }}
+                    <div className="bg-muted relative h-2 overflow-hidden rounded">
+                      <div
+                        className="bg-muted-foreground absolute top-0 left-0 h-full"
+                        style={{ width: `${origScore}%` }}
                       />
-                    </Box>
+                    </div>
                     {/* Paraphrased bar */}
-                    <Box
-                      sx={{
-                        position: "relative",
-                        height: 8,
-                        borderRadius: "4px",
-                        bgcolor: theme.palette.success.lighter,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          height: "100%",
-                          width: `${paraScore}%`,
-                          bgcolor: theme.palette.success.main,
-                        }}
+                    <div className="bg-primary/20 relative h-2 overflow-hidden rounded">
+                      <div
+                        className="bg-primary absolute top-0 left-0 h-full"
+                        style={{ width: `${paraScore}%` }}
                       />
-                    </Box>
+                    </div>
                     {/* Labels */}
-                    <Box
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      <Typography noWrap sx={{ fontSize: 12 }}>
+                    <div className="flex justify-between">
+                      <div className="text-xs" title={labels[0]}>
                         {labels[0]}
-                      </Typography>
-                      <Typography noWrap sx={{ fontSize: 12 }}>
+                      </div>
+                      <div className="text-xs" title={labels[1]}>
                         {labels[1]}
-                      </Typography>
-                    </Box>
-                  </Stack>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             );
           })}
-        </Stack>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

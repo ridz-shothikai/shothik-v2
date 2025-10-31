@@ -1,46 +1,27 @@
+import { Button } from "@/components/ui/button";
 import SvgColor from "@/resource/SvgColor";
-import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
 
 const UpgradePrompt = ({ onClose }) => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        minHeight: "calc(100dvh - 200px)",
-        maxHeight: "calc(100dvh - 200px)",
-        p: 3,
-        textAlign: "center",
-      }}
-    >
-      <Typography variant="h6" gutterBottom>
+    <div className="flex h-full max-h-[calc(100dvh-200px)] min-h-[calc(100dvh-200px)] flex-col items-center justify-center p-3 text-center">
+      <div className="mb-1 text-base font-semibold">
         Unlock Premium Features
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+      </div>
+      <div className="text-muted-foreground mb-3 text-sm">
         Upgrade to a premium plan to access advanced plagiarism checking,
         history, tone analysis, and comparison tools.
-      </Typography>
+      </div>
       <Link href="/pricing" onClick={onClose}>
-        <Button
-          color="primary"
-          size="medium"
-          variant="contained"
-          rel="noopener"
-          startIcon={
-            <SvgColor
-              src="/navbar/diamond.svg"
-              className="h-4 w-4 md:h-5 md:w-5"
-            />
-          }
-        >
+        <Button size="sm">
+          <SvgColor
+            src="/navbar/diamond.svg"
+            className="mr-2 h-4 w-4 md:h-5 md:w-5"
+          />
           Upgrade Plan
         </Button>
       </Link>
-    </Box>
+    </div>
   );
 };
 

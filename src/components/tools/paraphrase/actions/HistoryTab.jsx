@@ -1,12 +1,17 @@
 // HistoryTab.jsx
+import { Button } from "@/components/ui/button";
 import {
   setActiveHistory,
   setHistories,
   setHistoryGroups,
 } from "@/redux/slice/paraphraseHistorySlice";
 import { historyGroupsByPeriod } from "@/utils/historyGroupsByPeriod";
-import { Delete, ExpandLess, ExpandMore, Refresh } from "@mui/icons-material";
-import { Button, IconButton } from "@mui/material";
+import {
+  ChevronDown,
+  ChevronUp,
+  RefreshCcw,
+  Trash2 as Trash,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -210,20 +215,24 @@ const HistoryTab = ({ onClose }) => {
         <h6 className="text-lg font-bold">History</h6>
         {accessToken && (
           <div className="flex gap-1">
-            <IconButton
-              size="small"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={fetchHistory}
               className="min-w-0 p-1"
+              aria-label="Refresh history"
             >
-              <Refresh className="text-sm" />
-            </IconButton>
-            <IconButton
-              size="small"
+              <RefreshCcw className="size-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={handleDeleteAll}
               className="min-w-0 p-1"
+              aria-label="Clear history"
             >
-              <Delete className="text-sm" />
-            </IconButton>
+              <Trash className="size-4" />
+            </Button>
           </div>
         )}
       </div>
@@ -242,13 +251,23 @@ const HistoryTab = ({ onClose }) => {
             >
               <span className="text-muted-foreground text-sm">{period}</span>
               {expandedGroups?.[period] ? (
-                <IconButton size="small" className="min-w-0 p-1">
-                  <ExpandLess className="text-sm" />
-                </IconButton>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="min-w-0 p-1"
+                  aria-label="Collapse group"
+                >
+                  <ChevronUp className="size-4" />
+                </Button>
               ) : (
-                <IconButton size="small" className="min-w-0 p-1">
-                  <ExpandMore className="text-sm" />
-                </IconButton>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="min-w-0 p-1"
+                  aria-label="Expand group"
+                >
+                  <ChevronDown className="size-4" />
+                </Button>
               )}
             </div>
             <div className="border-border border-b" />
@@ -268,16 +287,18 @@ const HistoryTab = ({ onClose }) => {
                         minute: "2-digit",
                       })}
                     </span>
-                    <IconButton
-                      size="small"
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteEntry(entry._id);
                       }}
-                      className="text-error min-w-0 p-1"
+                      className="text-destructive min-w-0 p-1"
+                      aria-label="Delete entry"
                     >
-                      <Delete className="text-sm" />
-                    </IconButton>
+                      <Trash className="size-4" />
+                    </Button>
                   </div>
                   <p className="text-sm">
                     {expandedEntries?.[`${period}-${i}`]
@@ -285,12 +306,13 @@ const HistoryTab = ({ onClose }) => {
                       : truncateText(entry?.text, 20)}
                     {entry?.text?.split(" ")?.length > 20 && (
                       <Button
-                        size="small"
+                        size="sm"
+                        variant="ghost"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleEntryExpansion(period, i);
                         }}
-                        className="ml-1 normal-case"
+                        className="ml-1"
                       >
                         {expandedEntries?.[`${period}-${i}`]
                           ? "Read Less"

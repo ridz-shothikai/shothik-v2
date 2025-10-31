@@ -1,14 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import useGlobalPlagiarismCheck from "@/hooks/useGlobalPlagiarismCheck";
-import { ExpandMore, Refresh } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { ChevronDown, RefreshCcw } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -45,146 +38,93 @@ const PlagiarismTab = ({ text, score: propScore, results: propResults }) => {
   const isDemo = [true, "plagiarism_low", "plagiarism_high"].includes(demo);
 
   return (
-    <Box sx={{ px: 2, py: 1 }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold">
-          Plagiarism Checker
-        </Typography>
+    <div className="px-2 py-1">
+      <div className="mb-2 flex items-center justify-between">
+        <div className="text-base font-semibold">Plagiarism Checker</div>
 
         {!isDemo && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {/* {fromCache && (
-              <Chip 
-                icon={<Cached />} 
-                label="Cached" 
-                size="small" 
-                color="info" 
-                variant="outlined"
-              />
-            )} */}
-            <IconButton
-              size="small"
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={manualRefresh}
               disabled={loading || !text?.trim()}
-              title="Refresh check"
+              aria-label="Refresh check"
             >
-              <Refresh fontSize="small" />
-            </IconButton>
-          </Box>
-        )}
-      </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
-      <Paper
-        variant="outlined"
-        sx={{
-          bgcolor: loading
-            ? "grey.100"
-            : error
-              ? "error.light"
-              : "success.light",
-          p: 2,
-          mb: 2,
-          textAlign: "center",
-          minHeight: 100,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress size={24} sx={{ mb: 1 }} />
-            <Typography variant="caption" color="text.secondary">
-              Checking plagiarism...
-            </Typography>
-          </Box>
-        ) : error ? (
-          <>
-            <Typography variant="h4" color="error">
-              Error
-            </Typography>
-            <Typography variant="caption" color="error">
-              {error}
-            </Typography>
-            <Button
-              size="small"
-              onClick={manualRefresh}
-              sx={{ mt: 1 }}
-              variant="outlined"
-              color="error"
-            >
-              Retry
+              <RefreshCcw className="size-4" />
             </Button>
-          </>
-        ) : (
-          <>
-            <Typography id="plagiarism_score" variant="h2">
-              {displayScore != null ? `${displayScore}%` : "--"}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Plagiarism
-            </Typography>
-          </>
+          </div>
         )}
-      </Paper>
+      </div>
 
-      <Box id="plagiarism_results">
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      <div className="border-border mb-2 border-b" />
+
+      <Card
+        className={
+          loading
+            ? "bg-muted mb-2 text-center"
+            : error
+              ? "bg-destructive/10 mb-2 text-center"
+              : "bg-primary/10 mb-2 text-center"
+        }
+      >
+        <CardContent className="flex min-h-24 flex-col items-center justify-center">
+          {loading ? (
+            <div className="flex flex-col items-center gap-1">
+              <div className="text-muted-foreground border-muted-foreground/30 border-t-primary mb-1 inline-block size-6 animate-spin rounded-full border-2" />
+              <div className="text-muted-foreground text-xs">
+                Checking plagiarism...
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center">
+              <div className="text-destructive text-2xl font-semibold">
+                Error
+              </div>
+              <div className="text-destructive mt-1 text-xs">{error}</div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={manualRefresh}
+                className="mt-2"
+              >
+                Retry
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div id="plagiarism_score" className="text-3xl font-semibold">
+                {displayScore != null ? `${displayScore}%` : "--"}
+              </div>
+              <div className="text-muted-foreground text-xs">Plagiarism</div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div id="plagiarism_results">
+        <div className="text-muted-foreground mb-1 text-xs font-medium">
           Results ({displayResults.length})
-        </Typography>
+        </div>
 
         {displayResults?.map((r, i) => (
-          <Box
+          <div
             key={i}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              border: 1,
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 1,
-              mb: 1,
-            }}
+            className="border-border mb-1 flex items-center justify-between rounded-md border p-1"
           >
-            <Typography variant="body2" sx={{ width: "20%" }}>
-              {r.percent}%
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ flex: 1, textAlign: "center", ml: 1 }}
-            >
-              {r.source}
-            </Typography>
-            <IconButton size="small">
-              <ExpandMore fontSize="small" />
-            </IconButton>
-          </Box>
+            <div className="w-1/5 text-sm">{r.percent}%</div>
+            <div className="ml-1 flex-1 text-center text-sm">{r.source}</div>
+            <Button variant="ghost" size="icon-sm" aria-label="Expand result">
+              <ChevronDown className="size-4" />
+            </Button>
+          </div>
         ))}
 
         {!loading && !error && displayResults.length === 0 && (
-          <Typography variant="body2" color="text.secondary">
-            No matches found.
-          </Typography>
+          <div className="text-muted-foreground text-sm">No matches found.</div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

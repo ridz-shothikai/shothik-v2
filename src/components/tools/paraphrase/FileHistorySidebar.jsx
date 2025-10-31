@@ -307,14 +307,6 @@ export default function FileHistorySidebar({ fetchFileHistories }) {
             <button onClick={handleCloseSidebar} className="sr-only" />
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-lg font-semibold">Documents</h3>
-              <Button
-                id="file_history_close_button"
-                variant="ghost"
-                size="icon"
-                onClick={handleCloseSidebar}
-              >
-                <XCircle className="h-5 w-5" />
-              </Button>
             </div>
 
             {/* Search Input */}

@@ -1,6 +1,5 @@
 // SettingsSidebar.jsx
 import {
-  Close,
   ChatBubbleOutline as FeedbackIcon,
   Keyboard as KeyboardIcon,
   Settings as SettingsIcon,
@@ -93,24 +92,16 @@ const SettingsSidebar = ({
             </Box>
           ))}
         </Box>
-
-        {/* Close Button */}
-        <IconButton
-          id="settings_sidebar_x_button"
-          size="small"
-          onClick={onClose}
-        >
-          <Close fontSize="small" />
-        </IconButton>
       </Box>
 
       {/* Tab Content */}
       <Box sx={{ px: 2 }}>
-        {tab === "settings" && fromComp === "paraphrase" ? (
-          <SettingsTab />
-        ) : tab === "settings" && fromComp === "humanize" ? (
-          <GPTsettingsTab />
-        ) : null // default
+        {
+          tab === "settings" && fromComp === "paraphrase" ? (
+            <SettingsTab />
+          ) : tab === "settings" && fromComp === "humanize" ? (
+            <GPTsettingsTab />
+          ) : null // default
         }
         {tab === "feedback" && <FeedbackTab />}
         {tab === "shortcuts" && <ShortcutsTab fromComp={fromComp} />}

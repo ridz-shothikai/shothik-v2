@@ -1,26 +1,16 @@
 "use client";
 
-import { toggleUpdateFileHistory } from "@/redux/slice/paraphraseHistorySlice";
+import { Button } from "@/components/ui/button";
 import {
-  Close as CloseIcon,
-  CloudUploadOutlined,
-  GetApp as DownloadIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
+  DialogFooter,
+  DialogHeader,
   DialogTitle,
-  IconButton,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
-  Typography,
-} from "@mui/material";
+} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { toggleUpdateFileHistory } from "@/redux/slice/paraphraseHistorySlice";
+import { CloudUpload, Download } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CustomUiButton from "../../ui/CustomUiButton";
@@ -166,22 +156,6 @@ export default function MultipleFileUpload({
 
   return (
     <>
-      {/* <Button
-        id="multi_upload_button"
-        sx={{
-          display: shouldShowButton ? "flex" : "none",
-          gap: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          width: "fit-content",
-        }}
-        variant="outlined"
-        onClick={handleOpen}
-      >
-        <CloudUploadOutlined fontSize="small" />
-        Multi Upload Document
-      </Button> */}
       <CustomUiButton
         id="multi_upload_button"
         textLable={"Multi Upload Document"}
@@ -192,49 +166,31 @@ export default function MultipleFileUpload({
       />
       <Button
         id="multi_upload_close_button"
-        sx={{
-          opacity: 0,
-          zIndex: -9999,
-          position: "absolute",
-          top: -9999,
-          display: shouldShowButton ? "flex" : "none",
-        }}
+        className={`${shouldShowButton ? "flex" : "hidden"} absolute top-[-9999px] -z-50 opacity-0`}
         onClick={handleClose}
       />
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Upload Multiple Documents
-          <IconButton
-            onClick={handleClose}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box
+      <Dialog open={open} onOpenChange={(v) => (!v ? handleClose() : null)}>
+        <DialogContent showCloseButton={true}>
+          <DialogHeader>
+            <DialogTitle>Upload Multiple Documents</DialogTitle>
+          </DialogHeader>
+          <div
             id="multi_upload_view"
             onDrop={onDrop}
             onDragOver={onDragOver}
-            sx={{
-              border: "2px dashed",
-              borderColor: "divider",
-              borderRadius: 2,
-              p: 4,
-              textAlign: "center",
-              cursor: "pointer",
-              mb: 2,
-            }}
+            className="border-border mb-2 cursor-pointer rounded-lg border-2 border-dashed p-4 text-center"
             onClick={() => inputRef.current?.click()}
           >
-            <CloudUploadOutlined fontSize="large" sx={{ mb: 1 }} />
-            <Typography variant="h6">Upload Multiple Documents</Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <CloudUpload className="text-muted-foreground mb-1 inline-block size-8" />
+            <div className="text-base font-medium">
+              Upload Multiple Documents
+            </div>
+            <div className="text-muted-foreground mb-1 text-sm">
               Drop files here or <b>browse</b> your machine
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
+            </div>
+            <div className="text-muted-foreground text-xs">
               pdf, txt, docx — up to {limit} file{limit > 1 ? "s" : ""} at once
-            </Typography>
+            </div>
             <input
               ref={inputRef}
               type="file"
@@ -243,67 +199,54 @@ export default function MultipleFileUpload({
               hidden
               onChange={(e) => handleFilesSelected(e.target.files)}
             />
-          </Box>
-          <List disablePadding>
+          </div>
+          <div className="space-y-2">
             {files.map((f, i) => (
-              <ListItem
-                key={i}
-                sx={{ flexDirection: "column", alignItems: "stretch", py: 1 }}
-              >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <ListItemText
-                    primary={f.file.name}
-                    secondary={
-                      f.error
+              <div key={i} className="flex flex-col py-1">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">
+                      {f.file.name}
+                    </div>
+                    <div
+                      className={`text-xs ${f.error ? "text-destructive" : "text-muted-foreground"}`}
+                    >
+                      {f.error
                         ? f.error
                         : f.status === "success"
                           ? "Completed"
                           : f.status === "uploading"
                             ? "Uploading…"
-                            : ""
-                    }
-                    secondaryTypographyProps={
-                      f.error ? { color: "error.main" } : {}
-                    }
-                  />
+                            : ""}
+                    </div>
+                  </div>
                   {f.status === "success" && f.downloadUrl && (
-                    <IconButton
-                      component="a"
+                    <a
                       href={f.downloadUrl}
                       download={f.file.name}
+                      className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-md p-2"
                     >
-                      <DownloadIcon />
-                    </IconButton>
+                      <Download className="size-4" />
+                    </a>
                   )}
-                </Stack>
+                </div>
                 {(f.status === "uploading" || f.status === "success") && (
-                  <LinearProgress
-                    variant={
-                      f.status === "uploading" ? "indeterminate" : "determinate"
-                    }
-                    value={f.progress}
-                    sx={{ mt: 1 }}
-                  />
+                  <div className="mt-1">
+                    <Progress value={f.progress} />
+                  </div>
                 )}
-              </ListItem>
+              </div>
             ))}
-          </List>
+          </div>
+          <DialogFooter>
+            <div className="text-muted-foreground mr-auto pl-1 text-xs">
+              {paidUser
+                ? `Up to ${PAID_LIMIT} files per batch`
+                : `Free users: ${FREE_LIMIT} files per batch`}
+            </div>
+            <Button onClick={handleClose}>Close</Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Typography
-            variant="caption"
-            sx={{ flex: 1, pl: 2, color: "text.secondary" }}
-          >
-            {paidUser
-              ? `Up to ${PAID_LIMIT} files per batch`
-              : `Free users: ${FREE_LIMIT} files per batch`}
-          </Typography>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogActions>
       </Dialog>
       <UpgradePopover
         anchorEl={popoverAnchorEl}

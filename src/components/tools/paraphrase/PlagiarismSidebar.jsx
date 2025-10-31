@@ -1,8 +1,8 @@
 // PlagiarismSidebar.jsx
-import { Close } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import compare from "../../../../public/icons/compare-modes.svg";
 import history from "../../../../public/icons/history.svg";
@@ -52,57 +52,32 @@ const PlagiarismSidebar = ({
   const ActiveTab = tabs.find((t) => t.id === active)?.component;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "auto",
-        borderLeft: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.paper",
-        boxSizing: "border-box",
-        overflowY: "auto",
-      }}
-    >
+    <div className="border-border bg-background h-auto w-full overflow-y-auto border-l">
       {/* top nav with bottom border */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 2,
-          pt: 2,
-          pb: 1,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Box sx={{ display: "flex", flex: 1, justifyContent: "space-around" }}>
+      <div className="border-border flex items-center justify-between border-b px-2 pt-2 pb-1">
+        <div className="flex flex-1 justify-around">
           {tabs.map((t) => (
-            <Box
+            <div
               key={t.id}
               onClick={
                 disableActions && t.id !== "history"
                   ? null
                   : () => setActive(t.id)
               }
-              sx={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor:
-                  disableActions && t.id !== "history"
-                    ? "not-allowed"
-                    : "pointer",
-              }}
+              className={cn(
+                "flex flex-1 flex-col items-center",
+                disableActions && t.id !== "history"
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer",
+              )}
             >
-              <IconButton
-                size="large"
-                disableRipple
+              <Button
+                variant="ghost"
+                size="icon"
                 disabled={disableActions && t.id !== "history"}
-                sx={{
-                  color: active === t.id ? "primary.main" : "text.secondary",
-                }}
+                className={cn(
+                  active === t.id ? "text-primary" : "text-muted-foreground",
+                )}
               >
                 <Image
                   src={t.iconSrc}
@@ -112,29 +87,14 @@ const PlagiarismSidebar = ({
                   alt=""
                   className="h-6 w-6"
                 />
-              </IconButton>
+              </Button>
               {active === t.id && (
-                <Box
-                  sx={{
-                    width: 24,
-                    borderBottom: 2,
-                    borderColor: "primary.main",
-                    mt: 0.5,
-                  }}
-                />
+                <div className="border-primary mt-0.5 w-6 border-b-2" />
               )}
-            </Box>
+            </div>
           ))}
-        </Box>
-
-        <IconButton
-          size="small"
-          id="plagiarism_sidebar_x_button"
-          onClick={onClose}
-        >
-          <Close fontSize="small" />
-        </IconButton>
-      </Box>
+        </div>
+      </div>
 
       {/* active tab content */}
       {!paidUser ? (
@@ -159,7 +119,7 @@ const PlagiarismSidebar = ({
           />
         )
       )}
-    </Box>
+    </div>
   );
 };
 
