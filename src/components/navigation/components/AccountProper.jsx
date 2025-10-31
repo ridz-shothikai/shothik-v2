@@ -18,12 +18,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover({ accessToken, user }) {
-  const { theme } = useSelector((state) => state.settings);
   const [openPopover, setOpenPopover] = useState(null);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
 import { setOpen } from "@/redux/slice/settings";
-import DotFlashing from "@/resource/DotFlashing";
 import Logo from "@/resource/assets/Logo";
 import { Gem, Menu } from "lucide-react";
 import Link from "next/link";
@@ -21,26 +20,6 @@ export default function MainHeader() {
   });
   const pathname = usePathname();
   const dispatch = useDispatch();
-
-  const title = () => {
-    const ROUTE_TITLES = {
-      "/paraphrase": "Paraphrase",
-      "/humanize-gpt": "Humanize GPT",
-      "/ai-detector": "AI Detector",
-      "/plagiarism-checker": "Plagiarism Checker",
-      "/grammar-checker": "Grammar Fix",
-      "/summarize": "Summarize",
-      "/translator": "Translate",
-      "/pricing": "Shothik.ai Premium",
-      "/agents/research": "Research",
-      "/agents/sheets": "Sheet",
-      "/agents/presentation": "Presentation Slide",
-      "/agents": "Shothik AI Agent",
-      "/marketing-automation": "Marketing Automation",
-    };
-
-    return ROUTE_TITLES?.[pathname] || "";
-  };
 
   return (
     <header
@@ -79,7 +58,11 @@ export default function MainHeader() {
 
             <div className="flex items-center gap-2 md:gap-3">
               {isLoading ? (
-                <DotFlashing />
+                <div className="flex items-center gap-1">
+                  <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]" />
+                  <span className="bg-primary h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]" />
+                  <span className="bg-primary h-2 w-2 animate-bounce rounded-full" />
+                </div>
               ) : (
                 user?.package !== "unlimited" && (
                   <Link href={"/pricing?redirect=" + pathname}>
