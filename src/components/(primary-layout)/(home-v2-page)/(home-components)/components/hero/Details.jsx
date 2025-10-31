@@ -1,23 +1,15 @@
 "use client";
 
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
-import { Alert, Grid2, Snackbar, Typography, useTheme } from "@mui/material";
 import * as motion from "motion/react-client";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import EmailModal from "../../EmailCollectModal";
 import AnimatedText from "./AnimatedText";
 import UserActionButton from "./UserActionButton";
 
 const Details = ({ trackClick }) => {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-
   const [showModal, setShowModal] = useState(false);
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success", // 'success', 'error', 'warning', 'info'
-  });
 
   const [
     registerUserForBetaList,
@@ -31,71 +23,27 @@ const Details = ({ trackClick }) => {
       console.log(result, "result");
 
       // Success toast
-      setToast({
-        open: true,
-        message: "Successfully registered for beta! We'll be in touch soon.",
-        severity: "success",
-      });
+      toast.success(
+        "Successfully registered for beta! We'll be in touch soon.",
+      );
 
       // Close the modal
       setShowModal(false);
     } catch (error) {
       // Error toast
-      setToast({
-        open: true,
-        message:
-          error?.data?.message || "Registration failed. Please try again.",
-        severity: "error",
-      });
+      console.log(error, "error");
     }
-  };
-
-  const handleCloseToast = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setToast((prev) => ({ ...prev, open: false }));
   };
 
   return (
     <>
-      <Grid2
-        size={{ xs: 12, md: 6 }}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: { xl: "0.75rem" },
-          position: "relative",
-          zIndex: 12,
-        }}
-      >
+      <div className="relative z-[12] flex w-full flex-col items-center xl:gap-3">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <Typography
-            variant="h2"
-            sx={{
-              fontWeight: 700,
-              letterSpacing: "-2%",
-              lineHeight: 1,
-              color: isDarkMode ? "" : "#111827",
-              fontSize: {
-                xs: "2.5em",
-                sm: "3.25em",
-                md: "2.75em",
-                lg: "3.75em",
-                xl: "4.75em",
-              },
-              textAlign: "center",
-              // background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-              // backgroundClip: "text",
-              // WebkitBackgroundClip: "text",
-              // WebkitTextFillColor: "transparent",
-            }}
-          >
+          <h2 className="text-foreground text-center text-[2.5em] leading-none font-bold tracking-tight sm:text-[3.25em] md:text-[2.75em] lg:text-[3.75em] xl:text-[4.75em]">
             <AnimatedText />
             {/* <span
             style={{
@@ -109,7 +57,7 @@ const Details = ({ trackClick }) => {
           >
             before you do.
           </span> */}
-          </Typography>
+          </h2>
           {/* <Typography
           variant="h2"
           sx={{
@@ -129,22 +77,13 @@ const Details = ({ trackClick }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{
-              my: 2,
-              fontSize: { xl: "1.25em" },
-              maxWidth: "800px",
-              textAlign: "center",
-            }}
-          >
+          <p className="text-muted-foreground my-2 max-w-[800px] text-center text-base xl:text-[1.25em]">
             {/* AI that understands your thoughts before you do. Paraphrasing, */}
             {/* Humanizer, Grammer Fix, and AI Agents at your service.  */}
             Shothik is a general ai agent that understands your thoughts before
             you do. It doesn&apos;t just think, it delivers results.
             Paraphrasing, Humanizer, Grammer Fix, and AI Agents at your service.
-          </Typography>
+          </p>
         </motion.div>
 
         {/* <Box
@@ -174,7 +113,7 @@ const Details = ({ trackClick }) => {
         </Typography>
       </Box> */}
         <UserActionButton setShowModal={setShowModal} trackClick={trackClick} />
-      </Grid2>
+      </div>
 
       {/* Email collect modal */}
       <EmailModal
@@ -182,23 +121,6 @@ const Details = ({ trackClick }) => {
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
-
-      {/* Toast notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 };

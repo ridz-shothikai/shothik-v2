@@ -1,62 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { useExitIntent } from "@/hooks/useExitIntent";
 import { trackingList } from "@/libs/trackingList";
-import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialog-paper": {
-    borderRadius: "16px",
-    maxWidth: "448px",
-    width: "100%",
-    margin: theme.spacing(2),
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-  },
-  "& .MuiBackdrop-root": {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-}));
-
-const ClaimButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#059669",
-  color: "white",
-  padding: "12px 24px",
-  borderRadius: "8px",
-  fontWeight: 600,
-  textTransform: "none",
-  fontSize: "16px",
-  "&:hover": {
-    backgroundColor: "#047857",
-  },
-}));
-
-const DeclineButton = styled(Button)(({ theme }) => ({
-  color: "#6b7280",
-  padding: "8px 24px",
-  textTransform: "none",
-  fontSize: "16px",
-  "&:hover": {
-    color: "#374151",
-    backgroundColor: "transparent",
-  },
-}));
-
 export default function ExitModal({ setOpen }) {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const [showExitIntent, setShowExitIntent] = useState(false);
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.EXIT_INTENT_MODAL,
@@ -158,7 +110,7 @@ export default function ExitModal({ setOpen }) {
   };
 
   return (
-    <Box ref={componentRef}>
+    <div ref={componentRef}>
       {/* Demo button to show modal */}
       {/* <Button 
         variant="contained" 
@@ -168,77 +120,51 @@ export default function ExitModal({ setOpen }) {
         Show Exit Intent Modal
       </Button> */}
 
-      <StyledDialog
+      <Dialog
         open={showExitIntent}
-        onClose={handleClose}
-        maxWidth={false}
+        onOpenChange={(v) => (!v ? handleClose() : null)}
       >
-        <DialogContent sx={{ p: 4, position: "relative" }}>
-          <IconButton
+        <DialogContent className="relative w-full max-w-[448px] rounded-2xl p-6 text-center sm:p-8">
+          <button
+            type="button"
             onClick={handleClose}
-            sx={{
-              position: "absolute",
-              top: 16,
-              right: 16,
-              color: "#9ca3af",
-              "&:hover": {
-                color: "#4b5563",
-              },
-            }}
+            className="text-muted-foreground hover:text-foreground absolute top-4 right-4"
+            aria-label="Close"
           >
-            <Close />
-          </IconButton>
+            <X className="h-5 w-5" />
+          </button>
 
-          <Box sx={{ textAlign: "center" }}>
-            <Stack spacing={2}>
-              <Typography
-                variant="h4"
-                component="h3"
-                sx={{
-                  fontWeight: 700,
-                  color: isDarkMode ? "#FFF" : "#111827",
-                  fontSize: "24px",
-                  lineHeight: 1.2,
-                }}
+          <div className="space-y-3">
+            <h3 className="text-foreground text-xl leading-snug font-bold">
+              Wait! Don&apos;t Leave Yet
+            </h3>
+
+            <p className="text-muted-foreground text-sm leading-6">
+              Get your first paper improved free. Join 50,000+ students already
+              using Shothik AI.
+            </p>
+
+            <div className="mt-2 space-y-2">
+              <Button
+                data-umami-event="Claim Free Paper Review"
+                className="h-11 w-full text-base font-semibold"
+                onClick={handleClaimFree}
               >
-                Wait! Don&apos;t Leave Yet
-              </Typography>
+                Claim Free Paper Review
+              </Button>
 
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "#4b5563",
-                  fontSize: "16px",
-                  lineHeight: 1.5,
-                }}
+              <Button
+                data-umami-event="No thanks, I'll struggle with my writing"
+                variant="ghost"
+                className="h-10 w-full text-sm"
+                onClick={handleClose}
               >
-                Get your first paper improved free. Join 50,000+ students
-                already using Shothik AI.
-              </Typography>
-
-              <Stack spacing={1.5} sx={{ mt: 2 }}>
-                <ClaimButton
-                  data-umami-event="Claim Free Paper Review"
-                  fullWidth
-                  onClick={handleClaimFree}
-                  variant="contained"
-                >
-                  Claim Free Paper Review
-                </ClaimButton>
-
-                <DeclineButton
-                  data-umami-event="No thanks, I'll struggle with my writing"
-                  fullWidth
-                  onClick={handleClose}
-                  variant="text"
-                >
-                  No thanks, I&apos;ll struggle with my writing
-                </DeclineButton>
-              </Stack>
-            </Stack>
-          </Box>
+                No thanks, I&apos;ll struggle with my writing
+              </Button>
+            </div>
+          </div>
         </DialogContent>
-      </StyledDialog>
-    </Box>
+      </Dialog>
+    </div>
   );
 }
