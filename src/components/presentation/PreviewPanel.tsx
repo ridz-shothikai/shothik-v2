@@ -26,6 +26,7 @@ export default function PreviewPanel({
   onApplyAutoFixes,
   onRegenerateWithFeedback,
   title,
+  status,
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -67,13 +68,12 @@ export default function PreviewPanel({
                 {/* Sticky Header */}
                 <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-3 pt-3 pb-2">
                   <h6 className="min-w-0 overflow-hidden text-[0.9rem] font-medium text-ellipsis whitespace-nowrap sm:text-base md:text-[1.1rem]">
-                    {slidesData?.status !== "failed"
+                    {status !== "failed"
                       ? title || slidesData?.title || "Generating..."
                       : "Presentation generation failed"}
                   </h6>
 
-                  {(slidesData?.status === "completed" ||
-                    slidesData?.status === "saved") && (
+                  {(status === "completed" || status === "saved") && (
                     <div className="text-muted-foreground text-[0.8rem] sm:text-[0.9rem] md:text-base">
                       {!hasReplay && (
                         <Button

@@ -1,35 +1,30 @@
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import EditIcon from "@mui/icons-material/Edit";
-import ErrorIcon from "@mui/icons-material/Error";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import ImageIcon from "@mui/icons-material/Image";
-import PsychologyIcon from "@mui/icons-material/Psychology";
-import QueryBuilderIcon from "@mui/icons-material/QueryBuilder";
-import SearchIcon from "@mui/icons-material/Search";
-import SourceIcon from "@mui/icons-material/Source";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import {
-  Alert,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  Divider,
-  Grid,
-  LinearProgress,
-  Typography,
-} from "@mui/material";
+  AlertCircle,
+  Brain,
+  CheckCircle,
+  Edit,
+  FileText,
+  Hourglass,
+  Image as ImageIcon,
+  Search,
+  TrendingUp,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const stepIcons = {
-  queued: <HourglassEmptyIcon />,
-  generate_query: <PsychologyIcon />,
-  web_research: <SearchIcon />,
-  reflection: <PsychologyIcon />,
-  finalize_answer: <EditIcon />,
-  completed: <CheckCircleIcon />,
+  queued: <Hourglass className="size-5" />,
+  generate_query: <Brain className="size-5" />,
+  web_research: <Search className="size-5" />,
+  reflection: <Brain className="size-5" />,
+  finalize_answer: <Edit className="size-5" />,
+  completed: <CheckCircle className="size-5" />,
 };
 
 const stepLabels = {
@@ -71,27 +66,27 @@ export default function StreamingIndicator({
     switch (connectionStatus) {
       case "polling":
         return {
-          color: "warning",
+          variant: "default",
           text: "Reconnecting to research stream...",
-          icon: <HourglassEmptyIcon />,
+          icon: <Hourglass className="size-4" />,
         };
       case "reconnecting":
         return {
-          color: "info",
+          variant: "default",
           text: "Attempting to reconnect...",
-          icon: <HourglassEmptyIcon />,
+          icon: <Hourglass className="size-4" />,
         };
       case "failed":
         return {
-          color: "error",
+          variant: "destructive",
           text: "Connection lost - click to retry",
-          icon: <ErrorIcon />,
+          icon: <AlertCircle className="size-4" />,
         };
       case "timeout":
         return {
-          color: "error",
+          variant: "destructive",
           text: "Connection timeout - please refresh",
-          icon: <ErrorIcon />,
+          icon: <AlertCircle className="size-4" />,
         };
       default:
         return null;
@@ -196,307 +191,232 @@ export default function StreamingIndicator({
   const currentStepName = latestEvent.step;
   const isCompleted = currentStepName === "completed";
 
-  {
-    statusInfo && (
-      <Box sx={{ mb: 2 }}>
-        <Alert
-          severity={statusInfo.color}
-          action={
-            connectionStatus === "failed" && onRetry ? (
-              <Button color="inherit" size="small" onClick={onRetry}>
+  return (
+    <>
+      {statusInfo && (
+        <div className="mb-4">
+          <Alert
+            variant={statusInfo.variant}
+            className={cn(
+              "flex items-center justify-between",
+              statusInfo.variant === "destructive" && "bg-destructive/10",
+            )}
+          >
+            <div className="flex items-center gap-2">
+              {statusInfo.icon}
+              <AlertDescription>{statusInfo.text}</AlertDescription>
+            </div>
+            {connectionStatus === "failed" && onRetry && (
+              <Button variant="ghost" size="sm" onClick={onRetry}>
                 Retry
               </Button>
-            ) : null
-          }
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {statusInfo.icon}
-            <Typography variant="body2">{statusInfo.text}</Typography>
-          </Box>
-        </Alert>
-      </Box>
-    );
-  }
+            )}
+          </Alert>
+        </div>
+      )}
 
-  return (
-    <Card
-      sx={{
-        mb: { xs: 19, sm: 12, xl: 3 },
-        bgcolor: "#f8f9fa",
-        border: "1px solid #e9ecef",
-      }}
-    >
-      <CardContent>
-        {/* Main Status Header */}
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Box sx={{ mr: 2 }}>
-            {stepIcons[currentStepName] || <HourglassEmptyIcon />}
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" gutterBottom>
-              {latestEvent.data?.title ||
-                stepLabels[currentStepName] ||
-                "Processing..."}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {aggregatedData.currentMessage ||
-                stepDescriptions[currentStepName] ||
-                "Working on your request..."}
-            </Typography>
-          </Box>
-          <Chip
-            label={
-              isPolling
+      <Card className={cn("bg-muted/50 mb-12 border", "xl:mb-3")}>
+        <CardContent className="pt-6">
+          {/* Main Status Header */}
+          <div className="mb-4 flex items-center">
+            <div className="text-muted-foreground mr-4">
+              {stepIcons[currentStepName] || <Hourglass className="size-5" />}
+            </div>
+            <div className="flex-1">
+              <h3 className="mb-1 text-lg font-semibold">
+                {latestEvent.data?.title ||
+                  stepLabels[currentStepName] ||
+                  "Processing..."}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {aggregatedData.currentMessage ||
+                  stepDescriptions[currentStepName] ||
+                  "Working on your request..."}
+              </p>
+            </div>
+            <Badge
+              variant="outline"
+              className={cn(
+                isPolling && "border-destructive/50 text-destructive",
+                isCompleted && "border-primary text-primary",
+                !isPolling && !isCompleted && "border-primary text-primary",
+              )}
+            >
+              {isPolling
                 ? "Reconnecting..."
                 : isCompleted
                   ? "Completed"
-                  : "In Progress"
-            }
-            color={isPolling ? "warning" : isCompleted ? "success" : "primary"}
-            variant="outlined"
-            size="small"
-          />
-        </Box>
+                  : "In Progress"}
+            </Badge>
+          </div>
 
-        {/* Progress Bar */}
-        <Box sx={{ mb: 3 }}>
-          <LinearProgress
-            variant="determinate"
-            value={isCompleted ? 100 : (currentStep + 1) * 16.67} // 6 steps = 100%
-            sx={{
-              height: 6,
-              borderRadius: 3,
-              "& .MuiLinearProgress-bar": {
-                backgroundColor: isCompleted ? "#4caf50" : "#07B37A",
-              },
-            }}
-          />
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ mt: 0.5, display: "block" }}
-          >
-            Step {currentStep + 1} of 6 •{" "}
-            {Math.round(isCompleted ? 100 : (currentStep + 1) * 16.67)}%
-            Complete
-          </Typography>
-        </Box>
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <Progress
+              value={isCompleted ? 100 : (currentStep + 1) * 16.67}
+              className="h-1.5"
+            />
+            <p className="text-muted-foreground mt-1 block text-xs">
+              Step {currentStep + 1} of 6 •{" "}
+              {Math.round(isCompleted ? 100 : (currentStep + 1) * 16.67)}%
+              Complete
+            </p>
+          </div>
 
-        {/* Real-time Data Grid */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={6} sm={3}>
-            <Box
-              sx={{
-                textAlign: "center",
-                p: 1,
-                bgcolor: "white",
-                borderRadius: 1,
-              }}
-            >
-              <Badge
-                badgeContent={aggregatedData.totalSources}
-                color="primary"
-                max={999}
-              >
-                <SourceIcon color="action" />
-              </Badge>
-              <Typography
-                variant="caption"
-                display="block"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
-              >
+          {/* Real-time Data Grid */}
+          <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="bg-background rounded-md p-2 text-center">
+              <div className="relative inline-flex items-center justify-center">
+                <FileText className="text-muted-foreground size-5" />
+                {aggregatedData.totalSources > 0 && (
+                  <Badge
+                    variant="default"
+                    className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center px-1 text-[10px]"
+                  >
+                    {aggregatedData.totalSources > 999
+                      ? "999+"
+                      : aggregatedData.totalSources}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground mt-1 block text-xs">
                 Sources Found
-              </Typography>
-            </Box>
-          </Grid>
+              </p>
+            </div>
 
-          <Grid item xs={6} sm={3}>
-            <Box
-              sx={{
-                textAlign: "center",
-                p: 1,
-                bgcolor: "white",
-                borderRadius: 1,
-              }}
-            >
-              <Badge
-                badgeContent={aggregatedData.totalImages}
-                color="secondary"
-                max={999}
-              >
-                <ImageIcon color="action" />
-              </Badge>
-              <Typography
-                variant="caption"
-                display="block"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
-              >
+            <div className="bg-background rounded-md p-2 text-center">
+              <div className="relative inline-flex items-center justify-center">
+                <ImageIcon className="text-muted-foreground size-5" />
+                {aggregatedData.totalImages > 0 && (
+                  <Badge
+                    variant="secondary"
+                    className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center px-1 text-[10px]"
+                  >
+                    {aggregatedData.totalImages > 999
+                      ? "999+"
+                      : aggregatedData.totalImages}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground mt-1 block text-xs">
                 Images Found
-              </Typography>
-            </Box>
-          </Grid>
+              </p>
+            </div>
 
-          <Grid item xs={6} sm={3}>
-            <Box
-              sx={{
-                textAlign: "center",
-                p: 1,
-                bgcolor: "white",
-                borderRadius: 1,
-              }}
-            >
-              <Badge
-                badgeContent={aggregatedData.searchQueries.length}
-                color="info"
-                max={999}
-              >
-                <QueryBuilderIcon color="action" />
-              </Badge>
-              <Typography
-                variant="caption"
-                display="block"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
-              >
+            <div className="bg-background rounded-md p-2 text-center">
+              <div className="relative inline-flex items-center justify-center">
+                <Search className="text-muted-foreground size-5" />
+                {aggregatedData.searchQueries.length > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center px-1 text-[10px]"
+                  >
+                    {aggregatedData.searchQueries.length > 999
+                      ? "999+"
+                      : aggregatedData.searchQueries.length}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground mt-1 block text-xs">
                 Search Queries
-              </Typography>
-            </Box>
-          </Grid>
+              </p>
+            </div>
 
-          <Grid item xs={6} sm={3}>
-            <Box
-              sx={{
-                textAlign: "center",
-                p: 1,
-                bgcolor: "white",
-                borderRadius: 1,
-              }}
-            >
-              <Badge
-                badgeContent={aggregatedData.researchLoops}
-                color="warning"
-                max={999}
-              >
-                <TrendingUpIcon color="action" />
-              </Badge>
-              <Typography
-                variant="caption"
-                display="block"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
-              >
+            <div className="bg-background rounded-md p-2 text-center">
+              <div className="relative inline-flex items-center justify-center">
+                <TrendingUp className="text-muted-foreground size-5" />
+                {aggregatedData.researchLoops > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="border-destructive/50 text-destructive absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center px-1 text-[10px]"
+                  >
+                    {aggregatedData.researchLoops > 999
+                      ? "999+"
+                      : aggregatedData.researchLoops}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground mt-1 block text-xs">
                 Research Loops
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
+              </p>
+            </div>
+          </div>
 
-        {/* Current Search Queries (if available) */}
-        {aggregatedData.searchQueries.length > 0 && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" gutterBottom color="text.secondary">
-              Search Queries Generated:
-            </Typography>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {aggregatedData.searchQueries.slice(0, 3).map((query, index) => (
-                <Chip
-                  key={index}
-                  label={query.length > 40 ? `${query.slice(0, 40)}...` : query}
-                  size="small"
-                  variant="outlined"
-                  sx={{ fontSize: "0.7rem" }}
-                />
-              ))}
-              {aggregatedData.searchQueries.length > 3 && (
-                <Chip
-                  label={`+${aggregatedData.searchQueries.length - 3} more`}
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                  sx={{ fontSize: "0.7rem" }}
-                />
-              )}
-            </Box>
-          </Box>
-        )}
-
-        {/* Step-specific Information */}
-        {currentStepName === "web_research" &&
-          latestEvent.data?.sources_gathered && (
-            <Box
-              sx={{
-                mt: 2,
-                p: 2,
-                bgcolor: "rgba(7, 179, 122, 0.1)",
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                <strong>Sources gathered this round:</strong>{" "}
-                {latestEvent.data.sources_gathered.length}
-              </Typography>
-            </Box>
+          {/* Current Search Queries (if available) */}
+          {aggregatedData.searchQueries.length > 0 && (
+            <div className="mb-4">
+              <p className="text-muted-foreground mb-2 text-sm font-medium">
+                Search Queries Generated:
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {aggregatedData.searchQueries
+                  .slice(0, 3)
+                  .map((query, index) => (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-[0.7rem]"
+                    >
+                      {query.length > 40 ? `${query.slice(0, 40)}...` : query}
+                    </Badge>
+                  ))}
+                {aggregatedData.searchQueries.length > 3 && (
+                  <Badge
+                    variant="outline"
+                    className="border-primary text-primary text-[0.7rem]"
+                  >
+                    +{aggregatedData.searchQueries.length - 3} more
+                  </Badge>
+                )}
+              </div>
+            </div>
           )}
 
-        {currentStepName === "queued" &&
-          latestEvent.data?.position !== undefined && (
-            <Box
-              sx={{
-                mt: 2,
-                p: 2,
-                bgcolor: "rgba(255, 193, 7, 0.1)",
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="body2" color="text.secondary">
-                <strong>Queue position:</strong> #
-                {latestEvent.data.position + 1}
-              </Typography>
-            </Box>
+          {/* Step-specific Information */}
+          {currentStepName === "web_research" &&
+            latestEvent.data?.sources_gathered && (
+              <div className="bg-primary/10 mt-4 rounded-md p-4">
+                <p className="text-muted-foreground text-sm">
+                  <strong>Sources gathered this round:</strong>{" "}
+                  {latestEvent.data.sources_gathered.length}
+                </p>
+              </div>
+            )}
+
+          {currentStepName === "queued" &&
+            latestEvent.data?.position !== undefined && (
+              <div className="bg-destructive/10 mt-4 rounded-md p-4">
+                <p className="text-muted-foreground text-sm">
+                  <strong>Queue position:</strong> #
+                  {latestEvent.data.position + 1}
+                </p>
+              </div>
+            )}
+
+          {isCompleted && (
+            <div className="bg-primary/10 mt-4 rounded-md p-4">
+              <p className="text-primary text-sm font-medium">
+                ✓ Research completed successfully with{" "}
+                {aggregatedData.totalSources} sources and{" "}
+                {aggregatedData.totalImages} images
+              </p>
+            </div>
           )}
 
-        {isCompleted && (
-          <Box
-            sx={{
-              mt: 2,
-              p: 2,
-              bgcolor: "rgba(76, 175, 80, 0.1)",
-              borderRadius: 1,
-            }}
-          >
-            <Typography
-              variant="body2"
-              color="success.main"
-              fontWeight="medium"
-            >
-              ✓ Research completed successfully with{" "}
-              {aggregatedData.totalSources} sources and{" "}
-              {aggregatedData.totalImages} images
-            </Typography>
-          </Box>
-        )}
+          <Separator className="my-4" />
 
-        <Divider sx={{ my: 2 }} />
-
-        {/* Footer with metadata */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography variant="caption" color="text.secondary">
-            {latestEvent.researchId &&
-              `ID: ${latestEvent.researchId.slice(-8)}`}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {new Date(latestEvent.timestamp).toLocaleTimeString()}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
+          {/* Footer with metadata */}
+          <div className="flex items-center justify-between">
+            <p className="text-muted-foreground text-xs">
+              {latestEvent.researchId &&
+                `ID: ${latestEvent.researchId.slice(-8)}`}
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {new Date(latestEvent.timestamp).toLocaleTimeString()}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

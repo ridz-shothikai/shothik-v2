@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { HelpCircle, LogIn, Mail, Person } from "lucide-react";
+import { HelpCircle, LogIn, Mail, User } from "lucide-react";
 
 export default function AccountPopover() {
   const { accessToken, user } = useSelector((state) => state.auth);
@@ -92,7 +92,7 @@ export default function AccountPopover() {
             </div>
           ) : (
             <div className="flex h-10 w-10 items-center justify-center">
-              <Person className="text-muted-foreground h-6 w-6" />
+              <User className="text-muted-foreground h-6 w-6" />
             </div>
           )}
         </button>
@@ -108,7 +108,7 @@ export default function AccountPopover() {
                 "flex items-center gap-3",
               )}
             >
-              <Person className="h-5 w-5" />
+              <User className="h-5 w-5" />
               <div className="flex-1">
                 <div className="text-sm font-medium">My Profile</div>
                 <div className="text-muted-foreground truncate text-xs">

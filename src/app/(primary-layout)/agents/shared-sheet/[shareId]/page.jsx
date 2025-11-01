@@ -1,35 +1,34 @@
 "use client";
 
 import Main from "@/components/layout/Main";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import {
   useCreateAgentReplicaMutation,
   useLazyVerifySharedAgentQuery,
 } from "@/redux/api/shareAgent/shareAgentApi";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import {
-  ArrowDropDown,
+  ChevronDown,
   Download,
   Edit,
-  OpenInNew,
-  Save as SaveIcon,
-  Share,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Snackbar,
-  Typography,
-} from "@mui/material";
+  ExternalLink,
+  Save,
+  Share2,
+} from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { DataGrid } from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 // Editable Cell Component for shared sheets
@@ -76,14 +75,7 @@ const EditableCell = ({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         autoFocus
-        style={{
-          width: "100%",
-          border: "none",
-          outline: "none",
-          background: "transparent",
-          fontSize: "inherit",
-          fontFamily: "inherit",
-        }}
+        className="font-inherit w-full border-0 bg-transparent text-inherit outline-none"
       />
     );
   }
@@ -91,7 +83,7 @@ const EditableCell = ({
   return (
     <span
       onDoubleClick={() => onEdit && onEdit(`${row.id}-${column}`)}
-      style={{ cursor: "pointer", width: "100%", display: "block" }}
+      className="block w-full cursor-pointer"
     >
       {value || ""}
     </span>
@@ -154,12 +146,6 @@ export default function SharedSheetPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
-  const [exportMenuAnchor, setExportMenuAnchor] = useState(null);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
   const [pendingSaveAction, setPendingSaveAction] = useState(false);
   const { user } = useSelector((state) => state.auth);
 
@@ -521,20 +507,11 @@ export default function SharedSheetPage({ params }) {
     }
   }, [user, localUser, pendingSaveAction]);
 
-  const handleExportMenuOpen = (event) => {
-    setExportMenuAnchor(event.currentTarget);
-  };
-
-  const handleExportMenuClose = () => {
-    setExportMenuAnchor(null);
-  };
-
   const handleExportCSV = () => {
     if (!sharedData?.content?.data) return;
 
     const csvContent = convertToCSV(sharedData.content.data);
     downloadFile(csvContent, "shared-sheet.csv", "text/csv");
-    handleExportMenuClose();
   };
 
   const handleExportExcel = () => {
@@ -544,7 +521,6 @@ export default function SharedSheetPage({ params }) {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet Data");
     XLSX.writeFile(wb, "shared-sheet.xlsx");
-    handleExportMenuClose();
   };
 
   const convertToCSV = (data) => {
@@ -573,48 +549,33 @@ export default function SharedSheetPage({ params }) {
   };
 
   const showSnackbar = (message, severity = "success") => {
-    setSnackbar({ open: true, message, severity });
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
+    if (severity === "error") {
+      toast.error(message);
+    } else if (severity === "info") {
+      toast.info(message);
+    } else {
+      toast.success(message);
+    }
   };
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <CircularProgress size={40} />
-        <Typography variant="body1">Loading shared sheet...</Typography>
-      </Box>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+        <Spinner className="size-10" />
+        <p className="text-sm">Loading shared sheet...</p>
+      </div>
     );
   }
 
   if (error || !sharedData) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          flexDirection: "column",
-          gap: 2,
-          p: 3,
-        }}
-      >
-        <Alert severity="error" sx={{ maxWidth: 500 }}>
-          {error || "Sheet not found or access denied"}
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2 p-3">
+        <Alert variant="destructive" className="max-w-[500px]">
+          <AlertDescription>
+            {error || "Sheet not found or access denied"}
+          </AlertDescription>
         </Alert>
-      </Box>
+      </div>
     );
   }
 
@@ -657,141 +618,82 @@ export default function SharedSheetPage({ params }) {
   return (
     <Main>
       {/* Sheet Title/Dropdown */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-        <Box
-          sx={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            bgcolor: "#07B37A",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontSize: "12px",
-          }}
-        >
+      <div className="mb-2 flex items-center gap-1">
+        <div className="bg-primary text-primary-foreground flex h-5 w-5 items-center justify-center rounded-full text-xs">
           ✓
-        </Box>
-        <Typography variant="h6" sx={{ color: "#333", fontWeight: 500 }}>
+        </div>
+        <h2 className="text-foreground text-lg font-medium">
           List top 5 Italian restaurant...
-        </Typography>
-      </Box>
+        </h2>
+      </div>
 
       {/* Action Buttons */}
-      <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
-        <Button
-          variant="outlined"
-          startIcon={<Edit />}
-          sx={{
-            borderColor: "#07B37A",
-            color: "#07B37A",
-            textTransform: "none",
-            borderRadius: 2,
-            px: 2,
-            py: 1,
-            "&:hover": {
-              borderColor: "#07B37A",
-              bgcolor: "#f0f9f6",
-            },
-          }}
-        >
+      <div className="mb-3 flex gap-1">
+        <Button variant="outline" className="rounded-lg px-2 py-1">
+          <Edit className="size-4" />
           Edit Mode
         </Button>
 
-        <Button
-          variant="outlined"
-          startIcon={<OpenInNew />}
-          sx={{
-            borderColor: "#07B37A",
-            color: "#07B37A",
-            textTransform: "none",
-            borderRadius: 2,
-            px: 2,
-            py: 1,
-            "&:hover": {
-              borderColor: "#07B37A",
-              bgcolor: "#f0f9f6",
-            },
-          }}
-        >
+        <Button variant="outline" className="rounded-lg px-2 py-1">
+          <ExternalLink className="size-4" />
           View in New Window
         </Button>
 
-        <Button
-          variant="outlined"
-          startIcon={<Download />}
-          endIcon={<ArrowDropDown />}
-          onClick={handleExportMenuOpen}
-          disabled={!hasData}
-          sx={{
-            borderColor: "#07B37A",
-            color: "#07B37A",
-            textTransform: "none",
-            borderRadius: 2,
-            px: 2,
-            py: 1,
-            "&:hover": {
-              borderColor: "#07B37A",
-              bgcolor: "#f0f9f6",
-            },
-          }}
-        >
-          Export
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              disabled={!hasData}
+              className="rounded-lg px-2 py-1"
+            >
+              <Download className="size-4" />
+              Export
+              <ChevronDown className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportCSV}>
+              <Download className="size-4" />
+              Export as CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportExcel}>
+              <Download className="size-4" />
+              Export as Excel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-        <Button
-          variant="outlined"
-          startIcon={<Share />}
-          sx={{
-            borderColor: "#07B37A",
-            color: "#07B37A",
-            textTransform: "none",
-            borderRadius: 2,
-            px: 2,
-            py: 1,
-            "&:hover": {
-              borderColor: "#07B37A",
-              bgcolor: "#f0f9f6",
-            },
-          }}
-        >
+        <Button variant="outline" className="rounded-lg px-2 py-1">
+          <Share2 className="size-4" />
           Share
         </Button>
 
         {/* Save and Copy Button */}
         <Button
-          variant="contained"
-          startIcon={
-            isReplicating ? <CircularProgress size={20} /> : <SaveIcon />
-          }
+          variant="default"
           onClick={handleSaveAndCopy}
           disabled={isReplicating}
-          sx={{
-            bgcolor: "#07B37A",
-            color: "white",
-            textTransform: "none",
-            borderRadius: 2,
-            px: 3,
-            py: 1.5,
-            ml: 1,
-            fontWeight: 600,
-            fontSize: "0.875rem",
-            "&:hover": {
-              bgcolor: "#059669",
-            },
-            "&:disabled": {
-              bgcolor: "#e0e0e0",
-              color: "#9e9e9e",
-            },
-          }}
+          className={cn(
+            "ml-1 rounded-lg px-3 py-1.5 text-sm font-semibold",
+            isReplicating && "cursor-not-allowed opacity-50",
+          )}
         >
-          {isReplicating ? "Saving..." : "Save as Copy to My Chat"}
+          {isReplicating ? (
+            <>
+              <Spinner className="size-4" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="size-4" />
+              Save as Copy to My Chat
+            </>
+          )}
         </Button>
-      </Box>
+      </div>
 
       {/* Data Table */}
-      <Box sx={{ height: "calc(100vh - 300px)", minHeight: 400 }}>
+      <div className="h-[calc(100vh-300px)] min-h-[400px]">
         {hasData ? (
           <DataGrid
             rows={rows}
@@ -800,102 +702,30 @@ export default function SharedSheetPage({ params }) {
               resizable: true,
               sortable: true,
             }}
+            className="rdg-light border-border bg-background rounded-lg border"
             style={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 8,
               fontFamily: "inherit",
-              backgroundColor: "white",
             }}
-            className="rdg-light"
             headerRowHeight={40}
             rowHeight={40}
           />
         ) : (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-              flexDirection: "column",
-              gap: 2,
-              bgcolor: "white",
-              borderRadius: 2,
-              border: "1px solid #e0e0e0",
-            }}
-          >
-            <Typography variant="h6" color="text.secondary">
-              No data available
-            </Typography>
-          </Box>
+          <div className="bg-background border-border flex h-full flex-col items-center justify-center gap-2 rounded-lg border">
+            <h3 className="text-muted-foreground text-lg">No data available</h3>
+          </div>
         )}
-      </Box>
+      </div>
 
       {/* Footer */}
-      <Box
-        sx={{
-          mt: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="caption" color="text.secondary">
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-muted-foreground text-xs">
           Last updated: {new Date().toLocaleTimeString()}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-        >
-          <Edit sx={{ fontSize: 12 }} />
+        </p>
+        <p className="text-muted-foreground flex items-center gap-0.5 text-xs">
+          <Edit className="size-3" />
           Double-click to edit cells
-        </Typography>
-      </Box>
-
-      {/* Export Menu */}
-      <Menu
-        anchorEl={exportMenuAnchor}
-        open={Boolean(exportMenuAnchor)}
-        onClose={handleExportMenuClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-      >
-        <MenuItem onClick={handleExportCSV}>
-          <ListItemIcon>
-            <Download fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Export as CSV</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleExportExcel}>
-          <ListItemIcon>
-            <Download fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Export as Excel</ListItemText>
-        </MenuItem>
-      </Menu>
-
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+        </p>
+      </div>
     </Main>
   );
 }

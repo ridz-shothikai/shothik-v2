@@ -2,7 +2,6 @@ import AuthForgotPasswordForm from "@/components/auth/AuthForgotPasswordForm";
 import ReturnToHome from "@/components/auth/components/ReturnToHome";
 import Logo from "@/resource/assets/Logo";
 import PasswordIcon from "@/resource/assets/PasswordIcon";
-import { Box, Stack, Typography } from "@mui/material";
 
 // ----------------------------------------------------------------------
 export async function generateMetadata() {
@@ -14,44 +13,24 @@ export async function generateMetadata() {
 
 export default function ResetPasswordPage() {
   return (
-    <Stack sx={{ backgroundColor: "background.neutral" }}>
-      <Box
-        component="header"
-        sx={{
-          height: { xs: 50, sm: 80 },
-          padding: { sm: 3, xs: 1 },
-          backgroundColor: "background.paper",
-        }}
-      >
+    <div className="bg-muted flex min-h-screen flex-col">
+      <header className="bg-background h-[50px] px-4 py-1 sm:h-20 sm:px-12 sm:py-3">
         <Logo />
-      </Box>
-      <Stack
-        sx={{ height: { xs: "calc(100vh - 50px)", sm: "calc(100vh - 80px)" } }}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Box
-          sx={{
-            width: { xs: "100%", sm: "500px" },
-            padding: 2,
-            backgroundColor: "background.paper",
-            borderRadius: 3,
-            boxShadow: 4,
-            textAlign: "center",
-          }}
-        >
-          <PasswordIcon sx={{ mb: 5, height: 96 }} />
-          <Typography variant="h3">Reset your password</Typography>
+      </header>
+      <div className="flex h-[calc(100vh-50px)] items-center justify-center sm:h-[calc(100vh-80px)]">
+        <div className="bg-background w-full rounded-2xl p-4 text-center shadow-lg sm:w-[500px] sm:p-8">
+          <PasswordIcon className="mb-12 h-24" />
+          <h1 className="mb-3 text-4xl font-semibold">Reset your password</h1>
 
-          <Typography sx={{ color: "text.secondary", mb: 5 }}>
+          <p className="text-muted-foreground mb-12">
             Please enter the password
-          </Typography>
+          </p>
 
           <AuthForgotPasswordForm />
 
           <ReturnToHome />
-        </Box>
-      </Stack>
-    </Stack>
+        </div>
+      </div>
+    </div>
   );
 }

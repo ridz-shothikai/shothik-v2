@@ -1,36 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import {
-  Box,
-  Typography,
-  Container,
-  Paper,
-  CircularProgress,
-  Alert,
-  Chip,
-  Divider,
-  IconButton,
   Tooltip,
-  Button
-} from '@mui/material';
-import {
-  Share as ShareIcon,
-  ContentCopy as CopyIcon,
-  Download as DownloadIcon,
-  Visibility as VisibilityIcon,
-  Schedule as ScheduleIcon,
-  Public as PublicIcon,
-  Lock as LockIcon
-} from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
-import { useParams } from 'next/navigation';
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Copy, Download } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const SharedContentPage = () => {
-  const theme = useTheme();
   const params = useParams();
   const { contentType, shareId } = params;
-  
+
   const [shareData, setShareData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +27,7 @@ const SharedContentPage = () => {
     const loadShareData = () => {
       try {
         setLoading(true);
-        
+
         // First, check sessionStorage for client-side shared data
         const sessionData = sessionStorage.getItem(`share_${shareId}`);
         if (sessionData) {
@@ -49,36 +37,37 @@ const SharedContentPage = () => {
             setLoading(false);
             return;
           } catch (parseError) {
-            console.log('Failed to parse session data:', parseError);
+            console.log("Failed to parse session data:", parseError);
           }
         }
-        
+
         // Try to fetch from backend
         const fetchFromBackend = async () => {
           try {
             const response = await fetch(`/api/share/${shareId}`, {
-              method: 'GET',
+              method: "GET",
               headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
               },
             });
-            
+
             if (response.ok) {
               const result = await response.json();
               setShareData(result.data);
             } else {
-              throw new Error('Failed to fetch share data');
+              throw new Error("Failed to fetch share data");
             }
           } catch (backendError) {
-            console.log('Backend fetch failed, using demo data:', backendError);
-            
+            console.log("Backend fetch failed, using demo data:", backendError);
+
             // Fallback to demo data if backend fails
             const demoData = {
               shareId: shareId,
-              contentType: contentType || 'research',
+              contentType: contentType || "research",
               content: {
-                title: 'Sample Research: The Future of AI in Healthcare',
-                query: 'What are the latest developments in AI healthcare applications?',
+                title: "Sample Research: The Future of AI in Healthcare",
+                query:
+                  "What are the latest developments in AI healthcare applications?",
                 content: `
 # The Future of AI in Healthcare
 
@@ -107,45 +96,47 @@ The future of healthcare lies in the successful integration of AI technologies, 
                 `,
                 sources: [
                   {
-                    title: 'AI in Healthcare: Current Applications and Future Prospects',
-                    url: 'https://example.com/ai-healthcare-2024',
-                    resolved_url: 'https://example.com/ai-healthcare-2024'
+                    title:
+                      "AI in Healthcare: Current Applications and Future Prospects",
+                    url: "https://example.com/ai-healthcare-2024",
+                    resolved_url: "https://example.com/ai-healthcare-2024",
                   },
                   {
-                    title: 'Machine Learning in Medical Diagnosis',
-                    url: 'https://example.com/ml-medical-diagnosis',
-                    resolved_url: 'https://example.com/ml-medical-diagnosis'
+                    title: "Machine Learning in Medical Diagnosis",
+                    url: "https://example.com/ml-medical-diagnosis",
+                    resolved_url: "https://example.com/ml-medical-diagnosis",
                   },
                   {
-                    title: 'The Ethics of AI in Healthcare',
-                    url: 'https://example.com/ai-healthcare-ethics',
-                    resolved_url: 'https://example.com/ai-healthcare-ethics'
-                  }
-                ]
+                    title: "The Ethics of AI in Healthcare",
+                    url: "https://example.com/ai-healthcare-ethics",
+                    resolved_url: "https://example.com/ai-healthcare-ethics",
+                  },
+                ],
               },
               metadata: {
-                title: 'Sample Research: The Future of AI in Healthcare',
-                description: 'A comprehensive research report on AI applications in healthcare',
-                tags: ['AI', 'Healthcare', 'Technology', 'Research'],
-                createdAt: new Date().toISOString()
+                title: "Sample Research: The Future of AI in Healthcare",
+                description:
+                  "A comprehensive research report on AI applications in healthcare",
+                tags: ["AI", "Healthcare", "Technology", "Research"],
+                createdAt: new Date().toISOString(),
               },
               permissions: {
                 isPublic: true,
                 allowDownload: true,
-                allowComments: false
+                allowComments: false,
               },
               currentViews: 42,
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             };
-            
+
             setShareData(demoData);
           }
         };
-        
+
         fetchFromBackend();
       } catch (err) {
-        console.error('Error loading share data:', err);
-        setError('Failed to load shared content');
+        console.error("Error loading share data:", err);
+        setError("Failed to load shared content");
       } finally {
         setLoading(false);
       }
@@ -160,229 +151,138 @@ The future of healthcare lies in the successful integration of AI technologies, 
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(window.location.href);
-        alert('Link copied to clipboard!');
+        alert("Link copied to clipboard!");
       } else {
         // Fallback for older browsers
-        const textArea = document.createElement('textarea');
+        const textArea = document.createElement("textarea");
         textArea.value = window.location.href;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        const success = document.execCommand('copy');
+        const success = document.execCommand("copy");
         document.body.removeChild(textArea);
         if (success) {
-          alert('Link copied to clipboard!');
+          alert("Link copied to clipboard!");
         }
       }
     } catch (error) {
-      console.error('Failed to copy link:', error);
-      alert('Failed to copy link');
+      console.error("Failed to copy link:", error);
+      alert("Failed to copy link");
     }
   };
 
   const handleDownload = () => {
     if (!shareData?.content) return;
-    
+
     try {
-      const element = document.createElement('a');
-      const content = shareData.content.content || shareData.content.title || 'Shared Content';
-      const file = new Blob([content], { type: 'text/plain' });
+      const element = document.createElement("a");
+      const content =
+        shareData.content.content ||
+        shareData.content.title ||
+        "Shared Content";
+      const file = new Blob([content], { type: "text/plain" });
       element.href = URL.createObjectURL(file);
-      element.download = `${shareData.content.title || 'shared-content'}.txt`;
+      element.download = `${shareData.content.title || "shared-content"}.txt`;
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
     } catch (error) {
-      console.error('Download failed:', error);
-      alert('Download failed');
+      console.error("Download failed:", error);
+      alert("Download failed");
     }
   };
 
   const renderResearchContent = (content) => {
     return (
-      <Box sx={{ 
-        maxWidth: '100%',
-        mx: 'auto',
-        px: { xs: 2, sm: 3, md: 4 },
-        py: 3
-      }}>
+      <div className="mx-auto max-w-full px-4 py-6 sm:px-6 md:px-8">
         {/* Research Title */}
-        <Typography 
-          variant="h4" 
-          gutterBottom
-          sx={{ 
-            fontWeight: 600,
-            color: 'text.primary',
-            mb: 2
-          }}
-        >
-          {content.title || 'Research Results'}
-        </Typography>
-        
+        <h2 className="text-foreground mb-4 text-2xl font-semibold sm:text-3xl">
+          {content.title || "Research Results"}
+        </h2>
+
         {/* Research Query */}
         {content.query && (
-          <Typography 
-            variant="subtitle1" 
-            color="text.secondary" 
-            gutterBottom
-            sx={{ 
-              mb: 3,
-              fontStyle: 'italic'
-            }}
-          >
+          <p className="text-muted-foreground mb-6 text-base italic">
             Query: {content.query}
-          </Typography>
+          </p>
         )}
-        
-        <Divider sx={{ my: 3 }} />
-        
+
+        <Separator className="my-6" />
+
         {/* Main Research Content - This is where the red arrow points */}
-        <Box 
-          sx={{ 
-            '& h1, & h2, & h3, & h4, & h5, & h6': {
-              mt: 4,
-              mb: 2,
-              fontWeight: 600,
-              color: 'text.primary'
-            },
-            '& h1': { fontSize: '2rem' },
-            '& h2': { fontSize: '1.75rem' },
-            '& h3': { fontSize: '1.5rem' },
-            '& h4': { fontSize: '1.25rem' },
-            '& p': {
-              mb: 2,
-              lineHeight: 1.7,
-              fontSize: '1rem',
-              color: 'text.primary'
-            },
-            '& ul, & ol': {
-              mb: 2,
-              pl: 3
-            },
-            '& li': {
-              mb: 1,
-              lineHeight: 1.6
-            },
-            '& blockquote': {
-              borderLeft: '4px solid',
-              borderColor: 'primary.main',
-              pl: 2,
-              py: 1,
-              my: 2,
-              backgroundColor: 'action.hover',
-              fontStyle: 'italic'
-            },
-            '& code': {
-              backgroundColor: 'action.hover',
-              px: 1,
-              py: 0.5,
-              borderRadius: 1,
-              fontFamily: 'monospace'
-            },
-            '& pre': {
-              backgroundColor: 'action.hover',
-              p: 2,
-              borderRadius: 1,
-              overflow: 'auto',
-              fontFamily: 'monospace'
-            }
-          }}
+        <div
+          className="[&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_p]:text-foreground [&_blockquote]:border-primary [&_blockquote]:bg-muted [&_code]:bg-muted [&_pre]:bg-muted max-w-none [&_blockquote]:my-4 [&_blockquote]:border-l-4 [&_blockquote]:py-2 [&_blockquote]:pl-4 [&_blockquote]:italic [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-semibold [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:mt-8 [&_h3]:mb-4 [&_h3]:text-xl [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:mb-3 [&_h4]:text-lg [&_h4]:font-semibold [&_li]:mb-2 [&_li]:leading-relaxed [&_ol]:mb-4 [&_ol]:pl-6 [&_p]:mb-4 [&_p]:text-base [&_p]:leading-relaxed [&_pre]:overflow-auto [&_pre]:rounded [&_pre]:p-4 [&_pre]:font-mono [&_ul]:mb-4 [&_ul]:pl-6"
           dangerouslySetInnerHTML={{ __html: content.content }}
         />
-        
+
         {/* Sources Section */}
         {content.sources && content.sources.length > 0 && (
-          <Box sx={{ mt: 5 }}>
-            <Typography 
-              variant="h5" 
-              gutterBottom
-              sx={{ 
-                fontWeight: 600,
-                mb: 3,
-                color: 'text.primary'
-              }}
-            >
+          <div className="mt-12">
+            <h3 className="text-foreground mb-6 text-xl font-semibold">
               Sources ({content.sources.length})
-            </Typography>
-            <Box sx={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              gap: 1.5, 
-              mb: 3 
-            }}>
+            </h3>
+            <div className="mb-6 flex flex-wrap gap-3">
               {content.sources.map((source, index) => (
-                <Chip
+                <Badge
                   key={index}
-                  label={source.title || source.url}
-                  variant="outlined"
-                  size="medium"
-                  onClick={() => window.open(source.url, '_blank')}
-                  sx={{ 
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      color: 'primary.contrastText'
-                    }
-                  }}
-                />
+                  variant="outline"
+                  className="hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors"
+                  onClick={() => window.open(source.url, "_blank")}
+                >
+                  {source.title || source.url}
+                </Badge>
               ))}
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
+      </div>
     );
   };
 
   const renderChatContent = (content) => {
     return (
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          {content.title || 'Chat Conversation'}
-        </Typography>
-        
-        <Divider sx={{ my: 2 }} />
-        
-        {content.messages && content.messages.map((message, index) => (
-          <Paper key={index} sx={{ p: 2, mb: 2 }}>
-            <Typography variant="body1">
-              {message.content}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {message.role} • {new Date(message.timestamp).toLocaleString()}
-            </Typography>
-          </Paper>
-        ))}
-      </Box>
+      <div>
+        <h2 className="text-foreground mb-4 text-2xl font-semibold sm:text-3xl">
+          {content.title || "Chat Conversation"}
+        </h2>
+
+        <Separator className="my-4" />
+
+        {content.messages &&
+          content.messages.map((message, index) => (
+            <Card key={index} className="mb-4">
+              <CardContent className="p-4">
+                <p className="text-foreground mb-2 text-base">
+                  {message.content}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {message.role} •{" "}
+                  {new Date(message.timestamp).toLocaleString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+      </div>
     );
   };
 
   const renderDocumentContent = (content) => {
     return (
-      <Box>
-        <Typography variant="h4" gutterBottom>
-          {content.title || 'Document'}
-        </Typography>
-        
-        <Divider sx={{ my: 2 }} />
-        
-        <Box 
-          sx={{ 
-            '& h1, & h2, & h3, & h4, & h5, & h6': {
-              mt: 3,
-              mb: 1,
-              fontWeight: 'bold'
-            },
-            '& p': {
-              mb: 2,
-              lineHeight: 1.6
-            }
-          }}
+      <div>
+        <h2 className="text-foreground mb-4 text-2xl font-semibold sm:text-3xl">
+          {content.title || "Document"}
+        </h2>
+
+        <Separator className="my-4" />
+
+        <div
+          className="[&_h1]:mt-6 [&_h1]:mb-2 [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h2]:font-bold [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:font-bold [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:font-bold [&_h5]:mt-6 [&_h5]:mb-2 [&_h5]:font-bold [&_h6]:mt-6 [&_h6]:mb-2 [&_h6]:font-bold [&_p]:mb-4 [&_p]:leading-relaxed"
           dangerouslySetInnerHTML={{ __html: content.content }}
         />
-      </Box>
+      </div>
     );
   };
 
@@ -390,119 +290,118 @@ The future of healthcare lies in the successful integration of AI technologies, 
     if (!shareData) return null;
 
     switch (shareData.contentType) {
-      case 'research':
+      case "research":
         return renderResearchContent(shareData.content);
-      case 'chat':
+      case "chat":
         return renderChatContent(shareData.content);
-      case 'document':
+      case "document":
         return renderDocumentContent(shareData.content);
       default:
         return (
-          <Typography variant="body1">
+          <p className="text-foreground text-base">
             {JSON.stringify(shareData.content, null, 2)}
-          </Typography>
+          </p>
         );
     }
   };
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <CircularProgress />
-        </Box>
-      </Container>
+      <div className="mx-auto max-w-3xl py-8">
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <Spinner className="size-8" />
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+      <div className="mx-auto max-w-3xl py-8">
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
-        <Typography variant="body1">
-          The shared content could not be loaded. It may have expired or been removed.
-        </Typography>
-      </Container>
+        <p className="text-foreground text-base">
+          The shared content could not be loaded. It may have expired or been
+          removed.
+        </p>
+      </div>
     );
   }
 
   if (!shareData) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Alert severity="warning">
-          No content found for this share.
+      <div className="mx-auto max-w-3xl py-8">
+        <Alert variant="default">
+          <AlertDescription>No content found for this share.</AlertDescription>
         </Alert>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      backgroundColor: 'background.default',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="bg-background flex min-h-screen flex-col">
       {/* Minimal Header - Only essential info */}
-      <Box sx={{ 
-        backgroundColor: 'background.paper',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        py: 2,
-        px: 3
-      }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+      <div className="bg-card border-border border-b px-6 py-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h6 className="text-foreground text-lg font-semibold">
                 SHOTHIK AI
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Shared Research
-              </Typography>
-            </Box>
-            
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Tooltip title="Copy Link">
-                <IconButton onClick={handleCopyLink} size="small">
-                  <CopyIcon />
-                </IconButton>
+              </h6>
+              <p className="text-muted-foreground text-sm">Shared Research</p>
+            </div>
+
+            <div className="flex gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={handleCopyLink}
+                  >
+                    <Copy className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy Link</p>
+                </TooltipContent>
               </Tooltip>
-              
+
               {shareData.permissions?.allowDownload && (
-                <Tooltip title="Download">
-                  <IconButton onClick={handleDownload} size="small">
-                    <DownloadIcon />
-                  </IconButton>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={handleDownload}
+                    >
+                      <Download className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Download</p>
+                  </TooltipContent>
                 </Tooltip>
               )}
-            </Box>
-          </Box>
-        </Container>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content Area - This is where the red arrow points */}
-      <Box sx={{ flex: 1, py: 0 }}>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          {renderContent()}
-        </Container>
-      </Box>
-      
+      <div className="flex-1 py-0">
+        <div className="mx-auto max-w-6xl py-8">{renderContent()}</div>
+      </div>
+
       {/* Minimal Footer */}
-      <Box sx={{ 
-        backgroundColor: 'background.paper',
-        borderTop: '1px solid',
-        borderColor: 'divider',
-        py: 2,
-        textAlign: 'center'
-      }}>
-        <Typography variant="body2" color="text.secondary">
-          Shared with SHOTHIK AI • {shareData.currentViews} views • {new Date(shareData.createdAt).toLocaleDateString()}
-        </Typography>
-      </Box>
-    </Box>
+      <div className="bg-card border-border border-t py-4 text-center">
+        <p className="text-muted-foreground text-sm">
+          Shared with SHOTHIK AI • {shareData.currentViews} views •{" "}
+          {new Date(shareData.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+    </div>
   );
 };
 

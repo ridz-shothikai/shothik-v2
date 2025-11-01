@@ -1,6 +1,5 @@
 import GrammarCheckerContentSection from "@/components/(primary-layout)/(grammar-checker-page)/GrammarCheckerContentSection";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
-import { Container } from "@mui/material";
 
 export async function generateMetadata() {
   return {
@@ -11,14 +10,7 @@ export async function generateMetadata() {
 
 const Grammar = () => {
   return (
-    <Container
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: { md: 12, xs: 10 },
-        maxWidth: "100% !important",
-      }}
-    >
+    <div className="flex max-w-full flex-col gap-20 md:gap-24">
       <ErrorBoundary>
         <GrammarCheckerContentSection />
       </ErrorBoundary>
@@ -28,7 +20,7 @@ const Grammar = () => {
       />
       <ToolsCTA toolType="grammar" />
       <HomeAdvertisement /> */}
-    </Container>
+    </div>
   );
 };
 

@@ -49,7 +49,7 @@ export const presentationApiSlice = createApi({
 
     // Fetch slides
     fetchSlides: builder.query({
-      query: (presentationId) => `/presentation/slides/${presentationId}`,
+      query: (presentationId) => `/slides?p_id=${presentationId}`,
       providesTags: (result, error, presentationId) => [
         { type: "slides", id: presentationId },
       ],

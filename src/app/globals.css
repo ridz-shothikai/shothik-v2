@@ -100,4 +100,5 @@
 @layer utilities {
   @import "../assets/styles/utilities/loading.css";
   @import "../assets/styles/utilities/intersection-observer.css";
+  @import "../assets/styles/utilities/shine.css";
 }

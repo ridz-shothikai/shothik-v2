@@ -1,5 +1,6 @@
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { setActiveResearch } from "@/redux/slice/researchCoreSlice";
-import { Box, Tabs } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ResearchNavigation() {
@@ -8,8 +9,8 @@ export default function ResearchNavigation() {
   );
   const dispatch = useDispatch();
 
-  const handleTabChange = (event, newValue) => {
-    dispatch(setActiveResearch(newValue));
+  const handleTabChange = (value) => {
+    dispatch(setActiveResearch(parseInt(value, 10)));
   };
 
   if (!researches || researches.length <= 1) {
@@ -17,41 +18,27 @@ export default function ResearchNavigation() {
   }
 
   return (
-    <Box sx={{ mb: 2, borderBottom: "1px solid #e0e0e0" }}>
+    <div className="border-border mb-2 border-b">
       <Tabs
-        value={activeResearchIndex}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        sx={{
-          "& .MuiTabs-indicator": {
-            backgroundColor: "#07B37A",
-          },
-          "& .MuiTab-root": {
-            minWidth: 120,
-            textTransform: "none",
-            fontSize: "14px",
-            "&.Mui-selected": {
-              color: "#07B37A",
-            },
-          },
-        }}
+        value={String(activeResearchIndex)}
+        onValueChange={handleTabChange}
+        className="w-full"
       >
-        {researches.map((research, index) => (
-          //   <Tab
-          //     key={research._id || `research-${index}`}
-          //     label={`Research ${index + 1}`}
-          //   />
-          <p
-            key={index + 1}
-            style={{
-              marginInline: "10px",
-            }}
-          >
-            {index + 1}
-          </p>
-        ))}
+        <TabsList className="h-auto w-full justify-start rounded-none border-0 bg-transparent p-0">
+          {researches.map((research, index) => (
+            <TabsTrigger
+              key={research._id || `research-${index}`}
+              value={String(index)}
+              className={cn(
+                "min-w-[120px] rounded-none border-0 border-b-2 border-transparent bg-transparent text-sm font-normal transition-none",
+                "data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+              )}
+            >
+              {index + 1}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
-    </Box>
+    </div>
   );
 }

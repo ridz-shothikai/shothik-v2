@@ -139,7 +139,7 @@ const ProcessTimelineItem = ({ ev, isLast, isActive }) => {
                 <p className="text-sm font-semibold">
                   <span
                     className={cn(
-                      "relative z-10 inline-block overflow-hidden",
+                      "relative inline-block overflow-hidden",
                       isLast && "animate-shine",
                     )}
                   >

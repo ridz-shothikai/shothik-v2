@@ -1,31 +1,27 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import {
   useCreateAgentReplicaMutation,
   useLazyVerifySharedAgentQuery,
 } from "@/redux/api/shareAgent/shareAgentApi";
 import { setShowLoginModal } from "@/redux/slice/auth";
-import {
-  ArrowBack as ArrowBackIcon,
-  Person as PersonIcon,
-  Save as SaveIcon,
-  Visibility as VisibilityIcon,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { ArrowLeft, Eye, Save, User } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -216,40 +212,31 @@ const SharedAgentPage = () => {
 
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        flexDirection="column"
-        gap={2}
-      >
-        <CircularProgress size={50} />
-        <Typography color="text.secondary">
-          Loading shared content...
-        </Typography>
-      </Box>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <Spinner className="size-12" />
+        <p className="text-muted-foreground">Loading shared content...</p>
+      </div>
     );
   }
 
   if (error && !passwordDialogOpen) {
     return (
-      <Container maxWidth="md" sx={{ py: 8 }}>
-        <Alert
-          severity="error"
-          action={
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>{error}</span>
             <Button
-              color="inherit"
-              size="small"
+              variant="ghost"
+              size="sm"
               onClick={() => router.push("/")}
+              className="ml-4"
             >
               Go Home
             </Button>
-          }
-        >
-          {error}
+          </AlertDescription>
         </Alert>
-      </Container>
+      </div>
     );
   }
 
@@ -259,181 +246,121 @@ const SharedAgentPage = () => {
 
   return (
     <>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Header */}
-        <Box mb={4}>
+        <div className="mb-8">
           <Button
-            startIcon={<ArrowBackIcon />}
+            variant="ghost"
             onClick={() => router.push("/")}
-            sx={{ mb: 2 }}
+            className="mb-4"
           >
+            <ArrowLeft className="mr-2 size-4" />
             Back to Home
           </Button>
 
-          <Paper sx={{ p: 3 }}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="flex-start"
-              mb={2}
-            >
-              <Box flex={1}>
-                <Typography variant="h4" gutterBottom fontWeight={600}>
-                  Shared AI Research
-                </Typography>
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <PersonIcon fontSize="small" color="action" />
-                  <Typography variant="body2" color="text.secondary">
-                    Shared by: {sharedData.shareInfo.sharedBy.name}
-                  </Typography>
-                </Box>
-                {sharedData.shareInfo.message && (
-                  <Alert severity="info" sx={{ mt: 2 }}>
-                    {sharedData.shareInfo.message}
-                  </Alert>
-                )}
-              </Box>
+          <Card>
+            <CardContent className="p-6">
+              <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex-1">
+                  <h1 className="mb-2 text-2xl font-semibold">
+                    Shared AI Research
+                  </h1>
+                  <div className="mb-2 flex items-center gap-2">
+                    <User className="text-muted-foreground size-4" />
+                    <p className="text-muted-foreground text-sm">
+                      Shared by: {sharedData.shareInfo.sharedBy.name}
+                    </p>
+                  </div>
+                  {sharedData.shareInfo.message && (
+                    <Alert className="mt-4">
+                      <AlertDescription>
+                        {sharedData.shareInfo.message}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
 
-              <Box display="flex" gap={1} flexWrap="wrap">
-                <Chip
-                  icon={<VisibilityIcon />}
-                  label={sharedData.shareInfo.visibility}
-                  color={
-                    sharedData.shareInfo.visibility === "public"
-                      ? "primary"
-                      : "default"
-                  }
-                  size="small"
-                />
-                {sharedData.shareInfo.views !== null && (
-                  <Chip
-                    label={`${sharedData.shareInfo.views} views`}
-                    size="small"
-                    variant="outlined"
-                  />
-                )}
-              </Box>
-            </Box>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={
+                      sharedData.shareInfo.visibility === "public"
+                        ? "default"
+                        : "outline"
+                    }
+                  >
+                    <Eye className="mr-1 size-3" />
+                    {sharedData.shareInfo.visibility}
+                  </Badge>
+                  {sharedData.shareInfo.views !== null && (
+                    <Badge variant="outline">
+                      {sharedData.shareInfo.views} views
+                    </Badge>
+                  )}
+                </div>
+              </div>
 
-            {/* Action Buttons */}
-            <Box display="flex" gap={1} flexWrap="wrap" mt={3}>
-              <Button
-                variant="contained"
-                startIcon={
-                  isCreatingReplica ? (
-                    <CircularProgress size={20} />
+              {/* Action Buttons */}
+              <div className="mt-6 flex flex-wrap gap-2">
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    console.log("Button clicked - before handleSaveAsCopy");
+                    handleSaveAsCopy();
+                  }}
+                  disabled={isCreatingReplica}
+                >
+                  {isCreatingReplica ? (
+                    <>
+                      <Spinner className="mr-2 size-4" />
+                      Saving...
+                    </>
                   ) : (
-                    <SaveIcon />
-                  )
-                }
-                onClick={() => {
-                  console.log("Button clicked - before handleSaveAsCopy");
-                  handleSaveAsCopy();
-                }}
-                disabled={isCreatingReplica}
-              >
-                {isCreatingReplica ? "Saving..." : "Save as Copy to My Chat"}
-              </Button>
-            </Box>
-          </Paper>
-        </Box>
+                    <>
+                      <Save className="mr-2 size-4" />
+                      Save as Copy to My Chat
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Research Content Display - Matching Research Agent Page Design */}
-        <Box sx={{ maxWidth: "100%", mx: "auto" }}>
+        <div className="mx-auto max-w-full">
           {sharedData.agent.type === "research" ? (
-            <Box>
+            <div>
               {/* Main Title */}
               {sharedData.agent.title && (
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: 700,
-                    mb: 3,
-                    color: "text.primary",
-                    textAlign: "center",
-                  }}
-                >
+                <h2 className="text-foreground mb-6 text-center text-2xl font-bold">
                   {sharedData.agent.title}
-                </Typography>
+                </h2>
               )}
 
               {/* Research Content */}
-              <Box
-                sx={{
-                  "& h1, & h2, & h3, & h4, & h5, & h6": {
-                    fontWeight: 600,
-                    marginBottom: 2,
-                    marginTop: 4,
-                    color: "text.primary",
-                    fontSize: "1.25rem",
-                  },
-                  "& h1": { fontSize: "2rem" },
-                  "& h2": { fontSize: "1.5rem" },
-                  "& h3": { fontSize: "1.25rem" },
-                  "& p": {
-                    marginBottom: 2,
-                    lineHeight: 1.8,
-                    color: "text.primary",
-                    fontSize: "1rem",
-                    textAlign: "justify",
-                  },
-                  "& strong, & b": {
-                    fontWeight: 600,
-                    color: "text.primary",
-                  },
-                  "& em, & i": {
-                    fontStyle: "italic",
-                  },
-                  "& ul, & ol": {
-                    paddingLeft: 3,
-                    marginBottom: 2,
-                    marginTop: 1,
-                  },
-                  "& li": {
-                    marginBottom: 1,
-                    lineHeight: 1.6,
-                    listStyleType: "disc",
-                    marginLeft: 1,
-                  },
-                  "& blockquote": {
-                    borderLeft: "4px solid",
-                    borderColor: "primary.main",
-                    paddingLeft: 2,
-                    marginLeft: 0,
-                    marginBottom: 2,
-                    fontStyle: "italic",
-                    color: "text.secondary",
-                  },
-                  "& code": {
-                    backgroundColor: "grey.100",
-                    padding: "2px 4px",
-                    borderRadius: 1,
-                    fontFamily: "monospace",
-                    fontSize: "0.875rem",
-                  },
-                  "& pre": {
-                    backgroundColor: "grey.100",
-                    padding: 2,
-                    borderRadius: 1,
-                    overflow: "auto",
-                    marginBottom: 2,
-                  },
-                  "& a": {
-                    color: "primary.main",
-                    textDecoration: "underline",
-                  },
-                  // Style inline citations like [1], [2], etc.
-                  "& sup": {
-                    fontSize: "0.75rem",
-                    color: "primary.main",
-                    fontWeight: 600,
-                    marginLeft: "2px",
-                  },
-                  // Hide raw HTML elements and show only content
-                  '& span[class*="reference-link"]': {
-                    display: "none",
-                  },
-                }}
+              <div
+                className={cn(
+                  "[&_h1]:text-foreground [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:text-3xl [&_h1]:font-semibold",
+                  "[&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-2xl [&_h2]:font-semibold",
+                  "[&_h3]:text-foreground [&_h3]:mt-8 [&_h3]:mb-4 [&_h3]:text-xl [&_h3]:font-semibold",
+                  "[&_h4]:text-foreground [&_h4]:mt-8 [&_h4]:mb-4 [&_h4]:text-xl [&_h4]:font-semibold",
+                  "[&_h5]:text-foreground [&_h5]:mt-8 [&_h5]:mb-4 [&_h5]:text-xl [&_h5]:font-semibold",
+                  "[&_h6]:text-foreground [&_h6]:mt-8 [&_h6]:mb-4 [&_h6]:text-xl [&_h6]:font-semibold",
+                  "[&_p]:text-foreground [&_p]:mb-4 [&_p]:text-justify [&_p]:text-base [&_p]:leading-relaxed",
+                  "[&_strong]:text-foreground [&_strong]:font-semibold",
+                  "[&_b]:text-foreground [&_b]:font-semibold",
+                  "[&_em]:italic",
+                  "[&_i]:italic",
+                  "[&_ul]:mt-2 [&_ul]:mb-4 [&_ul]:pl-12",
+                  "[&_ol]:mt-2 [&_ol]:mb-4 [&_ol]:pl-12",
+                  "[&_li]:mb-2 [&_li]:ml-4 [&_li]:list-disc [&_li]:leading-relaxed",
+                  "[&_blockquote]:border-primary [&_blockquote]:text-muted-foreground [&_blockquote]:mb-4 [&_blockquote]:border-l-4 [&_blockquote]:pl-4 [&_blockquote]:italic",
+                  "[&_code]:bg-muted [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-sm",
+                  "[&_pre]:bg-muted [&_pre]:mb-4 [&_pre]:overflow-auto [&_pre]:rounded [&_pre]:p-4",
+                  "[&_a]:text-primary [&_a]:underline",
+                  "[&_sup]:text-primary [&_sup]:ml-0.5 [&_sup]:text-xs [&_sup]:font-semibold",
+                  '[&_span[class*="reference-link"]]:hidden',
+                )}
                 dangerouslySetInnerHTML={{
                   __html: processMarkdownContent(sharedData.agent.content),
                 }}
@@ -442,210 +369,135 @@ const SharedAgentPage = () => {
               {/* Sources Section - Matching Research Agent Page */}
               {sharedData.agent.sources &&
                 sharedData.agent.sources.length > 0 && (
-                  <Box mt={6}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 600,
-                        mb: 3,
-                        color: "text.primary",
-                      }}
-                    >
+                  <div className="mt-12">
+                    <h3 className="text-foreground mb-6 text-xl font-semibold">
                       References
-                    </Typography>
+                    </h3>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: { xs: "column", md: "row" },
-                        flexWrap: "wrap",
-                        gap: 2,
-                        mb: 2,
-                      }}
-                    >
+                    <div className="mb-4 flex flex-col flex-wrap gap-4 md:flex-row">
                       {sharedData.agent.sources
                         .slice(0, 6)
                         .map((source, index) => (
-                          <Box
+                          <div
                             key={index}
-                            sx={{
-                              flex: {
-                                xs: "1 1 100%",
-                                md: "1 1 calc(50% - 8px)",
-                              },
-                              minWidth: { xs: "100%", md: "calc(50% - 8px)" },
-                              p: 2,
-                              border: "1px solid",
-                              borderColor: "grey.300",
-                              borderRadius: 2,
-                              backgroundColor: "grey.50",
-                              "&:hover": {
-                                backgroundColor: "grey.100",
-                              },
-                            }}
+                            className={cn(
+                              "border-border bg-card hover:bg-muted flex-[1_1_100%] rounded-lg border p-4 transition-colors",
+                              "md:min-w-[calc(50%-8px)] md:flex-[1_1_calc(50%-8px)]",
+                            )}
                           >
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              gap={1}
-                              mb={1}
-                            >
-                              <Box
-                                sx={{
-                                  width: 24,
-                                  height: 24,
-                                  borderRadius: "50%",
-                                  backgroundColor: "primary.main",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  flexShrink: 0,
-                                }}
-                              >
-                                <Typography
-                                  variant="caption"
-                                  sx={{
-                                    color: "white",
-                                    fontSize: "0.75rem",
-                                    fontWeight: "bold",
-                                  }}
-                                >
+                            <div className="mb-2 flex items-center gap-2">
+                              <div className="bg-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                                <span className="text-primary-foreground text-xs font-bold">
                                   {index + 1}
-                                </Typography>
-                              </Box>
-                              <Typography
-                                variant="body2"
-                                fontWeight={600}
-                                color="text.primary"
-                                sx={{
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
+                                </span>
+                              </div>
+                              <p className="text-foreground truncate text-sm font-semibold">
                                 {source.title ||
                                   source.domain ||
                                   `Source ${index + 1}`}
-                              </Typography>
-                            </Box>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              sx={{
-                                display: "block",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                maxWidth: "100%",
-                              }}
-                            >
+                              </p>
+                            </div>
+                            <p className="text-muted-foreground block max-w-full truncate text-xs">
                               {source.url ||
                                 source.domain ||
                                 "No URL available"}
-                            </Typography>
-                          </Box>
+                            </p>
+                          </div>
                         ))}
-                    </Box>
+                    </div>
 
                     {sharedData.agent.sources.length > 6 && (
-                      <Typography
-                        variant="body2"
-                        color="primary.main"
-                        sx={{
-                          cursor: "pointer",
-                          textDecoration: "underline",
-                          mb: 3,
-                        }}
-                      >
+                      <p className="text-primary mb-6 cursor-pointer text-sm underline">
                         +{sharedData.agent.sources.length - 6} more sources
                         available
-                      </Typography>
+                      </p>
                     )}
-                  </Box>
+                  </div>
                 )}
-            </Box>
+            </div>
           ) : sharedData.agent.messages ? (
             // Regular agent messages display
             sharedData.agent.messages.map((message, index) => (
-              <Paper
+              <Card
                 key={index}
-                sx={{
-                  p: 3,
-                  mb: 2,
-                  bgcolor:
-                    message.role === "user" ? "grey.50" : "background.paper",
-                  borderLeft:
-                    message.role === "user" ? "4px solid" : "4px solid",
-                  borderColor:
-                    message.role === "user" ? "primary.main" : "success.main",
-                }}
+                className={cn(
+                  "mb-4 border-l-4 p-6",
+                  message.role === "user"
+                    ? "bg-muted/50 border-l-primary"
+                    : "border-l-primary",
+                )}
               >
-                <Box display="flex" alignItems="center" gap={1} mb={1}>
-                  <Chip
-                    label={message.role === "user" ? "You" : "AI Assistant"}
-                    size="small"
-                    color={message.role === "user" ? "primary" : "success"}
-                  />
-                </Box>
-                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                <div className="mb-2 flex items-center gap-2">
+                  <Badge
+                    variant={message.role === "user" ? "default" : "secondary"}
+                  >
+                    {message.role === "user" ? "You" : "AI Assistant"}
+                  </Badge>
+                </div>
+                <p className="text-base whitespace-pre-wrap">
                   {typeof message.content === "string"
                     ? message.content
                     : message.content?.message ||
                       message.content?.data?.content ||
                       JSON.stringify(message.content, null, 2)}
-                </Typography>
-              </Paper>
+                </p>
+              </Card>
             ))
           ) : (
-            <Alert severity="info">No content available</Alert>
+            <Alert>
+              <AlertDescription>No content available</AlertDescription>
+            </Alert>
           )}
-        </Box>
+        </div>
 
         {/* Footer Info */}
-        <Box mt={4} textAlign="center">
-          <Typography variant="caption" color="text.secondary">
+        <div className="mt-8 text-center">
+          <p className="text-muted-foreground text-xs">
             Shared on{" "}
             {new Date(sharedData.shareInfo.createdAt).toLocaleDateString()} via
             Shothik AI
-          </Typography>
-        </Box>
-      </Container>
+          </p>
+        </div>
+      </div>
 
       {/* Password Dialog */}
-      <Dialog
-        open={passwordDialogOpen}
-        onClose={() => setPasswordDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Password Required</DialogTitle>
-        <DialogContent>
-          <Typography variant="body2" color="text.secondary" mb={2}>
-            This shared content is password protected. Please enter the password
-            to continue.
-          </Typography>
-          <TextField
-            autoFocus
-            fullWidth
-            type="password"
-            label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handlePasswordSubmit()}
-            error={!!error}
-            helperText={error}
-          />
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Password Required</DialogTitle>
+            <DialogDescription className="mb-4">
+              This shared content is password protected. Please enter the
+              password to continue.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                autoFocus
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handlePasswordSubmit()}
+                aria-invalid={!!error}
+              />
+              {error && <p className="text-destructive text-sm">{error}</p>}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => router.push("/")}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePasswordSubmit}
+              variant="default"
+              disabled={!password}
+            >
+              Submit
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => router.push("/")}>Cancel</Button>
-          <Button
-            onClick={handlePasswordSubmit}
-            variant="contained"
-            disabled={!password}
-          >
-            Submit
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );

@@ -74,7 +74,7 @@ export default function SlidesPreviewPage() {
     );
   }
 
-  if (!slidesData?.data || slidesData.data.length === 0) {
+  if (!slidesData?.slides || slidesData.slides.length === 0) {
     return (
       <>
         <SlidePreviewNavbar slidesData={null} />
@@ -98,8 +98,8 @@ export default function SlidesPreviewPage() {
     <>
       <SlidePreviewNavbar slidesData={slidesData} />
       <PresentationMode
-        slides={slidesData?.data || []}
-        open={isPresentationOpen && slidesData?.data?.length > 0}
+        slides={slidesData?.slides || []}
+        open={isPresentationOpen && slidesData?.slides?.length > 0}
         onClose={closePresentation}
       />
       <Box
@@ -123,12 +123,12 @@ export default function SlidesPreviewPage() {
           >
             Slides Preview
           </Typography>
-          {slidesData.data.map((slide, index) => (
+          {slidesData.slides.map((slide, index) => (
             <SlideCard
               key={slide.slide_index || index}
               slide={slide}
               index={index}
-              totalSlides={slidesData.data.length}
+              totalSlides={slidesData.slides.length}
             />
           ))}
         </Box>

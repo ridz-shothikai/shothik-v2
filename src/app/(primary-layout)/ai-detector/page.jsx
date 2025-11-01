@@ -4,7 +4,6 @@ import ErrorBoundary from "@/components/common/ErrorBoundary";
 import HomeAdvertisement from "@/components/common/HomeAdvertisement";
 import ToolsCTA from "@/components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "@/components/tools/common/ToolsSepecigFaq";
-import { Container } from "@mui/material";
 import { Suspense } from "react";
 
 export async function generateMetadata() {
@@ -16,14 +15,7 @@ export async function generateMetadata() {
 
 const Aidetector = () => {
   return (
-    <Container
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: { md: 12, xs: 10 },
-        maxWidth: "100% !important",
-      }}
-    >
+    <div className="flex max-w-full flex-col gap-10 md:gap-12">
       <ErrorBoundary>
         <Suspense fallback={null}>
           <AiDetectorContentSection />
@@ -35,7 +27,7 @@ const Aidetector = () => {
       />
       <ToolsCTA toolType="aidetector" />
       <HomeAdvertisement />
-    </Container>
+    </div>
   );
 };
 

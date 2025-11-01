@@ -66,6 +66,7 @@ export default function PresentationAgentPageV2({ presentationId }) {
               slidesLoading={false}
               presentationId={presentationState.slideCurrentId}
               title={presentationState.title}
+              status={presentationState.status}
             />
           </div>
         </div>

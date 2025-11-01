@@ -149,14 +149,14 @@ export default function SlidePreviewNavbar({
 
   const handleImagePptxExport = async () => {
     handleExportClose();
-    if (!slidesData?.data || slidesData.data.length === 0) {
+    if (!slidesData?.slides || slidesData.slides.length === 0) {
       showSnackbar("No slides available to export", "error");
       return;
     }
 
     setIsExporting(true);
     try {
-      const result = await handleAdvancedPptxExport(slidesData.data, {
+      const result = await handleAdvancedPptxExport(slidesData.slides, {
         fileName: "presentation-images.pptx",
       });
 
@@ -178,14 +178,14 @@ export default function SlidePreviewNavbar({
 
   const handleNativePptxExportClick = async () => {
     handleExportClose();
-    if (!slidesData?.data || slidesData.data.length === 0) {
+    if (!slidesData?.slides || slidesData.slides.length === 0) {
       showSnackbar("No slides available to export", "error");
       return;
     }
 
     setIsExporting(true);
     try {
-      const result = await handleNativePptxExport(slidesData.data, {
+      const result = await handleNativePptxExport(slidesData.slides, {
         fileName: "presentation-editable.pptx",
       });
 
@@ -213,7 +213,7 @@ export default function SlidePreviewNavbar({
   };
 
   const handlePDFExportConfirm = async () => {
-    if (!slidesData?.data || slidesData.data.length === 0) {
+    if (!slidesData?.slides || slidesData.slides.length === 0) {
       showSnackbar("No slides available to export", "error");
       return;
     }
@@ -222,7 +222,7 @@ export default function SlidePreviewNavbar({
     setIsExporting(true);
 
     try {
-      const result = await handlePDFExport(slidesData.data, {
+      const result = await handlePDFExport(slidesData.slides, {
         fileName: "presentation.pdf",
         ...pdfOptions,
       });
@@ -416,9 +416,9 @@ export default function SlidePreviewNavbar({
                 {slidesData?.title || PresentationTitle || "Generating..."}
               </Typography>
 
-              {!isMobile && slidesData?.data && (
+              {!isMobile && slidesData?.slides && (
                 <Chip
-                  label={`${slidesData.data.length} slides`}
+                  label={`${slidesData.slides.length} slides`}
                   size="small"
                   variant="outlined"
                   sx={{
@@ -444,7 +444,7 @@ export default function SlidePreviewNavbar({
               startIcon={!isMobile ? <PlayArrow /> : undefined}
               onClick={openPresentation}
               disabled={
-                (!slidesData?.data || slidesData.data.length === 0) &&
+                (!slidesData?.slides || slidesData.slides.length === 0) &&
                 !slidesData
               }
               sx={{
@@ -472,8 +472,8 @@ export default function SlidePreviewNavbar({
                 }
                 onClick={handleExportClick}
                 disabled={
-                  !slidesData?.data ||
-                  slidesData.data.length === 0 ||
+                  !slidesData?.slides ||
+                  slidesData.slides.length === 0 ||
                   isExporting
                 }
                 sx={{
@@ -501,12 +501,13 @@ export default function SlidePreviewNavbar({
               </Button>
             )}
 
-            {!isSharedPage && (
+            {/* {!isSharedPage && ( this is not changed so not showing the share button now. */}
+            {false && (
               <Button
                 variant="outlined"
                 startIcon={!isMobile ? <ShareIcon /> : undefined}
                 onClick={handleShareClick}
-                disabled={!slidesData?.data || slidesData.data.length === 0}
+                disabled={!slidesData?.slides || slidesData.slides.length === 0}
                 sx={{
                   color: "#4caf50",
                   borderColor: "#4caf50",

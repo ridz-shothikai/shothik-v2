@@ -1,31 +1,31 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 import PageNotFoundIllustration from "../resource/assets/notFound";
 
 export const metadata = {
   title: "404 Page Not Found | Shothik AI",
   description:
-    "Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL?",
+    "Sorry, we couldn't find the page you're looking for. Perhaps you've mistyped the URL?",
 };
 
 export default function NotFound() {
   return (
-    <Stack sx={{ height: "100vh" }} alignItems="center" justifyContent="center">
-      <Typography variant="h3" sx={{ animation: "fadeIn 1s ease-in-out" }}>
+    <div className="flex h-screen flex-col items-center justify-center gap-4">
+      <h3 className="animate-in fade-in text-3xl font-bold duration-1000">
         Sorry, page not found!
-      </Typography>
+      </h3>
 
-      <Typography
-        sx={{ color: "text.secondary", animation: "fadeIn 1.2s ease-in-out" }}
-      >
-        Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve
+      <p className="text-muted-foreground animate-in fade-in text-center duration-[1200ms]">
+        Sorry, we couldn't find the page you're looking for. Perhaps you've
         mistyped the URL? Be sure to check your spelling.
-      </Typography>
+      </p>
 
-      <PageNotFoundIllustration sx={{ height: 260, my: { xs: 5, sm: 10 } }} />
+      <PageNotFoundIllustration className={cn("my-5 h-[260px] sm:my-10")} />
 
-      <Button component="a" href="/" size="large" variant="contained">
-        Go to Home
+      <Button asChild size="lg">
+        <Link href="/">Go to Home</Link>
       </Button>
-    </Stack>
+    </div>
   );
 }

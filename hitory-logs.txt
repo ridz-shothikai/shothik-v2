@@ -1,0 +1,636 @@
+logs
+: 
+Array(37)
+0
+: 
+{id: 'user_2025-10-29T07:05:02.276000_history', author: 'user', content: 'Create a professional business presentation about Digital Marketing', timestamp: '2025-10-29T07:05:02.276000', phase: 'planning', …}
+1
+: 
+author
+: 
+"presentation_spec_extractor_agent"
+colorTheme
+: 
+"#1E3A8A"
+hasData
+: 
+false
+hasKeywords
+: 
+false
+hasLinks
+: 
+false
+hasSummary
+: 
+false
+id
+: 
+"presentation_spec_extractor_agent_2025-10-29T07:05:44.149000_history"
+messageType
+: 
+"spec_extractor"
+phase
+: 
+"planning"
+tags
+: 
+Array(38)
+0
+: 
+"Strategic importance of digital marketing"
+1
+: 
+"Key components of an effective digital marketing strategy"
+2
+: 
+"Emerging trends in digital marketing"
+3
+: 
+"Transformative role of Artificial Intelligence (AI) in digital marketing"
+4
+: 
+"AI applications in personalization"
+5
+: 
+"AI applications in content creation"
+6
+: 
+"AI applications in predictive analytics"
+7
+: 
+"AI applications in optimizing ad campaigns for hyper-targeted strategies"
+8
+: 
+"Data-Driven Marketing"
+9
+: 
+"Use of consumer data and insights for targeted campaigns"
+10
+: 
+"Understanding customer behavior through data"
+11
+: 
+"Enhancing ROI with data-driven marketing"
+12
+: 
+"Customer-Centered Strategies"
+13
+: 
+"Building customer relationships"
+14
+: 
+"Audience segmentation"
+15
+: 
+"Personalization based on customer preferences"
+16
+: 
+"Creating tailored content based on customer pain points"
+17
+: 
+"Key Digital Marketing Channels and Tactics"
+18
+: 
+"Search Engine Optimization (SEO)"
+19
+: 
+"SEO aspects: page speed, mobile usability, structured data, voice search"
+20
+: 
+"Content Marketing"
+21
+: 
+"Importance of valuable, user-friendly content"
+22
+: 
+"Storytelling in content marketing"
+23
+: 
+"Increasing role of short-form video in content marketing"
+24
+: 
+"Social Media Marketing"
+25
+: 
+"Evolving social media landscape"
+26
+: 
+"Platform-specific messaging"
+27
+: 
+"Significance of customer-generated content"
+28
+: 
+"Paid Media (SEM and Display Advertising) effectiveness"
+29
+: 
+"Email Marketing"
+30
+: 
+"Mobile-First Strategies"
+31
+: 
+"Measuring Success and ROI"
+32
+: 
+"Importance of real-time analytics for tracking performance"
+33
+: 
+"Cruciality of measurable outcomes for optimizing strategies"
+34
+: 
+"The Future of Digital Marketing"
+35
+: 
+"Continuous evolution of the digital landscape"
+36
+: 
+"Need for adaptability in digital marketing"
+37
+: 
+"Integrating new technologies into digital marketing strategies"
+length
+: 
+38
+[[Prototype]]
+: 
+Array(0)
+timestamp
+: 
+"2025-10-29T07:05:44.149000"
+workerNumber
+: 
+null
+[[Prototype]]
+: 
+Object
+2
+: 
+author
+: 
+"KeywordResearchAgent"
+hasData
+: 
+false
+hasKeywords
+: 
+true
+hasLinks
+: 
+false
+hasSummary
+: 
+false
+id
+: 
+"KeywordResearchAgent_2025-10-29T07:06:19.971000_history"
+keywords
+: 
+Array(10)
+0
+: 
+"Digital Marketing Trends 2025 statistics and future outlook"
+1
+: 
+"Strategic applications of AI in marketing effectiveness 2025 latest research"
+2
+: 
+"Hyper-Personalization Strategies 2025 and current ROI data"
+3
+: 
+"Best practices for data-driven marketing ROI optimization 2025"
+4
+: 
+"Generative AI content creation recent developments and impact 2025"
+5
+: 
+"Mobile-First Marketing Trends 2025 and emerging digital channels"
+6
+: 
+"Future of Digital Advertising market trends and projections 2025-2027"
+7
+: 
+"Adaptive Marketing Frameworks 2025 current implementations and success metrics"
+8
+: 
+"Ethical AI Marketing and data privacy regulations current updates 2025"
+9
+: 
+"Competitive digital landscape analysis and strategic shifts 2025-2026"
+length
+: 
+10
+[[Prototype]]
+: 
+Array(0)
+messageType
+: 
+"keyword_research"
+phase
+: 
+"research"
+timestamp
+: 
+"2025-10-29T07:06:19.971000"
+workerNumber
+: 
+null
+[[Prototype]]
+: 
+Object
+3
+: 
+author
+: 
+"browser_worker_4"
+hasData
+: 
+false
+hasKeywords
+: 
+false
+hasLinks
+: 
+true
+hasSummary
+: 
+true
+id
+: 
+"browser_worker_4_2025-10-29T07:06:34.447000_history"
+lastUpdated
+: 
+"2025-10-29T07:06:43.204000"
+links
+: 
+Array(5)
+0
+: 
+domain
+: 
+"bernardmarr.com"
+timestamp
+: 
+"2025-10-29T07:06:34.447000"
+url
+: 
+"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHIcYFr2h3r6A7emYvo3Ou6tRu_MI5cvfAjVz6wyshUNk63TrTTI6BMtCOeXjYlgykRlaouYxPN1FXGXHkHQY6dIZvd3r9mIC4pySOVPQQY2qR7XVsFWoi07K6fcZ3Y4z4FV075VaUeex6O5NawD85Ybx_vqZ7b2rKtGFXO4lOTfwiVPE05lRaM54k8X4fypg4n4LLlGQ=="
+[[Prototype]]
+: 
+Object
+1
+: 
+{domain: 'freedomx.com', url: 'https://vertexaisearch.cloud.google.com/grounding-…Mz8cXxcMeT6JG-414wW4CjM5PPrkzs6po7vxaAv5wFzGE0uo=', timestamp: '2025-10-29T07:06:35.770000'}
+2
+: 
+{domain: 'ecommercenews.com.au', url: 'https://vertexaisearch.cloud.google.com/grounding-…7DceLbI6clVq-A_Yxi1E51NrisAnbRgyWTRP6gnd-ogpV9A==', timestamp: '2025-10-29T07:06:36.980000'}
+3
+: 
+{domain: 'adobe.com', url: 'https://vertexaisearch.cloud.google.com/grounding-…kLC7b8mnKKWj-LowBsOVyCS_cEjnt1leN3OCA8sxZZmGga1-h', timestamp: '2025-10-29T07:06:38.200000'}
+4
+: 
+{domain: 'weforum.org', url: 'https://vertexaisearch.cloud.google.com/grounding-…lYjUC3j8O1uW4xs6FK5AEZ5jOGp_fTiyd2OXmdNQNhmolN2Y=', timestamp: '2025-10-29T07:06:39.508000'}
+length
+: 
+5
+[[Prototype]]
+: 
+Array(0)
+messageType
+: 
+"browser_worker"
+phase
+: 
+"research"
+summary
+: 
+"Generative AI Content Creation: Recent Developments and Impact (2025)\n\n**Key Developments and Trends:**\n\n*   **Mainstream Integration:** By 2026, generative AI is expected to be firmly embedded in workflows across many larger organizations, with millions relying on it for research, study, and content creation. The pace of integration is expected to accelerate.\n*   **Generative Video Comes of Age:** Generative AI in entertainment is becoming mainstream. Netflix utilized generative AI in the Argentinian series \"El Eternauta,\" reportedly slashing production time and costs. Expect more big-budget TV shows and Hollywood productions to leverage generative AI in 2026.\n*   **Synthetic Data for Analytics and Simulation:** Generative AI is increasingly used to create raw data for understanding the real world, simulating systems (physical, mechanical, biological), and training other algorithms. This allows for applications like fraud detection system modeling without exposing real customer records and simulating medical treatments without risking patient privacy. Demand for synthetic training data will grow, fueling cutting-edge analytics and automated decision-making systems in 2026 and beyond.\n*   **Privacy-Focused GenAI:** As businesses invest more in generative AI, there's a growing awareness of privacy risks. This will lead to increased adoption of privacy-centric AI models where data processing occurs on-premises or directly on user devices. Companies like Apple are leading with privacy-first approaches, a trend expected to be followed by other AI device manufacturers and developers in 2026.\n*   **Augmenting Human Creativity:** Industry professionals view AI as an \"additional tool\" that augments rather than replaces human developers and creators.\n*   **Mobile-Centric Content Creation:** Seventy percent of Australian creators frequently produce content on mobile devices. This trend is expected to continue, with 80% of creators anticipating producing even more content on mobile platforms as toolsets become more powerful and user-friendly.\n\n**Impact and Statistics:**\n\n*   **Accelerated Business Growth and Follower Base:** 82% of Australian creators reported that creative generative AI has accelerated the growth of their business or follower base.\n*   **Enhanced Content Production Capabilities:** 82% of Australian creators believe the technology enables them to produce content they would otherwise have been unable to make.\n*   **Positive Impact on Creator Economy:** 86% of Australian respondents view creative generative AI as having a positive impact on the broader creator economy.\n*   **Deeply Embedded Workflows:** 90% of Australian creators are actively using generative AI, indicating that these tools are deeply embedded in daily workflows rather than used only for isolated tasks.\n*   **Common Uses:** Australian creators report the most common uses for creative generative AI include:\n    *   Ideation and brainstorming (62%)\n    *   Editing, upscaling, and enhancement (60%)\n    *   Generating new visual or audio assets (56%)\n*   **Workflow Shifts:** Workflows have shifted to integrate AI at multiple stages, from conceptualization to content production and improvement.\n*   **Increased Demand for Creative Content:** New AI innovations are enabling creative professionals to save time and meet the rising global demand for creative content.\n*   **Revolutionizing Game Development:** Major players like Electronic Arts (partnering with Stability AI) and Krafton (aiming to be an \"AI-first\" company) are embracing generative AI to reshape game creation, enhance player immersion, and potentially accelerate development cycles. Initial applications include accelerating the generation of physically based rendering (PBR) materials and creating 3D environments from text prompts.\n\n**Challenges and Considerations:**\n\n*   **Copyright Conundrum:** Debate over the use of copyrighted content to train generative AI models and fair compensation for human creatives is intensifying in 2026. Many artists, musicians, writers, and filmmakers view the use of their work for AI training as theft. Expect more lawsuits, public debate, and potential attempts at regulation to balance technological innovation with intellectual property rights. The Creative Commons model, which facilitated open sharing, is being stressed by generative AI harvesting public content at scale, often stripping attribution.\n*   **Authenticity Concerns:** Faced with a vast amount of generative AI content, individuals and brands will seek new ways to communicate authenticity and genuine human experience. Creators who can leverage truly human qualities to provide content that machines cannot match will stand out from generic \"AI slop.\"\n*   **Job Displacement:** Concerns have been raised by players and developers regarding potential job displacement due to AI, though many in the industry view it as an augmenting tool.\n*   **Ethical AI Use and Data Privacy:** The need for ethical AI practices and transparent data governance is crucial to ensure technology strengthens rather than erases collective creativity. Responsible AI innovation requires transparency, accountability, collaboration, and reciprocity across the AI value chain.\n*   **Trust in AI Tools:** Creators are actively curating the AI tools they trust, highlighting the importance of flexibility, control, and trust in AI tools for creative decisions.\n\n**Research Findings:**\n\n*   A global Creators' Toolkit Report found that 82% of Australian creators believe creative generative AI is positively shaping the creator economy, helping them reach new audiences, scale businesses, and amplify creative expression.\n*   Creators actively seek out new AI tools, relying on personal research (57%), social media trends (56%), and recommendations from fellow creators (49%).\n*   Adobe is introducing new AI innovations and models across its Creative Cloud applications (Photoshop, Lightroom, Premiere, Illustrator) to empower creative professionals, including Generative Fill with partner models, Generative Upscale, Harmonize, and an AI Assistant in Photoshop. These tools aim to save time and meet the rising demand for creative content.\n*   The World Economic Forum is exploring ways to resolve the tension between generative AI and Creative Commons principles, advocating for ethical AI use based on reciprocity."
+timestamp
+: 
+"2025-10-29T07:06:34.447000"
+workerNumber
+: 
+4
+[[Prototype]]
+: 
+Object
+4
+: 
+{id: 'browser_worker_2_2025-10-29T07:06:44.421000_history', author: 'browser_worker_2', workerNumber: 2, links: Array(5), summary: 'Here is comprehensive information and data regardi… with many integrating with existing tech stacks.', …}
+5
+: 
+{id: 'browser_worker_5_2025-10-29T07:06:53.842000_history', author: 'browser_worker_5', workerNumber: 5, links: Array(5), summary: 'Here is comprehensive information and data regardi…affecting ad pricing, making them more expensive.', …}
+6
+: 
+{id: 'browser_worker_0_2025-10-29T07:07:03.535000_history', author: 'browser_worker_0', workerNumber: 0, links: Array(5), summary: 'Here is comprehensive information about Digital Ma… Executive Development | Harvard DCE (2025-04-14)', …}
+7
+: 
+{id: 'browser_worker_6_2025-10-29T07:07:13.531000_history', author: 'browser_worker_6', workerNumber: 6, links: Array(5), summary: '**Future of Digital Advertising Market Trends and …businesses that have augmented reality offerings.', …}
+8
+: 
+{id: 'browser_worker_8_2025-10-29T07:07:23.914000_history', author: 'browser_worker_8', workerNumber: 8, links: Array(5), summary: 'Here is comprehensive information and data regardi…derstanding customer behavior, and enhancing ROI.', …}
+9
+: 
+{id: 'browser_worker_9_2025-10-29T07:07:34.462000_history', author: 'browser_worker_9', workerNumber: 9, links: Array(5), summary: 'The competitive digital landscape for 2025-2026 is…building a community around the brand is crucial.', …}
+10
+: 
+{id: 'browser_worker_3_2025-10-29T07:07:44.442000_history', author: 'browser_worker_3', workerNumber: 3, links: Array(5), summary: 'Key facts and information about Best practices for…xecutive Development | Harvard DCE. (2025-04-14).', …}
+11
+: 
+{id: 'browser_worker_7_2025-10-29T07:07:54.608000_history', author: 'browser_worker_7', workerNumber: 7, links: Array(5), summary: '**Adaptive Marketing Frameworks 2025: Current Impl…ect NANDA." Research Period: January – June 2025.', …}
+12
+: 
+{id: 'browser_worker_1_2025-10-29T07:08:05.355000_history', author: 'browser_worker_1', workerNumber: 1, links: Array(5), summary: 'The following outlines factual information, data, …s in revenue within the deploying business units.', …}
+13
+: 
+author
+: 
+"lightweight_planning_agent"
+data
+: 
+content_strategy
+: 
+closing_slides
+: 
+(2) [9, 10]
+core_content_slides
+: 
+(6) [3, 4, 5, 6, 7, 8]
+data_heavy_slides
+: 
+(2) [4, 8]
+opening_slides
+: 
+(2) [1, 2]
+story_slides
+: 
+(2) [4, 8]
+[[Prototype]]
+: 
+Object
+global_theme
+: 
+accent_color
+: 
+"#8A6C1E"
+background_color
+: 
+"#FFFFFF"
+heading_color
+: 
+"#1E3A8A"
+primary_color
+: 
+"#1E3A8A"
+secondary_color
+: 
+"#182E6E"
+text_color
+: 
+"#1F2937"
+tone
+: 
+"informative"
+visual_style
+: 
+"modern_tech"
+[[Prototype]]
+: 
+Object
+presentation_metadata
+: 
+key_message
+: 
+"Leveraging 2025 digital marketing trends, particularly AI and data-driven strategies, is crucial for businesses to develop and execute effective, customer-centric plans and achieve measurable ROI."
+narrative_flow
+: 
+"Introduction to 2025 digital marketing trends, deep dive into AI and data strategies, explore customer-centricity and key channels, conclude with performance measurement, future outlook, and a call to action."
+presentation_type
+: 
+"regular_presentation"
+topic
+: 
+"Digital Marketing: 2025 Trends and Future Outlook"
+total_slides
+: 
+10
+[[Prototype]]
+: 
+Object
+slide_outline
+: 
+Array(10)
+0
+: 
+content_guidance
+: 
+"Introduce the presentation topic, key message, and set the stage for future trends. Emphasize the strategic importance for executives."
+fallback_keywords
+: 
+['Digital Marketing Trends 2025 statistics and future outlook']
+required_elements
+: 
+(3) ['headline', 'subheading', 'footer_text']
+search_query
+: 
+"Digital Marketing Trends 2025 executive summary and key takeaways for business professionals"
+slide_number
+: 
+1
+slide_purpose
+: 
+"title"
+slide_title
+: 
+"Digital Marketing: 2025 Trends & Outlook"
+suggested_type
+: 
+"hero_title"
+[[Prototype]]
+: 
+Object
+1
+: 
+{slide_number: 2, slide_purpose: 'problem_statement', slide_title: 'The Strategic Imperative of Digital Marketing', suggested_type: 'two_column_split', search_query: 'Strategic importance of digital marketing for business growth 2025 metrics and executive insights', …}
+2
+: 
+{slide_number: 3, slide_purpose: 'core_content', slide_title: 'AI: Reshaping Digital Marketing in 2025', suggested_type: 'three_column_grid', search_query: 'Transformative role of AI in digital marketing str…iew 2025 executive report applications and impact', …}
+3
+: 
+{slide_number: 4, slide_purpose: 'data_visualization', slide_title: 'Data-Driven Marketing: Insights & ROI', suggested_type: 'data_dashboard', search_query: 'Best practices for data-driven marketing ROI optimization 2025 case studies and analytics dashboards', …}
+4
+: 
+{slide_number: 5, slide_purpose: 'core_content', slide_title: 'Hyper-Personalization in Customer-Centered Strategies', suggested_type: 'feature_breakdown', search_query: 'Hyper-Personalization Strategies 2025 and current …for customer experience and audience segmentation', …}
+5
+: 
+{slide_number: 6, slide_purpose: 'core_content', slide_title: 'Evolving Content & SEO Strategies 2025', suggested_type: 'two_column_split', search_query: 'SEO aspects page speed mobile usability structured…-form video content marketing storytelling impact', …}
+6
+: 
+{slide_number: 7, slide_purpose: 'core_content', slide_title: 'Social & Paid Media Dynamics: 2025 Outlook', suggested_type: 'three_column_grid', search_query: 'Evolving social media landscape platform-specific …display advertising effectiveness 2025 statistics', …}
+7
+: 
+{slide_number: 8, slide_purpose: 'data_visualization', slide_title: 'Measuring Success & Optimizing ROI', suggested_type: 'data_dashboard', search_query: 'Real-time analytics for tracking digital marketing… measurable outcomes optimization strategies KPIs', …}
+8
+: 
+{slide_number: 9, slide_purpose: 'key_takeaways', slide_title: 'The Future of Digital Marketing: Adapt & Innovate', suggested_type: 'centered_focus', search_query: 'Future of digital marketing continuous evolution a…ing new technologies 2025-2027 executive insights', …}
+9
+: 
+{slide_number: 10, slide_purpose: 'call_to_action', slide_title: 'Your Next Step: Execute Your 2025 Strategy', suggested_type: 'hero_title', search_query: 'Digital marketing strategic planning guide 2025 ac…n items and implementation roadmap for businesses', …}
+length
+: 
+10
+[[Prototype]]
+: 
+Array(0)
+[[Prototype]]
+: 
+Object
+hasData
+: 
+true
+hasKeywords
+: 
+false
+hasLinks
+: 
+false
+hasSummary
+: 
+false
+id
+: 
+"lightweight_planning_agent_2025-10-29T07:08:54.569000_history"
+messageType
+: 
+"planning"
+phase
+: 
+"planning"
+timestamp
+: 
+"2025-10-29T07:08:54.569000"
+workerNumber
+: 
+null
+[[Prototype]]
+: 
+Object
+14
+: 
+author
+: 
+"LightweightSlideGeneration"
+data
+: 
+parsed_output
+: 
+"✅ Outline created: 10 slides planned"
+[[Prototype]]
+: 
+Object
+hasData
+: 
+true
+hasKeywords
+: 
+false
+hasLinks
+: 
+false
+hasSummary
+: 
+false
+id
+: 
+"LightweightSlideGeneration_2025-10-29T07:08:56.492000_history"
+messageType
+: 
+"slide_generation"
+phase
+: 
+"generation"
+text
+: 
+"✅ Outline created: 10 slides planned"
+timestamp
+: 
+"2025-10-29T07:08:56.492000"
+workerNumber
+: 
+null
+[[Prototype]]
+: 
+Object
+15
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:08:57.796000_history', author: 'LightweightSlideGeneration', text: '🎨 Retrieving templates and generating 10 slides...', data: {…}, timestamp: '2025-10-29T07:08:57.796000', …}
+16
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:09:08.690000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 1/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:09:08.690000', …}
+17
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:09:29.584000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 2/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:09:29.584000', …}
+18
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:09:51.135000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 3/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:09:51.135000', …}
+19
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:10:16.041000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 4/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:10:16.041000', …}
+20
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:10:38.087000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 5/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:10:38.087000', …}
+21
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:10:58.506000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 6/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:10:58.506000', …}
+22
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:11:20.262000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 7/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:11:20.262000', …}
+23
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:11:44.697000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 8/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:11:44.697000', …}
+24
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:11:58.696000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 9/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:11:58.696000', …}
+25
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:12:22.910000_history', author: 'LightweightSlideGeneration', text: '✅ Slide 10/10 ready for generation', data: {…}, timestamp: '2025-10-29T07:12:22.910000', …}
+26
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:12.470000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 1/10', data: {…}, timestamp: '2025-10-29T07:13:12.470000', …}
+27
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:15.201000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 2/10', data: {…}, timestamp: '2025-10-29T07:13:15.201000', …}
+28
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:18.765000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 3/10', data: {…}, timestamp: '2025-10-29T07:13:18.765000', …}
+29
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:21.427000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 4/10', data: {…}, timestamp: '2025-10-29T07:13:21.427000', …}
+30
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:24.370000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 5/10', data: {…}, timestamp: '2025-10-29T07:13:24.370000', …}
+31
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:27.315000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 6/10', data: {…}, timestamp: '2025-10-29T07:13:27.315000', …}
+32
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:30.068000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 7/10', data: {…}, timestamp: '2025-10-29T07:13:30.068000', …}
+33
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:33.092000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 8/10', data: {…}, timestamp: '2025-10-29T07:13:33.092000', …}
+34
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:36.026000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 9/10', data: {…}, timestamp: '2025-10-29T07:13:36.026000', …}
+35
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:39.149000_history', author: 'LightweightSlideGeneration', text: '✅ Generated slide 10/10', data: {…}, timestamp: '2025-10-29T07:13:39.149000', …}
+36
+: 
+{id: 'LightweightSlideGeneration_2025-10-29T07:13:40.473000_history', author: 'LightweightSlideGeneration', text: '🎉 Presentation complete: 10 slides generated successfully!', data: {…}, timestamp: '2025-10-29T07:13:40.473000', …}
+length
+: 
+37
+[[Prototype]]
+: 
+Array(0)

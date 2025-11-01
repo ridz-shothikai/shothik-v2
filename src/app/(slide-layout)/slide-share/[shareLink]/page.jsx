@@ -4,22 +4,23 @@ import { PresentationMode } from "@/components/presentation/PresentationMode";
 import { SlideCard } from "@/components/presentation/SlideCard";
 import { usePresentation } from "@/components/slide/context/SlideContextProvider";
 import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import {
   useFetchSharedSlidesQuery,
   useTrackViewMutation,
 } from "@/redux/api/share/shareApi";
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-} from "@mui/material";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -98,45 +99,25 @@ export default function SharedSlidesPage() {
 
   if (sharedLoading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <CircularProgress />
-        <Typography>Loading shared presentation...</Typography>
-      </Box>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+        <Spinner className="size-6" />
+        <p className="text-foreground">Loading shared presentation...</p>
+      </div>
     );
   }
 
   if (authError) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Alert severity="error">{authError}</Alert>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+        <Alert variant="destructive">
+          <AlertDescription>{authError}</AlertDescription>
+        </Alert>
         {authError.includes("sign in") && (
-          <Button
-            variant="contained"
-            href="/login" // Adjust based on your auth flow
-            sx={{ textTransform: "none" }}
-          >
-            Sign In
+          <Button variant="default" asChild>
+            <a href="/login">Sign In</a>
           </Button>
         )}
-      </Box>
+      </div>
     );
   }
 
@@ -145,20 +126,11 @@ export default function SharedSlidesPage() {
     sharedData.presentation.slides.length === 0
   ) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Typography>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-2">
+        <p className="text-foreground">
           No slides available for this shared presentation
-        </Typography>
-      </Box>
+        </p>
+      </div>
     );
   }
 
@@ -184,67 +156,46 @@ export default function SharedSlidesPage() {
       />
 
       {/* Password Dialog */}
-      <Dialog
-        open={passwordDialogOpen}
-        onClose={() => setPasswordDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Enter Password</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            variant="outlined"
-            error={!!passwordError}
-            helperText={passwordError}
-            sx={{ mt: 2 }}
-          />
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enter Password</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 flex flex-col gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              autoFocus
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={cn(passwordError && "border-destructive")}
+              aria-invalid={!!passwordError}
+            />
+            {passwordError && (
+              <p className="text-destructive text-sm">{passwordError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setPasswordDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handlePasswordSubmit} disabled={!password}>
+              Submit
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setPasswordDialogOpen(false)}
-            sx={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handlePasswordSubmit}
-            variant="contained"
-            sx={{ textTransform: "none" }}
-            disabled={!password}
-          >
-            Submit
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Main Content */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minHeight: "100vh",
-          bgcolor: "#f5f5f5",
-          py: 4,
-          px: 2,
-        }}
-      >
-        <Box
-          sx={{ width: "100%", maxWidth: { xs: "90vw", sm: "60vw" }, mb: 3 }}
-        >
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{ fontWeight: "bold", mb: 2 }}
-          >
+      <div className="bg-muted/50 flex min-h-screen flex-col items-center px-2 py-4">
+        <div className="mb-3 w-full max-w-[90vw] sm:max-w-[60vw]">
+          <h1 className="text-foreground mb-2 text-3xl font-bold">
             {sharedData.presentation.title || "Shared Presentation"}
-          </Typography>
+          </h1>
           {sharedData.presentation.slides.map((slide, index) => (
             <SlideCard
               key={slide.slide_index || index}
@@ -256,8 +207,8 @@ export default function SharedSlidesPage() {
               totalSlides={sharedData.presentation.slides.length}
             />
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }

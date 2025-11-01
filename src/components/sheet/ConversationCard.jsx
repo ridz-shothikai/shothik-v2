@@ -1,20 +1,13 @@
-import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
-  IconButton,
   Tooltip,
-} from "@mui/material";
-import {
-  TableChart,
-  CheckCircle,
-  Error,
-  Schedule,
-  Visibility,
-} from "@mui/icons-material";
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { CheckCircle, Clock, Eye, Table } from "lucide-react";
 
 const ConversationCard = ({ conversation, onViewData, isActive = false }) => {
   const handleViewClick = () => {
@@ -27,22 +20,22 @@ const ConversationCard = ({ conversation, onViewData, isActive = false }) => {
     if (conversation.response && conversation.response.rows) {
       return {
         status: "completed",
-        icon: <CheckCircle sx={{ fontSize: 16 }} />,
-        color: "success",
+        icon: <CheckCircle className="h-4 w-4" />,
+        color: "default",
         text: `${conversation.response.rows.length} rows`,
       };
     } else if (conversation.response) {
       return {
         status: "completed",
-        icon: <CheckCircle sx={{ fontSize: 16 }} />,
-        color: "success",
+        icon: <CheckCircle className="h-4 w-4" />,
+        color: "default",
         text: "Generated",
       };
     } else {
       return {
         status: "pending",
-        icon: <Schedule sx={{ fontSize: 16 }} />,
-        color: "warning",
+        icon: <Clock className="h-4 w-4" />,
+        color: "secondary",
         text: "No response",
       };
     }
@@ -53,100 +46,76 @@ const ConversationCard = ({ conversation, onViewData, isActive = false }) => {
 
   return (
     <Card
-      sx={{
-        mb: 2,
-        cursor: hasData ? "pointer" : "default",
-        border: isActive ? "2px solid" : "1px solid",
-        borderColor: isActive ? "primary.main" : "divider",
-        transition: "all 0.2s ease-in-out",
-        "&:hover": hasData
-          ? {
-              boxShadow: 2,
-              borderColor: "primary.main",
-            }
-          : {},
-        opacity: hasData ? 1 : 0.7,
-      }}
+      className={cn(
+        "mb-2 transition-all duration-200",
+        hasData ? "cursor-pointer opacity-100" : "cursor-default opacity-70",
+        isActive ? "border-primary border-2" : "border-border border",
+        hasData && "hover:border-primary hover:shadow-md",
+      )}
       onClick={hasData ? handleViewClick : undefined}
     >
-      <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <Box sx={{ flex: 1, minWidth: 0, mr: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                lineHeight: 1.4,
-                mb: 1,
-                fontWeight: isActive ? 600 : 400,
-              }}
+      <CardContent className="p-2 pb-2">
+        <div className="flex items-start justify-between">
+          <div className="mr-1 min-w-0 flex-1">
+            <p
+              className={cn(
+                "mb-1 line-clamp-2 overflow-hidden text-sm leading-[1.4] text-ellipsis",
+                isActive ? "font-semibold" : "font-normal",
+              )}
             >
               {conversation.prompt}
-            </Typography>
+            </p>
 
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                flexWrap: "wrap",
-              }}
-            >
-              <Chip
-                icon={statusInfo.icon}
-                label={statusInfo.text}
-                size="small"
-                color={statusInfo.color}
-                variant="outlined"
-                sx={{ height: 20 }}
-              />
+            <div className="flex flex-wrap items-center gap-1">
+              <Badge
+                variant={
+                  statusInfo.color === "default" ? "default" : "secondary"
+                }
+                className="h-5 gap-1 text-xs"
+              >
+                {statusInfo.icon}
+                {statusInfo.text}
+              </Badge>
 
               {hasData && (
-                <Chip
-                  icon={<TableChart sx={{ fontSize: 14 }} />}
-                  label={`${conversation.response.columns?.length || 0} cols`}
-                  size="small"
-                  variant="outlined"
-                  sx={{ height: 20 }}
-                />
+                <Badge variant="outline" className="h-5 gap-1 text-xs">
+                  <Table className="h-3.5 w-3.5" />
+                  {`${conversation.response.columns?.length || 0} cols`}
+                </Badge>
               )}
 
-              <Typography variant="caption" color="text.secondary">
+              <span className="text-muted-foreground text-xs">
                 {new Date(conversation.createdAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
-              </Typography>
-            </Box>
-          </Box>
+              </span>
+            </div>
+          </div>
 
           {hasData && (
-            <Tooltip title="View this data in grid">
-              <IconButton
-                size="small"
-                color="primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewClick();
-                }}
-              >
-                <Visibility sx={{ fontSize: 18 }} />
-              </IconButton>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-primary h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewClick();
+                  }}
+                >
+                  <Eye className="h-[18px] w-[18px]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>View this data in grid</p>
+              </TooltipContent>
             </Tooltip>
           )}
-        </Box>
+        </div>
       </CardContent>
     </Card>
   );

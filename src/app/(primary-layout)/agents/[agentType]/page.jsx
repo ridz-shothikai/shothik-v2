@@ -1,6 +1,6 @@
 "use client";
-import AgentPage from "@/../components/agents/AgentPage";
 import { AgentContextProvider } from "@/../components/agents/shared/AgentContextProvider";
+import NotFound from "@/app/not-found";
 import ChatInput from "@/components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "@/components/research/ui/ResearchPageSkeletonLoader";
 import { FooterCta } from "@/components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
@@ -11,13 +11,13 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 // import PresentationAgentPage from "@/components/presentation/PresentationAgentPage";
 // import ResearchAgentPage from "@/components/research/ResearchAgentPage";
-const PresentationAgentPage = dynamic(
-  () => import("@/components/presentation/PresentationAgentPage"),
-  {
-    loading: () => <ResearchPageSkeletonLoader />,
-    ssr: false,
-  },
-);
+// const PresentationAgentPage = dynamic(
+//   () => import("@/components/presentation/PresentationAgentPage"),
+//   {
+//     loading: () => <ResearchPageSkeletonLoader />,
+//     ssr: false,
+//   },
+// );
 const PresentationAgentPageV2 = dynamic(
   () => import("@/components/presentation/PresentationAgentPageV2"),
   {
@@ -95,7 +95,7 @@ export default function SpecificAgentPage() {
       case "call":
         return <div>Call Agent Page - Coming Soon</div>;
       default:
-        return <AgentPage />;
+        return <NotFound />;
     }
   };
 
