@@ -1,11 +1,9 @@
 // LanguageMenu.jsx
 "use client";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useResponsive from "@/hooks/useResponsive";
-import {
-  ExpandMoreOutlined,
-  KeyboardArrowUpOutlined,
-} from "@mui/icons-material";
-import { Box, Button, Tab, Tabs, useTheme } from "@mui/material";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";
 
@@ -23,7 +21,6 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   const isMobile = useResponsive("down", "sm");
   const maxTabs = isMobile ? 3 : 5;
   const showMenu = Boolean(anchorEl);
-  const theme = useTheme();
 
   const handleOpen = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -49,20 +46,11 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         <Button
           onClick={handleOpen}
           disabled={isLoading}
-          endIcon={<ExpandMoreOutlined />}
-          sx={{
-            textTransform: "none",
-            width: "100%",
-            justifyContent: "start",
-            color:
-              theme.palette.mode === "dark" ? "common.white" : "text.primary",
-            bgcolor: theme.palette.mode === "dark" ? "grey.800" : "grey.200",
-            "&:hover": {
-              bgcolor: theme.palette.mode === "dark" ? "grey.700" : "grey.300",
-            },
-          }}
+          variant="secondary"
+          className="w-full justify-start"
         >
-          {language}
+          <span className="truncate">{language}</span>
+          <ChevronDown className="ml-auto h-4 w-4" />
         </Button>
         <LanguageMenus
           selectedLanguage={language}
@@ -76,55 +64,20 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
   }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <Tabs
-        value={language}
-        onChange={(_, v) => setLanguage(v)}
-        variant="standard"
-        textColor="primary"
-        sx={{
-          minHeight: 30,
-          "& .MuiTabs-flexContainer": { flexWrap: "nowrap" },
-          "& .MuiTabs-indicator": { display: "none" },
-        }}
-      >
-        {displayTabs.map((tab) => (
-          <Tab
-            key={tab}
-            value={tab}
-            label={tab}
-            disabled={isLoading}
-            sx={{
-              px: { xs: 2, lg: 2.5 },
-              "&.Mui-selected": {
-                backgroundColor:
-                  theme.palette.mode === "dark" ? "grey.800" : "common.white",
-                borderRadius: "12px 12px 0 0",
-                border: "1px solid",
-                borderColor:
-                  theme.palette.mode === "dark" ? "grey.700" : "divider",
-                color:
-                  theme.palette.mode === "dark"
-                    ? "common.white"
-                    : "text.primary",
-              },
-              "&.MuiTab-root:not(:last-of-type)": {
-                mr: "0px !important",
-              },
-              "&.MuiTab-root": {
-                display: "inline-flex",
-                color:
-                  theme.palette.mode === "dark" ? "grey.400" : "text.secondary",
-              },
-              "&.MuiTab-root:hover": {
-                color:
-                  theme.palette.mode === "dark"
-                    ? "common.white"
-                    : "text.primary",
-              },
-            }}
-          />
-        ))}
+    <div className="flex w-full items-center">
+      <Tabs value={language} onValueChange={setLanguage} className="w-fit">
+        <TabsList className="border-border flex-nowrap overflow-x-auto rounded-b-none bg-transparent p-0 whitespace-nowrap">
+          {displayTabs.map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-foreground data-[state=active]:border-border data-[state=active]:bg-card data-[state=active]:text-foreground px-2 py-4 data-[state=active]:rounded-t-lg data-[state=active]:rounded-b-none data-[state=active]:border lg:px-2.5"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </Tabs>
       {/* <Button
         id="language_x_button"
@@ -137,13 +90,16 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
       <Button
         onClick={handleOpen}
         disabled={isLoading}
-        endIcon={
-          showMenu ? <KeyboardArrowUpOutlined /> : <ExpandMoreOutlined />
-        }
-        sx={{ color: "text.secondary", ml: 2 }}
+        variant="ghost"
+        className="text-muted-foreground ml-2"
         id="language_all_button"
       >
-        All
+        All{" "}
+        {showMenu ? (
+          <ChevronUp className="ml-1 h-4 w-4" />
+        ) : (
+          <ChevronDown className="ml-1 h-4 w-4" />
+        )}
       </Button>
       <LanguageMenus
         selectedLanguage={language}
@@ -152,7 +108,7 @@ const LanguageMenu = ({ language, setLanguage, isLoading }) => {
         handleClose={handleClose}
         handleLanguageMenu={handleSelect}
       />
-    </Box>
+    </div>
   );
 };
 
