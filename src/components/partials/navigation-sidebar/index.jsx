@@ -10,6 +10,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import Logo from "@/resource/assets/Logo";
 import {
   Brain,
   CheckCheck,
@@ -17,12 +19,12 @@ import {
   FileText,
   Languages,
   Megaphone,
-  MoreHorizontal,
   Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
-import NextImage from "next/image";
+import Image from "next/image";
+import { useSelector } from "react-redux";
 
 const menuItems = [
   {
@@ -77,17 +79,30 @@ const menuItems = [
 ];
 
 export default function NavigationSidebar() {
+  const { sidebar } = useSelector((state) => state.settings);
+  const isCompact = sidebar === "compact";
   return (
     <Sidebar>
-      <SidebarHeader className="border-sidebar-border border-b p-4">
-        <NextImage
-          src={"/logo.png"}
-          alt="Shothik AI"
-          height={24}
-          width={120}
-          className="h-6 w-auto object-contain"
-          data-testid="sidebar-logo"
-        />
+      <SidebarHeader className="border-sidebar-border h-12 border-b px-4 lg:h-16">
+        <div>
+          <Logo
+            className={cn("", {
+              "lg:hidden": isCompact,
+              "lg:inline-block": !isCompact,
+            })}
+          />
+          <Image
+            src="/moscot.png"
+            priority
+            alt="shothik_logo"
+            width={100}
+            height={40}
+            className={cn("mx-auto h-auto w-1/2 object-contain", {
+              "hidden lg:hidden": !isCompact,
+              "hidden lg:inline-block": isCompact,
+            })}
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -103,14 +118,6 @@ export default function NavigationSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild data-testid="sidebar-more">
-                  <a href="/more" className="flex items-center gap-3">
-                    <MoreHorizontal className="h-4 w-4" />
-                    <span>More</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

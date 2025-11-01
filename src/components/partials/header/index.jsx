@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
 import { updateTheme } from "@/redux/slice/settings";
@@ -42,12 +43,9 @@ import MobileMenu from "./MobileMenu";
 import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
-  { label: "Use Case", href: "#product-suites" },
-  { label: "Blog", href: "/blog" },
-  { label: "Community", href: "/community" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "About", href: "/about-us" },
+  { label: "Contact", href: "/contact-us" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 const featuresMenuContent = {
@@ -123,16 +121,18 @@ const featuresMenuContent = {
 };
 
 export default function Header() {
+  const { accessToken, user } = useSelector((state) => state.auth);
+  const { theme, sidebar } = useSelector((state) => state.settings);
+  const isCompact = sidebar === "compact";
+
+  const { isLoading } = useGetUserQuery(undefined, {
+    skip: !accessToken,
+  });
+
   const dispatch = useDispatch();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
-  const { theme } = useSelector((state) => state.settings);
-  const { isLoading } = useGetUserQuery(undefined, {
-    skip: !accessToken,
-  });
-  const { sidebar } = useSelector((state) => state.settings);
-  const isCompact = sidebar === "compact";
 
   const featuresSections = [
     featuresMenuContent.writing,
@@ -143,24 +143,32 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "bg-background/70 supports-[backdrop-filter]:bg-background/60 z-50 border-b backdrop-blur-md",
+        "bg-background/70 supports-[backdrop-filter]:bg-background/60 z-50 h-12 border-b backdrop-blur-md lg:h-16",
       )}
     >
-      <div className="flex h-16 items-center justify-between gap-6 px-4 lg:px-8">
+      <div className="flex h-full items-center justify-between gap-6 px-4">
         {/* Logo + Desktop Nav */}
-        <div className="flex items-center gap-6">
-          <div>
-            <div></div> {isCompact && <Logo className="hidden lg:block" />}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger size="icon" className="lg:hidden">
+              <Menu className="h-5 w-5" />
+            </SidebarTrigger>
+            <Logo
+              className={cn("", {
+                "lg:hidden": !isCompact,
+                "lg:inline-block": isCompact,
+              })}
+            />
           </div>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-1 lg:flex">
             {/* Features Popover */}
             <Popover open={featuresOpen} onOpenChange={setFeaturesOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   className={cn(
-                    "px-3 text-sm font-semibold transition-colors",
+                    "gap-1 px-2 text-sm font-semibold transition-colors",
                     featuresOpen
                       ? "text-primary"
                       : "text-muted-foreground hover:text-primary hover:bg-muted/50",
@@ -169,7 +177,7 @@ export default function Header() {
                   data-testid="nav-features"
                 >
                   Features
-                  <ChevronDown className="ml-1 h-4 w-4" />
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -197,7 +205,7 @@ export default function Header() {
                 key={link.label}
                 variant="ghost"
                 asChild
-                className="text-muted-foreground hover:text-primary hover:bg-muted/50 px-3 text-sm font-semibold transition-colors"
+                className="text-muted-foreground hover:text-primary hover:bg-muted/50 px-2 text-sm font-semibold transition-colors"
                 data-testid={`nav-${link.label.toLowerCase()}`}
               >
                 <a href={link.href}>{link.label}</a>
@@ -222,9 +230,9 @@ export default function Header() {
                   <Link href={"/pricing?redirect=" + pathname}>
                     <Button
                       data-umami-event="Nav: Upgrade To Premium"
-                      className={cn("h-9 px-3 text-xs md:text-sm")}
+                      className={cn("h-9 px-1 text-xs md:text-sm")}
                     >
-                      <Gem className="mr-2 h-5 w-5 md:h-6 md:w-6" />
+                      <Gem className="h-5 w-5" />
                       {user?.email ? "Upgrade" : "Upgrade Plan"}
                     </Button>
                   </Link>

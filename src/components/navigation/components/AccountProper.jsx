@@ -1,4 +1,10 @@
 "use client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { PATH_ACCOUNT } from "@/config/config/route";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import useSnackbar from "@/hooks/useSnackbar";
@@ -7,13 +13,8 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "@/redux/slice/auth";
-
 import Discord from "@/resource/assets/Discord";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import LoginIcon from "@mui/icons-material/Login";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import PersonOutlineSharpIcon from "@mui/icons-material/PersonOutlineSharp";
-import { Box, MenuItem, Popover, Stack, Typography } from "@mui/material";
+import { HelpCircle, LogIn, Mail, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,24 +24,16 @@ import { useDispatch } from "react-redux";
 // ----------------------------------------------------------------------
 
 export default function AccountPopover({ accessToken, user }) {
-  const [openPopover, setOpenPopover] = useState(null);
+  const [open, setOpen] = useState(false);
   const enqueueSnackbar = useSnackbar();
   const dispatch = useDispatch();
   const { push } = useRouter();
-
-  const handleOpenPopover = (event) => {
-    setOpenPopover(event.currentTarget);
-  };
-
-  const handleClosePopover = () => {
-    setOpenPopover(null);
-  };
 
   const handleLogout = async () => {
     try {
       dispatch(logout());
       localStorage.setItem("logout-event", Date.now().toString());
-      handleClosePopover();
+      setOpen(false);
       enqueueSnackbar("Logout successful!", { variant: "success" });
       push("/");
     } catch (error) {
@@ -50,11 +43,11 @@ export default function AccountPopover({ accessToken, user }) {
   };
 
   const handleClickItem = (path) => {
-    handleClosePopover();
+    setOpen(false);
     push(path);
   };
 
-  const popoverRef = useOutsideClick(() => handleClosePopover());
+  const popoverRef = useOutsideClick(() => setOpen(false));
 
   useEffect(() => {
     const syncLogout = (event) => {
@@ -72,178 +65,92 @@ export default function AccountPopover({ accessToken, user }) {
   }, [dispatch, push]);
 
   return (
-    <>
-      <Box
-        ref={popoverRef}
-        onClick={handleOpenPopover}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          cursor: "pointer",
-        }}
-      >
-        {user && user?.image ? (
-          <Image
-            src={user.image}
-            alt={user.name || "User"}
-            style={{ width: 40, height: 40, borderRadius: "50%" }}
-            width={40}
-            height={40}
-          />
-        ) : user && accessToken ? (
-          <Box
-            sx={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              bgcolor: "primary.main",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: "bold",
-              fontSize: 14,
-            }}
-          >
-            {user?.name
-              ? `${String(user?.name ?? "").split(" ")[0][0] || ""}${
-                  user.name?.split(" ")[1]?.[0] || ""
-                }`
-              : ""}
-          </Box>
-        ) : (
-          <PersonOutlineSharpIcon
-            sx={{
-              fontSize: 30,
-              color: "text.secondary",
-            }}
-          />
-        )}
-      </Box>
-
-      <Popover
-        open={Boolean(openPopover)}
-        anchorEl={openPopover}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        transformOrigin={{ vertical: "top", horizontal: "right" }}
-        onClose={handleClosePopover}
-        slotProps={{
-          paper: {
-            sx: {
-              p: 1,
-              width: "auto",
-              overflow: "inherit",
-              "& .MuiMenuItem-root": {
-                px: 1,
-                typography: "body2",
-                borderRadius: 0.75,
-                "& svg": { mr: 2, width: 20, height: 20, flexShrink: 0 },
-              },
-              width: 220,
-              p: 0,
-              my: 2,
-            },
-          },
-        }}
-      >
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button ref={popoverRef} className="flex cursor-pointer items-center">
+          {user && user?.image ? (
+            <Image
+              src={user.image}
+              alt={user.name || "User"}
+              className="h-10 w-10 rounded-full"
+              width={40}
+              height={40}
+            />
+          ) : user && accessToken ? (
+            <div className="bg-primary text-primary-foreground flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold">
+              {user?.name
+                ? `${String(user?.name ?? "").split(" ")[0][0] || ""}${
+                    user.name?.split(" ")[1]?.[0] || ""
+                  }`
+                : ""}
+            </div>
+          ) : (
+            <User className="text-muted-foreground h-8 w-8" />
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
         {user?.email && (
-          <Box
+          <DropdownMenuItem
             onClick={() => handleClickItem(PATH_ACCOUNT.settings.root)}
-            sx={{
-              cursor: "pointer",
-              my: 1.5,
-              px: 2,
-              "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" },
-            }}
+            className="cursor-pointer"
           >
-            <Stack direction="row" alignItems="center" spacing={2}>
-              <PersonOutlineSharpIcon />
-              <Box>
-                <Typography variant="subtitle2" noWrap>
-                  My Profile
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "text.secondary",
-                  }}
-                >
-                  {user?.email
-                    ? user.email.length > 15
-                      ? `${user.email.slice(0, 15)}...`
-                      : user.email
-                    : ""}
-                </Typography>
-              </Box>
-            </Stack>
-          </Box>
+            <User className="mr-2 h-5 w-5" />
+            <div className="flex flex-col">
+              <span className="font-medium">My Profile</span>
+              <span className="text-muted-foreground truncate text-xs">
+                {user?.email
+                  ? user.email.length > 15
+                    ? `${user.email.slice(0, 15)}...`
+                    : user.email
+                  : ""}
+              </span>
+            </div>
+          </DropdownMenuItem>
         )}
 
         {!user?.email && (
-          <MenuItem
+          <DropdownMenuItem
             data-umami-event="Nav: Login / Sign up"
             onClick={() => {
-              handleClosePopover();
+              setOpen(false);
               dispatch(setShowRegisterModal(false));
               dispatch(setShowLoginModal(true));
             }}
-            sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}
           >
-            <Stack direction="row" pl={1.5}>
-              <LoginIcon />
-              <Typography variant="body2">Login / Sign up</Typography>
-            </Stack>
-          </MenuItem>
+            <LogIn className="mr-2 h-5 w-5" />
+            <span>Login / Sign up</span>
+          </DropdownMenuItem>
         )}
 
-        <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
-          <Link
-            href="mailto:support@shothik.ai"
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
-              <HelpOutlineIcon fontSize="small" />
-              <Typography variant="body2">Help Center</Typography>
-            </Box>
+        <DropdownMenuItem asChild>
+          <Link href="mailto:support@shothik.ai" className="no-underline">
+            <HelpCircle className="mr-2 h-5 w-5" />
+            <span>Help Center</span>
           </Link>
-        </MenuItem>
+        </DropdownMenuItem>
 
-        <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
-          <Link
-            href="/contact-us"
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
-              <MailOutlineIcon fontSize="small" />
-              <Typography variant="body2">Contact us</Typography>
-            </Box>
+        <DropdownMenuItem asChild>
+          <Link href="/contact-us" className="no-underline">
+            <Mail className="mr-2 h-5 w-5" />
+            <span>Contact us</span>
           </Link>
-        </MenuItem>
+        </DropdownMenuItem>
 
-        <MenuItem sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}>
-          <Link
-            href="https://discord.gg/pq2wTqXEpj"
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", pl: 1.5 }}>
-              <Discord />
-              <Typography variant="body2">Join Us on Discord</Typography>
-            </Box>
+        <DropdownMenuItem asChild>
+          <Link href="https://discord.gg/pq2wTqXEpj" className="no-underline">
+            <Discord className="mr-2 h-5 w-5" />
+            <span>Join Us on Discord</span>
           </Link>
-        </MenuItem>
+        </DropdownMenuItem>
 
         {user?.email && (
-          <MenuItem
-            onClick={handleLogout}
-            sx={{ "&:hover": { bgcolor: "rgba(145, 158, 171, 0.08)" } }}
-          >
-            <Box sx={{ pl: 1.5, pb: 2, display: "flex", alignItems: "center" }}>
-              <LoginIcon />
-              <Typography variant="body2">Log out</Typography>
-            </Box>
-          </MenuItem>
+          <DropdownMenuItem onClick={handleLogout}>
+            <LogIn className="mr-2 h-5 w-5" />
+            <span>Log out</span>
+          </DropdownMenuItem>
         )}
-      </Popover>
-    </>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

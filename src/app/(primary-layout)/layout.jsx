@@ -89,7 +89,7 @@ export default function PrimaryLayout({ children }) {
                 <Header />
                 <VerifyEmailAlert />
               </div>
-              <div className="flex flex-1 flex-col overflow-y-auto">
+              <div className="flex max-w-full flex-1 flex-col overflow-y-auto">
                 <div className="">{children}</div>
                 <div>{/* <Footer /> */}</div>
               </div>

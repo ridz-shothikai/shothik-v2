@@ -1,6 +1,6 @@
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { Box, IconButton, List, Stack } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ChevronUp, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import NavList from "./NavList";
 
@@ -31,7 +31,7 @@ function NavSectionMini({ data, user }) {
   let itemsRenderedSoFar = 0;
 
   return (
-    <Stack alignItems="center">
+    <div className="flex flex-col items-center">
       {filteredData.map((group, groupIndex) => {
         const itemsToRender = [];
 
@@ -56,16 +56,7 @@ function NavSectionMini({ data, user }) {
           isLastGroup;
 
         return (
-          <List
-            key={groupIndex}
-            disablePadding
-            sx={{
-              px: 2,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+          <div key={groupIndex} className="flex flex-col items-center px-2">
             {itemsToRender.map((list) => (
               <NavList
                 key={list.title + list.path}
@@ -76,35 +67,38 @@ function NavSectionMini({ data, user }) {
 
             {/* Show "More" button after the last visible item */}
             {shouldShowMoreHere && (
-              <IconButton onClick={handleToggleShowAll} sx={{ my: 1 }}>
-                <MoreHorizIcon />
-              </IconButton>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleToggleShowAll}
+                className="my-1"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
             )}
 
             {/* Show "Less" button when showing all and this is the last group */}
             {showAll && shouldShowMoreButton && isLastGroup && (
-              <IconButton onClick={handleToggleShowAll} sx={{ my: 1 }}>
-                <ExpandLessIcon />
-              </IconButton>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleToggleShowAll}
+                className="my-1"
+              >
+                <ChevronUp className="h-5 w-5" />
+              </Button>
             )}
 
             {/* Show divider between groups (but not after the last group) */}
             {!isLastGroup && (
-              <Stack alignItems="center">
-                <Box
-                  sx={{
-                    width: 24,
-                    height: "1px",
-                    bgcolor: "divider",
-                    my: "8px !important",
-                  }}
-                />
-              </Stack>
+              <div className="flex items-center">
+                <Separator className="my-2 w-6" />
+              </div>
             )}
-          </List>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }
 
