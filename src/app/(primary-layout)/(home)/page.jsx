@@ -1,4 +1,7 @@
-import HomeContentSection from "@/components/(primary-layout)/(home-v2-page)/HomeContentSection";
+// import HomeContentSection from "@/components/(primary-layout)/(home-v2-page)/HomeContentSection";
+
+import { ThemeRegistry } from "@/components/(primary-layout)/(home-v3-page)/components/providers";
+import HomeContentSection from "@/components/(primary-layout)/(home-v3-page)/page";
 
 export async function generateMetadata() {
   const siteUrl = "https://www.shothik.ai";
@@ -58,7 +61,7 @@ export async function generateMetadata() {
   };
 }
 
-const Home = () => {
+const Home = async () => {
   return (
     <>
       <div hidden>
@@ -116,9 +119,11 @@ const Home = () => {
         </p>
       </div>
 
-      <main className="container mx-auto">
-        <HomeContentSection />
-      </main>
+      <ThemeRegistry>
+        <main className="container mx-auto">
+          <HomeContentSection />
+        </main>
+      </ThemeRegistry>
     </>
   );
 };
