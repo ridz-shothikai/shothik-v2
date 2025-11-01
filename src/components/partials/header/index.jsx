@@ -9,7 +9,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
-import { updateTheme } from "@/redux/slice/settings";
+import { toggleSidebar, updateTheme } from "@/redux/slice/settings";
 import Logo from "@/resource/assets/Logo";
 import {
   BarChart3,
@@ -18,6 +18,7 @@ import {
   Brush,
   CheckCheck,
   ChevronDown,
+  ChevronRight,
   Edit,
   FileText,
   Gem,
@@ -123,6 +124,7 @@ const featuresMenuContent = {
 export default function Header() {
   const { accessToken, user } = useSelector((state) => state.auth);
   const { theme, sidebar } = useSelector((state) => state.settings);
+
   const isCompact = sidebar === "compact";
 
   const { isLoading } = useGetUserQuery(undefined, {
@@ -143,9 +145,15 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "bg-background/70 supports-[backdrop-filter]:bg-background/60 z-50 h-12 border-b backdrop-blur-md lg:h-16",
+        "bg-card/70 supports-[backdrop-filter]:bg-background/60 relative z-50 h-12 border-b backdrop-blur-md lg:h-16",
       )}
     >
+      <button
+        className="bg-card absolute z-10 hidden size-8 items-center justify-center rounded-full border border-dashed lg:-bottom-4 lg:-left-4 lg:flex"
+        onClick={() => dispatch(toggleSidebar())}
+      >
+        <ChevronRight className="size-4" />
+      </button>
       <div className="flex h-full items-center justify-between gap-6 px-4">
         {/* Logo + Desktop Nav */}
         <div className="flex items-center gap-2">

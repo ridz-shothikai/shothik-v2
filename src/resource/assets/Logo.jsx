@@ -41,22 +41,19 @@ const Logo = forwardRef(({ className }, ref) => {
               : "/shothik_light_logo.png";
 
   return (
-    <Link href="/?utm_source=internal" className={cn("contents", className)}>
-      <div className="mx-0.5 my-2.5 flex items-center justify-start">
-        <div
-          ref={ref}
-          className="h-auto w-[100px] sm:w-[100px] md:w-[100px] lg:w-[150px]"
-        >
-          <Image
-            src={logoSrc}
-            priority={true}
-            alt="shothik_logo"
-            width={100}
-            height={40}
-            className="h-auto w-full"
-          />
-        </div>
-      </div>
+    <Link
+      ref={ref}
+      href="/?utm_source=internal"
+      className={cn("flex w-20 items-center justify-start lg:w-32", className)}
+    >
+      <Image
+        src={logoSrc}
+        priority={true}
+        alt="shothik_logo"
+        width={100}
+        height={40}
+        className="h-auto w-full object-contain"
+      />
     </Link>
   );
 });

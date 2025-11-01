@@ -3,88 +3,44 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import navConfig from "@/config/config/navConfig";
 import { cn } from "@/lib/utils";
 import Logo from "@/resource/assets/Logo";
-import {
-  Brain,
-  CheckCheck,
-  Edit,
-  FileText,
-  Languages,
-  Megaphone,
-  Sparkles,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { Dot } from "lucide-react";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-
-const menuItems = [
-  {
-    label: "Paraphrase",
-    icon: Edit,
-    href: "/paraphrase",
-    testId: "sidebar-paraphrase",
-  },
-  {
-    label: "Humanize",
-    icon: Sparkles,
-    href: "/humanize",
-    testId: "sidebar-humanize",
-  },
-  {
-    label: "Plagiarism Checker",
-    icon: CheckCheck,
-    href: "/plagiarism",
-    testId: "sidebar-plagiarism",
-  },
-  {
-    label: "AI Detector",
-    icon: Brain,
-    href: "/ai-detector",
-    testId: "sidebar-ai-detector",
-  },
-  { label: "Admob", icon: FileText, href: "/admob", testId: "sidebar-admob" },
-  {
-    label: "Marketing Automation",
-    icon: Megaphone,
-    href: "/marketing",
-    testId: "sidebar-marketing",
-  },
-  {
-    label: "Translator",
-    icon: Languages,
-    href: "/translator",
-    testId: "sidebar-translator",
-  },
-  {
-    label: "AI Optimization",
-    icon: TrendingUp,
-    href: "/optimization",
-    testId: "sidebar-optimization",
-  },
-  {
-    label: "Community",
-    icon: Users,
-    href: "/community",
-    testId: "sidebar-community",
-  },
-];
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import NavigantionIcons from "./NavigationIcons";
+import NavItem from "./NavItem";
+import UserInfo from "./UserInfo";
 
 export default function NavigationSidebar() {
+  const dispatch = useDispatch();
+  const { accessToken, user } = useSelector((state) => state.auth);
   const { sidebar } = useSelector((state) => state.settings);
   const isCompact = sidebar === "compact";
+
+  const { setOpen } = useSidebar();
+
+  useEffect(() => {
+    if (sidebar === "compact") {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [sidebar, setOpen]);
+
   return (
-    <Sidebar>
-      <SidebarHeader className="border-sidebar-border h-12 border-b px-4 lg:h-16">
-        <div>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-sidebar-border h-12 border-b p-0 lg:h-16">
+        <div className="flex h-full items-center justify-center px-2 py-1">
           <Logo
             className={cn("", {
               "lg:hidden": isCompact,
@@ -97,31 +53,63 @@ export default function NavigationSidebar() {
             alt="shothik_logo"
             width={100}
             height={40}
-            className={cn("mx-auto h-auto w-1/2 object-contain", {
-              "hidden lg:hidden": !isCompact,
-              "hidden lg:inline-block": isCompact,
+            className={cn("mx-auto hidden! h-full w-auto object-contain", {
+              "lg:hidden!": !isCompact,
+              "lg:inline-block!": isCompact,
             })}
           />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overflow-y-auto!">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild data-testid={item.testId}>
-                    <a href={item.href} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              <div className="flex flex-col py-2">
+                {navConfig?.map((group) => {
+                  if (group?.roles && !group?.roles?.includes(user?.role)) {
+                    return null;
+                  }
+                  const key = group.subheader || group.items?.[0]?.title;
+                  return (
+                    <div key={key} className="flex flex-col gap-4">
+                      <div className="px-2">
+                        {group?.subheader && (
+                          <>
+                            {isCompact ? (
+                              <div className="flex h-6 items-center justify-center">
+                                <Dot className="size-6" />
+                              </div>
+                            ) : (
+                              <div className="text-muted-foreground flex h-6 items-center text-sm font-medium uppercase">
+                                {group?.subheader}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        {group?.items?.map((item) => (
+                          <NavItem
+                            key={item?.title + item?.path}
+                            item={item}
+                            sidebar={sidebar}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="border-sidebar-border flex min-h-12 items-center border-t">
+        <div className="w-full">
+          {!accessToken ? <UserInfo /> : <NavigantionIcons />}
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }
