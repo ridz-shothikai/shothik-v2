@@ -1,22 +1,20 @@
 "use client";
 import { refetchBlogDetails } from "@/app/actions";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   usePostCommentMutation,
   useRemoveCommentMutation,
 } from "@/redux/api/blog/blogApiSlice";
 import TipTapEditor from "@/resource/editor/TipTapEditor";
-import { DeleteOutline } from "@mui/icons-material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { LikeDislike } from "./LikeDislike";
@@ -78,150 +76,93 @@ export default function CommentSection({ comments, data }) {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-      }}
-    >
-      <Box
-        sx={{
-          borderBottom: "4px solid",
-          borderColor: "divider",
-          flex: "0 0 auto",
-          textAlign: "center",
-          width: "100%",
-        }}
-      >
+    <div className="flex flex-col gap-2">
+      <div className="border-border w-full flex-none border-b-[4px] text-center">
         <Button
-          sx={{
-            backgroundColor: "transparent",
-            color: (theme) =>
-              theme.palette.mode === "dark" ? "#d4d4d4" : "#1e1e1e",
-            borderRadius: "0px",
-            borderBottomWidth: "4px",
-            borderBottomStyle: "solid",
-            borderBottomColor: "primary.main",
-            borderTopLeftRadius: "7px",
-            borderTopRightRadius: "7px",
-            padding: "15px 20px",
-            "&:hover": {
-              backgroundColor: "primary.main",
-              color: "white",
-            },
-            mb: "-4px",
-          }}
+          variant="ghost"
+          className={cn(
+            "border-b-primary -mb-1 rounded-none rounded-t-lg border-b-[4px] px-5 py-[15px]",
+            "hover:bg-primary hover:text-primary-foreground",
+            "text-foreground bg-transparent",
+          )}
         >
           Comments
         </Button>
-      </Box>
-      <Typography variant="h4" gutterBottom>
-        Leave a comment
-      </Typography>
+      </div>
+      <h4 className="mb-4 text-2xl font-semibold">Leave a comment</h4>
 
       <TipTapEditor content={comment} onChange={(value) => setComment(value)} />
 
       <Button
         disabled={isPending || !comment || comment === "<p></p>"}
-        variant="contained"
-        sx={{
-          width: "100px",
-          ml: "auto",
-          mt: "10px",
-          mb: "15px",
-        }}
+        variant="default"
+        className="mt-2.5 mb-[15px] ml-auto w-[100px]"
         onClick={onSubmit}
       >
         Comment
       </Button>
 
-      <Box>
-        {comments?.map((comment) => (
-          <Accordion
-            key={comment._id}
-            defaultExpanded
-            variant="outlined"
-            sx={{
-              mt: "1rem",
-              borderRadius: "8px",
-              "&:before": {
-                backgroundColor: "transparent",
-              },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3-content"
-              id="panel3-header"
+      <div>
+        <Accordion
+          type="multiple"
+          defaultValue={comments?.map((_, index) => index.toString()) || []}
+          className="w-full"
+        >
+          {comments?.map((comment, index) => (
+            <AccordionItem
+              key={comment._id}
+              value={index.toString()}
+              className="mt-4 rounded-lg border"
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "100%",
-                  justifyContent: "space-between",
-                }}
+              <AccordionTrigger
+                aria-controls="panel3-content"
+                id="panel3-header"
+                className="hover:no-underline"
               >
-                <Box>
-                  <Typography
-                    component="span"
-                    color={"primary"}
-                    fontWeight={"500"}
-                  >
-                    {comment?.user?.name}
-                  </Typography>
-                  <Typography
-                    component="span"
-                    width={"5px"}
-                    height={"5px"}
-                    fontWeight={"900"}
-                    bgcolor={"black"}
-                    borderRadius={"100%"}
-                    alignSelf={"center"}
-                    mx="4px"
-                  ></Typography>
-                  <Typography component="span" fontSize={"0.9rem"}>
-                    {new Intl.DateTimeFormat("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "2-digit",
-                    }).format(new Date(comment?.createdAt))}
-                  </Typography>
-                </Box>
+                <div className="flex flex-1 items-center justify-between pr-4">
+                  <div className="flex items-center">
+                    <span className="text-primary font-medium">
+                      {comment?.user?.name}
+                    </span>
+                    <span className="bg-foreground mx-1 h-[5px] w-[5px] rounded-full font-black"></span>
+                    <span className="text-sm">
+                      {new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "2-digit",
+                      }).format(new Date(comment?.createdAt))}
+                    </span>
+                  </div>
 
-                <Stack flexDirection="row" alignItems="center" gap={1}>
-                  <LikeDislike
-                    api="/blog/comment"
-                    id={comment._id}
-                    dislike={comment.dislikes}
-                    like={comment.likes}
-                    size="20px"
-                    slug={data.slag}
-                  />
-                  {user?._id === comment?.user?._id && (
-                    <DeleteOutline
-                      onClick={(e) => handleRemoveComment(e, comment._id)}
-                      disabled={loading}
-                      sx={{
-                        height: "20px",
-                        width: "20px",
-                        objectFit: "contain",
-                        color: "orangered",
-                      }}
+                  <div className="flex flex-row items-center gap-2">
+                    <LikeDislike
+                      api="/blog/comment"
+                      id={comment._id}
+                      dislike={comment.dislikes}
+                      like={comment.likes}
+                      size="20px"
+                      slug={data.slag}
                     />
-                  )}
-                </Stack>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails sx={{ mt: "-2rem" }}>
-              <Typography
-                dangerouslySetInnerHTML={{ __html: comment?.content }}
-              />
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </Box>
-    </Box>
+                    {user?._id === comment?.user?._id && (
+                      <Trash2
+                        onClick={(e) => handleRemoveComment(e, comment._id)}
+                        disabled={loading}
+                        className="text-destructive h-5 w-5 cursor-pointer object-contain disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                    )}
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="-mt-8">
+                <div
+                  dangerouslySetInnerHTML={{ __html: comment?.content }}
+                  className="text-sm"
+                />
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </div>
   );
 }

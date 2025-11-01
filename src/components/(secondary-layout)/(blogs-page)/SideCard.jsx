@@ -1,7 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { setShowLoginModal } from "@/redux/slice/auth";
-import { Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,20 +12,20 @@ export default function SideCard() {
 
   return (
     <>
-      <Typography fontWeight={700} sx={{ mb: 1 }}>
+      <h2 className="mb-1 font-bold">
         {user?.email
           ? user.package === "free"
             ? "Unlock Premium Features and Enhance Your Experience with Shothik AI"
             : "Explore All Features and Enhance Your Experience with Shothik AI"
           : "Sign up for free to access all features"}
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 2, fontSize: "12px" }}>
+      </h2>
+      <p className="text-muted-foreground mb-2 text-xs">
         {(!user?.email || user?.package === "free") &&
           "Unlock the full potential of Shothik AI."}{" "}
         Experience AI-powered paraphrasing, human-like content generation,
         grammar refinement, and precise summarization to enhance your writing
         effortlessly.
-      </Typography>
+      </p>
       <Button
         onClick={() => {
           if (user?.email) {
@@ -34,10 +34,8 @@ export default function SideCard() {
             dispatch(setShowLoginModal(true));
           }
         }}
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ textTransform: "none" }}
+        variant="default"
+        className="w-full"
       >
         {user?.email ? "Explore the features" : "Sign up for free"}
       </Button>

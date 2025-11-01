@@ -2,23 +2,23 @@
 import { trackEvent } from "@/analysers/eventTracker";
 import UserActionInput from "@/components/tools/common/UserActionInput";
 import WordCounter from "@/components/tools/common/WordCounter";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import useGlobalPlagiarismCheck from "@/hooks/useGlobalPlagiarismCheck";
 import useLoadingText from "@/hooks/useLoadingText";
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
-import { ExpandMore, Refresh } from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Button,
-  CircularProgress,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { RefreshCw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -74,31 +74,19 @@ const PlagiarismCheckerContentSection = () => {
         {/* Input Section */}
         <div className="md:w-full md:flex-1">
           <div className="bg-card relative flex h-[400px] flex-col rounded-xl border shadow-sm md:h-[600px]">
-            <div className="flex-1">
-              <TextField
+            <div className="flex-1 p-3">
+              <Textarea
                 name="input"
-                variant="outlined"
-                rows={isMobile ? 13 : 18}
-                fullWidth
-                multiline
                 placeholder="Enter your text here..."
                 value={loadingText ? loadingText : inputText}
                 onChange={(e) => {
                   setInputText(e.target.value);
                   !enableScan && setEnableScan(true);
                 }}
-                className="!max-h-auto !mb-0 !h-full"
-                sx={{
-                  flexGrow: 1,
-                  "& .MuiOutlinedInput-root": {
-                    height: "100%",
-                    "& fieldset": { border: "none" },
-                    "& textarea": {
-                      height: "100% !important",
-                      resize: "none",
-                    },
-                  },
-                }}
+                className={cn(
+                  "h-full resize-none border-0 bg-transparent p-0 shadow-none focus-visible:ring-0",
+                )}
+                rows={isMobile ? 13 : 18}
               />
             </div>
 
@@ -134,31 +122,33 @@ const PlagiarismCheckerContentSection = () => {
         <div className="flex-1 px-3 py-2">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-semibold">Plagiarism Checker</h2>
-            <IconButton
-              size="small"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={manualRefresh}
               disabled={loading || !inputText?.trim()}
               title="Refresh check"
             >
-              <Refresh fontSize="small" />
-            </IconButton>
+              <RefreshCw className="size-4" />
+            </Button>
           </div>
 
           {/* Status / Score Box */}
           <div
-            className={`mb-3 flex min-h-[100px] flex-col items-center justify-center rounded-md border p-4 text-center ${
+            className={cn(
+              "mb-3 flex min-h-[100px] flex-col items-center justify-center rounded-md border p-4 text-center",
               loading
                 ? "bg-muted"
                 : error
                   ? "bg-destructive/20"
                   : results?.length || score
                     ? "bg-success/20"
-                    : "bg-muted/30"
-            }`}
+                    : "bg-muted/30",
+            )}
           >
             {loading ? (
               <div className="flex flex-col items-center gap-1">
-                <CircularProgress size={24} className="mb-1" />
+                <Spinner className="mb-1 size-6" />
                 <span className="text-muted-foreground text-xs">
                   Checking plagiarism...
                 </span>
@@ -168,11 +158,10 @@ const PlagiarismCheckerContentSection = () => {
                 <p className="text-destructive text-2xl font-bold">Error</p>
                 <p className="text-destructive text-xs">{error}</p>
                 <Button
-                  size="small"
+                  size="sm"
                   onClick={manualRefresh}
-                  variant="outlined"
-                  color="error"
-                  sx={{ mt: 1 }}
+                  variant="outline"
+                  className="mt-2"
                 >
                   Retry
                 </Button>
@@ -200,26 +189,29 @@ const PlagiarismCheckerContentSection = () => {
               Results ({results?.length || 0})
             </p>
 
-            {results?.map((r, i) => (
-              <Accordion key={i} className="rounded border shadow-sm">
-                <AccordionSummary
-                  expandIcon={<ExpandMore fontSize="small" />}
-                  className="flex items-center"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <span className="w-1/5 text-sm">{r?.percent}%</span>
-                    <span className="flex-1 text-center text-sm">
-                      {r?.source}
-                    </span>
-                  </div>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography variant="body2" className="text-sm">
-                    {r?.chunkText}
-                  </Typography>
-                </AccordionDetails>
+            {results?.length > 0 && (
+              <Accordion type="single" collapsible className="space-y-2">
+                {results.map((r, i) => (
+                  <AccordionItem
+                    key={i}
+                    value={`item-${i}`}
+                    className="rounded border shadow-sm"
+                  >
+                    <AccordionTrigger className="px-4 py-3">
+                      <div className="flex w-full items-center gap-2">
+                        <span className="w-1/5 text-sm">{r?.percent}%</span>
+                        <span className="flex-1 text-center text-sm">
+                          {r?.source}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <p className="text-sm">{r?.chunkText}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
               </Accordion>
-            ))}
+            )}
 
             {!loading && !error && results?.length === 0 && (
               <p className="text-muted-foreground text-sm">

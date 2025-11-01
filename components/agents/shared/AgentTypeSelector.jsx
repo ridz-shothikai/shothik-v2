@@ -1,46 +1,52 @@
-import React from 'react';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Bot, Presentation } from "lucide-react";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "../../../src/components/ui/toggle-group";
+import { cn } from "../../../src/lib/utils";
 
 const AGENT_TYPES = [
   {
-    value: 'super',
-    label: 'Super Agent',
-    icon: <SmartToyIcon />,
+    value: "super",
+    label: "Super Agent",
+    Icon: Bot,
   },
   {
-    value: 'presentation',
-    label: 'Presentation Agent',
-    icon: <SlideshowIcon />,
+    value: "presentation",
+    label: "Presentation Agent",
+    Icon: Presentation,
   },
 ];
 
 const AgentTypeSelector = ({ value, onChange }) => {
   return (
-    <Box>
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        Select Agent Type
-      </Typography>
-      <ToggleButtonGroup
+    <div>
+      <h3 className="mb-1 text-sm font-medium">Select Agent Type</h3>
+      <ToggleGroup
+        type="single"
         value={value}
-        exclusive
-        onChange={(_, newValue) => newValue && onChange(newValue)}
-        aria-label="Agent Type Selector"
-        color="primary"
+        onValueChange={(newValue) => newValue && onChange(newValue)}
+        className="inline-flex"
       >
-        {AGENT_TYPES.map((type) => (
-          <ToggleButton key={type.value} value={type.value} aria-label={type.label} sx={{ minWidth: 160 }}>
-            {type.icon}
-            <Box component="span" sx={{ ml: 1 }}>{type.label}</Box>
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    </Box>
+        {AGENT_TYPES.map((type) => {
+          const Icon = type.Icon;
+          return (
+            <ToggleGroupItem
+              key={type.value}
+              value={type.value}
+              aria-label={type.label}
+              className={cn(
+                "inline-flex min-w-[160px] items-center justify-center gap-2",
+              )}
+            >
+              <Icon className="size-4" />
+              <span>{type.label}</span>
+            </ToggleGroupItem>
+          );
+        })}
+      </ToggleGroup>
+    </div>
   );
 };
 
-export default AgentTypeSelector; 
+export default AgentTypeSelector;

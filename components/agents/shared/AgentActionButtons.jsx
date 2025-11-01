@@ -1,10 +1,6 @@
-import React from 'react';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import SendIcon from '@mui/icons-material/Send';
-import ClearIcon from '@mui/icons-material/Clear';
-import SaveIcon from '@mui/icons-material/Save';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { Save, Send, X } from "lucide-react";
 
 const AgentActionButtons = ({
   onSubmit,
@@ -15,34 +11,45 @@ const AgentActionButtons = ({
   loading = false,
 }) => {
   return (
-    <ButtonGroup variant="contained" color="primary" sx={{ mt: 2 }}>
+    <div className="mt-4 flex items-center gap-2">
       <Button
         onClick={onSubmit}
         disabled={disabled || loading}
-        startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <SendIcon />}
+        variant="default"
+        className="flex items-center gap-2"
       >
-        {loading ? 'Submitting...' : 'Submit'}
+        {loading ? (
+          <>
+            <Spinner className="size-4" />
+            <span>Submitting...</span>
+          </>
+        ) : (
+          <>
+            <Send className="size-4" />
+            <span>Submit</span>
+          </>
+        )}
       </Button>
       <Button
         onClick={onClear}
-        color="secondary"
-        variant="outlined"
-        startIcon={<ClearIcon />}
+        variant="outline"
+        className="flex items-center gap-2"
       >
-        Clear
+        <X className="size-4" />
+        <span>Clear</span>
       </Button>
       {showSave && (
         <Button
           onClick={onSave}
-          color="success"
-          variant="contained"
-          startIcon={<SaveIcon />}
+          variant="default"
+          className="flex items-center gap-2"
         >
-          Save
+          <Save className="size-4" />
+          <span>Save</span>
         </Button>
       )}
-    </ButtonGroup>
+    </div>
   );
 };
 
-export default AgentActionButtons; 
+export default AgentActionButtons;

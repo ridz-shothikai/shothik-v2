@@ -1,64 +1,84 @@
-import React from 'react';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 const RESPONSE_FORMATS = [
-  { value: 'text', label: 'Text' },
-  { value: 'markdown', label: 'Markdown' },
-  { value: 'json', label: 'JSON' },
+  { value: "text", label: "Text" },
+  { value: "markdown", label: "Markdown" },
+  { value: "json", label: "JSON" },
 ];
 
 const AgentConfigurationPanel = ({ config, onChange }) => {
-  const handleSwitch = (key) => (event) => {
-    onChange({ ...config, [key]: event.target.checked });
+  const handleSwitch = (key) => (checked) => {
+    onChange({ ...config, [key]: checked });
   };
-  const handleSelect = (key) => (event) => {
-    onChange({ ...config, [key]: event.target.value });
+  const handleSelect = (key) => (value) => {
+    onChange({ ...config, [key]: value });
   };
 
   return (
-    <Accordion sx={{ mb: 2 }}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="subtitle1">Advanced Agent Settings</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <FormGroup>
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel id="response-format-label">Response Format</InputLabel>
-            <Select
-              labelId="response-format-label"
-              label="Response Format"
-              value={config.responseFormat || 'text'}
-              onChange={handleSelect('responseFormat')}
-            >
-              {RESPONSE_FORMATS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControlLabel
-            control={<Switch checked={!!config.verbosity} onChange={handleSwitch('verbosity')} />}
-            label="Verbose Output"
-          />
-          <FormControlLabel
-            control={<Switch checked={!!config.advancedMode} onChange={handleSwitch('advancedMode')} />}
-            label="Enable Advanced Mode"
-          />
-        </FormGroup>
-      </AccordionDetails>
+    <Accordion type="single" collapsible className="mb-2">
+      <AccordionItem value="advanced-settings">
+        <AccordionTrigger>
+          <span className="text-sm font-medium">Advanced Agent Settings</span>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="response-format">Response Format</Label>
+              <Select
+                value={config.responseFormat || "text"}
+                onValueChange={handleSelect("responseFormat")}
+              >
+                <SelectTrigger id="response-format" className="w-full">
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent>
+                  {RESPONSE_FORMATS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="verbosity" className="cursor-pointer">
+                Verbose Output
+              </Label>
+              <Switch
+                id="verbosity"
+                checked={!!config.verbosity}
+                onCheckedChange={handleSwitch("verbosity")}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="advanced-mode" className="cursor-pointer">
+                Enable Advanced Mode
+              </Label>
+              <Switch
+                id="advanced-mode"
+                checked={!!config.advancedMode}
+                onCheckedChange={handleSwitch("advancedMode")}
+              />
+            </div>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   );
 };
 
-export default AgentConfigurationPanel; 
+export default AgentConfigurationPanel;

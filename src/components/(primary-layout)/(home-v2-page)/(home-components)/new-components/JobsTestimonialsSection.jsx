@@ -1,21 +1,10 @@
 "use client";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { trackingList } from "@/libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -86,70 +75,7 @@ const universities = [
   "Cornell",
 ];
 
-const StyledSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(12, 0),
-  // background: "linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)",
-  minHeight: "100vh",
-}));
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: theme.spacing(2),
-  padding: theme.spacing(4),
-  borderRadius: "14px",
-  boxShadow: "0 12px 24px -4px rgba(145, 158, 171, 0.16)",
-  transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-  "&:hover": {
-    transform: "translateY(-4px)",
-  },
-}));
-
-const GradientAvatar = styled(Avatar)(({ gradientfrom, gradientto }) => ({
-  width: 64,
-  height: 64,
-  background: `linear-gradient(135deg, ${gradientfrom} 0%, ${gradientto} 100%)`,
-  fontSize: "1.125rem",
-  fontWeight: "bold",
-  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-}));
-
-const AchievementChip = styled(Box)(({ theme }) => ({
-  backgroundColor: "#ECFDF5",
-  border: "1px solid #D1FAE5",
-  borderRadius: theme.spacing(1.5),
-  padding: theme.spacing(1.5),
-  marginBottom: theme.spacing(3),
-}));
-
-const CareerTransition = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: theme.spacing(1.5),
-  backgroundColor: "#F8FAFC",
-  borderRadius: theme.spacing(1.5),
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: "#059669",
-  color: "white",
-  padding: theme.spacing(2, 6),
-  borderRadius: theme.spacing(4),
-  fontSize: "1.125rem",
-  fontWeight: 500,
-  textTransform: "none",
-  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-  "&:hover": {
-    backgroundColor: "#047857",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-  },
-}));
-
 export default function JobsTestimonialsSection() {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
-
   const [showModal, setShowModal] = useState(false);
 
   const { componentRef, trackClick } = useComponentTracking(
@@ -205,202 +131,127 @@ export default function JobsTestimonialsSection() {
 
   return (
     <>
-      <StyledSection
-        ref={componentRef}
-        sx={
-          {
-            // bgcolor: isDarkMode ? "#161C24" : "#f8fafc",
-          }
-        }
-      >
-        <Container maxWidth="xl">
+      <section ref={componentRef} className="min-h-screen py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Jobs-style Header */}
-          <Box textAlign="center" mb={10}>
+          <div className="mb-20 text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <Typography
-                variant="h2"
-                sx={{
-                  fontSize: { xs: "2.5rem", lg: "3rem" },
-                  fontWeight: 300,
-                  color: isDarkMode ? "inherit" : "#0F172A",
-                  mb: 3,
-                }}
-              >
+              <h2 className="text-foreground mb-12 text-4xl font-light lg:text-6xl">
                 Real Students.
-              </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: { xs: "2rem", lg: "2.5rem" },
-                  fontWeight: 300,
-                  color: isDarkMode ? "inherit" : "#64748B",
-                  mb: 4,
-                }}
-              >
+              </h2>
+              <h3 className="text-muted-foreground mb-16 text-3xl font-light lg:text-5xl">
                 Real Results.
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: "1.25rem",
-                  color: isDarkMode ? "inherit" : "#64748B",
-                  maxWidth: "48rem",
-                  mx: "auto",
-                  lineHeight: 1.6,
-                }}
-              >
+              </h3>
+              <p className="text-muted-foreground mx-auto max-w-3xl text-xl leading-relaxed">
                 From struggling with assignments to landing dream careers. See
                 how Shothik AI transforms academic journeys.
-              </Typography>
+              </p>
             </motion.div>
-          </Box>
+          </div>
 
           {/* Student Success Stories */}
-          <Grid container spacing={4} mb={8} alignItems="stretch">
+          <div className="mb-16 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-3">
             {studentStories.map((story, index) => (
-              <Grid item xs={12} lg={4} key={story.id} sx={{ display: "flex" }}>
+              <div key={story.id} className="flex">
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
-                  style={{ flex: 1, display: "flex" }}
+                  className="flex flex-1"
                 >
-                  <StyledCard>
-                    <CardContent sx={{ p: 0 }}>
+                  <Card className="rounded-[14px] p-8 shadow-[0_12px_24px_-4px_rgba(145,158,171,0.16)] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:-translate-y-1">
+                    <CardContent className="p-0">
                       {/* Story Header */}
-                      <Box
-                        display="flex"
-                        alignItems="flex-start"
-                        gap={2}
-                        mb={3}
-                      >
-                        <GradientAvatar
-                          sx={{
-                            color: "#FFF",
+                      <div className="mb-6 flex items-start gap-8">
+                        <Avatar
+                          className="size-16 text-lg font-bold text-white shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)]"
+                          style={{
+                            background: `linear-gradient(135deg, ${story.gradientFrom} 0%, ${story.gradientTo} 100%)`,
                           }}
-                          gradientfrom={story.gradientFrom}
-                          gradientto={story.gradientTo}
                         >
-                          {story.avatar}
-                        </GradientAvatar>
-                        <Box flex={1}>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              fontWeight: 600,
-                              color: isDarkMode ? "inherit" : "#0F172A",
-                              fontSize: "1.125rem",
-                            }}
-                          >
+                          <AvatarFallback>{story.avatar}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h6 className="text-foreground mb-2 text-lg font-semibold">
                             {story.name}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: "#64748B",
-                              mb: 0.5,
-                            }}
-                          >
+                          </h6>
+                          <p className="text-muted-foreground mb-2 text-sm">
                             {story.university}
-                          </Typography>
-                          <Box display="flex" alignItems="center" gap={0.5}>
-                            <GraduationCap size={12} color="#64748B" />
-                            <Typography
-                              variant="caption"
-                              sx={{ color: "#64748B" }}
-                            >
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <GraduationCap
+                              size={12}
+                              className="text-muted-foreground"
+                            />
+                            <span className="text-muted-foreground text-xs">
                               {story.timeframe}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Box>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
                       {/* Achievement Badge */}
-                      <AchievementChip>
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
-                          <Award size={16} color="#059669" />
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 500,
-                              color: "#047857",
-                            }}
-                          >
+                      <div className="bg-muted border-border mb-6 rounded-xl border p-6">
+                        <div className="mb-4 flex items-center gap-4">
+                          <Award size={16} className="text-primary" />
+                          <p className="text-foreground text-sm font-medium">
                             {story.achievement}
-                          </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <TrendingUp size={16} color="#059669" />
-                          <Typography variant="body2" sx={{ color: "#059669" }}>
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <TrendingUp size={16} className="text-primary" />
+                          <p className="text-foreground text-sm">
                             {story.metric}
-                          </Typography>
-                        </Box>
-                      </AchievementChip>
+                          </p>
+                        </div>
+                      </div>
 
                       {/* Story Content */}
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: isDarkMode ? "inherit" : "#374151",
-                          lineHeight: 1.6,
-                          mb: 3,
-                          fontStyle: "italic",
-                        }}
-                      >
+                      <p className="text-foreground mb-6 text-base leading-relaxed italic">
                         &quot;{story.story}&quot;
-                      </Typography>
+                      </p>
 
                       {/* Career Transition */}
-                      <CareerTransition>
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{ color: "#64748B" }}
-                          >
+                      <div className="bg-muted flex items-center justify-between rounded-xl p-6">
+                        <div>
+                          <p className="text-muted-foreground mb-2 text-xs">
                             Now at
-                          </Typography>
-                          <Box display="flex" alignItems="center" gap={0.5}>
-                            <Building size={16} color="#0F172A" />
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: 600,
-                                color: "#0F172A",
-                              }}
-                            >
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <Building size={16} className="text-foreground" />
+                            <p className="text-foreground text-sm font-semibold">
                               {story.company}
-                            </Typography>
-                          </Box>
-                        </Box>
-                        <ArrowRight size={20} color="#059669" />
-                      </CareerTransition>
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowRight size={20} className="text-primary" />
+                      </div>
 
                       {/* Star Rating */}
-                      <Box display="flex" justifyContent="center" mt={3}>
-                        <Box display="flex" gap={0.5}>
+                      <div className="mt-6 flex justify-center">
+                        <div className="flex gap-2">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
                               size={16}
-                              fill="#FBBF24"
-                              color="#FBBF24"
+                              className="fill-primary text-primary"
                             />
                           ))}
-                        </Box>
-                      </Box>
+                        </div>
+                      </div>
                     </CardContent>
-                  </StyledCard>
+                  </Card>
                 </motion.div>
-              </Grid>
+              </div>
             ))}
-          </Grid>
+          </div>
 
           {/* University Trust Bar */}
           <motion.div
@@ -409,24 +260,14 @@ export default function JobsTestimonialsSection() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <Box textAlign="center">
-              <Typography
-                variant="overline"
-                sx={{
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  color: isDarkMode ? "inherit" : "#64748B",
-                  letterSpacing: "0.05em",
-                  mb: 3,
-                  display: "block",
-                }}
-              >
+            <div className="text-center">
+              <p className="text-muted-foreground mb-6 block text-sm font-medium tracking-wider">
                 Trusted by students at top universities
-              </Typography>
-            </Box>
+              </p>
+            </div>
           </motion.div>
-        </Container>
-      </StyledSection>
+        </div>
+      </section>
     </>
   );
 }

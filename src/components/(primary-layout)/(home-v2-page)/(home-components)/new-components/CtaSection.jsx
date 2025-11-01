@@ -1,37 +1,21 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { trackingList } from "@/libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Snackbar,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
 import { motion } from "framer-motion";
 import { CheckCircle, Globe, Shield } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import EmailModal from "../EmailCollectModal";
 
 export default function CTASection() {
-  const theme = useTheme();
-
   const [showModal, setShowModal] = useState(false);
 
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.START_WRITING_SECTION,
   );
-
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success", // 'success', 'error', 'warning', 'info'
-  });
 
   const [
     registerUserForBetaList,
@@ -45,104 +29,51 @@ export default function CTASection() {
       console.log(result, "result");
 
       // Success toast
-      setToast({
-        open: true,
-        message: "Successfully registered for beta! We'll be in touch soon.",
-        severity: "success",
-      });
+      toast.success(
+        "Successfully registered for beta! We'll be in touch soon.",
+      );
 
       // Close the modal
       setShowModal(false);
     } catch (error) {
       // Error toast
-      setToast({
-        open: true,
-        message:
-          error?.data?.message || "Registration failed. Please try again.",
-        severity: "error",
-      });
+      toast.error(
+        error?.data?.message || "Registration failed. Please try again.",
+      );
     }
-  };
-
-  const handleCloseToast = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setToast((prev) => ({ ...prev, open: false }));
   };
 
   return (
     <>
-      <Box
+      <section
         ref={componentRef}
-        component="section"
-        sx={{
-          py: { xs: 3, sm: 5, md: 10 },
-          background:
-            theme.palette.mode === "dark"
-              ? "linear-gradient(to right, #1a202c, #2d3748)" // Darker gradient for dark mode
-              : "linear-gradient(to right, #059669, #047857, #0f766e)", // emerald-600 to teal-700
-          position: "relative",
-        }}
+        className="from-primary via-primary/90 to-primary/80 relative bg-gradient-to-r py-12 sm:py-20 md:py-40"
       >
-        <Container
-          maxWidth={false}
-          sx={{
-            maxWidth: "80rem", // max-w-5xl
-            px: { xs: 2, sm: 3, lg: 4 }, // px-4 sm:px-6 lg:px-8
-          }}
-        >
+        <div className="mx-auto max-w-[80rem] px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <Box sx={{ textAlign: "center" }}>
+            <div className="text-center">
               {/* Main Heading */}
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: { xs: "2.25rem", sm: "3rem" }, // text-4xl sm:text-5xl
-                  fontWeight: 700, // font-bold
-                  color: theme.palette.mode === "dark" ? "white" : "white", // Keep white for both, or adjust if needed
-                  mb: 2, // mb-4
-                  lineHeight: 1.1,
-                  fontFamily:
-                    '"Inter", "Roboto", "Helvetica", "Arial", sans-serif', // font-display equivalent
-                }}
-              >
+              <h1 className="text-primary-foreground mb-8 text-[2.25rem] leading-tight font-bold sm:text-5xl">
                 Stop Struggling. Start Succeeding.
-              </Typography>
+              </h1>
 
               {/* Subtitle */}
-              <Typography
-                variant="h5"
-                sx={{
-                  fontSize: "1.25rem", // text-xl
-                  color:
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[300]
-                      : "#a7f3d0", // text-emerald-100
-                  mb: 4, // mb-8
-                  maxWidth: "48rem", // max-w-3xl
-                  mx: "auto",
-                  lineHeight: 1.6,
-                }}
-              >
+              <p className="text-primary-foreground/90 mx-auto mb-16 max-w-3xl text-xl leading-relaxed">
                 Leave it to us. Your next A+ paper is just 60 seconds away. Join
                 students who&apos;ve already transformed their academic success.
-              </Typography>
+              </p>
 
               {/* CTA Button Section */}
-              <Box sx={{ maxWidth: "28rem", mx: "auto", mb: 3 }}>
-                {" "}
-                {/* max-w-md */}
-                <Box sx={{ position: "relative", mb: 3 }}>
+              <div className="mx-auto mb-12 max-w-md">
+                <div className="relative mb-12">
                   {/* Enhanced CTA Button */}
                   <Button
                     data-umami-event="Start Writing Better Papers Now"
-                    variant="contained"
                     onClick={() => {
                       setShowModal(true);
 
@@ -152,178 +83,61 @@ export default function CTASection() {
                         postion: "start_writing_section",
                       });
                     }}
-                    fullWidth
-                    sx={{
-                      backgroundColor:
-                        theme.palette.mode === "dark"
-                          ? theme.palette.primary.main
-                          : "white",
-                      color:
-                        theme.palette.mode === "dark"
-                          ? theme.palette.primary.contrastText
-                          : "#059669", // text-emerald-600
-                      fontWeight: 700, // font-bold
-                      height: "4rem", // h-16
-                      px: 4, // px-8
-                      fontSize: "1.125rem", // text-lg
-                      position: "relative",
-                      overflow: "hidden",
-                      boxShadow:
-                        "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)", // shadow-lg
-                      textTransform: "none",
-                      "& .MuiButton-label, & > span": {
-                        position: "relative",
-                        zIndex: 1,
-                      },
-                    }}
+                    className="bg-background text-primary hover:bg-background/90 relative h-16 w-full overflow-hidden px-8 text-lg font-bold shadow-lg"
                   >
-                    <Box
-                      sx={{
-                        position: "relative",
-                        zIndex: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                    <span className="relative z-10 flex items-center justify-center">
                       Start Writing Better Papers Now
-                    </Box>
+                    </span>
                   </Button>
 
                   {/* Scarcity indicator */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: "-0.5rem", // -bottom-2
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      backgroundColor: "#ea580c", // bg-orange-500 (keeping orange for both modes as it's a warning/scarcity color)
-                      color: "white",
-                      fontSize: "0.75rem", // text-xs
-                      fontWeight: 700, // font-bold
-                      px: 1.5, // px-3
-                      py: 0.5, // py-1
-                      borderRadius: "9999px", // rounded-full
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <div className="bg-destructive text-destructive-foreground absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap">
                     457 spots left this month
-                  </Box>
-                </Box>
+                  </div>
+                </div>
                 {/* Guarantee text */}
-                <Box sx={{ textAlign: "center" }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color:
-                        theme.palette.mode === "dark"
-                          ? theme.palette.grey[400]
-                          : "#a7f3d0", // text-emerald-100
-                      fontSize: "0.875rem", // text-sm
-                    }}
-                  >
+                <div className="text-center">
+                  <p className="text-primary-foreground/80 text-sm">
                     No credit card • 14-day guarantee • Instant access
-                  </Typography>
-                </Box>
-              </Box>
+                  </p>
+                </div>
+              </div>
 
               {/* Trust Indicators */}
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={{ xs: 1, sm: 3 }}
-                alignItems="center"
-                justifyContent="center"
-                sx={{
-                  mb: 2, // mb-4
-                  fontSize: "0.875rem", // text-sm
-                  color:
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[400]
-                      : "#a7f3d0", // text-emerald-100
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <div className="text-primary-foreground/80 mb-8 flex flex-col items-center justify-center gap-3 text-sm sm:flex-row sm:gap-6">
+                <div className="flex items-center gap-2">
                   <CheckCircle size={16} />
-                  <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
-                    14-day free trial
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <span className="text-sm">14-day free trial</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <Shield size={16} />
-                  <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
-                    No credit card required
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <span className="text-sm">No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <Globe size={16} />
-                  <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
-                    Available worldwide
-                  </Typography>
-                </Box>
-              </Stack>
+                  <span className="text-sm">Available worldwide</span>
+                </div>
+              </div>
 
               {/* Payment Methods */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 2,
-                  opacity: 0.8,
-                  flexWrap: "wrap",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontSize: "0.75rem", // text-xs
-                    color:
-                      theme.palette.mode === "dark"
-                        ? theme.palette.grey[500]
-                        : "#bbf7d0", // text-emerald-200
-                  }}
-                >
+              <div className="flex flex-wrap items-center justify-center gap-4 opacity-80">
+                <p className="text-primary-foreground/70 text-xs">
                   Accepted payments:
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    fontSize: "0.75rem", // text-xs
-                    color:
-                      theme.palette.mode === "dark"
-                        ? theme.palette.grey[500]
-                        : "#bbf7d0", // text-emerald-200
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    Visa
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    •
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    Mastercard
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    •
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    bKash
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    •
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-                    UPI
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+                </p>
+                <div className="text-primary-foreground/70 flex items-center gap-2 text-xs">
+                  <span>Visa</span>
+                  <span>•</span>
+                  <span>Mastercard</span>
+                  <span>•</span>
+                  <span>bKash</span>
+                  <span>•</span>
+                  <span>UPI</span>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </Container>
-      </Box>
+        </div>
+      </section>
 
       {/* email collect modal */}
       <EmailModal
@@ -331,23 +145,6 @@ export default function CTASection() {
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
-
-      {/* Toast notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

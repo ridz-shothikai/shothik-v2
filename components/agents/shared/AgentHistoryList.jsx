@@ -1,29 +1,25 @@
-import React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import Chip from '@mui/material/Chip';
-import Typography from '@mui/material/Typography';
-import HistoryIcon from '@mui/icons-material/History';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import Box from '@mui/material/Box';
+import {
+  CheckCircle2,
+  Clock,
+  History as HistoryIcon,
+  XCircle,
+} from "lucide-react";
+import React from "react";
+import { Badge } from "../../src/components/ui/badge";
+import { cn } from "../../src/lib/utils";
 
 const STATUS_ICONS = {
-  success: <CheckCircleIcon color="success" fontSize="small" />,
-  error: <ErrorIcon color="error" fontSize="small" />,
-  pending: <HourglassEmptyIcon color="warning" fontSize="small" />,
-  default: <HistoryIcon color="action" fontSize="small" />,
+  success: CheckCircle2,
+  error: XCircle,
+  pending: Clock,
+  default: HistoryIcon,
 };
 
 const STATUS_LABELS = {
-  success: 'Success',
-  error: 'Error',
-  pending: 'Pending',
-  default: 'Unknown',
+  success: "Success",
+  error: "Error",
+  pending: "Pending",
+  default: "Unknown",
 };
 
 function formatTimestamp(ts) {
@@ -33,41 +29,62 @@ function formatTimestamp(ts) {
 
 const AgentHistoryList = ({ history = [], onSelect }) => {
   return (
-    <List sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+    <div className="bg-background w-full rounded-lg shadow-sm">
       {history.length === 0 && (
-        <ListItem>
-          <ListItemIcon><HistoryIcon color="disabled" /></ListItemIcon>
-          <ListItemText primary={<Typography color="text.secondary">No history yet.</Typography>} />
-        </ListItem>
+        <div className="flex items-center gap-3 p-4">
+          <HistoryIcon className="text-muted-foreground h-5 w-5" />
+          <span className="text-muted-foreground text-sm">No history yet.</span>
+        </div>
       )}
       {history.map((item, idx) => {
-        const status = item.status || 'default';
+        const status = item.status || "default";
+        const IconComponent = STATUS_ICONS[status] || STATUS_ICONS.default;
+        const getBadgeVariant = () => {
+          if (status === "success") return "default";
+          if (status === "error") return "destructive";
+          if (status === "pending") return "secondary";
+          return "outline";
+        };
+        const getIconColor = () => {
+          if (status === "success") return "text-primary";
+          if (status === "error") return "text-destructive";
+          if (status === "pending") return "text-muted-foreground";
+          return "text-muted-foreground";
+        };
         return (
           <React.Fragment key={item.id || idx}>
-            <ListItem button={!!onSelect} onClick={onSelect ? () => onSelect(item) : undefined} alignItems="flex-start">
-              <ListItemIcon>{STATUS_ICONS[status] || STATUS_ICONS.default}</ListItemIcon>
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {item.query || 'No query'}
-                    </Typography>
-                    <Chip label={STATUS_LABELS[status] || STATUS_LABELS.default} size="small" color={status === 'success' ? 'success' : status === 'error' ? 'error' : status === 'pending' ? 'warning' : 'default'} />
-                  </Box>
-                }
-                secondary={
-                  <Typography variant="caption" color="text.secondary">
-                    {formatTimestamp(item.timestamp)}
-                  </Typography>
-                }
+            <div
+              className={cn(
+                "flex items-start gap-3 p-4 transition-colors",
+                onSelect && "hover:bg-accent cursor-pointer",
+              )}
+              onClick={onSelect ? () => onSelect(item) : undefined}
+            >
+              <IconComponent
+                className={cn("mt-0.5 h-5 w-5 shrink-0", getIconColor())}
               />
-            </ListItem>
-            {idx < history.length - 1 && <Divider component="li" />}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="truncate text-sm font-medium">
+                    {item.query || "No query"}
+                  </span>
+                  <Badge variant={getBadgeVariant()} className="shrink-0">
+                    {STATUS_LABELS[status] || STATUS_LABELS.default}
+                  </Badge>
+                </div>
+                <span className="text-muted-foreground text-xs">
+                  {formatTimestamp(item.timestamp)}
+                </span>
+              </div>
+            </div>
+            {idx < history.length - 1 && (
+              <div className="border-border mx-4 border-b" />
+            )}
           </React.Fragment>
         );
       })}
-    </List>
+    </div>
   );
 };
 
-export default AgentHistoryList; 
+export default AgentHistoryList;

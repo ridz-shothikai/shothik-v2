@@ -1,73 +1,73 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import LinearProgress from '@mui/material/LinearProgress';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import FactCheckIcon from '@mui/icons-material/FactCheck';
-import PaletteIcon from '@mui/icons-material/Palette';
-import AccessibilityIcon from '@mui/icons-material/Accessibility';
-import SpeedIcon from '@mui/icons-material/Speed';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import {
+  Accessibility,
+  AlertTriangle,
+  CheckCircle,
+  ClipboardCheck,
+  FileCheck,
+  Gauge,
+  Palette,
+  RefreshCw,
+  Sparkles,
+  XCircle,
+} from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "../../../src/components/ui/alert";
+import { Badge } from "../../../src/components/ui/badge";
+import { Button } from "../../../src/components/ui/button";
+import { Card, CardContent } from "../../../src/components/ui/card";
+import { Progress } from "../../../src/components/ui/progress";
+import { cn } from "../../../src/lib/utils";
 
-const PRIMARY_GREEN = '#07B37A';
-
-const getScoreColor = (score) => {
-  if (score >= 0.9) return PRIMARY_GREEN;
-  if (score >= 0.7) return '#ff9800';
-  return '#f44336';
+const getScoreVariant = (score) => {
+  if (score >= 0.9) return "default";
+  if (score >= 0.7) return "secondary";
+  return "destructive";
 };
 
 const getScoreIcon = (score) => {
-  if (score >= 0.9) return <CheckCircleIcon sx={{ color: PRIMARY_GREEN }} />;
-  if (score >= 0.7) return <WarningIcon sx={{ color: '#ff9800' }} />;
-  return <ErrorIcon sx={{ color: '#f44336' }} />;
+  if (score >= 0.9) return <CheckCircle className="text-primary size-4" />;
+  if (score >= 0.7)
+    return <AlertTriangle className="text-secondary-foreground size-4" />;
+  return <XCircle className="text-destructive size-4" />;
 };
 
 const getScoreLabel = (score) => {
-  if (score >= 0.9) return 'Excellent';
-  if (score >= 0.8) return 'Good';
-  if (score >= 0.7) return 'Acceptable';
-  if (score >= 0.6) return 'Needs Improvement';
-  return 'Poor';
+  if (score >= 0.9) return "Excellent";
+  if (score >= 0.8) return "Good";
+  if (score >= 0.7) return "Acceptable";
+  if (score >= 0.6) return "Needs Improvement";
+  return "Poor";
 };
 
-export default function QualityValidationPanel({ 
+export default function QualityValidationPanel({
   qualityMetrics = {},
   validationResult = {},
   isValidating = false,
   onApplyAutoFixes,
   onRegenerateWithFeedback,
-  onViewDetails
+  onViewDetails,
 }) {
   // Default values for demo/loading states
   const defaultMetrics = {
     overall: 0.85,
     contentAccuracy: 0.88,
     designQuality: 0.82,
-    requirementCompliance: 0.90,
+    requirementCompliance: 0.9,
     accessibility: 0.79,
-    performance: 0.85
+    performance: 0.85,
   };
 
   const defaultResult = {
-    status: 'completed',
+    status: "completed",
     needsImprovement: false,
     contentSuggestions: [],
     designSuggestions: [],
     requirementSuggestions: [],
     accessibilitySuggestions: [],
-    performanceSuggestions: []
+    performanceSuggestions: [],
   };
 
   const metrics = { ...defaultMetrics, ...qualityMetrics };
@@ -75,265 +75,259 @@ export default function QualityValidationPanel({
 
   const qualityCategories = [
     {
-      id: 'contentAccuracy',
-      title: 'Content Accuracy',
-      description: 'Factual correctness and research quality',
-      icon: <FactCheckIcon />,
+      id: "contentAccuracy",
+      title: "Content Accuracy",
+      description: "Factual correctness and research quality",
+      icon: FileCheck,
       score: metrics.contentAccuracy,
-      suggestions: result.contentSuggestions || []
+      suggestions: result.contentSuggestions || [],
     },
     {
-      id: 'designQuality',
-      title: 'Design Quality',
-      description: 'Visual hierarchy and aesthetic appeal',
-      icon: <PaletteIcon />,
+      id: "designQuality",
+      title: "Design Quality",
+      description: "Visual hierarchy and aesthetic appeal",
+      icon: Palette,
       score: metrics.designQuality,
-      suggestions: result.designSuggestions || []
+      suggestions: result.designSuggestions || [],
     },
     {
-      id: 'requirementCompliance',
-      title: 'Requirement Compliance',
-      description: 'Adherence to user specifications',
-      icon: <AssignmentTurnedInIcon />,
+      id: "requirementCompliance",
+      title: "Requirement Compliance",
+      description: "Adherence to user specifications",
+      icon: ClipboardCheck,
       score: metrics.requirementCompliance,
-      suggestions: result.requirementSuggestions || []
+      suggestions: result.requirementSuggestions || [],
     },
     {
-      id: 'accessibility',
-      title: 'Accessibility',
-      description: 'WCAG compliance and inclusivity',
-      icon: <AccessibilityIcon />,
+      id: "accessibility",
+      title: "Accessibility",
+      description: "WCAG compliance and inclusivity",
+      icon: Accessibility,
       score: metrics.accessibility,
-      suggestions: result.accessibilitySuggestions || []
+      suggestions: result.accessibilitySuggestions || [],
     },
     {
-      id: 'performance',
-      title: 'Performance',
-      description: 'Load times and optimization',
-      icon: <SpeedIcon />,
+      id: "performance",
+      title: "Performance",
+      description: "Load times and optimization",
+      icon: Gauge,
       score: metrics.performance,
-      suggestions: result.performanceSuggestions || []
-    }
+      suggestions: result.performanceSuggestions || [],
+    },
   ];
 
   if (isValidating) {
     return (
       <Card>
-        <CardContent sx={{ textAlign: 'center', py: 4 }}>
-          <Box sx={{ mb: 2 }}>
-            <LinearProgress 
-              sx={{ 
-                width: '100%', 
-                '& .MuiLinearProgress-bar': { bgcolor: PRIMARY_GREEN } 
-              }} 
-            />
-          </Box>
-          <Typography variant="h6" gutterBottom>
+        <CardContent className="py-8 text-center">
+          <div className="mb-4">
+            <Progress value={undefined} className="w-full" />
+          </div>
+          <h6 className="mb-2 text-lg font-semibold">
             Validating Presentation Quality...
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Our QA Agent is analyzing content accuracy, design quality, and user requirements
-          </Typography>
+          </h6>
+          <p className="text-muted-foreground text-sm">
+            Our QA Agent is analyzing content accuracy, design quality, and user
+            requirements
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Box>
+    <div>
       {/* Overall Quality Score */}
-      <Card sx={{ mb: 3 }}>
+      <Card className="mb-6">
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="h6">Overall Quality Score</Typography>
-            <Chip 
-              icon={getScoreIcon(metrics.overall)}
-              label={`${Math.round(metrics.overall * 100)}%`}
-              sx={{ 
-                bgcolor: getScoreColor(metrics.overall), 
-                color: 'white',
-                fontSize: '1rem',
-                px: 1
-              }}
-            />
-          </Box>
-          
-          <LinearProgress
-            variant="determinate"
+          <div className="mb-4 flex items-center justify-between">
+            <h6 className="text-lg font-semibold">Overall Quality Score</h6>
+            <Badge
+              variant={getScoreVariant(metrics.overall)}
+              className="px-4 py-1 text-base"
+            >
+              <span className="mr-1">{getScoreIcon(metrics.overall)}</span>
+              {Math.round(metrics.overall * 100)}%
+            </Badge>
+          </div>
+
+          <Progress
             value={metrics.overall * 100}
-            sx={{
-              height: 8,
-              borderRadius: 4,
-              '& .MuiLinearProgress-bar': {
-                bgcolor: getScoreColor(metrics.overall),
-                borderRadius: 4
-              },
-              '& .MuiLinearProgress-root': {
-                bgcolor: '#f5f5f5'
-              }
-            }}
+            className={cn(
+              "mb-4 h-2 rounded-full",
+              metrics.overall >= 0.9 && "[&>div]:bg-primary",
+              metrics.overall >= 0.7 &&
+                metrics.overall < 0.9 &&
+                "[&>div]:bg-secondary",
+              metrics.overall < 0.7 && "[&>div]:bg-destructive",
+            )}
           />
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {getScoreLabel(metrics.overall)} - {
-              metrics.overall >= 0.9 ? 'Ready for presentation!' :
-              metrics.overall >= 0.7 ? 'Minor improvements recommended' :
-              'Significant improvements needed'
-            }
-          </Typography>
+
+          <p className="text-muted-foreground mt-2 text-sm">
+            {getScoreLabel(metrics.overall)} -{" "}
+            {metrics.overall >= 0.9
+              ? "Ready for presentation!"
+              : metrics.overall >= 0.7
+                ? "Minor improvements recommended"
+                : "Significant improvements needed"}
+          </p>
         </CardContent>
       </Card>
 
       {/* Detailed Metrics */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        {qualityCategories.map((category) => (
-          <Grid item xs={12} md={6} key={category.id}>
-            <Card sx={{ height: '100%' }}>
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        {qualityCategories.map((category) => {
+          const IconComponent = category.icon;
+          return (
+            <Card key={category.id} className="h-full">
               <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ color: PRIMARY_GREEN, mr: 1 }}>
-                    {category.icon}
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                <div className="mb-4 flex items-center">
+                  <div className="text-primary mr-2">
+                    <IconComponent className="size-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h6 className="text-base font-semibold">
                       {category.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    </h6>
+                    <p className="text-muted-foreground text-sm">
                       {category.description}
-                    </Typography>
-                  </Box>
-                  <Chip 
-                    label={`${Math.round(category.score * 100)}%`}
-                    size="small"
-                    sx={{ 
-                      bgcolor: getScoreColor(category.score), 
-                      color: 'white' 
-                    }}
-                  />
-                </Box>
+                    </p>
+                  </div>
+                  <Badge
+                    variant={getScoreVariant(category.score)}
+                    className="text-xs"
+                  >
+                    {Math.round(category.score * 100)}%
+                  </Badge>
+                </div>
 
-                <LinearProgress
-                  variant="determinate"
+                <Progress
                   value={category.score * 100}
-                  sx={{
-                    mb: 2,
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: getScoreColor(category.score)
-                    }
-                  }}
+                  className={cn(
+                    "mb-4 h-2",
+                    category.score >= 0.9 && "[&>div]:bg-primary",
+                    category.score >= 0.7 &&
+                      category.score < 0.9 &&
+                      "[&>div]:bg-secondary",
+                    category.score < 0.7 && "[&>div]:bg-destructive",
+                  )}
                 />
 
                 {category.suggestions.length > 0 && (
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
+                  <div>
+                    <p className="text-muted-foreground mb-1 text-xs">
                       Suggestions:
-                    </Typography>
-                    {category.suggestions.slice(0, 2).map((suggestion, index) => (
-                      <Typography key={index} variant="body2" sx={{ fontSize: '0.75rem', mt: 0.5 }}>
-                        • {suggestion}
-                      </Typography>
-                    ))}
+                    </p>
+                    {category.suggestions
+                      .slice(0, 2)
+                      .map((suggestion, index) => (
+                        <p key={index} className="mt-1 text-xs">
+                          • {suggestion}
+                        </p>
+                      ))}
                     {category.suggestions.length > 2 && (
-                      <Typography variant="caption" color="primary" sx={{ cursor: 'pointer' }}>
+                      <p className="text-primary mt-1 cursor-pointer text-xs">
                         +{category.suggestions.length - 2} more
-                      </Typography>
+                      </p>
                     )}
-                  </Box>
+                  </div>
                 )}
               </CardContent>
             </Card>
-          </Grid>
-        ))}
-      </Grid>
+          );
+        })}
+      </div>
 
       {/* Alerts and Recommendations */}
       {result.needsImprovement && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
+        <Alert
+          variant="default"
+          className="border-secondary/50 bg-secondary/10 mb-6"
+        >
+          <AlertTriangle className="text-secondary-foreground size-4" />
           <AlertTitle>Quality Improvements Recommended</AlertTitle>
-          Some aspects of your presentation could be enhanced. Review the suggestions above or use our auto-fix feature.
+          <AlertDescription>
+            Some aspects of your presentation could be enhanced. Review the
+            suggestions above or use our auto-fix feature.
+          </AlertDescription>
         </Alert>
       )}
 
       {metrics.overall >= 0.9 && (
-        <Alert severity="success" sx={{ mb: 3 }}>
+        <Alert
+          variant="default"
+          className="border-primary/50 bg-primary/10 mb-6"
+        >
+          <CheckCircle className="text-primary size-4" />
           <AlertTitle>Excellent Quality!</AlertTitle>
-          Your presentation meets high-quality standards and is ready for delivery.
+          <AlertDescription>
+            Your presentation meets high-quality standards and is ready for
+            delivery.
+          </AlertDescription>
         </Alert>
       )}
 
       {/* Action Buttons */}
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-4">
         {result.needsImprovement && (
           <>
             <Button
-              variant="contained"
-              startIcon={<AutoFixHighIcon />}
+              variant="default"
               onClick={onApplyAutoFixes}
-              sx={{ 
-                bgcolor: PRIMARY_GREEN,
-                '&:hover': { bgcolor: '#06A36D' }
-              }}
+              className="bg-primary hover:bg-primary/90"
             >
+              <Sparkles className="mr-2 size-4" />
               Apply Auto-Fixes
             </Button>
-            
+
             <Button
-              variant="outlined"
-              startIcon={<RefreshIcon />}
+              variant="outline"
               onClick={onRegenerateWithFeedback}
-              sx={{ 
-                borderColor: PRIMARY_GREEN,
-                color: PRIMARY_GREEN,
-                '&:hover': { 
-                  borderColor: '#06A36D',
-                  bgcolor: 'rgba(7, 179, 122, 0.04)'
-                }
-              }}
+              className="border-primary text-primary hover:bg-primary/10"
             >
+              <RefreshCw className="mr-2 size-4" />
               Regenerate with Feedback
             </Button>
           </>
         )}
-        
+
         <Button
-          variant="text"
+          variant="ghost"
           onClick={onViewDetails}
-          sx={{ color: PRIMARY_GREEN }}
+          className="text-primary"
         >
           View Detailed Report
         </Button>
-      </Box>
+      </div>
 
       {/* Quality Timeline */}
-      <Card sx={{ mt: 3 }}>
+      <Card className="mt-6">
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Validation Process
-          </Typography>
-          <Box sx={{ pl: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <CheckCircleIcon sx={{ color: PRIMARY_GREEN, mr: 2, fontSize: 20 }} />
-              <Typography variant="body2">Content accuracy verified</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <CheckCircleIcon sx={{ color: PRIMARY_GREEN, mr: 2, fontSize: 20 }} />
-              <Typography variant="body2">Design principles applied</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <CheckCircleIcon sx={{ color: PRIMARY_GREEN, mr: 2, fontSize: 20 }} />
-              <Typography variant="body2">User requirements validated</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <CheckCircleIcon sx={{ color: PRIMARY_GREEN, mr: 2, fontSize: 20 }} />
-              <Typography variant="body2">Accessibility standards checked</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <CheckCircleIcon sx={{ color: PRIMARY_GREEN, mr: 2, fontSize: 20 }} />
-              <Typography variant="body2">Performance optimized</Typography>
-            </Box>
-          </Box>
+          <h6 className="mb-4 text-lg font-semibold">Validation Process</h6>
+          <div className="pl-4">
+            <div className="mb-2 flex items-center">
+              <CheckCircle className="text-primary mr-4 size-5" />
+              <p className="text-sm">Content accuracy verified</p>
+            </div>
+            <div className="mb-2 flex items-center">
+              <CheckCircle className="text-primary mr-4 size-5" />
+              <p className="text-sm">Design principles applied</p>
+            </div>
+            <div className="mb-2 flex items-center">
+              <CheckCircle className="text-primary mr-4 size-5" />
+              <p className="text-sm">User requirements validated</p>
+            </div>
+            <div className="mb-2 flex items-center">
+              <CheckCircle className="text-primary mr-4 size-5" />
+              <p className="text-sm">Accessibility standards checked</p>
+            </div>
+            <div className="flex items-center">
+              <CheckCircle className="text-primary mr-4 size-5" />
+              <p className="text-sm">Performance optimized</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
-    </Box>
+    </div>
   );
-} 
+}

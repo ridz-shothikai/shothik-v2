@@ -1,4 +1,5 @@
-import { alpha, Grid2, Typography } from "@mui/material";
+"use client";
+import { cn } from "@/lib/utils";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import BgContainer from "./components/hero/BgContainer";
@@ -6,12 +7,7 @@ import BgContainer from "./components/hero/BgContainer";
 export default function WhyShothik() {
   return (
     <BgContainer
-      sx={{
-        py: 8,
-        px: { xs: 2, sm: 4, md: 6 },
-        backgroundColor: alpha("#00A76F", 0.08),
-      }}
-      // image='url(/home/bg.png)'
+      className={cn("bg-primary/8", "py-8 md:py-16", "px-4 sm:px-6 md:px-12")}
     >
       <motion.div
         initial={{ y: 100, opacity: 0 }}
@@ -19,66 +15,60 @@ export default function WhyShothik() {
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
-        <Typography
-          fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-          align="center"
-          gutterBottom
-          fontWeight="bold"
-          marginBottom={{ xs: 2, sm: 4, md: 6, lg: 8, xl: 10 }}
-          marginTop={{ xs: 2, sm: 6, md: 8, lg: 8, xl: 10 }}
+        <h2
+          className={cn(
+            "text-center font-bold",
+            "text-[1.8rem] sm:text-[2rem] md:text-[3rem] lg:text-[3rem]",
+            "mb-4 sm:mb-8 md:mb-12 lg:mb-16 xl:mb-20",
+            "mt-4 sm:mt-12 md:mt-16 lg:mt-16 xl:mt-20",
+          )}
         >
           Why Choose{" "}
-          <Typography
-            component="span"
-            variant="inherit"
-            style={{ color: "#00A76F" }}
-            sx={{
-              background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+          <span
+            className={cn(
+              "from-primary via-primary to-primary/70 bg-gradient-to-br",
+              "bg-clip-text text-transparent",
+            )}
           >
             Shothik AI ?
-          </Typography>
-        </Typography>
+          </span>
+        </h2>
       </motion.div>
 
       {/* Boost productivity */}
-      <Grid2
-        container
-        spacing={{ xs: 2, sm: 3, md: 4 }}
-        alignItems="center"
-        justifyContent="center"
-        mb={{ xs: 4, sm: 5, md: 6 }}
+      <div
+        className={cn(
+          "grid grid-cols-12 gap-4 sm:gap-6 md:gap-8",
+          "items-center justify-center",
+          "mb-8 sm:mb-10 md:mb-12",
+        )}
       >
-        <Grid2 size={{ xs: 12, sm: 6 }}>
+        <div className="col-span-12 sm:col-span-6">
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              fontWeight={700}
-              marginLeft={0.2}
-              fontSize={{ xs: 20, sm: 24, md: 28 }}
-              my={2}
+            <p
+              className={cn(
+                "text-muted-foreground font-bold",
+                "ml-0.5",
+                "text-[20px] sm:text-[24px] md:text-[28px]",
+                "my-4",
+              )}
             >
               01
-            </Typography>
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{
-                fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                lineHeight: 1.2,
-              }}
+            </p>
+            <h3
+              className={cn(
+                "font-bold",
+                "text-[1.2rem] sm:text-[1.3rem] md:text-[2rem]",
+                "leading-tight",
+              )}
             >
               Boost Productivity
-            </Typography>
+            </h3>
           </motion.div>
           <motion.div
             initial={{ x: -100, opacity: 0 }}
@@ -86,25 +76,18 @@ export default function WhyShothik() {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginTop: 2 }}
-            >
+            <p className={cn("text-muted-foreground", "mt-4")}>
               Streamline your workflow with AI-powered tools that handle complex
               tasks, letting you focus on what matters most.
-            </Typography>
+            </p>
           </motion.div>
-        </Grid2>
-        <Grid2
-          size={{ xs: 12, sm: 6 }}
-          sx={{
-            position: "relative",
-            marginBottom: { xs: 4, sm: 0 },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        </div>
+        <div
+          className={cn(
+            "col-span-12 sm:col-span-6",
+            "relative mb-8 sm:mb-0",
+            "flex items-center justify-center",
+          )}
         >
           <motion.div
             initial={{ x: 100, opacity: 0 }}
@@ -115,36 +98,29 @@ export default function WhyShothik() {
             <Image
               src="/home/why-1.png"
               alt="AI Detector Illustration"
-              style={{
-                width: "100%",
-                maxWidth: "400px",
-                height: "auto",
-                margin: "auto",
-              }}
+              className={cn("mx-auto h-auto w-full max-w-[400px]")}
               width={400}
               height={400}
             />
           </motion.div>
-        </Grid2>
-      </Grid2>
+        </div>
+      </div>
 
       {/* Perfect Your Language */}
-      <Grid2
-        container
-        spacing={{ xs: 2, sm: 3, md: 4 }}
-        alignItems="center"
-        justifyContent="center"
-        mb={{ xs: 4, sm: 5, md: 6 }}
+      <div
+        className={cn(
+          "grid grid-cols-12 gap-4 sm:gap-6 md:gap-8",
+          "items-center justify-center",
+          "mb-8 sm:mb-10 md:mb-12",
+        )}
       >
-        <Grid2
-          size={{ xs: 12, sm: 6 }}
-          order={{ xs: 2, sm: 1 }}
-          sx={{
-            marginBottom: { xs: 4, sm: 0 },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <div
+          className={cn(
+            "col-span-12 sm:col-span-6",
+            "order-2 sm:order-1",
+            "mb-8 sm:mb-0",
+            "flex items-center justify-center",
+          )}
         >
           <motion.div
             initial={{ x: -100, opacity: 0 }}
@@ -157,42 +133,36 @@ export default function WhyShothik() {
               height={400}
               src="/home/why-2.png"
               alt="Bypass GPT"
-              style={{
-                width: "100%",
-                maxWidth: "400px",
-                height: "auto",
-                margin: "auto",
-              }}
+              className={cn("mx-auto h-auto w-full max-w-[400px]")}
             />
           </motion.div>
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 6 }} order={{ xs: 1, sm: 2 }}>
+        </div>
+        <div className={cn("col-span-12 sm:col-span-6", "order-1 sm:order-2")}>
           <motion.div
             initial={{ x: 100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              fontWeight={700}
-              marginLeft={0.2}
-              fontSize={{ xs: 20, sm: 24, md: 28 }}
-              my={2}
+            <p
+              className={cn(
+                "text-muted-foreground font-bold",
+                "ml-0.5",
+                "text-[20px] sm:text-[24px] md:text-[28px]",
+                "my-4",
+              )}
             >
               02
-            </Typography>
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{
-                fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                lineHeight: 1.2,
-              }}
+            </p>
+            <h3
+              className={cn(
+                "font-bold",
+                "text-[1.2rem] sm:text-[1.3rem] md:text-[2rem]",
+                "leading-tight",
+              )}
             >
               Perfect Your Language
-            </Typography>
+            </h3>
           </motion.div>
           <motion.div
             initial={{ x: 100, opacity: 0 }}
@@ -200,53 +170,48 @@ export default function WhyShothik() {
             transition={{ duration: 0.6, delay: 0.6 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginTop: 2 }}
-            >
+            <p className={cn("text-muted-foreground", "mt-4")}>
               From grammar fixes to flawless translations, Shothik.ai ensures
               every word you write is polished and impactful.
-            </Typography>
+            </p>
           </motion.div>
-        </Grid2>
-      </Grid2>
+        </div>
+      </div>
 
       {/* Tailored to Your Needs */}
-      <Grid2
-        container
-        spacing={{ xs: 2, sm: 3, md: 4 }}
-        alignItems="center"
-        justifyContent="center"
-        mb={{ xs: 4, sm: 5, md: 6 }}
+      <div
+        className={cn(
+          "grid grid-cols-12 gap-4 sm:gap-6 md:gap-8",
+          "items-center justify-center",
+          "mb-8 sm:mb-10 md:mb-12",
+        )}
       >
-        <Grid2 size={{ xs: 12, sm: 6 }}>
+        <div className="col-span-12 sm:col-span-6">
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              fontWeight={700}
-              marginLeft={0.2}
-              fontSize={{ xs: 20, sm: 22, md: 24 }}
-              my={2}
+            <p
+              className={cn(
+                "text-muted-foreground font-bold",
+                "ml-0.5",
+                "text-[20px] sm:text-[22px] md:text-[24px]",
+                "my-4",
+              )}
             >
               03
-            </Typography>
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              sx={{
-                fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                lineHeight: 1.2,
-              }}
+            </p>
+            <h3
+              className={cn(
+                "font-bold",
+                "text-[1.2rem] sm:text-[1.3rem] md:text-[2rem]",
+                "leading-tight",
+              )}
             >
               Tailored to Your Needs
-            </Typography>
+            </h3>
           </motion.div>
           <motion.div
             initial={{ x: -100, opacity: 0 }}
@@ -254,25 +219,18 @@ export default function WhyShothik() {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginTop: 2 }}
-            >
+            <p className={cn("text-muted-foreground", "mt-4")}>
               No matter your industry or goal, our features adapt to your unique
               requirements, making Shothik.ai your versatile language partner.
-            </Typography>
+            </p>
           </motion.div>
-        </Grid2>
-        <Grid2
-          size={{ xs: 12, sm: 6 }}
-          sx={{
-            position: "relative",
-            marginBottom: { xs: 4, sm: 0 },
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        </div>
+        <div
+          className={cn(
+            "col-span-12 sm:col-span-6",
+            "relative mb-8 sm:mb-0",
+            "flex items-center justify-center",
+          )}
         >
           <motion.div
             initial={{ x: 100, opacity: 0 }}
@@ -285,16 +243,11 @@ export default function WhyShothik() {
               height={400}
               src="/home/why-3.png"
               alt="AI Detector Illustration"
-              style={{
-                width: "100%",
-                maxWidth: "400px",
-                height: "auto",
-                margin: "auto",
-              }}
+              className={cn("mx-auto h-auto w-full max-w-[400px]")}
             />
           </motion.div>
-        </Grid2>
-      </Grid2>
+        </div>
+      </div>
     </BgContainer>
   );
 }

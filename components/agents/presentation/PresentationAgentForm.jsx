@@ -1,103 +1,173 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { Controller, useForm } from "react-hook-form";
 
 const STYLE_OPTIONS = [
-  { value: 'business', label: 'Business' },
-  { value: 'educational', label: 'Educational' },
-  { value: 'creative', label: 'Creative' },
-  { value: 'minimal', label: 'Minimal' },
+  { value: "business", label: "Business" },
+  { value: "educational", label: "Educational" },
+  { value: "creative", label: "Creative" },
+  { value: "minimal", label: "Minimal" },
 ];
 
 const DELIVERY_OPTIONS = [
-  { value: 'live', label: 'Live Presentation' },
-  { value: 'export-pdf', label: 'Export as PDF' },
-  { value: 'export-ppt', label: 'Export as PPT' },
-  { value: 'export-html', label: 'Export as HTML' },
+  { value: "live", label: "Live Presentation" },
+  { value: "export-pdf", label: "Export as PDF" },
+  { value: "export-ppt", label: "Export as PPT" },
+  { value: "export-html", label: "Export as HTML" },
 ];
 
 const PresentationAgentForm = ({ onSubmit, defaultValues = {} }) => {
-  const { register, handleSubmit, formState: { errors, isValid }, reset } = useForm({
-    mode: 'onChange',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+    control,
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
-      name: '',
-      description: '',
-      topic: '',
-      style: '',
-      delivery: '',
+      name: "",
+      description: "",
+      topic: "",
+      style: "",
+      delivery: "",
       ...defaultValues,
     },
   });
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <TextField
-        label="Presentation Name"
-        {...register('name', { required: 'Presentation name is required' })}
-        error={!!errors.name}
-        helperText={errors.name?.message}
-        fullWidth
-      />
-      <TextField
-        label="Description"
-        {...register('description')}
-        fullWidth
-        multiline
-        minRows={2}
-      />
-      <TextField
-        label="Content / Topic"
-        {...register('topic', { required: 'Content or topic is required' })}
-        error={!!errors.topic}
-        helperText={errors.topic?.message}
-        fullWidth
-        multiline
-        minRows={2}
-      />
-      <FormControl fullWidth error={!!errors.style}>
-        <InputLabel id="style-label">Style / Theme</InputLabel>
-        <Select
-          labelId="style-label"
-          label="Style / Theme"
-          defaultValue=""
-          {...register('style', { required: 'Style selection is required' })}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <div className="space-y-2">
+        <Label htmlFor="name" className={cn(errors.name && "text-destructive")}>
+          Presentation Name
+        </Label>
+        <Input
+          id="name"
+          {...register("name", { required: "Presentation name is required" })}
+          className={cn(
+            errors.name && "border-destructive focus-visible:ring-destructive",
+          )}
+        />
+        {errors.name && (
+          <p className="text-destructive text-sm">{errors.name.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          {...register("description")}
+          className="min-h-[80px]"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label
+          htmlFor="topic"
+          className={cn(errors.topic && "text-destructive")}
         >
-          {STYLE_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-          ))}
-        </Select>
-        {errors.style && <Box sx={{ color: 'error.main', fontSize: 12, mt: 0.5 }}>{errors.style.message}</Box>}
-      </FormControl>
-      <FormControl fullWidth error={!!errors.delivery}>
-        <InputLabel id="delivery-label">Delivery Option</InputLabel>
-        <Select
-          labelId="delivery-label"
-          label="Delivery Option"
-          defaultValue=""
-          {...register('delivery', { required: 'Delivery option is required' })}
-        >
-          {DELIVERY_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-          ))}
-        </Select>
-        {errors.delivery && <Box sx={{ color: 'error.main', fontSize: 12, mt: 0.5 }}>{errors.delivery.message}</Box>}
-      </FormControl>
-      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-        <Button type="submit" variant="contained" color="primary" disabled={!isValid}>
+          Content / Topic
+        </Label>
+        <Textarea
+          id="topic"
+          {...register("topic", { required: "Content or topic is required" })}
+          className={cn(
+            "min-h-[80px]",
+            errors.topic && "border-destructive focus-visible:ring-destructive",
+          )}
+        />
+        {errors.topic && (
+          <p className="text-destructive text-sm">{errors.topic.message}</p>
+        )}
+      </div>
+      <Controller
+        name="style"
+        control={control}
+        rules={{ required: "Style selection is required" }}
+        render={({ field, fieldState: { error } }) => (
+          <div className="space-y-2">
+            <Label htmlFor="style" className={cn(error && "text-destructive")}>
+              Style / Theme
+            </Label>
+            <Select value={field.value || ""} onValueChange={field.onChange}>
+              <SelectTrigger
+                id="style"
+                className={cn(
+                  "w-full",
+                  error && "border-destructive focus-visible:ring-destructive",
+                )}
+              >
+                <SelectValue placeholder="Select a style" />
+              </SelectTrigger>
+              <SelectContent>
+                {STYLE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {error && (
+              <p className="text-destructive text-sm">{error.message}</p>
+            )}
+          </div>
+        )}
+      />
+      <Controller
+        name="delivery"
+        control={control}
+        rules={{ required: "Delivery option is required" }}
+        render={({ field, fieldState: { error } }) => (
+          <div className="space-y-2">
+            <Label
+              htmlFor="delivery"
+              className={cn(error && "text-destructive")}
+            >
+              Delivery Option
+            </Label>
+            <Select value={field.value || ""} onValueChange={field.onChange}>
+              <SelectTrigger
+                id="delivery"
+                className={cn(
+                  "w-full",
+                  error && "border-destructive focus-visible:ring-destructive",
+                )}
+              >
+                <SelectValue placeholder="Select a delivery option" />
+              </SelectTrigger>
+              <SelectContent>
+                {DELIVERY_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {error && (
+              <p className="text-destructive text-sm">{error.message}</p>
+            )}
+          </div>
+        )}
+      />
+      <div className="mt-2 flex gap-4">
+        <Button type="submit" variant="default" disabled={!isValid}>
           Save
         </Button>
-        <Button type="button" variant="outlined" color="secondary" onClick={() => reset()}>
+        <Button type="button" variant="outline" onClick={() => reset()}>
           Reset
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </form>
   );
 };
 
-export default PresentationAgentForm; 
+export default PresentationAgentForm;

@@ -1,98 +1,64 @@
 "use client";
 
-import { Box, Button, Container, styled, Typography } from "@mui/material";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-
-const GuaranteeSection = styled(Box)({
-  backgroundColor: "#111827", // gray-900
-  borderRadius: "16px",
-  padding: "48px 32px",
-  textAlign: "center",
-  marginTop: "64px",
-});
-
-const GuaranteeIconContainer = styled(Box)({
-  width: "64px",
-  height: "64px",
-  backgroundColor: "#059669", // emerald-600
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "0 auto 24px",
-});
+import { ArrowRight, CheckCircle } from "lucide-react";
 
 export default function Guarantee() {
   return (
-    <Container maxWidth="xl">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <GuaranteeSection sx={{ p: { xs: 4, lg: 6 } }}>
-          <Box sx={{ maxWidth: "768px", mx: "auto" }}>
-            <GuaranteeIconContainer>
-              <CheckCircle size={32} color="white" />
-            </GuaranteeIconContainer>
+        <div
+          className={cn(
+            "bg-muted rounded-2xl p-8 text-center lg:p-12",
+            "mt-16",
+          )}
+        >
+          <div className="mx-auto max-w-3xl">
+            <div className="bg-primary mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
+              <CheckCircle className="text-primary-foreground h-8 w-8" />
+            </div>
 
-            <Typography
-              variant="h3"
-              sx={{
-                fontSize: { xs: "1.5rem", sm: "1.875rem" },
-                fontWeight: 700,
-                color: "#ffffff",
-                mb: 2,
-              }}
+            <h3
+              className={cn(
+                "text-foreground mb-4 text-2xl font-bold",
+                "sm:text-3xl",
+              )}
             >
               Your Success is Guaranteed
-            </Typography>
+            </h3>
 
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: "1.25rem",
-                color: "#d1d5db", // gray-300
-                lineHeight: 1.6,
-                mb: 4,
-                fontWeight: 400,
-              }}
+            <p
+              className={cn(
+                "text-muted-foreground mb-8 text-xl leading-relaxed font-normal",
+              )}
             >
               If your improved paper doesn&apos;t meet your expectations,
               we&apos;ll revise it free or refund your credits. No questions
               asked.
-            </Typography>
+            </p>
 
             <Button
-              size="large"
+              size="lg"
               onClick={() => console.log("Guarantee CTA clicked")}
-              sx={{
-                backgroundColor: "#059669", // emerald-600
-                color: "#ffffff",
-                px: 4,
-                py: 2,
-                fontSize: "1.125rem",
-                fontWeight: 600,
-                borderRadius: "8px",
-                boxShadow:
-                  "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                textTransform: "none",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  backgroundColor: "#047857", // emerald-700
-                  boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  transform: "scale(1.05)",
-                },
-              }}
-              endIcon={<ArrowRight size={20} />}
+              className={cn(
+                "h-auto px-8 py-3 text-lg font-semibold shadow-lg",
+                "transition-all duration-300",
+                "hover:scale-105 hover:shadow-xl",
+              )}
             >
               Try Risk-Free Today
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-          </Box>
-        </GuaranteeSection>
+          </div>
+        </div>
       </motion.div>
-    </Container>
+    </div>
   );
 }

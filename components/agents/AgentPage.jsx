@@ -1,29 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ChatIcon from "@mui/icons-material/Chat";
-import DownloadIcon from "@mui/icons-material/Download";
-import GroupIcon from "@mui/icons-material/Group";
-import MicIcon from "@mui/icons-material/Mic";
-import PersonIcon from "@mui/icons-material/Person";
-import PhoneIcon from "@mui/icons-material/Phone";
-import SendIcon from "@mui/icons-material/Send";
-import SlideshowIcon from "@mui/icons-material/Slideshow";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CircularProgress from "@mui/material/CircularProgress";
-import Container from "@mui/material/Container";
-import IconButton from "@mui/material/IconButton";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import {
+  ArrowLeft,
+  Bot,
+  Download,
+  MessageCircle,
+  Mic,
+  Phone,
+  Presentation,
+  Send,
+  Table,
+  User,
+  Users,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 // New imports for 7-agent system
+import { Button } from "../../src/components/ui/button";
+import { Card, CardContent } from "../../src/components/ui/card";
+import { Spinner } from "../../src/components/ui/spinner";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../src/components/ui/tabs";
+import { Textarea } from "../../src/components/ui/textarea";
 import {
   useFetchLogsQuery,
   useFetchSlidesQuery,
@@ -33,20 +34,18 @@ import InteractiveChatMessage from "./shared/InteractiveChatMessage";
 import PlanningProgressIndicator from "./shared/PlanningProgressIndicator";
 import QualityValidationPanel from "./shared/QualityValidationPanel";
 
-const PRIMARY_GREEN = "#07B37A";
-
 const NAVIGATION_ITEMS = [
-  { id: "slides", label: "AI Slides", icon: <SlideshowIcon />, isNew: true },
-  { id: "sheets", label: "AI Sheets", icon: <TableChartIcon />, isNew: true },
+  { id: "slides", label: "AI Slides", icon: Presentation, isNew: true },
+  { id: "sheets", label: "AI Sheets", icon: Table, isNew: true },
   {
     id: "download",
     label: "Download For Me",
-    icon: <DownloadIcon />,
+    icon: Download,
     isNew: true,
   },
-  { id: "chat", label: "AI Chat", icon: <ChatIcon /> },
-  { id: "call", label: "Call For Me", icon: <PhoneIcon /> },
-  { id: "agents", label: "All Agents", icon: <GroupIcon /> },
+  { id: "chat", label: "AI Chat", icon: MessageCircle },
+  { id: "call", label: "Call For Me", icon: Phone },
+  { id: "agents", label: "All Agents", icon: Users },
 ];
 
 // Defines the order of phases for progress tracking.
@@ -308,121 +307,37 @@ export default function AgentPage({ specificAgent, presentationId }) {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "white",
-        color: "#333",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="bg-background text-foreground flex min-h-screen flex-col">
       {/* Fixed Header */}
-      <Box
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "80px",
-          bgcolor: "white",
-          borderBottom: "1px solid #e0e0e0",
-          zIndex: 1001,
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <Container
-          maxWidth="lg"
-          sx={{ height: "100%", display: "flex", alignItems: "center" }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              width: "100%",
-            }}
-          >
-            <IconButton
+      <div className="bg-background fixed top-0 right-0 left-0 z-[1001] flex h-20 items-center border-b shadow-sm">
+        <div className="mx-auto flex h-full w-full max-w-6xl items-center px-4">
+          <div className="flex w-full items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => router.push("/agents")}
-              sx={{ color: "#666", "&:hover": { color: PRIMARY_GREEN } }}
+              className="text-muted-foreground hover:text-primary"
             >
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 700,
-                background: `linear-gradient(45deg, ${PRIMARY_GREEN}, #00ff88)`,
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                flex: 1,
-              }}
-            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="from-primary to-primary/60 flex-1 bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
               Shothik{" "}
               {currentAgentType === "presentation" ? "Presentation" : "Super"}{" "}
               Agent
-            </Typography>
-            <Box
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                bgcolor: PRIMARY_GREEN,
-                animation: "pulse 2s infinite",
-                "@keyframes pulse": {
-                  "0%": { opacity: 1 },
-                  "50%": { opacity: 0.5 },
-                  "100%": { opacity: 1 },
-                },
-              }}
-            />
-          </Box>
-        </Container>
-      </Box>
+            </h1>
+            <div className="bg-primary h-2 w-2 animate-pulse rounded-full" />
+          </div>
+        </div>
+      </div>
 
       {/* Content Area */}
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          overflow: "hidden",
-          height: "calc(100vh - 220px)",
-          marginTop: "80px",
-          marginBottom: "140px",
-        }}
-      >
+      <div className="mt-20 mb-[140px] flex h-[calc(100vh-220px)] flex-1 overflow-hidden">
         {/* Left Side - Chat Area */}
-        <Box
-          sx={{
-            flex: { xs: 1, md: 1 },
-            display: "flex",
-            flexDirection: "column",
-            borderRight: { xs: "none", md: "1px solid #e0e0e0" },
-            height: "100%",
-            // overflow: 'hidden',
-            maxHeight: "100vh",
-            overflowY: "auto",
-            position: "relative",
-          }}
-        >
+        <div className="relative flex h-full max-h-screen flex-1 flex-col overflow-y-auto md:border-r">
           {/* Planning Progress - now driven by real data */}
           {currentAgentType === "presentation" &&
             (logsData?.data?.length > 0 || isLoading) && (
-              <Box
-                sx={{
-                  flexShrink: 0,
-                  bgcolor: "#f8f9fa",
-                  borderBottom: "1px solid #e0e0e0",
-                  p: 2,
-                  position: "sticky",
-                  top: 0,
-                  zIndex: 100,
-                }}
-              >
+              <div className="bg-muted sticky top-0 z-[100] flex-shrink-0 border-b p-4">
                 <PlanningProgressIndicator
                   currentPhase={currentPhase}
                   completedPhases={completedPhases}
@@ -430,60 +345,22 @@ export default function AgentPage({ specificAgent, presentationId }) {
                     isLoading ? "Processing..." : "Completed"
                   }
                 />
-              </Box>
+              </div>
             )}
 
           {/* Chat Messages */}
-          <Box
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              overflowX: "hidden",
-              bgcolor: "#f8f9fa",
-              height: "100%",
-              position: "relative",
-              scrollBehavior: "smooth",
-              "&::-webkit-scrollbar": { width: "8px" },
-              "&::-webkit-scrollbar-track": {
-                background: "#f1f1f1",
-                borderRadius: "4px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                background: "#c1c1c1",
-                borderRadius: "4px",
-                "&:hover": { background: "#a8a8a8" },
-              },
-              scrollbarWidth: "thin",
-              scrollbarColor: "#c1c1c1 #f1f1f1",
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-                minHeight: "100%",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+          <div className="bg-muted [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/30 relative h-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth [scrollbar-color:hsl(var(--muted-foreground)/0.2)_hsl(var(--muted))] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-track]:rounded">
+            <div className="flex min-h-full flex-col p-6">
               {chatHistory.length === 0 && realLogs.length === 0 && (
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    minHeight: "400px",
-                  }}
-                >
-                  <SmartToyIcon sx={{ fontSize: 64, color: "#ddd", mb: 2 }} />
-                  <Typography color="#666">
+                <div className="flex min-h-[400px] flex-1 flex-col items-center justify-center text-center">
+                  <Bot className="text-muted-foreground mb-4 h-16 w-16" />
+                  <p className="text-muted-foreground">
                     Start a conversation with{" "}
                     {currentAgentType === "presentation"
                       ? "Presentation Agent"
                       : "Super Agent"}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
 
               {/* Display user's sent messages */}
@@ -493,114 +370,61 @@ export default function AgentPage({ specificAgent, presentationId }) {
 
               {/* Display real logs from the API */}
               {realLogs.length > 0 && (
-                <Box sx={{ mt: 2, pb: 10 }}>
+                <div className="mt-4 pb-10">
                   {realLogs.map((log, index) => (
-                    <Box
+                    <div
                       key={index}
-                      sx={{
-                        mb: 2,
-                        p: 2,
-                        bgcolor: "#e3f2fd",
-                        borderRadius: 2,
-                        borderLeft: "4px solid #2196f3",
-                      }}
+                      className="bg-primary/5 border-primary mb-4 rounded-lg border-l-4 p-4"
                     >
-                      <Typography variant="body2" color="text.secondary">
+                      <p className="text-muted-foreground mb-2 text-sm">
                         {new Date(log.timestamp).toLocaleTimeString()} -{" "}
                         <strong>{log.agent_name}</strong>
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-                      >
+                      </p>
+                      <p className="text-base break-words whitespace-pre-wrap">
                         {log.parsed_output}
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
                   ))}
-                </Box>
+                </div>
               )}
 
               {isLoading && (
-                <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
-                  <CircularProgress size={24} />
-                  <Typography sx={{ ml: 2 }}>Processing...</Typography>
-                </Box>
+                <div className="flex items-center justify-center p-4">
+                  <Spinner className="h-6 w-6" />
+                  <p className="ml-4">Processing...</p>
+                </div>
               )}
 
               <div ref={chatEndRef} />
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
 
         {/* Right Side - Preview Panel */}
-        <Box
-          sx={{
-            width: { xs: "0px", md: "40%" },
-            display: { xs: "none", md: "flex" },
-            flexDirection: "column",
-            bgcolor: "white",
-            // Make the panel's height equal to the viewport height minus the header
-            height: "calc(100vh - 80px)",
-            // Make the panel sticky to the top, just below the header
-            position: "sticky",
-            top: "20px",
-            // Allow this panel to scroll internally if its content overflows
-            overflowY: "auto",
-            // Add scrollbar styling for consistency
-            "&::-webkit-scrollbar": { width: "8px" },
-            "&::-webkit-scrollbar-track": {
-              background: "#f1f1f1",
-              borderRadius: "4px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#c1c1c1",
-              borderRadius: "4px",
-              "&:hover": { background: "#a8a8a8" },
-            },
-            scrollbarWidth: "thin",
-            scrollbarColor: "#c1c1c1 #f1f1f1",
-          }}
-        >
+        <div className="bg-background [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:hover:bg-muted-foreground/30 sticky top-5 hidden h-[calc(100vh-80px)] flex-col overflow-y-auto [scrollbar-color:hsl(var(--muted-foreground)/0.2)_hsl(var(--muted))] [scrollbar-width:thin] md:flex md:w-[40%] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-track]:rounded">
           {/* Preview Content */}
-          <Box
-            sx={{
-              flex: 1,
-            }}
-          >
-            <Box sx={{ p: 3, minHeight: "100%", pb: 6 }}>
+          <div className="flex-1">
+            <div className="min-h-full p-6 pb-12">
               {previewTab === "preview" && (
-                <Box>
+                <div>
                   {currentAgentType === "presentation" ? (
                     <>
-                      <Box
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="h6" color="#333">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h2 className="text-xl font-semibold">
                           Your Presentation
-                        </Typography>
-                        <Typography color="#666">
+                        </h2>
+                        <p className="text-muted-foreground">
                           {slidesData?.data?.length || 0} slides
-                        </Typography>
-                      </Box>
+                        </p>
+                      </div>
 
                       {slidesLoading ? (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            p: 4,
-                          }}
-                        >
-                          <CircularProgress />
-                        </Box>
+                        <div className="flex justify-center p-8">
+                          <Spinner className="h-8 w-8" />
+                        </div>
                       ) : slidesData?.data?.length > 0 ? (
                         <>
-                          <Box>
+                          <div>
                             {slidesData?.data.map((slide, index) => {
                               // Default to 'preview' tab if no specific tab is set for this slide
                               const activeSlideTab =
@@ -609,190 +433,134 @@ export default function AgentPage({ specificAgent, presentationId }) {
                               return (
                                 <Card
                                   key={slide.slide_index}
-                                  sx={{
-                                    mb: 3,
-                                    boxShadow: 2,
-                                    borderRadius: 2,
-                                    overflow: "hidden",
-                                  }}
+                                  className="mb-6 overflow-hidden shadow-md"
                                 >
-                                  <CardContent sx={{ p: "0 !important" }}>
+                                  <CardContent className="p-0">
                                     {/* Tabs for each individual slide */}
-                                    <Box
-                                      sx={{
-                                        borderBottom: 1,
-                                        borderColor: "divider",
-                                        bgcolor: "#fafafa",
-                                        px: 2,
-                                      }}
+                                    <Tabs
+                                      value={activeSlideTab}
+                                      onValueChange={(newValue) =>
+                                        handleSlideTabChange(index, newValue)
+                                      }
+                                      aria-label={`Tabs for slide ${index + 1}`}
                                     >
-                                      <Tabs
-                                        value={activeSlideTab}
-                                        onChange={(e, newValue) =>
-                                          handleSlideTabChange(index, newValue)
-                                        }
-                                        aria-label={`Tabs for slide ${index + 1}`}
-                                        sx={{
-                                          "& .MuiTabs-indicator": {
-                                            bgcolor: PRIMARY_GREEN,
-                                          },
-                                          "& .Mui-selected": {
-                                            color: `${PRIMARY_GREEN} !important`,
-                                          },
-                                        }}
-                                      >
-                                        <Tab
-                                          label={`Preview`}
-                                          value="preview"
-                                        />
-                                        <Tab
-                                          label="Thinking"
-                                          value="thinking"
-                                        />
-                                        <Tab label="Code" value="code" />
-                                      </Tabs>
-                                    </Box>
+                                      <div className="bg-muted border-b px-4">
+                                        <TabsList className="bg-transparent">
+                                          <TabsTrigger value="preview">
+                                            Preview
+                                          </TabsTrigger>
+                                          <TabsTrigger value="thinking">
+                                            Thinking
+                                          </TabsTrigger>
+                                          <TabsTrigger value="code">
+                                            Code
+                                          </TabsTrigger>
+                                        </TabsList>
+                                      </div>
 
-                                    {/* Conditional content based on the active tab for this slide */}
-                                    <Box sx={{ p: 2 }}>
-                                      {activeSlideTab === "preview" && (
-                                        <Box
-                                          sx={{
-                                            height: "300px",
-                                            position: "relative",
-                                            width: "100%",
-                                          }}
+                                      {/* Conditional content based on the active tab for this slide */}
+                                      <div className="p-4">
+                                        <TabsContent
+                                          value="preview"
+                                          className="m-0"
                                         >
-                                          <iframe
-                                            srcDoc={slide.body}
-                                            style={{
-                                              width: "333.33%",
-                                              height: "333.33%",
-                                              transform: "scale(0.3)",
-                                              transformOrigin: "top left",
-                                              position: "absolute",
-                                              top: 0,
-                                              left: 0,
-                                              border: "none",
-                                              display: "block",
-                                              pointerEvents: "none",
-                                            }}
-                                            title={`Slide ${slide.slide_index + 1}`}
-                                          />
-                                        </Box>
-                                      )}
-                                      {activeSlideTab === "thinking" && (
-                                        <Box
-                                          sx={{
-                                            p: 2,
-                                            minHeight: "300px",
-                                            maxHeight: "300px",
-                                            bgcolor: "#f8f9fa",
-                                            borderRadius: 1,
-                                            overflowY: "auto",
-                                          }}
+                                          <div className="relative h-[300px] w-full">
+                                            <iframe
+                                              srcDoc={slide.body}
+                                              className="pointer-events-none absolute top-0 left-0 block border-none"
+                                              style={{
+                                                width: "333.33%",
+                                                height: "333.33%",
+                                                transform: "scale(0.3)",
+                                                transformOrigin: "top left",
+                                              }}
+                                              title={`Slide ${slide.slide_index + 1}`}
+                                            />
+                                          </div>
+                                        </TabsContent>
+                                        <TabsContent
+                                          value="thinking"
+                                          className="m-0"
                                         >
-                                          <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                          >
-                                            {slide?.thought}
-                                          </Typography>
-                                        </Box>
-                                      )}
-                                      {activeSlideTab === "code" && (
-                                        <Box sx={{ minHeight: "300px" }}>
-                                          <pre
-                                            style={{
-                                              backgroundColor: "#f8f9fa",
-                                              color: "#333",
-                                              padding: 16,
-                                              borderRadius: 8,
-                                              overflow: "auto",
-                                              border: "1px solid #e0e0e0",
-                                              maxHeight: "300px",
-                                            }}
-                                          >
-                                            <code>{`\n${slide.body}`}</code>
-                                          </pre>
-                                        </Box>
-                                      )}
-                                    </Box>
+                                          <div className="bg-muted max-h-[300px] min-h-[300px] overflow-y-auto rounded-md p-4">
+                                            <p className="text-muted-foreground text-sm">
+                                              {slide?.thought}
+                                            </p>
+                                          </div>
+                                        </TabsContent>
+                                        <TabsContent
+                                          value="code"
+                                          className="m-0"
+                                        >
+                                          <div className="min-h-[300px]">
+                                            <pre className="bg-muted text-foreground max-h-[300px] overflow-auto rounded-lg border p-4">
+                                              <code>{`\n${slide.body}`}</code>
+                                            </pre>
+                                          </div>
+                                        </TabsContent>
+                                      </div>
+                                    </Tabs>
                                   </CardContent>
                                 </Card>
                               );
                             })}
-                          </Box>
+                          </div>
                         </>
                       ) : (
-                        <Card
-                          sx={{
-                            bgcolor: "#f8f9fa",
-                            height: 400,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            border: "1px solid #e0e0e0",
-                            boxShadow: 1,
-                            mb: 4,
-                          }}
-                        >
-                          <CardContent sx={{ textAlign: "center" }}>
-                            <Typography
-                              variant="h4"
-                              sx={{ color: PRIMARY_GREEN, mb: 2 }}
-                            >
+                        <Card className="bg-muted mb-8 flex h-[400px] items-center justify-center border shadow-sm">
+                          <CardContent className="text-center">
+                            <h3 className="text-primary mb-4 text-3xl font-semibold">
                               Your Presentation Title
-                            </Typography>
-                            <Typography variant="h6" color="#666">
+                            </h3>
+                            <p className="text-muted-foreground text-lg">
                               Generated slides will appear here
-                            </Typography>
+                            </p>
                           </CardContent>
                         </Card>
                       )}
                     </>
                   ) : (
-                    <Box sx={{ textAlign: "center", mt: 8 }}>
-                      <Typography color="#666">
+                    <div className="mt-16 text-center">
+                      <p className="text-muted-foreground">
                         Agent output will appear here
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
                   )}
-                </Box>
+                </div>
               )}
 
               {previewTab === "blueprint" && (
-                <Box sx={{ pb: 4 }}>
+                <div className="pb-8">
                   {presentationBlueprint ? (
                     <Card>
                       <CardContent>
-                        <Typography variant="h6" gutterBottom>
+                        <h3 className="mb-4 text-xl font-semibold">
                           Presentation Blueprint
-                        </Typography>
-                        <Typography>
+                        </h3>
+                        <p className="mb-2">
                           <strong>Slides:</strong>{" "}
                           {presentationBlueprint.slideCount}
-                        </Typography>
-                        <Typography>
+                        </p>
+                        <p className="mb-2">
                           <strong>Duration:</strong>{" "}
                           {presentationBlueprint.duration}
-                        </Typography>
-                        <Typography>
+                        </p>
+                        <p>
                           <strong>Structure:</strong>{" "}
                           {presentationBlueprint.structure}
-                        </Typography>
+                        </p>
                       </CardContent>
                     </Card>
                   ) : (
-                    <Typography color="#666">
+                    <p className="text-muted-foreground">
                       Blueprint will appear after planning phase is complete.
-                    </Typography>
+                    </p>
                   )}
-                </Box>
+                </div>
               )}
 
               {previewTab === "quality" && (
-                <Box sx={{ pb: 4 }}>
+                <div className="pb-8">
                   {completedPhases.includes("validation") ? (
                     <QualityValidationPanel
                       qualityMetrics={qualityMetrics} // This remains null as it's not in logs
@@ -802,34 +570,25 @@ export default function AgentPage({ specificAgent, presentationId }) {
                       onRegenerateWithFeedback={handleRegenerateWithFeedback}
                     />
                   ) : (
-                    <Typography color="#666">
+                    <p className="text-muted-foreground">
                       Quality metrics will appear after the validation phase.
-                    </Typography>
+                    </p>
                   )}
-                </Box>
+                </div>
               )}
 
               {previewTab === "preferences" && (
-                <Box sx={{ pb: 4 }}>
-                  <Typography color="#666">
+                <div className="pb-8">
+                  <p className="text-muted-foreground">
                     This phase is automatically inferred during content
                     generation.
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
 
               {previewTab === "code" && (
-                <Box sx={{ pb: 4 }}>
-                  <pre
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#333",
-                      padding: 16,
-                      borderRadius: 8,
-                      overflow: "auto",
-                      border: "1px solid #e0e0e0",
-                    }}
-                  >
+                <div className="pb-8">
+                  <pre className="bg-muted text-foreground overflow-auto rounded-lg border p-4">
                     <code>
                       {`// Code view reflects the latest state
 const presentationState = {
@@ -841,58 +600,36 @@ const presentationState = {
 };`}
                     </code>
                   </pre>
-                </Box>
+                </div>
               )}
 
               {previewTab === "thinking" && (
-                <Box sx={{ pb: 4 }}>
-                  <Typography variant="body2" color="#666" paragraph>
+                <div className="pb-8">
+                  <p className="text-muted-foreground mb-2 text-sm">
                     <strong>Current Phase:</strong> {currentPhase}
-                  </Typography>
-                  <Typography variant="body2" color="#666" paragraph>
+                  </p>
+                  <p className="text-muted-foreground mb-2 text-sm">
                     <strong>Completed:</strong> {completedPhases.join(", ")}
-                  </Typography>
-                  <Typography variant="body2" color="#666" paragraph>
+                  </p>
+                  <p className="text-muted-foreground text-sm">
                     The system is processing your request using multiple agents.
                     The progress bar above reflects the current status based on
                     agent activity.
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
-            </Box>
-          </Box>
-        </Box>
-      </Box>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Fixed Input Area */}
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          bgcolor: "white",
-          borderTop: "1px solid #e0e0e0",
-          zIndex: 1002,
-          py: 2,
-          boxShadow: "0 -2px 8px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              bgcolor: "#f8f9fa",
-              borderRadius: 4,
-              p: 3,
-              border: "1px solid #e0e0e0",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-              <TextField
-                fullWidth
-                multiline
-                maxRows={4}
+      <div className="bg-background fixed right-0 bottom-0 left-0 z-[1002] border-t py-4 shadow-[0_-2px_8px_rgba(0,0,0,0.1)]">
+        <div className="mx-auto w-full max-w-6xl px-4">
+          <div className="bg-muted rounded-2xl border p-6 shadow-md">
+            <div className="mb-4 flex items-center gap-4">
+              <Textarea
+                className="placeholder:text-muted-foreground flex-1 resize-none border-none bg-transparent text-base shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 placeholder={
                   currentAgentType === "presentation"
                     ? "Create a presentation about..."
@@ -900,73 +637,43 @@ const presentationState = {
                 }
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => {
+                onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSend();
                   }
                 }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: "transparent",
-                    color: "#333",
-                    fontSize: "1.1rem",
-                    border: "none",
-                    "& fieldset": { border: "none" },
-                    "& input": { color: "#333" },
-                    "& textarea": { color: "#333" },
-                  },
-                  "& .MuiOutlinedInput-input::placeholder": {
-                    color: "#999",
-                    opacity: 1,
-                  },
-                }}
+                rows={4}
               />
-              <IconButton
-                sx={{ color: "#666", "&:hover": { color: PRIMARY_GREEN } }}
-              >
-                <MicIcon />
-              </IconButton>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
               <Button
-                startIcon={<PersonIcon />}
-                sx={{
-                  color: "#666",
-                  textTransform: "none",
-                  "&:hover": {
-                    color: PRIMARY_GREEN,
-                    bgcolor: "rgba(7, 179, 122, 0.1)",
-                  },
-                }}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-primary"
               >
+                <Mic className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+              >
+                <User className="mr-2 h-4 w-4" />
                 Personalize
               </Button>
-              <IconButton
+              <Button
                 onClick={() => handleSend()}
                 disabled={!inputValue.trim() || isLoading}
-                sx={{
-                  bgcolor: PRIMARY_GREEN,
-                  color: "white",
-                  width: 40,
-                  height: 40,
-                  "&:hover": { bgcolor: "#06A36D" },
-                  "&.Mui-disabled": { bgcolor: "#ddd", color: "#999" },
-                }}
+                size="icon"
+                className="bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground h-10 w-10"
               >
-                <SendIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

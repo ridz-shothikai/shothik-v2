@@ -1,7 +1,8 @@
 import { trackEvent } from "@/analysers/eventTracker";
+import { Button } from "@/components/ui/button";
 import { PAYMENT } from "@/config/config/route";
+import { cn } from "@/lib/utils";
 import { setShowLoginModal } from "@/redux/slice/auth";
-import { Box, Button } from "@mui/material";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
@@ -26,27 +27,14 @@ export default function PricingButton({
   // console.log(subscription, "subscription");
 
   return (
-    <Box>
+    <div className="w-full">
       {user?.email ? (
         <Button
-          component={Link}
+          asChild
           onClick={handleTrigger}
-          href={
-            paymentMethod === "bkash"
-              ? `${PAYMENT.bkash}/?subscription=${id}&tenure=${
-                  yearly ? "yearly" : "monthly"
-                }&redirect=${redirect}`
-              : paymentMethod === "razor"
-                ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
-                    yearly ? "yearly" : "monthly"
-                  }&redirect=${redirect}`
-                : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
-                    yearly ? "yearly" : "monthly"
-                  }&redirect=${redirect}`
-          }
-          fullWidth
-          size="large"
-          variant={outline ? "outlined" : "contained"}
+          size="lg"
+          variant={outline ? "outline" : "default"}
+          className={cn("w-full")}
           disabled={
             !yearly_plan_available && yearly
               ? true
@@ -56,21 +44,35 @@ export default function PricingButton({
                 user?.package === subscription
           }
         >
-          {user?.package === subscription
-            ? "current plan"
-            : !yearly_plan_available && yearly
-              ? "Available for monthly plan"
-              : `Choose ${caption}`}
+          <Link
+            href={
+              paymentMethod === "bkash"
+                ? `${PAYMENT.bkash}/?subscription=${id}&tenure=${
+                    yearly ? "yearly" : "monthly"
+                  }&redirect=${redirect}`
+                : paymentMethod === "razor"
+                  ? `${PAYMENT.razor}/?subscription=${id}&tenure=${
+                      yearly ? "yearly" : "monthly"
+                    }&redirect=${redirect}`
+                  : `${PAYMENT.stripe}/?subscription=${id}&tenure=${
+                      yearly ? "yearly" : "monthly"
+                    }&redirect=${redirect}`
+            }
+          >
+            {user?.package === subscription
+              ? "current plan"
+              : !yearly_plan_available && yearly
+                ? "Available for monthly plan"
+                : `Choose ${caption}`}
+          </Link>
         </Button>
       ) : (
         <Button
           disabled={!yearly_plan_available && yearly}
           onClick={() => dispatch(setShowLoginModal(true))}
-          fullWidth
-          size="large"
-          variant={
-            outline || subscription === "free" ? `outlined` : "contained"
-          }
+          size="lg"
+          variant={outline || subscription === "free" ? "outline" : "default"}
+          className={cn("w-full")}
         >
           {!yearly_plan_available && yearly
             ? "Available for monthly plan"
@@ -79,6 +81,6 @@ export default function PricingButton({
               : `Choose ${caption}`}
         </Button>
       )}
-    </Box>
+    </div>
   );
 }

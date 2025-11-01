@@ -1,115 +1,80 @@
-import { Box, Grid2, Typography } from "@mui/material";
+"use client";
+
+import { cn } from "@/lib/utils";
 import * as motion from "motion/react-client";
 import ViewMoreButton from "./components/b2b/ViewMoreButton";
-import BgContainer from "./components/hero/BgContainer";
 
 export default function B2bFeatures() {
   return (
-    <BgContainer
-      sx={{ py: 8, px: { xs: 2, sm: 4, md: 6 } }}
-      image="url(/home/b2b-background.png)"
+    <div
+      className={cn(
+        "relative bg-cover bg-center bg-no-repeat",
+        "bg-[url('/home/b2b-background.png')]",
+        "py-16 sm:py-20 md:py-20",
+        "px-4 sm:px-8 md:px-12",
+      )}
     >
-      <Box
-        component={motion.div}
+      <motion.div
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        textAlign="center"
-        fontWeight="bold"
-        marginBottom={{ xs: 8, sm: 6 }}
-        sx={{
-          lineHeight: 1.2,
-          color: "#fff",
-          "& > span": {
-            display: "block",
-          },
-        }}
+        className={cn(
+          "text-foreground text-center font-bold",
+          "text-[1.8rem] sm:text-2xl md:text-4xl lg:text-4xl",
+          "mb-16 leading-tight sm:mb-12",
+          "[&>span]:block",
+        )}
       >
         Shothik AI Solutions for Businesses
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
-          }}
-        >
-          <Typography
-            component="span"
-            variant="inherit"
-            sx={{
-              background: "linear-gradient(135deg, #00A76F 0%, #00A76F 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+        <div className="flex items-center justify-center gap-4">
+          <span
+            className={cn(
+              "from-primary to-primary bg-gradient-to-r",
+              "bg-clip-text text-transparent",
+            )}
           >
             Tailored for B2B Innovation
-          </Typography>
-        </Box>
-      </Box>
+          </span>
+        </div>
+      </motion.div>
 
-      <Grid2 container alignItems="center">
-        <Grid2
-          size={{ xs: 12, sm: 6, md: 6 }}
-          component={motion.div}
+      <div className="grid grid-cols-1 items-center sm:grid-cols-2 md:grid-cols-2">
+        <motion.div
           initial={{ x: -100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
+          className="col-span-1"
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                sx={{
-                  fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                  lineHeight: 1.2,
-                  color: "#fff",
-                }}
+          <div className="flex items-center justify-start gap-8">
+            <div className="flex flex-col items-start justify-start">
+              <h3
+                className={cn(
+                  "text-foreground leading-tight font-bold",
+                  "text-xl sm:text-xl md:text-3xl",
+                )}
               >
                 Transform Your Business with <br />
-                <Typography
-                  component="span"
-                  variant="inherit"
-                  fontWeight="bold"
-                  color="#00A76F"
-                >
+                <span className="text-primary font-bold">
                   AI-Powered Solutions
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
+                </span>
+              </h3>
+            </div>
+          </div>
 
-          <Box>
-            <Typography variant="body1" color="#fff" sx={{ marginTop: 2 }}>
+          <div className="mt-4">
+            <p className="text-foreground text-base">
               Leverage cutting-edge AI solutions to optimize your business
               processes, enhance productivity, and drive innovation across your
               organization.
-            </Typography>
-          </Box>
-          <Box style={{ marginTop: 30 }}>
+            </p>
+          </div>
+          <div className="mt-8">
             <ViewMoreButton />
-          </Box>
-        </Grid2>
-      </Grid2>
-    </BgContainer>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 }

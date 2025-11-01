@@ -1,5 +1,5 @@
 import { tools } from "@/config/config/navConfig";
-import { alpha, Box, Card, Grid2, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
 import * as motion from "motion/react-client";
 import Link from "next/link";
 import BgContainer from "./components/hero/BgContainer";
@@ -8,34 +8,22 @@ import UserActionButton from "./components/hero/UserActionButton";
 export default function HomeTools() {
   return (
     <BgContainer
-      sx={{
-        py: 8,
-        px: { xs: 2, sm: 4, md: 6 },
-        backgroundColor: alpha("#00A76F", 0.08),
-        mb: 3,
-      }}
+      className="bg-primary/8 mb-3 px-2 py-8 sm:px-4 md:px-6"
       // image='url(/home/bg.png)'
     >
-      <Box>
-        <Typography
-          component={motion.h2}
+      <div>
+        <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          variant="h2"
-          align="center"
-          sx={{
-            fontSize: { xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" },
-            lineHeight: 1.2,
-            mb: 6,
-            fontWeight: 600,
-          }}
+          className="mb-6 text-center text-[1.8rem] leading-tight font-semibold sm:text-[2rem] md:text-[3rem] lg:text-[3rem]"
         >
           Seven powerful{" "}
           <b
             style={{
-              background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
+              background:
+                "linear-gradient(135deg, hsl(var(--primary)) 40%, hsl(var(--primary)) 100%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -46,121 +34,66 @@ export default function HomeTools() {
           </b>
           , <br />
           one unified platform
-        </Typography>
+        </motion.h2>
 
-        <Grid2 container spacing={3}>
+        <div className="grid grid-cols-12 gap-3">
           {tools.map((tool, i) =>
             tool.link ? (
-              <Grid2
-                component={motion.div}
+              <motion.div
+                key={tool.title}
                 initial={{ y: 20, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.2 * (i + 1) }}
                 viewport={{ once: true }}
-                size={{ xs: 12, md: 4, sm: 6 }}
-                key={tool.title}
+                className="col-span-12 sm:col-span-6 md:col-span-4"
               >
-                <Card
-                  component={Link}
+                <Link
                   href={tool.link}
-                  sx={{
-                    padding: 2,
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 2,
-                    border: ".5px solid",
-                    borderColor: "divider",
-                    boxShadow: "none",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out",
-                    backgroundColor: "transparent",
-                    height: "100%",
-                    textDecoration: "none",
-                    minHeight: 90,
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: 1,
-                    },
-                  }}
+                  className={cn(
+                    "border-border block flex h-full min-h-[90px] cursor-pointer items-start gap-2 rounded-xl border-[0.5px] bg-transparent p-2 no-underline shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm",
+                  )}
                 >
-                  <Box
-                    sx={{
-                      color: tool.iconColor,
-                      borderRadius: "50%",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      "& svg": {
-                        color: "#fff",
-                        fontSize: 24,
-                      },
-                    }}
+                  <div
+                    style={{ color: tool.iconColor }}
+                    className="[&_svg]:text-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full [&_svg]:text-2xl"
                   >
                     {tool.icon}
-                  </Box>
+                  </div>
                   {tool.label && (
-                    <Typography
-                      sx={{
+                    <span
+                      style={{
                         backgroundColor: tool.iconColor,
-                        color: "#fff",
-                        fontSize: { xs: 10, sm: 12 },
-                        fontWeight: "bold",
-                        padding: "2px 8px",
-                        borderRadius: "12px",
-                        textTransform: "uppercase",
                       }}
+                      className="text-foreground rounded-xl px-2 py-0.5 text-[10px] font-bold uppercase sm:text-xs"
                     >
                       {tool.label}
-                    </Typography>
+                    </span>
                   )}
-                  <Box sx={{ minWidth: 0, flex: 1 }}>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: { xs: 18, sm: 20, md: 20, lg: 22, xl: 22 },
-                        fontWeight: 500,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 0.5,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        maxWidth: "100%",
-                        "&::after": {
-                          content: '"›"',
-                          color: "#00A76F",
-                          flexShrink: 0,
-                        },
-                      }}
+                  <div className="min-w-0 flex-1">
+                    <h3
+                      className={cn(
+                        "after:text-primary flex max-w-full items-center gap-0.5 overflow-hidden text-lg font-medium text-ellipsis whitespace-nowrap after:shrink-0 after:content-['›'] sm:text-xl md:text-xl lg:text-[22px] xl:text-[22px]",
+                      )}
                     >
                       {tool.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "text.secondary",
-                        fontSize: 14,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical",
-                      }}
+                    </h3>
+                    <p
+                      className={cn(
+                        "text-muted-foreground line-clamp-2 overflow-hidden text-sm text-ellipsis",
+                      )}
                     >
                       {tool.description}
-                    </Typography>
-                  </Box>
-                </Card>
-              </Grid2>
+                    </p>
+                  </div>
+                </Link>
+              </motion.div>
             ) : null,
           )}
-        </Grid2>
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+        </div>
+        <div className="mt-6 flex justify-center">
           <UserActionButton />
-        </Box>
-      </Box>
+        </div>
+      </div>
     </BgContainer>
   );
 }

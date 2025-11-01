@@ -1,34 +1,24 @@
-import { Card, CardContent, Grid2, Skeleton, Stack } from "@mui/material";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const BlogLoading = () => {
   return (
-    <Grid2
-      container
-      spacing={3}
-      sx={{ py: 5, textAlign: "center", width: "100%" }}
-    >
+    <div className="grid grid-cols-1 gap-4 py-10 text-center sm:grid-cols-2 md:grid-cols-3">
       {[1, 2, 3].map((item) => (
-        <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={item}>
-          <Card
-            sx={{
-              height: "100%",
-              boxShadow: 3,
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
+        <div key={item}>
+          <Card className="h-full overflow-hidden rounded-lg shadow-md">
             <CardContent>
-              <Skeleton variant="rectangular" width="100%" height={140} />
-              <Stack spacing={1} sx={{ mt: 2 }}>
-                <Skeleton variant="text" width="60%" />
-                <Skeleton variant="text" width="80%" />
-                <Skeleton variant="text" width="40%" />
-              </Stack>
+              <Skeleton className="h-[140px] w-full rounded-md" />
+              <div className="mt-4 space-y-2">
+                <Skeleton className="h-4 w-[60%] rounded-md" />
+                <Skeleton className="h-4 w-[80%] rounded-md" />
+                <Skeleton className="h-4 w-[40%] rounded-md" />
+              </div>
             </CardContent>
           </Card>
-        </Grid2>
+        </div>
       ))}
-    </Grid2>
+    </div>
   );
 };
 

@@ -1,246 +1,257 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import StepContent from '@mui/material/StepContent';
-import LinearProgress from '@mui/material/LinearProgress';
-import Chip from '@mui/material/Chip';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import PlanningIcon from '@mui/icons-material/AssignmentTurnedIn';
-import QuestionIcon from '@mui/icons-material/HelpOutline';
-import ContentIcon from '@mui/icons-material/Article';
-import DesignIcon from '@mui/icons-material/Palette';
-import ValidationIcon from '@mui/icons-material/FactCheck';
-
-const PRIMARY_GREEN = '#07B37A';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import {
+  CheckCheck,
+  CheckCircle,
+  Circle,
+  ClipboardCheck,
+  FileText,
+  HelpCircle,
+  Palette,
+  PlayCircle,
+} from "lucide-react";
 
 const phases = [
   {
-    id: 'planning',
-    title: 'Planning & Analysis',
-    icon: <PlanningIcon />,
-    description: 'Planner Agent analyzes your requirements and creates presentation blueprint',
-    agents: ['Planner Agent'],
-    estimatedTime: '30s'
+    id: "planning",
+    title: "Planning & Analysis",
+    icon: ClipboardCheck,
+    description:
+      "Planner Agent analyzes your requirements and creates presentation blueprint",
+    agents: ["Planner Agent"],
+    estimatedTime: "30s",
   },
   {
-    id: 'preferences',
-    title: 'Preference Collection',
-    icon: <QuestionIcon />,
-    description: 'Interactive questions to understand your style and design preferences',
-    agents: ['Interactive Chat System'],
-    estimatedTime: '2-3 min'
+    id: "preferences",
+    title: "Preference Collection",
+    icon: HelpCircle,
+    description:
+      "Interactive questions to understand your style and design preferences",
+    agents: ["Interactive Chat System"],
+    estimatedTime: "2-3 min",
   },
   {
-    id: 'content',
-    title: 'Content Generation',
-    icon: <ContentIcon />,
-    description: 'Content Generation Agent researches and creates slide content',
-    agents: ['Content Generation Agent', 'Slide Structuring Agent'],
-    estimatedTime: '45s'
+    id: "content",
+    title: "Content Generation",
+    icon: FileText,
+    description:
+      "Content Generation Agent researches and creates slide content",
+    agents: ["Content Generation Agent", "Slide Structuring Agent"],
+    estimatedTime: "45s",
   },
   {
-    id: 'design',
-    title: 'Design & Media',
-    icon: <DesignIcon />,
-    description: 'Media selection and layout design with your custom preferences',
-    agents: ['Media Selection Agent', 'Layout & Design Agent', 'Slide Rendering Agent'],
-    estimatedTime: '60s'
+    id: "design",
+    title: "Design & Media",
+    icon: Palette,
+    description:
+      "Media selection and layout design with your custom preferences",
+    agents: [
+      "Media Selection Agent",
+      "Layout & Design Agent",
+      "Slide Rendering Agent",
+    ],
+    estimatedTime: "60s",
   },
   {
-    id: 'validation',
-    title: 'Quality Validation',
-    icon: <ValidationIcon />,
-    description: 'Validator/QA Agent ensures quality and compliance with requirements',
-    agents: ['Validator/QA Agent'],
-    estimatedTime: '20s'
-  }
+    id: "validation",
+    title: "Quality Validation",
+    icon: CheckCheck,
+    description:
+      "Validator/QA Agent ensures quality and compliance with requirements",
+    agents: ["Validator/QA Agent"],
+    estimatedTime: "20s",
+  },
 ];
 
 const getStepIcon = (phase, currentPhase, completedPhases) => {
   if (completedPhases.includes(phase.id)) {
-    return <CheckCircleIcon sx={{ color: PRIMARY_GREEN }} />;
+    return <CheckCircle className="h-6 w-6" />;
   } else if (currentPhase === phase.id) {
-    return <PlayCircleIcon sx={{ color: '#ff9800' }} />;
+    return <PlayCircle className="h-6 w-6" />;
   } else {
-    return <RadioButtonUncheckedIcon sx={{ color: '#ccc' }} />;
+    return <Circle className="h-6 w-6" />;
   }
 };
 
 const getStepStatus = (phase, currentPhase, completedPhases) => {
   if (completedPhases.includes(phase.id)) {
-    return 'completed';
+    return "completed";
   } else if (currentPhase === phase.id) {
-    return 'active';
+    return "active";
   } else {
-    return 'pending';
+    return "pending";
   }
 };
 
-export default function PlanningProgressIndicator({ 
-  currentPhase = 'planning',
+export default function PlanningProgressIndicator({
+  currentPhase = "planning",
   completedPhases = [],
   progressPercentage = 0,
   estimatedTimeRemaining = null,
   isInteractive = false,
-  onPhaseClick
+  onPhaseClick,
 }) {
-  const currentPhaseIndex = phases.findIndex(phase => phase.id === currentPhase);
+  const currentPhaseIndex = phases.findIndex(
+    (phase) => phase.id === currentPhase,
+  );
   const totalPhases = phases.length;
   const completedCount = completedPhases.length;
   const overallProgress = (completedCount / totalPhases) * 100;
 
   return (
     <Card>
-      <CardContent sx={{ p: 3 }}>
+      <CardContent className="p-6">
         {/* Header */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
+        <div className="mb-6">
+          <h3 className="mb-4 text-lg font-semibold">
             Presentation Generation Progress
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <LinearProgress
-              variant="determinate"
-              value={overallProgress}
-              sx={{
-                flex: 1,
-                height: 8,
-                borderRadius: 4,
-                '& .MuiLinearProgress-bar': {
-                  bgcolor: PRIMARY_GREEN,
-                  borderRadius: 4
-                }
-              }}
-            />
-            <Typography variant="body2" color="text.secondary">
+          </h3>
+          <div className="mb-4 flex items-center gap-4">
+            <div className="flex-1">
+              <Progress value={overallProgress} className="h-2" />
+            </div>
+            <span className="text-muted-foreground text-sm">
               {completedCount}/{totalPhases} Complete
-            </Typography>
-          </Box>
-          
+            </span>
+          </div>
+
           {estimatedTimeRemaining && (
-            <Typography variant="body2" color="text.secondary">
+            <p className="text-muted-foreground text-sm">
               Estimated time remaining: {estimatedTimeRemaining}
-            </Typography>
+            </p>
           )}
-        </Box>
+        </div>
 
         {/* Phase Steps */}
-        <Stepper 
-          activeStep={currentPhaseIndex} 
-          orientation="vertical"
-          sx={{
-            '& .MuiStepLabel-root': {
-              cursor: isInteractive ? 'pointer' : 'default'
-            }
-          }}
-        >
+        <div className="space-y-0">
           {phases.map((phase, index) => {
             const status = getStepStatus(phase, currentPhase, completedPhases);
-            const isClickable = isInteractive && (completedPhases.includes(phase.id) || currentPhase === phase.id);
-            
+            const isClickable =
+              isInteractive &&
+              (completedPhases.includes(phase.id) || currentPhase === phase.id);
+            const isLast = index === phases.length - 1;
+
             return (
-              <Step key={phase.id} completed={completedPhases.includes(phase.id)}>
-                <StepLabel
-                  icon={getStepIcon(phase, currentPhase, completedPhases)}
-                  onClick={isClickable ? () => onPhaseClick?.(phase.id) : undefined}
-                  sx={{
-                    '& .MuiStepLabel-label': {
-                      fontWeight: status === 'active' ? 600 : 400,
-                      color: status === 'completed' ? PRIMARY_GREEN : 
-                             status === 'active' ? '#000' : '#666'
-                    }
-                  }}
+              <div key={phase.id} className="relative">
+                {/* Connecting Line */}
+                {!isLast && (
+                  <div className="border-border absolute top-12 left-3 h-full w-0.5 border-l-2 border-dashed" />
+                )}
+
+                <div
+                  className={cn(
+                    "relative flex gap-4 pb-8",
+                    !isClickable && "cursor-default",
+                  )}
+                  onClick={
+                    isClickable ? () => onPhaseClick?.(phase.id) : undefined
+                  }
                 >
-                  <Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="subtitle1">
-                        {phase.title}
-                      </Typography>
-                      <Chip
-                        size="small"
-                        label={phase.estimatedTime}
-                        sx={{
-                          height: 20,
-                          fontSize: '0.7rem',
-                          bgcolor: status === 'completed' ? PRIMARY_GREEN :
-                                  status === 'active' ? '#ff9800' : '#f5f5f5',
-                          color: status === 'pending' ? '#666' : 'white'
-                        }}
-                      />
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {phase.description}
-                    </Typography>
-                  </Box>
-                </StepLabel>
-                
-                <StepContent>
-                  <Box sx={{ mt: 1, mb: 2 }}>
-                    <Typography variant="caption" color="text.secondary" gutterBottom>
-                      Active Agents:
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                      {phase.agents.map((agent) => (
-                        <Chip
-                          key={agent}
-                          label={agent}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            fontSize: '0.7rem',
-                            height: 24,
-                            borderColor: PRIMARY_GREEN,
-                            color: PRIMARY_GREEN
-                          }}
-                        />
-                      ))}
-                    </Box>
-                    
-                    {status === 'active' && progressPercentage > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Phase Progress: {Math.round(progressPercentage)}%
-                        </Typography>
-                        <LinearProgress
-                          variant="determinate"
-                          value={progressPercentage}
-                          sx={{
-                            mt: 0.5,
-                            height: 4,
-                            '& .MuiLinearProgress-bar': {
-                              bgcolor: '#ff9800'
-                            }
-                          }}
-                        />
-                      </Box>
+                  {/* Icon */}
+                  <div
+                    className={cn(
+                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
+                      status === "completed" &&
+                        "bg-primary text-primary-foreground",
+                      status === "active" &&
+                        "bg-chart-3 text-primary-foreground",
+                      status === "pending" && "bg-muted text-muted-foreground",
                     )}
-                  </Box>
-                </StepContent>
-              </Step>
+                  >
+                    {getStepIcon(phase, currentPhase, completedPhases)}
+                  </div>
+
+                  {/* Content */}
+                  <div className="min-w-0 flex-1 pt-0.5">
+                    <div className="mb-1 flex items-center gap-2">
+                      <h4
+                        className={cn(
+                          "text-base font-medium",
+                          status === "completed" && "text-primary",
+                          status === "active" &&
+                            "text-foreground font-semibold",
+                          status === "pending" && "text-muted-foreground",
+                        )}
+                      >
+                        {phase.title}
+                      </h4>
+                      <Badge
+                        variant={status === "pending" ? "secondary" : "default"}
+                        className={cn(
+                          "h-5 text-xs",
+                          status === "completed" &&
+                            "bg-primary text-primary-foreground",
+                          status === "active" &&
+                            "bg-chart-3 text-primary-foreground",
+                          status === "pending" &&
+                            "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {phase.estimatedTime}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground mb-3 text-sm">
+                      {phase.description}
+                    </p>
+
+                    {/* Phase Details */}
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-muted-foreground mb-2 text-xs">
+                          Active Agents:
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {phase.agents.map((agent) => (
+                            <Badge
+                              key={agent}
+                              variant="outline"
+                              className="border-primary text-primary h-6 text-xs"
+                            >
+                              {agent}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+
+                      {status === "active" && progressPercentage > 0 && (
+                        <div>
+                          <p className="text-muted-foreground mb-1 text-xs">
+                            Phase Progress: {Math.round(progressPercentage)}%
+                          </p>
+                          <Progress
+                            value={progressPercentage}
+                            className="[&>div]:bg-chart-3 h-1"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             );
           })}
-        </Stepper>
+        </div>
 
         {/* Summary */}
-        <Box sx={{ mt: 3, p: 2, bgcolor: '#f8f9fa', borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            <strong>Current Status:</strong> {
-              currentPhase === 'planning' ? 'Analyzing your requirements and creating presentation structure' :
-              currentPhase === 'preferences' ? 'Collecting your design preferences for customization' :
-              currentPhase === 'content' ? 'Generating content based on research and your requirements' :
-              currentPhase === 'design' ? 'Applying design principles and selecting media assets' :
-              currentPhase === 'validation' ? 'Ensuring quality and validating against requirements' :
-              'Processing complete'
-            }
-          </Typography>
-        </Box>
+        <div className="bg-muted/50 mt-6 rounded-md p-4">
+          <p className="text-muted-foreground text-sm">
+            <strong>Current Status:</strong>{" "}
+            {currentPhase === "planning"
+              ? "Analyzing your requirements and creating presentation structure"
+              : currentPhase === "preferences"
+                ? "Collecting your design preferences for customization"
+                : currentPhase === "content"
+                  ? "Generating content based on research and your requirements"
+                  : currentPhase === "design"
+                    ? "Applying design principles and selecting media assets"
+                    : currentPhase === "validation"
+                      ? "Ensuring quality and validating against requirements"
+                      : "Processing complete"}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
-} 
+}

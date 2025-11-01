@@ -1,27 +1,21 @@
-import React from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import { Card, CardContent } from "../../../src/components/ui/card";
+import { cn } from "../../../src/lib/utils";
 
 const AgentCard = ({ name, description, icon, actions }) => {
   return (
-    <Card sx={{ minWidth: 260, maxWidth: 340, m: 1, boxShadow: 3, borderRadius: 2 }}>
+    <Card
+      className={cn("m-1 max-w-[340px] min-w-[260px] rounded-lg shadow-md")}
+    >
       <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          {icon && <Box sx={{ mr: 1, fontSize: 32 }}>{icon}</Box>}
-          <Typography variant="h6" component="div">
-            {name}
-          </Typography>
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          {description}
-        </Typography>
+        <div className="mb-1 flex items-center">
+          {icon && <div className="mr-1 text-[32px] leading-none">{icon}</div>}
+          <div className="text-lg font-semibold">{name}</div>
+        </div>
+        <div className="text-muted-foreground text-sm">{description}</div>
       </CardContent>
-      {actions && <CardActions>{actions}</CardActions>}
+      {actions && <div className="px-6 pb-4">{actions}</div>}
     </Card>
   );
 };
 
-export default AgentCard; 
+export default AgentCard;

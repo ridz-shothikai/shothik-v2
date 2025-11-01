@@ -1,31 +1,37 @@
-import React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { Bot } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "../../../src/lib/utils";
 
 const AgentSidebar = () => {
   const pathname = usePathname();
-  const isActive = pathname === '/agents';
+  const isActive = pathname === "/agents";
 
   return (
-    <List component="nav" aria-label="Agent navigation">
-      <ListItem disablePadding>
-        <Link href="/agents" passHref legacyBehavior>
-          <ListItemButton selected={isActive} component="a">
-            <ListItemIcon>
-              <SmartToyIcon color={isActive ? 'primary' : 'inherit'} />
-            </ListItemIcon>
-            <ListItemText primary="Agents" />
-          </ListItemButton>
-        </Link>
-      </ListItem>
-    </List>
+    <nav aria-label="Agent navigation">
+      <Link
+        href="/agents"
+        className={cn(
+          "relative mb-0.5 flex w-full flex-row items-center justify-start rounded-md px-4 py-2 transition-colors",
+          isActive
+            ? "text-primary bg-primary/10 hover:bg-primary/10 hover:text-primary"
+            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        )}
+      >
+        <div className="mr-4 flex h-8 w-8 flex-shrink-0 items-center justify-center">
+          <Bot
+            className={cn(
+              "h-5 w-5",
+              isActive ? "text-primary" : "text-muted-foreground",
+            )}
+          />
+        </div>
+        <span className="flex-grow text-start text-base whitespace-nowrap">
+          Agents
+        </span>
+      </Link>
+    </nav>
   );
 };
 
-export default AgentSidebar; 
+export default AgentSidebar;

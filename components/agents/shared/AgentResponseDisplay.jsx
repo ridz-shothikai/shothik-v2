@@ -1,11 +1,10 @@
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import Image from "next/image";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import python from "react-syntax-highlighter/dist/esm/languages/hljs/python";
 import { github } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { Card, CardContent } from "../../../src/components/ui/card";
+import { cn } from "../../../src/lib/utils";
 
 SyntaxHighlighter.registerLanguage("javascript", js);
 SyntaxHighlighter.registerLanguage("python", python);
@@ -17,11 +16,13 @@ const AgentResponseDisplay = ({
 }) => {
   if (!response) {
     return (
-      <Paper sx={{ p: 2, minHeight: 80, bgcolor: "grey.50" }}>
-        <Typography variant="body2" color="text.secondary">
-          No response yet.
-        </Typography>
-      </Paper>
+      <Card className={cn("bg-muted min-h-[80px]")}>
+        <CardContent className={cn("p-4")}>
+          <p className={cn("text-muted-foreground text-sm")}>
+            No response yet.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -38,43 +39,28 @@ const AgentResponseDisplay = ({
     );
   } else if (type === "image") {
     content = (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: 120,
-        }}
-      >
+      <div className={cn("flex min-h-[120px] items-center justify-center")}>
         <Image
           src={typeof response === "string" ? response : response.url}
           alt="Agent response"
-          style={{ maxWidth: "100%", maxHeight: 240, borderRadius: 8 }}
-          width={"100%"}
-          height={"100%"}
+          className={cn("max-h-[240px] max-w-full rounded-lg")}
+          width={800}
+          height={600}
         />
-      </Box>
+      </div>
     );
   } else {
     content = (
-      <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
+      <p className={cn("text-base whitespace-pre-line")}>
         {typeof response === "string" ? response : response.text || ""}
-      </Typography>
+      </p>
     );
   }
 
   return (
-    <Paper
-      sx={{
-        p: 2,
-        minHeight: 80,
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        boxShadow: 1,
-      }}
-    >
-      {content}
-    </Paper>
+    <Card className={cn("bg-card min-h-[80px] shadow-sm")}>
+      <CardContent className={cn("p-4")}>{content}</CardContent>
+    </Card>
   );
 };
 

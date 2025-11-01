@@ -1,66 +1,88 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import Slider from '@mui/material/Slider';
-import PaletteIcon from '@mui/icons-material/Palette';
-import StyleIcon from '@mui/icons-material/Style';
-import AnimationIcon from '@mui/icons-material/Animation';
-import PeopleIcon from '@mui/icons-material/People';
-import TimerIcon from '@mui/icons-material/Timer';
-
-const PRIMARY_GREEN = '#07B37A';
+import { Clock, Palette, Sparkles, Users, Wand2, X } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "../../../src/components/ui/badge";
+import { Button } from "../../../src/components/ui/button";
+import { Card, CardContent } from "../../../src/components/ui/card";
+import { Input } from "../../../src/components/ui/input";
+import { Label } from "../../../src/components/ui/label";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "../../../src/components/ui/radio-group";
+import { Slider } from "../../../src/components/ui/slider";
+import { cn } from "../../../src/lib/utils";
 
 const COLOR_SCHEMES = [
-  { id: 'professional', name: 'Professional', colors: ['#1976d2', '#424242', '#f5f5f5'] },
-  { id: 'vibrant', name: 'Vibrant', colors: ['#ff5722', '#ff9800', '#ffc107'] },
-  { id: 'minimal', name: 'Minimal', colors: ['#000000', '#ffffff', '#f0f0f0'] },
-  { id: 'custom', name: 'Custom', colors: [] }
+  {
+    id: "professional",
+    name: "Professional",
+    colors: ["#1976d2", "#424242", "#f5f5f5"],
+  },
+  { id: "vibrant", name: "Vibrant", colors: ["#ff5722", "#ff9800", "#ffc107"] },
+  { id: "minimal", name: "Minimal", colors: ["#000000", "#ffffff", "#f0f0f0"] },
+  { id: "custom", name: "Custom", colors: [] },
 ];
 
 const STYLE_OPTIONS = [
-  { id: 'corporate', name: 'Corporate', description: 'Professional business style' },
-  { id: 'creative', name: 'Creative', description: 'Modern and artistic design' },
-  { id: 'academic', name: 'Academic', description: 'Clean educational layout' },
-  { id: 'minimal', name: 'Minimal', description: 'Simple and focused design' }
+  {
+    id: "corporate",
+    name: "Corporate",
+    description: "Professional business style",
+  },
+  {
+    id: "creative",
+    name: "Creative",
+    description: "Modern and artistic design",
+  },
+  { id: "academic", name: "Academic", description: "Clean educational layout" },
+  { id: "minimal", name: "Minimal", description: "Simple and focused design" },
 ];
 
 const ANIMATION_OPTIONS = [
-  { id: 'none', name: 'None', description: 'No animations' },
-  { id: 'subtle', name: 'Subtle', description: 'Light transitions' },
-  { id: 'dynamic', name: 'Dynamic', description: 'Engaging animations' }
+  { id: "none", name: "None", description: "No animations" },
+  { id: "subtle", name: "Subtle", description: "Light transitions" },
+  { id: "dynamic", name: "Dynamic", description: "Engaging animations" },
 ];
 
-export default function PreferenceCollectionPanel({ onPreferencesUpdate, onComplete }) {
+export default function PreferenceCollectionPanel({
+  onPreferencesUpdate,
+  onComplete,
+}) {
   const [preferences, setPreferences] = useState({
-    colorScheme: 'professional',
-    customColors: ['#07B37A', '#ffffff'],
-    style: 'corporate',
-    animation: 'subtle',
-    audienceLevel: 'business',
+    colorScheme: "professional",
+    customColors: ["#07B37A", "#ffffff"],
+    style: "corporate",
+    animation: "subtle",
+    audienceLevel: "business",
     duration: 15,
-    fontPreference: 'modern'
+    fontPreference: "modern",
   });
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [customColorInput, setCustomColorInput] = useState('#07B37A');
+  const [customColorInput, setCustomColorInput] = useState("#07B37A");
 
   const steps = [
-    { id: 'colors', title: 'Color Preferences', icon: <PaletteIcon /> },
-    { id: 'style', title: 'Design Style', icon: <StyleIcon /> },
-    { id: 'animation', title: 'Animation Level', icon: <AnimationIcon /> },
-    { id: 'audience', title: 'Target Audience', icon: <PeopleIcon /> },
-    { id: 'duration', title: 'Presentation Length', icon: <TimerIcon /> }
+    {
+      id: "colors",
+      title: "Color Preferences",
+      icon: <Palette className="size-5" />,
+    },
+    { id: "style", title: "Design Style", icon: <Wand2 className="size-5" /> },
+    {
+      id: "animation",
+      title: "Animation Level",
+      icon: <Sparkles className="size-5" />,
+    },
+    {
+      id: "audience",
+      title: "Target Audience",
+      icon: <Users className="size-5" />,
+    },
+    {
+      id: "duration",
+      title: "Presentation Length",
+      icon: <Clock className="size-5" />,
+    },
   ];
 
   const handlePreferenceChange = (key, value) => {
@@ -70,16 +92,21 @@ export default function PreferenceCollectionPanel({ onPreferencesUpdate, onCompl
   };
 
   const addCustomColor = () => {
-    if (customColorInput && !preferences.customColors.includes(customColorInput)) {
+    if (
+      customColorInput &&
+      !preferences.customColors.includes(customColorInput)
+    ) {
       const newColors = [...preferences.customColors, customColorInput];
-      handlePreferenceChange('customColors', newColors);
-      setCustomColorInput('#07B37A');
+      handlePreferenceChange("customColors", newColors);
+      setCustomColorInput("#07B37A");
     }
   };
 
   const removeCustomColor = (colorToRemove) => {
-    const newColors = preferences.customColors.filter(color => color !== colorToRemove);
-    handlePreferenceChange('customColors', newColors);
+    const newColors = preferences.customColors.filter(
+      (color) => color !== colorToRemove,
+    );
+    handlePreferenceChange("customColors", newColors);
   };
 
   const nextStep = () => {
@@ -98,217 +125,231 @@ export default function PreferenceCollectionPanel({ onPreferencesUpdate, onCompl
 
   const renderStepContent = () => {
     switch (steps[currentStep].id) {
-      case 'colors':
+      case "colors":
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">
               Choose your color scheme
-            </Typography>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            </h3>
+            <div className="mb-6 grid grid-cols-2 gap-4">
               {COLOR_SCHEMES.map((scheme) => (
-                <Grid item xs={6} key={scheme.id}>
-                  <Card 
-                    sx={{ 
-                      cursor: 'pointer',
-                      border: preferences.colorScheme === scheme.id ? `2px solid ${PRIMARY_GREEN}` : '1px solid #e0e0e0',
-                      '&:hover': { boxShadow: 2 }
-                    }}
-                    onClick={() => handlePreferenceChange('colorScheme', scheme.id)}
-                  >
-                    <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        {scheme.name}
-                      </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
-                        {scheme.colors.map((color, index) => (
-                          <Box
-                            key={index}
-                            sx={{
-                              width: 24,
-                              height: 24,
-                              bgcolor: color,
-                              borderRadius: '50%',
-                              border: '1px solid #ddd'
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <Card
+                  key={scheme.id}
+                  className={cn(
+                    "cursor-pointer transition-shadow hover:shadow-md",
+                    preferences.colorScheme === scheme.id
+                      ? "border-primary border-2"
+                      : "border-border border",
+                  )}
+                  onClick={() =>
+                    handlePreferenceChange("colorScheme", scheme.id)
+                  }
+                >
+                  <CardContent className="py-4 text-center">
+                    <p className="mb-2 text-sm font-medium">{scheme.name}</p>
+                    <div className="flex justify-center gap-1">
+                      {scheme.colors.map((color, index) => (
+                        <div
+                          key={index}
+                          className="border-border size-6 rounded-full border"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </Grid>
+            </div>
 
-            {preferences.colorScheme === 'custom' && (
-              <Box>
-                <Typography variant="subtitle1" gutterBottom>
-                  Add Custom Colors
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                  <TextField
-                    size="small"
+            {preferences.colorScheme === "custom" && (
+              <div>
+                <p className="mb-3 text-base font-medium">Add Custom Colors</p>
+                <div className="mb-4 flex gap-2">
+                  <Input
                     type="color"
                     value={customColorInput}
                     onChange={(e) => setCustomColorInput(e.target.value)}
-                    sx={{ width: 60 }}
+                    className="h-9 w-16 cursor-pointer p-1"
                   />
-                  <TextField
-                    size="small"
+                  <Input
                     value={customColorInput}
                     onChange={(e) => setCustomColorInput(e.target.value)}
                     placeholder="#07B37A"
-                    sx={{ flex: 1 }}
+                    className="flex-1"
                   />
-                  <Button onClick={addCustomColor} variant="outlined" size="small">
+                  <Button onClick={addCustomColor} variant="outline" size="sm">
                     Add
                   </Button>
-                </Box>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                </div>
+                <div className="flex flex-wrap gap-2">
                   {preferences.customColors.map((color) => (
-                    <Chip
+                    <Badge
                       key={color}
-                      label={color}
-                      onDelete={() => removeCustomColor(color)}
-                      sx={{ bgcolor: color, color: 'white' }}
-                    />
+                      className="flex items-center gap-1.5 text-white"
+                      style={{ backgroundColor: color }}
+                    >
+                      <span>{color}</span>
+                      <button
+                        onClick={() => removeCustomColor(color)}
+                        className="transition-opacity hover:opacity-70"
+                        type="button"
+                        aria-label={`Remove color ${color}`}
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
                   ))}
-                </Box>
-              </Box>
+                </div>
+              </div>
             )}
-          </Box>
+          </div>
         );
 
-      case 'style':
+      case "style":
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">
               Select your presentation style
-            </Typography>
-            <Grid container spacing={2}>
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
               {STYLE_OPTIONS.map((style) => (
-                <Grid item xs={6} key={style.id}>
-                  <Card 
-                    sx={{ 
-                      cursor: 'pointer',
-                      border: preferences.style === style.id ? `2px solid ${PRIMARY_GREEN}` : '1px solid #e0e0e0',
-                      '&:hover': { boxShadow: 2 }
-                    }}
-                    onClick={() => handlePreferenceChange('style', style.id)}
-                  >
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {style.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {style.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <Card
+                  key={style.id}
+                  className={cn(
+                    "cursor-pointer transition-shadow hover:shadow-md",
+                    preferences.style === style.id
+                      ? "border-primary border-2"
+                      : "border-border border",
+                  )}
+                  onClick={() => handlePreferenceChange("style", style.id)}
+                >
+                  <CardContent>
+                    <h4 className="mb-2 text-lg font-semibold">{style.name}</h4>
+                    <p className="text-muted-foreground text-sm">
+                      {style.description}
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
-            </Grid>
-          </Box>
+            </div>
+          </div>
         );
 
-      case 'animation':
+      case "animation":
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">
               Choose animation level
-            </Typography>
-            <FormControl component="fieldset">
-              <RadioGroup
-                value={preferences.animation}
-                onChange={(e) => handlePreferenceChange('animation', e.target.value)}
-              >
-                {ANIMATION_OPTIONS.map((option) => (
-                  <FormControlLabel
-                    key={option.id}
+            </h3>
+            <RadioGroup
+              value={preferences.animation}
+              onValueChange={(value) =>
+                handlePreferenceChange("animation", value)
+              }
+            >
+              {ANIMATION_OPTIONS.map((option) => (
+                <div key={option.id} className="mb-3 flex items-start gap-3">
+                  <RadioGroupItem
                     value={option.id}
-                    control={<Radio sx={{ color: PRIMARY_GREEN, '&.Mui-checked': { color: PRIMARY_GREEN } }} />}
-                    label={
-                      <Box>
-                        <Typography variant="subtitle1">{option.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {option.description}
-                        </Typography>
-                      </Box>
-                    }
+                    id={option.id}
+                    className="mt-0.5"
                   />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </Box>
+                  <Label htmlFor={option.id} className="flex-1 cursor-pointer">
+                    <p className="text-base font-medium">{option.name}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {option.description}
+                    </p>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
         );
 
-      case 'audience':
+      case "audience":
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">
               Who is your target audience?
-            </Typography>
-            <FormControl component="fieldset">
-              <RadioGroup
-                value={preferences.audienceLevel}
-                onChange={(e) => handlePreferenceChange('audienceLevel', e.target.value)}
-              >
-                <FormControlLabel
+            </h3>
+            <RadioGroup
+              value={preferences.audienceLevel}
+              onValueChange={(value) =>
+                handlePreferenceChange("audienceLevel", value)
+              }
+            >
+              <div className="mb-3 flex items-start gap-3">
+                <RadioGroupItem
                   value="executive"
-                  control={<Radio sx={{ color: PRIMARY_GREEN, '&.Mui-checked': { color: PRIMARY_GREEN } }} />}
-                  label="Executive Level (High-level overview)"
+                  id="executive"
+                  className="mt-0.5"
                 />
-                <FormControlLabel
+                <Label htmlFor="executive" className="cursor-pointer">
+                  Executive Level (High-level overview)
+                </Label>
+              </div>
+              <div className="mb-3 flex items-start gap-3">
+                <RadioGroupItem
                   value="business"
-                  control={<Radio sx={{ color: PRIMARY_GREEN, '&.Mui-checked': { color: PRIMARY_GREEN } }} />}
-                  label="Business Professional (Balanced detail)"
+                  id="business"
+                  className="mt-0.5"
                 />
-                <FormControlLabel
+                <Label htmlFor="business" className="cursor-pointer">
+                  Business Professional (Balanced detail)
+                </Label>
+              </div>
+              <div className="mb-3 flex items-start gap-3">
+                <RadioGroupItem
                   value="technical"
-                  control={<Radio sx={{ color: PRIMARY_GREEN, '&.Mui-checked': { color: PRIMARY_GREEN } }} />}
-                  label="Technical Team (Detailed information)"
+                  id="technical"
+                  className="mt-0.5"
                 />
-                <FormControlLabel
+                <Label htmlFor="technical" className="cursor-pointer">
+                  Technical Team (Detailed information)
+                </Label>
+              </div>
+              <div className="mb-3 flex items-start gap-3">
+                <RadioGroupItem
                   value="general"
-                  control={<Radio sx={{ color: PRIMARY_GREEN, '&.Mui-checked': { color: PRIMARY_GREEN } }} />}
-                  label="General Audience (Easy to understand)"
+                  id="general"
+                  className="mt-0.5"
                 />
-              </RadioGroup>
-            </FormControl>
-          </Box>
+                <Label htmlFor="general" className="cursor-pointer">
+                  General Audience (Easy to understand)
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
         );
 
-      case 'duration':
+      case "duration":
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
+          <div>
+            <h3 className="mb-4 text-lg font-semibold">
               Expected presentation duration
-            </Typography>
-            <Box sx={{ px: 2 }}>
+            </h3>
+            <div className="px-4">
               <Slider
-                value={preferences.duration}
-                onChange={(e, value) => handlePreferenceChange('duration', value)}
+                value={[preferences.duration]}
+                onValueChange={(values) =>
+                  handlePreferenceChange("duration", values[0])
+                }
                 min={5}
                 max={60}
                 step={5}
-                marks={[
-                  { value: 5, label: '5 min' },
-                  { value: 15, label: '15 min' },
-                  { value: 30, label: '30 min' },
-                  { value: 60, label: '1 hour' }
-                ]}
-                valueLabelDisplay="on"
-                sx={{
-                  color: PRIMARY_GREEN,
-                  '& .MuiSlider-thumb': { bgcolor: PRIMARY_GREEN },
-                  '& .MuiSlider-track': { bgcolor: PRIMARY_GREEN },
-                  '& .MuiSlider-rail': { bgcolor: '#ddd' }
-                }}
+                className="w-full"
               />
-            </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
+              <div className="text-muted-foreground mt-2 flex justify-between text-xs">
+                <span>5 min</span>
+                <span>15 min</span>
+                <span>30 min</span>
+                <span>1 hour</span>
+              </div>
+            </div>
+            <p className="text-muted-foreground mt-4 text-center text-sm">
               Current selection: {preferences.duration} minutes
-            </Typography>
-          </Box>
+            </p>
+          </div>
         );
 
       default:
@@ -317,69 +358,56 @@ export default function PreferenceCollectionPanel({ onPreferencesUpdate, onCompl
   };
 
   return (
-    <Card sx={{ maxWidth: 600, mx: 'auto' }}>
-      <CardContent sx={{ p: 3 }}>
+    <Card className="mx-auto max-w-[600px]">
+      <CardContent className="p-6">
         {/* Progress Steps */}
-        <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        <div className="mb-6">
+          <div className="mb-2 flex justify-between">
             {steps.map((step, index) => (
-              <Box key={step.id} sx={{ textAlign: 'center', flex: 1 }}>
-                <Box
-                  sx={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    bgcolor: index <= currentStep ? PRIMARY_GREEN : '#e0e0e0',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 1
-                  }}
+              <div key={step.id} className="flex-1 text-center">
+                <div
+                  className={cn(
+                    "mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                    index <= currentStep
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground",
+                  )}
                 >
                   {step.icon}
-                </Box>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
-                    color: index <= currentStep ? PRIMARY_GREEN : '#666',
-                    fontWeight: index === currentStep ? 600 : 400
-                  }}
+                </div>
+                <p
+                  className={cn(
+                    "text-xs",
+                    index <= currentStep
+                      ? "text-primary"
+                      : "text-muted-foreground",
+                    index === currentStep && "font-semibold",
+                  )}
                 >
                   {step.title}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* Step Content */}
-        <Box sx={{ minHeight: 300, mb: 3 }}>
-          {renderStepContent()}
-        </Box>
+        <div className="mb-6 min-h-[300px]">{renderStepContent()}</div>
 
         {/* Navigation Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button 
-            onClick={prevStep} 
+        <div className="flex justify-between">
+          <Button
+            onClick={prevStep}
             disabled={currentStep === 0}
-            variant="outlined"
+            variant="outline"
           >
             Previous
           </Button>
-          <Button 
-            onClick={nextStep}
-            variant="contained"
-            sx={{ 
-              bgcolor: PRIMARY_GREEN,
-              '&:hover': { bgcolor: '#06A36D' }
-            }}
-          >
-            {currentStep === steps.length - 1 ? 'Complete Setup' : 'Next'}
+          <Button onClick={nextStep} variant="default">
+            {currentStep === steps.length - 1 ? "Complete Setup" : "Next"}
           </Button>
-        </Box>
+        </div>
       </CardContent>
     </Card>
   );
-} 
+}

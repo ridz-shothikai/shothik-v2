@@ -1,6 +1,6 @@
 "use client";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import Box from "@mui/material/Box";
+import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 
 export default function HeroVideo() {
@@ -44,16 +44,12 @@ export default function HeroVideo() {
   }, []);
 
   return (
-    <Box
+    <div
       ref={componentRef}
-      sx={{
-        position: "relative",
-        width: "100%",
-        height: { xs: 250, sm: 300, md: 380, lg: 420, xl: 550 },
-        borderRadius: 2,
-        overflow: "hidden",
-        bgcolor: "#f5f5f5",
-      }}
+      className={cn(
+        "bg-muted relative w-full overflow-hidden rounded-lg",
+        "h-[250px] sm:h-[300px] md:h-[380px] lg:h-[420px] xl:h-[550px]",
+      )}
     >
       <video
         ref={videoRef}
@@ -62,13 +58,7 @@ export default function HeroVideo() {
         controls
         preload="none"
         poster="/home/hero/video-thumbnail.webp"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          borderRadius: "8px",
-          aspectRatio: 16 / 9,
-        }}
+        className="aspect-video h-full w-full rounded-lg object-cover"
         onPlay={handleVideoPlay}
         onPause={() => trackClick("video_pause", { video_position: "hero" })}
         onEnded={() => trackClick("video_complete", { video_position: "hero" })}
@@ -77,6 +67,6 @@ export default function HeroVideo() {
         {/* <source data-src="/home/hero/demo-video.webm" type="video/webm" /> */}
         Your browser does not support the video tag.
       </video>
-    </Box>
+    </div>
   );
 }

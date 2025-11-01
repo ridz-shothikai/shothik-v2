@@ -1,105 +1,28 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { cn } from "@/lib/utils";
 import { trackingList } from "@/libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import {
-  ArrowForward,
-  AutoAwesome,
-  Bolt,
+  ArrowRight,
+  Bot,
+  Brain,
   CheckCircle,
+  Clock,
   Code,
-  People,
+  Globe,
   Phone,
-  PlayArrow,
-  Psychology,
-  Public,
-  Schedule,
-  SmartToy,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Fade,
-  Grid,
-  IconButton,
-  Paper,
-  Slide,
-  Snackbar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+  Play,
+  Sparkles,
+  Users,
+  Zap,
+} from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import EmailModal from "../EmailCollectModal";
-
-// Styled components for custom styling
-const GradientBox = styled(Box)(({ gradient }) => ({
-  background: `linear-gradient(135deg, ${gradient})`,
-}));
-
-const GradientText = styled(Typography)(({ gradient }) => ({
-  background: `linear-gradient(135deg, ${gradient})`,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-  display: "inline-block",
-}));
-
-const GradientButton = styled(Button)(({ gradient }) => ({
-  background: `linear-gradient(135deg, ${gradient})`,
-  "&:hover": {
-    background: `linear-gradient(135deg, ${gradient})`,
-    opacity: 0.9,
-  },
-}));
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: "16px",
-  border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[800] : "#e5e7eb"}`,
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 1px 3px 0 rgba(255, 255, 255, 0.1)"
-      : "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-  overflow: "hidden",
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[900]
-      : theme.palette.background.paper,
-}));
-
-const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
-  width: 48,
-  height: 48,
-  backgroundColor:
-    theme.palette.mode === "dark" ? theme.palette.grey[800] : "#ffffff",
-  border: `1px solid ${theme.palette.mode === "dark" ? theme.palette.grey[700] : "#e5e7eb"}`,
-  borderRadius: "50%",
-  "&:hover": {
-    backgroundColor:
-      theme.palette.mode === "dark" ? theme.palette.grey[700] : "#f9fafb",
-    transform: "scale(1.1)",
-    boxShadow:
-      theme.palette.mode === "dark"
-        ? "0 10px 15px -3px rgba(255, 255, 255, 0.1)"
-        : "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-  },
-  transition: "all 0.3s ease",
-  color:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[300]
-      : theme.palette.text.primary,
-}));
-
-const TouchArea = styled(Box)({
-  touchAction: "pan-y",
-  userSelect: "none",
-});
 
 const agents = [
   {
@@ -107,8 +30,8 @@ const agents = [
     name: "Deep Research Agent",
     description:
       "Analyze 50+ research papers and extract key findings in minutes, not weeks",
-    icon: <Psychology sx={{ fontSize: 24 }} />,
-    gradient: "#059669, #0f766e",
+    icon: <Brain className="size-6" />,
+    gradient: "from-emerald-600 to-teal-600",
     capabilities: [
       "Cross-reference 100+ academic sources",
       "Extract contradicting findings",
@@ -131,8 +54,8 @@ const agents = [
     name: "Browse For Me",
     description:
       "Research complex topics across hundreds of websites like having a personal research team",
-    icon: <Public sx={{ fontSize: 24 }} />,
-    gradient: "#0d9488, #059669",
+    icon: <Globe className="size-6" />,
+    gradient: "from-teal-600 to-emerald-600",
     capabilities: [
       "Multi-site data extraction",
       "Comparative analysis",
@@ -155,8 +78,8 @@ const agents = [
     name: "Task Automation",
     description:
       "Complete multi-step workflows that would take you days of manual work",
-    icon: <SmartToy sx={{ fontSize: 24 }} />,
-    gradient: "#047857, #0d9488",
+    icon: <Bot className="size-6" />,
+    gradient: "from-emerald-700 to-teal-600",
     capabilities: [
       "Job application automation",
       "Scholarship applications",
@@ -179,8 +102,8 @@ const agents = [
     name: "Call For Me",
     description:
       "Make professional calls to gather information, schedule meetings, and handle negotiations",
-    icon: <Phone sx={{ fontSize: 24 }} />,
-    gradient: "#0f766e, #059669",
+    icon: <Phone className="size-6" />,
+    gradient: "from-teal-700 to-emerald-600",
     capabilities: [
       "Information gathering calls",
       "Appointment scheduling",
@@ -203,8 +126,8 @@ const agents = [
     name: "Hire For Me",
     description:
       "Find, vet, and hire the perfect freelancers for your academic or personal projects",
-    icon: <People sx={{ fontSize: 24 }} />,
-    gradient: "#059669, #065f46",
+    icon: <Users className="size-6" />,
+    gradient: "from-emerald-600 to-emerald-800",
     capabilities: [
       "Talent sourcing & vetting",
       "Portfolio evaluation",
@@ -232,22 +155,11 @@ export default function AgentShowcase() {
   const [slideDirection, setSlideDirection] = useState("left");
   const [showModal, setShowModal] = useState(false);
 
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
-
   const currentAgent = agents[currentIndex];
 
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.CAROUSEL_SECTION,
   );
-
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success", // 'success', 'error', 'warning', 'info'
-  });
 
   const [
     registerUserForBetaList,
@@ -308,411 +220,189 @@ export default function AgentShowcase() {
       console.log(result, "result");
 
       // Success toast
-      setToast({
-        open: true,
-        message: "Successfully registered for beta! We'll be in touch soon.",
-        severity: "success",
+      toast.success("Successfully registered for beta!", {
+        description: "We'll be in touch soon.",
       });
 
       // Close the modal
       setShowModal(false);
     } catch (error) {
       // Error toast
-      setToast({
-        open: true,
-        message:
+      toast.error("Registration failed", {
+        description:
           error?.data?.message || "Registration failed. Please try again.",
-        severity: "error",
       });
     }
   };
 
-  const handleCloseToast = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setToast((prev) => ({ ...prev, open: false }));
-  };
-
   return (
     <>
-      <Box
+      <div
         ref={componentRef}
-        sx={{
-          pb: { xs: 8, md: 12 },
-          bgcolor: isDarkMode ? "inherit" : "white",
-          overflow: "hidden",
-        }}
+        className={cn("bg-background overflow-hidden pb-8 md:pb-12")}
       >
-        <Container maxWidth="xl" sx={{ px: { xs: 2, md: 4 } }}>
-          {/* Carousel Navigation */}
-          {/* <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              mb: 8,
-            }}
-          >
-            <AnimatedIconButton onClick={prevAgent}>
-              <ArrowForward
-                sx={{ transform: "rotate(180deg)", fontSize: 20 }}
-              />
-            </AnimatedIconButton>
-
-            <Box sx={{ display: "flex", gap: 1 }}>
-              {agents.map((_, index) => (
-                <IndicatorButton
-                  key={index}
-                  active={index === currentIndex ? "true" : "false"}
-                  onClick={() => setCurrentIndex(index)}
-                />
-              ))}
-            </Box>
-
-            <AnimatedIconButton onClick={nextAgent}>
-              <ArrowForward sx={{ fontSize: 20 }} />
-            </AnimatedIconButton>
-          </Box> */}
-
+        <div className="container mx-auto max-w-7xl px-4 md:px-8">
           {/* Demo Section with Swipe Support */}
-          <TouchArea
+          <div
+            className="touch-pan-y select-none"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            <Slide
+            <div
               key={currentIndex}
-              direction={slideDirection}
-              in
-              timeout={600}
-              mountOnEnter
-              unmountOnExit
+              className="transition-all duration-[600ms] ease-in-out"
             >
-              <StyledCard>
+              <Card className="overflow-hidden rounded-2xl border shadow-sm">
                 {/* Demo Header */}
-                <GradientBox
-                  gradient={currentAgent.gradient}
-                  sx={{ color: "white", p: 4 }}
+                <div
+                  className={cn(
+                    "bg-gradient-to-br p-6 text-white md:p-8",
+                    currentAgent.gradient,
+                  )}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mb: 3,
-                      flexDirection: { xs: "column", md: "row" },
-                      gap: { xs: 3, md: 0 },
-                    }}
+                  <div
+                    className={cn(
+                      "mb-6 flex items-center justify-between",
+                      "flex-col gap-6 md:flex-row md:gap-0",
+                    )}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 2,
-                        textAlign: { xs: "center", md: "left" },
-                      }}
+                    <div
+                      className={cn(
+                        "flex items-center gap-4",
+                        "text-center md:text-left",
+                      )}
                     >
-                      <Box
-                        sx={{
-                          width: 64,
-                          height: 64,
-                          bgcolor: "rgba(255, 255, 255, 0.2)",
-                          borderRadius: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
+                      <div className="flex size-16 items-center justify-center rounded-lg bg-white/20">
                         {currentAgent.icon}
-                      </Box>
-                      <Box>
-                        <Typography
-                          variant="h4"
-                          sx={{
-                            fontWeight: "bold",
-                            fontSize: { xs: "1.5rem", md: "2rem" },
-                          }}
-                        >
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold md:text-3xl">
                           {currentAgent.name}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            color: "rgba(255, 255, 255, 0.9)",
-                            fontSize: { xs: "0.9rem", md: "1.1rem" },
-                          }}
-                        >
+                        </h2>
+                        <p className="mt-1 text-sm text-white/90 md:text-base">
                           {currentAgent.description}
-                        </Typography>
-                      </Box>
-                    </Box>
+                        </p>
+                      </div>
+                    </div>
                     <Button
                       data-umami-event={`Watch Agent Work: ${currentAgent.name}`}
                       onClick={() => handlePlayDemo(currentAgent.id)}
-                      sx={{
-                        bgcolor: "rgba(255, 255, 255, 0.2)",
-                        color: "white",
-                        border: "1px solid rgba(255, 255, 255, 0.3)",
-                        px: 3,
-                        py: 1.5,
-                        "&:hover": {
-                          bgcolor: "rgba(255, 255, 255, 0.3)",
-                        },
-                      }}
-                      startIcon={<PlayArrow />}
+                      className="border border-white/30 bg-white/20 px-6 py-3 text-white hover:bg-white/30"
+                      variant="ghost"
                     >
+                      <Play className="mr-2 size-4" />
                       Watch Agent Work
                     </Button>
-                  </Box>
+                  </div>
 
                   {/* Stats */}
-                  <Grid container spacing={4}>
-                    <Grid item xs={12} sm={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <Schedule />
-                          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                            {currentAgent.stats.timesSaved}
-                          </Typography>
-                        </Box>
-                        <Typography sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                          Time Saved
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <Bolt />
-                          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                            {currentAgent.stats.accuracy}
-                          </Typography>
-                        </Box>
-                        <Typography sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                          Success Rate
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <Psychology />
-                          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                            {currentAgent.stats.automationLevel}
-                          </Typography>
-                        </Box>
-                        <Typography sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
-                          Automation
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </GradientBox>
+                  <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+                    <div className="text-center">
+                      <div className="mb-2 flex items-center justify-center gap-2">
+                        <Clock className="size-5" />
+                        <h3 className="text-2xl font-bold">
+                          {currentAgent.stats.timesSaved}
+                        </h3>
+                      </div>
+                      <p className="text-white/80">Time Saved</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="mb-2 flex items-center justify-center gap-2">
+                        <Zap className="size-5" />
+                        <h3 className="text-2xl font-bold">
+                          {currentAgent.stats.accuracy}
+                        </h3>
+                      </div>
+                      <p className="text-white/80">Success Rate</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="mb-2 flex items-center justify-center gap-2">
+                        <Brain className="size-5" />
+                        <h3 className="text-2xl font-bold">
+                          {currentAgent.stats.automationLevel}
+                        </h3>
+                      </div>
+                      <p className="text-white/80">Automation</p>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Demo Content */}
-                <CardContent sx={{ p: 4 }}>
-                  <Grid container spacing={4}>
+                <CardContent className="p-6 md:p-8">
+                  <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
                     {/* Input */}
-                    <Grid item xs={12} lg={6}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          color: isDarkMode
-                            ? theme.palette.text.primary
-                            : theme.palette.text.primary,
-                        }}
+                    <div>
+                      <h3
+                        className={cn(
+                          "text-foreground mb-4 flex items-center gap-2 text-lg font-semibold",
+                        )}
                       >
-                        <Code sx={{ color: "#10b981" }} />
+                        <Code className="size-5 text-emerald-600" />
                         Your Command
-                      </Typography>
-                      <Paper
-                        sx={{
-                          bgcolor: isDarkMode
-                            ? theme.palette.grey[800]
-                            : "#f8fafc",
-                          p: 3,
-                          border: `1px solid ${
-                            isDarkMode ? theme.palette.grey[700] : "#e2e8f0"
-                          }`,
-                          borderRadius: 1.5,
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            color: isDarkMode
-                              ? theme.palette.grey[300]
-                              : "#334155",
-                            fontStyle: "italic",
-                            lineHeight: 1.6,
-                          }}
-                        >
+                      </h3>
+                      <div className="bg-muted rounded-lg border p-6">
+                        <p className="text-muted-foreground leading-relaxed italic">
                           {currentAgent.demoPrompt}
-                        </Typography>
-                      </Paper>
-                    </Grid>
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Output */}
-                    <Grid item xs={12} lg={6}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          mb: 2,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          color: isDarkMode
-                            ? theme.palette.text.primary
-                            : theme.palette.text.primary,
-                        }}
-                      >
-                        <AutoAwesome sx={{ color: "#a855f7" }} />
-                        Agent Execution
-                      </Typography>
-                      <Paper
-                        sx={{
-                          bgcolor: isDarkMode
-                            ? theme.palette.grey[800]
-                            : "#ecfdf5",
-                          p: 3,
-                          border: `1px solid ${
-                            isDarkMode ? theme.palette.grey[700] : "#bbf7d0"
-                          }`,
-                          borderRadius: 1.5,
-                        }}
-                      >
-                        {isPlaying === currentAgent.id ? (
-                          <Fade in>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1.5,
-                                color: "#047857",
-                              }}
-                            >
-                              <Psychology
-                                sx={{
-                                  animation: "spin 1s linear infinite",
-                                  "@keyframes spin": {
-                                    "0%": { transform: "rotate(0deg)" },
-                                    "100%": { transform: "rotate(360deg)" },
-                                  },
-                                }}
-                              />
-                              <Typography
-                                sx={{ fontSize: "1.1rem", fontWeight: 500 }}
-                              >
-                                Agent is working...
-                              </Typography>
-                            </Box>
-                          </Fade>
-                        ) : (
-                          <Typography
-                            sx={{
-                              color: isDarkMode
-                                ? theme.palette.grey[300]
-                                : "#334155",
-                              lineHeight: 1.6,
-                            }}
-                          >
-                            {currentAgent.output}
-                          </Typography>
+                    <div>
+                      <h3
+                        className={cn(
+                          "text-foreground mb-4 flex items-center gap-2 text-lg font-semibold",
                         )}
-                      </Paper>
-                    </Grid>
-                  </Grid>
+                      >
+                        <Sparkles className="size-5 text-purple-600" />
+                        Agent Execution
+                      </h3>
+                      <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900 dark:bg-emerald-950/20">
+                        {isPlaying === currentAgent.id ? (
+                          <div className="flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
+                            <Brain className="size-5 animate-spin" />
+                            <p className="text-base font-medium">
+                              Agent is working...
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-muted-foreground leading-relaxed">
+                            {currentAgent.output}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Capabilities */}
-                  <Box sx={{ mt: 4 }}>
-                    <Typography variant="h6" sx={{ mb: 2 }}>
+                  <div className="mt-8">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Agent Capabilities
-                    </Typography>
-                    <Grid container spacing={2}>
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       {currentAgent.capabilities.map((capability, index) => (
-                        <Grid item xs={12} sm={6} lg={3} key={index}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              color: isDarkMode
-                                ? theme.palette.grey[400]
-                                : "#475569",
-                            }}
-                          >
-                            <CheckCircle
-                              sx={{
-                                fontSize: 16,
-                                color: "#059669",
-                                flexShrink: 0,
-                              }}
-                            />
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: isDarkMode
-                                  ? theme.palette.grey[300]
-                                  : "text.secondary",
-                              }}
-                            >
-                              {capability}
-                            </Typography>
-                          </Box>
-                        </Grid>
+                        <div
+                          key={index}
+                          className="text-muted-foreground flex items-center gap-2"
+                        >
+                          <CheckCircle className="size-4 flex-shrink-0 text-emerald-600" />
+                          <p className="text-muted-foreground text-sm">
+                            {capability}
+                          </p>
+                        </div>
                       ))}
-                    </Grid>
-                  </Box>
+                    </div>
+                  </div>
 
                   {/* CTA */}
-                  <Box
-                    sx={{
-                      mt: 4,
-                      pt: 3,
-                      borderTop: `1px solid ${
-                        isDarkMode ? theme.palette.grey[700] : "#e2e8f0"
-                      }`,
-                    }}
-                  >
-                    <GradientButton
+                  <div className="mt-8 border-t pt-6">
+                    <Button
                       data-umami-event={`Try Now Agent: ${currentAgent.name}`}
-                      gradient={currentAgent.gradient}
-                      fullWidth
-                      sx={{
-                        color: "white",
-                        fontSize: "1.1rem",
-                        py: 2,
-                        textTransform: "none",
-                      }}
-                      endIcon={<ArrowForward />}
+                      className={cn(
+                        "w-full py-6 text-base text-white hover:opacity-90",
+                        `bg-gradient-to-r ${currentAgent.gradient}`,
+                      )}
                       onClick={() => {
                         setShowModal(true);
 
@@ -724,63 +414,45 @@ export default function AgentShowcase() {
                       }}
                     >
                       Try Now
-                    </GradientButton>
-                  </Box>
+                      <ArrowRight className="ml-2 size-4" />
+                    </Button>
+                  </div>
                 </CardContent>
-              </StyledCard>
-            </Slide>
-          </TouchArea>
+              </Card>
+            </div>
+          </div>
 
           {/* Bottom CTA */}
-          <Fade in timeout={600} style={{ transitionDelay: "800ms" }}>
-            <Box sx={{ textAlign: "center", mt: 10 }}>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: "bold",
-                  mb: 2,
-                  color: isDarkMode ? "#FFF" : "#0f172a",
-                }}
-              >
-                Ready to Command the Future?
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  color: isDarkMode ? theme.palette.grey[400] : "#64748b",
-                  mb: 4,
-                }}
-              >
-                Leave it to us. Stop working for your tools. Make them work for
-                you.
-              </Typography>
-              <GradientButton
-                data-umami-event="Command Your AI Writing Team"
-                gradient="#059669, #0d9488"
-                sx={{
-                  color: "white",
-                  fontSize: "1.1rem",
-                  px: 4,
-                  py: 2,
-                  textTransform: "none",
-                }}
-                endIcon={<Public />}
-                onClick={() => {
-                  setShowModal(true);
+          <div className="mt-16 text-center">
+            <h2 className="text-foreground mb-4 text-3xl font-bold md:text-4xl">
+              Ready to Command the Future?
+            </h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Leave it to us. Stop working for your tools. Make them work for
+              you.
+            </p>
+            <Button
+              data-umami-event="Command Your AI Writing Team"
+              className={cn(
+                "px-8 py-6 text-base text-white hover:opacity-90",
+                "bg-gradient-to-r from-emerald-600 to-teal-600",
+              )}
+              onClick={() => {
+                setShowModal(true);
 
-                  // tracking
-                  trackClick(trackingList.CTA_BUTTON, {
-                    button_text: "Command Your AI Writing Team",
-                    position: "agent_show_case_section",
-                  });
-                }}
-              >
-                Command Your AI Writing Team
-              </GradientButton>
-            </Box>
-          </Fade>
-        </Container>
-      </Box>
+                // tracking
+                trackClick(trackingList.CTA_BUTTON, {
+                  button_text: "Command Your AI Writing Team",
+                  position: "agent_show_case_section",
+                });
+              }}
+            >
+              Command Your AI Writing Team
+              <Globe className="ml-2 size-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* email collect modal */}
       <EmailModal
@@ -788,23 +460,6 @@ export default function AgentShowcase() {
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
-
-      {/* Toast notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

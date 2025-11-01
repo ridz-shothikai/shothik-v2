@@ -1,92 +1,167 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { Controller, useForm } from "react-hook-form";
 
 const MODEL_OPTIONS = [
-  { value: 'gemini-pro', label: 'Gemini Pro' },
-  { value: 'gemini-ultra', label: 'Gemini Ultra' },
+  { value: "gemini-pro", label: "Gemini Pro" },
+  { value: "gemini-ultra", label: "Gemini Ultra" },
 ];
 
 const SuperAgentForm = ({ onSubmit, defaultValues = {} }) => {
-  const { register, handleSubmit, formState: { errors, isValid }, reset } = useForm({
-    mode: 'onChange',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+    control,
+  } = useForm({
+    mode: "onChange",
     defaultValues: {
-      name: '',
-      description: '',
-      apiKey: '',
-      model: '',
+      name: "",
+      description: "",
+      apiKey: "",
+      model: "",
       temperature: 0.7,
       ...defaultValues,
     },
   });
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <TextField
-        label="Agent Name"
-        {...register('name', { required: 'Agent name is required' })}
-        error={!!errors.name}
-        helperText={errors.name?.message}
-        fullWidth
-      />
-      <TextField
-        label="Description"
-        {...register('description')}
-        fullWidth
-        multiline
-        minRows={2}
-      />
-      <TextField
-        label="API Key"
-        type="password"
-        {...register('apiKey', { required: 'API key is required' })}
-        error={!!errors.apiKey}
-        helperText={errors.apiKey?.message}
-        fullWidth
-      />
-      <FormControl fullWidth error={!!errors.model}>
-        <InputLabel id="model-label">Model</InputLabel>
-        <Select
-          labelId="model-label"
-          label="Model"
-          defaultValue=""
-          {...register('model', { required: 'Model selection is required' })}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+      <div className="space-y-2">
+        <Label htmlFor="name" className={cn(errors.name && "text-destructive")}>
+          Agent Name
+        </Label>
+        <Input
+          id="name"
+          {...register("name", { required: "Agent name is required" })}
+          className={cn(
+            errors.name && "border-destructive focus-visible:ring-destructive",
+          )}
+        />
+        {errors.name && (
+          <p className="text-destructive text-sm">{errors.name.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea id="description" {...register("description")} rows={2} />
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="apiKey"
+          className={cn(errors.apiKey && "text-destructive")}
         >
-          {MODEL_OPTIONS.map((option) => (
-            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-          ))}
-        </Select>
-        {errors.model && <Box sx={{ color: 'error.main', fontSize: 12, mt: 0.5 }}>{errors.model.message}</Box>}
-      </FormControl>
-      <TextField
-        label="Temperature"
-        type="number"
-        inputProps={{ min: 0, max: 1, step: 0.01 }}
-        {...register('temperature', {
-          valueAsNumber: true,
-          min: { value: 0, message: 'Min is 0' },
-          max: { value: 1, message: 'Max is 1' },
-        })}
-        error={!!errors.temperature}
-        helperText={errors.temperature?.message || 'Controls randomness (0 = deterministic, 1 = very random)'}
-        fullWidth
-      />
-      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-        <Button type="submit" variant="contained" color="primary" disabled={!isValid}>
+          API Key
+        </Label>
+        <Input
+          id="apiKey"
+          type="password"
+          {...register("apiKey", { required: "API key is required" })}
+          className={cn(
+            errors.apiKey &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
+        />
+        {errors.apiKey && (
+          <p className="text-destructive text-sm">{errors.apiKey.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="model-label"
+          className={cn(errors.model && "text-destructive")}
+        >
+          Model
+        </Label>
+        <Controller
+          name="model"
+          control={control}
+          rules={{ required: "Model selection is required" }}
+          render={({ field }) => (
+            <Select value={field.value || ""} onValueChange={field.onChange}>
+              <SelectTrigger
+                id="model-label"
+                className={cn(
+                  "w-full",
+                  errors.model &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
+              >
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent>
+                {MODEL_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.model && (
+          <p className="text-destructive text-sm">{errors.model.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="temperature"
+          className={cn(errors.temperature && "text-destructive")}
+        >
+          Temperature
+        </Label>
+        <Input
+          id="temperature"
+          type="number"
+          min={0}
+          max={1}
+          step={0.01}
+          {...register("temperature", {
+            valueAsNumber: true,
+            min: { value: 0, message: "Min is 0" },
+            max: { value: 1, message: "Max is 1" },
+          })}
+          className={cn(
+            errors.temperature &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
+        />
+        {errors.temperature ? (
+          <p className="text-destructive text-sm">
+            {errors.temperature.message}
+          </p>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Controls randomness (0 = deterministic, 1 = very random)
+          </p>
+        )}
+      </div>
+
+      <div className="mt-2 flex gap-2">
+        <Button type="submit" variant="default" disabled={!isValid}>
           Save
         </Button>
-        <Button type="button" variant="outlined" color="secondary" onClick={() => reset()}>
+        <Button type="button" variant="outline" onClick={() => reset()}>
           Reset
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </form>
   );
 };
 
-export default SuperAgentForm; 
+export default SuperAgentForm;

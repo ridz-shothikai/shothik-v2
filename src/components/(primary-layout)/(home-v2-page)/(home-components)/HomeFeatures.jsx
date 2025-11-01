@@ -1,139 +1,82 @@
 "use client";
 
-import { alpha, Box, Grid2, Typography, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import * as motion from "motion/react-client";
 import BgContainer from "./components/hero/BgContainer";
 import UserActionButton from "./components/hero/UserActionButton";
 import VideoImage from "./components/VideoImage";
 
 export default function HomeFeatures() {
-  const theme = useTheme();
   return (
     <BgContainer
-      sx={{
-        py: 8,
-        px: { xs: 2, sm: 4, md: 6 },
-        // backgroundColor: "#FFFFFF",
-        backgroundColor: theme.palette.background.default,
-        mb: 3,
-      }}
-      // image='url(/home/bg.png)'
+      className={cn("bg-background mb-3 px-4 py-16 sm:px-8 md:px-12")}
     >
-      <Box
-        component={motion.div}
+      <motion.div
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        fontSize={{ xs: "1.8rem", sm: "2rem", md: "3rem", lg: "3rem" }}
-        fontWeight="bold"
-        textAlign="center"
-        marginBottom={{ xs: 8, sm: 6 }}
-        sx={{
-          lineHeight: 1.2,
-          "& > span": {
-            display: "block",
-          },
-        }}
+        className={cn(
+          "mb-16 text-center font-bold sm:mb-12",
+          "text-[1.8rem] sm:text-2xl md:text-3xl lg:text-3xl",
+          "leading-tight",
+          "[&>span]:block",
+        )}
       >
         Powerful Features That Set{" "}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
-          }}
-        >
-          <Typography
-            component="span"
-            variant="inherit"
-            style={{ color: "#00A76F" }}
-            sx={{
-              background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+        <div className="flex items-center justify-center gap-4">
+          <span
+            className={cn(
+              "from-primary to-primary bg-gradient-to-r",
+              "bg-clip-text text-transparent",
+            )}
           >
             Shothik AI
-          </Typography>
-          <Typography component="span" variant="inherit" color="text.primary">
-            Apart
-          </Typography>
-        </Box>
-      </Box>
+          </span>
+          <span className="text-foreground">Apart</span>
+        </div>
+      </motion.div>
 
       {/* Bypass GPT Section */}
-      <Grid2 container justifyContent="space-between" alignItems="center">
-        <Grid2
-          component={motion.div}
+      <div className="grid grid-cols-1 items-center justify-between sm:grid-cols-2 md:grid-cols-2">
+        <motion.div
           initial={{ x: -100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          size={{ xs: 12, sm: 6, md: 6 }}
+          className="col-span-1"
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                sx={{
-                  fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                  lineHeight: 1.2,
-                }}
+          <div className="flex items-center justify-start gap-8">
+            <div className="flex flex-col items-start justify-start">
+              <h3
+                className={cn(
+                  "leading-tight font-bold",
+                  "text-xl sm:text-xl md:text-2xl",
+                )}
               >
                 Unleash AI Potential with <br />
-                <Typography
-                  component="span"
-                  variant="inherit"
-                  fontWeight="bold"
-                  color="#00A76F"
-                >
-                  Humanize GPT
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
+                <span className="text-primary font-bold">Humanize GPT</span>
+              </h3>
+            </div>
+          </div>
 
-          <Box>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginY: 2 }}
-            >
+          <div className="my-4">
+            <p className="text-muted-foreground text-base">
               Working closely in partnership with the AI detector, you can
               verify and authenticate, distinguishing between human-written and
               AI-generated content with precision and confidence.
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
           <UserActionButton />
-        </Grid2>
+        </motion.div>
 
-        <Grid2
-          size={{ xs: 12, sm: 6, md: 6 }}
-          component={motion.div}
+        <motion.div
           initial={{ x: 100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          sx={{ pl: { md: 10 } }}
+          className="col-span-1 pl-0 md:pl-20"
         >
           <VideoImage
             lightImage="/home/bypass-light.webp"
@@ -142,22 +85,18 @@ export default function HomeFeatures() {
             height={450}
             object="fill"
           />
-        </Grid2>
-      </Grid2>
+        </motion.div>
+      </div>
 
       {/* AI Detector Section */}
-      <Grid2 container justifyContent="space-between" alignItems="center">
+      <div className="grid grid-cols-1 items-center justify-between sm:grid-cols-2 md:grid-cols-2">
         {/* Video Grid */}
-        <Grid2
-          size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{
-            order: { xs: 2, sm: 1 },
-          }}
-          component={motion.div}
+        <motion.div
           initial={{ x: -100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true }}
+          className="order-2 col-span-1 sm:order-1"
         >
           <VideoImage
             lightImage="/home/ai-detector-light.webp"
@@ -165,149 +104,80 @@ export default function HomeFeatures() {
             width={400}
             height={400}
           />
-        </Grid2>
+        </motion.div>
 
         {/* Text Content Grid */}
-        <Grid2
-          size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{
-            order: { xs: 1, sm: 2 },
-          }}
-          component={motion.div}
+        <motion.div
           initial={{ x: 100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.12 }}
           viewport={{ once: true }}
+          className="order-1 col-span-1 sm:order-2"
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                flexDirection: "column",
-                gap: 0.3,
-              }}
-            >
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                sx={{
-                  fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                  lineHeight: 1.2,
-                }}
+          <div className="flex items-center justify-start gap-8">
+            <div className="flex flex-col items-start justify-start gap-1">
+              <h3
+                className={cn(
+                  "leading-tight font-bold",
+                  "text-xl sm:text-xl md:text-2xl",
+                )}
               >
                 Harness the Power of <br /> Advanced{" "}
-                <Typography
-                  component="span"
-                  variant="inherit"
-                  fontWeight="bold"
-                  color="#00A76F"
-                >
-                  AI Detector
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
-          <Box>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginY: 2 }}
-            >
+                <span className="text-primary font-bold">AI Detector</span>
+              </h3>
+            </div>
+          </div>
+          <div className="my-4">
+            <p className="text-muted-foreground text-base">
               Direct communications with AI-driven queries. The Humanize GPT
               feature ensures you receive unrestrained, detailed, and
               comprehensive responses, enabling a seamless experience for
               complex tasks.
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
           <UserActionButton />
-        </Grid2>
-      </Grid2>
+        </motion.div>
+      </div>
 
       {/* Translator Section */}
-      <Grid2
-        container
-        justifyContent="space-between"
-        spacing={4}
-        alignItems="center"
-      >
-        <Grid2
-          component={motion.div}
+      <div className="grid grid-cols-1 items-center justify-between gap-8 sm:grid-cols-2 md:grid-cols-2">
+        <motion.div
           initial={{ x: -100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.16 }}
           viewport={{ once: true }}
-          size={{ xs: 12, sm: 6, md: 6 }}
+          className="col-span-1"
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 4,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-                flexDirection: "column",
-                gap: 0.3,
-              }}
-            >
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                sx={{
-                  fontSize: { xs: "1.2rem", sm: "1.3rem", md: "2rem" },
-                  lineHeight: 1.2,
-                }}
+          <div className="flex items-center justify-start gap-8">
+            <div className="flex flex-col items-start justify-start gap-1">
+              <h3
+                className={cn(
+                  "leading-tight font-bold",
+                  "text-xl sm:text-xl md:text-2xl",
+                )}
               >
                 Break Language Barriers <br /> with{" "}
-                <Typography
-                  component="span"
-                  variant="inherit"
-                  fontWeight="bold"
-                  color="#00A76F"
-                >
-                  {" "}
-                  Translator
-                </Typography>
-              </Typography>
-            </Box>
-          </Box>
+                <span className="text-primary font-bold"> Translator</span>
+              </h3>
+            </div>
+          </div>
 
-          <Box>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ marginY: 2 }}
-            >
+          <div className="my-4">
+            <p className="text-muted-foreground text-base">
               Working closely in partnership with the AI detector, you can
               verify and authenticate, distinguishing between human-written and
               AI-generated content with precision and confidence.
-            </Typography>
-          </Box>
+            </p>
+          </div>
           <UserActionButton />
-        </Grid2>
-        <Grid2
-          component={motion.div}
+        </motion.div>
+        <motion.div
           initial={{ x: 100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.19 }}
           viewport={{ once: true }}
-          size={{ xs: 12, sm: 6, md: 6 }}
-          sx={{ pl: { md: 10 } }}
+          className="col-span-1 pl-0 md:pl-20"
         >
           <VideoImage
             lightImage="/home/translator-light.webp"
@@ -315,8 +185,8 @@ export default function HomeFeatures() {
             width={400}
             height={400}
           />
-        </Grid2>
-      </Grid2>
+        </motion.div>
+      </div>
     </BgContainer>
   );
 }

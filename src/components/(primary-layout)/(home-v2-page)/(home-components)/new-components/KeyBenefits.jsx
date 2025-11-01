@@ -2,46 +2,8 @@
 
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { trackingList } from "@/libs/trackingList";
-import {
-  Box,
-  Container,
-  Grid,
-  styled,
-  Typography,
-  useTheme,
-} from "@mui/material";
 import { motion } from "framer-motion";
 import { Brain, FileText, Globe, Shield } from "lucide-react";
-
-const BenefitIconContainer = styled(Box)(({ theme }) => ({
-  width: "64px",
-  height: "64px",
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: "16px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: "0 auto 16px",
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05)"
-      : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  transition: "box-shadow 0.3s ease",
-  "&:hover": {
-    boxShadow:
-      theme.palette.mode === "dark"
-        ? "0 25px 50px -12px rgba(255, 255, 255, 0.25)"
-        : "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-  },
-}));
-
-const BenefitCard = styled(Box)({
-  textAlign: "center",
-  cursor: "pointer",
-  "&:hover": {
-    transform: "scale(1.05)",
-  },
-});
 
 const benefits = [
   {
@@ -79,20 +41,16 @@ const benefits = [
 ];
 
 export default function KeyBenefits() {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-
   const { componentRef } = useComponentTracking(
     trackingList.WHY_STUDENT_CHOOSE_SECTION,
   );
 
+  const handleBenefitClick = (id) => {
+    // Placeholder handler - can be implemented as needed
+  };
+
   return (
-    <Container
-      maxWidth="xl"
-      sx={{
-        pb: { xs: 4, sm: 6, xl: 8 },
-      }}
-    >
+    <div className="mx-auto max-w-7xl pb-4 sm:pb-6 xl:pb-8">
       <motion.div
         ref={componentRef}
         initial={{ opacity: 0, y: 30 }}
@@ -100,45 +58,20 @@ export default function KeyBenefits() {
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
       >
-        <Box
-          sx={{
-            background: isDarkMode
-              ? theme.palette.background.default
-              : "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)", // emerald-50 to blue-50
-            borderRadius: "24px",
-            p: { xs: 4, lg: 6 },
-          }}
-        >
-          <Box sx={{ textAlign: "center", mb: 6 }}>
-            <Typography
-              variant="h3"
-              sx={{
-                fontSize: { xs: "1.5rem", sm: "1.875rem" },
-                fontWeight: 700,
-                color: isDarkMode ? theme.palette.text.primary : "#111827", // gray-900
-                mb: 2,
-              }}
-            >
+        <div className="from-primary/5 via-muted to-primary/5 rounded-3xl bg-gradient-to-br p-4 lg:p-6">
+          <div className="mb-6 text-center">
+            <h3 className="text-foreground mb-2 text-2xl font-bold sm:text-3xl">
               Why Students Choose Shothik AI
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: "1.125rem",
-                color: isDarkMode ? theme.palette.text.secondary : "#4b5563", // gray-600
-                maxWidth: "512px",
-                mx: "auto",
-                fontWeight: 400,
-              }}
-            >
+            </h3>
+            <p className="text-muted-foreground mx-auto max-w-[512px] text-lg font-normal">
               Built specifically for academic writing with features that generic
               paraphrasing tools simply don&apos;t offer.
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
-          <Grid container spacing={4}>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map((benefit, index) => (
-              <Grid item xs={12} sm={6} lg={3} key={benefit.id}>
+              <div key={benefit.id} className="col-span-1">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -146,57 +79,32 @@ export default function KeyBenefits() {
                   viewport={{ once: true }}
                   whileHover={{ scale: 1.05 }}
                 >
-                  <BenefitCard onClick={() => handleBenefitClick(benefit.id)}>
-                    <BenefitIconContainer>
-                      <benefit.icon
-                        size={32}
-                        color={theme.palette.success.main}
-                      />
-                    </BenefitIconContainer>
+                  <div
+                    onClick={() => handleBenefitClick(benefit.id)}
+                    className="cursor-pointer text-center transition-transform hover:scale-105"
+                  >
+                    <div className="bg-card mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm transition-shadow hover:shadow-lg">
+                      <benefit.icon size={32} className="text-primary" />
+                    </div>
 
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: "1.125rem",
-                        fontWeight: 700,
-                        color: isDarkMode
-                          ? theme.palette.text.primary
-                          : "#111827", // gray-900
-                        mb: 1,
-                      }}
-                    >
+                    <h6 className="text-foreground mb-1 text-lg font-bold">
                       {benefit.title}
-                    </Typography>
+                    </h6>
 
-                    <Typography
-                      sx={{
-                        color: isDarkMode
-                          ? theme.palette.text.secondary
-                          : "#4b5563", // gray-600
-                        fontSize: "0.875rem",
-                        lineHeight: 1.6,
-                        mb: 1.5,
-                      }}
-                    >
+                    <p className="text-muted-foreground mb-1.5 text-sm leading-relaxed">
                       {benefit.description}
-                    </Typography>
+                    </p>
 
-                    <Typography
-                      sx={{
-                        fontSize: "2rem",
-                        fontWeight: 900,
-                        color: theme.palette.success.main, // emerald-600
-                      }}
-                    >
+                    <p className="text-primary text-3xl font-black">
                       {benefit.stat}
-                    </Typography>
-                  </BenefitCard>
+                    </p>
+                  </div>
                 </motion.div>
-              </Grid>
+              </div>
             ))}
-          </Grid>
-        </Box>
+          </div>
+        </div>
       </motion.div>
-    </Container>
+    </div>
   );
 }

@@ -1,224 +1,129 @@
-import { keyframes } from "@emotion/react";
-import {
-  AutoMode,
-  CheckCircle,
-  ExpandMore,
-  Psychology,
-  SmartToy,
-  TravelExplore,
-} from "@mui/icons-material";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Bot,
+  CheckCircle,
+  Loader2,
+  MousePointer2,
+  Sparkles,
+} from "lucide-react";
 
 export default function AgentMessage({ message, handleSideView }) {
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
-
   const data = message?.content;
   if (!data && !data.length) return null;
-  const spin = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`;
 
   return (
-    <Box>
-      <Stack direction="row" gap={2} alignItems="center">
-        <SmartToyIcon sx={{ color: "#00A76F", fontSize: 30 }} />
-        <Typography fontWeight={600}>Shothik AI Agent</Typography>
-      </Stack>
+    <div>
+      <div className="flex items-center gap-2">
+        <Bot className="size-7" style={{ color: "#00A76F" }} />
+        <h3 className="text-base font-semibold">Shothik AI Agent</h3>
+      </div>
       {data[0]?.message?.includes("##") ? (
         <RenderResponse
-          sx={{ marginTop: 1 }}
+          className="mt-1"
           item={data[0]}
-          dark={dark}
           handleSideView={handleSideView}
         />
       ) : (
-        <Typography fontSize={16} mt={1}>
-          {data[0]?.message}
-        </Typography>
+        <p className="mt-1 text-base">{data[0]?.message}</p>
       )}
 
       {data.slice(1, data.length).map((item, index, arr) => (
-        <Stack sx={{ position: "relative" }} key={index}>
-          <Box sx={{ position: "absolute", left: 0, top: 10, zIndex: 20 }}>
-            <CheckCircle fontSize="small" sx={{ color: "primary.main" }} />
-          </Box>
-          <Box
-            sx={{
-              borderLeft: "1px dashed",
-              borderColor: "primary.main",
-              position: "absolute",
-              top: 12,
-              bottom: arr.length - 1 === index ? 12 : -12,
-              left: 8,
-              zIndex: 1,
+        <div className="relative" key={index}>
+          <div className="absolute top-2.5 left-0 z-20">
+            <CheckCircle className="text-primary size-4" />
+          </div>
+          <div
+            className="border-primary absolute top-3 z-10 border-l border-dashed"
+            style={{
+              bottom: arr.length - 1 === index ? "12px" : "-12px",
+              left: "8px",
             }}
           />
 
           <Accordion
-            defaultExpanded
-            disableGutters
-            sx={{
-              border: "none",
-              boxShadow: "none",
-              margin: 0,
-              marginLeft: 3,
-              "&::before": {
-                display: "none",
-              },
-              "&.Mui-expanded": {
-                backgroundColor: "transparent",
-                boxShadow: "none",
-                minHeight: "auto",
-                marginLeft: 3,
-              },
-              "& .Mui-expanded": {
-                backgroundColor: "transparent",
-                boxShadow: "none",
-                minHeight: "auto",
-                margin: 0,
-              },
-              "& .MuiAccordionSummary-root": {
-                padding: 0,
-              },
-              "& .MuiAccordionDetails-root": {
-                boxShadow: "none",
-                border: "none",
-                paddingY: 0,
-                paddingX: 1,
-              },
-              "& .MuiAccordionSummary-content": {
-                marginY: 0,
-              },
-              "& .MuiButtonBase-root": {
-                minHeight: "auto",
-                marginY: 1,
-              },
-            }}
+            type="single"
+            collapsible
+            defaultValue="item"
+            className="ml-3 border-none shadow-none"
           >
-            <AccordionSummary
-              expandIcon={item?.message?.includes("##") ? null : <ExpandMore />}
-              aria-controls={`logs-${index}`}
-              id={`logs-${index}`}
-            >
-              {item?.message?.includes("##") ? (
-                <RenderResponse
-                  item={item}
-                  dark={dark}
-                  handleSideView={handleSideView}
-                />
-              ) : (
-                <Typography>{item.message}</Typography>
-              )}
-            </AccordionSummary>
-            <AccordionDetails
-              sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}
-            >
-              {item.data && item.data.length
-                ? item.data.map((subMessage, index) => {
-                    if (subMessage.type === "text") {
-                      return (
-                        <Typography
-                          sx={{
-                            color: dark ? "primary.lighter" : "primary.darker",
-                            fontSize: 14,
-                          }}
-                          key={index}
-                        >
-                          {subMessage.message}
-                        </Typography>
-                      );
-                    } else if (subMessage.type === "tool") {
-                      return (
-                        <Box
-                          onClick={() => handleSideView(subMessage)}
-                          sx={{
-                            backgroundColor: dark
-                              ? "rgba(4, 64, 57, 0.5)"
-                              : "#cbe9dd",
-                            paddingX: 1.5,
-                            paddingY: 0.5,
-                            borderRadius: 2,
-                            cursor: "pointer",
-                            width: "fit-content",
-                            maxWidth: "100%",
-                            color: dark ? "primary.lighter" : "primary.darker",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 0.5,
-                          }}
-                          key={index}
-                        >
-                          <Typography fontWeight={600}>Tool</Typography>
-                          <Typography>||</Typography>
-                          {subMessage.agent_name === "browser_agent" ? (
-                            <TravelExplore
-                              sx={{ fontSize: 16, color: "primary.main" }}
-                            />
-                          ) : subMessage.agent_name === "planner_agent" ? (
-                            <Psychology
-                              sx={{ fontSize: 18, color: "primary.main" }}
-                            />
-                          ) : (
-                            <SmartToyIcon
-                              sx={{ color: "#00A76F", fontSize: 16 }}
-                            />
-                          )}
-
-                          <Typography
-                            noWrap
-                            sx={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              flexGrow: 1,
-                            }}
-                            fontSize={14}
+            <AccordionItem value="item" className="border-none">
+              <AccordionTrigger
+                hideChevron={item?.message?.includes("##")}
+                className="py-0 hover:no-underline"
+              >
+                {item?.message?.includes("##") ? (
+                  <RenderResponse item={item} handleSideView={handleSideView} />
+                ) : (
+                  <p>{item.message}</p>
+                )}
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-1 px-1 py-0">
+                {item.data && item.data.length
+                  ? item.data.map((subMessage, index) => {
+                      if (subMessage.type === "text") {
+                        return (
+                          <p
+                            className="text-muted-foreground text-sm"
+                            key={index}
                           >
                             {subMessage.message}
-                          </Typography>
-                          {subMessage?.status === "progress" ? (
-                            <AutoMode
-                              sx={{
-                                animation: `${spin} 2s linear infinite`,
-                                fontSize: 16,
-                                color: "primary.main",
-                              }}
-                            />
-                          ) : (
-                            <Button sx={{ padding: 0 }}>View</Button>
-                          )}
-                        </Box>
-                      );
-                    } else return null;
-                  })
-                : null}
-            </AccordionDetails>
+                          </p>
+                        );
+                      } else if (subMessage.type === "tool") {
+                        return (
+                          <div
+                            onClick={() => handleSideView(subMessage)}
+                            className="border-primary/20 bg-primary/10 flex w-fit max-w-full cursor-pointer items-center gap-0.5 rounded-lg border px-1.5 py-0.5 text-sm"
+                            key={index}
+                          >
+                            <span className="font-semibold">Tool</span>
+                            <span>||</span>
+                            {subMessage.agent_name === "browser_agent" ? (
+                              <MousePointer2 className="text-primary size-4" />
+                            ) : subMessage.agent_name === "planner_agent" ? (
+                              <Sparkles className="text-primary size-4.5" />
+                            ) : (
+                              <Bot
+                                className="size-4"
+                                style={{ color: "#00A76F" }}
+                              />
+                            )}
+
+                            <span className="grow truncate">
+                              {subMessage.message}
+                            </span>
+                            {subMessage?.status === "progress" ? (
+                              <Loader2 className="text-primary size-4 animate-spin" />
+                            ) : (
+                              <Button variant="ghost" className="h-auto p-0">
+                                View
+                              </Button>
+                            )}
+                          </div>
+                        );
+                      } else return null;
+                    })
+                  : null}
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
-        </Stack>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 }
 
-function RenderResponse({ item, dark, handleSideView, sx }) {
+function RenderResponse({ item, handleSideView, className }) {
   if (!item) return null;
   return (
-    <Box
+    <div
       onClick={() =>
         handleSideView({
           type: "result",
@@ -228,28 +133,17 @@ function RenderResponse({ item, dark, handleSideView, sx }) {
           message: "Shothik AI Agent Task is completed",
         })
       }
-      sx={{
-        backgroundColor: dark ? "rgba(4, 64, 57, 0.5)" : "#cbe9dd",
-        paddingX: 1.5,
-        paddingY: 0.5,
-        borderRadius: 2,
-        cursor: "pointer",
-        width: "fit-content",
-        color: dark ? "primary.lighter" : "primary.darker",
-        display: "flex",
-        alignItems: "center",
-        gap: 0.5,
-        ...sx,
-      }}
+      className={cn(
+        "border-primary/20 bg-primary/10 flex w-fit cursor-pointer items-center gap-0.5 rounded-lg border px-1.5 py-0.5",
+        className,
+      )}
     >
-      <SmartToy sx={{ color: "#00A76F", fontSize: 16 }} />
-      <Typography fontSize={14} fontWeight={600}>
+      <Bot className="size-4" style={{ color: "#00A76F" }} />
+      <span className="text-sm font-semibold">
         Shothik AI Agent Task is completed
-      </Typography>
-      <Typography>||</Typography>
-      <Typography fontWeight={600} fontSize={14}>
-        View
-      </Typography>
-    </Box>
+      </span>
+      <span>||</span>
+      <span className="text-sm font-semibold">View</span>
+    </div>
   );
 }

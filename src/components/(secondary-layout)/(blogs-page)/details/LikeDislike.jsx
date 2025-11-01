@@ -1,18 +1,13 @@
 "use client";
 import { refetchBlogDetails } from "@/app/actions";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   useDisLikeContendMutation,
   useLikeContendMutation,
 } from "@/redux/api/blog/blogApiSlice";
 import { setShowLoginModal } from "@/redux/slice/auth";
-import {
-  ThumbDownAlt,
-  ThumbDownOffAlt,
-  ThumbUpAlt,
-  ThumbUpOffAlt,
-} from "@mui/icons-material";
-import { Stack, Typography } from "@mui/material";
+import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -67,58 +62,66 @@ export function LikeDislike({ id, api, like, dislike, size = "30px", slug }) {
     }
   };
 
+  // Map common pixel sizes to Tailwind classes
+  const getSizeClass = (sizeStr) => {
+    const sizeNum = parseInt(sizeStr.replace("px", "")) || 30;
+    const sizeMap = {
+      16: "size-4",
+      20: "size-5",
+      24: "size-6",
+      28: "size-7",
+      30: "size-8",
+      32: "size-8",
+      36: "size-9",
+      40: "size-10",
+      48: "size-12",
+    };
+    // For sizes not in map, use arbitrary value (works if size is known at build time)
+    return sizeMap[sizeNum] || `h-[${sizeNum}px] w-[${sizeNum}px]`;
+  };
+
+  const iconSizeClass = getSizeClass(size);
+
   return (
-    <Stack flexDirection="row" alignItems="center" gap={1}>
-      <Stack flexDirection="row" alignItems="center" gap={0.5}>
+    <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-2">
         {like?.includes(userId) ? (
-          <ThumbUpAlt
-            sx={{
-              height: size,
-              width: size,
-              color: "primary.main",
-            }}
+          <ThumbsUp
+            className={cn(iconSizeClass, "text-primary fill-primary")}
           />
         ) : (
-          <ThumbUpOffAlt
+          <ThumbsUp
             onClick={handleLike}
-            sx={{
-              height: size,
-              width: size,
-              color: "primary.main",
-              cursor: "pointer",
-            }}
-            disabled={loading}
+            className={cn(
+              iconSizeClass,
+              "text-primary cursor-pointer",
+              loading && "pointer-events-none opacity-50",
+            )}
           />
         )}
-        <Typography align="center" fontWeight={"700"} color="primary.main">
+        <span className="text-primary text-center font-bold">
           {like?.length || 0}
-        </Typography>
-      </Stack>
-      <Stack flexDirection="row" alignItems="center" gap={0.5}>
+        </span>
+      </div>
+      <div className="flex flex-row items-center gap-2">
         {dislike?.includes(userId) ? (
-          <ThumbDownAlt
-            sx={{
-              height: size,
-              width: size,
-              color: "warning.main",
-            }}
+          <ThumbsDown
+            className={cn(iconSizeClass, "text-destructive fill-destructive")}
           />
         ) : (
-          <ThumbDownOffAlt
+          <ThumbsDown
             onClick={handleDislike}
-            sx={{
-              height: size,
-              width: size,
-              color: "warning.main",
-              cursor: "pointer",
-            }}
-            disabled={loading}
+            className={cn(
+              iconSizeClass,
+              "text-destructive cursor-pointer",
+              loading && "pointer-events-none opacity-50",
+            )}
           />
         )}
-        <Typography align="center" fontWeight={"700"} color="warning.main">
+        <span className="text-destructive text-center font-bold">
           {dislike?.length || 0}
-        </Typography>
-      </Stack>
-    </Stack>
+        </span>
+      </div>
+    </div>
   );
 }

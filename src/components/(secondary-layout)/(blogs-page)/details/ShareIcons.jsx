@@ -1,5 +1,10 @@
 "use client";
-import { Box, Stack, Tooltip } from "@mui/material";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -12,8 +17,8 @@ import CopyButton from "./CopyButton";
 
 const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
   return (
-    <Stack flexDirection="row" gap={1} alignItems="center">
-      <Box>
+    <div className={cn("flex flex-row items-center gap-1")}>
+      <div>
         <FacebookShareButton
           url={shareUrl}
           quote={title}
@@ -21,13 +26,13 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
         >
           <FacebookIcon size={32} round />
         </FacebookShareButton>
-      </Box>
-      <Box>
+      </div>
+      <div>
         <TwitterShareButton url={shareUrl} title={title} hashtags={hashtags}>
           <TwitterIcon size={32} round />
         </TwitterShareButton>
-      </Box>
-      <Box>
+      </div>
+      <div>
         <LinkedinShareButton
           url={shareUrl}
           title={title}
@@ -36,13 +41,16 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
         >
           <LinkedinIcon size={32} round />
         </LinkedinShareButton>
-      </Box>
-      <Box>
-        <Tooltip title="Copy URL" arrow placement="top">
-          <CopyButton text={shareUrl} />
+      </div>
+      <div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <CopyButton text={shareUrl} />
+          </TooltipTrigger>
+          <TooltipContent side="top">Copy URL</TooltipContent>
         </Tooltip>
-      </Box>
-    </Stack>
+      </div>
+    </div>
   );
 };
 

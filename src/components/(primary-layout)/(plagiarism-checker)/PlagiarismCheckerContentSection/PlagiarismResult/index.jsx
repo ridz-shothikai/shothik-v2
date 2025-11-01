@@ -1,13 +1,8 @@
-import { ExpandMore, Refresh } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  IconButton,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Loader2, RefreshCw } from "lucide-react";
 
 const PlagiarismResult = ({
   text: inputText,
@@ -18,20 +13,11 @@ const PlagiarismResult = ({
   manualRefresh,
 }) => {
   return (
-    <Box sx={{ px: 2, py: 1 }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold">
-          Plagiarism Checker
-        </Typography>
+    <div className="px-4 py-2">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-lg font-bold">Plagiarism Checker</div>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <div className="flex items-center gap-2">
           {/* {fromCache && (
               <Chip 
                 icon={<Cached />} 
@@ -41,121 +27,83 @@ const PlagiarismResult = ({
                 variant="outlined"
               />
             )} */}
-          <IconButton
-            size="small"
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={manualRefresh}
             disabled={loading || !inputText?.trim()}
             title="Refresh check"
           >
-            <Refresh fontSize="small" />
-          </IconButton>
-        </Box>
-      </Box>
+            <RefreshCw className="size-4" />
+          </Button>
+        </div>
+      </div>
 
-      <Divider sx={{ mb: 2 }} />
+      <Separator className="mb-4" />
 
-      <Paper
-        variant="outlined"
-        sx={{
-          bgcolor: loading
-            ? "grey.100"
-            : error
-              ? "error.light"
-              : "success.light",
-          p: 2,
-          mb: 2,
-          textAlign: "center",
-          minHeight: 100,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              alignItems: "center",
-            }}
-          >
-            <CircularProgress size={24} sx={{ mb: 1 }} />
-            <Typography variant="caption" color="text.secondary">
-              Checking plagiarism...
-            </Typography>
-          </Box>
-        ) : error ? (
-          <>
-            <Typography variant="h4" color="error">
-              Error
-            </Typography>
-            <Typography variant="caption" color="error">
-              {error}
-            </Typography>
-            <Button
-              size="small"
-              onClick={manualRefresh}
-              sx={{ mt: 1 }}
-              variant="outlined"
-              color="error"
-            >
-              Retry
-            </Button>
-          </>
-        ) : (
-          <>
-            <Typography id="plagiarism_score" variant="h2">
-              {score != null ? `${score}%` : "--"}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Plagiarism
-            </Typography>
-          </>
+      <Card
+        className={cn(
+          "mb-4 flex min-h-[100px] flex-col justify-center text-center",
+          loading ? "bg-muted" : error ? "bg-destructive/10" : "bg-background",
         )}
-      </Paper>
+      >
+        <CardContent className="p-4">
+          {loading ? (
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="mb-2 size-6 animate-spin" />
+              <span className="text-muted-foreground text-sm">
+                Checking plagiarism...
+              </span>
+            </div>
+          ) : error ? (
+            <>
+              <div className="text-destructive mb-2 text-2xl font-semibold">
+                Error
+              </div>
+              <p className="text-destructive mb-3 text-sm">{error}</p>
+              <Button
+                size="sm"
+                onClick={manualRefresh}
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive/10 mt-2"
+              >
+                Retry
+              </Button>
+            </>
+          ) : (
+            <>
+              <div id="plagiarism_score" className="text-4xl font-bold">
+                {score != null ? `${score}%` : "--"}
+              </div>
+              <span className="text-muted-foreground text-sm">Plagiarism</span>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
-      <Box id="plagiarism_results">
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      <div id="plagiarism_results">
+        <div className="text-muted-foreground mb-2 text-sm font-medium">
           Results ({results.length})
-        </Typography>
+        </div>
 
         {results.map((r, i) => (
-          <Box
+          <div
             key={i}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              border: 1,
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 1,
-              mb: 1,
-            }}
+            className="border-border mb-2 flex items-center justify-between rounded border p-2"
           >
-            <Typography variant="body2" sx={{ width: "20%" }}>
-              {r.percent}%
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ flex: 1, textAlign: "center", ml: 1 }}
-            >
-              {r.source}
-            </Typography>
-            <IconButton size="small">
-              <ExpandMore fontSize="small" />
-            </IconButton>
-          </Box>
+            <span className="w-[20%] text-sm">{r.percent}%</span>
+            <span className="ml-2 flex-1 text-center text-sm">{r.source}</span>
+            <Button variant="ghost" size="icon-sm">
+              <ChevronDown className="size-4" />
+            </Button>
+          </div>
         ))}
 
         {!loading && !error && results.length === 0 && (
-          <Typography variant="body2" color="text.secondary">
-            No matches found.
-          </Typography>
+          <p className="text-muted-foreground text-sm">No matches found.</p>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

@@ -1,124 +1,77 @@
-import { Box, Grid, Skeleton, Stack, Paper } from "@mui/material";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export default function FounderVideoSectionSkeleton() {
   return (
-    <Box
-      component="section"
+    <section
       aria-busy="true"
-      sx={{
-        px: { xs: 2, md: 6 },
-        py: { xs: 4, md: 8 },
-        width: "100%",
-        maxWidth: "1400px",
-        mx: "auto",
-      }}
+      className="mx-auto w-full max-w-[1400px] px-2 py-4 md:px-6 md:py-8"
     >
-      <Grid container spacing={6} alignItems="center">
+      <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
         {/* Left - Video/Card skeleton */}
-        <Grid item xs={12} md={6}>
-          <Stack spacing={2}>
-            <Paper
-              elevation={0}
-              sx={{
-                position: "relative",
-                borderRadius: 2,
-                overflow: "hidden",
-                boxShadow: "0 12px 30px rgba(10,20,30,0.06)",
-                px: 2,
-                py: 2,
-                bgcolor: "transparent",
-              }}
+        <div>
+          <div className="flex flex-col gap-2">
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-lg bg-transparent px-2 py-2",
+                "shadow-[0_12px_30px_rgba(10,20,30,0.06)]",
+              )}
             >
               {/* big rounded rectangle representing the video area */}
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                sx={{
-                  borderRadius: 3,
-                  height: { xs: 220, sm: 320, md: 360 },
-                }}
-              />
+              <Skeleton className="h-[220px] rounded-xl sm:h-[320px] md:h-[360px]" />
 
               {/* centered circular play button skeleton (absolute) */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  left: "50%",
-                  top: "50%",
-                  transform: "translate(-50%, -50%)",
-                  pointerEvents: "none",
-                }}
-              >
-                <Skeleton
-                  variant="circular"
-                  width={64}
-                  height={64}
-                  animation="wave"
-                />
-              </Box>
-            </Paper>
+              <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <Skeleton className="h-16 w-16 rounded-full" />
+              </div>
+            </div>
 
             {/* small stats row under the video */}
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Skeleton variant="rectangular" width={120} height={18} />
-              <Skeleton variant="rectangular" width={90} height={18} />
-              <Box sx={{ flex: 1 }} />
-            </Stack>
-          </Stack>
-        </Grid>
+            <div className="flex flex-row items-center gap-2">
+              <Skeleton className="h-[18px] w-[120px]" />
+              <Skeleton className="h-[18px] w-[90px]" />
+              <div className="flex-1" />
+            </div>
+          </div>
+        </div>
 
         {/* Right - Heading, paragraph, feature bullets skeleton */}
-        <Grid item xs={12} md={6}>
-          <Stack spacing={3}>
+        <div>
+          <div className="flex flex-col gap-3">
             {/* big heading lines */}
-            <Stack spacing={1}>
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                width="80%"
-                height={42}
-                sx={{ borderRadius: 1 }}
-              />
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                width="60%"
-                height={42}
-                sx={{ borderRadius: 1 }}
-              />
-            </Stack>
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-[42px] w-[80%] rounded" />
+              <Skeleton className="h-[42px] w-[60%] rounded" />
+            </div>
 
             {/* paragraph */}
-            <Stack spacing={1}>
-              <Skeleton variant="rectangular" width="90%" height={14} />
-              <Skeleton variant="rectangular" width="85%" height={14} />
-              <Skeleton variant="rectangular" width="70%" height={14} />
-            </Stack>
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-[14px] w-[90%]" />
+              <Skeleton className="h-[14px] w-[85%]" />
+              <Skeleton className="h-[14px] w-[70%]" />
+            </div>
 
             {/* three feature bullets */}
-            <Stack spacing={2} sx={{ mt: 1 }}>
+            <div className="mt-1 flex flex-col gap-2">
               {[0, 1, 2].map((i) => (
-                <Stack key={i} direction="row" spacing={2} alignItems="center">
-                  <Skeleton variant="circular" width={18} height={18} />
-                  <Box sx={{ width: "100%" }}>
+                <div key={i} className="flex flex-row items-center gap-2">
+                  <Skeleton className="h-[18px] w-[18px] rounded-full" />
+                  <div className="w-full">
                     <Skeleton
-                      variant="rectangular"
-                      width={`${40 + i * 15}%`}
-                      height={14}
+                      className="h-[14px]"
+                      style={{ width: `${40 + i * 15}%` }}
                     />
                     <Skeleton
-                      variant="rectangular"
-                      width={`${60 - i * 10}%`}
-                      height={12}
-                      sx={{ mt: 0.5 }}
+                      className="mt-0.5 h-[12px]"
+                      style={{ width: `${60 - i * 10}%` }}
                     />
-                  </Box>
-                </Stack>
+                  </div>
+                </div>
               ))}
-            </Stack>
-          </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

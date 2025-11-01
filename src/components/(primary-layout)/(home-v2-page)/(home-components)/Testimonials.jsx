@@ -1,41 +1,30 @@
 "use client";
 import { testimonials } from "@/_mock/testimonials";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  Rating,
-  styled,
-  Typography,
-} from "@mui/material";
-import { Stack } from "@mui/system";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useState } from "react";
 
-const StyledDot = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "active",
-})(({ active }) => ({
-  width: 10,
-  height: 10,
-  borderRadius: "50%",
-  backgroundColor: active ? "#00D67D" : "#E0E0E0",
-  margin: "0 4px",
-  cursor: "pointer",
-  transition: "background-color 0.3s ease",
-}));
-
-const NavigationButton = styled(IconButton)({
-  width: 40,
-  height: 40,
-  color: "#00A76F",
-  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-  "&:hover": {
-    backgroundColor: "#00A76F",
-    color: "white",
-  },
-});
+const StarRating = ({ value, max = 5, size = "small" }) => {
+  const sizeClasses = size === "small" ? "size-4" : "size-6";
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: max }).map((_, index) => (
+        <Star
+          key={index}
+          className={cn(
+            sizeClasses,
+            index < value
+              ? "fill-primary text-primary"
+              : "text-muted-foreground/30",
+          )}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function Testimonials() {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -49,347 +38,179 @@ export default function Testimonials() {
   };
 
   return (
-    <Box sx={{ marginBottom: 6 }}>
-      <Typography
-        component={motion.h2}
+    <div className="mb-24">
+      <motion.h2
         initial={{ y: 30, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        textAlign="center"
-        sx={{
-          mb: { xs: 6, md: 8 },
-          fontSize: { xs: "1.5rem", sm: "2rem", md: "3rem", lg: "3rem" },
-          fontWeight: 700,
-          lineHeight: 1.2,
-          "& .highlight": {
-            color: "#00A76F",
-            fontWeight: "inherit",
-          },
-        }}
+        className="mb-12 text-center text-2xl leading-tight font-bold sm:text-3xl md:mb-16 md:text-5xl lg:text-5xl"
       >
         Elevating Client Experiences to
         <br />
         New Heights with{" "}
-        <span
-          className="highlight"
-          style={{
-            background: "linear-gradient(135deg, #00A76F 40%, #3A7A69 100%)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}
-        >
+        <span className="from-primary via-primary to-primary/80 bg-gradient-to-br bg-clip-text font-bold text-transparent">
           Shothik AI
         </span>
-      </Typography>
+      </motion.h2>
 
-      <Box
-        sx={{
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-          gap: 6,
-          mb: 4,
-        }}
-      >
+      <div className="relative mb-8 flex justify-center gap-6">
         {/* Previous slide (semi-visible) */}
-        <Box
-          sx={{
-            width: 400,
-            opacity: 0.5,
-            display: { xs: "none", md: "block" },
-            transform: "scale(0.9)",
-            bgcolor: "white",
-            borderRadius: 3,
-            p: 4,
-            height: 400,
-            transition: "all 0.5s ease-in-out",
-            overflow: "hidden",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 2,
-              transition: "all 0.5s ease-in-out",
-            }}
-          >
-            <Avatar
-              src={
-                testimonials[
+        <div className="bg-card hidden h-[400px] w-[400px] scale-90 overflow-hidden rounded-xl p-8 opacity-50 transition-all duration-500 ease-in-out md:block">
+          <div className="mb-4 flex items-center transition-all duration-500 ease-in-out">
+            <Avatar className="mr-4 size-12 transition-all duration-500 ease-in-out">
+              <AvatarImage
+                src={
+                  testimonials[
+                    (activeSlide - 1 + testimonials.length) %
+                      testimonials.length
+                  ].image
+                }
+              />
+              <AvatarFallback>
+                {testimonials[
                   (activeSlide - 1 + testimonials.length) % testimonials.length
-                ].image
-              }
-              sx={{
-                width: 48,
-                height: 48,
-                mr: 2,
-                transition: "all 0.5s ease-in-out",
-              }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                position: "relative",
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
-                >
+                ].name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="relative flex w-full items-center justify-between">
+              <div>
+                <p className="text-muted-foreground font-medium transition-all duration-500 ease-in-out">
                   {
                     testimonials[
                       (activeSlide - 1 + testimonials.length) %
                         testimonials.length
                     ].name
                   }
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ transition: "all 0.5s ease-in-out" }}
-                >
+                </p>
+                <p className="text-muted-foreground transition-all duration-500 ease-in-out">
                   {
                     testimonials[
                       (activeSlide - 1 + testimonials.length) %
                         testimonials.length
                     ].title
                   }
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ mb: 2, fontWeight: 500, transition: "all 0.5s ease-in-out" }}
-          >
+          <h3 className="text-muted-foreground mb-4 font-medium transition-all duration-500 ease-in-out">
             {
               testimonials[
                 (activeSlide - 1 + testimonials.length) % testimonials.length
               ].headline
             }
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ transition: "all 0.5s ease-in-out" }}
-          >
+          </h3>
+          <p className="text-muted-foreground transition-all duration-500 ease-in-out">
             {
               testimonials[
                 (activeSlide - 1 + testimonials.length) % testimonials.length
               ].content
             }
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Active slide */}
-        <Box
-          sx={{
-            width: { xs: "100%", md: 500 },
-            bgcolor: { md: "background.paper" },
-            borderRadius: 3,
-            py: 4,
-            px: { xs: 2, sm: 4 },
-            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.09)",
-            zIndex: 1,
-            height: { xs: 400, sm: 300, md: 400, lg: 400, xl: 400 },
-            overflow: "hidden",
-            transition: "all 0.5s ease-in-out",
-            border: "1px solid #ddd",
-            "&:hover": {
-              boxShadow: 1,
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 2,
-              transition: "all 0.5s ease-in-out",
-            }}
-          >
-            <Avatar
-              src={testimonials[activeSlide].image}
-              sx={{ width: 48, height: 48, mr: 2 }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                position: "relative",
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
-                >
+        <div className="md:bg-card border-border z-10 h-[400px] w-full overflow-hidden rounded-xl border px-4 py-8 shadow-lg transition-all duration-500 ease-in-out hover:shadow-xl sm:h-[300px] sm:px-8 md:h-[400px] md:w-[500px] lg:h-[400px] xl:h-[400px]">
+          <div className="mb-4 flex items-center transition-all duration-500 ease-in-out">
+            <Avatar className="mr-4 size-12">
+              <AvatarImage src={testimonials[activeSlide].image} />
+              <AvatarFallback>
+                {testimonials[activeSlide].name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="relative flex w-full items-center justify-between">
+              <div>
+                <p className="text-muted-foreground font-medium transition-all duration-500 ease-in-out">
                   {testimonials[activeSlide].name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ transition: "all 0.5s ease-in-out" }}
-                >
+                </p>
+                <p className="text-muted-foreground text-sm transition-all duration-500 ease-in-out">
                   {testimonials[activeSlide].title}
-                </Typography>
-              </Box>
-              <Rating
-                value={testimonials[activeSlide].rating}
-                readOnly
-                size="small"
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  "& .MuiRating-iconFilled": {
-                    color: "#00A76F",
-                  },
-                  transition: "all 0.5s ease-in-out",
-                }}
-              />
-            </Box>
-          </Box>
+                </p>
+              </div>
+              <div className="absolute top-0 right-0 transition-all duration-500 ease-in-out">
+                <StarRating value={testimonials[activeSlide].rating} />
+              </div>
+            </div>
+          </div>
 
-          <Typography
-            color="text.secondary"
-            sx={{
-              mb: 2,
-              fontSize: { xs: 18, sm: 24, md: 24 },
-              fontWeight: 500,
-              transition: "all 0.5s ease-in-out",
-            }}
-          >
+          <h3 className="text-muted-foreground mb-4 text-lg font-medium transition-all duration-500 ease-in-out sm:text-2xl md:text-2xl">
             {testimonials[activeSlide].headline}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: { xs: 18, sm: 16, md: 16 },
-              color: "text.secondary",
-              transition: "all 0.5s ease-in-out",
-            }}
-          >
+          </h3>
+          <p className="text-muted-foreground text-lg transition-all duration-500 ease-in-out sm:text-base md:text-base">
             {testimonials[activeSlide].content}
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         {/* Next slide (semi-visible) */}
-        <Box
-          sx={{
-            width: 400,
-            opacity: 0.5,
-            display: { xs: "none", md: "block" },
-            transform: "scale(0.9)",
-            bgcolor: "white",
-            borderRadius: 3,
-            p: 4,
-            height: 400, // Fixed height for card
-            transition: "all 0.5s ease-in-out",
-            overflow: "hidden", // Prevent overflow
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 2,
-              transition: "all 0.5s ease-in-out",
-            }}
-          >
-            <Avatar
-              src={testimonials[(activeSlide + 1) % testimonials.length].image}
-              sx={{
-                width: 48,
-                height: 48,
-                mr: 2,
-                transition: "all 0.5s ease-in-out",
-              }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-                position: "relative",
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ fontWeight: 500, transition: "all 0.5s ease-in-out" }}
-                >
+        <div className="bg-card hidden h-[400px] w-[400px] scale-90 overflow-hidden rounded-xl p-8 opacity-50 transition-all duration-500 ease-in-out md:block">
+          <div className="mb-4 flex items-center transition-all duration-500 ease-in-out">
+            <Avatar className="mr-4 size-12 transition-all duration-500 ease-in-out">
+              <AvatarImage
+                src={
+                  testimonials[(activeSlide + 1) % testimonials.length].image
+                }
+              />
+              <AvatarFallback>
+                {testimonials[
+                  (activeSlide + 1) % testimonials.length
+                ].name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="relative flex w-full items-center justify-between">
+              <div>
+                <p className="text-muted-foreground font-medium transition-all duration-500 ease-in-out">
                   {testimonials[(activeSlide + 1) % testimonials.length].name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ transition: "all 0.5s ease-in-out" }}
-                >
+                </p>
+                <p className="text-muted-foreground text-sm transition-all duration-500 ease-in-out">
                   {testimonials[(activeSlide + 1) % testimonials.length].title}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ mb: 2, fontWeight: 500, transition: "all 0.5s ease-in-out" }}
-          >
+          <h3 className="text-muted-foreground mb-4 font-medium transition-all duration-500 ease-in-out">
             {testimonials[(activeSlide + 1) % testimonials.length].headline}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ transition: "all 0.5s ease-in-out" }}
-          >
+          </h3>
+          <p className="text-muted-foreground transition-all duration-500 ease-in-out">
             {testimonials[(activeSlide + 1) % testimonials.length].content}
-          </Typography>
-        </Box>
-      </Box>
+          </p>
+        </div>
+      </div>
 
-      <Stack>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
-          <NavigationButton onClick={handlePrevious}>
-            <ArrowBackIosNewIcon />
-          </NavigationButton>
+      <div>
+        <div className="flex items-center justify-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePrevious}
+            className="text-primary hover:bg-primary hover:text-primary-foreground size-10 shadow-md transition-all duration-300"
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
 
           {testimonials.map((_, index) => (
-            <StyledDot
+            <div
               key={index}
-              active={index === activeSlide}
               onClick={() => setActiveSlide(index)}
+              className={cn(
+                "mx-1 size-2.5 cursor-pointer rounded-full transition-colors duration-300",
+                index === activeSlide ? "bg-primary" : "bg-muted",
+              )}
             />
           ))}
 
-          <NavigationButton onClick={handleNext}>
-            <ArrowForwardIosIcon />
-          </NavigationButton>
-        </Box>
-      </Stack>
-    </Box>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleNext}
+            className="text-primary hover:bg-primary hover:text-primary-foreground size-10 shadow-md transition-all duration-300"
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

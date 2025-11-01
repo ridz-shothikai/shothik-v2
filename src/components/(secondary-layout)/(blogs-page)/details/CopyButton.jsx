@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
-import { Check, ContentCopy } from "@mui/icons-material";
-import { IconButton } from "@mui/material";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
 const CopyButton = ({ text }) => {
@@ -19,9 +19,9 @@ const CopyButton = ({ text }) => {
   }
 
   return (
-    <IconButton onClick={handleCopy}>
-      {showCopy ? <ContentCopy /> : <Check />}
-    </IconButton>
+    <Button variant="ghost" size="icon" onClick={handleCopy}>
+      {showCopy ? <Copy className="size-5" /> : <Check className="size-5" />}
+    </Button>
   );
 };
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { motion } from "framer-motion";
 import { Brain, Sparkles } from "lucide-react";
 import Image from "next/image";
@@ -13,111 +12,12 @@ const AgentThinkingLoader = ({
     "Generating response",
   ],
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-
-  const containerStyles = {
-    display: "flex",
-    alignItems: "center",
-    gap: isMobile ? 2 : 3,
-    padding: isMobile ? 2 : 3,
-    background: "linear-gradient(to right, #ecfdf5, #f0fdfa)",
-    borderRadius: 3,
-    border: "1px solid #a7f3d0",
-    width: "100%",
-    maxWidth: "100%",
-    overflow: "hidden",
-    mt: { xs: 2, lg: 3 },
-  };
-
-  const mascotContainerStyles = {
-    position: "relative",
-    flexShrink: 0,
-    width: isMobile ? 40 : 48,
-    height: isMobile ? 40 : 48,
-  };
-
-  const mascotImageStyles = {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-  };
-
-  const thinkingBubbleStyles = {
-    position: "absolute",
-    width: 6,
-    height: 6,
-    backgroundColor: "#10b981",
-    borderRadius: "50%",
-  };
-
-  const brainIconStyles = {
-    position: "absolute",
-    bottom: -4,
-    right: -4,
-    backgroundColor: "white",
-    borderRadius: "50%",
-    padding: "4px",
-    boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-    border: "1px solid #a7f3d0",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  const textContainerStyles = {
-    flex: 1,
-    minWidth: 0, // Prevent flex item from overflowing
-    overflow: "hidden",
-  };
-
-  const messageStyles = {
-    fontSize: isMobile ? "0.75rem" : "0.875rem",
-    fontWeight: 500,
-    color: "#047857",
-    marginBottom: 1,
-    lineHeight: 1.2,
-  };
-
-  const stepsContainerStyles = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 0.5,
-  };
-
-  const stepStyles = {
-    display: "flex",
-    alignItems: "center",
-    gap: 1,
-    fontSize: isMobile ? "0.625rem" : "0.75rem",
-    color: "#059669",
-    lineHeight: 1.2,
-  };
-
-  const stepDotStyles = {
-    width: 4,
-    height: 4,
-    backgroundColor: "#10b981",
-    borderRadius: "50%",
-    flexShrink: 0,
-  };
-
-  const sparkleContainerStyles = {
-    flexShrink: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-
-  // console.log(mascotImage, "mascotImage");
-
   return (
-    <Box sx={containerStyles}>
+    <div className="mt-2 flex w-full max-w-full items-center gap-2 overflow-hidden rounded-xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-2 sm:gap-3 sm:p-3 lg:mt-3">
       {/* Animated Mascot */}
-      <Box sx={mascotContainerStyles}>
+      <div className="relative h-10 w-10 shrink-0 sm:h-12 sm:w-12">
         <motion.div
-          style={{ width: "100%", height: "100%" }}
+          className="h-full w-full"
           animate={{
             rotate: [-3, 3, -3],
             scale: [1, 1.05, 1],
@@ -131,18 +31,17 @@ const AgentThinkingLoader = ({
           <Image
             src={"/home/shothik-mascot.png"}
             alt="AI thinking"
-            style={mascotImageStyles}
+            className="h-full w-full object-contain"
           />
         </motion.div>
 
         {/* Thinking bubbles */}
-        <Box sx={{ position: "absolute", top: -8, right: -4 }}>
+        <div className="absolute -top-2 -right-1">
           {[...Array(3)].map((_, i) => (
             <motion.div
               key={i}
+              className="absolute h-1.5 w-1.5 rounded-full bg-green-500"
               style={{
-                ...thinkingBubbleStyles,
-                position: "absolute",
                 right: i * 16,
                 top: i * -12,
               }}
@@ -157,11 +56,11 @@ const AgentThinkingLoader = ({
               }}
             />
           ))}
-        </Box>
+        </div>
 
         {/* Brain icon indicator */}
         <motion.div
-          style={brainIconStyles}
+          className="bg-background absolute -right-1 -bottom-1 flex items-center justify-center rounded-full border border-green-200 p-1 shadow-sm"
           animate={{
             scale: [1, 1.1, 1],
           }}
@@ -170,28 +69,30 @@ const AgentThinkingLoader = ({
             repeat: Infinity,
           }}
         >
-          <Brain size={12} color="#059669" />
+          <Brain className="size-3 text-green-600" />
         </motion.div>
-      </Box>
+      </div>
 
       {/* Text content */}
-      <Box sx={textContainerStyles}>
+      <div className="min-w-0 flex-1 overflow-hidden">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Typography sx={messageStyles}>{message}</Typography>
+          <p className="mb-1 text-xs leading-tight font-medium text-green-700 sm:text-sm">
+            {message}
+          </p>
         </motion.div>
 
         {/* Animated steps */}
-        <Box sx={stepsContainerStyles}>
+        <div className="flex flex-col gap-0.5">
           {steps.map((step, index) => (
             <motion.div
               key={step}
-              style={{ display: "flex", alignItems: "center", gap: 8 }}
+              className="flex items-center gap-2"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.5 }}
             >
               <motion.div
-                style={stepDotStyles}
+                className="h-1 w-1 shrink-0 rounded-full bg-green-500"
                 animate={{
                   scale: [1, 1.5, 1],
                 }}
@@ -201,16 +102,16 @@ const AgentThinkingLoader = ({
                   delay: index * 0.5,
                 }}
               />
-              <Typography sx={stepStyles} component="span">
+              <span className="text-[0.625rem] leading-tight text-green-600 sm:text-xs">
                 {step}
-              </Typography>
+              </span>
             </motion.div>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Sparkle animation */}
-      <Box sx={sparkleContainerStyles}>
+      <div className="flex shrink-0 items-center justify-center">
         <motion.div
           animate={{
             rotate: [0, 180, 360],
@@ -221,10 +122,10 @@ const AgentThinkingLoader = ({
             ease: "linear",
           }}
         >
-          <Sparkles size={isMobile ? 14 : 16} color="#10b981" />
+          <Sparkles className="size-3.5 text-green-500 sm:size-4" />
         </motion.div>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

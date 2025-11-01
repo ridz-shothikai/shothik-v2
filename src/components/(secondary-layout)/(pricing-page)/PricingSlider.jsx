@@ -1,6 +1,6 @@
+import { cn } from "@/lib/utils";
 import { useGetAppModeQuery } from "@/redux/api/pricing/pricingApi";
 import DotFlashing from "@/resource/DotFlashing";
-import { Box, Typography } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import Slider from "react-slick";
 import PricingButton from "./PricingButton";
@@ -59,13 +59,9 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
 
   if (isLoading)
     return (
-      <Box
-        sx={{
-          height: "60vh",
-        }}
-      >
+      <div className="h-[60vh]">
         <DotFlashing />
-      </Box>
+      </div>
     );
 
   const settings = {
@@ -97,59 +93,34 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
   };
 
   return (
-    <Box className="pricing_slider">
+    <div className="pricing_slider">
       <Slider {...settings}>
         {payload?.map((item, index) => (
-          <Box
+          <div
             key={index}
-            sx={{
-              boxShadow: "0px 8px 16px 0px #919EAB29",
-              marginRight: "24px",
-              flexShrink: 0,
-              p: 3,
-            }}
+            className={cn("mr-6 flex-shrink-0 rounded-lg p-6 shadow-sm")}
           >
-            <Box>
-              <Typography
-                sx={{
-                  fontWeight: 700,
-                  mb: "12px",
-                  textTransform: "capitalize",
-                  color:
-                    item.subscription === "free"
-                      ? "#637381"
-                      : item.subscription === "value plan"
-                        ? "#00A76F"
-                        : item.subscription === "pro plan"
-                          ? "#8E33FF"
-                          : "#FFAB00",
-                }}
+            <div>
+              <h3
+                className={cn(
+                  "mb-3 font-bold capitalize",
+                  item.subscription === "free"
+                    ? "text-muted-foreground"
+                    : "text-primary",
+                )}
               >
                 {item.caption}
-              </Typography>
-              <Typography
-                variant="h3"
-                fontSize={22}
-                fontWeight={700}
-                sx={{ mb: 2 }}
-              >
-                <Typography variant="h3" component="sup" fontWeight={400}>
-                  {item.currency}
-                </Typography>
+              </h3>
+              <div className="mb-4 text-[22px] font-bold">
+                <sup className="font-normal">{item.currency}</sup>
                 {/dev|test/.test(modeResult?.data?.appMode)
                   ? modePrice
                   : item.price}
-                <Typography component="sub" color="text.secondary">
-                  / {item.plan}
-                </Typography>
-              </Typography>
-              <Typography
-                sx={{ height: 26, mt: -1 }}
-                color="text.secondary"
-                fontSize={14}
-              >
+                <sub className="text-muted-foreground"> / {item.plan}</sub>
+              </div>
+              <p className="text-muted-foreground -mt-1 h-[26px] text-sm">
                 {item.description}
-              </Typography>
+              </p>
               <PricingButton
                 user={user}
                 caption={item.caption}
@@ -161,11 +132,11 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
                 yearly_plan_available={item.yearly_plan_available}
                 outline={true}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         ))}
       </Slider>
-    </Box>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ import ErrorBoundary from "@/components/common/ErrorBoundary";
 import HomeAdvertisement from "@/components/common/HomeAdvertisement";
 import ToolsCTA from "@/components/tools/common/ToolsCTA";
 import ToolsSepecigFaq from "@/components/tools/common/ToolsSepecigFaq";
-import { Container } from "@mui/material";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata() {
   return {
@@ -15,8 +15,8 @@ export async function generateMetadata() {
 
 const Summarize = () => {
   return (
-    <Container
-      sx={{ display: "flex", flexDirection: "column", gap: { md: 7, xs: 5 } }}
+    <div
+      className={cn("container mx-auto flex flex-col gap-10 px-4 md:gap-14")}
     >
       <ErrorBoundary>
         <SummarizeContentSection />
@@ -27,7 +27,7 @@ const Summarize = () => {
       />
       <ToolsCTA toolType="summarize" />
       <HomeAdvertisement />
-    </Container>
+    </div>
   );
 };
 

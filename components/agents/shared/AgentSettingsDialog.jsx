@@ -1,23 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import Box from '@mui/material/Box';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 const MODEL_OPTIONS = [
-  { value: 'gemini-pro', label: 'Gemini Pro' },
-  { value: 'gemini-ultra', label: 'Gemini Ultra' },
+  { value: "gemini-pro", label: "Gemini Pro" },
+  { value: "gemini-ultra", label: "Gemini Ultra" },
 ];
 
 const AgentSettingsDialog = ({ open, onClose, settings = {}, onSave }) => {
   const [form, setForm] = useState({
-    apiEndpoint: '',
-    defaultModel: '',
+    apiEndpoint: "",
+    defaultModel: "",
     darkMode: false,
     ...settings,
   });
@@ -25,8 +35,8 @@ const AgentSettingsDialog = ({ open, onClose, settings = {}, onSave }) => {
 
   useEffect(() => {
     setForm({
-      apiEndpoint: '',
-      defaultModel: '',
+      apiEndpoint: "",
+      defaultModel: "",
       darkMode: false,
       ...settings,
     });
@@ -34,14 +44,22 @@ const AgentSettingsDialog = ({ open, onClose, settings = {}, onSave }) => {
   }, [open, settings]);
 
   const handleChange = (key) => (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value = e.target.value;
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSelectChange = (value) => {
+    setForm((prev) => ({ ...prev, defaultModel: value }));
+  };
+
+  const handleSwitchChange = (checked) => {
+    setForm((prev) => ({ ...prev, darkMode: checked }));
   };
 
   const validate = () => {
     const errs = {};
-    if (!form.apiEndpoint) errs.apiEndpoint = 'API endpoint is required';
-    if (!form.defaultModel) errs.defaultModel = 'Default model is required';
+    if (!form.apiEndpoint) errs.apiEndpoint = "API endpoint is required";
+    if (!form.defaultModel) errs.defaultModel = "Default model is required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -54,45 +72,77 @@ const AgentSettingsDialog = ({ open, onClose, settings = {}, onSave }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Agent Global Settings</DialogTitle>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField
-            label="API Endpoint"
-            value={form.apiEndpoint}
-            onChange={handleChange('apiEndpoint')}
-            error={!!errors.apiEndpoint}
-            helperText={errors.apiEndpoint}
-            fullWidth
-          />
-          <TextField
-            label="Default Model"
-            select
-            value={form.defaultModel}
-            onChange={handleChange('defaultModel')}
-            error={!!errors.defaultModel}
-            helperText={errors.defaultModel}
-            fullWidth
-            SelectProps={{ native: true }}
-          >
-            <option value=""></option>
-            {MODEL_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </TextField>
-          <FormControlLabel
-            control={<Switch checked={form.darkMode} onChange={handleChange('darkMode')} />}
-            label="Enable Dark Mode"
-          />
-        </Box>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="w-full max-w-xs">
+        <DialogHeader>
+          <DialogTitle>Agent Global Settings</DialogTitle>
+        </DialogHeader>
+        <div className={cn("mt-1 flex flex-col gap-4")}>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="apiEndpoint">API Endpoint</Label>
+            <Input
+              id="apiEndpoint"
+              value={form.apiEndpoint}
+              onChange={handleChange("apiEndpoint")}
+              className={cn(
+                errors.apiEndpoint &&
+                  "border-destructive focus-visible:ring-destructive",
+              )}
+            />
+            {errors.apiEndpoint && (
+              <p className="text-destructive text-sm">{errors.apiEndpoint}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="defaultModel">Default Model</Label>
+            <Select
+              value={form.defaultModel || undefined}
+              onValueChange={handleSelectChange}
+            >
+              <SelectTrigger
+                id="defaultModel"
+                className={cn(
+                  "w-full",
+                  errors.defaultModel &&
+                    "border-destructive focus-visible:ring-destructive",
+                )}
+              >
+                <SelectValue placeholder="Select a model" />
+              </SelectTrigger>
+              <SelectContent>
+                {MODEL_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.defaultModel && (
+              <p className="text-destructive text-sm">{errors.defaultModel}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              id="darkMode"
+              checked={form.darkMode}
+              onCheckedChange={handleSwitchChange}
+            />
+            <Label htmlFor="darkMode" className="cursor-pointer">
+              Enable Dark Mode
+            </Label>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button onClick={onClose} variant="outline">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} variant="default">
+            Save
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary" variant="outlined">Cancel</Button>
-        <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
-      </DialogActions>
     </Dialog>
   );
 };
 
-export default AgentSettingsDialog; 
+export default AgentSettingsDialog;

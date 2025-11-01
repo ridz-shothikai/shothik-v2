@@ -1,21 +1,10 @@
 "use client";
 
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { cn } from "@/lib/utils";
 import { trackingList } from "@/libs/trackingList";
-import {
-  AccountBalance,
-  CheckCircle,
-  Public,
-  ViewInAr,
-} from "@mui/icons-material";
-import {
-  Box,
-  Container,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
 import { motion } from "framer-motion";
+import { Box as BoxIcon, Building2, CheckCircle, Globe } from "lucide-react";
 import Image from "next/image";
 
 const timelineData = [
@@ -31,7 +20,7 @@ const timelineData = [
     year: "2023",
     title: "First AI Agent Deployed",
     description: "Launched our flagship risk assessment AI agent",
-    icon: ViewInAr,
+    icon: BoxIcon,
     bgColor: "#ffffff",
     cardIcon: "/journey/j-2.svg",
   },
@@ -39,7 +28,7 @@ const timelineData = [
     year: "2024",
     title: "500+ Institutions",
     description: "Reached milestone of serving 500+ financial institutions",
-    icon: AccountBalance,
+    icon: Building2,
     bgColor: "#f1f8e9",
     cardIcon: "/journey/j-3.svg",
   },
@@ -48,264 +37,183 @@ const timelineData = [
     title: "Global Expansion",
     description:
       "Expanding to serve financial institutions across 25+ countries",
-    icon: Public,
+    icon: Globe,
     bgColor: "#ffffff",
     cardIcon: "/journey/j-4.svg",
   },
 ];
 
 const JourneyTimeline = () => {
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const { componentRef } = useComponentTracking(trackingList.JOURNEY_SECTION);
 
   return (
-    <Box
+    <section
       ref={componentRef}
-      component="section"
-      sx={{
-        pt: { xs: 2, sm: 3, xl: 4 },
-        pb: { xs: 7, sm: 9, xl: 12 },
-        // backgroundColor: theme.palette.background.default,
-      }}
+      className={cn("pt-4 sm:pt-6 xl:pt-8", "pb-14 sm:pb-18 xl:pb-24")}
     >
-      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3, lg: 4 } }}>
+      <div className={cn("mx-auto max-w-7xl", "px-4 sm:px-6 lg:px-8")}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <Box
-            sx={{
-              textAlign: "center",
-              maxWidth: "600px",
-              mx: "auto",
-              mb: { xs: 5, md: 10 },
-            }}
+          <div
+            className={cn(
+              "mx-auto max-w-[600px] text-center",
+              "mb-10 md:mb-20",
+            )}
           >
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: "2rem", sm: "2.5rem", lg: "3rem" },
-                fontWeight: 700,
-                color: theme.palette.text.primary,
-                mb: 3,
-                lineHeight: 1.2,
-              }}
+            <h2
+              className={cn(
+                "text-[2rem] sm:text-[2.5rem] lg:text-[3rem]",
+                "text-foreground font-bold",
+                "mb-6 leading-[1.2]",
+              )}
             >
               Our Journey
-            </Typography>
+            </h2>
 
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: { xs: "0.95rem", md: "1rem", lg: "1.25rem" },
-                color: theme.palette.text.secondary,
-                lineHeight: 1.6,
-                fontWeight: 400,
-              }}
+            <p
+              className={cn(
+                "text-[0.95rem] md:text-base lg:text-[1.25rem]",
+                "text-muted-foreground",
+                "leading-[1.6] font-normal",
+              )}
             >
               From startup to industry leader, see how we&apos;ve grown to
               become the trusted AI platform for financial institutions
               worldwide.
-            </Typography>
-          </Box>
+            </p>
+          </div>
         </motion.div>
 
-        <Box sx={{ position: "relative", maxWidth: "800px", mx: "auto" }}>
+        <div className={cn("relative mx-auto max-w-[800px]")}>
           {/* Timeline line - positioned absolutely */}
-          <Box
-            sx={{
-              position: "absolute",
-              left: "9px",
-              top: "0px",
-              bottom: "80px",
-              width: "3px",
-              backgroundColor: theme.palette.divider,
-              borderRadius: "99999px",
-              zIndex: 1,
-              height: "100%",
-            }}
+          <div
+            className={cn(
+              "absolute top-0 bottom-20 left-[9px]",
+              "bg-border w-[3px] rounded-full",
+              "z-[1] h-full",
+            )}
           />
 
           {/* Timeline items */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 4, lg: 5, xl: 6 },
-              position: "relative",
-            }}
+          <div
+            className={cn(
+              "flex flex-col",
+              "gap-8 lg:gap-10 xl:gap-12",
+              "relative",
+            )}
           >
             {timelineData?.map((data, index) => (
-              <Box
-                key={index}
-                sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  position: "relative",
-                }}
-              >
+              <div key={index} className={cn("relative flex items-start")}>
                 {/* Timeline dot */}
-                <Box
-                  sx={{
-                    position: "relative",
-                    top: {
-                      xs: "20px",
-                      sm: "24px",
-                      md: "28px",
-                      lg: "30px",
-                      xl: "40px",
-                    },
-                    zIndex: 2,
-                    mt: 1,
-                  }}
+                <div
+                  className={cn(
+                    "relative z-[2] mt-1",
+                    "top-5 sm:top-6 md:top-7 lg:top-[30px] xl:top-10",
+                  )}
                 >
-                  <Box
-                    sx={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "50%",
-                      backgroundColor: "#10B981",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: `4px solid ${theme.palette.background.default}`,
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                    }}
+                  <div
+                    className={cn(
+                      "h-5 w-5 rounded-full",
+                      "bg-primary",
+                      "flex items-center justify-center",
+                      "border-background border-4",
+                      "shadow-[0_2px_8px_rgba(0,0,0,0.1)]",
+                    )}
                   />
-                </Box>
-                <Box
-                  sx={{
-                    position: "relative",
-                    top: {
-                      xs: "24px",
-                      sm: "24px",
-                      md: "28px",
-                      lg: "30px",
-                      xl: "40px",
-                    },
-                    zIndex: 2,
-                    mt: 1,
-                    ml: {
-                      xs: "10px",
-                      sm: "34px",
-                      md: "40px",
-                      lg: "60px",
-                      xl: "70px",
-                    },
-                    mr: { xs: "0px", md: "10px" },
-                  }}
+                </div>
+                <div
+                  className={cn(
+                    "relative z-[2] mt-1",
+                    "top-6 sm:top-6 md:top-7 lg:top-[30px] xl:top-10",
+                    "ml-[10px] sm:ml-[34px] md:ml-10 lg:ml-[60px] xl:ml-[70px]",
+                    "mr-0 md:mr-[10px]",
+                  )}
                 >
-                  <Typography
-                    sx={{
-                      fontSize: { xs: "12px", lg: "14px", xl: "16px" },
-                      color: theme.palette.text.secondary,
-                      mb: 1,
-                      lineHeight: 1.3,
-                    }}
+                  <p
+                    className={cn(
+                      "text-xs lg:text-sm xl:text-base",
+                      "text-muted-foreground",
+                      "mb-1 leading-[1.3]",
+                    )}
                   >
                     {data.year}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
                 {/* Content card */}
-                <Box
-                  sx={{
-                    ml: 4,
-                    flex: 1,
-                    p: { xs: 2, md: 3, xl: 4 },
-                    backgroundColor: theme.palette.background.paper,
-                    border: `1px solid ${theme.palette.divider}`,
-                    borderRadius: { xs: "12px", lg: "16px" },
-                    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                    transition: "all 0.3s ease",
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    gap: { xs: "12px", lg: "16px", xl: "20px" },
-                    alignItems: { xs: "center", sm: "flex-start" },
-                    "&:hover": {
-                      backgroundColor: theme.palette.action.hover,
-                      border: `1px solid ${theme.palette.action.hover}`,
-                      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                      transform: "translateY(-2px)",
-                    },
-                  }}
+                <div
+                  className={cn(
+                    "ml-16 flex-1",
+                    "p-4 md:p-6 xl:p-8",
+                    "bg-card border-border border",
+                    "rounded-xl lg:rounded-2xl",
+                    "shadow-[0_1px_3px_rgba(0,0,0,0.1)]",
+                    "transition-all duration-300 ease-in-out",
+                    "flex flex-col sm:flex-row",
+                    "gap-3 lg:gap-4 xl:gap-5",
+                    "items-center sm:items-start",
+                    "hover:bg-accent hover:border-accent",
+                    "hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)]",
+                    "hover:-translate-y-0.5",
+                  )}
                 >
                   {/* Icon container */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      p: { xs: "12px", lg: "16px", xl: "20px" },
-                      backgroundColor: theme.palette.background.default,
-                      borderRadius: "12px",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                      flexShrink: 0,
-                      minWidth: { xs: "52px", lg: "60px", xl: "68px" },
-                      minHeight: { xs: "52px", lg: "60px", xl: "68px" },
-                      transition: "all 0.3s ease",
-                      "&:hover": {
-                        backgroundColor: theme.palette.background.default,
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.12)",
-                      },
-                    }}
+                  <div
+                    className={cn(
+                      "flex items-center justify-center",
+                      "p-3 lg:p-4 xl:p-5",
+                      "bg-background rounded-xl",
+                      "shadow-[0_2px_8px_rgba(0,0,0,0.06)]",
+                      "flex-shrink-0",
+                      "min-w-[52px] lg:min-w-[60px] xl:min-w-[68px]",
+                      "min-h-[52px] lg:min-h-[60px] xl:min-h-[68px]",
+                      "transition-all duration-300 ease-in-out",
+                      "hover:bg-background",
+                      "hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
+                    )}
                   >
                     <Image
                       src={data?.cardIcon}
                       alt={data?.title}
                       width={28}
                       height={28}
-                      style={{
-                        width: "auto",
-                        height: "auto",
-                        maxWidth: "28px",
-                        maxHeight: "28px",
-                      }}
+                      className="h-auto max-h-[28px] w-auto max-w-[28px]"
                     />
-                  </Box>
+                  </div>
 
                   {/* Text content */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        fontSize: { xs: "16px", lg: "18px", xl: "20px" },
-                        color: theme.palette.text.primary,
-                        fontWeight: 600,
-                        mb: 1,
-                        lineHeight: 1.3,
-                        textAlign: { xs: "center", sm: "left" },
-                      }}
+                  <div className={cn("flex flex-1 flex-col")}>
+                    <h3
+                      className={cn(
+                        "text-base lg:text-lg xl:text-xl",
+                        "text-foreground font-semibold",
+                        "mb-2 leading-[1.3]",
+                        "text-center sm:text-left",
+                      )}
                     >
                       {data.title}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: { xs: "14px", lg: "16px" },
-                        color: theme.palette.text.secondary,
-                        lineHeight: 1.6,
-                        textAlign: { xs: "center", sm: "left" },
-                      }}
+                    </h3>
+                    <p
+                      className={cn(
+                        "text-sm lg:text-base",
+                        "text-muted-foreground",
+                        "leading-[1.6]",
+                        "text-center sm:text-left",
+                      )}
                     >
                       {data.description}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

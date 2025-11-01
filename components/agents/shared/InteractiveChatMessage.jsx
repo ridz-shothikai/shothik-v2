@@ -1,34 +1,24 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Chip from '@mui/material/Chip';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import PersonIcon from '@mui/icons-material/Person';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import PaletteIcon from '@mui/icons-material/Palette';
-import FactCheckIcon from '@mui/icons-material/FactCheck';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { Bot, CheckCircle2, HelpCircle, Palette, User } from "lucide-react";
+import { useState } from "react";
 
-const PRIMARY_GREEN = '#07B37A';
-
-export default function InteractiveChatMessage({ 
+export default function InteractiveChatMessage({
   message,
   onResponse,
   onPreferenceUpdate,
-  onFeedback
+  onFeedback,
 }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   const handleOptionSelect = (option) => {
     if (message.allowMultiple) {
       const newOptions = selectedOptions.includes(option)
-        ? selectedOptions.filter(o => o !== option)
+        ? selectedOptions.filter((o) => o !== option)
         : [...selectedOptions, option];
       setSelectedOptions(newOptions);
     } else {
@@ -43,192 +33,185 @@ export default function InteractiveChatMessage({
 
   const renderMessageContent = () => {
     switch (message.type) {
-      case 'question':
+      case "question":
         return (
-          <Box>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {message.content}
-            </Typography>
-            
+          <div>
+            <p className="mb-4 text-base">{message.content}</p>
+
             {message.options && (
-              <Box>
-                <Grid container spacing={1}>
+              <div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {message.options.map((option, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Button
-                        variant={selectedOptions.includes(option) ? 'contained' : 'outlined'}
-                        fullWidth
-                        onClick={() => handleOptionSelect(option)}
-                        sx={{
-                          justifyContent: 'flex-start',
-                          textAlign: 'left',
-                          py: 1.5,
-                          bgcolor: selectedOptions.includes(option) ? PRIMARY_GREEN : 'transparent',
-                          borderColor: selectedOptions.includes(option) ? PRIMARY_GREEN : '#ddd',
-                          color: selectedOptions.includes(option) ? 'white' : 'inherit',
-                          '&:hover': {
-                            bgcolor: selectedOptions.includes(option) ? '#06A36D' : 'rgba(7, 179, 122, 0.04)',
-                            borderColor: PRIMARY_GREEN
-                          }
-                        }}
-                      >
-                        {option}
-                      </Button>
-                    </Grid>
+                    <Button
+                      key={index}
+                      variant={
+                        selectedOptions.includes(option) ? "default" : "outline"
+                      }
+                      className={cn(
+                        "w-full justify-start text-left",
+                        selectedOptions.includes(option) &&
+                          "bg-primary text-primary-foreground hover:bg-primary/90",
+                        !selectedOptions.includes(option) &&
+                          "hover:bg-accent hover:text-accent-foreground",
+                      )}
+                      onClick={() => handleOptionSelect(option)}
+                    >
+                      {option}
+                    </Button>
                   ))}
-                </Grid>
+                </div>
 
                 {message.allowMultiple && selectedOptions.length > 0 && (
-                  <Box sx={{ mt: 2, textAlign: 'right' }}>
-                    <Button
-                      variant="contained"
-                      onClick={handleSubmitMultiple}
-                      sx={{
-                        bgcolor: PRIMARY_GREEN,
-                        '&:hover': { bgcolor: '#06A36D' }
-                      }}
-                    >
+                  <div className="mt-4 text-right">
+                    <Button variant="default" onClick={handleSubmitMultiple}>
                       Submit ({selectedOptions.length} selected)
                     </Button>
-                  </Box>
+                  </div>
                 )}
-              </Box>
+              </div>
             )}
-          </Box>
+          </div>
         );
 
-      case 'quality_feedback':
+      case "quality_feedback":
+        const qualityScore = message.qualityScore || 0;
+        const scorePercent = Math.round(qualityScore * 100);
+        const isHighScore = qualityScore >= 0.8;
+        const isMediumScore = qualityScore >= 0.6 && qualityScore < 0.8;
+        const isLowScore = qualityScore < 0.6;
+
         return (
-          <Box>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {message.content}
-            </Typography>
-            
-            {message.qualityScore && (
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body2">Quality Score</Typography>
-                  <Chip
-                    label={`${Math.round(message.qualityScore * 100)}%`}
-                    sx={{
-                      bgcolor: message.qualityScore >= 0.8 ? PRIMARY_GREEN : 
-                               message.qualityScore >= 0.6 ? '#ff9800' : '#f44336',
-                      color: 'white'
-                    }}
-                  />
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={message.qualityScore * 100}
-                  sx={{
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: message.qualityScore >= 0.8 ? PRIMARY_GREEN : 
-                               message.qualityScore >= 0.6 ? '#ff9800' : '#f44336'
+          <div>
+            <p className="mb-4 text-base">{message.content}</p>
+
+            {message.qualityScore !== undefined && (
+              <div className="mb-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">
+                    Quality Score
+                  </span>
+                  <Badge
+                    variant={
+                      isHighScore
+                        ? "default"
+                        : isMediumScore
+                          ? "secondary"
+                          : "destructive"
                     }
-                  }}
+                  >
+                    {scorePercent}%
+                  </Badge>
+                </div>
+                <Progress
+                  value={scorePercent}
+                  className={cn(
+                    isHighScore &&
+                      '[&_[data-slot="progress-indicator"]]:bg-primary',
+                    isMediumScore &&
+                      '[&_[data-slot="progress-indicator"]]:bg-secondary',
+                    isLowScore &&
+                      '[&_[data-slot="progress-indicator"]]:bg-destructive',
+                  )}
                 />
-              </Box>
+              </div>
             )}
 
-            <ButtonGroup variant="outlined" sx={{ mt: 1 }}>
+            <div className="mt-2 flex gap-2">
               <Button
-                onClick={() => onResponse?.(message.id, 'accept')}
-                sx={{ 
-                  borderColor: PRIMARY_GREEN,
-                  color: PRIMARY_GREEN,
-                  '&:hover': { bgcolor: 'rgba(7, 179, 122, 0.04)' }
-                }}
+                variant="outline"
+                onClick={() => onResponse?.(message.id, "accept")}
+                className="border-primary text-primary hover:bg-accent hover:text-accent-foreground"
               >
                 Accept Changes
               </Button>
               <Button
-                onClick={() => onResponse?.(message.id, 'modify')}
-                sx={{ 
-                  borderColor: PRIMARY_GREEN,
-                  color: PRIMARY_GREEN,
-                  '&:hover': { bgcolor: 'rgba(7, 179, 122, 0.04)' }
-                }}
+                variant="outline"
+                onClick={() => onResponse?.(message.id, "modify")}
+                className="border-primary text-primary hover:bg-accent hover:text-accent-foreground"
               >
                 Request Modifications
               </Button>
-            </ButtonGroup>
-          </Box>
+            </div>
+          </div>
         );
 
       default:
-        return (
-          <Typography variant="body1">
-            {message.content}
-          </Typography>
-        );
+        return <p className="text-base">{message.content}</p>;
     }
   };
 
   const getMessageIcon = () => {
     switch (message.type) {
-      case 'question':
-        return <QuestionMarkIcon />;
-      case 'preference_request':
-        return <PaletteIcon />;
-      case 'quality_feedback':
-        return <FactCheckIcon />;
+      case "question":
+        return <HelpCircle className="size-4" />;
+      case "preference_request":
+        return <Palette className="size-4" />;
+      case "quality_feedback":
+        return <CheckCircle2 className="size-4" />;
       default:
-        return message.sender === 'user' ? <PersonIcon /> : <SmartToyIcon />;
+        return message.sender === "user" ? (
+          <User className="size-4" />
+        ) : (
+          <Bot className="size-4" />
+        );
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-        mb: 2
-      }}
+    <div
+      className={cn(
+        "mb-4 flex",
+        message.sender === "user" ? "justify-end" : "justify-start",
+      )}
     >
-      <Box
-        sx={{
-          maxWidth: '70%',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 1,
-          flexDirection: message.sender === 'user' ? 'row-reverse' : 'row'
-        }}
+      <div
+        className={cn(
+          "flex max-w-[70%] items-start gap-2",
+          message.sender === "user" ? "flex-row-reverse" : "flex-row",
+        )}
       >
         <Avatar
-          sx={{
-            bgcolor: message.sender === 'user' ? '#1976d2' : PRIMARY_GREEN,
-            width: 32,
-            height: 32
-          }}
+          className={cn(
+            "size-8",
+            message.sender === "user" ? "bg-secondary" : "bg-primary",
+          )}
         >
-          {getMessageIcon()}
+          <AvatarFallback
+            className={cn(
+              message.sender === "user"
+                ? "bg-secondary text-secondary-foreground"
+                : "bg-primary text-primary-foreground",
+            )}
+          >
+            {getMessageIcon()}
+          </AvatarFallback>
         </Avatar>
 
         <Card
-          sx={{
-            bgcolor: message.sender === 'user' ? '#f5f5f5' : 'white',
-            border: message.sender === 'user' ? 'none' : `1px solid ${PRIMARY_GREEN}`,
-            borderRadius: message.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px'
-          }}
+          className={cn(
+            message.sender === "user"
+              ? "bg-muted rounded-tl-2xl rounded-tr-2xl rounded-br rounded-bl-2xl border-0"
+              : "bg-card border-primary rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl border",
+          )}
         >
-          <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          <CardContent className="p-4">
             {message.agentName && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+              <span className="text-muted-foreground mb-2 block text-xs">
                 {message.agentName}
-              </Typography>
+              </span>
             )}
-            
+
             {renderMessageContent()}
 
             {message.timestamp && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+              <span className="text-muted-foreground mt-2 block text-xs">
                 {new Date(message.timestamp).toLocaleTimeString()}
-              </Typography>
+              </span>
             )}
           </CardContent>
 
           {/* {message.sender !== 'user' && onFeedback && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', pb: 1 }}>
+            <div className="flex justify-center pb-2">
               <IconButton
                 size="small"
                 onClick={() => onFeedback(message.id, 'positive')}
@@ -243,10 +226,10 @@ export default function InteractiveChatMessage({
               >
                 <ThumbDownIcon fontSize="small" />
               </IconButton>
-            </Box>
+            </div>
           )} */}
         </Card>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
-} 
+}

@@ -1,22 +1,13 @@
 "use client";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { cn } from "@/lib/utils";
 import { trackingList } from "@/libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Grid,
-  Paper,
-  Snackbar,
-  TextField,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bot,
@@ -26,223 +17,12 @@ import {
   Send,
   Sheet,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import EmailModal from "../EmailCollectModal";
 import AgentThinkingLoader from "./AgentThinkingLoader";
-
-// Styled components to match Tailwind styles
-const StyledContainer = styled(Container)(({ theme }) => ({
-  maxWidth: "1200px !important",
-  padding: theme.spacing(0, 2),
-  [theme.breakpoints.up("lg")]: {
-    maxWidth: "1400px !important",
-  },
-}));
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: "16px",
-  border: "2px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[700]
-      : theme.palette.grey[200],
-  cursor: "pointer",
-  transition: "all 0.3s ease",
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[900]
-      : theme.palette.background.paper,
-  color:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[100]
-      : theme.palette.text.primary,
-  "&:hover": {
-    borderColor:
-      theme.palette.mode === "dark"
-        ? theme.palette.grey[600]
-        : theme.palette.grey[300],
-  },
-  "&.selected-emerald": {
-    borderColor: "#10b981",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
-    color: theme.palette.mode === "dark" ? "#34d399" : "#047857",
-  },
-  "&.selected-blue": {
-    borderColor: "#3b82f6",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "#eff6ff",
-    color: theme.palette.mode === "dark" ? "#60a5fa" : "#1d4ed8",
-  },
-  "&.selected-purple": {
-    borderColor: "#8b5cf6",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(139, 92, 246, 0.2)" : "#f3e8ff",
-    color: theme.palette.mode === "dark" ? "#a78bfa" : "#7c3aed",
-  },
-}));
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "12px",
-    minHeight: "120px",
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? theme.palette.grey[800]
-        : theme.palette.background.paper,
-    "& fieldset": {
-      borderColor:
-        theme.palette.mode === "dark"
-          ? theme.palette.grey[700]
-          : theme.palette.grey[200],
-    },
-    "&:hover fieldset": {
-      borderColor: "#10b981",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#10b981",
-      borderWidth: "1px",
-    },
-    // Disabled state cursor styling
-    "&.Mui-disabled": {
-      cursor: "not-allowed !important",
-      "& .MuiInputBase-input": {
-        cursor: "not-allowed !important",
-      },
-    },
-  },
-  "& .MuiInputBase-input": {
-    fontSize: "14px",
-    resize: "none",
-    color: `${theme.palette.text.primary} !important`, // Use theme-aware color
-  },
-  "& .MuiInputBase-input.Mui-disabled": {
-    WebkitTextFillColor: `${theme.palette.text.primary} !important`, // Override Chrome's dimming with !important
-    color: `${theme.palette.text.primary} !important`, // Override Firefox/other browsers with !important
-    opacity: "1 !important", // Ensure full opacity
-    cursor: "not-allowed !important", // Disabled cursor
-  },
-  // Additional fallback for better cross-browser support
-  "& .MuiInputBase-root.Mui-disabled": {
-    color: `${theme.palette.text.primary} !important`,
-    cursor: "not-allowed !important",
-    "& .MuiInputBase-input": {
-      WebkitTextFillColor: `${theme.palette.text.primary} !important`,
-      color: `${theme.palette.text.primary} !important`,
-      opacity: "1 !important",
-      cursor: "not-allowed !important",
-    },
-  },
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: "12px",
-  textTransform: "none",
-  fontSize: "14px",
-  fontWeight: 500,
-  padding: theme.spacing(1.5, 3),
-  backgroundColor: "#10b981",
-  "&:hover": {
-    backgroundColor: "#059669",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "16px",
-    padding: theme.spacing(2, 3),
-  },
-}));
-
-const ExampleButton = styled(Button)(({ theme }) => ({
-  borderRadius: "12px",
-  textTransform: "none",
-  fontSize: "12px",
-  padding: theme.spacing(1.5, 2),
-  border: "1px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[700]
-      : theme.palette.grey[200],
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[800]
-      : theme.palette.background.paper,
-  color:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[100]
-      : theme.palette.text.primary,
-  textAlign: "left",
-  justifyContent: "flex-start",
-  "&:hover": {
-    borderColor: "#10b981",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
-  },
-  [theme.breakpoints.up("sm")]: {
-    fontSize: "14px",
-    padding: theme.spacing(2, 2),
-  },
-}));
-
-const HeaderSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3, 2),
-  borderBottom: "1px solid",
-  borderColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[700]
-      : theme.palette.grey[200],
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[800]
-      : theme.palette.background.paper,
-  color:
-    theme.palette.mode === "dark"
-      ? theme.palette.grey[100]
-      : theme.palette.text.primary,
-  "&.header-emerald": {
-    borderColor: "#10b981",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(16, 185, 129, 0.2)" : "#ecfdf5",
-    color: theme.palette.mode === "dark" ? "#34d399" : "#047857",
-  },
-  "&.header-blue": {
-    borderColor: "#3b82f6",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(59, 130, 246, 0.2)" : "#eff6ff",
-    color: theme.palette.mode === "dark" ? "#60a5fa" : "#1d4ed8",
-  },
-  "&.header-purple": {
-    borderColor: "#8b5cf6",
-    backgroundColor:
-      theme.palette.mode === "dark" ? "rgba(139, 92, 246, 0.2)" : "#f3e8ff",
-    color: theme.palette.mode === "dark" ? "#a78bfa" : "#7c3aed",
-  },
-  [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(4, 3),
-  },
-}));
-
-const ResultsBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(3),
-  padding: theme.spacing(3),
-  background:
-    theme.palette.mode === "dark"
-      ? "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%)"
-      : "linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%)",
-  borderRadius: "12px",
-  border: "1px solid #10b981",
-}));
-
-// interface AgentDemo {
-//   id: string;
-//   name: string;
-//   icon: React.ReactNode;
-//   color: string;
-//   placeholder: string;
-//   examples: string[];
-//   description: string;
-//   processingMessage: string;
-// }
 
 const agentDemos = [
   {
@@ -340,10 +120,6 @@ export default function InteractiveAgentDemo() {
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.LIVE_AGENT,
   );
-
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [selectedAgent, setSelectedAgent] = useState(agentDemos[0]);
   const [userInput, setUserInput] = useState("");
@@ -515,171 +291,114 @@ export default function InteractiveAgentDemo() {
     setToast((prev) => ({ ...prev, open: false }));
   };
 
+  const getColorClasses = (color, type) => {
+    const colorMap = {
+      emerald: {
+        selected: "border-primary bg-primary/10 text-primary",
+        header: "border-b border-primary bg-primary/10 text-primary",
+      },
+      blue: {
+        selected: "border-secondary bg-secondary/10 text-secondary-foreground",
+        header:
+          "border-b border-secondary bg-secondary/10 text-secondary-foreground",
+      },
+      purple: {
+        selected: "border-accent bg-accent/10 text-accent-foreground",
+        header: "border-b border-accent bg-accent/10 text-accent-foreground",
+      },
+    };
+    return colorMap[color]?.[type] || "";
+  };
+
   return (
     <>
-      <Box
-        ref={componentRef}
-        component="section"
-        sx={{
-          pt: { xs: 12, lg: 15 },
-          // background: "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
-          // background:
-          // "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, rgba(16, 185, 129, 0.04) 100%)",
-          // bgcolor: isDarkMode ? "" : "#FBFCFD",
-          minHeight: "100vh",
-        }}
-      >
-        <StyledContainer>
+      <section ref={componentRef} className="min-h-screen pt-12 lg:pt-16">
+        <div className="mx-auto max-w-[1200px] px-2 lg:max-w-[1400px]">
           {/* Header */}
-          <Box textAlign="center" mb={{ xs: 6, lg: 8 }}>
+          <div className="mb-6 text-center lg:mb-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Typography
-                variant="h2"
-                component="h2"
-                sx={{
-                  fontSize: {
-                    xs: "2rem",
-                    sm: "2.5rem",
-                    lg: "3rem",
-                    xl: "3.75rem",
-                  },
-                  fontWeight: 300,
-                  color: isDarkMode ? theme.palette.text.primary : "#0f172a",
-                  mb: { xs: 2, lg: 3 },
-                  px: 2,
-                }}
-              >
-                Try an Agent{" "}
-                <Box component="span" sx={{ color: "#10b981" }}>
-                  Live
-                </Box>
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                  color: isDarkMode ? theme.palette.text.secondary : "#64748b",
-                  maxWidth: "768px",
-                  mx: "auto",
-                  px: 2,
-                  fontWeight: 400,
-                }}
-              >
+              <h2 className="text-foreground mb-2 px-2 text-[2rem] leading-tight font-light sm:text-[2.5rem] lg:mb-3 lg:text-[3rem] xl:text-[3.75rem]">
+                Try an Agent <span className="text-primary">Live</span>
+              </h2>
+              <p className="text-muted-foreground mx-auto max-w-[768px] px-2 text-lg leading-relaxed font-normal sm:text-xl">
                 Experience the future of AI. Pick an agent, give it a task, and
                 watch it work in real-time.
-              </Typography>
+              </p>
             </motion.div>
-          </Box>
+          </div>
 
-          <Grid container spacing={{ xs: 4, lg: 6 }} alignItems="flex-start">
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2 lg:gap-6">
             {/* Agent Selection */}
-            <Grid item xs={12} lg={6}>
-              <Box>
-                <Typography
-                  variant="h5"
-                  component="h3"
-                  sx={{
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                    fontWeight: 600,
-                    color: isDarkMode ? "" : "#0f172a",
-                    mb: { xs: 2, lg: 3 },
-                  }}
-                >
+            <div className="lg:col-span-1">
+              <div>
+                <h3 className="text-foreground mb-2 text-xl font-semibold sm:text-2xl lg:mb-3">
                   Choose Your Agent
-                </Typography>
+                </h3>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <div className="flex flex-col gap-2">
                   {agentDemos.map((agent) => (
                     <motion.div
                       key={agent.id}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <StyledPaper
-                        className={
+                      <Card
+                        className={cn(
+                          "cursor-pointer rounded-2xl border-2 transition-all",
                           selectedAgent.id === agent.id
-                            ? `selected-${agent.color}`
-                            : ""
-                        }
+                            ? getColorClasses(agent.color, "selected")
+                            : "border-border bg-card hover:border-muted-foreground/30",
+                        )}
                         onClick={() => handleAgentSelect(agent)}
-                        elevation={0}
-                        sx={{ p: { xs: 2, sm: 3 } }}
                       >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: { xs: 1.5, sm: 2 },
-                          }}
-                        >
-                          <Paper
-                            elevation={selectedAgent.id === agent.id ? 2 : 0}
-                            sx={{
-                              p: { xs: 1, sm: 1.5 },
-                              borderRadius: "12px",
-                              backgroundColor:
+                        <CardContent className="p-2 sm:p-3">
+                          <div className="flex items-center gap-3 sm:gap-4">
+                            <div
+                              className={cn(
+                                "flex items-center justify-center rounded-xl p-2 sm:p-3",
                                 selectedAgent.id === agent.id
-                                  ? "white"
-                                  : "#f1f5f9",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: isDarkMode ? "#000" : "inherit",
-                              "& svg": {
-                                color: isDarkMode ? "#000" : "inherit",
-                              },
-                            }}
-                          >
-                            {agent.icon}
-                          </Paper>
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography
-                              component="h4"
-                              sx={{
-                                fontSize: { xs: "1rem", sm: "1.125rem" },
-                                fontWeight: 600,
-                                mb: 0.5,
-                              }}
+                                  ? "bg-background shadow-sm"
+                                  : "bg-muted",
+                              )}
                             >
-                              {agent.name}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                                opacity: 0.8,
-                                lineHeight: 1.6,
-                              }}
-                            >
-                              {agent.description}
-                            </Typography>
-                          </Box>
-                          {selectedAgent.id === agent.id && (
-                            <ChevronRight size={isMobile ? 16 : 20} />
-                          )}
-                        </Box>
-                      </StyledPaper>
+                              {agent.icon}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h4 className="mb-0.5 text-base font-semibold sm:text-lg">
+                                {agent.name}
+                              </h4>
+                              <p className="text-xs leading-relaxed opacity-80 sm:text-sm">
+                                {agent.description}
+                              </p>
+                            </div>
+                            {selectedAgent.id === agent.id && (
+                              <>
+                                <ChevronRight
+                                  size={20}
+                                  className="hidden sm:block"
+                                />
+                                <ChevronRight
+                                  size={16}
+                                  className="block sm:hidden"
+                                />
+                              </>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
                     </motion.div>
                   ))}
-                </Box>
+                </div>
 
                 {/* Example Prompts */}
-                <Box sx={{ mt: 4 }}>
-                  <Typography
-                    sx={{
-                      fontSize: "0.875rem",
-                      fontWeight: 500,
-                      color: isDarkMode ? "inherit" : "#64748b",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                      mb: 2,
-                    }}
-                  >
+                <div className="mt-4">
+                  <p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase sm:text-sm">
                     Try These Examples
-                  </Typography>
+                  </p>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={`${selectedAgent.id}-${currentExample}`}
@@ -688,13 +407,7 @@ export default function InteractiveAgentDemo() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 1.5,
-                        }}
-                      >
+                      <div className="flex flex-col gap-1.5">
                         {selectedAgent.examples.map((example, index) => (
                           <motion.div
                             key={index}
@@ -703,146 +416,81 @@ export default function InteractiveAgentDemo() {
                               opacity: index === currentExample ? 1 : 0.6,
                             }}
                           >
-                            <ExampleButton
-                              fullWidth={true}
+                            <Button
+                              variant="outline"
+                              className="border-border bg-card hover:border-primary hover:bg-primary/10 w-full justify-start rounded-xl border px-2 py-3 text-left text-xs transition-colors sm:px-2 sm:py-2 sm:text-sm"
                               onClick={() => handleExample(example, index)}
                             >
-                              <Typography
-                                sx={{
-                                  fontSize: "inherit",
-                                  textAlign: "left",
-                                  color: isDarkMode ? "#FFF" : "inherit",
-                                }}
-                              >
-                                &quot;{example}&quot;
-                              </Typography>
-                            </ExampleButton>
+                              <span>&quot;{example}&quot;</span>
+                            </Button>
                           </motion.div>
                         ))}
-                      </Box>
+                      </div>
                     </motion.div>
                   </AnimatePresence>
-                </Box>
-              </Box>
-            </Grid>
+                </div>
+              </div>
+            </div>
 
             {/* Interactive Demo */}
-            <Grid item xs={12} lg={6}>
-              <Box
-                sx={{
-                  position: { lg: "sticky" },
-                  top: { lg: "2rem" },
-                  mt: {
-                    lg: "3.75rem",
-                  },
-                }}
-              >
-                <Paper
-                  elevation={8}
-                  sx={{
-                    borderRadius: "16px",
-                    border: "1px solid",
-                    borderColor: "#e2e8f0",
-                    overflow: "hidden",
-                  }}
-                >
+            <div className="lg:col-span-1">
+              <div className="lg:sticky lg:top-8 lg:mt-[3.75rem]">
+                <Card className="overflow-hidden rounded-2xl border shadow-lg">
                   {/* Agent Header */}
-                  <HeaderSection className={`header-${selectedAgent.color}`}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: { xs: 1.5, sm: 2 },
-                      }}
-                    >
-                      <Paper
-                        elevation={2}
-                        sx={{
-                          p: { xs: 1, sm: 1.5 },
-                          backgroundColor: "white",
-                          borderRadius: "12px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "inherit",
-                          "& svg": {
-                            color: "inherit",
-                          },
-                        }}
-                      >
+                  <div
+                    className={cn(
+                      "border-b px-3 py-3 sm:px-4 sm:py-4",
+                      getColorClasses(selectedAgent.color, "header"),
+                    )}
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="bg-background flex items-center justify-center rounded-xl p-2 shadow-sm sm:p-3">
                         {selectedAgent.icon}
-                      </Paper>
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography
-                          component="h3"
-                          sx={{
-                            fontSize: { xs: "1.125rem", sm: "1.25rem" },
-                            fontWeight: 600,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="overflow-hidden text-lg font-semibold text-ellipsis whitespace-nowrap sm:text-xl">
                           {selectedAgent.name}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                            opacity: 0.8,
-                          }}
-                        >
+                        </h3>
+                        <p className="text-xs opacity-80 sm:text-sm">
                           Ready to help
-                        </Typography>
-                      </Box>
+                        </p>
+                      </div>
                       <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       >
-                        <Bot size={isMobile ? 20 : 24} />
+                        <Bot size={24} className="hidden sm:block" />
+                        <Bot size={20} className="block sm:hidden" />
                       </motion.div>
-                    </Box>
-                  </HeaderSection>
+                    </div>
+                  </div>
 
                   {/* Input Area */}
-                  <Box sx={{ p: { xs: 2, sm: 3 } }}>
-                    <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                    >
-                      <Box>
-                        <Typography
-                          component="label"
-                          sx={{
-                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                            fontWeight: 500,
-                            color: isDarkMode ? "inherit" : "#374151",
-                            mb: 1,
-                            display: "block",
-                          }}
-                        >
+                  <CardContent className="p-2 sm:p-3">
+                    <div className="flex flex-col gap-2">
+                      <div>
+                        <label className="text-foreground mb-1 block text-xs font-medium sm:text-sm">
                           What would you like {selectedAgent.name} to do?
-                        </Typography>
-                        <StyledTextField
-                          fullWidth={true}
-                          multiline
-                          rows={4}
-                          inputRef={inputRef}
+                        </label>
+                        <Textarea
+                          ref={inputRef}
                           value={userInput}
                           onChange={(e) => setUserInput(e.target.value)}
                           placeholder={selectedAgent.placeholder}
-                          // disabled={isProcessing}
                           disabled={true}
-                          variant="outlined"
+                          className="min-h-[120px] cursor-not-allowed resize-none rounded-xl text-sm"
+                          rows={4}
                         />
-                      </Box>
+                      </div>
 
-                      <StyledButton
+                      <Button
                         data-umami-event={`Try New Agent: ${selectedAgent?.name || ""}`}
-                        fullWidth={true}
-                        variant="contained"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-xl text-sm font-medium transition-colors sm:px-6 sm:py-2 sm:text-base"
                         onClick={() => handleSubmit()}
                         disabled={!userInput.trim() || isProcessing}
-                        startIcon={
-                          isProcessing ? (
+                      >
+                        {isProcessing ? (
+                          <>
                             <motion.div
                               animate={{ rotate: 360 }}
                               transition={{
@@ -850,17 +498,20 @@ export default function InteractiveAgentDemo() {
                                 repeat: Infinity,
                                 ease: "linear",
                               }}
+                              className="mr-2"
                             >
                               <Sparkles size={20} />
                             </motion.div>
-                          ) : (
-                            <Send size={20} />
-                          )
-                        }
-                      >
-                        {isProcessing ? "Agent Working..." : "Try Now"}
-                      </StyledButton>
-                    </Box>
+                            Agent Working...
+                          </>
+                        ) : (
+                          <>
+                            <Send size={20} className="mr-2" />
+                            Try Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
 
                     {/* Processing Status */}
                     <AnimatePresence>
@@ -891,99 +542,45 @@ export default function InteractiveAgentDemo() {
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                         >
-                          <ResultsBox>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: 1.5,
-                              }}
-                            >
-                              <Paper
-                                elevation={0}
-                                sx={{
-                                  p: 1,
-                                  backgroundColor: "#10b981",
-                                  borderRadius: "8px",
-                                  color: "white",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
-                              >
+                          <div className="border-primary bg-primary/10 mt-3 rounded-xl border p-3">
+                            <div className="flex items-start gap-1.5">
+                              <div className="bg-primary text-primary-foreground flex items-center justify-center rounded-lg p-1">
                                 {selectedAgent.icon}
-                              </Paper>
-                              <Box sx={{ flex: 1 }}>
-                                <Typography
-                                  sx={{
-                                    fontWeight: 600,
-                                    color: "#0f172a",
-                                    mb: 1.5,
-                                  }}
-                                >
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="text-foreground mb-1.5 font-semibold">
                                   {selectedAgent.name} Results
-                                </Typography>
+                                </h4>
                                 {error ? (
-                                  <Paper
-                                    elevation={0}
-                                    sx={{
-                                      p: 1.5,
-                                      backgroundColor: "#fef2f2",
-                                      border: "1px solid #fecaca",
-                                      borderRadius: "8px",
-                                    }}
+                                  <Alert
+                                    variant="destructive"
+                                    className="p-1.5"
                                   >
-                                    <Typography
-                                      sx={{
-                                        fontSize: "0.875rem",
-                                        color: "#dc2626",
-                                      }}
-                                    >
+                                    <AlertDescription className="text-sm">
                                       {error}
-                                    </Typography>
-                                  </Paper>
+                                    </AlertDescription>
+                                  </Alert>
                                 ) : (
-                                  <Typography
-                                    sx={{
-                                      color: "#374151",
-                                      whiteSpace: "pre-wrap",
-                                      lineHeight: 1.6,
-                                      fontSize: "0.875rem",
-                                    }}
-                                  >
+                                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
                                     {aiResponse}
-                                  </Typography>
+                                  </p>
                                 )}
-                              </Box>
-                            </Box>
-                          </ResultsBox>
+                              </div>
+                            </div>
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </Box>
-                </Paper>
-              </Box>
-            </Grid>
-          </Grid>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
 
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              padding: {
-                xs: "20px 0px 0px",
-                sm: "30px 0px 0px",
-                md: "40px 0px 0px",
-                lg: "44px 0px 0px",
-                xl: "48px 0px 0px",
-              },
-            }}
-          >
+          <div className="flex w-full justify-center pt-5 sm:pt-7 md:pt-10 lg:pt-11 xl:pt-12">
             <Button
               data-umami-event="Get early access"
-              variant="contained"
-              size="large"
+              size="lg"
               onClick={() => {
                 setShowModal(true);
 
@@ -993,24 +590,13 @@ export default function InteractiveAgentDemo() {
                   position: "live_agent",
                 });
               }}
-              sx={{
-                maxWidth: "fit-content",
-                borderRadius: "0.5rem",
-                textTransform: "none",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                px: 3,
-                py: 1.3,
-                bgcolor: "#00AB55",
-                fontWeight: "400",
-              }}
+              className="bg-primary text-primary-foreground max-w-fit rounded-lg px-3 py-1.5 font-normal"
             >
               Get early access
             </Button>
-          </Box>
-        </StyledContainer>
-      </Box>
+          </div>
+        </div>
+      </section>
 
       <EmailModal
         open={showModal}
@@ -1018,21 +604,26 @@ export default function InteractiveAgentDemo() {
         onSubmit={handleEmailSubmit}
       />
 
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={6000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
+      {/* Toast notification */}
+      {toast.open && (
+        <div className="fixed bottom-5 left-1/2 z-[9999] -translate-x-1/2 transform">
+          <Alert
+            variant={toast.severity === "error" ? "destructive" : "default"}
+            className="w-full max-w-md"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <AlertDescription>{toast.message}</AlertDescription>
+              <button
+                onClick={() => handleCloseToast(null, "close")}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </Alert>
+        </div>
+      )}
     </>
   );
 }

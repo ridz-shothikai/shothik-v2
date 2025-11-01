@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import { useNewsletterMutation } from "@/redux/api/blog/blogApiSlice";
-import { Box, Button, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
 const NewsLetter = () => {
@@ -34,34 +36,27 @@ const NewsLetter = () => {
     }
   }
   return (
-    <Box onSubmit={handlenewLatter} component="form" sx={{ mt: 10 }}>
-      <Typography variant="h6" gutterBottom>
+    <form onSubmit={handlenewLatter} className={cn("mt-10")}>
+      <h2 className="mb-4 text-xl leading-tight font-semibold">
         Get our newsletter
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
+      </h2>
+      <p className="text-muted-foreground mb-4 text-sm">
         Stay up to date by signing up for Shothik AI&apos;s Infrastructure as a
         Newsletter.
-      </Typography>
-      <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-        <TextField
+      </p>
+      <div className="mt-2 flex gap-2">
+        <Input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Email address"
-          size="small"
-          sx={{ flexGrow: 1 }}
+          className="h-9 flex-grow"
         />
-        <Button
-          disabled={isLoading}
-          type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ textTransform: "none" }}
-        >
+        <Button disabled={isLoading} type="submit" variant="default">
           Submit
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </form>
   );
 };
 

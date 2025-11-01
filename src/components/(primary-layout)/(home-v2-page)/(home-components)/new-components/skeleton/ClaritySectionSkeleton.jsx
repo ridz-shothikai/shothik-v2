@@ -1,40 +1,29 @@
-import React from "react";
-import { Box, Grid, Skeleton, Stack } from "@mui/material";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function StepsSkeleton({ count = 6 }) {
   return (
-    <Box sx={{ py: 8, px: 2, maxWidth: 1200, mx: "auto" }}>
+    <div className="mx-auto max-w-[1200px] px-2 py-8">
       {/* header skeletons (title / subtitle / short description) */}
-      <Stack spacing={1.2} alignItems="center" sx={{ mb: 6 }}>
-        <Skeleton variant="text" width={360} height={48} />
-        <Skeleton variant="text" width={220} height={36} />
-        <Skeleton variant="text" width={640} height={18} />
-      </Stack>
+      <div className="mb-6 flex flex-col items-center gap-2.5">
+        <Skeleton className="h-12 w-[360px]" />
+        <Skeleton className="h-9 w-[220px]" />
+        <Skeleton className="h-[18px] w-[640px]" />
+      </div>
 
       {/* grid of wrapper boxes only - each box is represented by a single rectangular skeleton */}
-      <Grid container spacing={3}>
+      <div className="grid grid-cols-12 gap-6">
         {Array.from({ length: count }).map((_, idx) => (
-          <Grid item xs={12} sm={6} md={4} key={idx}>
+          <div key={idx} className="col-span-12 sm:col-span-6 md:col-span-4">
             {/* single wrapper box skeleton - matches the visual weight of the cards in your screenshot */}
-            <Skeleton
-              variant="rectangular"
-              height={180}
-              sx={{ borderRadius: 2 }}
-              animation="wave"
-            />
-          </Grid>
+            <Skeleton className="h-[180px] rounded-md" />
+          </div>
         ))}
-      </Grid>
+      </div>
 
       {/* CTA button skeleton */}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-        <Skeleton
-          variant="rectangular"
-          width={160}
-          height={42}
-          sx={{ borderRadius: 3 }}
-        />
-      </Box>
-    </Box>
+      <div className="mt-6 flex justify-center">
+        <Skeleton className="h-[42px] w-[160px] rounded-lg" />
+      </div>
+    </div>
   );
 }

@@ -1,20 +1,10 @@
 "use client";
 
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import InnovationIcon from "@mui/icons-material/Lightbulb";
-import SchoolIcon from "@mui/icons-material/School";
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { motion, useAnimation, useInView } from "framer-motion";
+import { CheckCircle, GraduationCap, Lightbulb } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 const AnimatedTimelineItem = ({ children, index }) => {
@@ -37,7 +27,7 @@ const AnimatedTimelineItem = ({ children, index }) => {
       ref={ref}
       initial={{ opacity: 0, x: 50 }}
       animate={controls}
-      style={{ position: "relative" }}
+      className="relative"
     >
       {children}
     </motion.div>
@@ -54,85 +44,40 @@ const TimelineConnector = ({ index }) => {
       initial={{ height: 0 }}
       animate={isInView ? { height: "100%" } : { height: 0 }}
       transition={{ duration: 0.8, delay: index * 0.3 }}
-      style={{
-        position: "absolute",
-        left: "24px",
-        top: "48px",
-        width: "2px",
-        backgroundColor: "#4CAF50",
-        zIndex: 0,
-      }}
+      className="bg-primary absolute top-12 left-6 z-0 w-0.5"
     />
   );
 };
 
 export default function StudentDeserve() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
-
   const heroRef = useRef(null);
   const isHeroInView = useInView(heroRef, { once: true });
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
+    <div className="bg-background min-h-screen">
       {/* Hero Section */}
-      <Container
-        maxWidth="lg"
-        sx={{ pt: { xs: 4, md: 8 }, pb: { xs: 6, md: 10 } }}
-      >
+      <div className="container mx-auto max-w-6xl px-4 pt-8 pb-10 md:pt-16 md:pb-20">
         <motion.div
           ref={heroRef}
           initial={{ opacity: 0, y: 30 }}
           animate={isHeroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8 }}
         >
-          <Typography
-            variant="h2"
-            component="h1"
-            align="center"
-            sx={{
-              fontSize: { xs: "2rem", sm: "2.5rem", md: "3.5rem" },
-              fontWeight: 700,
-              color: "#1a1a1a",
-              mb: 3,
-              lineHeight: 1.2,
-            }}
-          >
+          <h1 className="text-foreground mb-6 text-center text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl">
             &quot;Every Student Deserves{" "}
-            <Box component="span" sx={{ color: "#4CAF50" }}>
-              AI That Understands
-            </Box>{" "}
-            Their Domain&quot;
-          </Typography>
+            <span className="text-primary">AI That Understands</span> Their
+            Domain&quot;
+          </h1>
 
-          <Typography
-            variant="h6"
-            align="center"
-            sx={{
-              color: "#666",
-              mb: 6,
-              maxWidth: "600px",
-              mx: "auto",
-              fontSize: { xs: "1rem", md: "1.125rem" },
-              lineHeight: 1.6,
-            }}
-          >
+          <p className="text-muted-foreground mx-auto mb-12 max-w-[600px] text-center text-base leading-relaxed md:text-lg">
             As a former PhD student who struggled with domain-specific writing,
             I built Shothik AI to solve the problem every academic faces:
             generic tools that don&apos;t understand your field.
-          </Typography>
+          </p>
         </motion.div>
 
         {/* Main Content Grid */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-            gap: { xs: 4, md: 6 },
-            alignItems: "start",
-          }}
-        >
+        <div className="grid grid-cols-1 items-start gap-8 md:gap-12 lg:grid-cols-2">
           {/* Left Side - Hero Image */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -141,37 +86,14 @@ export default function StudentDeserve() {
             }
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Box
-              sx={{
-                position: "relative",
-                borderRadius: 3,
-                overflow: "hidden",
-                boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                mb: { xs: 4, lg: 0 },
-              }}
-            >
-              <Box
-                component="img"
+            <div className="relative mb-8 overflow-hidden rounded-xl shadow-2xl lg:mb-0">
+              <img
                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop"
                 alt="AI Technology"
-                sx={{
-                  width: "100%",
-                  height: { xs: "250px", md: "350px" },
-                  objectFit: "cover",
-                }}
+                className="h-[250px] w-full object-cover md:h-[350px]"
               />
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background:
-                    "linear-gradient(45deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1))",
-                }}
-              />
-            </Box>
+              <div className="from-primary/10 to-primary/10 absolute inset-0 bg-gradient-to-br" />
+            </div>
 
             {/* Testimonial Card */}
             <motion.div
@@ -181,190 +103,100 @@ export default function StudentDeserve() {
               }
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <Card
-                sx={{
-                  mt: 4,
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
-                  border: "1px solid #e0e0e0",
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-                    <Avatar
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face"
-                      sx={{ width: 60, height: 60 }}
-                    />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontStyle: "italic",
-                          color: "#555",
-                          mb: 2,
-                          lineHeight: 1.6,
-                        }}
-                      >
+              <Card className="mt-8 border shadow-lg">
+                <CardContent className="p-6">
+                  <div className="mb-4 flex gap-4">
+                    <Avatar className="size-[60px] shrink-0">
+                      <AvatarImage
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face"
+                        alt="Arif Rahman"
+                      />
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="text-muted-foreground mb-4 leading-relaxed italic">
                         &quot;I spent countless nights rewriting papers because
                         generic paraphrasing tools couldn&apos;t handle medical
                         terminology. That frustration became our mission: build
                         AI that actually understands what you&apos;re writing
                         about.&quot;
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: 600, color: "#1a1a1a" }}
-                      >
+                      </p>
+                      <h3 className="text-foreground font-semibold">
                         Arif Rahman
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: "#666" }}>
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
                         PHD BIOMEDICAL ENGINEERING, FOUNDER & CEO
-                      </Typography>
-                    </Box>
-                  </Box>
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
           </motion.div>
 
           {/* Right Side - Timeline Features */}
-          <Box sx={{ position: "relative", pl: { lg: 4 } }}>
+          <div className="relative lg:pl-8">
             {/* Timeline Items */}
-            <Box sx={{ position: "relative" }}>
+            <div className="relative">
               {/* Feature 1 */}
               <AnimatedTimelineItem index={0}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 3,
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: "50%",
-                      bgcolor: "#4CAF50",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <SchoolIcon sx={{ color: "white", fontSize: 24 }} />
-                  </Box>
-                  <Box sx={{ flex: 1, pb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontWeight: 600, mb: 1, color: "#1a1a1a" }}
-                    >
+                <div className="relative z-10 flex items-start gap-6">
+                  <div className="bg-primary flex size-12 shrink-0 items-center justify-center rounded-full">
+                    <GraduationCap className="text-primary-foreground size-6" />
+                  </div>
+                  <div className="flex-1 pb-8">
+                    <h3 className="text-foreground mb-2 text-lg font-semibold">
                       Built by Academics, for Academics
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "#666", lineHeight: 1.6 }}
-                    >
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       Our team includes PhD researchers from medical, legal, and
                       engineering backgrounds.
-                    </Typography>
-                  </Box>
-                </Box>
+                    </p>
+                  </div>
+                </div>
               </AnimatedTimelineItem>
 
               <TimelineConnector index={0} />
 
               {/* Feature 2 */}
               <AnimatedTimelineItem index={1}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 3,
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: "50%",
-                      bgcolor: "#4CAF50",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <CheckCircleIcon sx={{ color: "white", fontSize: 24 }} />
-                  </Box>
-                  <Box sx={{ flex: 1, pb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontWeight: 600, mb: 1, color: "#1a1a1a" }}
-                    >
+                <div className="relative z-10 flex items-start gap-6">
+                  <div className="bg-primary flex size-12 shrink-0 items-center justify-center rounded-full">
+                    <CheckCircle className="text-primary-foreground size-6" />
+                  </div>
+                  <div className="flex-1 pb-8">
+                    <h3 className="text-foreground mb-2 text-lg font-semibold">
                       Trusted by Top Universities
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "#666", lineHeight: 1.6 }}
-                    >
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       Students at Harvard, MIT, Stanford already use Shothik AI
                       for their research papers.
-                    </Typography>
-                  </Box>
-                </Box>
+                    </p>
+                  </div>
+                </div>
               </AnimatedTimelineItem>
 
               <TimelineConnector index={1} />
 
               {/* Feature 3 */}
               <AnimatedTimelineItem index={2}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: 3,
-                    position: "relative",
-                    zIndex: 1,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: "50%",
-                      bgcolor: "#4CAF50",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <InnovationIcon sx={{ color: "white", fontSize: 24 }} />
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography
-                      variant="h6"
-                      sx={{ fontWeight: 600, mb: 1, color: "#1a1a1a" }}
-                    >
+                <div className="relative z-10 flex items-start gap-6">
+                  <div className="bg-primary flex size-12 shrink-0 items-center justify-center rounded-full">
+                    <Lightbulb className="text-primary-foreground size-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-foreground mb-2 text-lg font-semibold">
                       Continuous Innovation
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "#666", lineHeight: 1.6 }}
-                    >
+                    </h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       We ship new domain-specific features every week based on
                       student feedback.
-                    </Typography>
-                  </Box>
-                </Box>
+                    </p>
+                  </div>
+                </div>
               </AnimatedTimelineItem>
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
 
         {/* CTA Buttons */}
         <motion.div
@@ -372,62 +204,24 @@ export default function StudentDeserve() {
           animate={isHeroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-              mt: { xs: 6, md: 8 },
-              flexDirection: { xs: "column", sm: "row" },
-              alignItems: "center",
-            }}
-          >
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-16">
             <Button
-              variant="contained"
-              size="large"
-              sx={{
-                bgcolor: "#4CAF50",
-                color: "white",
-                px: 4,
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                borderRadius: 2,
-                textTransform: "none",
-                boxShadow: "0 4px 16px rgba(76, 175, 80, 0.3)",
-                "&:hover": {
-                  bgcolor: "#45a049",
-                  boxShadow: "0 6px 20px rgba(76, 175, 80, 0.4)",
-                },
-                minWidth: { xs: "200px", sm: "auto" },
-              }}
+              variant="default"
+              size="lg"
+              className="min-w-[200px] rounded-lg px-8 py-3 text-base font-semibold shadow-lg sm:min-w-auto"
             >
               Start your free trial
             </Button>
             <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                color: "#4CAF50",
-                borderColor: "#4CAF50",
-                px: 4,
-                py: 1.5,
-                fontSize: "1.1rem",
-                fontWeight: 600,
-                borderRadius: 2,
-                textTransform: "none",
-                "&:hover": {
-                  borderColor: "#45a049",
-                  bgcolor: "rgba(76, 175, 80, 0.04)",
-                },
-                minWidth: { xs: "200px", sm: "auto" },
-              }}
+              variant="outline"
+              size="lg"
+              className="border-primary text-primary hover:bg-primary/5 min-w-[200px] rounded-lg px-8 py-3 text-base font-semibold sm:min-w-auto"
             >
               Read Our Story
             </Button>
-          </Box>
+          </div>
         </motion.div>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }

@@ -1,39 +1,23 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import {
+  ArrowLeftRight,
+  Bot,
+  Eye,
+  FileText,
+  Languages,
+  Megaphone,
+  SpellCheck2,
+  Wand2,
+} from "lucide-react";
 import React from "react";
 
-// StudentToEntrepreneurJourneySection.jsx (Material UI)
-// Single-file React component using @mui/material v5 and @mui/icons-material
-// Drop into a project that already has @mui/material and @mui/icons-material installed.
-
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Tabs,
-  Tab,
-  Stack,
-  IconButton,
-  useTheme,
-  Divider,
-} from "@mui/material";
-
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz"; // paraphrase
-import SpellcheckIcon from "@mui/icons-material/Spellcheck"; // grammar fix
-import SummarizeIcon from "@mui/icons-material/Summarize"; // summarize
-import TranslateIcon from "@mui/icons-material/Translate"; // translator
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh"; // humanize
-import VisibilityIcon from "@mui/icons-material/Visibility"; // ai detector
-import SmartToyIcon from "@mui/icons-material/SmartToy"; // agents
-import CampaignIcon from "@mui/icons-material/Campaign"; // marketing automation
-
 export default function ClaritSectionV2({ onCTAClick = () => {} }) {
-  const theme = useTheme();
-
   const stages = [
     {
       id: "learn",
@@ -44,25 +28,25 @@ export default function ClaritSectionV2({ onCTAClick = () => {} }) {
           key: "paraphrase",
           title: "Paraphrase",
           desc: "Reword sentences while preserving meaning — perfect for study notes and drafts.",
-          icon: <SwapHorizIcon fontSize="small" />,
+          icon: <ArrowLeftRight className="size-4" />,
         },
         {
           key: "grammar",
           title: "Grammar Fix",
           desc: "Auto-correct spelling, punctuation and tone for academic clarity.",
-          icon: <SpellcheckIcon fontSize="small" />,
+          icon: <SpellCheck2 className="size-4" />,
         },
         {
           key: "summarize",
           title: "Summarize",
           desc: "Get concise summaries so you can absorb and review faster.",
-          icon: <SummarizeIcon fontSize="small" />,
+          icon: <FileText className="size-4" />,
         },
         {
           key: "translate",
           title: "Translator",
           desc: "Translate content while preserving voice and context.",
-          icon: <TranslateIcon fontSize="small" />,
+          icon: <Languages className="size-4" />,
         },
       ],
     },
@@ -75,19 +59,19 @@ export default function ClaritSectionV2({ onCTAClick = () => {} }) {
           key: "humanize",
           title: "Humanize",
           desc: "Make technical or academic text sound natural and persuasive.",
-          icon: <AutoFixHighIcon fontSize="small" />,
+          icon: <Wand2 className="size-4" />,
         },
         {
           key: "ai-detector",
           title: "AI Detector",
           desc: "Check for generated content and tune for a human voice.",
-          icon: <VisibilityIcon fontSize="small" />,
+          icon: <Eye className="size-4" />,
         },
         {
           key: "agents",
           title: "Agents",
           desc: "Automate repetitive content tasks and assemble workflows.",
-          icon: <SmartToyIcon fontSize="small" />,
+          icon: <Bot className="size-4" />,
         },
       ],
     },
@@ -100,60 +84,41 @@ export default function ClaritSectionV2({ onCTAClick = () => {} }) {
           key: "marketing",
           title: "Marketing Automation",
           desc: "Create email flows, landing copy, and campaign-ready assets quickly.",
-          icon: <CampaignIcon fontSize="small" />,
+          icon: <Megaphone className="size-4" />,
         },
         {
           key: "agents-2",
           title: "Agents",
           desc: "Deploy agents that perform outreach tasks and content orchestration.",
-          icon: <SmartToyIcon fontSize="small" />,
+          icon: <Bot className="size-4" />,
         },
       ],
     },
   ];
 
-  const [tab, setTab] = React.useState(0);
-
-  const handleTabChange = (e, value) => {
-    setTab(value);
-  };
-
-  const activeStage = stages[tab] || stages[0];
+  const [tab, setTab] = React.useState("0");
 
   return (
-    <Box
-      component="section"
-      sx={{ py: { xs: 6, md: 12 }, bgcolor: "background.paper" }}
-    >
-      <Container maxWidth="lg">
+    <section className="bg-background py-12 md:py-24">
+      <div className="mx-auto max-w-6xl px-4">
         {/* Hero / Motto */}
-        <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
-          <Typography variant="h4" component="h2" fontWeight={700} gutterBottom>
+        <div className="mb-6 text-center md:mb-12">
+          <h2 className="mb-4 text-2xl font-bold">
             From Student to Entrepreneur —{" "}
-            <Box component="span" sx={{ color: "success.main" }}>
+            <span className="text-primary">
               Your writing journey, simplified
-            </Box>
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ maxWidth: 760, mx: "auto" }}
-          >
+            </span>
+          </h2>
+          <p className="text-muted-foreground mx-auto max-w-[760px]">
             One platform to write, verify and launch: paraphrase, humanize,
             detect, fix grammar, summarize, translate, build agents and automate
             marketing — all in a cohesive workflow.
-          </Typography>
+          </p>
 
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="center"
-            sx={{ mt: 3 }}
-          >
+          <div className="mt-6 flex flex-row justify-center gap-2">
             <Button
               data-umami-event="Get early access"
-              variant="contained"
-              color="success"
+              variant="default"
               onClick={() => onCTAClick("get-started")}
               aria-label="Get early access"
             >
@@ -161,211 +126,161 @@ export default function ClaritSectionV2({ onCTAClick = () => {} }) {
             </Button>
             <Button
               data-umami-event="View features"
-              variant="outlined"
+              variant="outline"
               onClick={() => onCTAClick("features")}
             >
               View features
             </Button>
-          </Stack>
-        </Box>
+          </div>
+        </div>
 
         {/* Tabs (stages) */}
-        <Card variant="outlined" sx={{ mb: 4 }}>
-          <Box sx={{ px: { xs: 2, md: 3 }, pt: 2 }}>
-            <Tabs
-              value={tab}
-              onChange={handleTabChange}
-              variant="scrollable"
-              scrollButtons="auto"
-              aria-label="Stage tabs"
-              sx={{ mb: 2 }}
-            >
-              {stages.map((s, i) => (
-                <Tab
-                  key={s.id}
-                  disableRipple
-                  label={
-                    <Box sx={{ textAlign: "left" }}>
-                      <Typography sx={{ fontWeight: 700 }}>
-                        {s.label}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
+        <Card className="mb-6 border">
+          <div className="px-4 pt-4 md:px-6">
+            <Tabs value={tab} onValueChange={setTab}>
+              <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+                {stages.map((s, i) => (
+                  <TabsTrigger
+                    key={s.id}
+                    value={i.toString()}
+                    className="min-w-[160px] py-3 text-left"
+                  >
+                    <div className="text-left">
+                      <div className="font-bold">{s.label}</div>
+                      <div className="text-muted-foreground text-xs">
                         {s.subtitle}
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ py: 1.5, minWidth: 160 }}
-                />
-              ))}
-            </Tabs>
-
-            <Divider />
-
-            {/* Cards Grid */}
-            <CardContent>
-              <Grid container spacing={2}>
-                {activeStage.services.map((svc) => (
-                  <Grid key={svc.key} item xs={12} sm={6} md={4}>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <CardContent>
-                        <Stack
-                          direction="row"
-                          spacing={2}
-                          alignItems="flex-start"
-                        >
-                          <Box
-                            sx={{
-                              width: 44,
-                              height: 44,
-                              borderRadius: 2,
-                              bgcolor: "success.50",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              flexShrink: 0,
-                            }}
-                          >
-                            <Box sx={{ color: "success.main" }}>{svc.icon}</Box>
-                          </Box>
-
-                          <Box>
-                            <Typography variant="subtitle1" fontWeight={700}>
-                              {svc.title}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ mt: 0.5 }}
-                            >
-                              {svc.desc}
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      </CardContent>
-
-                      <Box sx={{ px: 2, pb: 2 }}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
-                          <Button
-                            size="small"
-                            onClick={() => onCTAClick(svc.key)}
-                            aria-label={`Learn more about ${svc.title}`}
-                          >
-                            Learn more
-                          </Button>
-                          <Typography variant="caption" color="text.disabled">
-                            Fast • Secure
-                          </Typography>
-                        </Stack>
-                      </Box>
-                    </Card>
-                  </Grid>
+                      </div>
+                    </div>
+                  </TabsTrigger>
                 ))}
-              </Grid>
-            </CardContent>
-          </Box>
+              </TabsList>
+
+              <Separator />
+
+              {/* Cards Grid */}
+              <CardContent className="pt-6">
+                {stages.map((stage, stageIndex) => (
+                  <TabsContent
+                    key={stage.id}
+                    value={stageIndex.toString()}
+                    className="mt-0"
+                  >
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                      {stage.services.map((svc) => (
+                        <Card
+                          key={svc.key}
+                          className="flex h-full flex-col justify-between border"
+                        >
+                          <CardContent className="pt-6">
+                            <div className="flex flex-row items-start gap-4">
+                              <div
+                                className={cn(
+                                  "h-11 w-11 rounded-lg",
+                                  "bg-primary/10 flex flex-shrink-0 items-center justify-center",
+                                )}
+                              >
+                                <div className="text-primary">{svc.icon}</div>
+                              </div>
+
+                              <div>
+                                <h3 className="text-base font-bold">
+                                  {svc.title}
+                                </h3>
+                                <p className="text-muted-foreground mt-1 text-sm">
+                                  {svc.desc}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+
+                          <div className="px-4 pb-4">
+                            <div className="flex flex-row items-center justify-between">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => onCTAClick(svc.key)}
+                                aria-label={`Learn more about ${svc.title}`}
+                              >
+                                Learn more
+                              </Button>
+                              <span className="text-muted-foreground/60 text-xs">
+                                Fast • Secure
+                              </span>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                ))}
+              </CardContent>
+            </Tabs>
+          </div>
         </Card>
 
         {/* Secondary row: Why choose us + illustration */}
-        <Grid container spacing={3} alignItems="center">
-          <Grid item xs={12} lg={8}>
-            <Typography variant="h6" fontWeight={700} gutterBottom>
+        <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <h3 className="mb-2 text-lg font-bold">
               Designed for the whole journey
-            </Typography>
-            <Typography color="text.secondary" sx={{ maxWidth: 680 }}>
+            </h3>
+            <p className="text-muted-foreground max-w-[680px]">
               Preserve your voice and get results. Each tool plugs into
               workflows so you can go from first draft to market-ready copy
               without leaving the platform.
-            </Typography>
+            </p>
 
-            <Grid container spacing={1} sx={{ mt: 2 }}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2">
+            <div className="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-2">
+              <div>
+                <p className="text-sm">
                   • Intuitive, card-based UI for quick scanning
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2">
+                </p>
+              </div>
+              <div>
+                <p className="text-sm">
                   • Stage-guided path from student to entrepreneur
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2">
+                </p>
+              </div>
+              <div>
+                <p className="text-sm">
                   • Built-in verification (AI detector & originality checks)
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2">
+                </p>
+              </div>
+              <div>
+                <p className="text-sm">
                   • Automations & agents to scale outreach
-                </Typography>
-              </Grid>
-            </Grid>
+                </p>
+              </div>
+            </div>
 
-            <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => onCTAClick("signup")}
-              >
+            <div className="mt-6 flex flex-row gap-2">
+              <Button variant="default" onClick={() => onCTAClick("signup")}>
                 Start free trial
               </Button>
-              <Button variant="outlined" onClick={() => onCTAClick("demo")}>
+              <Button variant="outline" onClick={() => onCTAClick("demo")}>
                 Request demo
               </Button>
-            </Stack>
-          </Grid>
+            </div>
+          </div>
 
-          <Grid item xs={12} lg={4}>
-            <Box
-              sx={{
-                display: { xs: "none", lg: "block" },
-                bgcolor: "background.default",
-                borderRadius: 2,
-                p: 2,
-                height: "100%",
-                border: `1px dashed ${theme.palette.success[100] || "#E6F4EA"}`,
-              }}
+          <div className="lg:col-span-4">
+            <div
+              className={cn(
+                "hidden lg:block",
+                "bg-muted h-full rounded-lg p-4",
+                "border-primary/20 border border-dashed",
+              )}
             >
               {/* Replace this area with a branded illustration, Lottie or GIF in production. */}
-              <Box
-                sx={{
-                  width: "100%",
-                  height: 220,
-                  borderRadius: 1,
-                  bgcolor: "background.paper",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography variant="body2" color="text.secondary">
+              <div className="bg-background flex h-[220px] w-full items-center justify-center rounded">
+                <p className="text-muted-foreground text-sm">
                   Illustration / GIF — replace with brand asset
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
-
-      {/* Integration notes as a comment:
-        - This component uses MUI v5. Ensure `@mui/material` and `@mui/icons-material` are installed.
-        - Replace the placeholder illustration with a compressed GIF or Lottie for better engagement.
-        - Wire `onCTAClick` to your analytics/navigation. Example: onCTAClick('paraphrase')
-        - A/B testing ideas: (A) Stage-tabbed experience (this component) vs (B) full-grid experience.
-        - Accessibility: tabs are keyboard accessible via MUI's Tabs component. Add any extra ARIA attributes
-          for deeper support if required.
-      */}
-    </Box>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

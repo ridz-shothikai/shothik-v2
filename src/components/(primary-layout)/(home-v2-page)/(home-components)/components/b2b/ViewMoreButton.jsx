@@ -1,7 +1,8 @@
 "use client";
-import { Button } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 const ViewMoreButton = () => {
   const router = useRouter();
@@ -11,21 +12,12 @@ const ViewMoreButton = () => {
       onClick={() => {
         router.push("/b2b");
       }}
-      variant="contained"
-      color="primary"
-      size="small"
-      sx={{
-        fontSize: ".9rem",
-        fontWeight: "normal",
-        px: 2,
-        "&::after": {
-          content: '"›"',
-          flexShrink: 0,
-          marginLeft: "0.5rem",
-        },
-      }}
+      variant="default"
+      size="sm"
+      className={cn("text-[0.9rem] font-normal")}
     >
       View More
+      <ChevronRight />
     </Button>
   );
 };

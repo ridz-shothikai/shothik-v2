@@ -4,10 +4,8 @@ import { PresentationMode } from "@/components/presentation/PresentationMode";
 import { SlideCard } from "@/components/presentation/SlideCard";
 import { usePresentation } from "@/components/slide/context/SlideContextProvider";
 import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
+import { Spinner } from "@/components/ui/spinner";
 import { useFetchSlidesQuery } from "@/redux/api/presentation/presentationApi";
-import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -37,19 +35,10 @@ export default function SlidesPreviewPage() {
     return (
       <>
         <SlidePreviewNavbar slidesData={null} />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "50vh",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <CircularProgress />
-          <Typography>Loading slides...</Typography>
-        </Box>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
+          <Spinner className="text-primary" />
+          <p className="text-foreground">Loading slides...</p>
+        </div>
       </>
     );
   }
@@ -58,18 +47,9 @@ export default function SlidesPreviewPage() {
     return (
       <>
         <SlidePreviewNavbar slidesData={null} />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "50vh",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <Typography color="error">Error loading slides</Typography>
-        </Box>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
+          <p className="text-destructive">Error loading slides</p>
+        </div>
       </>
     );
   }
@@ -78,18 +58,9 @@ export default function SlidesPreviewPage() {
     return (
       <>
         <SlidePreviewNavbar slidesData={null} />
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "50vh",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          <Typography>No slides available</Typography>
-        </Box>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
+          <p className="text-foreground">No slides available</p>
+        </div>
       </>
     );
   }
@@ -102,27 +73,9 @@ export default function SlidesPreviewPage() {
         open={isPresentationOpen && slidesData?.slides?.length > 0}
         onClose={closePresentation}
       />
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minHeight: "100vh",
-          bgcolor: "#f5f5f5",
-          py: 4,
-          px: 2,
-        }}
-      >
-        <Box
-          sx={{ width: "100%", maxWidth: { xs: "90vw", sm: "60vw" }, mb: 3 }}
-        >
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{ fontWeight: "bold", mb: 2 }}
-          >
-            Slides Preview
-          </Typography>
+      <div className="bg-muted flex min-h-screen flex-col items-center px-2 py-4">
+        <div className="mb-3 w-full max-w-[90vw] sm:max-w-[60vw]">
+          <h1 className="mb-2 text-2xl font-bold">Slides Preview</h1>
           {slidesData.slides.map((slide, index) => (
             <SlideCard
               key={slide.slide_index || index}
@@ -131,8 +84,8 @@ export default function SlidesPreviewPage() {
               totalSlides={slidesData.slides.length}
             />
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     </>
   );
 }
