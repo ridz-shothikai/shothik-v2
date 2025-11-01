@@ -1,12 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Chart, registerables } from "chart.js";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Button } from "../ui/button";
 import SlidePreview from "./SlidePreview";
 
 // Register Chart.js components

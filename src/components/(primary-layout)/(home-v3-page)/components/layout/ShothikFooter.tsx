@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Separator } from '../ui/separator';
+import { Separator } from "@/components/ui/separator";
+import FooterBottom from "./footer/FooterBottom";
 import FooterColumn from "./footer/FooterColumn";
 import SocialLinks from "./footer/SocialLinks";
-import FooterBottom from "./footer/FooterBottom";
 
 const aiWritingTools = [
   { label: "Paraphrase", href: "/paraphrase" },
@@ -54,15 +54,15 @@ const support = [
 
 export default function ShothikFooter() {
   return (
-    <footer className="bg-background border-t border-border pt-12 md:pt-16 pb-8 md:pb-12">
-      <div className="container max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8">
+    <footer className="bg-background border-border border-t pt-12 pb-8 md:pt-16 md:pb-12">
+      <div className="container mx-auto max-w-7xl px-4">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:gap-8 lg:grid-cols-6">
           <FooterColumn title="AI Writing Tools" links={aiWritingTools} />
           <FooterColumn title="AI Agents" links={aiAgents} />
           <FooterColumn title="Domains" links={domains} />
           <FooterColumn title="Features" links={features} />
           <FooterColumn title="Support" links={support} />
-          
+
           <div className="col-span-2 sm:col-span-1">
             <FooterColumn title="Company" links={company} />
             <div className="mt-6">

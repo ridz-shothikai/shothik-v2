@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from "react";
-import { Button } from '../../../ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../../ui/dialog';
-import { X, CheckCircle2, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CheckCircle2, Loader2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function MetaAutomationShowcase() {
   const [open, setOpen] = useState(false);
@@ -67,16 +67,16 @@ export default function MetaAutomationShowcase() {
         onClick={handleOpen}
         size="lg"
         data-testid="button-try-meta-demo"
-        className="text-sm font-semibold rounded-lg bg-[#1877F2] hover:bg-[#0C63D4] text-white"
+        className="rounded-lg bg-[#1877F2] text-sm font-semibold text-white hover:bg-[#0C63D4]"
       >
         Try Interactive Demo
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-6xl h-[80vh] p-0 gap-0 bg-background dark:bg-gray-900">
+        <DialogContent className="bg-background h-[80vh] max-w-6xl gap-0 p-0 dark:bg-gray-900">
           <div className="flex h-full">
-            <div className="w-80 border-r border-border bg-gray-50 dark:bg-gray-800 p-6 overflow-y-auto">
-              <p className="text-caption text-muted-foreground font-bold mb-6 block">
+            <div className="border-border w-80 overflow-y-auto border-r bg-gray-50 p-6 dark:bg-gray-800">
+              <p className="text-caption text-muted-foreground mb-6 block font-bold">
                 META AUTOMATION PIPELINE
               </p>
 
@@ -84,29 +84,33 @@ export default function MetaAutomationShowcase() {
                 {stages.map((stage, index) => (
                   <div
                     key={index}
-                    className={`p-4 rounded-lg border transition-all ${
+                    className={`rounded-lg border p-4 transition-all ${
                       index <= agentStage
-                        ? 'border-[#1877F2] bg-[rgba(24,119,242,0.05)] opacity-100'
-                        : 'border-border bg-transparent opacity-50'
+                        ? "border-[#1877F2] bg-[rgba(24,119,242,0.05)] opacity-100"
+                        : "border-border bg-transparent opacity-50"
                     }`}
                   >
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       {index < agentStage ? (
                         <CheckCircle2 size={16} color="#1877F2" />
                       ) : index === agentStage ? (
-                        <Loader2 size={16} color="#1877F2" className="animate-spin" />
+                        <Loader2
+                          size={16}
+                          color="#1877F2"
+                          className="animate-spin"
+                        />
                       ) : (
-                        <div className="w-4 h-4 rounded-full border border-border" />
+                        <div className="border-border h-4 w-4 rounded-full border" />
                       )}
-                      <p className="text-body2 font-semibold text-foreground">
+                      <p className="text-body2 text-foreground font-semibold">
                         {stage.title}
                       </p>
                     </div>
-                    <p className="text-caption text-muted-foreground block mb-3">
+                    <p className="text-caption text-muted-foreground mb-3 block">
                       {stage.description}
                     </p>
                     {index <= agentStage && (
-                      <div className="h-1 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
+                      <div className="h-1 overflow-hidden rounded bg-gray-200 dark:bg-gray-700">
                         <div
                           className="h-full bg-[#1877F2] transition-all duration-1000"
                           style={{
@@ -120,10 +124,12 @@ export default function MetaAutomationShowcase() {
               </div>
             </div>
 
-            <div className="flex-1 flex flex-col">
-              <div className="px-8 py-6 border-b border-border flex items-center justify-between">
+            <div className="flex flex-1 flex-col">
+              <div className="border-border flex items-center justify-between border-b px-8 py-6">
                 <div>
-                  <h3 className="text-h6 font-bold text-foreground">Meta Automation Agent</h3>
+                  <h3 className="text-h6 text-foreground font-bold">
+                    Meta Automation Agent
+                  </h3>
                   <p className="text-body2 text-muted-foreground">
                     From product link to live campaigns automatically
                   </p>
@@ -141,40 +147,60 @@ export default function MetaAutomationShowcase() {
 
               <div className="flex-1 overflow-y-auto p-8">
                 {agentStage === 5 ? (
-                  <div className="text-center py-16">
-                    <CheckCircle2 size={64} color="#1877F2" className="mx-auto" />
-                    <h4 className="text-h4 mt-6 mb-4 font-bold">Campaign Live!</h4>
+                  <div className="py-16 text-center">
+                    <CheckCircle2
+                      size={64}
+                      color="#1877F2"
+                      className="mx-auto"
+                    />
+                    <h4 className="text-h4 mt-6 mb-4 font-bold">
+                      Campaign Live!
+                    </h4>
                     <p className="text-body1 text-muted-foreground mb-8">
-                      Your Meta ads campaign is now running with AI-powered optimization
+                      Your Meta ads campaign is now running with AI-powered
+                      optimization
                     </p>
-                    <div className="grid grid-cols-4 gap-6 max-w-2xl mx-auto">
+                    <div className="mx-auto grid max-w-2xl grid-cols-4 gap-6">
                       {[
-                        { value: '2.4K', label: 'Impressions' },
-                        { value: '156', label: 'Clicks' },
-                        { value: '12', label: 'Conversions' },
-                        { value: '3.2x', label: 'ROAS' },
+                        { value: "2.4K", label: "Impressions" },
+                        { value: "156", label: "Clicks" },
+                        { value: "12", label: "Conversions" },
+                        { value: "3.2x", label: "ROAS" },
                       ].map((stat, i) => (
-                        <div key={i} className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg border border-border">
-                          <p className="text-h5 font-bold text-[#1877F2]">{stat.value}</p>
-                          <p className="text-caption text-muted-foreground">{stat.label}</p>
+                        <div
+                          key={i}
+                          className="border-border rounded-lg border bg-gray-50 p-6 dark:bg-gray-800"
+                        >
+                          <p className="text-h5 font-bold text-[#1877F2]">
+                            {stat.value}
+                          </p>
+                          <p className="text-caption text-muted-foreground">
+                            {stat.label}
+                          </p>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="max-w-2xl mx-auto">
-                    <h5 className="text-h5 mb-4 font-bold text-center">
+                  <div className="mx-auto max-w-2xl">
+                    <h5 className="text-h5 mb-4 text-center font-bold">
                       {stages[agentStage].title}
                     </h5>
-                    <p className="text-body2 text-muted-foreground text-center mb-8">
+                    <p className="text-body2 text-muted-foreground mb-8 text-center">
                       {stages[agentStage].description}
                     </p>
-                    <div className="p-8 bg-gray-50 dark:bg-gray-800 rounded-xl border border-border">
-                      <div className="flex items-center gap-4 mb-6">
-                        <Loader2 size={20} color="#1877F2" className="animate-spin" />
-                        <p className="text-body2 font-semibold">Processing...</p>
+                    <div className="border-border rounded-xl border bg-gray-50 p-8 dark:bg-gray-800">
+                      <div className="mb-6 flex items-center gap-4">
+                        <Loader2
+                          size={20}
+                          color="#1877F2"
+                          className="animate-spin"
+                        />
+                        <p className="text-body2 font-semibold">
+                          Processing...
+                        </p>
                       </div>
-                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
+                      <div className="h-1.5 overflow-hidden rounded bg-gray-200 dark:bg-gray-700">
                         <div
                           className="h-full bg-[#1877F2] transition-all duration-1000"
                           style={{
