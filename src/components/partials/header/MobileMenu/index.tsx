@@ -2,12 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { LucideIcon, Monitor, Moon, Sun } from "lucide-react";
 
 interface MenuItem {
@@ -50,39 +45,35 @@ export default function MobileMenu({
         className="w-[280px] overflow-y-auto"
         data-testid="mobile-drawer"
       >
-        <SheetHeader>
-          <SheetTitle>Menu</SheetTitle>
+        <SheetHeader className="border-b">
+          <strong>Menu</strong>
         </SheetHeader>
 
-        <Separator className="my-4" />
-
-        <div className="px-2 py-2">
-          <div className="text-subtitle2 text-muted-foreground mb-2 font-bold">
-            Features
+        <div className="space-y-4 px-2 py-2">
+          <div className="space-y-4">
+            {featuresSections?.map((section) => (
+              <div key={section?.title}>
+                <div className="text-caption text-foreground mb-2 font-semibold uppercase">
+                  {section?.title}
+                </div>
+                <div className="flex flex-col">
+                  {section?.items?.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={onClose}
+                      className="text-foreground hover:text-primary px-2 py-1 text-sm font-medium transition-colors"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-
-          {featuresSections.map((section) => (
-            <div key={section.title}>
-              <div className="text-caption text-foreground mt-4 mb-2 font-semibold uppercase">
-                {section.title}
-              </div>
-              <div className="flex flex-col">
-                {section.items.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={onClose}
-                    className="text-foreground hover:text-primary py-1 text-sm font-medium transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <div className="flex flex-col">
           {navLinks.map((link) => (
@@ -97,7 +88,7 @@ export default function MobileMenu({
           ))}
         </div>
 
-        <Separator className="my-4" />
+        <Separator />
 
         <div className="px-2 py-2">
           <div className="text-caption text-muted-foreground mb-2 font-semibold uppercase">
