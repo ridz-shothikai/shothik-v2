@@ -1,9 +1,12 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import useResponsive from "@/hooks/useResponsive";
-import { Box, Stack, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { ClipboardPaste, FlaskConical } from "lucide-react";
 import dynamic from "next/dynamic";
-import CustomUiButton from "../../ui/CustomUiButton";
-const FileUpload = dynamic(() => import("./FileUpload"), { ssr: false });
+const FileUpload = dynamic(() => import("./FileUpload"), {
+  ssr: false,
+});
 const MultipleFileUpload = dynamic(() => import("./MultipleFileUpload"), {
   ssr: false,
 });
@@ -41,62 +44,38 @@ const UserActionInput = ({
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        position: "absolute",
-        bottom: { xs: 40, sm: 80, lg: 30 },
-        left: "0px",
-        right: "0px",
-      }}
+    <div
+      className={cn(
+        "absolute right-0 left-0 w-full",
+        "bottom-[40px] sm:bottom-[80px] lg:bottom-[30px]",
+      )}
     >
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        flexWrap="wrap"
-        rowGap={1.5}
-        columnGap={2}
-        sx={{ width: "80%", mx: "auto" }}
+      <div
+        className={cn(
+          "flex flex-row flex-wrap items-center justify-center",
+          "gap-x-2 gap-y-1.5",
+          "mx-auto w-[80%]",
+        )}
       >
-        <Stack
-          direction={isSmallDevice ? "column" : "row"}
+        <div
           id="sample-paste-section"
-          alignItems="center"
-          justifyContent="center"
-          flexWrap="wrap"
-          rowGap={1.5}
-          columnGap={2}
-          sx={{ width: "100%", mx: "auto" }}
+          className={cn(
+            "flex flex-wrap items-center justify-center",
+            "gap-x-2 gap-y-1.5",
+            "mx-auto w-full",
+            isSmallDevice ? "flex-col" : "flex-row",
+          )}
         >
           {!disableTrySample ? (
-            // <Button
-            //   color="warning"
-            //   // size={isMobile ? "small" : "large"}
-            //   // variant="soft"
-            //   onClick={handleSampleText}
-            //   disabled={!sampleText}
-            //   startIcon={<SaveAsOutlined />}
-            //   sx={{
-            //     border: { sm: "none", xs: "2px solid" },
-            //     borderColor: "primary.warning",
-            //     borderRadius: "5px",
-            //     "&:hover": {
-            //       borderColor: "primary.dark",
-            //     },
-            //     px: 1.5,
-            //     py: 1.5,
-            //   }}
-            // >
-            //   {!isMobile ? "Try Sample Text" : "Try Sample"}
-            // </Button>
-            <CustomUiButton
+            <Button
+              type="button"
               onClick={handleSampleText}
-              textLable={"Try sample"}
-              startIconSrc={"/icons/sample.svg"}
-              iconClassName={"w-4 h-4 lg:w-4 lg:h-4"}
-              className={"font-bold"}
-            />
+              disabled={!sampleText}
+              className={cn("font-bold")}
+            >
+              <FlaskConical className="mr-2 h-4 w-4" aria-hidden="true" />
+              Try sample
+            </Button>
           ) : null}
 
           {/* <Button
@@ -117,18 +96,19 @@ const UserActionInput = ({
             {!isMobile ? "Paste Text" : "Paste"}
           </Button> */}
           {!disableTrySample ? (
-            <span className="hidden text-sm font-bold text-[#212B36] lowercase sm:block lg:text-base">
+            <span className="text-muted-foreground hidden text-sm font-bold lowercase sm:block lg:text-base">
               OR
             </span>
           ) : null}
-          <CustomUiButton
+          <Button
+            type="button"
             onClick={handlePaste}
-            textLable={"Paste text"}
-            startIconSrc={"/icons/paste.svg"}
-            iconClassName={"w-5 h-5 lg:w-5 lg:h-5"}
-            className={"font-bold"}
-          />
-        </Stack>
+            className={cn("font-bold")}
+          >
+            <ClipboardPaste className="mr-2 h-5 w-5" aria-hidden="true" />
+            Paste text
+          </Button>
+        </div>
         {/* {paraphrase ? (
           <MultipleFileUpload
             isMobile={isMobile}
@@ -140,22 +120,17 @@ const UserActionInput = ({
             selectedLang={selectedLang}
           />
         ) : ( */}
-        <Box id="upload_button">
-          <FileUpload isMobile={isMobile} setInput={handleFileData} />
-          <Typography
-            component="p"
-            variant="caption"
-            sx={{
-              color: "text.secondary",
-              textAlign: "center",
-            }}
-          >
+        <div id="upload_button">
+          {FileUpload && (
+            <FileUpload isMobile={isMobile} setInput={handleFileData} />
+          )}
+          <p className={cn("text-muted-foreground text-center text-xs")}>
             {isMobile ? "" : "Supported file"} formats: pdf,docx.
-          </Typography>
-        </Box>
+          </p>
+        </div>
         {/* )} */}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 };
 

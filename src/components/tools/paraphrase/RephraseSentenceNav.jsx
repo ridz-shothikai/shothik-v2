@@ -1,16 +1,19 @@
-import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { Button } from "@/components/ui/button";
 import {
-  AssistantPhotoRounded,
-  InsertDriveFileRounded,
-} from "@mui/icons-material";
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
 import {
-  Button,
-  IconButton,
-  Paper,
-  Popper,
-  Stack,
   Tooltip,
-} from "@mui/material";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+import { cn } from "@/lib/utils";
+import { Copy, Flag } from "lucide-react";
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 
 export default function RephraseSentenceNav({
@@ -25,56 +28,75 @@ export default function RephraseSentenceNav({
   const { showTooltips } = useSelector(
     (state) => state.settings.interfaceOptions,
   );
+  const virtualRef = useMemo(() => ({ current: anchorEl }), [anchorEl]);
 
   return (
-    <Popper
-      ref={ref}
-      placement="top-start"
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-    >
-      <Paper variant="outlined">
-        {showTooltips && (
-          <Stack
-            direction="row"
-            alignItems="center"
-            sx={{ p: "5px" }}
-            spacing={1}
-          >
-            <Tooltip title="See More Sentence" placement="top" arrow>
-              <Button
-                onClick={rephraseSentence}
-                variant="outlined"
-                sx={{ mb: 0 }}
-                spacing={1}
-                size="small"
-              >
-                Rephrase
-              </Button>
-            </Tooltip>
-
-            <Tooltip title="Copy Sentence" placement="top" arrow>
-              <IconButton
-                onClick={handleCopy}
-                aria-label="Copy Sentence"
-                size="small"
-              >
-                <InsertDriveFileRounded />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Report Sentence" placement="top" arrow>
-              <IconButton
-                aria-label="Report Sentence"
-                size="small"
-                onClick={sendReprt}
-              >
-                <AssistantPhotoRounded />
-              </IconButton>
-            </Tooltip>
-          </Stack>
+    <Popover open={open}>
+      <PopoverAnchor virtualRef={virtualRef} />
+      <PopoverContent
+        ref={ref}
+        side="top"
+        align="start"
+        className={cn(
+          "z-50 min-w-[200px] p-0",
+          "bg-popover text-popover-foreground border-border border",
+          "shadow-lg",
         )}
-      </Paper>
-    </Popper>
+      >
+        {showTooltips && (
+          <TooltipProvider>
+            <div className={cn("flex items-center gap-2", "p-1")}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={rephraseSentence}
+                    variant="outline"
+                    size="sm"
+                    className={cn("mb-0")}
+                  >
+                    Rephrase
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>See More Sentence</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleCopy}
+                    aria-label="Copy Sentence"
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Copy Sentence</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    aria-label="Report Sentence"
+                    onClick={sendReprt}
+                    variant="ghost"
+                    size="icon"
+                  >
+                    <Flag className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Report Sentence</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

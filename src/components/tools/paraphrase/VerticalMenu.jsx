@@ -52,7 +52,13 @@ const ActionButton = memo(
               if (!disabled) onClick();
             }}
           >
-            <Image src={icon} alt="" width={20} height={20} classNmae="" />
+            <Image
+              src={icon}
+              alt=""
+              width={20}
+              height={20}
+              className="h-4 w-4 md:h-5 md:w-5"
+            />
           </Button>
           {crown && (
             <Image

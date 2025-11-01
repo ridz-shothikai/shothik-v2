@@ -1,5 +1,5 @@
 // ShortcutsTab.jsx
-import { Box, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
 
 const ShortcutsTab = ({
   fromComp = "paraphrase", // This flag is to maintain different sesstings on same component. ENUM: [paraphrase, humanize, ai-detector, grammar-fix, translator]
@@ -43,69 +43,44 @@ const ShortcutsTab = ({
     fromComp === "paraphrase" ? paraphraseRows : humanizeRows;
 
   return (
-    <Box id="shortcuts_tab" sx={{ px: 2, py: 1 }}>
+    <div id="shortcuts_tab" className="px-2 py-1">
       {/* Title */}
-      <Typography variant="h6" fontWeight="bold" gutterBottom>
-        Keyboard Shortcuts
-      </Typography>
+      <h2 className="mb-4 text-lg font-bold">Keyboard Shortcuts</h2>
 
       {/* Header Row */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          mb: 1,
-        }}
-      >
-        <Typography variant="subtitle2" color="text.secondary">
-          Action
-        </Typography>
-        <Typography variant="subtitle2" color="text.secondary">
+      <div className="mb-1 flex justify-between">
+        <p className="text-muted-foreground text-sm font-medium">Action</p>
+        <p className="text-muted-foreground text-sm font-medium">
           Keyboard shortcut
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {/* Data Rows */}
       {currentCompData.map((row, i) => (
-        <Box
+        <div
           key={i}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            py: 1,
-            borderBottom: i < currentCompData.length - 1 ? 1 : 0,
-            borderColor: "divider",
-          }}
+          className={cn(
+            "flex items-center justify-between py-1",
+            i < currentCompData.length - 1 && "border-border border-b",
+          )}
         >
-          <Typography variant="body2">{row.action}</Typography>
-          <Typography variant="body2" sx={{ fontFamily: "Monospace" }}>
-            {row.shortcut}
-          </Typography>
-        </Box>
+          <p className="text-sm">{row.action}</p>
+          <p className="font-mono text-sm">{row.shortcut}</p>
+        </div>
       ))}
 
       {/* Section Divider */}
-      {/* <Divider sx={{ my: 3 }} /> */}
+      {/* <div className="my-3 border-t border-border" /> */}
 
       {/* Canvas Divider Section */}
-      {/* <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      {/* <p className="text-muted-foreground mb-1 text-sm font-medium">
         Canvas divider
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          py: 1,
-        }}
-      >
-        <Typography variant="body2">Auto center</Typography>
-        <Typography variant="body2" sx={{ fontFamily: "Monospace" }}>
-          Ctrl + |
-        </Typography>
-      </Box> */}
-    </Box>
+      </p>
+      <div className="flex items-center justify-between py-1">
+        <p className="text-sm">Auto center</p>
+        <p className="font-mono text-sm">Ctrl + |</p>
+      </div> */}
+    </div>
   );
 };
 

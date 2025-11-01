@@ -1,11 +1,14 @@
 // SettingsTab.jsx
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
 import {
   toggleInterfaceOption,
   toggleParaphraseOption,
 } from "@/redux/slice/settings";
-import { Info as InfoIcon } from "@mui/icons-material";
-import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
+import { Info } from "lucide-react";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -55,7 +58,7 @@ const SettingsTab = () => {
         key: "showChangedWords",
         label: "Show ",
         highlightText: "changed words",
-        highlight: "warning.main",
+        highlight: "text-primary",
         info: false,
       },
       {
@@ -67,7 +70,7 @@ const SettingsTab = () => {
         key: "showLongestUnchangedWords",
         label: "Show ",
         highlightText: "longest unchanged words",
-        highlight: "info.main",
+        highlight: "text-primary",
         info: false,
       },
     ],
@@ -82,74 +85,86 @@ const SettingsTab = () => {
   }, [isMobile, paraphraseOptionsMeta]);
 
   return (
-    <Box id="settings_tab">
-      <Typography variant="h6" fontWeight="bold">
-        Settings
-      </Typography>
+    <div id="settings_tab">
+      <h2 className="mb-4 text-xl font-bold">Settings</h2>
 
       {/* Paraphrase Section - Only show if there are visible options */}
       {visibleParaphraseOptions.length > 0 && (
         <>
-          <Typography variant="subtitle2" gutterBottom>
+          <h3 className="text-muted-foreground mb-2 text-sm font-medium">
             Paraphrase
-          </Typography>
-          {visibleParaphraseOptions.map(({ key, label, info }) => (
-            <Box
-              key={key}
-              sx={{ display: "flex", alignItems: "center", mb: 1 }}
-            >
-              <Checkbox
-                size="small"
-                checked={paraphraseOptions[key]}
-                onChange={() => dispatch(toggleParaphraseOption(key))}
-              />
-              <Typography variant="body2" sx={{ ml: 1 }}>
-                {label}
-              </Typography>
-              {info && (
-                <IconButton size="small" sx={{ ml: "auto" }}>
-                  <InfoIcon fontSize="small" color="action" />
-                </IconButton>
-              )}
-            </Box>
-          ))}
-          <Divider sx={{ my: 2 }} />
+          </h3>
+          <div className="space-y-1">
+            {visibleParaphraseOptions.map(({ key, label, info }) => (
+              <div key={key} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={key}
+                    checked={paraphraseOptions[key]}
+                    onCheckedChange={() =>
+                      dispatch(toggleParaphraseOption(key))
+                    }
+                  />
+                  <label
+                    htmlFor={key}
+                    className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    {label}
+                  </label>
+                </div>
+                {info && (
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Info className="text-muted-foreground h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+          <Separator className="my-2" />
         </>
       )}
 
       {/* Interface Section */}
-      <Typography variant="subtitle2" gutterBottom>
+      <h3 className="text-muted-foreground mb-2 text-sm font-medium">
         Interface
-      </Typography>
-      {interfaceOptionsMeta.map(
-        ({ key, label, info, highlight, highlightText }) => (
-          <Box key={key} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <Checkbox
-              size="small"
-              checked={interfaceOptions[key] || false}
-              onChange={() => dispatch(toggleInterfaceOption(key))}
-            />
-            <Typography variant="body2" sx={{ ml: 1 }}>
-              {label}
-              {highlightText && (
-                <Typography
-                  component="span"
-                  variant="body2"
-                  sx={{ color: highlight }}
+      </h3>
+      <div className="space-y-1">
+        {interfaceOptionsMeta.map(
+          ({ key, label, info, highlight, highlightText }) => (
+            <div key={key} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id={key}
+                  checked={interfaceOptions[key] || false}
+                  onCheckedChange={() => dispatch(toggleInterfaceOption(key))}
+                />
+                <label
+                  htmlFor={key}
+                  className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  {highlightText}
-                </Typography>
+                  {label}
+                  {highlightText && (
+                    <span
+                      className={cn(
+                        "text-sm leading-none font-medium",
+                        highlight,
+                      )}
+                    >
+                      {highlightText}
+                    </span>
+                  )}
+                </label>
+              </div>
+              {info && (
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Info className="text-muted-foreground h-4 w-4" />
+                </Button>
               )}
-            </Typography>
-            {info && (
-              <IconButton size="small" sx={{ ml: "auto" }}>
-                <InfoIcon fontSize="small" color="action" />
-              </IconButton>
-            )}
-          </Box>
-        ),
-      )}
-    </Box>
+            </div>
+          ),
+        )}
+      </div>
+    </div>
   );
 };
 

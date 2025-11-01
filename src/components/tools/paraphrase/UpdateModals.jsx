@@ -1,7 +1,8 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import useResponsive from "@/hooks/useResponsive";
-import SvgColor from "@/resource/SvgColor";
-import { Button, Chip, Grid2, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import { cn } from "@/lib/utils";
+import { Gem } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,273 +16,147 @@ export function MessageTemplate({
 }) {
   const isMd = useResponsive("up", "sm");
   return (
-    <Box
-      sx={{
-        "& .MuiChip-label": {
-          fontSize: "14px",
-          fontWeight: 500,
-        },
-        height: "100%",
-        width: "100%",
-        padding: { xs: "50px 10px 0 10px", lg: 2 },
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "background.paper",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
+    <div
+      className={cn(
+        "absolute top-0 right-0 bottom-0 left-0 h-full w-full px-[10px] pt-[50px] pb-0 lg:p-2",
+        "bg-background z-[1000] flex flex-col items-center justify-center",
+      )}
     >
-      <Box sx={{ mb: { xs: 0.5, md: 1, lg: 1.5 }, position: "relative" }}>
+      <div className="relative mb-2 md:mb-4 lg:mb-6">
         {/* element starts */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: "-100px",
-            right: { xs: "-100px", lg: "-120px", xl: "-120px" },
-            transform: "translate(-50%, -50%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 100,
-            height: 100,
-          }}
+        <div
+          className={cn(
+            "absolute -right-[100px] -bottom-[100px] lg:-right-[120px] xl:-right-[120px]",
+            "flex h-[100px] w-[100px] -translate-x-1/2 -translate-y-1/2 items-center justify-center",
+          )}
         >
-          <Box
-            sx={{
-              transform: {
-                xs: "none",
-                sm: "none",
-                md: "none",
-                xl: "scale(1.2)",
-              },
-            }}
-          >
+          <div className="xl:scale-[1.2]">
             <Image src="/fromTo-2.svg" alt="arrow" width={120} height={120} />
-          </Box>
-        </Box>
+          </div>
+        </div>
         {/* element ends */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 0.5,
-          }}
-        >
-          <Typography
-            gutterBottom
-            variant="subtitle1"
-            sx={{
-              overflow: "hidden",
-              textAlign: "start",
-              fontSize: { xs: "12px", lg: "16px" },
-              fontWeight: 600,
-              color: "#212B36",
-              mb: "0px !important",
-            }}
+        <div className="flex flex-col items-center justify-center gap-0.5">
+          <h3
+            className={cn(
+              "overflow-hidden text-start text-xs font-semibold lg:text-base",
+              "text-foreground mb-0",
+            )}
           >
             {title}
-          </Typography>
+          </h3>
 
-          <Typography
-            gutterBottom
-            variant="subtitle2"
-            sx={{
-              overflow: "hidden",
-              textAlign: "center",
-              fontSize: { xs: "12px", lg: "14px" },
-              fontWeight: 400,
-              color: "#858481",
-              mb: "0px !important",
-            }}
+          <p
+            className={cn(
+              "overflow-hidden text-center text-xs font-normal lg:text-sm",
+              "text-muted-foreground mb-0",
+            )}
           >
             {desc}
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          p: { xs: 1.5, md: 2, lg: 3 },
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: { xs: 1, md: 2, lg: 2.5 },
-          border: "1px solid #919EAB33",
-          borderRadius: { xs: "8px", md: "12px", lg: "16px" },
-        }}
+          </p>
+        </div>
+      </div>
+      <div
+        className={cn(
+          "flex flex-col items-center p-3 md:p-4 lg:p-6",
+          "border-border/20 gap-2 border md:gap-4 lg:gap-5",
+          "rounded-lg md:rounded-xl lg:rounded-2xl",
+        )}
       >
-        <Grid2 spacing={1}>
-          <Grid2
-            size={{ xs: 12 }}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: { xs: 0.5, lg: 1 },
-            }}
-          >
-            <Typography
-              gutterBottom
-              variant="subtitle2"
-              sx={{
-                overflow: "hidden",
-                textAlign: "start",
-                fontSize: { xs: "12px", lg: "14px" },
-                fontWeight: 600,
-                color: "#212B36",
-                mb: "0px !important",
-              }}
+        <div className="w-full">
+          <div className="flex flex-col items-center justify-center gap-1 lg:gap-2">
+            <h4
+              className={cn(
+                "overflow-hidden text-start text-xs font-semibold lg:text-sm",
+                "text-foreground mb-0",
+              )}
             >
               Uses
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: { xs: 1, md: 1.5, lg: 2 },
-                maxWidth: { xl: "65%" },
-              }}
+            </h4>
+            <div
+              className={cn(
+                "flex flex-wrap items-center justify-center",
+                "max-w-[65%] gap-2 md:gap-3 lg:gap-4 xl:max-w-[65%]",
+              )}
             >
               {chipLabels.map((label, index) => (
-                <Chip
+                <Badge
                   key={index}
-                  label={label}
-                  sx={{
-                    bgcolor: (theme) =>
-                      theme.palette.mode === "dark"
-                        ? ""
-                        : chipBgColors[index] || "#e8f4ff",
-                    borderRadius: "8px",
-                    "& .MuiChip-label": {
-                      fontSize: { xs: "12px", lg: "14px" },
-                      fontWeight: 400,
-                    },
-                    // px: 1,
-                    // flex: "0 0 48%",
-                    color: (theme) =>
-                      theme.palette.mode === "dark"
-                        ? theme.palette.common.white
-                        : theme.palette.common.black,
+                  className={cn(
+                    "rounded-lg text-xs font-normal lg:text-sm",
+                    "text-foreground border-0",
+                  )}
+                  style={{
+                    backgroundColor: chipBgColors[index] || "hsl(var(--muted))",
                   }}
-                />
+                >
+                  {label}
+                </Badge>
               ))}
-            </Box>
-          </Grid2>
-        </Grid2>
+            </div>
+          </div>
+        </div>
 
-        <Box
-          sx={{
-            display: "flex",
-            gap: { xs: 1.5, sm: 2 },
-            flexDirection: { xs: "column", sm: "row" },
-            position: "relative",
-          }}
+        <div
+          className={cn(
+            "flex flex-col gap-3 sm:flex-row sm:gap-4",
+            "relative w-full",
+          )}
         >
-          <Box
-            sx={{
-              flex: 1,
-              p: { xs: 1.5, md: 2, lg: 3 },
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 0.5, lg: 1 },
-              borderRadius: { xs: 1, md: 1.5, lg: 2 },
-              boxShadow:
-                "0 0 2px 0 rgba(145, 158, 171, 0.20), 0 12px 24px -4px rgba(145, 158, 171, 0.12)",
-            }}
+          <div
+            className={cn(
+              "flex flex-1 flex-col p-3 md:p-4 lg:p-6",
+              "gap-1 rounded-md md:rounded-lg lg:gap-2 lg:rounded-xl",
+              "shadow-sm",
+            )}
           >
-            <Typography
-              gutterBottom
-              variant="subtitle2"
-              sx={{
-                overflow: "hidden",
-                textAlign: "start",
-                fontSize: { xs: "12px", lg: "14px" },
-                fontWeight: 600,
-                color: "#212B36",
-                mb: "0px !important",
-              }}
+            <h4
+              className={cn(
+                "overflow-hidden text-start text-xs font-semibold lg:text-sm",
+                "text-foreground mb-0",
+              )}
             >
               Input text
-            </Typography>
-            <Typography
-              sx={{
-                color: "#858481",
-                fontSize: { xs: "12px", xl: "14px" },
-              }}
-            >
+            </h4>
+            <p className={cn("text-muted-foreground text-xs xl:text-sm")}>
               {inputText}
-            </Typography>
-          </Box>
+            </p>
+          </div>
 
-          <Box
-            sx={{
-              flex: 1,
-              p: { xs: 1.5, md: 2, lg: 3 },
-              display: "flex",
-              flexDirection: "column",
-              gap: { xs: 0.5, lg: 1 },
-              borderRadius: { xs: 1, md: 1.5, lg: 2 },
-              boxShadow:
-                "0 0 2px 0 rgba(145, 158, 171, 0.20), 0 12px 24px -4px rgba(145, 158, 171, 0.12)",
-            }}
+          <div
+            className={cn(
+              "flex flex-1 flex-col p-3 md:p-4 lg:p-6",
+              "gap-1 rounded-md md:rounded-lg lg:gap-2 lg:rounded-xl",
+              "shadow-sm",
+            )}
           >
-            <Typography
-              gutterBottom
-              variant="subtitle2"
-              sx={{
-                overflow: "hidden",
-                textAlign: "start",
-                fontSize: { xs: "12px", lg: "14px" },
-                fontWeight: 600,
-                color: "#212B36",
-                mb: "0px !important",
-              }}
+            <h4
+              className={cn(
+                "overflow-hidden text-start text-xs font-semibold lg:text-sm",
+                "text-foreground mb-0",
+              )}
             >
               Paraphrased Text
-            </Typography>
-            <Typography
-              sx={{
-                color: "#858481",
-                fontSize: { xs: "12px", xl: "14px" },
-              }}
-            >
+            </h4>
+            <p className={cn("text-muted-foreground text-xs xl:text-sm")}>
               {paraphrasedText}
-            </Typography>
-          </Box>
-        </Box>
+            </p>
+          </div>
+        </div>
         {/* upgrade button */}
         <Link href={"/pricing"}>
           <Button
             data-umami-event="Nav: Upgrade To Premium"
-            color="primary"
-            size={isMd ? "medium" : "small"}
-            variant="contained"
+            size={isMd ? "default" : "sm"}
+            variant="default"
             rel="noopener"
-            sx={{
-              maxWidth: "fit-content",
-            }}
-            startIcon={
-              <SvgColor
-                src="/navbar/diamond.svg"
-                className="h-5 w-5 md:h-6 md:w-6"
-              />
-            }
+            className="max-w-fit"
           >
+            <Gem className="h-5 w-5 md:h-6 md:w-6" />
             Upgrade Plan
           </Button>
         </Link>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 

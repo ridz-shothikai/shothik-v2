@@ -1,11 +1,7 @@
 // SettingsSidebar.jsx
-import {
-  ChatBubbleOutline as FeedbackIcon,
-  Keyboard as KeyboardIcon,
-  Settings as SettingsIcon,
-} from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Keyboard, MessageSquare, Settings } from "lucide-react";
 
 import GPTsettingsTab from "../../humanize/GPTsettingsTab";
 import FeedbackTab from "./FeedbackTab";
@@ -13,9 +9,9 @@ import SettingsTab from "./SettingsTab";
 import ShortcutsTab from "./ShortcutsTab";
 
 const tabs = [
-  { id: "settings", icon: <SettingsIcon /> },
-  { id: "feedback", icon: <FeedbackIcon /> },
-  { id: "shortcuts", icon: <KeyboardIcon /> },
+  { id: "settings", icon: <Settings className="h-6 w-6" /> },
+  { id: "feedback", icon: <MessageSquare className="h-6 w-6" /> },
+  { id: "shortcuts", icon: <Keyboard className="h-6 w-6" /> },
 ];
 
 const SettingsSidebar = ({
@@ -29,73 +25,42 @@ const SettingsSidebar = ({
   if (!open) return null;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: { xs: "auto", sm: "calc(100vh - 90px)" },
-        borderLeft: mobile ? "none" : "1px solid",
-        borderColor: mobile ? "transparent" : "divider",
-        bgcolor: "background.paper",
-        boxSizing: "border-box",
-        overflowY: "auto",
-      }}
+    <div
+      className={cn(
+        "bg-background box-border h-auto w-full overflow-y-auto sm:h-[calc(100vh-90px)]",
+        !mobile && "border-border border-l",
+      )}
     >
       {/* Top Nav */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 2,
-          pt: 2,
-          pb: 1,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-around",
-            flexGrow: 1,
-          }}
-        >
+      <div className="flex items-center justify-between px-2 pt-2 pb-1">
+        <div className="flex flex-1 justify-around">
           {tabs.map((t) => (
-            <Box
+            <div
               key={t.id}
               onClick={() => setTab(t.id)}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-                flex: 1,
-              }}
+              className="flex flex-1 cursor-pointer flex-col items-center"
             >
-              <IconButton
-                size="large"
-                disableRipple
-                sx={{
-                  color: tab === t.id ? "success.main" : "text.secondary",
-                }}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "text-muted-foreground h-9 w-9",
+                  tab === t.id && "text-primary",
+                )}
               >
-                {React.cloneElement(t.icon, { fontSize: "inherit" })}
-              </IconButton>
+                {t.icon}
+              </Button>
               {tab === t.id && (
-                <Box
-                  sx={{
-                    width: 24,
-                    borderBottom: 2,
-                    borderColor: "success.main",
-                    mt: 0.5,
-                  }}
-                />
+                <div className="border-primary mt-0.5 w-6 border-b-2" />
               )}
-            </Box>
+            </div>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
 
       {/* Tab Content */}
-      <Box sx={{ px: 2 }}>
+      <div className="px-2">
         {
           tab === "settings" && fromComp === "paraphrase" ? (
             <SettingsTab />
@@ -105,8 +70,8 @@ const SettingsSidebar = ({
         }
         {tab === "feedback" && <FeedbackTab />}
         {tab === "shortcuts" && <ShortcutsTab fromComp={fromComp} />}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

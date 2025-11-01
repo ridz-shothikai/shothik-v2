@@ -1,21 +1,11 @@
 "use client";
 
-import CloseIcon from "@mui/icons-material/Close";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import {
-  Box,
-  Button,
-  Chip,
-  Divider,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { MinusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { protectedPhrases, protectedSingleWords } from "./extentions";
 
@@ -158,187 +148,132 @@ export default function FreezeWordsContent({
     userFrozenWords.size > 0 || userFrozenPhrases.size > 0;
 
   return (
-    <Box
-      sx={{
-        width: { xs: "90vw", sm: "300px", md: "500px", lg: "600px" },
-        maxHeight: "80vh",
-        bgcolor: "background.paper",
-        boxShadow: 24,
-        borderRadius: 2,
-        p: 2,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Typography variant="h6" component="div">
-          Freeze Words
-        </Typography>
-        <IconButton aria-label="close" onClick={close} size="small">
-          <CloseIcon />
-        </IconButton>
-      </Stack>
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={2}
-        flexGrow={1}
-        overflow="hidden"
-      >
+    <div className="bg-background flex max-h-[80vh] w-[90vw] flex-col rounded-lg p-2 shadow-lg sm:w-[300px] md:w-[500px] lg:w-[600px]">
+      <div className="mb-2 flex flex-row items-center justify-between">
+        <div className="text-base font-semibold">Freeze Words</div>
+        <Button aria-label="close" onClick={close} variant="ghost" size="icon">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden md:flex-row">
         {/* Left panel - Recommendations */}
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <Typography variant="subtitle2">Recommended Words</Typography>
-          <Box
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              mt: 1,
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 1,
-            }}
-          >
+        <div className="flex flex-1 flex-col">
+          <div className="text-sm font-medium">Recommended Words</div>
+          <div className="border-border mt-1 flex-1 overflow-y-auto rounded-md border p-1">
             {localRecs.length > 0 ? (
-              <List dense disablePadding>
+              <ul className="m-0 list-none p-0">
                 {localRecs.map((word) => (
-                  <ListItem key={word} disablePadding>
-                    <ListItemButton
+                  <li key={word} className="m-0 p-0">
+                    <button
+                      type="button"
                       disabled={readOnly}
                       onClick={() => handleRecClick(word)}
+                      className={cn(
+                        "hover:bg-accent hover:text-accent-foreground w-full rounded-md px-3 py-2 text-left",
+                        readOnly && "cursor-not-allowed opacity-50",
+                      )}
                     >
-                      <ListItemText primary={word} />
-                    </ListItemButton>
-                  </ListItem>
+                      {word}
+                    </button>
+                  </li>
                 ))}
-              </List>
+              </ul>
             ) : (
-              <Typography color="text.secondary" sx={{ p: 1 }}>
+              <div className="text-muted-foreground p-1 text-sm">
                 No recommendations available
-              </Typography>
+              </div>
             )}
-          </Box>
+          </div>
 
           {/* Add custom words input */}
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              label="Enter word(s) to freeze"
+          <div className="mt-2">
+            <label className="mb-1 block text-sm font-medium">
+              Enter word(s) to freeze
+            </label>
+            <Textarea
               placeholder="Separate words with commas"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              fullWidth
-              multiline
-              minRows={2}
               disabled={readOnly}
+              className="min-h-[72px]"
             />
             <Button
-              variant="contained"
-              color="success"
-              sx={{ mt: 1 }}
+              className="mt-1 w-full"
               disabled={isFreezeDisabled}
-              fullWidth
               onClick={handleAddInput}
             >
               Freeze
             </Button>
-          </Box>
-        </Box>
+          </div>
+        </div>
 
-        <Divider orientation="vertical" flexItem />
+        <Separator orientation="vertical" className="mx-1" />
 
         {/* Right panel - Active Frozen Words */}
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <Typography variant="subtitle2">
+        <div className="flex flex-1 flex-col">
+          <div className="text-sm font-medium">
             Active Frozen Words ({allFrozenWords.length})
-          </Typography>
-          <Box
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              mt: 1,
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 1,
-              maxHeight: { xs: "100px", md: "250px" },
-            }}
-          >
+          </div>
+          <div className="border-border xs:max-h-[100px] mt-1 max-h-[250px] flex-1 overflow-y-auto rounded-md border p-1 md:max-h-[250px]">
             {allFrozenWords.length > 0 ? (
-              <List dense disablePadding>
+              <ul className="m-0 list-none p-0">
                 {allFrozenWords.map((item) => {
                   const isProtected = isProtectedItem(item);
                   return (
-                    <ListItem
+                    <li
                       key={item}
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        opacity: isProtected ? 0.7 : 1,
-                      }}
-                    >
-                      <ListItemText
-                        primary={
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              // textTransform: "capitalize",
-                            }}
-                          >
-                            <span>{item}</span>
-                            {isProtected && (
-                              <Chip
-                                label="Protected"
-                                size="small"
-                                variant="outlined"
-                                sx={{ fontSize: "0.65rem", height: 20 }}
-                              />
-                            )}
-                          </Box>
-                        }
-                      />
-                      {!readOnly && !isProtected && (
-                        <IconButton
-                          edge="end"
-                          size="small"
-                          onClick={() => handleRemoveFrozen(item)}
-                          color="error"
-                        >
-                          <RemoveCircleOutlineIcon />
-                        </IconButton>
+                      className={cn(
+                        "flex items-center justify-between px-2 py-2",
+                        isProtected && "opacity-70",
                       )}
-                    </ListItem>
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{item}</span>
+                        {isProtected && (
+                          <Badge
+                            variant="outline"
+                            className="h-5 px-2 text-[0.65rem]"
+                          >
+                            Protected
+                          </Badge>
+                        )}
+                      </div>
+                      {!readOnly && !isProtected && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveFrozen(item)}
+                          aria-label="remove"
+                        >
+                          <MinusCircle className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </li>
                   );
                 })}
-              </List>
+              </ul>
             ) : (
-              <Typography color="text.secondary" sx={{ p: 1 }}>
+              <div className="text-muted-foreground p-1 text-sm">
                 {readOnly
                   ? "No frozen words"
                   : "Add words to freeze them during paraphrasing"}
-              </Typography>
+              </div>
             )}
-          </Box>
+          </div>
 
           {/* Clear user words button */}
           {!readOnly && hasUserFrozenItems && (
             <Button
               onClick={handleClearAll}
-              sx={{ mt: 1, textTransform: "none" }}
-              fullWidth
-              variant="outlined"
-              color="warning"
+              variant="outline"
+              className="mt-1 w-full"
             >
               Clear User Words
             </Button>
           )}
-        </Box>
-      </Stack>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

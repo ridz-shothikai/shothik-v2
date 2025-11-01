@@ -1,20 +1,21 @@
-import useWordLimit from "@/hooks/useWordLimit";
-import SvgColor from "@/resource/SvgColor";
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  Button,
-  CircularProgress,
-  ClickAwayListener,
-  IconButton,
-  Paper,
-  Popper,
-  Stack,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Spinner } from "@/components/ui/spinner";
+import {
   Tooltip,
-  Typography,
-} from "@mui/material";
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import useWordLimit from "@/hooks/useWordLimit";
+import { cn } from "@/lib/utils";
+import { Gem, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import FreezeWordsContent from "../paraphrase/FreezeWordsContent";
 function WordCounter({
   freeze_modal = false,
@@ -117,278 +118,157 @@ const Contend = ({
     setWordCount(words);
   }, [userInput]);
   const [show_freeze, set_show_freeze] = useState(false);
-  const anchorRef = useRef(null);
-
-  const handleToggleFreeze = () => {
-    set_show_freeze((prev) => !prev);
-  };
 
   const handleCloseFreeze = () => {
     set_show_freeze(false);
   };
 
-  if (!userInput) return <Box sx={{ height: 48 }} />;
+  if (!userInput) return <div className="h-12" />;
   return (
-    <Stack
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: 1,
-        py: 1,
-        px: 2,
-        ...sx,
-      }}
-      bgcolor="background.paper"
+    <div
+      className={cn(
+        "bg-background flex flex-row flex-wrap items-center justify-between gap-2 px-4 py-2",
+        typeof sx === "string" ? sx : "",
+      )}
     >
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        justifyContent="space-between"
-        height={48}
-        sx={
-          btnText === "Fix Grammar"
-            ? { width: { xs: "100%", sm: "auto" } }
-            : undefined
-        }
-        flex={1}
+      <div
+        className={cn(
+          "flex h-12 flex-1 flex-row items-center justify-between gap-4",
+          btnText === "Fix Grammar" && "w-full sm:w-auto",
+        )}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          {/* <WordIcon /> */}
-          <Typography
-            variant="subtitle2"
-            sx={{
-              color: `${wordCount > wordLimit ? "error.main" : ""}`,
-              whiteSpace: "nowrap",
-              fontSize: { xs: "12px", lg: "14px" },
-            }}
+        <div className="flex flex-row items-center gap-2">
+          <span
+            className={cn(
+              "text-xs whitespace-nowrap lg:text-sm",
+              wordCount > wordLimit && "text-destructive",
+            )}
           >
             <b>{wordCount}</b> /{" "}
             {wordLimit === 9999 ? (
-              <Typography
-                component="span"
-                sx={{
-                  color: "primary.main",
-                  fontSize: "14px",
-                }}
-              >
-                Unlimited
-              </Typography>
+              <span className="text-primary text-sm">Unlimited</span>
             ) : (
               <>
                 {wordLimit}{" "}
-                <Typography
-                  component="span"
-                  sx={{
-                    color: "#242426",
-                    fontSize: { xs: "12px", lg: "14px" },
-                  }}
-                >
+                <span className="text-foreground text-xs lg:text-sm">
                   Words
-                </Typography>
+                </span>
               </>
             )}
-          </Typography>
+          </span>
 
-          <Tooltip title="Clear text" placement="top" arrow>
-            <IconButton
-              aria-label="delete"
-              size={isMobile ? "small" : "large"}
-              variant={"outlined"}
-              color="inherit"
-              disabled={isLoading}
-              onClick={handleClearInput}
-              disableRipple
-              sx={{
-                p: 0,
-              }}
-            >
-              {/* <DeleteRounded sx={{ color: "text.secondary" }} /> */}
-              <Image
-                src={"/icons/delete.svg"}
-                alt="delete"
-                width={18}
-                height={18}
-              />
-            </IconButton>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                aria-label="delete"
+                variant="ghost"
+                size={isMobile ? "icon-sm" : "icon"}
+                disabled={isLoading}
+                onClick={handleClearInput}
+                className="p-0"
+              >
+                <Trash2 className="size-[18px]" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>Clear text</p>
+            </TooltipContent>
           </Tooltip>
           {freeze_modal ? (
-            <>
-              <Tooltip title="Freeze Words" placement="top" arrow>
-                <IconButton
-                  id="show_freeze_button"
-                  aria-label="freeze"
-                  size={isMobile ? "small" : "large"}
-                  variant={"outlined"}
-                  color="inherit"
-                  disabled={false}
-                  onClick={handleToggleFreeze}
-                  disableRipple
-                  ref={anchorRef}
-                  sx={{
-                    p: 0,
-                  }}
-                >
-                  <Image
-                    src={
-                      show_freeze
-                        ? "/icons/freeze-active.svg"
-                        : "/icons/freeze.svg"
-                    }
-                    alt="freeze"
-                    width={18}
-                    height={18}
-                  />
-                </IconButton>
+            <Popover open={show_freeze} onOpenChange={set_show_freeze}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="show_freeze_button"
+                      aria-label="freeze"
+                      variant="ghost"
+                      size={isMobile ? "icon-sm" : "icon"}
+                      disabled={false}
+                      className="p-0"
+                    >
+                      <Image
+                        src={
+                          show_freeze
+                            ? "/icons/freeze-active.svg"
+                            : "/icons/freeze.svg"
+                        }
+                        alt="Freeze Words"
+                        width={18}
+                        height={18}
+                        className="size-[18px]"
+                      />
+                    </Button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Freeze Words</p>
+                </TooltipContent>
               </Tooltip>
-              <Popper
-                open={show_freeze}
-                anchorEl={anchorRef.current}
-                placement="top-start"
-                disablePortal={false}
-                modifiers={[
-                  {
-                    name: "flip",
-                    enabled: true,
-                    options: {
-                      altBoundary: true,
-                      rootBoundary: "viewport",
-                      createPopper: {
-                        strategy: "fixed",
-                      },
-                    },
-                  },
-                  {
-                    name: "preventOverflow",
-                    enabled: true,
-                    options: {
-                      altAxis: true,
-                      altBoundary: true,
-                      tether: true,
-                      rootBoundary: "viewport",
-                      padding: 8,
-                    },
-                  },
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, 8], // Example: 0px horizontal skidding, 8px vertical distance from anchor
-                    },
-                  },
-                ]}
-                sx={{ zIndex: 1300 }}
+              <PopoverContent
+                side="top"
+                align="start"
+                sideOffset={8}
+                className="z-[1300]"
               >
-                <ClickAwayListener onClickAway={handleCloseFreeze}>
-                  <Paper>
-                    <FreezeWordsContent
-                      close={handleCloseFreeze}
-                      readOnly={isLoading}
-                      freeze_props={freeze_props}
-                    />
-                  </Paper>
-                </ClickAwayListener>
-              </Popper>
-            </>
+                <FreezeWordsContent
+                  close={handleCloseFreeze}
+                  readOnly={isLoading}
+                  freeze_props={freeze_props}
+                />
+              </PopoverContent>
+            </Popover>
           ) : null}
 
           {detectingFreezeTerms && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 1,
-                alignItems: "center",
-                ml: { lg: 2 },
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <CircularProgress size={16} color="inherit" />
-              </Box>
-              <Typography
-                component="span"
-                sx={{
-                  // color: "primary.main",
-                  color: "#242426",
-                  fontSize: "14px",
-                  whiteSpace: "nowrap",
-                  lineHeight: 1,
-                }}
-              >
+            <div className="flex flex-row items-center gap-2 lg:ml-4">
+              <div className="flex items-center">
+                <Spinner className="size-4" />
+              </div>
+              <span className="text-foreground text-sm leading-none whitespace-nowrap">
                 freezing
-              </Typography>
-            </Box>
+              </span>
+            </div>
           )}
-        </Stack>
+        </div>
         {ExtraCounter}
-      </Stack>
+      </div>
 
-      <Stack
-        sx={{
-          flexDirection: "row",
-          gap: 2,
-          flex: 1,
-          justifyContent: {
-            md: children ? "center" : "flex-end",
-            xs: "flex-end",
-          },
-        }}
+      <div
+        className={cn(
+          "flex flex-1 flex-row gap-4",
+          children ? "justify-end md:justify-center" : "justify-end",
+        )}
       >
         {wordCount > wordLimit && userPackage !== "unlimited" && (
           <Link href="/pricing">
             <Button
-              sx={{ py: { md: 0 }, px: { md: 2 }, height: { md: 40 } }}
-              variant="contained"
-              startIcon={
-                <SvgColor src="/navbar/diamond.svg" className="h-5 w-5" />
-              }
+              variant="default"
+              className="h-10 px-2 py-0 md:h-10 md:px-2 md:py-0"
             >
+              <Gem className="size-5" />
               Upgrade
             </Button>
           </Link>
         )}
         <Button
           onClick={() => handleSubmit()}
-          variant="contained"
-          loading={isLoading}
+          variant="default"
           disabled={!dontDisable ? wordCount > wordLimit : btnDisabled || false}
-          sx={{
-            py: { md: 0 },
-            px: { md: 2 },
-            height: { md: 40 },
-            whiteSpace: "nowrap",
-          }}
-          // startIcon={btnIcon}
+          className="h-10 px-2 py-0 whitespace-nowrap md:h-10 md:px-2 md:py-0"
         >
+          {isLoading && <Spinner className="mr-2 size-4" />}
           {btnText}
         </Button>
         {ExtraBtn}
-      </Stack>
+      </div>
 
       {children && (
-        <Stack
-          sx={{
-            flexDirection: "row",
-            gap: 2,
-            flex: {
-              md: 1,
-            },
-            justifyContent: {
-              md: "flex-end",
-            },
-          }}
-        >
+        <div className="flex flex-1 flex-row justify-end gap-4 md:flex-1 md:justify-end">
           {children}
-        </Stack>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 };
 

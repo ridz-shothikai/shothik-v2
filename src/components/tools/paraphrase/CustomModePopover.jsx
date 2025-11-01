@@ -1,5 +1,6 @@
 // src/components/tools/paraphrase/CustomModePopover.jsx
-import { Box, Popover } from "@mui/material";
+import { Popover, PopoverContent } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import CustomModeContent from "./CustomModeContent";
 
 /**
@@ -30,42 +31,31 @@ const CustomModePopover = ({
   return (
     <Popover
       open={open}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
       }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "center",
-      }}
-      PaperProps={{
-        sx: {
-          mt: 1,
-          boxShadow: 3,
-          borderRadius: 2,
-          maxWidth: 500,
-        },
-      }}
-      // Prevent popover from closing when clicking inside
-      disableRestoreFocus
     >
-      <Box sx={{ p: 2.5 }}>
-        <CustomModeContent
-          mode="edit"
-          existingModeName={modeName}
-          recentModes={recentModes}
-          recommendedModes={recommendedModes}
-          onSubmit={handleUpdate}
-          onDelete={handleDelete}
-          onClose={onClose}
-          error={error}
-          isLoading={isLoading}
-          showHeader={true}
-          showActions={true}
-        />
-      </Box>
+      <PopoverContent
+        side="bottom"
+        align="center"
+        className={cn("max-w-[500px] rounded-2xl p-0 shadow-md")}
+      >
+        <div className="p-2.5">
+          <CustomModeContent
+            mode="edit"
+            existingModeName={modeName}
+            recentModes={recentModes}
+            recommendedModes={recommendedModes}
+            onSubmit={handleUpdate}
+            onDelete={handleDelete}
+            onClose={onClose}
+            error={error}
+            isLoading={isLoading}
+            showHeader={true}
+            showActions={true}
+          />
+        </div>
+      </PopoverContent>
     </Popover>
   );
 };

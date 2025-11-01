@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { CircleCheck, Loader2, OctagonX } from "lucide-react";
 import Image from "next/image";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const FeedbackTab = () => {
   // grab user & token from your auth slice
@@ -61,60 +57,54 @@ const FeedbackTab = () => {
   };
 
   return (
-    <Box id="feedback_tab">
-      <Typography variant="h6" fontWeight="bold">
-        Feedback
-      </Typography>
-      <Typography variant="body2" fontWeight="medium" gutterBottom>
+    <div id="feedback_tab">
+      <h6 className="text-lg font-bold">Feedback</h6>
+      <p className="mb-4 text-sm font-medium">
         Are you happy with our service?
-      </Typography>
-      <Typography variant="body2" gutterBottom>
+      </p>
+      <p className="mb-6 text-sm">
         What do you think about the paraphrasing tool?
-      </Typography>
+      </p>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+        <Alert variant="destructive" className="mb-4">
+          <OctagonX className="size-4" />
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
       {success && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {success}
+        <Alert className="border-primary/50 bg-primary/5 mb-4">
+          <CircleCheck className="text-primary size-4" />
+          <AlertDescription className="text-primary">
+            {success}
+          </AlertDescription>
         </Alert>
       )}
 
-      <TextField
-        fullWidth
-        size="small"
+      <Textarea
         placeholder="Write feedback..."
-        multiline
         rows={4}
-        sx={{ mb: 2 }}
+        className="mb-4"
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
         disabled={loading}
       />
 
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleSubmit}
-        disabled={loading}
-        startIcon={loading ? <CircularProgress size={20} /> : null}
-      >
+      <Button onClick={handleSubmit} disabled={loading}>
+        {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
         {loading ? "Submitting..." : "Submit"}
       </Button>
 
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 3, mb: 2 }}>
+      <div className="mt-6 mb-4 flex justify-center">
         <Image
           src="/moscot.png"
           alt="moscot"
           width={120}
           height={120}
-          objectFit="contain"
+          className="object-contain"
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

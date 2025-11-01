@@ -1,6 +1,12 @@
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { ChevronRight } from "@mui/icons-material";
-import { List, ListItemButton, ListItemText, Popper } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 
 export default function Synonyms({
   synonyms,
@@ -10,54 +16,51 @@ export default function Synonyms({
   replaceSynonym,
 }) {
   const ref = useOutsideClick(() => handleClose());
+  const virtualRef = useMemo(() => ({ current: anchorEl }), [anchorEl]);
 
   return (
-    <Popper
-      anchorEl={anchorEl}
-      placement="bottom-start"
-      ref={ref}
-      open={open}
-      onClose={handleClose}
-      sx={{ zIndex: 500 }}
-    >
-      <List
-        sx={{
-          minWidth: 200,
-          bgcolor: "background.paper",
-          boxShadow: "rgba(0, 0, 0, 0.2) 0px 4px 22px 0px",
-          position: "relative",
-          overflow: "auto",
-          maxHeight: 300,
-          "& ul": { padding: 0 },
-        }}
+    <Popover open={open} onOpenChange={(v) => !v && handleClose()}>
+      <PopoverAnchor virtualRef={virtualRef} />
+      <PopoverContent
+        ref={ref}
+        side="bottom"
+        align="start"
+        className={cn(
+          "z-50 max-h-[300px] min-w-[200px] overflow-auto p-0",
+          "bg-popover text-popover-foreground border-border border",
+          "shadow-lg",
+        )}
       >
-        {synonyms.length
-          ? synonyms?.map((synonym, index) => (
-              <ListItemButton
-                onClick={() => replaceSynonym(synonym)}
-                key={`item-${index}`}
-                sx={{
-                  py: 0,
-                  px: "12px",
-                  minHeight: 32,
-                  justifyContent: "space-between",
-                  display: "flex",
-                  alignItems: "center",
-                  position: "relative",
-                  "&:hover .arrow-icon": {
-                    display: "block",
-                  },
-                }}
-              >
-                <ListItemText sx={{}} primary={`${synonym}`} />
-                <ChevronRight
-                  className="arrow-icon"
-                  sx={{ display: "none", color: "text.secondary" }}
-                />
-              </ListItemButton>
-            ))
-          : null}
-      </List>
-    </Popper>
+        <div className={cn("relative", "[&>ul]:p-0")}>
+          {synonyms.length ? (
+            <ul className="m-0 list-none p-0">
+              {synonyms?.map((synonym, index) => (
+                <li key={`item-${index}`}>
+                  <button
+                    type="button"
+                    onClick={() => replaceSynonym(synonym)}
+                    className={cn(
+                      "group w-full",
+                      "flex items-center justify-between",
+                      "min-h-8 px-3 py-0",
+                      "text-sm",
+                      "hover:bg-accent hover:text-accent-foreground",
+                    )}
+                  >
+                    <span className="truncate text-left">{`${synonym}`}</span>
+                    <ChevronRight
+                      className={cn(
+                        "text-muted-foreground ml-2 h-4 w-4",
+                        "hidden group-hover:block",
+                      )}
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }

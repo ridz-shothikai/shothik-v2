@@ -1,9 +1,10 @@
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
 } from "@/redux/api/tools/toolsApi";
-import { Box, useTheme } from "@mui/material";
+import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import EditableOutput from "./EditableOutput";
 import RephraseSentenceNav from "./RephraseSentenceNav";
@@ -37,8 +38,8 @@ const ParaphraseOutput = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [sentence, setSentence] = useState("");
   const enqueueSnackbar = useSnackbar();
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
 
   // CRITICAL: Use ref to track current request to prevent stale closures
   const currentRequestRef = useRef(paraphraseRequestCounter);
@@ -341,7 +342,7 @@ const ParaphraseOutput = ({
   }, [sentence, rephraseMode]);
 
   return (
-    <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
+    <div className={cn("flex-1 overflow-y-auto p-2")}>
       <EditableOutput
         data={data}
         dark={dark}
@@ -390,7 +391,7 @@ const ParaphraseOutput = ({
         setRephraseMode={setRephraseMode}
         rephraseMode={rephraseMode}
       />
-    </Box>
+    </div>
   );
 };
 

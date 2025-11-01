@@ -1,19 +1,26 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import useSnackbar from "@/hooks/useSnackbar";
+import { Extension } from "@tiptap/core";
 import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import {
   defaultMarkdownParser,
   defaultMarkdownSerializer,
   MarkdownSerializer,
 } from "@tiptap/pm/markdown";
-import { useSelector } from "react-redux";
-
-// Custom extension to handle plain text paste
-import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import MarkdownIt from "markdown-it";
 import { DOMParser as ProseMirrorDOMParser } from "prosemirror-model";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import "./editor.css";
+import { CombinedHighlighting } from "./extentions";
+
 const md = new MarkdownIt();
 
 const PlainTextPaste = Extension.create({
@@ -295,15 +302,6 @@ const marks = {
 
 // 3. Build your custom serializer
 const customMarkdownSerializer = new MarkdownSerializer(nodes, marks);
-
-import useSnackbar from "@/hooks/useSnackbar";
-import { Box, Button, Popover } from "@mui/material";
-import Placeholder from "@tiptap/extension-placeholder";
-import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef, useState } from "react";
-import "./editor.css";
-import { CombinedHighlighting } from "./extentions";
 
 // Dummy text for demo mode
 const DEMO_TEXT =
@@ -694,15 +692,7 @@ function UserInputBox({
     !paidUser ? "Please upgrade to Freeze" : isFrozen() ? "Unfreeze" : "Freeze";
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        cursor: "text",
-        position: "relative",
-        overflowY: "auto",
-        p: 2,
-      }}
-    >
+    <div className="relative flex-grow cursor-text overflow-y-auto p-4">
       <div
         id={
           isDemoMode
@@ -715,24 +705,27 @@ function UserInputBox({
         <EditorContent editor={editor} />
       </div>
 
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={clearSelection}
-        anchorReference="anchorPosition"
-        anchorPosition={popoverPosition}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
-      >
-        <Button
-          variant="contained"
-          size="small"
-          disabled={!paidUser}
-          onClick={handleToggleFreeze}
+      {Boolean(anchorEl) && (
+        <div
+          className="bg-popover text-popover-foreground fixed z-50 rounded-md"
+          style={{
+            top: popoverPosition.top,
+            left: popoverPosition.left,
+          }}
         >
-          {getButtonText()}
-        </Button>
-      </Popover>
-    </Box>
+          <div>
+            <Button
+              variant="default"
+              size="sm"
+              disabled={!paidUser}
+              onClick={handleToggleFreeze}
+            >
+              {getButtonText()}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -1,8 +1,14 @@
 "use client";
-import { Box, Tooltip } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { CloudUpload } from "lucide-react";
 import mammoth from "mammoth";
 import { useRef, useState } from "react";
-import CustomUiButton from "../../ui/CustomUiButton";
 import pdfToText from "./pdftotext";
 
 function FileUpload({ isMobile, setInput }) {
@@ -88,34 +94,35 @@ function FileUpload({ isMobile, setInput }) {
   };
 
   return (
-    <Tooltip title="Browse documents (DOCX, PDF)." arrow placement="top">
-      <CustomUiButton
-        textLable={`Upload ${isMobile ? "Doc" : "Document"}`}
-        startIconSrc={"/icons/cloud-download-up.svg"}
-        iconClassName={"w-5 h-5 lg:w-5 lg:h-5"}
-        className={"font-bold"}
-        disabled={isProcessing}
-        onClick={() => inputRef.current.click()} // Add onClick handler
-      >
-        <Box
-          component="input"
-          sx={{
-            clip: "rect(0 0 0 0)",
-            clipPath: "inset(50%)",
-            height: 1,
-            overflow: "hidden",
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            whiteSpace: "nowrap",
-            width: 1,
-          }}
-          ref={inputRef}
-          onChange={handleFileChange}
-          type="file"
-          accept="application/pdf, .docx"
-        />
-      </CustomUiButton>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            className={cn(
+              "border-primary text-primary border-2 bg-transparent hover:opacity-80",
+              "flex items-center gap-1 rounded-lg px-3 py-2.5 text-sm font-bold transition-opacity md:gap-1.5 lg:gap-2",
+            )}
+            disabled={isProcessing}
+            onClick={() => inputRef.current?.click()}
+          >
+            <CloudUpload className="h-5 w-5 lg:h-5 lg:w-5" />
+            {`Upload ${isMobile ? "Doc" : "Document"}`}
+            <input
+              ref={inputRef}
+              onChange={handleFileChange}
+              type="file"
+              accept="application/pdf, .docx"
+              className="absolute inset-0 h-full w-full opacity-0"
+              style={{
+                clip: "rect(0 0 0 0)",
+                clipPath: "inset(50%)",
+              }}
+            />
+          </Button>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="top">Browse documents (DOCX, PDF).</TooltipContent>
     </Tooltip>
   );
 }
