@@ -40,7 +40,7 @@ export default function UserInfo() {
   }
 
   return (
-    <div className="px-2 py-2 text-center">
+    <div className="py-2 text-center">
       <div className="flex flex-col items-center">
         {user?.email ? (
           <>
