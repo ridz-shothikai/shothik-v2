@@ -1,10 +1,9 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
 import {
   logout,
@@ -12,10 +11,10 @@ import {
   setShowRegisterModal,
 } from "@/redux/slice/auth";
 import DotFlashing from "@/resource/DotFlashing";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useTheme } from "@mui/material/styles";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CustomAvatar from "./Avater";
+
 // ----------------------------------------------------------------------
 
 export default function UserInfo() {
@@ -23,8 +22,6 @@ export default function UserInfo() {
   const { isLoading } = useGetUserQuery();
   const dispatch = useDispatch();
   const router = useRouter();
-  const theme = useTheme();
-  const isDark = theme.palette.mode === "dark";
 
   const handleLogout = async () => {
     try {
@@ -38,116 +35,70 @@ export default function UserInfo() {
   // Show loading state
   if (isLoading) {
     return (
-      <Stack
-        sx={{
-          px: { xs: 2, sm: 2 },
-          py: { xs: 5, sm: 5 },
-          textAlign: "center",
-          minHeight: "200px",
-          justifyContent: "center",
-        }}
-      >
+      <div className="flex min-h-[200px] justify-center px-2 py-5 text-center">
         <DotFlashing />
-      </Stack>
+      </div>
     );
   }
 
   return (
-    <Stack
-      sx={{ px: { xs: 2, sm: 2 }, py: { xs: 5, sm: 5 }, textAlign: "center" }}
-    >
-      <Stack alignItems="center">
+    <div className="px-2 py-5 text-center">
+      <div className="flex flex-col items-center">
         {user?.email ? (
           <>
-            <Box sx={{ position: "relative" }}>
-              <CustomAvatar
-                src={user?.image}
-                alt={user?.name}
-                name={user?.name}
-                sx={{ width: 48, height: 48 }}
-              />
-            </Box>
+            <div className="relative">
+              {user?.image ? (
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={user.image} alt={user?.name} />
+                  <AvatarFallback>
+                    {user?.name?.charAt(0).toUpperCase() || ""}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <CustomAvatar name={user?.name} className="h-12 w-12" />
+              )}
+            </div>
 
-            <Stack spacing={0.5} sx={{ mt: 1.5, mb: 3 }}>
-              <Typography
-                variant="subtitle2"
-                sx={{ overflowWrap: "break-word", wordBreak: "break-all" }}
-              >
+            <div className="mt-1.5 mb-3 flex flex-col gap-0.5">
+              <span className="font-medium break-words break-all">
                 {user?.name}
-              </Typography>
+              </span>
 
-              <Typography
-                sx={{
-                  backgroundColor: "#8E33FF",
-                  color: "#fff",
-                  padding: "2px 5px",
-                  borderRadius: "5px",
-                  fontSize: "14px",
-                  "&:first-letter": {
-                    textTransform: "uppercase",
-                  },
-                }}
-              >
+              <Badge className="bg-[#8E33FF] text-sm text-white capitalize">
                 {user.package?.replace("_", " ")}
-              </Typography>
-            </Stack>
+              </Badge>
+            </div>
 
             {user.package !== "unlimited" && (
-              <Button
-                style={{ marginTop: -10 }}
-                variant="contained"
-                component={Link}
-                href="/pricing"
-              >
-                Upgrade plan
+              <Button asChild className="-mt-2" variant="default">
+                <Link href="/pricing">Upgrade plan</Link>
               </Button>
             )}
-            <Box
+            <div
               onClick={handleLogout}
-              sx={{
-                width: "100%",
-                cursor: "pointer",
-                background: isDark ? "#454F5B" : "#eceff8",
-                height: 40,
-                lineHeight: "40px",
-                color: "text.primary",
-                fontWeight: 500,
-                borderRadius: "5px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "5px",
-                marginTop: 2,
-              }}
+              className="bg-muted hover:bg-accent mt-2 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-md leading-10 font-medium transition-colors"
             >
               Logout
-              <LogoutIcon fontSize="24px" />
-            </Box>
+              <LogOut className="h-6 w-6" />
+            </div>
           </>
         ) : (
-          <Stack
-            spacing={2}
-            alignItems="left"
-            sx={{ width: "100%", textAlign: "left" }}
-          >
-            <Stack spacing={0.5}>
-              <Typography variant="subtitle2" sx={{ color: "text.primary" }}>
-                Log In or Sign Up
-              </Typography>
-              <Typography variant="caption" sx={{ color: "text.primary" }}>
-                Unlock hidden features. Write with confidence.{" "}
-              </Typography>
-            </Stack>
-            <Stack spacing={1.5}>
+          <div className="flex w-full flex-col items-start gap-2 text-left">
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium">Log In or Sign Up</span>
+              <span className="text-sm">
+                Unlock hidden features. Write with confidence.
+              </span>
+            </div>
+            <div className="flex w-full flex-col gap-1.5">
               <Button
                 data-umami-event="Nav: Sign In"
                 onClick={() => {
                   dispatch(setShowRegisterModal(false));
                   dispatch(setShowLoginModal(true));
                 }}
-                variant="contained"
-                size="medium"
-                sx={{ width: "100%" }}
+                variant="default"
+                className="w-full"
               >
                 Sign In
               </Button>
@@ -158,28 +109,15 @@ export default function UserInfo() {
                   dispatch(setShowLoginModal(false));
                   dispatch(setShowRegisterModal(true));
                 }}
-                variant="outlined"
-                size="medium"
-                sx={{
-                  width: "100%",
-                  borderColor:
-                    theme.palette.mode === "dark"
-                      ? "rgba(145, 158, 171, 0.32)"
-                      : "inherit",
-                  "&:hover": {
-                    borderColor:
-                      theme.palette.mode === "dark"
-                        ? "rgba(145, 158, 171, 0.48)"
-                        : "inherit",
-                  },
-                }}
+                variant="outline"
+                className="w-full"
               >
                 Sign Up
               </Button>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
         )}
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }

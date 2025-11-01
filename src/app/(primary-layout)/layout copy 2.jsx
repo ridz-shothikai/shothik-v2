@@ -1,5 +1,8 @@
+import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
+import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
 import Header from "@/components/partials/header";
 import Sidebar from "@/components/partials/navigation-sidebar";
+import AlertDialog from "@/components/tools/common/AlertDialog";
 import { useSidebar } from "@/hooks/ui/useSidebar";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +62,14 @@ const CommonLayout = ({ children }) => {
         />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="min-h-full w-full px-4 py-6 lg:px-6">{children}</div>
+          <div className="min-h-full w-full px-4 py-6 lg:px-6">
+            <div>
+              <VerifyEmailAlert />
+              {children}
+              <AuthSuccessPopup />
+              <AlertDialog />
+            </div>
+          </div>
         </main>
       </div>
     </div>

@@ -1,28 +1,21 @@
-import { List, ListSubheader, Stack, styled } from "@mui/material";
 import NavList from "./NavList";
 
 // ----------------------------------------------------------------------
 
-const StyledSubheader = styled(ListSubheader)(({ theme }) => ({
-  ...theme.typography.overline,
-  fontSize: 11,
-  paddingTop: theme.spacing(3),
-  paddingBottom: theme.spacing(1),
-  color: theme.palette.text.secondary,
-}));
-
 export default function NavSectionVertical({ data, user, onCloseNav }) {
   return (
-    <Stack>
+    <div className="flex flex-col">
       {data.map((group) => {
         if (group.roles && !group.roles.includes(user?.role)) {
           return null;
         }
         const key = group.subheader || group.items[0].title;
         return (
-          <List key={key} disablePadding sx={{ px: 2 }}>
+          <div key={key} className="px-2">
             {group.subheader && (
-              <StyledSubheader disableSticky>{group.subheader}</StyledSubheader>
+              <div className="text-muted-foreground pt-12 pb-4 text-[11px] font-medium tracking-[0.08em] uppercase">
+                {group.subheader}
+              </div>
             )}
 
             {group.items.map((list) => (
@@ -33,9 +26,9 @@ export default function NavSectionVertical({ data, user, onCloseNav }) {
                 onCloseNav={onCloseNav}
               />
             ))}
-          </List>
+          </div>
         );
       })}
-    </Stack>
+    </div>
   );
 }

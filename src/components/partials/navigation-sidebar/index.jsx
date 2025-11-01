@@ -1,77 +1,127 @@
-import { ENV } from "@/config";
+"use client";
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { memo } from "react";
+import Logo from "@/resource/assets/Logo";
+import {
+  Brain,
+  CheckCheck,
+  Edit,
+  FileText,
+  Languages,
+  Megaphone,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import Image from "next/image";
+import { useSelector } from "react-redux";
 
-const Sidebar = memo(({ className, onClose }) => {
+const menuItems = [
+  {
+    label: "Paraphrase",
+    icon: Edit,
+    href: "/paraphrase",
+    testId: "sidebar-paraphrase",
+  },
+  {
+    label: "Humanize",
+    icon: Sparkles,
+    href: "/humanize",
+    testId: "sidebar-humanize",
+  },
+  {
+    label: "Plagiarism Checker",
+    icon: CheckCheck,
+    href: "/plagiarism",
+    testId: "sidebar-plagiarism",
+  },
+  {
+    label: "AI Detector",
+    icon: Brain,
+    href: "/ai-detector",
+    testId: "sidebar-ai-detector",
+  },
+  { label: "Admob", icon: FileText, href: "/admob", testId: "sidebar-admob" },
+  {
+    label: "Marketing Automation",
+    icon: Megaphone,
+    href: "/marketing",
+    testId: "sidebar-marketing",
+  },
+  {
+    label: "Translator",
+    icon: Languages,
+    href: "/translator",
+    testId: "sidebar-translator",
+  },
+  {
+    label: "AI Optimization",
+    icon: TrendingUp,
+    href: "/optimization",
+    testId: "sidebar-optimization",
+  },
+  {
+    label: "Community",
+    icon: Users,
+    href: "/community",
+    testId: "sidebar-community",
+  },
+];
+
+export default function NavigationSidebar() {
+  const { sidebar } = useSelector((state) => state.settings);
+  const isCompact = sidebar === "compact";
   return (
-    <div className={cn("flex h-full flex-col", className)}>
-      {/* Header */}
-      <header
-        className={cn(
-          "bg-card/50 flex h-16 items-center justify-between border-b px-4 backdrop-blur-sm lg:h-20",
-        )}
-      >
-        {/* Logo Section */}
-        <div
-          className={cn(
-            "logo flex h-full min-w-0 items-center gap-4 px-2 lg:px-1",
-          )}
-        >
-          <div
-            className={cn(
-              "logo-icon bg-muted size-8 flex-shrink-0 overflow-hidden rounded-md lg:size-10",
-            )}
-          >
-            <img
-              className="size-full rounded-md object-contain"
-              src="/logo.png"
-              alt="Z-News Logo"
-              loading="lazy"
-            />
-          </div>
-          <a
-            href={ENV?.app_url || "/"}
-            target="_blank"
-            className={cn(
-              "text-foreground logo-text inline-block font-bold tracking-wide",
-              "overflow-hidden whitespace-nowrap opacity-100 transition-opacity duration-500",
-            )}
-          >
-            DAINIK EIDIN
-          </a>
+    <Sidebar>
+      <SidebarHeader className="border-sidebar-border h-12 border-b px-4 lg:h-16">
+        <div>
+          <Logo
+            className={cn("", {
+              "lg:hidden": isCompact,
+              "lg:inline-block": !isCompact,
+            })}
+          />
+          <Image
+            src="/moscot.png"
+            priority
+            alt="shothik_logo"
+            width={100}
+            height={40}
+            className={cn("mx-auto h-auto w-1/2 object-contain", {
+              "hidden lg:hidden": !isCompact,
+              "hidden lg:inline-block": isCompact,
+            })}
+          />
         </div>
-
-        {/* Mobile Close Button */}
-        <button
-          onClick={onClose}
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-md",
-            "hover:bg-muted/80 transition-all duration-200 active:scale-95",
-            "text-muted-foreground hover:text-foreground",
-            "lg:hidden",
-          )}
-          aria-label="Close navigation"
-        >
-          <X size={18} />
-        </button>
-      </header>
-
-      {/* Navigation Content */}
-      <nav
-        className={cn(
-          "flex-1 overflow-x-hidden overflow-y-auto",
-          "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted",
-          "px-4 py-6",
-        )}
-      >
-        {/* Add your navigation items here */}
-        <div className="space-y-2"></div>
-      </nav>
-    </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.label}>
+                  <SidebarMenuButton asChild data-testid={item.testId}>
+                    <a href={item.href} className="flex items-center gap-3">
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
-});
-
-Sidebar.displayName = "Sidebar";
-
-export default Sidebar;
+}

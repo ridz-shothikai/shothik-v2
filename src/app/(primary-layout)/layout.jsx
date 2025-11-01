@@ -2,20 +2,17 @@
 
 import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
-import MainHeader from "@/components/navigation/MainHeader";
-import NavMini from "@/components/navigation/NavMini";
-import NavVertical from "@/components/navigation/NavVertical";
+import Header from "@/components/partials/header";
+import NavigationSidebar from "@/components/partials/navigation-sidebar";
 import AlertDialog from "@/components/tools/common/AlertDialog";
-import { useSidebar } from "@/hooks/ui/useSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import useResponsive from "@/hooks/useResponsive";
-import { cn } from "@/lib/utils";
 import {
   useGetUserLimitQuery,
   useGetUserQuery,
   useLoginMutation,
 } from "@/redux/api/auth/authApi";
 import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
-import { setOpen } from "@/redux/slice/settings";
 import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
@@ -72,10 +69,8 @@ export default function PrimaryLayout({ children }) {
       console.error(err);
     },
     scope: "email profile",
-    disabled: isLoading || user?.email || isSharedPage, // Disable on shared pages
+    disabled: isLoading || user?.email || isSharedPage,
   });
-
-  const { isMobileOpen, toggleMobile, closeMobile } = useSidebar();
 
   if (isLoadingPage) return <LoadingScreen />;
 
@@ -86,29 +81,26 @@ export default function PrimaryLayout({ children }) {
       shallowRouting
     >
       <div>
-        <MainHeader />
-        <div
-          className={cn(
-            "bg-background min-h-screen w-full overflow-hidden sm:flex",
-          )}
-        >
-          <div>
-            {!isMobile && isCompact ? (
-              <NavMini />
-            ) : (
-              <NavVertical
-                openNav={open}
-                onCloseNav={() => dispatch(setOpen(false))}
-              />
-            )}
+        <SidebarProvider defaultOpen={true}>
+          <div className="flex h-screen w-full">
+            <NavigationSidebar />
+            <div className="flex min-h-screen flex-1 flex-col">
+              <div>
+                <Header />
+                <VerifyEmailAlert />
+              </div>
+              <div className="flex max-w-full flex-1 flex-col overflow-y-auto">
+                <div className="">{children}</div>
+                <div>{/* <Footer /> */}</div>
+              </div>
+            </div>
           </div>
-          <main className="flex-1 pt-20 sm:pt-24">
-            <VerifyEmailAlert />
-            {children}
-            <AuthSuccessPopup />
-            <AlertDialog />
-          </main>
-        </div>
+        </SidebarProvider>
+
+        <>
+          <AuthSuccessPopup />
+          <AlertDialog />
+        </>
       </div>
     </ProgressProvider>
   );

@@ -1,29 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { Toolbar, IconButton, Box, styled, Tooltip } from "@mui/material";
-import { Home, HelpCircle, Settings2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { HelpCircle, Home, Settings2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-const StyledAppBar = styled(Box)(({ theme }) => ({
-  backgroundColor: "inherit",
-  boxShadow: "none",
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme, selected }) => ({
-  color: selected ? "#00A76F" : "#888888",
-  padding: theme.spacing(1.5),
-  borderRadius: theme.spacing(1),
-  transition: "all 0.2s ease-in-out",
-  "&:hover": {
-    backgroundColor: "#00A76F",
-    color: "#ffffff",
-  },
-  "& svg": {
-    width: 24,
-    height: 24,
-  },
-}));
+import { useState } from "react";
 
 const NavigationBar = () => {
   const [selectedItem, setSelectedItem] = useState("home");
@@ -46,34 +32,37 @@ const NavigationBar = () => {
   };
 
   return (
-    <StyledAppBar position="static">
-      <Toolbar sx={{ minHeight: "56px !important" }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 1,
-            width: "100%",
-          }}
-        >
-          {navigationItems.map((item) => {
-            const IconComponent = item.icon;
-            return (
-              <Tooltip key={item.id} title={`${item.id}`} arrow>
-                <StyledIconButton
-                  selected={selectedItem === item.id}
+    <div className="bg-inherit">
+      <div className="flex min-h-[56px] w-full items-center justify-between gap-1">
+        {navigationItems.map((item) => {
+          const IconComponent = item.icon;
+          const isSelected = selectedItem === item.id;
+          return (
+            <Tooltip key={item.id}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleItemClick(item.id, item.href)}
                   aria-label={item.label}
+                  className={cn(
+                    "h-12 w-12 transition-all duration-200",
+                    isSelected
+                      ? "text-primary bg-primary/10 hover:bg-primary hover:text-primary-foreground"
+                      : "text-muted-foreground hover:bg-primary hover:text-primary-foreground",
+                  )}
                 >
-                  <IconComponent />
-                </StyledIconButton>
-              </Tooltip>
-            );
-          })}
-        </Box>
-      </Toolbar>
-    </StyledAppBar>
+                  <IconComponent className="h-6 w-6" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{item.id}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 
