@@ -780,6 +780,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                   onApplyAutoFixes={handleApplyAutoFixes}
                   onRegenerateWithFeedback={handleRegenerateWithFeedback}
                   title={presentationState.title || "Generating..."}
+                  status={"completed"}
                 />
               </DialogContent>
             </Dialog>
@@ -856,6 +857,7 @@ export default function PresentationAgentPage({ specificAgent }) {
                 onApplyAutoFixes={handleApplyAutoFixes}
                 onRegenerateWithFeedback={handleRegenerateWithFeedback}
                 title={presentationState.title || "Generating..."}
+                status={"completed"}
               />
             </Box>
           </Box>
