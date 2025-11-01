@@ -1,23 +1,18 @@
-'use client';
+"use client";
 
-import { Button } from '../ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { 
-  Moon,
-  Sun,
-  Monitor,
-  Check,
-} from 'lucide-react';
-import { useThemeMode } from '../../contexts/ThemeContext';
-import { ThemePreference } from '../../lib/theme-utils';
+} from "@/components/ui/dropdown-menu";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { useThemeMode } from "../../contexts/ThemeContext";
 
 export default function ThemeToggle() {
-  const { mode, preference, setPreference, nextTransition, mounted } = useThemeMode();
+  const { mode, preference, setPreference, nextTransition, mounted } =
+    useThemeMode();
 
   if (!mounted) {
     return (
@@ -34,14 +29,14 @@ export default function ThemeToggle() {
     );
   }
 
-  const ThemeIcon = mode === 'dark' ? Moon : Sun;
+  const ThemeIcon = mode === "dark" ? Moon : Sun;
 
   const formatNextTransition = () => {
-    if (!nextTransition) return '';
-    
+    if (!nextTransition) return "";
+
     const { nextTheme, hoursUntil } = nextTransition;
-    const NextIcon = nextTheme === 'dark' ? Moon : Sun;
-    
+    const NextIcon = nextTheme === "dark" ? Moon : Sun;
+
     if (hoursUntil === 0) {
       return (
         <span className="flex items-center gap-1">
@@ -77,7 +72,7 @@ export default function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
         <DropdownMenuItem
-          onClick={() => setPreference('auto')}
+          onClick={() => setPreference("auto")}
           data-testid="menu-theme-auto"
           className="flex items-center justify-between"
         >
@@ -85,20 +80,18 @@ export default function ThemeToggle() {
             <Monitor className="h-4 w-4" />
             <div>
               <div className="text-body2">Auto (Time-based)</div>
-              {preference === 'auto' && nextTransition && (
+              {preference === "auto" && nextTransition && (
                 <div className="text-caption text-muted-foreground">
                   {formatNextTransition()}
                 </div>
               )}
             </div>
           </div>
-          {preference === 'auto' && (
-            <Check className="h-4 w-4 text-primary" />
-          )}
+          {preference === "auto" && <Check className="text-primary h-4 w-4" />}
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => setPreference('light')}
+          onClick={() => setPreference("light")}
           data-testid="menu-theme-light"
           className="flex items-center justify-between"
         >
@@ -106,13 +99,11 @@ export default function ThemeToggle() {
             <Sun className="h-4 w-4" />
             <div className="text-body2">Light</div>
           </div>
-          {preference === 'light' && (
-            <Check className="h-4 w-4 text-primary" />
-          )}
+          {preference === "light" && <Check className="text-primary h-4 w-4" />}
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => setPreference('dark')}
+          onClick={() => setPreference("dark")}
           data-testid="menu-theme-dark"
           className="flex items-center justify-between"
         >
@@ -120,9 +111,7 @@ export default function ThemeToggle() {
             <Moon className="h-4 w-4" />
             <div className="text-body2">Dark</div>
           </div>
-          {preference === 'dark' && (
-            <Check className="h-4 w-4 text-primary" />
-          )}
+          {preference === "dark" && <Check className="text-primary h-4 w-4" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

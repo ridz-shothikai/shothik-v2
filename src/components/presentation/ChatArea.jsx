@@ -2,6 +2,7 @@
 
 // components/ChatArea.tsx
 import InteractiveChatMessage from "@/../components/agents/shared/InteractiveChatMessage";
+import { CustomSlideshowIcon } from "@/components/ui/CustomSlideshowIcon";
 import useResponsive from "@/hooks/useResponsive";
 import {
   formatAgentName,
@@ -28,7 +29,6 @@ import Typography from "@mui/material/Typography";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TypingAnimation from "../common/TypingAnimation";
 import { FooterCta } from "../sheet/SheetAgentPage";
-import { CustomSlideshowIcon } from "../ui/CustomSlideshowIcon";
 import InputArea from "./InputAreas";
 
 const PRIMARY_GREEN = "#07B37A";

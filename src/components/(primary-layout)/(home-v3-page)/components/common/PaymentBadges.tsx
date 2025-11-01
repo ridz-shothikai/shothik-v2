@@ -1,32 +1,39 @@
-'use client';
+"use client";
 
-import { Badge } from '../ui/badge';
+import { Badge } from "@/components/ui/badge";
 import { CreditCard } from "lucide-react";
 
 interface PaymentBadgesProps {
-  variant?: 'compact' | 'full';
+  variant?: "compact" | "full";
 }
 
-export default function PaymentBadges({ variant = 'full' }: PaymentBadgesProps) {
+export default function PaymentBadges({
+  variant = "full",
+}: PaymentBadgesProps) {
   const countries = [
-    { code: 'IN', name: 'India', methods: 'UPI, Cards', bgColor: '#FF9933' },
-    { code: 'BD', name: 'Bangladesh', methods: 'bKash, Nagad', bgColor: '#006A4E' },
+    { code: "IN", name: "India", methods: "UPI, Cards", bgColor: "#FF9933" },
+    {
+      code: "BD",
+      name: "Bangladesh",
+      methods: "bKash, Nagad",
+      bgColor: "#006A4E",
+    },
   ];
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         {countries.map((country) => (
           <Badge
             key={country.code}
             variant="outline"
-            className="font-semibold text-caption bg-primary/10 dark:bg-primary/15 text-foreground border-primary/20 dark:border-primary/30"
+            className="text-caption bg-primary/10 dark:bg-primary/15 text-foreground border-primary/20 dark:border-primary/30 font-semibold"
             data-testid={`chip-${country.name.toLowerCase()}`}
           >
             {country.name}
           </Badge>
         ))}
-        <span className="text-body2 font-semibold text-muted-foreground text-caption">
+        <span className="text-body2 text-muted-foreground text-caption font-semibold">
           + 15 more coming soon
         </span>
       </div>
@@ -49,12 +56,12 @@ export default function PaymentBadges({ variant = 'full' }: PaymentBadgesProps) 
                 data-testid={`chip-payment-${country.name.toLowerCase()}`}
               >
                 <div
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white mr-2"
+                  className="mr-2 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
                   style={{ backgroundColor: country.bgColor }}
                 >
                   {country.code}
                 </div>
-                <span className="font-bold text-body2 mr-1">
+                <span className="text-body2 mr-1 font-bold">
                   {country.name}
                 </span>
                 <span className="text-caption text-muted-foreground">
@@ -65,7 +72,7 @@ export default function PaymentBadges({ variant = 'full' }: PaymentBadgesProps) 
           </div>
           <Badge
             variant="outline"
-            className="mt-3 bg-muted/50 dark:bg-muted/50 text-muted-foreground font-semibold text-caption border-border"
+            className="bg-muted/50 dark:bg-muted/50 text-muted-foreground text-caption border-border mt-3 font-semibold"
             data-testid="chip-more-countries"
           >
             15+ countries coming soon
@@ -82,7 +89,7 @@ export default function PaymentBadges({ variant = 'full' }: PaymentBadgesProps) 
               className="bg-secondary/10 dark:bg-secondary/15 text-foreground border-secondary/20 dark:border-secondary/30 font-semibold"
               data-testid="chip-payment-cards"
             >
-              <CreditCard className="h-4 w-4 text-secondary mr-2" />
+              <CreditCard className="text-secondary mr-2 h-4 w-4" />
               Visa / Mastercard
             </Badge>
           </div>

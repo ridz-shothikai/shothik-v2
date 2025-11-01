@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import CustomUiButton from "@/components/ui/CustomUiButton";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,6 @@ import { toggleUpdateFileHistory } from "@/redux/slice/paraphraseHistorySlice";
 import { CloudUpload, Download } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CustomUiButton from "../../ui/CustomUiButton";
 import UpgradePopover from "./UpgradePopover";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
