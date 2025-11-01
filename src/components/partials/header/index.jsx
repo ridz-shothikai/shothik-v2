@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useGetUserQuery } from "@/redux/api/auth/authApi";
 import { updateTheme } from "@/redux/slice/settings";
 import Logo from "@/resource/assets/Logo";
 import {
