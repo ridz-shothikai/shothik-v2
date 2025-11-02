@@ -9,7 +9,7 @@ import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
-} from "@/redux/slice/auth";
+} from "@/redux/slices/auth";
 import DotFlashing from "@/resource/DotFlashing";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";

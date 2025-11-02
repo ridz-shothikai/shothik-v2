@@ -1,5 +1,5 @@
 "use client";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";

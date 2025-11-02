@@ -2,6 +2,7 @@
 
 import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
+import Footer from "@/components/partials/footer";
 import Header from "@/components/partials/header";
 import NavigationSidebar from "@/components/partials/navigation-sidebar";
 import AlertDialog from "@/components/tools/common/AlertDialog";
@@ -12,7 +13,7 @@ import {
   useGetUserQuery,
   useLoginMutation,
 } from "@/redux/api/auth/authApi";
-import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slices/auth";
 import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
@@ -91,7 +92,7 @@ export default function PrimaryLayout({ children }) {
               </div>
               <div className="flex max-w-full flex-1 flex-col overflow-y-auto">
                 <div className="">{children}</div>
-                <div>{/* <Footer /> */}</div>
+                <Footer />
               </div>
             </div>
           </div>

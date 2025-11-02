@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
-import { setOpen } from "@/redux/slice/settings";
+import { setOpen } from "@/redux/slices/settings-slice";
 import Logo from "@/resource/assets/Logo";
 import { Gem, Menu } from "lucide-react";
 import Link from "next/link";

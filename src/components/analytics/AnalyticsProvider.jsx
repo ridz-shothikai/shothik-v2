@@ -1,6 +1,6 @@
 "use client";
 
-import { setSessionId, setUserId } from "@/redux/slice/analyticsSlice";
+import { setSessionId, setUserId } from "@/redux/slices/analyticsSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AnalyticsLoader from "./AnalyticsLoader";

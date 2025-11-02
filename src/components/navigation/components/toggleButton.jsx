@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
-import { toggleSidebar } from "@/redux/slice/settings";
+import { toggleSidebar } from "@/redux/slices/settings-slice";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 

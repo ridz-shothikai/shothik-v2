@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { researchCoreState } from "@/redux/slice/researchCoreSlice";
+import { researchCoreState } from "@/redux/slices/researchCoreSlice";
 import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";

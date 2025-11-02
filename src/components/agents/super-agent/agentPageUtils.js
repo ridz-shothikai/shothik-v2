@@ -1,7 +1,7 @@
 // ====== For Slide creation handler ======
 
-import { setPresentationState } from "@/redux/slice/presentationSlice";
-import { setSheetState } from "@/redux/slice/sheetSlice";
+import { setPresentationState } from "@/redux/slices/presentationSlice";
+import { setSheetState } from "@/redux/slices/sheetSlice";
 import { createPresentationServer } from "@/services/createPresentationServer";
 
 // ====== For SLIDE generation handler ======

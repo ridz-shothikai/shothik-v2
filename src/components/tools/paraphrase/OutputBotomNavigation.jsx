@@ -20,7 +20,7 @@ import {
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
-import { setActiveHistory } from "@/redux/slice/paraphraseHistorySlice";
+import { setActiveHistory } from "@/redux/slices/paraphraseHistorySlice";
 import {
   ChevronDown,
   ChevronLeft,

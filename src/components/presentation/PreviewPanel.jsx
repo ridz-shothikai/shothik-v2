@@ -47,8 +47,6 @@ export default function PreviewPanel({
     }));
   };
 
-  console.log("slides data", slidesData);
-
   return (
     <div className="bg-background text-foreground flex h-full max-h-full flex-col overflow-hidden">
       <div

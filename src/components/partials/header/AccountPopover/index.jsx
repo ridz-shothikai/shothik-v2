@@ -11,7 +11,7 @@ import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
-} from "@/redux/slice/auth";
+} from "@/redux/slices/auth";
 import Discord from "@/resource/assets/Discord";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

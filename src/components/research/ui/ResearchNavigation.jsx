@@ -1,6 +1,6 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { setActiveResearch } from "@/redux/slice/researchCoreSlice";
+import { setActiveResearch } from "@/redux/slices/researchCoreSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ResearchNavigation() {

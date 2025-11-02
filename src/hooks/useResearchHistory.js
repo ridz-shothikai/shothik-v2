@@ -1,8 +1,8 @@
 "use client";
 
+import { loadExistingResearches } from "@/redux/slices/researchCoreSlice";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadExistingResearches } from "../redux/slice/researchCoreSlice";
 import { QueueStatusService } from "../services/queueStatusService";
 
 const isResearchCompleted = (research) => {
@@ -33,7 +33,7 @@ export const useResearchHistory = () => {
 
       // Ensure researches is an array before filtering
       const researchesArray = Array.isArray(researches) ? researches : [];
-      
+
       // Filter out incomplete researches (those without result)
       const completeResearches = researchesArray.filter(isResearchCompleted);
 

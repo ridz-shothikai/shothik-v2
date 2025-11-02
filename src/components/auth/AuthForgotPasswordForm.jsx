@@ -3,7 +3,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useResetPasswordMutation } from "@/redux/api/auth/authApi";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import FormProvider from "@/resource/FormProvider";
 import RHFTextField from "@/resource/RHFTextField";
 import { yupResolver } from "@hookform/resolvers/yup";

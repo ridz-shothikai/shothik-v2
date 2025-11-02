@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { toggleTheme } from "@/redux/slice/settings";
+import { toggleTheme } from "@/redux/slices/settings-slice";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 

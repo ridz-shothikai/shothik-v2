@@ -2,7 +2,7 @@
 
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { toggleParaphraseOption } from "@/redux/slice/settings";
+import { toggleParaphraseOption } from "@/redux/slices/settings-slice";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function AutoFreezeSettings() {

@@ -4,7 +4,7 @@ import {
   setActiveHistory,
   setHistories,
   setHistoryGroups,
-} from "@/redux/slice/paraphraseHistorySlice";
+} from "@/redux/slices/paraphraseHistorySlice";
 import { historyGroupsByPeriod } from "@/utils/historyGroupsByPeriod";
 import {
   ChevronDown,

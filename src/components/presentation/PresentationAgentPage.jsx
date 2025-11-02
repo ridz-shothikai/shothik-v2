@@ -7,7 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   selectPresentation,
   setPresentationState,
-} from "@/redux/slice/presentationSlice";
+} from "@/redux/slices/presentationSlice";
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -32,7 +32,7 @@ const getLatestPhase = (completedPhasesSet) => {
 };
 
 // Custom hook for media query
-function useMediaQuery(query: string) {
+function useMediaQuery(query) {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function useMediaQuery(query: string) {
     const media = window.matchMedia(query);
     setMatches(media.matches);
 
-    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    const listener = (e) => setMatches(e.matches);
     media.addEventListener("change", listener);
     return () => media.removeEventListener("change", listener);
   }, [query]);
@@ -75,7 +75,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "success" as "success" | "error" | "warning" | "info",
+    severity: "success",
   });
 
   const [awaitingAck, setAwaitingAck] = useState(false);
@@ -642,7 +642,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   };
 
   const handlePreviewOpen = () => setPreviewOpen(true);
-  const handlePreviewClose = (open: boolean) => setPreviewOpen(open);
+  const handlePreviewClose = (open) => setPreviewOpen(open);
 
   // console.log(logs, "logs data");
 

@@ -32,8 +32,8 @@ import {
   setResearchToken,
   setSheetToken,
   setShowLoginModal,
-} from "@/redux/slice/auth";
-import { setAgentHistoryMenu } from "@/redux/slice/tools";
+} from "@/redux/slices/auth";
+import { setAgentHistoryMenu } from "@/redux/slices/tools";
 import {
   BookOpen,
   Bot,

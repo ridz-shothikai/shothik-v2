@@ -17,9 +17,9 @@ import {
   setSectionsGroups,
   setSectionsMeta,
   setSelectedSection,
-} from "@/redux/slice/ai-detector-slice";
-import { setShowLoginModal } from "@/redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
+} from "@/redux/slices/ai-detector-slice";
+import { setShowLoginModal } from "@/redux/slices/auth";
+import { setAlertMessage, setShowAlert } from "@/redux/slices/tools";
 import LoadingScreen from "@/resource/LoadingScreen";
 import {
   fetchAiDetectorSection,

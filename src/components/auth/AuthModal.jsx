@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { setShowLoginModal, setShowRegisterModal } from "@/redux/slice/auth";
+import { setShowLoginModal, setShowRegisterModal } from "@/redux/slices/auth";
 import { useDispatch, useSelector } from "react-redux";
 
 const AuthModal = ({ isOpen, onClose, children }) => {

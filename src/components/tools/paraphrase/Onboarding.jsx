@@ -1,5 +1,5 @@
 "use client";
-import { setDemo } from "@/redux/slice/settings.js";
+import { setDemo } from "@/redux/slices/settings-slice.js";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { useEffect, useRef } from "react";

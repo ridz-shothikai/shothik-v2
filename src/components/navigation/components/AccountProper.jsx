@@ -12,7 +12,7 @@ import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
-} from "@/redux/slice/auth";
+} from "@/redux/slices/auth";
 import Discord from "@/resource/assets/Discord";
 import { HelpCircle, LogIn, Mail, User } from "lucide-react";
 import Image from "next/image";

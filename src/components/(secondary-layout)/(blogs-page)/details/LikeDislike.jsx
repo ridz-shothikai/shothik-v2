@@ -6,7 +6,7 @@ import {
   useDisLikeContendMutation,
   useLikeContendMutation,
 } from "@/redux/api/blog/blogApiSlice";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

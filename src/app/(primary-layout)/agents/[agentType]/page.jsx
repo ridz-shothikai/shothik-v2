@@ -4,7 +4,7 @@ import { AgentContextProvider } from "@/components/agents/shared/AgentContextPro
 import ChatInput from "@/components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "@/components/research/ui/ResearchPageSkeletonLoader";
 import { FooterCta } from "@/components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
-import { researchCoreState } from "@/redux/slice/researchCoreSlice";
+import { researchCoreState } from "@/redux/slices/researchCoreSlice";
 import dynamic from "next/dynamic";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
