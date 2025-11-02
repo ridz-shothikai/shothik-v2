@@ -31,6 +31,7 @@ async function handleSlideCreation(
         presentationBlueprint: null,
         title: "Generating...",
         totalSlides: 0,
+        _replaceArrays: true, // EXPLICIT replace mode - prevents append-mode bugs
       }),
     );
 

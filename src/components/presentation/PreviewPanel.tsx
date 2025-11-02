@@ -124,7 +124,18 @@ export default function PreviewPanel({
                     </div>
                   ) : (
                     <>
-                      {slidesData?.length === 0 ? (
+                      {status === "failed" ? (
+                        <div className="mt-8 p-6 text-center">
+                          <h3 className="mb-2 text-lg font-semibold">
+                            Presentation Generation Failed
+                          </h3>
+                          <p className="text-muted-foreground mx-auto max-w-md text-sm">
+                            We encountered an error while generating your
+                            presentation. Please try creating a new presentation
+                            or contact support if the issue persists.
+                          </p>
+                        </div>
+                      ) : slidesData?.length === 0 ? (
                         <div className="flex justify-center p-4">
                           <Loader2 className="text-primary h-8 w-8 animate-spin" />
                         </div>

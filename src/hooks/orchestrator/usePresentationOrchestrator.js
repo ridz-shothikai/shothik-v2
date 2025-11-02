@@ -476,14 +476,33 @@ export default function usePresentationOrchestrator(presentationId) {
   ]);
 
   /**
-   * Main effect - Initialize on mount
+   * Main effect - Initialize on presentationId change
+   * Production-grade: Reset state when presentationId changes (not just on unmount)
+   * This ensures clean state transitions between different presentations
    */
   useEffect(() => {
+    if (!presentationId) {
+      console.log("[Orchestrator] No presentationId, skipping initialization");
+      return;
+    }
+
+    // Reset state when presentationId changes (production-grade approach)
+    // This prevents stale data from previous presentations
+    console.log(
+      "[Orchestrator] 🔄 Presentation ID changed, resetting state for:",
+      presentationId,
+    );
+    dispatch(resetPresentationState());
+    hasInitializedRef.current = false; // Allow re-initialization for new ID
+
     initialize();
 
-    // Cleanup on unmount
+    // Cleanup: Only cleanup intervals/timers, not state (state is presentationId-scoped)
     return () => {
-      console.log("[Orchestrator] 🧹 Cleanup");
+      console.log(
+        "[Orchestrator] 🧹 Cleanup for presentation:",
+        presentationId,
+      );
 
       if (statusCheckIntervalRef.current) {
         clearInterval(statusCheckIntervalRef.current);
@@ -492,7 +511,7 @@ export default function usePresentationOrchestrator(presentationId) {
       hasInitializedRef.current = false;
       currentStatusRef.current = null;
     };
-  }, [initialize]);
+  }, [presentationId, initialize, dispatch]);
 
   /**
    * Retry mechanism for failed presentations
