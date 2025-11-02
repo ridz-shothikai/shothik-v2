@@ -1,6 +1,6 @@
 "use client";
-import FooterServerComponent from "@/components/navigation/components/FooterServerComponent";
-import SecondaryHeader from "@/components/navigation/SecondaryHeader";
+import Footer from "@/components/partials/footer";
+import Header from "@/components/partials/header";
 import {
   useGetUserLimitQuery,
   useGetUserQuery,
@@ -9,8 +9,6 @@ import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel/slick/slick.css";
 
 export default function SecondaryLayout({ children }) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -33,11 +31,9 @@ export default function SecondaryLayout({ children }) {
       options={{ showSpinner: false }}
       shallowRouting
     >
-      <SecondaryHeader />
-
+      <Header />
       <main>{children}</main>
-
-      <FooterServerComponent />
+      <Footer />
     </ProgressProvider>
   );
 }

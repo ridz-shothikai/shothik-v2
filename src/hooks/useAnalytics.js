@@ -7,7 +7,7 @@ import {
   initializeAnalytics,
   setConsent,
   trackEvent as trackEventAction,
-} from "../redux/slice/analyticsSlice";
+} from "@/redux/slices/analyticsSlice";
 
 export const useAnalytics = () => {
   const dispatch = useDispatch();

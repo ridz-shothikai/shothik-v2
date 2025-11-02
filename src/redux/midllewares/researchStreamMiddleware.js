@@ -1,9 +1,9 @@
 import {
   addStreamEvent,
-  setPollingMode,
-  setConnectionStatus,
   clearStreamEvents,
-} from "../slice/researchCoreSlice";
+  setConnectionStatus,
+  setPollingMode,
+} from "@/redux/slices/researchCoreSlice";
 
 // Action types that should trigger stream event validation
 const streamEventActions = [addStreamEvent];

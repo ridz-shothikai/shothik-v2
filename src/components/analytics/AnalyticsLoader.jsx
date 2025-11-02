@@ -2,7 +2,7 @@
 
 // components/analytics/AnalyticsLoader.jsx
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { markScriptsLoaded } from "@/redux/slice/analyticsSlice";
+import { markScriptsLoaded } from "@/redux/slices/analyticsSlice";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

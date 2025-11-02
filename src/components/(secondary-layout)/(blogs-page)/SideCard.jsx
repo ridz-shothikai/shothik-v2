@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 

@@ -13,7 +13,7 @@ import {
   setIsNewRegistered,
   setShowLoginModal,
   setShowRegisterModal,
-} from "@/redux/slice/auth";
+} from "@/redux/slices/auth";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

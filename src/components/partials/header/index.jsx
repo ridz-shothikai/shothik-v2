@@ -9,7 +9,7 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useGetUserQuery } from "@/redux/api/auth/authApi";
-import { toggleSidebar, updateTheme } from "@/redux/slice/settings";
+import { toggleSidebar, updateTheme } from "@/redux/slices/settings-slice";
 import Logo from "@/resource/assets/Logo";
 import {
   BarChart3,

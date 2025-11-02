@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addMessage } from "../redux/slice/researchChatSlice";
+import { addMessage } from "@/redux/slices/researchChatSlice";
 import {
   addStreamEvent,
   finishResearch,
@@ -11,8 +9,10 @@ import {
   setPollingMode,
   setStreamingMode,
   startStreaming,
-} from "../redux/slice/researchCoreSlice";
-import store from "../redux/store";
+} from "@/redux/slices/researchCoreSlice";
+import store from "@/redux/store";
+import { useCallback, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { QueueStatusService } from "../services/queueStatusService";
 import { useConnectionState } from "./useConnectionState";
 

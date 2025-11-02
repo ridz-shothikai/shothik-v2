@@ -9,7 +9,7 @@ import {
   setSheetData,
   setSheetStatus,
   setSheetTitle,
-} from "@/redux/slice/sheetSlice";
+} from "@/redux/slices/sheetSlice";
 import { Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

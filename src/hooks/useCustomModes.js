@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import {
   useDeleteCustomModeMutation,
   useGetCustomModesQuery,
   useSaveCustomModesMutation,
   useTrackModeUsageMutation,
   useUpdateCustomModeMutation,
-} from "../redux/api/paraphrase/customModesApi";
+} from "@/redux/api/paraphrase/customModesApi";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
 const STORAGE_KEY = "paraphrase_custom_modes";
 const MAX_RECENT_MODES = 5;

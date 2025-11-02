@@ -15,7 +15,7 @@ import {
   setStatus,
   updateLog,
   updateSlide,
-} from "@/redux/slice/presentationSlice";
+} from "@/redux/slices/presentationSlice";
 import {
   parseAgentOutput,
   parseConnectedEvent,

@@ -15,8 +15,8 @@ import {
   useGetUsesLimitQuery,
   useScanAidetectorMutation,
 } from "@/redux/api/tools/toolsApi";
-import { setShowLoginModal } from "@/redux/slice/auth";
-import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
+import { setShowLoginModal } from "@/redux/slices/auth";
+import { setAlertMessage, setShowAlert } from "@/redux/slices/tools";
 import LoadingScreen from "@/resource/LoadingScreen";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";

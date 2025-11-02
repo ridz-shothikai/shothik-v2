@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetTokenQuery } from "@/redux/api/auth/authApi";
-import { updateUser } from "@/redux/slice/auth";
+import { updateUser } from "@/redux/slices/auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

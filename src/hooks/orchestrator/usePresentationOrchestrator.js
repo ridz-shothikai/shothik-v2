@@ -21,7 +21,7 @@ import {
   setCurrentSlideId,
   setHistoryData,
   setStatus,
-} from "@/redux/slice/presentationSlice";
+} from "@/redux/slices/presentationSlice";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import usePresentationSocket from "../usePresentationSocket";

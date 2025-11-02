@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import {
-  startStreaming,
   addStreamEvent,
   finishResearch,
-  setError,
   setConnectionStatus,
+  setError,
   setIsSimulating,
   setSimulationStatus,
-} from "../redux/slice/researchCoreSlice";
+  startStreaming,
+} from "@/redux/slices/researchCoreSlice";
+import { useCallback, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 
 export const useResearchSimulation = () => {
   const dispatch = useDispatch();

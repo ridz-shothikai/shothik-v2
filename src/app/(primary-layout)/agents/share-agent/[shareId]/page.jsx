@@ -20,7 +20,7 @@ import {
   useCreateAgentReplicaMutation,
   useLazyVerifySharedAgentQuery,
 } from "@/redux/api/shareAgent/shareAgentApi";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import { ArrowLeft, Eye, Save, User } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

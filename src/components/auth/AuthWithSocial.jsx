@@ -4,7 +4,7 @@ import {
   logout,
   setShowLoginModal,
   setShowRegisterModal,
-} from "@/redux/slice/auth";
+} from "@/redux/slices/auth";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

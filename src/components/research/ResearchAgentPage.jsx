@@ -9,15 +9,15 @@ import {
   clearResearchChatState,
   researchChatState,
   setCurrentChat,
-} from "@/redux/slice/researchChatSlice";
+} from "@/redux/slices/researchChatSlice";
 import {
   researchCoreState,
   resetResearchCore,
   setIsSimulating,
   setResearchSelectedTab,
   setSimulationStatus,
-} from "@/redux/slice/researchCoreSlice";
-import { clearResearchUiState } from "@/redux/slice/researchUiSlice";
+} from "@/redux/slices/researchCoreSlice";
+import { clearResearchUiState } from "@/redux/slices/researchUiSlice";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

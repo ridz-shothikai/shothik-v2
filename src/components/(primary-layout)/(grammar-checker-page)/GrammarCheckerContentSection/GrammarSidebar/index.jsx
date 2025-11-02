@@ -3,7 +3,7 @@ import {
   setIsSidebarOpen,
   setSelectedIssue,
   setSelectedTab,
-} from "@/redux/slice/grammar-checker-slice";
+} from "@/redux/slices/grammar-checker-slice";
 import { ChevronsRight } from "lucide-react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";

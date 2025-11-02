@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   toggleInterfaceOption,
   toggleParaphraseOption,
-} from "@/redux/slice/settings";
+} from "@/redux/slices/settings-slice";
 import { Info } from "lucide-react";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";

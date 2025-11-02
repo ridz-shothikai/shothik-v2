@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { setIsSectionbarOpen } from "@/redux/slice/grammar-checker-slice";
+import { setIsSectionbarOpen } from "@/redux/slices/grammar-checker-slice";
 import {
   deleteGrammarSection,
   renameGrammarSection,

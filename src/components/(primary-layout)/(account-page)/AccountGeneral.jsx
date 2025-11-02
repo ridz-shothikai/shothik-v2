@@ -27,7 +27,7 @@ import {
   useUpdateProfileMutation,
   useUploadImageMutation,
 } from "@/redux/api/auth/authApi";
-import { getUser, setUser } from "@/redux/slice/auth";
+import { getUser, setUser } from "@/redux/slices/auth";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckCircle, Info, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";

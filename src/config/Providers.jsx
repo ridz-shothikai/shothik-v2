@@ -1,9 +1,9 @@
 "use client";
 
+import store from "@/redux/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
 import AnalyticsLoader from "../components/analytics/AnalyticsProvider";
-import store from "../redux/store";
 import { NotificationProvider } from "./NotificationProvider";
 
 function ConditionalGoogleProvider({ children }) {

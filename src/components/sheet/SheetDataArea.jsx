@@ -25,7 +25,7 @@ import {
   setSheetStatus,
   switchToGeneration,
   switchToSavePoint,
-} from "@/redux/slice/sheetSlice";
+} from "@/redux/slices/sheetSlice";
 import {
   AlertCircle,
   CheckCircle,

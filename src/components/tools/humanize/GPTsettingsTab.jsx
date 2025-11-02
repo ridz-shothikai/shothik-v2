@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { toggleHumanizeOption } from "@/redux/slice/settings";
+import { toggleHumanizeOption } from "@/redux/slices/settings-slice";
 import { Info } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 

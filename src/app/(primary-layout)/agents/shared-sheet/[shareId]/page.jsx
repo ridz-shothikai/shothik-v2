@@ -15,7 +15,7 @@ import {
   useCreateAgentReplicaMutation,
   useLazyVerifySharedAgentQuery,
 } from "@/redux/api/shareAgent/shareAgentApi";
-import { setShowLoginModal } from "@/redux/slice/auth";
+import { setShowLoginModal } from "@/redux/slices/auth";
 import {
   ChevronDown,
   Download,

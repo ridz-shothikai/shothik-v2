@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { toggleUpdateFileHistory } from "@/redux/slice/paraphraseHistorySlice";
+import { toggleUpdateFileHistory } from "@/redux/slices/paraphraseHistorySlice";
 import { CloudUpload, Download } from "lucide-react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

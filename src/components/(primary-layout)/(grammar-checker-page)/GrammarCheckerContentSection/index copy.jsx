@@ -41,7 +41,7 @@ import {
   setSelectedSection,
   setSelectedTab,
   setText,
-} from "@/redux/slice/grammar-checker-slice";
+} from "@/redux/slices/grammar-checker-slice";
 import {
   fetchGrammarSection,
   fetchGrammarSections,

@@ -1,4 +1,4 @@
-import { getUser, loggedIn, logout, setUserLimit } from "../../slice/auth";
+import { getUser, loggedIn, logout, setUserLimit } from "@/redux/slices/auth";
 import { authApiSlice } from "./authApiSlice";
 
 export const authApi = authApiSlice.injectEndpoints({

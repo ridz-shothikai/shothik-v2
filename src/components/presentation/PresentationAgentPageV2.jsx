@@ -2,7 +2,7 @@
 
 import usePresentationOrchestrator from "@/hooks/orchestrator/usePresentationOrchestrator";
 import { cn } from "@/lib/utils";
-import { selectPresentation } from "@/redux/slice/presentationSlice";
+import { selectPresentation } from "@/redux/slices/presentationSlice";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import PreviewPanel from "./PreviewPanel";

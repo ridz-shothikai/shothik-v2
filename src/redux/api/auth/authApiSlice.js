@@ -1,5 +1,5 @@
+import { logout } from "@/redux/slices/auth";
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { logout } from "../../slice/auth";
 import { baseQuery } from "../config";
 
 export const authApiSlice = createApi({

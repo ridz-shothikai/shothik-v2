@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { setIsNewRegistered } from "@/redux/slice/auth";
+import { setIsNewRegistered } from "@/redux/slices/auth";
 import { Check } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
