@@ -1,5 +1,41 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
 import { handleNativePptxExport } from "@/libs/nativePresentationExporter";
 import { handlePDFExport } from "@/libs/pdfPresentationExporter";
 import { handleAdvancedPptxExport } from "@/libs/presentationExporter";
@@ -10,58 +46,24 @@ import {
 } from "@/redux/api/share/shareApi";
 import {
   Check,
-  ContentCopy,
-  Description,
+  Copy,
+  Download,
   Edit as EditIcon,
-  Email,
-  FileDownload,
+  FileDown,
+  FileText,
   Image as ImageIcon,
-  LinkedIn,
+  Linkedin,
   Link as LinkIcon,
-  PictureAsPdf,
-  PlayArrow,
-  Share as ShareIcon,
+  Loader2,
+  Mail,
+  MessageCircle,
+  Play,
+  Share2,
   Twitter,
-  WhatsApp,
-} from "@mui/icons-material";
-import {
-  Alert,
-  AppBar,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Paper,
-  Radio,
-  RadioGroup,
-  Select,
-  Slider,
-  Snackbar,
-  Stack,
-  Switch,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { usePresentation } from "./context/SlideContextProvider";
 
 export default function SlidePreviewNavbar({
@@ -72,26 +74,20 @@ export default function SlidePreviewNavbar({
 }) {
   // console.log(shareSettings, "shareSettings");
   const { openPresentation } = usePresentation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobile = useResponsive("down", "sm");
+  const isTablet = useResponsive("down", "md");
 
   const searchParams = useSearchParams();
   const presentationId = searchParams.get("project_id");
 
-  const [exportAnchorEl, setExportAnchorEl] = useState(null);
+  const [exportOpen, setExportOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
   const [pdfDialogOpen, setPdfDialogOpen] = useState(false);
   const [pdfOptions, setPdfOptions] = useState({
     format: "presentation",
     orientation: "landscape",
-    quality: 0.92,
-    margin: 10,
+    quality: [0.92],
+    margin: [10],
   });
 
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -106,7 +102,6 @@ export default function SlidePreviewNavbar({
     requireSignIn: false,
     trackViews: true,
   });
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [shareStats, setShareStats] = useState({
     views: 0,
     uniqueVisitors: 0,
@@ -129,22 +124,24 @@ export default function SlidePreviewNavbar({
     }
   }, [analyticsData]);
 
-  const isExportMenuOpen = Boolean(exportAnchorEl);
-
-  const handleExportClick = (event) => {
-    setExportAnchorEl(event.currentTarget);
+  const handleExportClick = () => {
+    setExportOpen(true);
   };
 
   const handleExportClose = () => {
-    setExportAnchorEl(null);
+    setExportOpen(false);
   };
 
   const showSnackbar = (message, severity = "success") => {
-    setSnackbar({ open: true, message, severity });
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbar({ ...snackbar, open: false });
+    if (severity === "success") {
+      toast.success(message);
+    } else if (severity === "error") {
+      toast.error(message);
+    } else if (severity === "warning") {
+      toast.warning(message);
+    } else {
+      toast.info(message);
+    }
   };
 
   const handleImagePptxExport = async () => {
@@ -224,7 +221,10 @@ export default function SlidePreviewNavbar({
     try {
       const result = await handlePDFExport(slidesData.slides, {
         fileName: "presentation.pdf",
-        ...pdfOptions,
+        format: pdfOptions.format,
+        orientation: pdfOptions.orientation,
+        quality: pdfOptions.quality[0],
+        margin: pdfOptions.margin[0],
       });
 
       if (result.success) {
@@ -247,6 +247,13 @@ export default function SlidePreviewNavbar({
     }));
   };
 
+  const handleSliderChange = (key, value) => {
+    setPdfOptions((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const handleShareClick = () => {
     setShareDialogOpen(true);
   };
@@ -256,7 +263,6 @@ export default function SlidePreviewNavbar({
     setShareLink("");
     setIsDiscoverable(false);
     setLinkCopied(false);
-    setShowAdvancedOptions(false);
     setShareSettingsState({
       allowComments: true,
       allowDownload: true,
@@ -312,11 +318,10 @@ export default function SlidePreviewNavbar({
     );
 
     const socialUrls = {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${title}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-      whatsapp: `https://wa.me/?text=${title}%20${encodedUrl}`,
       email: `mailto:?subject=${title}&body=Check out this presentation: ${shareLink}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+      twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${title}`,
+      whatsapp: `https://wa.me/?text=${title}%20${encodedUrl}`,
     };
 
     if (socialUrls[platform]) {
@@ -359,502 +364,338 @@ export default function SlidePreviewNavbar({
 
   return (
     <>
-      <AppBar
-        position="sticky"
-        elevation={1}
-        sx={{
-          backgroundColor: "white",
-          color: "black",
-          borderBottom: "1px solid #e0e0e0",
-        }}
-      >
-        <Toolbar
-          sx={{
-            justifyContent: "space-between",
-            px: { xs: 1, sm: 2, md: 3 },
-            py: { xs: 0.5, sm: 1 },
-            minHeight: { xs: 56, sm: 64 },
-          }}
+      <header className="bg-background sticky top-0 z-50 border-b shadow-sm">
+        <div
+          className={cn(
+            "flex h-14 items-center justify-between gap-4",
+            "px-2 sm:px-4 md:px-6",
+          )}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: { xs: 1, sm: 2 },
-              flex: 1,
-              minWidth: 0,
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: { xs: 0.5, sm: 1 },
-                minWidth: 0,
-                flex: 1,
-              }}
-            >
-              <Description
-                sx={{
-                  fontSize: { xs: 18, sm: 20 },
-                  color: "#666",
-                  flexShrink: 0,
-                }}
-              />
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 500,
-                  fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                  color: "#333",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  minWidth: 0,
-                }}
-              >
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
+              <FileText className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+              <h1 className="text-foreground min-w-0 overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap sm:text-base md:text-lg">
                 {slidesData?.title || PresentationTitle || "Generating..."}
-              </Typography>
+              </h1>
 
               {!isMobile && slidesData?.slides && (
-                <Chip
-                  label={`${slidesData.slides.length} slides`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontSize: "0.75rem",
-                    height: 24,
-                    color: "#666",
-                    borderColor: "#e0e0e0",
-                    flexShrink: 0,
-                  }}
-                />
+                <Badge variant="outline" className="h-6 flex-shrink-0 text-xs">
+                  {slidesData.slides.length} slides
+                </Badge>
               )}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          <Stack
-            direction="row"
-            spacing={{ xs: 0.5, sm: 1 }}
-            alignItems="center"
-            sx={{ flexShrink: 0 }}
-          >
+          <div className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
             <Button
-              variant="contained"
-              startIcon={!isMobile ? <PlayArrow /> : undefined}
+              variant="default"
               onClick={openPresentation}
               disabled={
                 (!slidesData?.slides || slidesData.slides.length === 0) &&
                 !slidesData
               }
-              sx={{
-                backgroundColor: "#1976d2",
-                color: "white",
-                textTransform: "none",
-                fontWeight: 500,
-                px: { xs: 1, sm: 2 },
-                py: 0.5,
-                fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                minWidth: { xs: "auto", sm: "auto" },
-                "&:hover": {
-                  backgroundColor: "#1565c0",
-                },
-              }}
+              className="h-9 px-2 text-xs sm:px-4 sm:text-sm"
             >
-              {isMobile ? <PlayArrow /> : "Play Slides"}
+              <Play className="h-4 w-4 sm:mr-2" />
+              {!isMobile && "Play Slides"}
             </Button>
 
             {isDownloadAllowed && (
-              <Button
-                variant="outlined"
-                startIcon={
-                  !isMobile && !isExporting ? <FileDownload /> : undefined
-                }
-                onClick={handleExportClick}
-                disabled={
-                  !slidesData?.slides ||
-                  slidesData.slides.length === 0 ||
-                  isExporting
-                }
-                sx={{
-                  color: "#ff9800",
-                  borderColor: "#ff9800",
-                  textTransform: "none",
-                  fontWeight: 500,
-                  px: { xs: 1, sm: 2 },
-                  py: 0.5,
-                  fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                  minWidth: { xs: "auto", sm: "auto" },
-                  "&:hover": {
-                    borderColor: "#f57c00",
-                    backgroundColor: "rgba(255, 152, 0, 0.04)",
-                  },
-                }}
-              >
-                {isExporting ? (
-                  <CircularProgress size={16} sx={{ color: "#ff9800" }} />
-                ) : isMobile ? (
-                  <FileDownload />
-                ) : (
-                  "Export"
-                )}
-              </Button>
+              <DropdownMenu open={exportOpen} onOpenChange={setExportOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    onClick={handleExportClick}
+                    disabled={
+                      !slidesData?.slides ||
+                      slidesData.slides.length === 0 ||
+                      isExporting
+                    }
+                    className="h-9 px-2 text-xs sm:px-4 sm:text-sm"
+                  >
+                    {isExporting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 sm:mr-2" />
+                        {!isMobile && "Export"}
+                      </>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handlePDFExportClick}>
+                    <FileDown className="mr-2 h-4 w-4" />
+                    <span>Export as PDF</span>
+                    <span className="text-muted-foreground ml-auto text-xs">
+                      Portable document format
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleImagePptxExport}>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    <span>Export as Images</span>
+                    <span className="text-muted-foreground ml-auto text-xs">
+                      High-quality image slides in ppt
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleNativePptxExportClick}
+                    disabled
+                  >
+                    <EditIcon className="mr-2 h-4 w-4" />
+                    <span>Export as Editable</span>
+                    <span className="text-muted-foreground ml-auto text-xs">
+                      Coming soon
+                    </span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
-
-            {/* {!isSharedPage && ( this is not changed so not showing the share button now. */}
-            {false && (
-              <Button
-                variant="outlined"
-                startIcon={!isMobile ? <ShareIcon /> : undefined}
-                onClick={handleShareClick}
-                disabled={!slidesData?.slides || slidesData.slides.length === 0}
-                sx={{
-                  color: "#4caf50",
-                  borderColor: "#4caf50",
-                  textTransform: "none",
-                  fontWeight: 500,
-                  px: { xs: 1, sm: 2 },
-                  py: 0.5,
-                  fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                  minWidth: { xs: "auto", sm: "auto" },
-                  "&:hover": {
-                    borderColor: "#388e3c",
-                    backgroundColor: "rgba(76, 175, 80, 0.04)",
-                  },
-                }}
-              >
-                {isMobile ? <ShareIcon /> : "Share"}
-              </Button>
-            )}
-
-            <Menu
-              anchorEl={exportAnchorEl}
-              open={isExportMenuOpen}
-              onClose={handleExportClose}
-              PaperProps={{
-                sx: {
-                  mt: 1,
-                  minWidth: 200,
-                  "& .MuiMenuItem-root": {
-                    px: 2,
-                    py: 1.5,
-                  },
-                },
-              }}
-            >
-              <MenuItem onClick={handlePDFExportClick}>
-                <ListItemIcon>
-                  <PictureAsPdf fontSize="small" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Export as PDF"
-                  secondary="Portable document format"
-                />
-              </MenuItem>
-              <MenuItem onClick={handleImagePptxExport}>
-                <ListItemIcon>
-                  <ImageIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Export as Images"
-                  secondary="High-quality image slides in ppt"
-                />
-              </MenuItem>
-              <MenuItem onClick={handleNativePptxExportClick} disabled>
-                <ListItemIcon>
-                  <EditIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Export as Editable"
-                  secondary="Editable PowerPoint format (Coming soon)"
-                />
-              </MenuItem>
-            </Menu>
-          </Stack>
-        </Toolbar>
-      </AppBar>
+          </div>
+        </div>
+      </header>
 
       {/* PDF Export Dialog */}
-      <Dialog
-        open={pdfDialogOpen}
-        onClose={handlePDFDialogClose}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>PDF Export Options</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 2 }}>
-            <FormControl fullWidth>
-              <InputLabel>Page Format</InputLabel>
+      <Dialog open={pdfDialogOpen} onOpenChange={setPdfDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>PDF Export Options</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-6 py-4">
+            <div className="flex flex-col gap-2">
+              <Label>Page Format</Label>
               <Select
                 value={pdfOptions.format}
-                label="Page Format"
-                onChange={(e) =>
-                  handlePDFOptionChange("format", e.target.value)
+                onValueChange={(value) =>
+                  handlePDFOptionChange("format", value)
                 }
               >
-                <MenuItem value="presentation">Presentation (16:9)</MenuItem>
-                <MenuItem value="a4">A4</MenuItem>
-                <MenuItem value="letter">Letter</MenuItem>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="presentation">
+                    Presentation (16:9)
+                  </SelectItem>
+                  <SelectItem value="a4">A4</SelectItem>
+                  <SelectItem value="letter">Letter</SelectItem>
+                </SelectContent>
               </Select>
-            </FormControl>
+            </div>
 
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Orientation</FormLabel>
+            <div className="flex flex-col gap-3">
+              <Label>Orientation</Label>
               <RadioGroup
                 value={pdfOptions.orientation}
-                onChange={(e) =>
-                  handlePDFOptionChange("orientation", e.target.value)
+                onValueChange={(value) =>
+                  handlePDFOptionChange("orientation", value)
                 }
-                row
+                className="flex-row"
               >
-                <FormControlLabel
-                  value="landscape"
-                  control={<Radio />}
-                  label="Landscape"
-                />
-                <FormControlLabel
-                  value="portrait"
-                  control={<Radio />}
-                  label="Portrait"
-                />
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="landscape" id="landscape" />
+                  <Label htmlFor="landscape">Landscape</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="portrait" id="portrait" />
+                  <Label htmlFor="portrait">Portrait</Label>
+                </div>
               </RadioGroup>
-            </FormControl>
+            </div>
 
-            <Box>
-              <Typography gutterBottom>Image Quality</Typography>
+            <div className="flex flex-col gap-2">
+              <Label>
+                Image Quality: {Math.round(pdfOptions.quality[0] * 100)}%
+              </Label>
               <Slider
                 value={pdfOptions.quality}
-                onChange={(e, value) => handlePDFOptionChange("quality", value)}
+                onValueChange={(value) => handleSliderChange("quality", value)}
                 min={0.1}
                 max={1.0}
                 step={0.1}
-                marks={[
-                  { value: 0.1, label: "Low" },
-                  { value: 0.5, label: "Medium" },
-                  { value: 1.0, label: "High" },
-                ]}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
+                className="w-full"
               />
-            </Box>
+            </div>
 
-            <Box>
-              <Typography gutterBottom>Margin (mm)</Typography>
+            <div className="flex flex-col gap-2">
+              <Label>Margin: {pdfOptions.margin[0]}mm</Label>
               <Slider
                 value={pdfOptions.margin}
-                onChange={(e, value) => handlePDFOptionChange("margin", value)}
+                onValueChange={(value) => handleSliderChange("margin", value)}
                 min={0}
                 max={20}
                 step={1}
-                marks={[
-                  { value: 0, label: "0" },
-                  { value: 10, label: "10" },
-                  { value: 20, label: "20" },
-                ]}
-                valueLabelDisplay="auto"
+                className="w-full"
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handlePDFDialogClose}>
+              Cancel
+            </Button>
+            <Button onClick={handlePDFExportConfirm}>Export PDF</Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handlePDFDialogClose}>Cancel</Button>
-          <Button onClick={handlePDFExportConfirm} variant="contained">
-            Export PDF
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Share Dialog */}
-      <Dialog
-        open={shareDialogOpen}
-        onClose={handleShareDialogClose}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{ sx: { borderRadius: 3, maxHeight: "90vh" } }}
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <ShareIcon color="primary" />
-            <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
-              Share Presentation
-            </Typography>
-          </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Generate a shareable link to collaborate on your slides
-          </Typography>
-        </DialogTitle>
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-2">
+              <Share2 className="text-primary h-5 w-5" />
+              <DialogTitle className="text-2xl">Share Presentation</DialogTitle>
+            </div>
+            <DialogDescription className="text-sm">
+              Generate a shareable link to collaborate on your slides
+            </DialogDescription>
+          </DialogHeader>
 
-        <DialogContent sx={{ pt: 2 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <Paper
-              elevation={1}
-              sx={{ p: 3, borderRadius: 2, bgcolor: "#f8f9fa" }}
-            >
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{ fontWeight: 600, color: "#1976d2" }}
-              >
+          <div className="flex flex-col gap-4">
+            <div className="bg-muted/50 rounded-lg border p-6">
+              <h3 className="text-primary mb-4 text-base font-semibold">
                 Generate Share Link
-              </Typography>
+              </h3>
               {!shareLink ? (
                 <Button
-                  variant="contained"
-                  color="primary"
                   onClick={handleGenerateShareLink}
                   disabled={isGeneratingLink}
-                  startIcon={
-                    isGeneratingLink ? (
-                      <CircularProgress size={16} color="inherit" />
-                    ) : (
-                      <LinkIcon />
-                    )
-                  }
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 2,
-                  }}
+                  className="w-full"
                 >
-                  {isGeneratingLink ? "Generating..." : "Generate Share Link"}
+                  {isGeneratingLink ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                      Generate Share Link
+                    </>
+                  )}
                 </Button>
               ) : (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <TextField
-                    fullWidth
-                    label="Share Link"
-                    value={shareLink}
-                    variant="outlined"
-                    InputProps={{
-                      readOnly: true,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Tooltip title={linkCopied ? "Copied!" : "Copy link"}>
-                            <IconButton onClick={handleCopyLink} edge="end">
-                              {linkCopied ? (
-                                <Check color="success" />
-                              ) : (
-                                <ContentCopy />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        bgcolor: "white",
-                        borderRadius: 2,
-                      },
-                    }}
-                  />
-                  <Box>
-                    <Typography
-                      variant="subtitle2"
-                      gutterBottom
-                      sx={{ fontWeight: 600 }}
-                    >
-                      Quick Share
-                    </Typography>
-                    <Stack direction="row" spacing={1} flexWrap="wrap">
-                      <Tooltip title="Share via Email">
-                        <IconButton
-                          onClick={() => handleSocialShare("email")}
-                          size="small"
+                <div className="flex flex-col gap-4">
+                  <div className="relative">
+                    <Input
+                      value={shareLink}
+                      readOnly
+                      className="bg-background pr-10"
+                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="absolute top-1/2 right-1 h-8 w-8 -translate-y-1/2"
+                          onClick={handleCopyLink}
                         >
-                          <Email />
-                        </IconButton>
+                          {linkCopied ? (
+                            <Check className="text-primary h-4 w-4" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {linkCopied ? "Copied!" : "Copy link"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div>
+                    <h4 className="mb-2 text-sm font-semibold">Quick Share</h4>
+                    <div className="flex flex-wrap gap-1">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleSocialShare("email")}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Share via Email</TooltipContent>
                       </Tooltip>
-                      <Tooltip title="Share on LinkedIn">
-                        <IconButton
-                          onClick={() => handleSocialShare("linkedin")}
-                          size="small"
-                        >
-                          <LinkedIn />
-                        </IconButton>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleSocialShare("linkedin")}
+                          >
+                            <Linkedin className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Share on LinkedIn</TooltipContent>
                       </Tooltip>
-                      <Tooltip title="Share on Twitter">
-                        <IconButton
-                          onClick={() => handleSocialShare("twitter")}
-                          size="small"
-                        >
-                          <Twitter />
-                        </IconButton>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleSocialShare("twitter")}
+                          >
+                            <Twitter className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Share on Twitter</TooltipContent>
                       </Tooltip>
-                      <Tooltip title="Share on WhatsApp">
-                        <IconButton
-                          onClick={() => handleSocialShare("whatsapp")}
-                          size="small"
-                        >
-                          <WhatsApp />
-                        </IconButton>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleSocialShare("whatsapp")}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Share on WhatsApp</TooltipContent>
                       </Tooltip>
-                    </Stack>
-                  </Box>
-                </Box>
+                    </div>
+                  </div>
+                </div>
               )}
-            </Paper>
+            </div>
 
             {shareLink && (
-              <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{ fontWeight: 600, color: "#4caf50" }}
-                >
+              <div className="rounded-lg border p-6">
+                <h3 className="text-primary mb-4 text-base font-semibold">
                   Privacy Settings
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={isDiscoverable}
-                        onChange={(e) => setIsDiscoverable(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          Public Discovery
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {isDiscoverable
-                            ? "Anyone with the link can view and share"
-                            : "Only people with the link can view"}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={shareSettingsState.requireSignIn}
-                        onChange={(e) =>
-                          handleShareSettingChange(
-                            "requireSignIn",
-                            e.target.checked,
-                          )
-                        }
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                          Require Sign-in
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Viewers must sign in to access
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </Box>
-              </Paper>
+                </h3>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Public Discovery</p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        {isDiscoverable
+                          ? "Anyone with the link can view and share"
+                          : "Only people with the link can view"}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={isDiscoverable}
+                      onCheckedChange={setIsDiscoverable}
+                    />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Require Sign-in</p>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        Viewers must sign in to access
+                      </p>
+                    </div>
+                    <Switch
+                      checked={shareSettingsState.requireSignIn}
+                      onCheckedChange={(checked) =>
+                        handleShareSettingChange("requireSignIn", checked)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Additional setting is not required now 👇 */}
@@ -936,87 +777,62 @@ export default function SlidePreviewNavbar({
             )} */}
 
             {shareLink && shareSettingsState.trackViews && (
-              <Paper
-                elevation={1}
-                sx={{ p: 3, borderRadius: 2, bgcolor: "#f3f4f6" }}
-              >
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{ fontWeight: 600, color: "#6b7280" }}
-                >
+              <div className="bg-muted/30 rounded-lg border p-6">
+                <h3 className="text-muted-foreground mb-4 text-base font-semibold">
                   Analytics Preview
-                </Typography>
-                <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                  <Box sx={{ textAlign: "center" }}>
-                    <Typography
-                      variant="h4"
-                      sx={{ fontWeight: 700, color: "#1976d2" }}
-                    >
+                </h3>
+                <div className="flex flex-wrap gap-8">
+                  <div className="text-center">
+                    <p className="text-primary text-3xl font-bold">
                       {shareStats.views}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-xs">
                       Total Views
-                    </Typography>
-                  </Box>
-                  <Box sx={{ textAlign: "center" }}>
-                    <Typography
-                      variant="h4"
-                      sx={{ fontWeight: 700, color: "#4caf50" }}
-                    >
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-primary text-3xl font-bold">
                       {shareStats.uniqueVisitors}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-xs">
                       Unique Visitors
-                    </Typography>
-                  </Box>
-                  <Box sx={{ textAlign: "center" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">
                       {shareStats.lastViewed ? shareStats.lastViewed : "Never"}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-xs">
                       Last Viewed
-                    </Typography>
-                  </Box>
-                </Box>
-              </Paper>
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button
-            onClick={handleShareDialogClose}
-            sx={{ textTransform: "none" }}
-          >
-            Close
-          </Button>
-          {shareLink && (
-            <Button
-              variant="contained"
-              onClick={handleCopyLink}
-              startIcon={linkCopied ? <Check /> : <ContentCopy />}
-              sx={{ textTransform: "none", fontWeight: 500 }}
-            >
-              {linkCopied ? "Copied!" : "Copy Link"}
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
+          </div>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+          <DialogFooter className="px-6 py-4">
+            <Button variant="outline" onClick={handleShareDialogClose}>
+              Close
+            </Button>
+            {shareLink && (
+              <Button onClick={handleCopyLink}>
+                {linkCopied ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-2 h-4 w-4" />
+                    Copy Link
+                  </>
+                )}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

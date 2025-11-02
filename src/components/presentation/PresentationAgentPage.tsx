@@ -1,29 +1,20 @@
 "use client";
 
 import { useAgentContext } from "@/../components/agents/shared/AgentContextProvider";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   selectPresentation,
   setPresentationState,
 } from "@/redux/slice/presentationSlice";
-import {
-  Alert,
-  Button,
-  Dialog,
-  DialogContent,
-  Snackbar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import Box from "@mui/material/Box";
+import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import ChatArea from "./ChatArea";
 import PreviewPanel from "./PreviewPanel";
-
-const PRIMARY_GREEN = "#07B37A";
 const PHASES_ORDER = [
   "planning",
   "preferences",
@@ -40,13 +31,30 @@ const getLatestPhase = (completedPhasesSet) => {
   );
 };
 
+// Custom hook for media query
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const media = window.matchMedia(query);
+    setMatches(media.matches);
+
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
+
+  return matches;
+}
+
 export default function PresentationAgentPage({ specificAgent }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { agentType, setAgentType } = useAgentContext();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const isMobile = useMediaQuery("(max-width: 1023px)");
 
   const urlPresentationId =
     searchParams.get("id") || searchParams.get("presentation_id");
@@ -621,10 +629,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   };
 
   // Add this function to handle snackbar close
-  const handleSnackbarClose = (reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  const handleSnackbarClose = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
@@ -637,7 +642,7 @@ export default function PresentationAgentPage({ specificAgent }) {
   };
 
   const handlePreviewOpen = () => setPreviewOpen(true);
-  const handlePreviewClose = () => setPreviewOpen(false);
+  const handlePreviewClose = (open: boolean) => setPreviewOpen(open);
 
   // console.log(logs, "logs data");
 
@@ -651,78 +656,47 @@ export default function PresentationAgentPage({ specificAgent }) {
     }
   }, [status]);
 
+  // Auto-hide snackbar after 6 seconds
+  useEffect(() => {
+    if (snackbar.open) {
+      const timer = setTimeout(() => {
+        setSnackbar((prev) => ({ ...prev, open: false }));
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbar.open]);
+
   if (!currentPresentationId) {
     return (
-      <Box
-        sx={{
-          height: "100dvh",
-          // bgcolor: "white",
-          // color: "#333",
-          bgcolor: theme.palette.background.default,
-          color: theme.palette.text.primary,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="h6" color="error">
+      <div className="bg-background text-foreground flex h-[100dvh] flex-col items-center justify-center">
+        <h6 className="text-destructive mb-2 text-lg font-semibold">
           No presentation ID found. Please start a new presentation.
-        </Typography>
+        </h6>
         <Button
-          variant="contained"
+          variant="default"
           onClick={() => router.push("/agents")}
-          sx={{ mt: 2, bgcolor: PRIMARY_GREEN }}
+          className="mt-2"
         >
           Go Back to Agents
         </Button>
-      </Box>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        height: {
-          xs: "90dvh", // height for mobile screens (extra-small)
-          lg: "calc(100dvh - 70px)",
-        },
-        // bgcolor: "white",
-        // color: "#333",
-        bgcolor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      {/* <Box sx={{ flexShrink: 0 }}>
+    <div className="bg-background text-foreground flex h-[90dvh] flex-col overflow-hidden lg:h-[calc(100dvh-70px)]">
+      {/* <div className="shrink-0">
         <AgentHeader
           currentAgentType={currentAgentType}
           onBackClick={() => router.push("/agents")}
         />
-      </Box> */}
+      </div> */}
 
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
-      >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {isMobile ? (
           // Mobile Layout
           <>
-            <Box
-              sx={{
-                flex: 1,
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <ChatArea
                 currentAgentType={currentAgentType}
                 chatHistory={chatHistory}
@@ -750,17 +724,12 @@ export default function PresentationAgentPage({ specificAgent }) {
                 handlePreviewOpen={handlePreviewOpen}
                 slides={slides}
               />
-            </Box>
-            <Dialog
-              open={previewOpen}
-              onClose={handlePreviewClose}
-              maxWidth="md"
-              fullWidth
-              PaperProps={{
-                sx: { height: "80vh", maxHeight: "80vh", position: "relative" },
-              }}
-            >
-              <DialogContent sx={{ p: 0, overflow: "hidden" }}>
+            </div>
+            <Dialog open={previewOpen} onOpenChange={handlePreviewClose}>
+              <DialogContent
+                className="relative h-[80vh] max-h-[80vh] overflow-hidden p-0"
+                showCloseButton={true}
+              >
                 <PreviewPanel
                   currentAgentType="presentation"
                   slidesData={{
@@ -787,24 +756,8 @@ export default function PresentationAgentPage({ specificAgent }) {
           </>
         ) : (
           // Desktop Layout
-          <Box
-            sx={{
-              flex: 1,
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-              gridTemplateRows: "1fr",
-              overflow: "hidden",
-              minHeight: 0,
-            }}
-          >
-            <Box
-              sx={{
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 0,
-              }}
-            >
+          <div className="grid min-h-0 grid-cols-1 grid-rows-1 overflow-hidden md:grid-cols-2">
+            <div className="flex min-h-0 flex-col overflow-hidden">
               <ChatArea
                 currentAgentType={currentAgentType}
                 chatHistory={chatHistory}
@@ -829,15 +782,8 @@ export default function PresentationAgentPage({ specificAgent }) {
                 showModal={showModal}
                 setShowModal={setShowModal}
               />
-            </Box>
-            <Box
-              sx={{
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 0,
-              }}
-            >
+            </div>
+            <div className="flex min-h-0 flex-col overflow-hidden">
               <PreviewPanel
                 currentAgentType="presentation"
                 slidesData={{
@@ -859,25 +805,31 @@ export default function PresentationAgentPage({ specificAgent }) {
                 title={presentationState.title || "Generating..."}
                 status={"completed"}
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
-      </Box>
+      </div>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbar.severity}
-          sx={{ width: "100%", bgcolor: theme.palette.background.paper }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+      {/* Snackbar replacement */}
+      {snackbar.open && (
+        <div className="fixed top-5 left-1/2 z-50 w-full max-w-md -translate-x-1/2 transform">
+          <Alert
+            variant={snackbar.severity === "error" ? "destructive" : "default"}
+            className="bg-background w-full"
+          >
+            <AlertDescription className="flex items-center justify-between">
+              <span>{snackbar.message}</span>
+              <button
+                onClick={handleSnackbarClose}
+                className="text-muted-foreground hover:text-foreground focus:ring-ring ml-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:outline-none"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+    </div>
   );
 }

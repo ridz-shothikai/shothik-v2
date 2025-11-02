@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const SLIDE_WIDTH = 1280;
@@ -65,59 +66,27 @@ export const SlideCard = ({ slide, index, totalSlides }) => {
   }, [updateDimensions]);
 
   return (
-    <Grid item xs={12}>
+    <div className="w-full">
       <Card
-        sx={{
-          boxShadow: 3,
-          borderRadius: 2,
-          overflow: "hidden",
-          width: "100%",
-          minHeight: "auto",
-          my: 3,
-        }}
+        className={cn(
+          "my-6 min-h-0 w-full overflow-hidden rounded-lg shadow-lg",
+        )}
       >
-        <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-          <Box
-            sx={{
-              p: { xs: 1.5, sm: 2 },
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: "#f9f9f9",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            <Typography
-              variant="h6"
-              component="h3"
-              sx={{
-                fontWeight: "600",
-                fontSize: { xs: "1rem", sm: "1.25rem" },
-              }}
-            >
+        <CardContent className="p-0 last:pb-0">
+          <div className="bg-muted flex items-center justify-between border-b px-3 py-2 sm:px-4">
+            <h3 className="text-base font-semibold sm:text-xl">
               Slide {index + 1}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-            >
+            </h3>
+            <span className="text-muted-foreground text-xs sm:text-sm">
               {index + 1} / {totalSlides}
-            </Typography>
-          </Box>
+            </span>
+          </div>
 
-          <Box
+          <div
             ref={containerRef}
-            sx={{
-              position: "relative",
-              width: "100%",
+            className="bg-muted/50 relative flex w-full items-center justify-center overflow-hidden transition-[height] duration-200 ease-in-out"
+            style={{
               height: dimensions.height > 0 ? `${dimensions.height}px` : "auto",
-              bgcolor: "#f0f0f0",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              overflow: "hidden",
-              transition: "height 0.2s ease-in-out",
             }}
           >
             {dimensions.scale > 0 && slide?.body ? (
@@ -138,22 +107,13 @@ export const SlideCard = ({ slide, index, totalSlides }) => {
                 title={`Slide ${index + 1}`}
               />
             ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "100%",
-                  height: "200px",
-                  color: "#666",
-                }}
-              >
-                <Typography variant="body2">Loading slide...</Typography>
-              </Box>
+              <div className="text-muted-foreground flex h-[200px] w-full items-center justify-center">
+                <span className="text-sm">Loading slide...</span>
+              </div>
             )}
-          </Box>
+          </div>
         </CardContent>
       </Card>
-    </Grid>
+    </div>
   );
 };

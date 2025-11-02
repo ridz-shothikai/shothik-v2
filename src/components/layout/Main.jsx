@@ -1,9 +1,9 @@
 "use client";
 import { HEADER, NAV } from "@/config/config/nav";
-import useResponsive from "@/hooks/useResponsive";
-import { Box, Container, useTheme } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import FooterServerComponent from "../navigation/components/FooterServerComponent";
 import MobileNavigation from "../navigation/MobileNavigation";
 
@@ -12,12 +12,19 @@ const SPACING = 8;
 export default function Main({ children }) {
   const { sidebar } = useSelector((state) => state.settings);
   const isNavMini = sidebar === "compact";
-  const isDesktop = useResponsive("up", "sm");
-  const dispatch = useDispatch();
   const pathName = usePathname();
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 640);
+    };
+
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   const containerWidth = [
     "/",
@@ -28,62 +35,51 @@ export default function Main({ children }) {
     "/plagiarism-checker",
     "/summarize",
   ].includes(pathName)
-    ? "100%"
-    : "xl";
+    ? "w-full"
+    : "max-w-screen-xl";
+
+  const ptMobile = `${HEADER.H_MOBILE + SPACING}px`;
+  const ptDesktop = `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`;
+  const widthDesktop = `calc(100% - ${NAV.W_DASHBOARD}px)`;
+  const widthMini = `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`;
 
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        position: "relative",
-        backgroundColor:
-          pathName === "/"
-            ? `${isDarkMode ? "#2c2c2c" : "#FFF"}`
-            : `${isDarkMode ? "#2c2c2c" : "#F4F6F8"}`,
-        pt: `${HEADER.H_MOBILE + SPACING}px`,
+    <main
+      className={cn(
+        "relative flex-1",
+        pathName === "/" ? "bg-background" : "bg-muted/30",
+      )}
+      style={{
+        paddingTop: isDesktop ? ptDesktop : ptMobile,
         ...(isDesktop && {
-          // px: 2,
-          pt: `${HEADER.H_DASHBOARD_DESKTOP + SPACING}px`,
-          width: `calc(100% - ${NAV.W_DASHBOARD}px)`,
+          width: isNavMini ? widthMini : widthDesktop,
           ...(isNavMini && {
-            width: `calc(100% - ${NAV.W_DASHBOARD_MINI}px)`,
-            ml: { sm: "95px" },
+            marginLeft: "95px",
           }),
         }),
       }}
     >
-      <Container
-        maxWidth={containerWidth}
-        overflow="hidden"
-        disableGutters
-        sx={{ minHeight: "calc(100vh - 70px)" }}
+      <div
+        className={cn(
+          containerWidth,
+          "min-h-[calc(100vh-70px)] overflow-hidden",
+        )}
       >
         {!pathName.startsWith("/account") ? <MobileNavigation /> : null}
         {pathName.startsWith("/paraphrase") ? (
-          <Box
-            sx={{
-              display: "flex",
-              position: "relative",
-              justifyContent: "space-evenly",
-            }}
-          >
-            <Box
-              sx={{ display: "flex", flexDirection: "column", width: "100%" }}
-            >
-              {children}
-            </Box>
+          <div className="relative flex justify-evenly">
+            <div className="flex w-full flex-col">{children}</div>
             {/* <VerticalMenu/> */}
-          </Box>
+          </div>
         ) : (
           children
         )}
-      </Container>
+      </div>
       {pathName !== "/research" &&
       !pathName.startsWith("/agents") &&
       !pathName.startsWith("/slide") ? (
         <FooterServerComponent />
       ) : null}
-    </Box>
+    </main>
   );
 }

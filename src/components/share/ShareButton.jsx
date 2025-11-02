@@ -1,23 +1,16 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useShare } from "@/hooks/useShare";
-import {
-  ContentCopy as CopyIcon,
-  Public as PublicIcon,
-  Settings as SettingsIcon,
-  Share as ShareIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { cn } from "@/lib/utils";
+import { Copy, Globe, Settings, Share } from "lucide-react";
 import { useState } from "react";
 import ShareModal from "./ShareModal";
 
@@ -30,7 +23,6 @@ const ShareButton = ({
   onShare,
   disabled = false,
 }) => {
-  const theme = useTheme();
   const {
     shareResearch,
     shareChat,
@@ -39,22 +31,18 @@ const ShareButton = ({
     isLoading,
   } = useShare();
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [quickShareLoading, setQuickShareLoading] = useState(false);
 
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    if (variant === "menu") {
-      setAnchorEl(event.currentTarget);
-    } else {
+  const handleClick = () => {
+    if (variant !== "menu") {
       handleQuickShare();
     }
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const handleQuickShare = async () => {
@@ -134,109 +122,92 @@ const ShareButton = ({
   };
 
   const renderIconButton = () => (
-    <IconButton
+    <Button
       onClick={handleClick}
       disabled={disabled || isLoading || quickShareLoading}
-      size={size}
-      sx={{
-        color: theme.palette.text.secondary,
-        "&:hover": {
-          backgroundColor: theme.palette.action.hover,
-          color: theme.palette.primary.main,
-        },
-      }}
+      variant="ghost"
+      size={size === "small" ? "icon-sm" : "icon"}
+      className="text-muted-foreground hover:text-primary"
     >
-      <ShareIcon fontSize={size === "small" ? "small" : "medium"} />
-    </IconButton>
+      <Share className={cn(size === "small" ? "h-4 w-4" : "h-5 w-5")} />
+    </Button>
   );
 
   const renderButton = () => (
-    <Box
+    <div
       onClick={handleClick}
-      disabled={disabled || isLoading || quickShareLoading}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-        padding: "8px 16px",
-        borderRadius: 1,
-        cursor:
-          disabled || isLoading || quickShareLoading
-            ? "not-allowed"
-            : "pointer",
-        backgroundColor: theme.palette.background.paper,
-        border: `1px solid ${theme.palette.divider}`,
-        opacity: disabled || isLoading || quickShareLoading ? 0.6 : 1,
-        "&:hover": {
-          backgroundColor: theme.palette.action.hover,
-        },
-      }}
+      className={cn(
+        "flex items-center gap-2 rounded-md px-4 py-2",
+        "bg-background border-border border",
+        "transition-colors",
+        disabled || isLoading || quickShareLoading
+          ? "cursor-not-allowed opacity-60"
+          : "hover:bg-accent cursor-pointer",
+      )}
     >
-      <ShareIcon fontSize="small" />
-      <Typography variant="body2">
+      <Share className="h-4 w-4" />
+      <span className="text-sm">
         {isLoading || quickShareLoading ? "Sharing..." : title}
-      </Typography>
-    </Box>
+      </span>
+    </div>
   );
 
   const renderMenu = () => (
-    <>
-      {renderIconButton()}
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        PaperProps={{
-          sx: {
-            minWidth: 200,
-            mt: 1,
-          },
-        }}
-      >
-        <MenuItem
+    <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          disabled={disabled || isLoading || quickShareLoading}
+          variant="ghost"
+          size={size === "small" ? "icon-sm" : "icon"}
+          className="text-muted-foreground hover:text-primary"
+        >
+          <Share className={cn(size === "small" ? "h-4 w-4" : "h-5 w-5")} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[200px]">
+        <DropdownMenuItem
           onClick={handleQuickShare}
           disabled={isLoading || quickShareLoading}
+          className="flex items-start gap-2"
         >
-          <ListItemIcon>
-            <PublicIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Quick Share"
-            secondary="Share publicly with default settings"
-          />
-        </MenuItem>
+          <Globe className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="flex flex-col">
+            <span className="text-sm">Quick Share</span>
+            <span className="text-muted-foreground text-xs">
+              Share publicly with default settings
+            </span>
+          </div>
+        </DropdownMenuItem>
 
-        <MenuItem onClick={handleAdvancedShare}>
-          <ListItemIcon>
-            <SettingsIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Advanced Share"
-            secondary="Customize sharing options"
-          />
-        </MenuItem>
+        <DropdownMenuItem
+          onClick={handleAdvancedShare}
+          className="flex items-start gap-2"
+        >
+          <Settings className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="flex flex-col">
+            <span className="text-sm">Advanced Share</span>
+            <span className="text-muted-foreground text-xs">
+              Customize sharing options
+            </span>
+          </div>
+        </DropdownMenuItem>
 
-        <Divider />
+        <DropdownMenuSeparator />
 
-        <MenuItem onClick={handleCopyLink}>
-          <ListItemIcon>
-            <CopyIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Copy Page Link"
-            secondary="Copy current page URL"
-          />
-        </MenuItem>
-      </Menu>
-    </>
+        <DropdownMenuItem
+          onClick={handleCopyLink}
+          className="flex items-start gap-2"
+        >
+          <Copy className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="flex flex-col">
+            <span className="text-sm">Copy Page Link</span>
+            <span className="text-muted-foreground text-xs">
+              Copy current page URL
+            </span>
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 
   return (

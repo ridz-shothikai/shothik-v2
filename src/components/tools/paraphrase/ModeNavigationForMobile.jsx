@@ -1,5 +1,6 @@
-import { AcUnit } from "@mui/icons-material";
-import { Button, Stack } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Snowflake } from "lucide-react";
 import { useState } from "react";
 import MobileFreezeModal from "./MobileFreezeModal";
 import ModeModal from "./ModeModal";
@@ -16,35 +17,27 @@ const ModeNavigationForMobile = ({
   const [showMoModeModal, setShowModeModal] = useState(false);
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      spacing={2}
-      justifyContent="center"
-      sx={{ paddingTop: 1.5, paddingBottom: 1 }}
+    <div
+      className={cn(
+        "flex flex-row items-center justify-center gap-2 pt-6 pb-4",
+      )}
     >
       <Button
         variant="outlined"
-        size="medium"
-        color="primary"
+        size="default"
         onClick={() => setShowModeModal(true)}
         disabled={isLoading}
-        sx={{
-          textTransform: "none",
-          mr: 2,
-          px: 3,
-          borderRadius: 1,
-        }}
+        className="mr-4 rounded-md px-6"
       >
         {selectedMode || "Modes"}
       </Button>
       <Button
+        variant="outlined"
         onClick={() => setShowFreezeModal(true)}
         disabled={!userPackage || userPackage === "free"}
-        sx={{ textAlign: "right" }}
-        startIcon={<AcUnit />}
-        variant="outlined"
+        className="text-right"
       >
+        <Snowflake className="mr-2 size-4" />
         Freeze Words
       </Button>
 
@@ -64,7 +57,7 @@ const ModeNavigationForMobile = ({
         frozenWords={frozenWords}
         userPackage={userPackage}
       />
-    </Stack>
+    </div>
   );
 };
 

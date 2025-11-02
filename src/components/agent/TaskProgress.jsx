@@ -1,17 +1,5 @@
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { cn } from "@/lib/utils";
+import { CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 export default function TaskProgress({ taskProgress }) {
@@ -24,91 +12,61 @@ export default function TaskProgress({ taskProgress }) {
   const taskDone = taskProgress.filter((item) => item?.status === "success");
 
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        bottom: 16,
-        right: 16,
-        left: 16,
-      }}
-    >
-      <Paper
-        sx={{
-          px: 2,
-          py: expanded ? 2 : 0.5,
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 2,
-        }}
+    <div className="absolute right-4 bottom-4 left-4">
+      <div
+        className={cn(
+          "border-border bg-card text-card-foreground rounded-lg border px-4 shadow-sm",
+          expanded ? "py-4" : "py-1",
+        )}
       >
         {expanded ? (
           <>
-            <Typography variant="subtitle1" fontWeight="bold" mb={1}>
-              Task progress
-            </Typography>
-            <List dense>
+            <h3 className="mb-2 text-base font-bold">Task progress</h3>
+            <div className="space-y-1">
               {taskProgress.map((task, index) => (
-                <ListItem key={index}>
-                  <ListItemIcon>
-                    <CheckCircleIcon
-                      color={
-                        task?.status === "success" ? "success" : "disabled"
-                      }
-                      fontSize="small"
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    sx={{
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                    }}
-                    primary={task?.name}
+                <div key={index} className="flex min-h-0 items-center gap-3">
+                  <CheckCircle2
+                    className={cn(
+                      "shrink-0",
+                      task?.status === "success"
+                        ? "text-primary"
+                        : "text-muted-foreground",
+                    )}
+                    size={20}
                   />
-                </ListItem>
+                  <span className="overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                    {task?.name}
+                  </span>
+                </div>
               ))}
-            </List>
+            </div>
 
-            <IconButton
-              sx={{
-                position: "absolute",
-                right: 10,
-                bottom: 10,
-              }}
+            <button
+              className="hover:bg-accent absolute right-2 bottom-2 inline-flex items-center justify-center rounded-md p-1 transition-colors outline-none"
               onClick={toggleExpanded}
-              color="inherit"
-              size="small"
             >
-              {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
+              {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
           </>
         ) : (
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-              }}
-              variant="body2"
-            >
+          <div className="flex items-center justify-between">
+            <span className="overflow-hidden text-sm text-ellipsis whitespace-nowrap">
               {taskProgress[taskProgress.length - 1]?.name}
-            </Typography>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <Typography variant="caption">
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground text-xs">
                 {taskDone.length}/{taskProgress.length}
-              </Typography>
-              <IconButton onClick={toggleExpanded} color="inherit" size="small">
-                {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </IconButton>
-            </Stack>
-          </Stack>
+              </span>
+              <button
+                className="hover:bg-accent inline-flex items-center justify-center rounded-md p-1 transition-colors outline-none"
+                onClick={toggleExpanded}
+              >
+                {expanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              </button>
+            </div>
+          </div>
         )}
-      </Paper>
-    </Box>
+      </div>
+    </div>
   );
 }

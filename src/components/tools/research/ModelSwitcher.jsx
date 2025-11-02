@@ -1,13 +1,14 @@
-import { ArrowDropDown } from "@mui/icons-material";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
-  Avatar,
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 const ModelSwitcher = ({
@@ -20,11 +21,9 @@ const ModelSwitcher = ({
   const selectedModelData = models.find(
     (model) => model.value === selectedModel,
   );
-  const [anchorEl, setAnchorEl] = useState(null);
-  const isOpen = Boolean(anchorEl);
+  const [open, setOpen] = useState(false);
 
-  const handleOpen = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const handleClose = () => setOpen(false);
 
   // Check if there are attachments in current or previous messages
   const hasAttachments = attachments.length > 0;
@@ -45,98 +44,66 @@ const ModelSwitcher = ({
   }, {});
 
   return (
-    <>
-      <IconButton
-        color="text.secondary"
-        aria-label="Model"
-        sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-        onClick={handleOpen}
-      >
-        {selectedModelData && (
-          <Avatar
-            src={selectedModelData.icon}
-            alt={selectedModelData.label}
-            sx={{ width: 24, height: 24 }}
-          />
-        )}
-        <ArrowDropDown fontSize="small" />
-      </IconButton>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Model"
+          className={cn(
+            "bg-primary/5 text-muted-foreground inline-flex items-center justify-center gap-1 rounded-md p-1 text-xs transition-colors",
+            "hover:bg-primary/10 focus:ring-ring focus:ring-2 focus:ring-offset-2 focus:outline-none",
+          )}
+        >
+          {selectedModelData && (
+            <Avatar className="size-6">
+              <AvatarImage
+                src={selectedModelData.icon}
+                alt={selectedModelData.label}
+              />
+            </Avatar>
+          )}
+          <ChevronDown className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={isOpen}
-        onClose={handleClose}
-        PaperProps={{
-          sx: {
-            minWidth: 220,
-            p: 1,
-            borderRadius: "8px",
-            boxShadow: 3,
-            border: "1px solid",
-            borderColor: "divider",
-            bgcolor: "background.paper",
-          },
-        }}
+      <DropdownMenuContent
+        align="start"
+        className="min-w-[220px] rounded-lg border p-1 shadow-md"
       >
         {Object.entries(groupedModels).map(
           ([category, categoryModels], categoryIndex) => (
             <div key={category}>
-              {categoryIndex > 0 && <Divider sx={{ my: 1 }} />}
-              <MenuItem
-                disabled
-                sx={{ fontSize: "11px", fontWeight: "medium", opacity: 0.6 }}
-              >
+              {categoryIndex > 0 && <DropdownMenuSeparator className="my-1" />}
+              <DropdownMenuLabel className="px-2 py-1.5 text-[11px] font-medium opacity-60">
                 {category}
-              </MenuItem>
+              </DropdownMenuLabel>
               {categoryModels.map((model) => (
-                <MenuItem
+                <DropdownMenuItem
                   key={model.value}
                   onClick={() => {
                     setSelectedModel(model.value.trim());
                     handleClose();
                   }}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    borderRadius: "6px",
-                    transition: "all 0.2s",
-                    "&:hover": { bgcolor: "action.hover" },
-                  }}
+                  className="flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors"
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: "unset",
-                      p: "5px",
-                      borderRadius: "6px",
-                      bgcolor: "divider",
-                    }}
-                  >
-                    <Avatar
-                      src={model.icon}
-                      alt={model.label}
-                      sx={{ width: 24, height: 24 }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={model.label}
-                    secondary={model.description}
-                    primaryTypographyProps={{
-                      fontSize: "14px",
-                      fontWeight: "medium",
-                    }}
-                    secondaryTypographyProps={{
-                      fontSize: "10px",
-                      opacity: 0.8,
-                    }}
-                  />
-                </MenuItem>
+                  <div className="bg-muted flex size-6 items-center justify-center rounded-md p-1">
+                    <Avatar className="size-6">
+                      <AvatarImage src={model.icon} alt={model.label} />
+                    </Avatar>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium">{model.label}</span>
+                    <span className="text-[10px] opacity-80">
+                      {model.description}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
               ))}
             </div>
           ),
         )}
-      </Menu>
-    </>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

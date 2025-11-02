@@ -1,72 +1,40 @@
-import {
-  Box,
-  Container,
-  Stack,
-  Switch,
-  Typography,
-  Skeleton,
-  Card,
-} from "@mui/material";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 const PricingPlanCardSkeleton = () => (
   <Card
-    sx={{
-      p: 4,
-      boxShadow: (theme) => theme.customShadows.z24,
-      bgcolor: "background.default",
-      position: "relative",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      gap: 0,
-      maxWidth: { xs: "450px", md: "550px" },
-      marginInline: "auto",
-    }}
+    className={cn(
+      "bg-background relative mx-auto flex w-full max-w-[450px] flex-col justify-between gap-0 p-8 shadow-lg",
+      "md:max-w-[550px]",
+    )}
   >
-    <Box>
+    <div className="flex flex-col">
       {/* Price skeleton */}
-      <Stack spacing={1} direction="row">
-        <Skeleton
-          variant="rectangular"
-          width={80}
-          height={40}
-          sx={{ borderRadius: 1 }}
-        />
-        <Skeleton variant="text" width={60} height={20} />
-      </Stack>
+      <div className="flex flex-row gap-2">
+        <Skeleton className="h-10 w-20 rounded" />
+        <Skeleton className="h-5 w-[60px]" />
+      </div>
 
       {/* Title skeleton */}
-      <Skeleton variant="text" width={120} height={32} sx={{ mt: 1 }} />
+      <Skeleton className="mt-2 h-8 w-[120px]" />
 
       {/* Subtitle skeleton */}
-      <Skeleton variant="text" width={100} height={16} sx={{ mt: 0.5 }} />
+      <Skeleton className="mt-1 h-4 w-[100px]" />
 
       {/* Features list skeleton */}
-      <Stack spacing={2.25} sx={{ p: 0, my: 3 }}>
-        <Stack component="ul" spacing={2}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Stack
-              key={index}
-              component="li"
-              direction="row"
-              alignItems="flex-start"
-              spacing={1}
-            >
-              <Skeleton variant="circular" width={24} height={24} />
-              <Skeleton variant="text" width={200} height={16} />
-            </Stack>
-          ))}
-        </Stack>
-      </Stack>
-    </Box>
+      <ul className="my-6 flex flex-col gap-4 p-0">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <li key={index} className="flex flex-row items-start gap-2">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-4 w-[200px]" />
+          </li>
+        ))}
+      </ul>
+    </div>
 
     {/* Button skeleton */}
-    <Skeleton
-      variant="rectangular"
-      width="100%"
-      height={48}
-      sx={{ borderRadius: 1 }}
-    />
+    <Skeleton className="h-12 w-full rounded" />
   </Card>
 );
 

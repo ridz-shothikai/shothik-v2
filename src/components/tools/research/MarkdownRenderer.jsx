@@ -1,16 +1,14 @@
-import { useGetResearchMetaDataQuery } from "@/redux/api/tools/toolsApi";
-import { Check, ContentCopy } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
-  Box,
-  CircularProgress,
-  IconButton,
-  Link,
-  List,
-  ListItem,
-  Paper,
-  Popover,
-  Typography,
-} from "@mui/material";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { useGetResearchMetaDataQuery } from "@/redux/api/tools/toolsApi";
+import { Check, Copy } from "lucide-react";
 import Marked from "marked-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
@@ -34,176 +32,77 @@ const LinkPreview = ({ href }) => {
 
   if (isLoading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 4,
-        }}
-      >
-        <CircularProgress size={20} sx={{ color: "text.secondary" }} />
-      </Box>
+      <div className="flex items-center justify-center p-4">
+        <Spinner className="text-muted-foreground h-5 w-5" />
+      </div>
     );
   }
 
   const domain = new URL(href).hostname;
 
   return (
-    <Paper
-      elevation={4}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "background.paper",
-        borderRadius: 2,
-        overflow: "hidden",
-      }}
-    >
+    <Card className="flex flex-col overflow-hidden">
       {/* Header Section */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          p: 2,
-          bgcolor: "neutral.100",
-          dark: { bgcolor: "neutral.700" },
-        }}
-      >
+      <div className="bg-muted flex items-center gap-2 p-2">
         <Image
           src={`https://www.google.com/s2/favicons?domain=${domain}&sz=256`}
           alt="Favicon"
           width={20}
           height={20}
-          style={{ borderRadius: 4 }}
+          className="rounded"
         />
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          color="text.secondary"
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
+        <p className="text-muted-foreground overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap">
           {domain}
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {/* Content Section */}
-      <Box sx={{ px: 2, pb: 2 }}>
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          color="text.primary"
-          sx={{
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
+      <div className="px-2 pb-2">
+        <h6 className="text-foreground line-clamp-2 text-base font-semibold">
           {metadata?.title || "Untitled"}
-        </Typography>
+        </h6>
 
         {metadata?.description && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mt: 1,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
+          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
             {metadata.description}
-          </Typography>
+          </p>
         )}
-      </Box>
-    </Paper>
+      </div>
+    </Card>
   );
 };
 
 const RenderHoverCard = ({ href, text, isCitation = false }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleMouseEnter = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMouseLeave = () => {
-    setAnchorEl(null);
-  };
   return (
-    <Box component="span" display="inline-block">
+    <span className="inline-block">
       {/* Link as Trigger */}
-      <Link
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        sx={{
-          cursor: isCitation ? "help" : "pointer",
-          fontSize: isCitation ? "0.875rem" : "inherit",
-          margin: 0,
-          backgroundColor: isCitation ? "divider" : "transparent",
-          borderRadius: "9999px",
-          textDecoration: "none",
-          color: isCitation ? "text.secondary" : "text.secondary",
-          width: "20px",
-          height: "20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          "&:hover": {
-            textDecoration: "none",
-          },
-          "&::-webkit-any-link": {
-            textDecoration: "none",
-          },
-        }}
-      >
-        {text}
-      </Link>
-
-      {/* Popover for Hover Effect */}
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleMouseLeave}
-        anchorOrigin={{ vertical: "top", horizontal: "left" }}
-        transformOrigin={{ vertical: "bottom", horizontal: "left" }}
-        disableRestoreFocus
-        sx={{
-          pointerEvents: "none",
-        }}
-        slotProps={{
-          paper: {
-            onMouseEnter: handleMouseEnter,
-            onMouseLeave: handleMouseLeave,
-            sx: { width: 320, p: 0, boxShadow: 3 },
-          },
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            width: "100%",
-            p: 0,
-            borderwidth: "1px",
-            borderStyle: "solid",
-            borderColor: "divider",
-          }}
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              "inline-flex items-center justify-center no-underline",
+              isCitation
+                ? "bg-border text-muted-foreground h-5 w-5 cursor-help rounded-full text-sm"
+                : "text-muted-foreground cursor-pointer",
+            )}
+          >
+            {text}
+          </a>
+        </HoverCardTrigger>
+        <HoverCardContent
+          side="top"
+          align="start"
+          className="pointer-events-auto w-80 p-0"
         >
-          <LinkPreview href={href} />
-        </Paper>
-      </Popover>
-    </Box>
+          <div className="border-border w-full border p-0">
+            <LinkPreview href={href} />
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    </span>
   );
 };
 
@@ -235,69 +134,32 @@ const MarkdownRenderer = ({ content }) => {
     }, [children]);
 
     return (
-      <Box sx={{ my: 0.5 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateRows: "auto 1fr",
-            borderRadius: "8px",
-            border: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingX: 3,
-              paddingY: 2,
-              borderBottom: "1px solid",
-              borderColor: "divider",
-            }}
-          >
-            <Typography
-              sx={{
-                paddingX: 2,
-                paddingY: 0.5,
-                fontSize: "0.75rem",
-                fontWeight: "500",
-                borderRadius: "0.375rem",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
+      <div className="my-0.5">
+        <div className="border-border grid grid-rows-[auto_1fr] rounded-lg border">
+          <div className="border-border flex items-center justify-between border-b px-3 py-2">
+            <span className="border-border rounded-md border px-2 py-0.5 text-xs font-medium">
               {language || "text"}
-            </Typography>
-            <IconButton
+            </span>
+            <Button
               onClick={handleCopy}
-              color="primary"
-              sx={{ bgcolor: "rgba(73, 149, 87, 0.04)" }}
+              variant="ghost"
+              size="sm"
+              className="bg-primary/5 h-8 w-8 p-0"
               aria-label={isCopied ? "Copied!" : "Copy code"}
             >
-              {isCopied ? <Check /> : <ContentCopy />}
-            </IconButton>
-          </Box>
+              {isCopied ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
 
-          <Box
-            sx={{
-              overflow: "auto",
-              "&::-webkit-scrollbar": {
-                height: "4px !important",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#888",
-                borderRadius: "2px",
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: "#f1f1f1",
-              },
-            }}
-          >
+          <div className="[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-track]:bg-muted overflow-auto [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:rounded-sm">
             {children}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -336,9 +198,9 @@ const MarkdownRenderer = ({ content }) => {
     },
     paragraph(children) {
       return (
-        <Typography key={this.elementId}>
+        <p key={this.elementId} className="text-foreground">
           {safeRenderChildren(children)}
-        </Typography>
+        </p>
       );
     },
     code(children, language) {
@@ -353,64 +215,47 @@ const MarkdownRenderer = ({ content }) => {
       linkItem += 1;
       // console.log({ linkItem });
       return (
-        <Typography key={this.elementId} component="sup">
+        <sup key={this.elementId}>
           <RenderHoverCard href={href} text={linkItem} isCitation={true} />
-        </Typography>
+        </sup>
       );
     },
     heading(children) {
       return (
-        <Typography key={this.elementId} variant="h4" sx={{ my: 2 }}>
+        <h4 key={this.elementId} className="text-foreground my-2">
           {safeRenderChildren(children)}
-        </Typography>
+        </h4>
       );
     },
     list(children, ordered) {
+      const ListTag = ordered ? "ol" : "ul";
       return (
-        <List
+        <ListTag
           key={this.elementId}
-          component={ordered ? "ol" : "ul"}
-          sx={{
-            listStyleType: ordered ? "decimal" : "disc",
-            pl: 4,
-            color: "text.primary",
-            "& li": { display: "list-item" },
-          }}
+          className={cn(
+            "text-foreground list-inside pl-4",
+            ordered ? "list-decimal" : "list-disc",
+          )}
         >
           {safeRenderChildren(children)}
-        </List>
+        </ListTag>
       );
     },
     listItem(children) {
       return (
-        <ListItem
-          key={this.elementId}
-          sx={{
-            color: "text.primary",
-            display: "list-item",
-            p: 0,
-          }}
-        >
+        <li key={this.elementId} className="text-foreground list-item p-0">
           {safeRenderChildren(children)}
-        </ListItem>
+        </li>
       );
     },
     blockquote(children) {
       return (
-        <Box
+        <blockquote
           key={this.elementId}
-          component="blockquote"
-          sx={{
-            borderLeft: 4,
-            borderColor: "neutral.300",
-            pl: 4,
-            fontStyle: "italic",
-            my: 4,
-            color: "text.secondary",
-          }}
+          className="border-border text-muted-foreground my-4 border-l-4 pl-4 italic"
         >
           {safeRenderChildren(children)}
-        </Box>
+        </blockquote>
       );
     },
   };

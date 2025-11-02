@@ -1,8 +1,8 @@
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
 import DotFlashing from "@/resource/DotFlashing";
-import { Description, Task } from "@mui/icons-material";
-import { Box, Drawer, Stack, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { FileText, ListTodo } from "lucide-react";
 
 const SessionHistoryModal = ({
   open,
@@ -12,92 +12,53 @@ const SessionHistoryModal = ({
   setSessionHistoryId,
 }) => {
   const isMobile = useResponsive("down", "sm");
-  const router = useRouter();
-
   const histories = data?.data;
-  return (
-    <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-      <Box
-        sx={{
-          width: isMobile ? "300px" : "400px",
-          overflowY: "auto",
-          position: "relative",
-        }}
-      >
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          sx={{
-            borderBottom: "1px solid",
-            borderColor: "divider",
-            padding: 1.5,
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            backgroundColor: "Background",
-          }}
-        >
-          <Typography fontSize={18} fontWeight={600}>
-            Session History
-          </Typography>
-        </Stack>
 
-        <Stack paddingX={1.5}>
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent
+        side="right"
+        className={cn(
+          "w-full overflow-y-auto p-0",
+          isMobile ? "sm:w-[300px]" : "sm:w-[400px]",
+        )}
+      >
+        <div className="border-border bg-background sticky top-0 z-10 border-b">
+          <div className="flex items-center justify-center px-6 py-4">
+            <h2 className="text-lg font-semibold">Session History</h2>
+          </div>
+        </div>
+
+        <div className="px-6">
           {isLoading ? (
-            <Box>
+            <div className="py-4">
               <DotFlashing />
-            </Box>
+            </div>
           ) : histories && histories.length ? (
             histories.map((history) => (
-              <Stack
-                flexDirection="row"
-                alignItems="center"
+              <div
+                key={history._id}
                 onClick={() => {
                   setSessionHistoryId(history._id);
                   setOpen(false);
                 }}
-                gap={1}
-                key={history._id}
-                sx={{
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                  paddingY: 1.5,
-                  cursor: "pointer",
-                  ":hover": {
-                    backgroundColor: "divider",
-                  },
-                  width: "100%",
-                }}
+                className="border-border hover:bg-accent flex cursor-pointer items-center gap-2 border-b py-4 transition-colors"
               >
-                <Task sx={{ color: "primary.main" }} fontSize="small" />
-                <Typography
-                  sx={{
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                  }}
-                >
+                <ListTodo className="text-primary size-4" />
+                <p className="overflow-hidden text-ellipsis whitespace-nowrap">
                   {history.messages[0].content.message}
-                </Typography>
-              </Stack>
+                </p>
+              </div>
             ))
           ) : (
-            <Stack
-              flexDirection="row"
-              alignItems="center"
-              justifyContent="center"
-              gap={1}
-              sx={{ height: "calc(100vh - 100px)" }}
-            >
-              <Description sx={{ color: "text.secondary" }} />
-              <Typography sx={{ color: "text.secondary" }}>
-                No history found
-              </Typography>
-            </Stack>
+            <div className="flex h-[calc(100vh-100px)] items-center justify-center gap-2">
+              <FileText className="text-muted-foreground size-4" />
+              <p className="text-muted-foreground">No history found</p>
+            </div>
           )}
-        </Stack>
-      </Box>
-    </Drawer>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 

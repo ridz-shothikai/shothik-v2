@@ -1,7 +1,13 @@
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
-import { ContentCopy, VerticalAlignBottom } from "@mui/icons-material";
-import { IconButton, Stack, Tooltip } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { Copy, Download } from "lucide-react";
 import WordCounter from "../common/WordCounter";
 import { downloadFile } from "../common/downloadfile";
 
@@ -52,30 +58,49 @@ const BottomBar = ({
       //   ) : null
       // }
     >
-      <Stack direction="row" alignItems="center">
+      <div className="flex flex-row items-center">
         {outputContend && (
           <>
-            <Tooltip title="Export" placement="top" arrow>
-              <IconButton
-                onClick={handleDownload}
-                aria-label="download"
-                size={isMobile ? "small" : "large"}
-              >
-                <VerticalAlignBottom sx={{ fontWeight: 600 }} />
-              </IconButton>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleDownload}
+                  aria-label="download"
+                  variant="ghost"
+                  size={isMobile ? "icon-sm" : "icon"}
+                  className="rounded-[5px]"
+                >
+                  <Download
+                    className={cn(
+                      "font-semibold",
+                      isMobile ? "size-4" : "size-5",
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Export</p>
+              </TooltipContent>
             </Tooltip>
-            <Tooltip title="Copy Full Text" placement="top" arrow>
-              <IconButton
-                onClick={handleCopy}
-                aria-label="copy"
-                size={isMobile ? "small" : "large"}
-              >
-                <ContentCopy />
-              </IconButton>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleCopy}
+                  aria-label="copy"
+                  variant="ghost"
+                  size={isMobile ? "icon-sm" : "icon"}
+                  className="rounded-[5px]"
+                >
+                  <Copy className={cn(isMobile ? "size-4" : "size-5")} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Copy Full Text</p>
+              </TooltipContent>
             </Tooltip>
           </>
         )}
-      </Stack>
+      </div>
     </WordCounter>
   );
 };

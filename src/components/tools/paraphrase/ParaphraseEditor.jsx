@@ -1,8 +1,9 @@
 import { useOutsideClick } from "@/hooks/useOutsideClick";
-import { Box, Fade, Popper, Snackbar } from "@mui/material";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContentEditable from "react-contenteditable";
+import { toast } from "sonner";
 import style from "./editor.module.css";
 
 const ParaphraseEditor = ({
@@ -15,22 +16,16 @@ const ParaphraseEditor = ({
   updateHtml,
   isMobile,
 }) => {
-  const [isSnackbar, setSnackbar] = useState(false);
-  const [wordFreeze, setWordFreeze] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const [word, setWord] = useState("");
+  const [popperPosition, setPopperPosition] = useState({ top: 0, left: 0 });
   const nodeSelect = useRef(null);
   const router = useRouter();
 
   const handleClose = () => {
     setOpen(false);
     setAnchorEl(null);
-  };
-
-  const wordFreezeClose = () => {
-    setSnackbar(false);
-    setWordFreeze("");
   };
 
   function findInstances(str, word) {
@@ -94,8 +89,7 @@ const ParaphraseEditor = ({
         word,
       );
       setHtml(styledHtml);
-      setWordFreeze("Word Unfreeze");
-      setSnackbar(true);
+      toast("Word Unfreeze");
     } else {
       setFreezeWords((prevState) => [...prevState, word.trim()]);
       const styledHtml = html.replaceAll(
@@ -103,8 +97,7 @@ const ParaphraseEditor = ({
         `<span style="color:#006ACC; cursor: pointer; display: inline" class="freeze-word-text">${word}</span>`,
       );
       setHtml(styledHtml);
-      setWordFreeze("Word Freeze");
-      setSnackbar(true);
+      toast("Word Freeze");
     }
     handleClose();
   };
@@ -133,8 +126,16 @@ const ParaphraseEditor = ({
           return selection.getRangeAt(0).getBoundingClientRect();
         };
 
-        setOpen(true);
-        setAnchorEl({ getBoundingClientRect });
+        const rect = getBoundingClientRect();
+        if (rect) {
+          const containerRect = nodeSelect.current.getBoundingClientRect();
+          setPopperPosition({
+            top: rect.top - containerRect.top - 40,
+            left: rect.left - containerRect.left + rect.width / 2,
+          });
+          setOpen(true);
+          setAnchorEl({ getBoundingClientRect });
+        }
       } else {
         handleClose();
       }
@@ -164,7 +165,6 @@ const ParaphraseEditor = ({
     setHtml(updatedHtml);
   };
 
-  const id = open ? "virtual-element-popper" : undefined;
   let instances = findInstances(html, word);
 
   const paidUser =
@@ -173,31 +173,14 @@ const ParaphraseEditor = ({
     user?.package === "unlimited";
 
   return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        cursor: "text",
-        position: "relative",
-        overflowY: "auto",
-      }}
+    <div
+      className="relative flex-grow cursor-text overflow-y-auto"
       onClick={() => nodeSelect.current?.focus()}
     >
-      <div
-        style={{
-          position: "relative",
-        }}
-      >
+      <div className="relative">
         {/* Placeholder text */}
         {!html && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              color: "#888",
-              pointerEvents: "none",
-            }}
-          >
+          <div className="text-muted-foreground pointer-events-none absolute top-0 left-0">
             Please enter text...
           </div>
         )}
@@ -213,55 +196,37 @@ const ParaphraseEditor = ({
         />
       </div>
 
-      <Popper
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        transition
-        placement="top"
-      >
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Box
-              ref={ref}
-              onClick={paidUser ? toggleFreeze : () => router.push("/pricing")}
-              sx={{
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "background.paper",
-                p: 0.8,
-                bgcolor: "background.gray",
-                borderRadius: 0.5,
-                cursor: "pointer",
-                "&:hover": {
-                  color: "primary.dark",
-                },
-              }}
-            >
-              {`${
-                freezeWords.includes(word)
-                  ? "Unfreeze"
-                  : paidUser
-                    ? "Freeze"
-                    : "Please upgrade to Freeze"
-              }${instances > 1 ? ` all ${instances} instances` : ""}`}
-            </Box>
-          </Fade>
-        )}
-      </Popper>
-      <Snackbar
-        sx={{
-          zIndex: { xl: 9999, lg: 999 },
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-        }}
-        open={isSnackbar}
-        autoHideDuration={2500}
-        onClose={wordFreezeClose}
-        message={wordFreeze}
-      />
-    </Box>
+      {open && (
+        <div
+          className={cn(
+            "absolute z-50 transition-opacity duration-300 ease-in-out",
+            open ? "opacity-100" : "opacity-0",
+          )}
+          style={{
+            top: `${popperPosition.top}px`,
+            left: `${popperPosition.left}px`,
+            transform: "translate(-50%, -100%)",
+          }}
+        >
+          <div
+            ref={ref}
+            onClick={paidUser ? toggleFreeze : () => router.push("/pricing")}
+            className={cn(
+              "text-popover-foreground bg-popover cursor-pointer rounded-md px-3 py-2 text-sm font-semibold",
+              "hover:text-primary border shadow-md transition-colors",
+            )}
+          >
+            {`${
+              freezeWords.includes(word)
+                ? "Unfreeze"
+                : paidUser
+                  ? "Freeze"
+                  : "Please upgrade to Freeze"
+            }${instances > 1 ? ` all ${instances} instances` : ""}`}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -2,6 +2,8 @@
 
 // components/ChatArea.tsx
 import InteractiveChatMessage from "@/../components/agents/shared/InteractiveChatMessage";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { CustomSlideshowIcon } from "@/components/ui/CustomSlideshowIcon";
 import useResponsive from "@/hooks/useResponsive";
 import {
@@ -9,30 +11,12 @@ import {
   formatTimestamp,
   useStreamingLogs,
 } from "@/hooks/useStreamingLogs";
-import PaletteIcon from "@mui/icons-material/Palette";
-import PersonIcon from "@mui/icons-material/Person";
-import SearchIcon from "@mui/icons-material/Search";
-import SlideshowIcon from "@mui/icons-material/Slideshow";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import {
-  Card,
-  CardContent,
-  Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-} from "@mui/material";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { cn } from "@/lib/utils";
+import { Bot, Palette, Presentation, Search, User } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TypingAnimation from "../common/TypingAnimation";
 import { FooterCta } from "../sheet/SheetAgentPage";
 import InputArea from "./InputAreas";
-
-const PRIMARY_GREEN = "#07B37A";
-const USER_MESSAGE_COLOR = "#1976d2";
 
 // UTILS function
 // Parse tool outputs from markdown code blocks
@@ -54,61 +38,40 @@ const parseToolOutputs = (text) => {
 
 // Component for Tool Outputs logs
 const ToolOutputsLog = memo(({ toolOutputs, statusText }) => (
-  <Card
-    variant="outlined"
-    sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
-  >
-    <CardContent>
-      <Typography
-        variant="subtitle2"
-        sx={{ mb: 1, fontWeight: "bold", color: "text.secondary" }}
-      >
+  <Card className={cn("border-border mt-1 rounded-lg")}>
+    <CardContent className="p-4">
+      <h3 className="text-muted-foreground mb-1 text-sm font-semibold">
         Tool Outputs
-      </Typography>
+      </h3>
       {toolOutputs && (
-        <Box sx={{ mb: 2 }}>
-          <Typography
-            variant="subtitle1"
-            gutterBottom
-            sx={{ display: "flex", alignItems: "center", gap: 1 }}
-          >
-            <PaletteIcon color="action" /> Theme Configuration
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+        <div className="mb-2">
+          <div className="mb-2 flex items-center gap-1">
+            <Palette className="text-muted-foreground h-4 w-4" />
+            <span className="text-base font-medium">Theme Configuration</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
             {Object.entries(toolOutputs).map(([key, value]) => (
-              <Box
-                key={key}
-                sx={{ display: "flex", alignItems: "center", gap: 1 }}
-              >
+              <div key={key} className="flex items-center gap-1">
                 {key.includes("color") && (
-                  <Box
-                    sx={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: "4px",
-                      bgcolor: value,
-                      border: "1px solid #ccc",
-                    }}
+                  <div
+                    className="border-border h-4 w-4 rounded border"
+                    style={{ backgroundColor: value }}
                   />
                 )}
-                <Typography variant="caption">{`${key.replace(
+                <span className="text-muted-foreground text-xs">{`${key.replace(
                   /_/g,
                   " ",
-                )}: `}</Typography>
-                <Typography variant="caption" sx={{ fontWeight: "bold" }}>
-                  {value}
-                </Typography>
-              </Box>
+                )}: `}</span>
+                <span className="text-xs font-bold">{value}</span>
+              </div>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
       {statusText && (
-        <Box sx={{ mt: 2, p: 2, bgcolor: "#f8f9fa", borderRadius: 1 }}>
-          <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-            {statusText}
-          </Typography>
-        </Box>
+        <div className="bg-muted mt-2 rounded p-2">
+          <p className="text-sm whitespace-pre-wrap">{statusText}</p>
+        </div>
       )}
     </CardContent>
   </Card>
@@ -117,29 +80,19 @@ ToolOutputsLog.displayName = "ToolOutputsLog";
 
 // Component for Keyword Research logs
 const KeywordResearchLog = memo(({ queries }) => (
-  <Card
-    variant="outlined"
-    sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
-  >
-    <CardContent>
-      <Typography
-        variant="subtitle2"
-        sx={{ mb: 1, fontWeight: "bold", color: "text.secondary" }}
-      >
+  <Card className={cn("border-border mt-1 rounded-lg")}>
+    <CardContent className="p-4">
+      <h3 className="text-muted-foreground mb-1 text-sm font-semibold">
         Search Queries
-      </Typography>
-      <List dense>
+      </h3>
+      <ul className="space-y-1">
         {queries.map((query, i) => (
-          <ListItem key={i} sx={{ py: 0.5 }}>
-            <ListItemIcon sx={{ minWidth: 32 }}>
-              <SearchIcon fontSize="small" color="action" />
-            </ListItemIcon>
-            <ListItemText
-              primary={<Typography variant="body2">{query}</Typography>}
-            />
-          </ListItem>
+          <li key={i} className="flex items-center gap-2 py-0.5">
+            <Search className="text-muted-foreground h-4 w-4 shrink-0" />
+            <span className="text-sm">{query}</span>
+          </li>
         ))}
-      </List>
+      </ul>
     </CardContent>
   </Card>
 ));
@@ -163,17 +116,12 @@ const isNonEmptyArray = (value) => Array.isArray(value) && value.length > 0;
 const PlanningLog = memo(({ plan }) => {
   if (!isNonEmptyObject(plan)) {
     return (
-      <Card
-        variant="outlined"
-        sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
-      >
-        <CardContent>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-            Presentation Plan
-          </Typography>
-          <Typography variant="body2" color="error">
+      <Card className={cn("border-border mt-1 rounded-lg")}>
+        <CardContent className="p-4">
+          <h2 className="mb-2 text-lg font-bold">Presentation Plan</h2>
+          <p className="text-destructive text-sm">
             Empty presentation plan data.
-          </Typography>
+          </p>
         </CardContent>
       </Card>
     );
@@ -195,24 +143,16 @@ const PlanningLog = memo(({ plan }) => {
     );
 
   return (
-    <Card
-      variant="outlined"
-      sx={{ mt: 1, borderColor: "#e0e0e0", borderRadius: 2 }}
-    >
-      <CardContent>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-          Presentation Plan
-        </Typography>
+    <Card className={cn("border-border mt-1 rounded-lg")}>
+      <CardContent className="p-4">
+        <h2 className="mb-2 text-lg font-bold">Presentation Plan</h2>
         {hasDirectThemeProperties && (
-          <Box sx={{ mb: 2 }}>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <PaletteIcon color="action" /> Global Theme
-            </Typography>
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+          <div className="mb-2">
+            <div className="mb-2 flex items-center gap-1">
+              <Palette className="text-muted-foreground h-4 w-4" />
+              <span className="text-base font-medium">Global Theme</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
               {Object.entries(plan.global_theme).map(([key, value]) => {
                 // Convert value to string safely
                 const displayValue =
@@ -223,86 +163,60 @@ const PlanningLog = memo(({ plan }) => {
                       : String(value);
 
                 return (
-                  <Box
-                    key={key}
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
+                  <div key={key} className="flex items-center gap-1">
                     {key.includes("color") &&
                       typeof value === "string" &&
                       value.startsWith("#") && (
-                        <Box
-                          sx={{
-                            width: 16,
-                            height: 16,
-                            borderRadius: "4px",
-                            bgcolor: value,
-                            border: "1px solid #ccc",
-                          }}
+                        <div
+                          className="border-border h-4 w-4 rounded border"
+                          style={{ backgroundColor: value }}
                         />
                       )}
-                    <Typography variant="caption">{`${key.replace(
-                      /_/g,
-                      " ",
-                    )}: `}</Typography>
-                    <Typography variant="caption" sx={{ fontWeight: "bold" }}>
-                      {displayValue}
-                    </Typography>
-                  </Box>
+                    <span className="text-xs">{`${key.replace(/_/g, " ")}: `}</span>
+                    <span className="text-xs font-bold">{displayValue}</span>
+                  </div>
                 );
               })}
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
         {isNonEmptyArray(plan.slides) && (
-          <Box>
-            <Typography
-              variant="subtitle1"
-              gutterBottom
-              sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}
-            >
-              <SlideshowIcon color="action" /> Planned Slides
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <div>
+            <div className="mt-2 mb-2 flex items-center gap-1">
+              <Presentation className="text-muted-foreground h-4 w-4" />
+              <span className="text-base font-medium">Planned Slides</span>
+            </div>
+            <div className="flex flex-col gap-2">
               {plan.slides.map((slide, i) => (
-                <Card key={i} variant="outlined" sx={{ borderColor: "#eee" }}>
-                  <CardContent>
-                    <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                <Card key={i} className="border-border">
+                  <CardContent className="p-4">
+                    <p className="text-base font-semibold">
                       {isNonEmptyObject(slide.slide_data) &&
                       isString(slide.slide_data.headline)
                         ? slide.slide_data.headline
                         : "Untitled Slide"}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mb: 1 }}
-                    >
+                    </p>
+                    <p className="text-muted-foreground mb-1 text-sm">
                       {isNonEmptyObject(slide.slide_data) &&
                       isString(slide.slide_data.body_content)
-                        ? `${slide.slide_data.body_content.substring(
-                            0,
-                            100,
-                          )}...`
+                        ? `${slide.slide_data.body_content.substring(0, 100)}...`
                         : "No content available"}
-                    </Typography>
-                    <Chip
-                      label={
-                        isString(slide.slide_type)
-                          ? slide.slide_type
-                          : "Unknown"
-                      }
-                      size="small"
-                    />
+                    </p>
+                    <Badge variant="outline" className="text-xs">
+                      {isString(slide.slide_type)
+                        ? slide.slide_type
+                        : "Unknown"}
+                    </Badge>
                   </CardContent>
                 </Card>
               ))}
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
         {!hasDirectThemeProperties && !plan.slides && (
-          <Typography variant="body2" color="text.secondary">
+          <p className="text-muted-foreground text-sm">
             No valid theme or slides data available.
-          </Typography>
+          </p>
         )}
       </CardContent>
     </Card>
@@ -312,247 +226,102 @@ PlanningLog.displayName = "PlanningLog";
 
 // Component for rendering HTML content in a sandboxed iframe
 const HtmlContentLog = memo(({ htmlString }) => (
-  <Box
-    sx={{
-      mt: 1,
-      height: "400px",
-      resize: "vertical",
-      overflow: "auto",
-      border: "1px solid #e0e0e0",
-      borderRadius: "4px",
-    }}
-  >
+  <div className="border-border mt-1 h-[400px] resize-y overflow-auto rounded border">
     <iframe
       srcDoc={htmlString}
       title="Generated Slide Preview"
-      sandbox="allow-scripts" // Allows scripts to run but restricts other capabilities
-      style={{ width: "100%", height: "100%", border: "none" }}
+      sandbox="allow-scripts"
+      className="h-full w-full border-0"
     />
-  </Box>
+  </div>
 ));
 HtmlContentLog.displayName = "HtmlContentLog";
 
 // Generic fallback for unknown object structures
 const JsonLog = memo(({ data }) => (
-  <Box
-    sx={{
-      mt: 1,
-      p: 2,
-      bgcolor: "#f5f5f5",
-      borderRadius: 2,
-      maxHeight: 300,
-      overflowY: "auto",
-    }}
-  >
-    <pre
-      style={{
-        margin: 0,
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-all",
-        fontSize: "0.8rem",
-      }}
-    >
+  <div className="bg-muted mt-1 max-h-[300px] overflow-y-auto rounded-lg p-2">
+    <pre className="m-0 text-xs break-all whitespace-pre-wrap">
       {JSON.stringify(data, null, 2)}
     </pre>
-  </Box>
+  </div>
 ));
 JsonLog.displayName = "JsonLog";
 
 // --- NEW: User Message Component ---
 const UserMessage = memo(({ message, timestamp }) => (
-  <Box sx={{ mb: 3, display: "flex", justifyContent: "flex-end" }}>
-    <Box sx={{ maxWidth: "80%" }}>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          mb: 1,
-          justifyContent: "flex-end",
-          opacity: 0.7,
-        }}
-      >
-        <Typography
-          variant="caption"
-          color="text.disabled"
-          sx={{ fontSize: "0.7rem" }}
-        >
+  <div className="mb-3 flex justify-end">
+    <div className="max-w-[80%]">
+      <div className="mb-1 flex items-center justify-end gap-1 opacity-70">
+        <span className="text-muted-foreground text-[0.7rem]">
           {formatTimestamp(timestamp)}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-        >
+        </span>
+        <span className="text-muted-foreground text-[0.75rem] font-medium">
           You
-        </Typography>
-        <Box
-          sx={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            bgcolor: USER_MESSAGE_COLOR,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <PersonIcon sx={{ fontSize: 12, color: "white" }} />
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          bgcolor: USER_MESSAGE_COLOR,
-          color: "white",
-          borderRadius: "18px 18px 4px 18px",
-          px: 2,
-          py: 1.5,
-          maxWidth: "100%",
-          wordBreak: "break-word",
-        }}
-      >
-        <Typography
-          variant="body1"
-          sx={{
-            lineHeight: 1.5,
-            fontSize: "0.95rem",
-          }}
-        >
-          {message}
-        </Typography>
-      </Box>
-    </Box>
-  </Box>
+        </span>
+        <div className="bg-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+          <User className="text-primary-foreground h-3 w-3" />
+        </div>
+      </div>
+      <div className="bg-primary text-primary-foreground max-w-full rounded-[18px_18px_4px_18px] px-2 py-1.5 break-words">
+        <p className="text-[0.95rem] leading-[1.5]">{message}</p>
+      </div>
+    </div>
+  </div>
 ));
 UserMessage.displayName = "UserMessage";
 
 // --- Main Components ---
 
 // Component for Slide Data Fetcher Tool logs
-const SlideDataFetcherLog = memo(({ data, theme }) => {
+const SlideDataFetcherLog = memo(({ data }) => {
   const { original_plan, global_theme } = data;
 
   return (
-    <Box sx={{ mt: 2, mb: 1 }}>
+    <div className="mt-2 mb-1">
       <Card
-        elevation={0}
-        sx={{
-          borderRadius: "12px",
-          border: "1px solid #e8eaed",
-          // bgcolor: "white",
-          bgcolor: theme.palette.background.paper,
-          overflow: "hidden",
-          transition: "all 0.2s ease-in-out",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            borderColor: theme.palette.mode === "dark" ? "#444" : "#dadce0",
-          },
-        }}
+        className={cn(
+          "border-border bg-card hover:border-border overflow-hidden rounded-xl transition-all duration-200 hover:shadow-md",
+        )}
       >
         {/* Header */}
-        <Box
-          sx={{
-            background:
-              theme.palette.mode === "dark"
-                ? "#161C24"
-                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-            p: { xs: 2, sm: 2.5 },
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background:
-                'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
-            },
+        <div
+          className="text-primary-foreground relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-700 p-4 sm:p-5"
+          style={{
+            "--pattern": `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              position: "relative",
-              zIndex: 1,
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "var(--pattern)",
+              backgroundRepeat: "repeat",
             }}
-          >
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: "8px",
-                bgcolor: "rgba(255,255,255,0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              <SlideshowIcon sx={{ fontSize: 16, color: "white" }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: { xs: "1rem", sm: "1.1rem" },
-                  lineHeight: 1.3,
-                }}
-              >
+          />
+          <div className="relative z-10 flex items-center gap-1.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
+              <Presentation className="text-primary-foreground h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-base leading-tight font-semibold sm:text-lg">
                 Slide Data Fetcher
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  opacity: 0.9,
-                  fontSize: "0.85rem",
-                  fontWeight: 400,
-                }}
-              >
+              </h3>
+              <p className="text-sm font-normal opacity-90">
                 Preparing slide content and theme
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+        <CardContent className="p-4 sm:p-6">
           {/* Global Theme Section */}
           {global_theme && (
-            <Box sx={{ mb: 3 }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  mb: 2,
-                  color: theme.palette.mode === "dark" ? "white" : "#1f2937",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: "4px",
-                    bgcolor:
-                      theme.palette.mode === "dark" ? "#374151" : "#f3f4f6",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <PaletteIcon sx={{ fontSize: 12, color: "#6b7280" }} />
-                </Box>
+            <div className="mb-3">
+              <h3 className="text-foreground mb-2 flex items-center gap-1 text-base font-semibold">
+                <div className="bg-muted flex h-5 w-5 items-center justify-center rounded">
+                  <Palette className="text-muted-foreground h-3 w-3" />
+                </div>
                 Theme Configuration
-              </Typography>
+              </h3>
 
               {/* Extract color properties from global_theme */}
               {(() => {
@@ -572,98 +341,32 @@ const SlideDataFetcherLog = memo(({ data, theme }) => {
 
                 return (
                   Object.keys(colors).length > 0 && (
-                    <Box sx={{ mb: 2.5 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          mb: 1.5,
-                          color:
-                            theme.palette.mode === "dark" ? "white" : "#374151",
-                        }}
-                      >
+                    <div className="mb-2.5">
+                      <p className="text-foreground mb-1.5 font-medium">
                         Color Palette
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns: {
-                            xs: "repeat(auto-fit, minmax(140px, 1fr))",
-                            sm: "repeat(auto-fit, minmax(160px, 1fr))",
-                          },
-                          gap: 1.5,
-                        }}
-                      >
+                      </p>
+                      <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-1.5 sm:grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
                         {Object.entries(colors).map(([key, value]) => (
-                          <Box
+                          <div
                             key={key}
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              p: 1.5,
-                              borderRadius: "8px",
-                              bgcolor:
-                                theme.palette.mode === "dark"
-                                  ? "#374151"
-                                  : "#f9fafb",
-                              border: "1px solid #e5e7eb",
-                              transition: "all 0.2s ease",
-                              "&:hover": {
-                                bgcolor:
-                                  theme.palette.mode === "dark"
-                                    ? "#4b5563"
-                                    : "#f3f4f6",
-                                transform: "translateY(-1px)",
-                              },
-                            }}
+                            className="bg-muted border-border hover:bg-muted/80 flex items-center gap-1 rounded-lg border p-1.5 transition-all duration-200 hover:-translate-y-px"
                           >
-                            <Box
-                              sx={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: "6px",
-                                bgcolor: value,
-                                border: "2px solid white",
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                flexShrink: 0,
-                              }}
+                            <div
+                              className="border-card h-5 w-5 shrink-0 rounded-md border-2 shadow-sm"
+                              style={{ backgroundColor: value }}
                             />
-                            <Box sx={{ minWidth: 0 }}>
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  color:
-                                    theme.palette.mode === "dark"
-                                      ? "#9ca3af"
-                                      : "#6b7280",
-                                  fontSize: "0.75rem",
-                                  fontWeight: 500,
-                                  textTransform: "capitalize",
-                                }}
-                              >
+                            <div className="min-w-0">
+                              <span className="text-muted-foreground text-xs font-medium capitalize">
                                 {key.replace(/_/g, " ")}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                sx={{
-                                  display: "block",
-                                  color:
-                                    theme.palette.mode === "dark"
-                                      ? "#9ca3af"
-                                      : "#374151",
-                                  fontSize: "0.8rem",
-                                  fontWeight: 600,
-                                  fontFamily: "monospace",
-                                }}
-                              >
+                              </span>
+                              <span className="text-foreground block font-mono text-xs font-semibold">
                                 {value}
-                              </Typography>
-                            </Box>
-                          </Box>
+                              </span>
+                            </div>
+                          </div>
                         ))}
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
                   )
                 );
               })()}
@@ -680,237 +383,99 @@ const SlideDataFetcherLog = memo(({ data, theme }) => {
 
                 return (
                   Object.keys(fonts).length > 0 && (
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          mb: 1.5,
-                          color:
-                            theme.palette.mode === "dark" ? "white" : "#374151",
-                        }}
-                      >
+                    <div>
+                      <p className="text-foreground mb-1.5 font-medium">
                         Typography
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns: {
-                            xs: "1fr",
-                            sm: "repeat(auto-fit, minmax(200px, 1fr))",
-                          },
-                          gap: 1.5,
-                        }}
-                      >
+                      </p>
+                      <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
                         {Object.entries(fonts).map(([key, value]) => (
-                          <Box
+                          <div
                             key={key}
-                            sx={{
-                              p: 1.5,
-                              borderRadius: "8px",
-                              bgcolor: "#f9fafb",
-                              border: "1px solid #e5e7eb",
-                            }}
+                            className="bg-muted border-border rounded-lg border p-1.5"
                           >
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: "#6b7280",
-                                fontSize: "0.75rem",
-                                fontWeight: 500,
-                                textTransform: "capitalize",
-                              }}
-                            >
+                            <span className="text-muted-foreground text-xs font-medium capitalize">
                               {key.replace(/_/g, " ")}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontFamily: value,
-                                fontSize: "0.9rem",
-                                color: "#374151",
-                                fontWeight: 500,
-                                mt: 0.5,
-                              }}
+                            </span>
+                            <p
+                              className="text-foreground mt-0.5 text-sm font-medium"
+                              style={{ fontFamily: value }}
                             >
                               {value}
-                            </Typography>
-                          </Box>
+                            </p>
+                          </div>
                         ))}
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
                   )
                 );
               })()}
-            </Box>
+            </div>
           )}
 
           {/* Slide Plan Section */}
           {original_plan && (
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  mb: 2,
-                  color: theme.palette.mode === "dark" ? "white" : "#374151",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: "4px",
-                    bgcolor: "#eff6ff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <SlideshowIcon sx={{ fontSize: 12, color: "#3b82f6" }} />
-                </Box>
+            <div>
+              <h3 className="text-foreground mb-2 flex items-center gap-1 text-base font-semibold">
+                <div className="flex h-5 w-5 items-center justify-center rounded bg-blue-50">
+                  <Presentation className="h-3 w-3 text-blue-600" />
+                </div>
                 Slide Blueprint
-              </Typography>
+              </h3>
 
-              <Card
-                elevation={0}
-                sx={{
-                  borderRadius: "12px",
-                  border: "1px solid #e0e7ff",
-                  bgcolor: "linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%)",
-                  overflow: "hidden",
-                }}
-              >
-                <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: { xs: "column", sm: "row" },
-                      justifyContent: "space-between",
-                      alignItems: { xs: "flex-start", sm: "center" },
-                      gap: 1.5,
-                      mb: 2,
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: { xs: "1rem", sm: "1.1rem" },
-                        color:
-                          theme.palette.mode === "dark" ? "white" : "#374151",
-                        lineHeight: 1.3,
-                      }}
-                    >
+              <Card className="overflow-hidden rounded-xl border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
+                <CardContent className="p-4 sm:p-5">
+                  <div className="mb-2 flex flex-col items-start justify-between gap-1.5 sm:flex-row sm:items-center">
+                    <h3 className="text-foreground text-base leading-tight font-semibold sm:text-lg">
                       {original_plan.slide_data?.headline || "Untitled Slide"}
-                    </Typography>
-                    <Chip
-                      label={original_plan.slide_type}
-                      size="small"
-                      sx={{
-                        bgcolor: "#3b82f6",
-                        color: "white",
-                        fontWeight: 500,
-                        height: 28,
-                        "& .MuiChip-label": { px: 1.5 },
-                      }}
-                    />
-                  </Box>
+                    </h3>
+                    <Badge className="text-primary-foreground h-7 bg-blue-600 px-1.5 font-medium">
+                      {original_plan.slide_type}
+                    </Badge>
+                  </div>
 
                   {/* Visual Suggestion */}
                   {original_plan.visual_suggestion && (
-                    <Box
-                      sx={{
-                        mb: 2.5,
-                        p: 2,
-                        borderRadius: "10px",
-                        bgcolor: "rgba(59, 130, 246, 0.08)",
-                        border: "1px solid rgba(59, 130, 246, 0.2)",
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 600,
-                          mb: 0.5,
-                          color: "#1e40af",
-                          fontSize: "0.85rem",
-                        }}
-                      >
+                    <div className="mb-2.5 rounded-lg border border-blue-200 bg-blue-100/50 p-2">
+                      <p className="mb-0.5 text-sm font-semibold text-blue-900">
                         📊 {original_plan.visual_suggestion.chart_type}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: "#475569",
-                          lineHeight: 1.5,
-                          fontSize: "0.85rem",
-                        }}
-                      >
+                      </p>
+                      <p className="text-sm leading-relaxed text-slate-600">
                         {original_plan.visual_suggestion.highlight}
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
                   )}
 
                   {/* Data Points */}
                   {original_plan.slide_data?.body_content &&
                     Array.isArray(original_plan.slide_data.body_content) && (
-                      <Box>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            mb: 1.5,
-                            color: "#374151",
-                            fontSize: "0.85rem",
-                          }}
-                        >
+                      <div>
+                        <p className="text-foreground mb-1.5 text-sm font-semibold">
                           Data Points
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                          }}
-                        >
+                        </p>
+                        <div className="flex flex-wrap gap-1">
                           {original_plan.slide_data.body_content.map(
                             (item, index) => (
-                              <Chip
+                              <Badge
                                 key={index}
-                                label={
-                                  typeof item === "object"
-                                    ? `${item.label}: ${item.value}`
-                                    : item
-                                }
-                                size="small"
                                 variant="outlined"
-                                sx={{
-                                  borderColor: "#cbd5e1",
-                                  color: "#475569",
-                                  bgcolor: "white",
-                                  "&:hover": {
-                                    bgcolor: "#f8fafc",
-                                    borderColor: "#94a3b8",
-                                  },
-                                }}
-                              />
+                                className="border-border text-muted-foreground bg-card hover:bg-muted hover:border-border"
+                              >
+                                {typeof item === "object"
+                                  ? `${item.label}: ${item.value}`
+                                  : item}
+                              </Badge>
                             ),
                           )}
-                        </Box>
-                      </Box>
+                        </div>
+                      </div>
                     )}
                 </CardContent>
               </Card>
-            </Box>
+            </div>
           )}
         </CardContent>
       </Card>
-    </Box>
+    </div>
   );
 });
 SlideDataFetcherLog.displayName = "SlideDataFetcherLog";
@@ -918,229 +483,93 @@ SlideDataFetcherLog.displayName = "SlideDataFetcherLog";
 // Modern Responsive PlanModifierLog Component
 const PlanModifierLog = memo(({ data }) => {
   return (
-    <Box sx={{ mt: 2, mb: 1 }}>
+    <div className="mt-2 mb-1">
       <Card
-        elevation={0}
-        sx={{
-          borderRadius: "12px",
-          border: "1px solid #e8eaed",
-          bgcolor: "white",
-          overflow: "hidden",
-          transition: "all 0.2s ease-in-out",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-            borderColor: "#dadce0",
-          },
-        }}
+        className={cn(
+          "border-border bg-card hover:border-border overflow-hidden rounded-xl transition-all duration-200 hover:shadow-md",
+        )}
       >
         {/* Header */}
-        <Box
-          sx={{
-            background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-            color: "white",
-            p: { xs: 2, sm: 2.5 },
-            position: "relative",
-            overflow: "hidden",
-            "&::before": {
-              content: '""',
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background:
-                'url("data:image/svg+xml,%3Csvg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M20 20c0-8.837-7.163-16-16-16S-12 11.163-12 20s7.163 16 16 16 16-7.163 16-16zm0 0c0 8.837 7.163 16 16 16s16-7.163 16-16-7.163-16-16-16-16 7.163-16 16z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat',
-            },
+        <div
+          className="text-primary-foreground relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-600 p-4 sm:p-5"
+          style={{
+            "--pattern": `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-8.837-7.163-16-16-16S-12 11.163-12 20s7.163 16 16 16 16-7.163 16-16zm0 0c0 8.837 7.163 16 16 16s16-7.163 16-16-7.163-16-16-16-16 7.163-16 16z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1.5,
-              position: "relative",
-              zIndex: 1,
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: "var(--pattern)",
+              backgroundRepeat: "repeat",
             }}
-          >
-            <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: "8px",
-                bgcolor: "rgba(255,255,255,0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              <PaletteIcon sx={{ fontSize: 16, color: "white" }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: { xs: "1rem", sm: "1.1rem" },
-                  lineHeight: 1.3,
-                }}
-              >
+          />
+          <div className="relative z-10 flex items-center gap-1.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
+              <Palette className="text-primary-foreground h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-base leading-tight font-semibold sm:text-lg">
                 Plan Modifier
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  opacity: 0.9,
-                  fontSize: "0.85rem",
-                  fontWeight: 400,
-                }}
-              >
+              </h3>
+              <p className="text-sm font-normal opacity-90">
                 Customizing slide content
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-          <Card
-            elevation={0}
-            sx={{
-              borderRadius: "12px",
-              border: "1px solid #fed7aa",
-              bgcolor: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
-              overflow: "hidden",
-            }}
-          >
-            <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", sm: "row" },
-                  justifyContent: "space-between",
-                  alignItems: { xs: "flex-start", sm: "center" },
-                  gap: 1.5,
-                  mb: 2,
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: { xs: "1rem", sm: "1.1rem" },
-                    color: "#92400e",
-                    lineHeight: 1.3,
-                  }}
-                >
+        <CardContent className="p-4 sm:p-6">
+          <Card className="overflow-hidden rounded-xl border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100">
+            <CardContent className="p-4 sm:p-5">
+              <div className="mb-2 flex flex-col items-start justify-between gap-1.5 sm:flex-row sm:items-center">
+                <h3 className="text-base leading-tight font-semibold text-amber-900 sm:text-lg">
                   {data.slide_data?.headline || "Modified Slide"}
-                </Typography>
-                <Chip
-                  label={data.slide_type}
-                  size="small"
-                  sx={{
-                    bgcolor: "#f59e0b",
-                    color: "white",
-                    fontWeight: 500,
-                    height: 28,
-                    "& .MuiChip-label": { px: 1.5 },
-                  }}
-                />
-              </Box>
+                </h3>
+                <Badge className="text-primary-foreground h-7 bg-amber-500 px-1.5 font-medium">
+                  {data.slide_type}
+                </Badge>
+              </div>
 
               {/* Visual Suggestion */}
               {data.visual_suggestion && (
-                <Box
-                  sx={{
-                    mb: 2.5,
-                    p: 2,
-                    borderRadius: "10px",
-                    bgcolor: "rgba(245, 158, 11, 0.08)",
-                    border: "1px solid rgba(245, 158, 11, 0.2)",
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: 600,
-                      mb: 0.5,
-                      color: "#92400e",
-                      fontSize: "0.85rem",
-                    }}
-                  >
+                <div className="mb-2.5 rounded-lg border border-amber-200 bg-amber-100/50 p-2">
+                  <p className="mb-0.5 text-sm font-semibold text-amber-900">
                     📈 {data.visual_suggestion.chart_type}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "#78716c",
-                      lineHeight: 1.5,
-                      fontSize: "0.85rem",
-                    }}
-                  >
+                  </p>
+                  <p className="text-sm leading-relaxed text-amber-800">
                     {data.visual_suggestion.highlight}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
 
               {/* Modified Data Points */}
               {data.slide_data?.body_content &&
                 Array.isArray(data.slide_data.body_content) && (
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: 600,
-                        mb: 1.5,
-                        color: "#374151",
-                        fontSize: "0.85rem",
-                      }}
-                    >
+                  <div>
+                    <p className="text-foreground mb-1.5 text-sm font-semibold">
                       Modified Content
-                    </Typography>
-                    <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-                    >
+                    </p>
+                    <div className="flex flex-col gap-1">
                       {data.slide_data.body_content.map((item, index) => (
-                        <Box
+                        <div
                           key={index}
-                          sx={{
-                            p: 1.5,
-                            borderRadius: "8px",
-                            bgcolor: "rgba(255,255,255,0.7)",
-                            border: "1px solid rgba(245, 158, 11, 0.2)",
-                            fontFamily:
-                              'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-                            fontSize: "0.8rem",
-                            transition: "all 0.2s ease",
-                            "&:hover": {
-                              bgcolor: "rgba(255,255,255,0.9)",
-                              transform: "translateY(-1px)",
-                            },
-                          }}
+                          className="rounded-lg border border-amber-200 bg-white/70 p-1.5 font-mono text-xs transition-all duration-200 hover:-translate-y-px hover:bg-white/90"
                         >
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: "inherit",
-                              fontSize: "inherit",
-                              color: "#374151",
-                              whiteSpace: "pre-wrap",
-                              wordBreak: "break-word",
-                            }}
-                          >
+                          <p className="font-inherit text-foreground break-words whitespace-pre-wrap">
                             {typeof item === "string"
                               ? item
                               : JSON.stringify(item, null, 2)}
-                          </Typography>
-                        </Box>
+                          </p>
+                        </div>
                       ))}
-                    </Box>
-                  </Box>
+                    </div>
+                  </div>
                 )}
             </CardContent>
           </Card>
         </CardContent>
       </Card>
-    </Box>
+    </div>
   );
 });
 
@@ -1156,7 +585,6 @@ const StreamingMessage = memo(
     unregisterAnimationCallback,
     sessionStatus,
     processedLogs,
-    theme,
   }) => {
     const [displayedText, setDisplayedText] = useState("");
     const [isComplete, setIsComplete] = useState(!isTyping);
@@ -1332,7 +760,7 @@ const StreamingMessage = memo(
           case "planning_agent":
             return <PlanningLog plan={output} />;
           case "slide_data_fetcher_tool":
-            return <SlideDataFetcherLog data={output} theme={theme} />;
+            return <SlideDataFetcherLog data={output} />;
           case "plan_modifier_agent":
             return <PlanModifierLog data={output} />;
           default:
@@ -1359,86 +787,30 @@ const StreamingMessage = memo(
       }
 
       return (
-        <Typography
-          variant="body1"
-          sx={{
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-            lineHeight: 1.6,
-            color:
-              theme.palette.mode === "dark"
-                ? theme.palette.text.primary
-                : "#374151",
-            fontSize: "0.95rem",
-          }}
-        >
+        <p className="text-foreground text-[0.95rem] leading-relaxed break-words whitespace-pre-wrap">
           {displayedText}
           {shouldAnimate && !isComplete && (
-            <Box
-              component="span"
-              sx={{
-                display: "inline-block",
-                width: "2px",
-                height: "20px",
-                bgcolor: PRIMARY_GREEN,
-                ml: 0.5,
-                animation: "blink 1s infinite",
-                "@keyframes blink": {
-                  "0%, 50%": { opacity: 1 },
-                  "51%, 100%": { opacity: 0 },
-                },
-              }}
-            />
+            <span className="bg-primary ml-0.5 inline-block h-5 w-[2px] animate-pulse" />
           )}
-        </Typography>
+        </p>
       );
     };
 
     return (
-      <Box sx={{ mb: 3 }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mb: 1.5,
-            opacity: 0.7,
-          }}
-        >
-          <Box
-            sx={{
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              bgcolor: PRIMARY_GREEN,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "8px",
-              color: "white",
-              fontWeight: "bold",
-              flexShrink: 0,
-            }}
-          >
+      <div className="mb-3">
+        <div className="mb-1.5 flex items-center gap-1 opacity-70">
+          <div className="bg-primary text-primary-foreground flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[8px] font-bold">
             AI
-          </Box>
-          <Typography
-            variant="caption"
-            color={theme.palette.text.primary}
-            sx={{ fontWeight: 500, fontSize: "0.75rem" }}
-          >
+          </div>
+          <span className="text-foreground text-[0.75rem] font-medium">
             {formatAgentName(log.agent_name)}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.disabled"
-            sx={{ fontSize: "0.7rem" }}
-          >
+          </span>
+          <span className="text-muted-foreground text-[0.7rem]">
             {formatTimestamp(log.timestamp)}
-          </Typography>
-        </Box>
-        <Box sx={{ ml: 0 }}>{renderContent()}</Box>
-      </Box>
+          </span>
+        </div>
+        <div className="ml-0">{renderContent()}</div>
+      </div>
     );
   },
 );
@@ -1515,7 +887,6 @@ export default function ChatArea({
   handlePreviewOpen = () => {}, // onclick handler to open the preview panel
   slides = [], // slides data to show on the preview panel
 }) {
-  const theme = useTheme();
   const isMobile = useResponsive("down", "lg");
 
   const {
@@ -1584,81 +955,27 @@ export default function ChatArea({
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          maxHeight: "100%",
-          borderRight: `1px solid ${theme.palette.divider}`,
-          bgcolor: theme.palette.background.default,
-          overflow: "hidden",
-        }}
-      >
-        <Box
+      <div className="border-border bg-background flex h-full max-h-full flex-col overflow-hidden border-r">
+        <div
           ref={scrollContainerRef}
           onScroll={checkScrollPosition}
-          sx={{
-            flex: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            minHeight: 0,
-            scrollBehavior: "smooth",
-            "&::-webkit-scrollbar": { width: "6px" },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: theme.palette.mode === "dark" ? "#555" : "#c1c1c1",
-              borderRadius: "3px",
-              "&:hover": {
-                background: theme.palette.mode === "dark" ? "#777" : "#a8a8a8",
-              },
-            },
-            scrollbarWidth: "thin",
-            scrollbarColor:
-              theme.palette.mode === "dark"
-                ? "#555 transparent"
-                : "#c1c1c1 transparent",
-          }}
+          className="[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50 min-h-0 flex-1 overflow-x-hidden overflow-y-auto scroll-smooth [scrollbar-color:rgb(var(--muted-foreground)_/_0.3)_transparent] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-sm [&::-webkit-scrollbar-track]:bg-transparent"
         >
-          <Box
-            sx={{
-              p: 3,
-              minHeight: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <div className="flex min-h-full flex-col p-3">
             {chatHistory.length === 0 &&
               allMessages.length === 0 &&
               !showThinking && (
-                <Box
-                  sx={{
-                    textAlign: "center",
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    minHeight: "300px",
-                  }}
-                >
-                  <SmartToyIcon
-                    sx={{
-                      fontSize: 48,
-                      color: theme.palette.text.disabled,
-                      mb: 2,
-                    }}
-                  />
-                  <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
+                <div className="flex min-h-[300px] flex-1 flex-col justify-center text-center">
+                  <Bot className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
+                  <h2 className="text-muted-foreground mb-1 text-lg font-semibold">
                     {currentAgentType === "presentation"
                       ? "Presentation Agent"
                       : "Super Agent"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
                     Start a conversation to see AI responses stream in real-time
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               )}
 
             {chatHistory.map((message) => (
@@ -1697,7 +1014,6 @@ export default function ChatArea({
                       unregisterAnimationCallback={unregisterAnimationCallback}
                       sessionStatus={sessionStatus}
                       processedLogs={processedLogs}
-                      theme={theme}
                     />
                   );
                 }
@@ -1709,7 +1025,7 @@ export default function ChatArea({
               sessionStatus !== "completed" &&
               sessionStatus !== "failed" &&
               sessionStatus !== "saved" && (
-                <Box sx={{ mt: 1 }}>
+                <div className="mt-1">
                   <TypingAnimation
                     text={
                       sessionStatus === "failed"
@@ -1719,23 +1035,17 @@ export default function ChatArea({
                           : "Processing..."
                     }
                   />
-                </Box>
+                </div>
               )}
 
             <div ref={chatEndRef} />
-          </Box>
-        </Box>
+          </div>
+        </div>
 
-        <Box
-          sx={{
-            borderTop: `1px solid ${theme.palette.divider}`,
-            bgcolor: theme.palette.background.paper,
-            maxHeight: isMobile ? "400px" : "300px",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
+        <div
+          className={cn(
+            "border-border bg-card flex max-h-[400px] flex-col justify-center overflow-hidden border-t lg:max-h-[300px]",
+          )}
         >
           {/* 
             1. For mobile the preview view panel will be close to chat input box.
@@ -1744,53 +1054,21 @@ export default function ChatArea({
            */}
           {/* on mobile preview panel */}
           {isMobile && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                p: 2,
-                border: "1px solid #e0e0e0",
-                cursor: "pointer",
-                // bgcolor: "#fafafa",
-                bgcolor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.grey[900]
-                    : "#e6f7ee",
-              }}
+            <div
+              className="border-border bg-muted/50 flex cursor-pointer items-center gap-2 border p-2"
               onClick={handlePreviewOpen}
             >
-              <CustomSlideshowIcon sx={{ color: "#07B37A", fontSize: 30 }} />
-              <Typography
-                variant="h6"
-                sx={{
-                  ml: 0.5,
-                }}
-              >
-                Preview Slides
-              </Typography>
+              <CustomSlideshowIcon className="text-primary h-7 w-7" />
+              <h3 className="ml-0.5 text-lg font-semibold">Preview Slides</h3>
               {slides.length > 0 && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    fontSize: {
-                      xs: "0.75rem",
-                      sm: "0.875rem",
-                      md: "1rem",
-                      lg: "1.1rem",
-                      xl: "1.2rem",
-                    },
-                    mt: "3px",
-                  }}
-                >
+                <span className="text-muted-foreground mt-0.5 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">
                   {slides.length} slide{slides.length > 1 ? "s" : ""} available
-                </Typography>
+                </span>
               )}
-            </Box>
+            </div>
           )}
           {/* chat input box */}
-          <Box sx={{}}>
+          <div>
             {!hideInputField && (
               <InputArea
                 currentAgentType={currentAgentType}
@@ -1804,9 +1082,9 @@ export default function ChatArea({
                 fileUrls={fileUrls}
               />
             )}
-          </Box>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
 
       {/* for simulation */}
       {hideInputField && simulationCompleted && (

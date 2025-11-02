@@ -3,9 +3,13 @@ import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
 import UserActionInput from "@/components/tools/common/UserActionInput";
 import WordCounter from "@/components/tools/common/WordCounter";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import useLoadingText from "@/hooks/useLoadingText";
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   useGetShareAidetectorContendQuery,
   useGetUsesLimitQuery,
@@ -14,15 +18,6 @@ import {
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
 import LoadingScreen from "@/resource/LoadingScreen";
-import {
-  Box,
-  Card,
-  Grid2,
-  LinearProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -168,40 +163,26 @@ const AiDetector = () => {
   }
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Grid2 container spacing={2}>
-        <Grid2 size={{ xs: 12, md: 6 }}>
+    <div className="mt-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="col-span-1 md:col-span-1">
           <Card
-            sx={{
-              position: "relative",
-              height: isMobile ? 400 : 600,
-              display: "flex",
-              flexDirection: "column",
-              border: (theme) => `1px solid ${theme.palette.divider}`,
-            }}
-            elevation={16}
+            className={cn(
+              "relative flex flex-col border py-0 shadow-lg",
+              isMobile ? "h-[400px]" : "h-[600px]",
+            )}
           >
             {enableEdit ? (
-              <TextField
+              <Textarea
                 name="input"
-                variant="outlined"
                 rows={isMobile ? 13 : 22}
-                fullWidth
-                multiline
                 placeholder="Enter your text here..."
                 value={loadingText ? loadingText : userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                sx={{
-                  // flexGrow: 1,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
+                className="flex-grow resize-none border-0 focus-visible:ring-0"
               />
             ) : (
-              <Box sx={{ height: "100%", overflow: "auto", padding: 2 }}>
+              <div className="h-full overflow-auto p-2">
                 {outputContend &&
                   outputContend.sentences.map((item, index) => (
                     <Fragment key={index}>
@@ -218,7 +199,7 @@ const AiDetector = () => {
                       </span>
                     </Fragment>
                   ))}
-              </Box>
+              </div>
             )}
 
             {!userInput ? (
@@ -233,13 +214,7 @@ const AiDetector = () => {
               </>
             ) : null}
             {userInput ? (
-              <Box
-                sx={{
-                  borderTop: "1px solid",
-                  borderTopColor: "divider",
-                  px: 2,
-                }}
-              >
+              <div className="border-border border-t px-2">
                 <WordCounter
                   btnText={enableEdit ? "Scan" : "Edit"}
                   toolName="ai-detector"
@@ -250,7 +225,7 @@ const AiDetector = () => {
                   userPackage={user?.package}
                   sticky={0}
                 />
-              </Box>
+              </div>
             ) : null}
 
             {userLimit && !userInput ? (
@@ -259,9 +234,9 @@ const AiDetector = () => {
           </Card>
 
           {userLimit && userInput ? <UsesLimit userLimit={userLimit} /> : null}
-        </Grid2>
+        </div>
 
-        <Grid2 size={{ xs: 12, md: 6 }}>
+        <div className="col-span-1 md:col-span-1">
           {outputContend ? (
             <OutputResult
               handleOpen={() => setshowShareModal(true)}
@@ -276,8 +251,8 @@ const AiDetector = () => {
               isDrawer={openSampleDrawer}
             />
           )}
-        </Grid2>
-      </Grid2>
+        </div>
+      </div>
 
       {outputContend ? (
         <ShareURLModal
@@ -288,7 +263,7 @@ const AiDetector = () => {
           hashtags={["Shothik AI", "AI Detector"]}
         />
       ) : null}
-    </Box>
+    </div>
   );
 };
 
@@ -303,19 +278,15 @@ function UsesLimit({ userLimit }) {
   };
 
   return (
-    <Stack sx={{ padding: 2 }} alignItems="flex-end">
-      <Box sx={{ width: { xs: 220, sm: 250 } }}>
-        <LinearProgress
-          sx={{ height: 6 }}
-          variant="determinate"
-          value={progressPercentage()}
-        />
-        <Typography sx={{ fontSize: { xs: 12, sm: 14 } }}>
+    <div className="flex items-end justify-end p-2">
+      <div className="w-[220px] sm:w-[250px]">
+        <Progress value={progressPercentage()} className="h-1.5" />
+        <p className="text-xs sm:text-sm">
           {formatNumber(userLimit?.totalWordLimit)} words /{" "}
           {formatNumber(userLimit?.remainingWord)} words left
-        </Typography>
-      </Box>
-    </Stack>
+        </p>
+      </div>
+    </div>
   );
 }
 

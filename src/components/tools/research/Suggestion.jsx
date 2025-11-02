@@ -1,7 +1,6 @@
-import { FormatAlignLeft } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { AlignLeft } from "lucide-react";
 import * as motion from "motion/react-client";
-import React from "react";
 
 const Suggestion = ({ handleSuggestedQuestionClick, suggestedQuestions }) => {
   return (
@@ -11,30 +10,30 @@ const Suggestion = ({ handleSuggestedQuestionClick, suggestedQuestions }) => {
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5 }}
     >
-      <Box display="flex" alignItems="center" gap={2} my={2}>
-        <FormatAlignLeft fontSize="small" color="text.secondary" />
-        <Typography variant="h6">Suggested questions</Typography>
-      </Box>
+      <div className="my-2 flex items-center gap-2">
+        <AlignLeft className="text-muted-foreground h-4 w-4" />
+        <h6 className="text-lg leading-none font-semibold tracking-tight">
+          Suggested questions
+        </h6>
+      </div>
 
-      <Box display="flex" flexDirection="column" gap={1}>
+      <div className="flex flex-col gap-1">
         {suggestedQuestions?.map((question, index) => (
-          <Typography
+          <span
             key={index}
-            sx={{
-              borderRadius: "1.5rem",
-              fontWeight: "medium",
-              padding: "0.5rem 1rem",
-              backgroundColor: "background.paper",
-              color: "text.secondary",
-              cursor: "pointer",
-              width: "fit-content",
-            }}
+            className={cn(
+              "rounded-3xl px-4 py-2 font-medium",
+              "bg-card text-muted-foreground",
+              "w-fit cursor-pointer",
+              "hover:bg-accent hover:text-accent-foreground",
+              "transition-colors",
+            )}
             onClick={() => handleSuggestedQuestionClick(question)}
           >
             {question}
-          </Typography>
+          </span>
         ))}
-      </Box>
+      </div>
     </motion.div>
   );
 };

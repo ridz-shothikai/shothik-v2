@@ -1,13 +1,8 @@
-import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -53,33 +48,20 @@ function SampleTextForMobile({ setOpen, isMini }) {
 
   if (!show) return null;
   return (
-    <Stack
-      sx={{
-        position: "fixed",
-        bottom: 2,
-        left: { xs: 0, sm: isMini ? 105 : 290 },
-        right: 5,
-        zIndex: 100,
-      }}
+    <div
+      className={cn(
+        "fixed right-5 bottom-2 z-[100]",
+        isMini ? "sm:left-[105px]" : "sm:left-[290px]",
+      )}
     >
       <Card
         onClick={() => setOpen(true)}
-        sx={{
-          paddingX: 3,
-          paddingY: 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-          borderRadius: 50,
-          mt: 3,
-        }}
+        className="mt-3 flex items-center gap-1 rounded-full px-3 py-2"
       >
-        <Box sx={{ width: 24, height: 24 }}>
-          <img src="/tools/sample.svg" alt="sample" />
-        </Box>
-        <Typography>Sample Text</Typography>
+        <Image src="/tools/sample.svg" alt="sample" width={24} height={24} />
+        <span>Sample Text</span>
       </Card>
-    </Stack>
+    </div>
   );
 }
 
@@ -96,78 +78,53 @@ const SampleTextForLarge = ({
   };
 
   return (
-    <Stack
-      justifyContent="center"
-      sx={{
-        height: "100%",
-        paddingX: 3,
-        paddingY: isDrawer ? 3 : 0,
-        position: "relative",
-      }}
+    <div
+      className={cn(
+        "relative flex h-full justify-center px-3",
+        isDrawer ? "py-3" : "py-0",
+      )}
     >
       {isDrawer && (
-        <IconButton
-          sx={{ position: "absolute", top: 2, right: 2, zIndex: 50 }}
+        <button
+          className="hover:bg-accent absolute top-2 right-2 z-50 rounded-xs transition-colors"
           onClick={() => setOpen(false)}
         >
-          <Close />
-        </IconButton>
+          <X className="size-4" />
+        </button>
       )}
 
-      <Box sx={{ marginLeft: isDrawer ? 0 : 4 }}>
+      <div className={cn(isDrawer ? "ml-0" : "ml-4")}>
         <Card
-          sx={{
-            width: isDrawer ? "100%" : 250,
-            boxShadow: isDrawer ? "none" : undefined,
-            border: (theme) => `1px solid ${theme.palette.divider}`,
-          }}
+          className={cn(
+            "border",
+            isDrawer ? "w-full shadow-none" : "w-[250px]",
+          )}
         >
-          <Stack direction="column" spacing={0.5} sx={{ paddingY: 1 }}>
+          <div className="flex flex-col gap-0.5 py-1">
             {gptModel.map((item, index) => (
               <Button
-                variant="soft"
-                color="inherit"
+                variant="ghost"
                 key={index}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  gap: 2,
-                  paddingY: 1,
-                  backgroundColor: "transparent",
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                  },
-                }}
+                className="flex items-center justify-start gap-2 bg-transparent py-1 hover:bg-transparent"
                 onClick={() => handleClick(item.text)}
               >
-                <Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    filter: (theme) =>
-                      theme.palette.mode === "dark" ? "invert(1)" : "none",
-                  }}
-                >
-                  <img src={item.icon} alt={item.name} />
-                </Box>
-                <Typography variant="body2">{item.name}</Typography>
+                <Image src={item.icon} alt={item.name} width={24} height={24} />
+                <span className="text-sm">{item.name}</span>
               </Button>
             ))}
-          </Stack>
+          </div>
         </Card>
-        <Stack
-          direction="column"
-          alignItems={isDrawer ? "center" : "flex-start"}
+        <div
+          className={cn(
+            "flex flex-col",
+            isDrawer ? "items-center" : "items-start",
+          )}
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: isDrawer ? "center" : "flex-start",
-              gap: 0.5,
-              mt: 3,
-            }}
+          <div
+            className={cn(
+              "mt-3 flex items-center gap-0.5",
+              isDrawer ? "justify-center" : "justify-start",
+            )}
           >
             <Image
               src="/tools/language.svg"
@@ -176,27 +133,17 @@ const SampleTextForLarge = ({
               height={100}
               className="max-w-4!"
             />
-            <Typography fontWeight={600}>Supported languages:</Typography>
-          </Box>
-          <Typography sx={{ mt: 0.5, mb: 1 }}>
+            <span className="font-semibold">Supported languages:</span>
+          </div>
+          <span className="mt-0.5 mb-1">
             English, Bangla, Hindi and 100+ more
-          </Typography>
-          {/* <Typography
-            fontSize={15}
-            sx={{
-              borderBottom: "1px solid #333",
-              width: "fit-content",
-              cursor: "pointer",
-              ...(isDrawer && {
-                color: "text.secondary",
-              }),
-            }}
-          >
+          </span>
+          {/* <span className="text-[15px] border-b border-border w-fit cursor-pointer text-muted-foreground">
             Request more languages
-          </Typography> */}
-        </Stack>
-      </Box>
-    </Stack>
+          </span> */}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -210,17 +157,14 @@ function SampleText({
   if (isMobile)
     return (
       <>
-        <Dialog
-          maxWidth="xs"
-          fullWidth
-          open={isDrawer}
-          onClose={() => setOpen(false)}
-        >
-          <SampleTextForLarge
-            isDrawer={true}
-            setOpen={setOpen}
-            handleSampleText={handleSampleText}
-          />
+        <Dialog open={isDrawer} onOpenChange={setOpen}>
+          <DialogContent className="w-full max-w-xs p-0">
+            <SampleTextForLarge
+              isDrawer={true}
+              setOpen={setOpen}
+              handleSampleText={handleSampleText}
+            />
+          </DialogContent>
         </Dialog>
         <SampleTextForMobile setOpen={setOpen} isMini={isMini} />
       </>

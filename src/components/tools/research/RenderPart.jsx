@@ -1,6 +1,6 @@
 import CopyButton from "@/components/(secondary-layout)/(blogs-page)/details/CopyButton";
-import { AutoAwesome } from "@mui/icons-material";
-import { Box, Stack, Typography } from "@mui/material";
+import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
 import { AcademicLoadingState } from "./AcademicLoadingState";
 import AcademicSearch from "./AcademicSearch";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -12,20 +12,17 @@ const RenderPart = ({ data, group, isLoading, userQuestion }) => {
   switch (data.type) {
     case "text":
       return (
-        <Box>
-          <Stack
-            flexDirection="row"
-            justifyContent="space-between"
-            mt={2}
-            mb={1}
+        <div>
+          <div
+            className={cn(
+              "mt-2 mb-1 flex flex-row items-center justify-between",
+            )}
           >
-            <Stack flexDirection="row" alignItems="center" gap={1}>
-              <AutoAwesome sx={{ fontSize: 28, color: "primary.main" }} />
-              <Typography variant="body1" fontWeight={600} color="text.primary">
-                Answer
-              </Typography>
-            </Stack>
-            <Box>
+            <div className={cn("flex flex-row items-center gap-1")}>
+              <Sparkles className={cn("text-primary h-7 w-7")} />
+              <p className={cn("text-foreground font-semibold")}>Answer</p>
+            </div>
+            <div>
               <CopyButton
                 text={
                   typeof data.content === "string"
@@ -33,8 +30,8 @@ const RenderPart = ({ data, group, isLoading, userQuestion }) => {
                     : JSON.stringify(data.content)
                 }
               />
-            </Box>
-          </Stack>
+            </div>
+          </div>
           {data.sources && data.sources.length > 0 ? (
             <ResearchContentWithReferences
               content={data.content}
@@ -46,7 +43,7 @@ const RenderPart = ({ data, group, isLoading, userQuestion }) => {
           ) : (
             <MarkdownRenderer content={data.content} />
           )}
-        </Box>
+        </div>
       );
     case "tool-invocation": {
       if (group === "web") {

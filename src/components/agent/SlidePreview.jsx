@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 
 function SlidePreview({ src }) {
@@ -28,21 +27,18 @@ function SlidePreview({ src }) {
   }, []);
 
   return (
-    <Box sx={{ height: "100%", overflow: "hidden" }} ref={containerRef}>
+    <div className="h-full overflow-hidden" ref={containerRef}>
       <iframe
         src={src}
         referrerPolicy="origin"
+        className="pointer-events-auto origin-top-left overflow-hidden border-none"
         style={{
           width: `${width}px`,
           height: `${height}px`,
-          border: "none",
-          overflow: "hidden",
-          pointerEvents: "auto",
           transform: `scale(${scale})`,
-          transformOrigin: "top left",
         }}
       />
-    </Box>
+    </div>
   );
 }
 

@@ -1,39 +1,21 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-export const IconWrapper = ({ children, sx }) => {
+export const IconWrapper = ({ children, className }) => {
   return (
-    <Box
-      sx={{
-        borderRadius: "50%",
-        width: 30,
-        height: 30,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        "& svg": {
-          color: "#fff",
-          fontSize: 24,
-        },
-        ...sx,
-      }}
+    <div
+      className={cn(
+        "[&_svg]:text-foreground flex h-[30px] w-[30px] items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6",
+        className,
+      )}
     >
       {children}
-    </Box>
+    </div>
   );
 };
 
@@ -66,108 +48,46 @@ const TutorialSection = ({
   }, [tool]);
 
   return (
-    <Box sx={{ maxWidth: 1200, margin: "0 auto", pb: 10 }}>
-      <Paper
-        elevation={1}
-        sx={{
-          bgcolor: "transparent",
-          backgroundImage: "none",
-        }}
-      >
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h4" gutterBottom>
-            {tool.name}
-          </Typography>
+    <div className="mx-auto max-w-[1200px] pb-10">
+      <div className="bg-transparent">
+        <div className="p-6">
+          <h2 className="mb-4 text-3xl font-semibold">{tool.name}</h2>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              gap: 3,
-            }}
-          >
+          <div className="flex flex-col gap-6 md:flex-row">
             {/* Main content */}
-            <Box sx={{ flex: 1 }}>
-              <Box
-                sx={{
-                  position: "relative",
-                  paddingBottom: "56.25%",
-                  height: 0,
-                  overflow: "hidden",
-                  // backgroundColor: '#f5f5f5',
-                  marginBottom: 2,
-                  width: { xs: "100%", sm: "100%", md: "auto" },
-                }}
-              >
+            <div className="flex-1">
+              <div className="relative mb-4 h-0 w-full overflow-hidden pb-[56.25%] md:w-auto">
                 {currentVideo ? (
                   <iframe
                     src={currentVideo}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      border: "none",
-                      borderRadius: 8,
-                    }}
+                    className="absolute top-0 left-0 h-full w-full rounded-lg border-0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 ) : (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height="100%"
-                      animation="wave"
-                      sx={{
-                        bgcolor: "rgba(0, 0, 0, 0.1)",
-                        borderRadius: 1,
-                      }}
-                    />
-                  </Box>
+                  <div className="absolute top-0 left-0 flex h-full w-full flex-col items-center justify-center">
+                    <Skeleton className="h-full w-full rounded-md" />
+                  </div>
                 )}
-              </Box>
+              </div>
 
-              <Typography variant="h6" gutterBottom>
-                {tool.title}
-              </Typography>
+              <h3 className="mb-2 text-xl font-semibold">{tool.title}</h3>
 
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <p className="text-muted-foreground mb-4 text-sm">
                 {tool.description}
-              </Typography>
+              </p>
 
-              <Divider sx={{ mt: 3 }} />
+              <Separator className="mt-6" />
 
-              <Box
-                sx={{ display: "flex", alignItems: "center", mt: 2, gap: 2 }}
-              >
+              <div className="mt-4 flex items-center gap-4">
                 {loading ? (
                   <>
-                    <Skeleton variant="circular" width={40} height={40} />
-                    <Box sx={{ flex: 1 }}>
-                      <Skeleton variant="text" width={100} height={28} />
-                      <Skeleton variant="text" width={140} height={20} />
-                    </Box>
-                    <Skeleton
-                      variant="rectangular"
-                      width={100}
-                      height={36}
-                      sx={{ borderRadius: 1 }}
-                    />
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="flex-1">
+                      <Skeleton className="mb-2 h-7 w-[100px]" />
+                      <Skeleton className="h-5 w-[140px]" />
+                    </div>
+                    <Skeleton className="h-9 w-[100px] rounded-md" />
                   </>
                 ) : (
                   <>
@@ -177,90 +97,82 @@ const TutorialSection = ({
                       height={40}
                       alt="Shothik AI"
                     />
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle1">Shothik AI</Typography>
-                      <Typography variant="body2" color="text.secondary">
+                    <div className="flex-1">
+                      <p className="text-base font-semibold">Shothik AI</p>
+                      <p className="text-muted-foreground text-sm">
                         {formatSubscriberCount(subscriberCount)} subscribers
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
                     <Button
                       onClick={handleSubscribe}
-                      variant="contained"
-                      color="error"
-                      sx={{
-                        bgcolor: "#FF0000",
-                        "&:hover": {
-                          bgcolor: "#CC0000",
-                        },
-                        fontWeight: "bold",
-                        textTransform: "none",
-                        px: 3,
-                      }}
+                      variant="destructive"
+                      className="px-6 font-bold hover:opacity-90"
                     >
                       Subscribe
                     </Button>
                   </>
                 )}
-              </Box>
-            </Box>
+              </div>
+            </div>
 
             {/* Sidebar */}
-            <Card sx={{ width: 400 }}>
+            <Card className="w-full md:w-[400px]">
               <CardContent>
-                <Box
+                <div
                   onClick={() => handleVideoClick(tool.videoId)}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    mb: 2,
-                    cursor: "pointer",
-                  }}
+                  className="mb-4 flex cursor-pointer items-center gap-2"
                 >
-                  <IconWrapper
-                    sx={{ width: 52, height: 52, color: tool.iconColor }}
+                  <div
+                    className={cn(
+                      "flex h-[52px] w-[52px] items-center justify-center rounded-full",
+                    )}
+                    style={
+                      tool.iconColor ? { backgroundColor: tool.iconColor } : {}
+                    }
                   >
                     {tool.icon}
-                  </IconWrapper>
+                  </div>
 
-                  <Typography variant="h6">
+                  <h3 className="text-lg font-semibold">
                     {tool.title} <br />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      component="span"
-                    >
+                    <span className="text-muted-foreground text-sm font-normal">
                       Shothik AI
-                    </Typography>
-                  </Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle2" gutterBottom>
+                    </span>
+                  </h3>
+                </div>
+                <Separator className="my-4" />
+                <h4 className="mb-4 text-sm font-semibold">
                   More related to {tool.name}
-                </Typography>
-                <List>
+                </h4>
+                <ul className="space-y-2">
                   {tool.tutorials.map((tutorial, index) => (
-                    <ListItem
+                    <li
                       key={index}
                       onClick={() => handleVideoClick(tutorial.videoLink)}
+                      className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors"
                     >
-                      <ListItemIcon>
-                        <IconWrapper
-                          sx={{ color: tool.iconColor, width: 24, height: 24 }}
-                        >
-                          {tool.icon}
-                        </IconWrapper>
-                      </ListItemIcon>
-                      <ListItemText primary={tutorial.name} />
-                    </ListItem>
+                      <div
+                        className={cn(
+                          "flex h-6 w-6 items-center justify-center rounded-full",
+                        )}
+                        style={
+                          tool.iconColor
+                            ? { backgroundColor: tool.iconColor }
+                            : {}
+                        }
+                      >
+                        {tool.icon}
+                      </div>
+                      <span className="text-sm">{tutorial.name}</span>
+                    </li>
                   ))}
-                </List>
+                </ul>
               </CardContent>
             </Card>
-          </Box>
-        </Box>
-      </Paper>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

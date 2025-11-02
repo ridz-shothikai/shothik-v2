@@ -1,7 +1,9 @@
 // components/plagiarism/Sidebar.jsx
-import React from "react";
-import { Box, IconButton, Typography, Divider, Paper } from "@mui/material";
-import { Close, History, Gavel, ExpandMore } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { ChevronDown, History, Scale, X } from "lucide-react";
 
 const sampleResults = [
   { percent: 50, source: "ms.z-library.sk" },
@@ -18,92 +20,49 @@ const PlagiarismSidebar = ({
   if (!open) return null;
 
   return (
-    <Box
-      sx={{
-        width: 300,
-        height: "100%",
-        borderLeft: "1px solid",
-        borderColor: "divider",
-        bgcolor: "background.paper",
-        boxSizing: "border-box",
-        overflowY: "auto",
-      }}
+    <div
+      className={cn(
+        "border-border bg-background box-border h-full w-[300px] overflow-y-auto border-l",
+      )}
     >
       {/* Top Nav */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 2,
-          pt: 2,
-          pb: 1,
-        }}
-      >
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Gavel fontSize="small" color="action" />
-          <History fontSize="small" color="action" />
-        </Box>
-        <IconButton onClick={onClose} size="small">
-          <Close />
-        </IconButton>
-      </Box>
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <div className="flex gap-2">
+          <Scale className="text-muted-foreground h-4 w-4" />
+          <History className="text-muted-foreground h-4 w-4" />
+        </div>
+        <Button onClick={onClose} variant="ghost" size="icon-sm">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
 
       {/* Title */}
-      <Box sx={{ px: 2 }}>
-        <Typography variant="h6" fontWeight="bold">
-          Plagiarism Checker
-        </Typography>
-        <Divider sx={{ my: 2 }} />
+      <div className="px-4">
+        <h6 className="text-lg font-bold">Plagiarism Checker</h6>
+        <Separator className="my-4" />
 
         {/* Score Card */}
-        <Paper
-          variant="outlined"
-          sx={{
-            bgcolor: "#e8f5e9",
-            p: 2,
-            mb: 2,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h2">{score}%</Typography>
-          <Typography variant="caption">Plagiarism</Typography>
-        </Paper>
+        <Card className="bg-muted/50 mb-4 border p-4 text-center">
+          <h2 className="text-4xl font-bold">{score}%</h2>
+          <p className="text-muted-foreground text-xs">Plagiarism</p>
+        </Card>
 
         {/* Results */}
-        <Typography variant="subtitle2" gutterBottom>
-          Results ({results.length})
-        </Typography>
+        <p className="mb-2 text-sm font-medium">Results ({results.length})</p>
         {results.map((r, i) => (
-          <Box
+          <div
             key={i}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: 1,
-              p: 1,
-              mb: 1,
-            }}
+            className="border-border mb-2 flex items-center justify-between rounded-md border p-2"
           >
-            <Typography variant="body2" sx={{ width: "20%" }}>
-              {r.percent}%
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ flex: 1, textAlign: "center", ml: 1 }}
-            >
-              {r.source}
-            </Typography>
-            <IconButton size="small">
-              <ExpandMore />
-            </IconButton>
-          </Box>
+            <span className="w-[20%] text-sm">{r.percent}%</span>
+            <span className="ml-2 flex-1 text-center text-sm">{r.source}</span>
+            <Button variant="ghost" size="icon-sm">
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </div>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

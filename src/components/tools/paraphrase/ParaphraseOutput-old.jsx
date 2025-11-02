@@ -1,42 +1,29 @@
 import { modes } from "@/_mock/tools/paraphrase";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
 } from "@/redux/api/tools/toolsApi";
-import styled from "@emotion/styled";
-import {
-  AssistantPhotoRounded,
-  ChevronRight,
-  Close,
-  Diamond,
-  InsertDriveFileRounded,
-  Lock,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Divider,
-  Grid2,
-  IconButton,
-  Link,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Paper,
-  Popper,
-  Skeleton,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  tooltipClasses,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { ChevronRight, FileText, Flag, Gem, Lock, X } from "lucide-react";
+import Link from "next/link";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 const ParaphraseOutput = ({
@@ -64,8 +51,6 @@ const ParaphraseOutput = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [sentence, setSentence] = useState("");
   const enqueueSnackbar = useSnackbar();
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
   const synonymInit = {
     synonyms: [],
     sentenceIndex: -1,
@@ -269,46 +254,32 @@ const ParaphraseOutput = ({
     }
   }, [rephraseMode]);
 
-  const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
-  const nounColor = dark ? "#b6bdbd" : "#530a78";
-  const phraseColor = dark ? "#b6bdbd" : "#051780";
-  const hoverColor = "#2971FE";
-  const freezeColor = "#006ACC";
-
   return (
-    <Box sx={{ p: 2, flexGrow: 1, overflowY: "auto" }}>
+    <div className={cn("flex-grow overflow-y-auto p-2")}>
       {data.map((sentence, index) => (
-        <Typography
-          component="span"
+        <span
           key={index}
-          sx={{
-            backgroundColor:
-              highlightSentence === index
-                ? `${dark ? "#253241" : "#f3f7ff"}`
-                : undefined,
-          }}
+          className={cn(
+            highlightSentence === index && "bg-accent rounded-sm px-1 py-0.5",
+          )}
         >
           {sentence &&
             sentence?.map((segment, i, arr) => (
-              <Typography
-                component="span"
+              <span
                 key={i}
-                sx={{
-                  color: /NP/.test(segment.type)
-                    ? adJectiveVerbAdverbColor
+                className={cn(
+                  /NP/.test(segment.type)
+                    ? "text-primary"
                     : /VP/.test(segment.type)
-                      ? nounColor
+                      ? "text-secondary-foreground"
                       : /PP|CP|AdvP|AdjP/.test(segment.type)
-                        ? phraseColor
+                        ? "text-accent-foreground"
                         : /freeze/.test(segment.type)
-                          ? freezeColor
-                          : undefined,
-                  cursor: "pointer",
-                  transition: "all 0.1s ease-in-out",
-                  "&:hover": {
-                    color: !segment.child?.length ? hoverColor : undefined,
-                  },
-                }}
+                          ? "text-muted-foreground"
+                          : "text-foreground",
+                  !segment.child?.length && "hover:text-primary",
+                  "cursor-pointer transition-colors duration-100",
+                )}
                 onClick={(event) =>
                   handleWordClick(event, segment.synonyms, index, i)
                 }
@@ -322,9 +293,9 @@ const ParaphraseOutput = ({
                 {segment.word?.length > 1
                   ? segment.word?.replace(/[.।]$/, "")
                   : segment.word}
-              </Typography>
+              </span>
             ))}
-        </Typography>
+        </span>
       ))}
 
       <Synonyms
@@ -365,61 +336,52 @@ const ParaphraseOutput = ({
         setRephraseMode={setRephraseMode}
         rephraseMode={rephraseMode}
       />
-    </Box>
+    </div>
   );
 };
 
 function Synonyms({ synonyms, open, handleClose, anchorEl, replaceSynonym }) {
   const ref = useOutsideClick(() => handleClose());
+  const virtualRef = useMemo(() => ({ current: anchorEl }), [anchorEl]);
 
   return (
-    <Popper
-      anchorEl={anchorEl}
-      placement="bottom-start"
-      ref={ref}
-      open={open}
-      onClose={handleClose}
-      sx={{ zIndex: 500 }}
-    >
-      <List
-        sx={{
-          minWidth: 200,
-          bgcolor: "background.paper",
-          boxShadow: "rgba(0, 0, 0, 0.2) 0px 4px 22px 0px",
-          position: "relative",
-          overflow: "auto",
-          maxHeight: 300,
-          "& ul": { padding: 0 },
-        }}
+    <Popover open={open}>
+      <PopoverAnchor virtualRef={virtualRef} />
+      <PopoverContent
+        align="start"
+        side="bottom"
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={handleClose}
+        className={cn("z-[500] max-h-[300px] min-w-[200px] overflow-auto p-0")}
       >
-        {synonyms.length
-          ? synonyms?.map((synonym, index) => (
-              <ListItemButton
-                onClick={() => replaceSynonym(synonym)}
-                key={`item-${index}`}
-                sx={{
-                  py: 0,
-                  px: "12px",
-                  minHeight: 32,
-                  justifyContent: "space-between",
-                  display: "flex",
-                  alignItems: "center",
-                  position: "relative",
-                  "&:hover .arrow-icon": {
-                    display: "block",
-                  },
-                }}
-              >
-                <ListItemText sx={{}} primary={`${synonym}`} />
-                <ChevronRight
-                  className="arrow-icon"
-                  sx={{ display: "none", color: "text.secondary" }}
-                />
-              </ListItemButton>
-            ))
-          : null}
-      </List>
-    </Popper>
+        <div ref={ref} className={cn("max-h-[300px] overflow-auto")}>
+          {synonyms.length
+            ? synonyms?.map((synonym, index) => (
+                <button
+                  type="button"
+                  onClick={() => replaceSynonym(synonym)}
+                  key={`item-${index}`}
+                  className={cn(
+                    "group flex w-full items-center justify-between",
+                    "min-h-8 px-3 py-2",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    "cursor-pointer transition-colors",
+                    "focus:bg-accent focus:outline-none",
+                  )}
+                >
+                  <span className={cn("text-sm")}>{synonym}</span>
+                  <ChevronRight
+                    className={cn(
+                      "text-muted-foreground h-4 w-4",
+                      "hidden group-hover:block",
+                    )}
+                  />
+                </button>
+              ))
+            : null}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -435,57 +397,85 @@ function RephraseSentenceNav({
   const { showTooltips } = useSelector(
     (state) => state.settings.interfaceOptions,
   );
+  const virtualRef = useMemo(() => ({ current: anchorEl }), [anchorEl]);
 
   return (
-    <Popper
-      ref={ref}
-      placement="top-start"
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-    >
-      {showTooltips && (
-        <Paper variant="outlined">
-          <Stack
-            direction="row"
-            alignItems="center"
-            sx={{ p: "5px" }}
-            spacing={1}
-          >
-            <Tooltip title="See More Sentence" placement="top" arrow>
-              <Button
-                onClick={rephraseSentence}
-                variant="outlined"
-                sx={{ mb: 0 }}
-                spacing={1}
-                size="small"
-              >
-                Rephrase
-              </Button>
-            </Tooltip>
+    <Popover open={open}>
+      <PopoverAnchor virtualRef={virtualRef} />
+      <PopoverContent
+        align="start"
+        side="top"
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={handleClose}
+        className={cn("z-[500] p-1.5")}
+      >
+        <div ref={ref}>
+          {showTooltips && (
+            <div
+              className={cn(
+                "bg-background rounded-md border",
+                "flex items-center gap-1",
+              )}
+            >
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={rephraseSentence}
+                      variant="outlined"
+                      size="sm"
+                    >
+                      Rephrase
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>See More Sentence</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-            <Tooltip title="Copy Sentence" placement="top" arrow>
-              <IconButton
-                onClick={handleCopy}
-                aria-label="Copy Sentence"
-                size="small"
-              >
-                <InsertDriveFileRounded />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Report Sentence" placement="top" arrow>
-              <IconButton
-                aria-label="Report Sentence"
-                size="small"
-                onClick={sendReprt}
-              >
-                <AssistantPhotoRounded />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        </Paper>
-      )}
-    </Popper>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleCopy}
+                      variant="ghost"
+                      size="icon"
+                      className={cn("h-8 w-8")}
+                      aria-label="Copy Sentence"
+                    >
+                      <FileText className={cn("h-4 w-4")} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Copy Sentence</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={sendReprt}
+                      variant="ghost"
+                      size="icon"
+                      className={cn("h-8 w-8")}
+                      aria-label="Report Sentence"
+                    >
+                      <Flag className={cn("h-4 w-4")} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Report Sentence</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -502,211 +492,171 @@ function RephraseSentences(props) {
     rephraseMode,
   } = props;
 
-  const theme = useTheme();
+  const virtualRef = useMemo(() => ({ current: anchorEl }), [anchorEl]);
+
   if (!open) return null;
-  const dark = theme.palette.mode === "dark";
-
-  // Styled Tooltip
-  const HtmlTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: "#f5f5f9",
-      color: "rgba(0, 0, 0, 0.87)",
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: "1px solid #dadde9",
-    },
-  }));
-
-  const adJectiveVerbAdverbColor = dark ? "#ef5c47" : "#d95645";
-  const nounColor = dark ? "#b6bdbd" : "#530a78";
-  const phraseColor = dark ? "#b6bdbd" : "#051780";
-  const hoverColor = "#2971FE";
-  const freezeColor = "#006ACC";
 
   return (
-    <Popper
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      placement="bottom"
-      sx={{ zIndex: 500 }}
-    >
-      <Box
-        sx={{
-          maxWidth: { xs: "320px", sm: "420px", lg: "635px" },
-          border: 1,
-          p: 0,
-          borderRadius: "5px",
-          bgcolor: "background.paper",
-          borderColor: "background.neutral",
-        }}
+    <Popover open={open}>
+      <PopoverAnchor virtualRef={virtualRef} />
+      <PopoverContent
+        align="start"
+        side="bottom"
+        onEscapeKeyDown={handleClose}
+        onPointerDownOutside={handleClose}
+        className={cn(
+          "z-[500] p-0",
+          "w-[320px] sm:w-[420px] lg:w-[635px]",
+          "bg-popover text-popover-foreground border-border border",
+          "rounded-md",
+        )}
       >
-        <Grid2 container spacing={2} sx={{ pl: 2 }} alignItems="center">
-          <Grid2 size={{ xs: 11 }}>
+        <div className={cn("flex items-center gap-2 pt-2 pr-2 pl-2")}>
+          <div className={cn("flex-1 overflow-hidden")}>
             <Tabs
               value={rephraseMode}
-              onChange={(_, selectedMode) => {
-                // if (userPackage?.includes(selectedMode.toLocaleLowerCase())) {
-                // }
-                setRephraseMode(selectedMode);
-              }}
-              variant="scrollable"
-              scrollButtons="auto"
-              textColor="primary"
-              sx={{
-                "& .MuiTabs-indicator": {
-                  display: "none",
-                },
-                "& .MuiTabs-scrollButtons": {
-                  width: "24px",
-                  height: "24px",
-                },
-                "& .MuiTabs-scrollButtons.Mui-disabled": {
-                  display: "none",
-                },
-                alignItems: "center",
-              }}
+              onValueChange={(val) => setRephraseMode(val)}
             >
-              {modes.map((mode, index) => {
-                const isDisabled = !mode.package.includes(userPackage);
+              <TabsList
+                className={cn(
+                  "w-full justify-start gap-1",
+                  "overflow-x-auto",
+                  "[&>*]:shrink-0",
+                  "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                )}
+              >
+                {modes.map((mode, index) => {
+                  const isDisabled = !mode.package.includes(userPackage);
 
-                return (
-                  <Tab
-                    key={index}
-                    value={mode.value}
-                    label={
-                      isDisabled ? (
-                        <HtmlTooltip
-                          title={
-                            <Link
-                              href="/pricing"
-                              style={{ textDecoration: "none" }}
-                            >
-                              <div
-                                style={{
-                                  textAlign: "center",
-                                  marginBottom: "10px",
-                                }}
-                              >
-                                <Typography variant="h6" gutterBottom>
-                                  Upgrade
-                                </Typography>
-                                <Typography variant="body2">
-                                  Access premium modes by upgrading your plan.
-                                </Typography>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  sx={{ mt: 1, width: "100%" }}
-                                >
-                                  <Diamond fontSize="small" sx={{ mr: 1 }} />
-                                  Upgrade Plan
-                                </Button>
-                              </div>
-                            </Link>
-                          }
+                  const trigger = (
+                    <TabsTrigger
+                      key={index}
+                      value={mode.value}
+                      disabled={isDisabled}
+                      className={cn(
+                        "h-8 px-3 py-1",
+                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                        isDisabled && "cursor-not-allowed opacity-60",
+                      )}
+                    >
+                      {isDisabled && <Lock className={cn("mr-1 h-3 w-3")} />}
+                      {mode.value}
+                    </TabsTrigger>
+                  );
+
+                  if (!isDisabled) return trigger;
+
+                  return (
+                    <TooltipProvider key={index}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+                        <TooltipContent
+                          className={cn(
+                            "max-w-[220px] text-center",
+                            "bg-background text-foreground border-border border",
+                          )}
                         >
-                          <span style={{ cursor: "not-allowed" }}>
-                            {mode.value}
-                          </span>
-                        </HtmlTooltip>
-                      ) : (
-                        mode.value
-                      )
-                    }
-                    icon={
-                      isDisabled ? (
-                        <Lock sx={{ width: 12, height: 12 }} />
-                      ) : undefined
-                    }
-                    iconPosition="start"
-                    onClick={(e) => isDisabled && e.preventDefault()}
-                    sx={{
-                      color: isDisabled ? "text.disabled" : "text.primary",
-                      cursor: isDisabled ? "not-allowed" : "pointer",
-                    }}
-                  />
-                );
-              })}
+                          <div className={cn("mb-2.5 space-y-2 text-center")}>
+                            <h6 className={cn("mb-2 text-base font-semibold")}>
+                              Upgrade
+                            </h6>
+                            <p className={cn("text-muted-foreground text-sm")}>
+                              Access premium modes by upgrading your plan.
+                            </p>
+                            <Link href="/pricing" className={cn("block")}>
+                              <Button
+                                variant="default"
+                                className={cn("mt-2 w-full")}
+                              >
+                                <Gem className={cn("mr-1 h-4 w-4")} />
+                                Upgrade Plan
+                              </Button>
+                            </Link>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                })}
+              </TabsList>
             </Tabs>
-          </Grid2>
-          <Grid2 size={{ xs: 1 }}>
-            <IconButton onClick={handleClose}>
-              <Close />
-            </IconButton>
-          </Grid2>
-        </Grid2>
+          </div>
+          <Button
+            onClick={handleClose}
+            variant="ghost"
+            size="icon"
+            className={cn("h-8 w-8")}
+            aria-label="Close"
+          >
+            <X className={cn("h-4 w-4")} />
+          </Button>
+        </div>
 
-        <List
-          sx={{
-            width: "100%",
-            overflow: "auto",
-            maxHeight: 200,
-          }}
+        <div
+          className={cn(
+            "max-h-[200px] w-full overflow-auto",
+            "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          )}
         >
           {isPending ? (
-            <Box sx={{ px: 2 }}>
-              <Skeleton />
-              <Skeleton animation="wave" />
-              <Skeleton animation={false} />
-            </Box>
+            <div className={cn("space-y-2 px-2 py-2")}>
+              <Skeleton className={cn("h-4 w-full")} />
+              <Skeleton className={cn("h-4 w-11/12")} />
+              <Skeleton className={cn("h-4 w-10/12")} />
+            </div>
           ) : (
             rephraseData?.map((sentence, index) => {
               return (
                 <Fragment key={index}>
-                  <ListItem
-                    sx={{ p: 0 }}
+                  <button
+                    type="button"
                     onClick={() => replaceSentence(sentence)}
+                    className={cn(
+                      "w-full p-0 text-left",
+                      "hover:bg-accent hover:text-accent-foreground",
+                      "transition-colors focus:outline-none",
+                    )}
                   >
-                    <ListItemButton>
-                      <ListItemText>
-                        {sentence &&
-                          sentence?.map((segment, i, arr) => (
-                            <Typography
-                              component="span"
-                              key={i}
-                              sx={{
-                                color: /NP/.test(segment.type)
-                                  ? adJectiveVerbAdverbColor
-                                  : /VP/.test(segment.type)
-                                    ? nounColor
-                                    : /PP|CP|AdvP|AdjP/.test(segment.type)
-                                      ? phraseColor
-                                      : /freeze/.test(segment.type)
-                                        ? freezeColor
-                                        : undefined,
-                                cursor: "pointer",
-                                transition: "all 0.1s ease-in-out",
-                                "&:hover": {
-                                  color: hoverColor,
-                                },
-                              }}
-                            >
-                              {arr.length - 1 === i ||
-                              segment.word === "," ||
-                              segment?.word?.endsWith("'")
-                                ? ""
-                                : " "}
-                              {segment.word?.length > 1
-                                ? segment.word
-                                    ?.replace(/[{}]/g, "")
-                                    .replace(/[.।]+$/, "")
-                                : segment.word}
-                            </Typography>
-                          ))}
-                      </ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                  <Divider />
+                    <div className={cn("px-3 py-2")}>
+                      {sentence &&
+                        sentence?.map((segment, i, arr) => (
+                          <span
+                            key={i}
+                            className={cn(
+                              /NP/.test(segment.type)
+                                ? "text-primary"
+                                : /VP/.test(segment.type)
+                                  ? "text-secondary-foreground"
+                                  : /PP|CP|AdvP|AdjP/.test(segment.type)
+                                    ? "text-accent-foreground"
+                                    : /freeze/.test(segment.type)
+                                      ? "text-muted-foreground"
+                                      : "text-foreground",
+                              "hover:text-primary cursor-pointer transition-colors duration-100",
+                            )}
+                          >
+                            {arr.length - 1 === i ||
+                            segment.word === "," ||
+                            segment?.word?.endsWith("'")
+                              ? ""
+                              : " "}
+                            {segment.word?.length > 1
+                              ? segment.word
+                                  ?.replace(/[{}]/g, "")
+                                  .replace(/[.।]+$/, "")
+                              : segment.word}
+                          </span>
+                        ))}
+                    </div>
+                  </button>
+                  <Separator />
                 </Fragment>
               );
             })
           )}
-        </List>
-      </Box>
-    </Popper>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 

@@ -1,34 +1,31 @@
 "use client";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useShare } from "@/hooks/useShare";
 import {
-  Close as CloseIcon,
-  Comment as CommentIcon,
-  Download as DownloadIcon,
-  Schedule as ScheduleIcon,
-  Share as ShareIcon,
-  Visibility as VisibilityIcon,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  Snackbar,
-  Switch,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+  Calendar,
+  Download,
+  Eye,
+  MessageSquare,
+  Share2,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const ShareModal = ({
   open,
@@ -37,7 +34,6 @@ const ShareModal = ({
   contentType = "research",
   title = "Share Content",
 }) => {
-  const theme = useTheme();
   const {
     shareResearch,
     shareChat,
@@ -60,11 +56,6 @@ const ShareModal = ({
   });
 
   const [newTag, setNewTag] = useState("");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
 
   // Initialize form data when modal opens
   useEffect(() => {
@@ -152,20 +143,12 @@ const ShareModal = ({
           document.body.removeChild(textArea);
         }
 
-        setSnackbar({
-          open: true,
-          message: "Share created and link copied to clipboard!",
-          severity: "success",
-        });
+        toast.success("Share created and link copied to clipboard!");
       } else {
         throw new Error("Only research content sharing is supported");
       }
     } catch (err) {
-      setSnackbar({
-        open: true,
-        message: err.message || "Failed to create share",
-        severity: "error",
-      });
+      toast.error(err.message || "Failed to create share");
     }
   };
 
@@ -184,245 +167,217 @@ const ShareModal = ({
     onClose();
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
-  };
-
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            minHeight: "500px",
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            pb: 1,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <ShareIcon color="primary" />
-            <Typography variant="h6">{title}</Typography>
-          </Box>
-          <IconButton onClick={handleClose} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent className="min-h-[500px] sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Share2 className="text-primary size-5" />
+              <span>{title}</span>
+            </div>
+            <button
+              onClick={handleClose}
+              className="focus:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none"
+            >
+              <X className="size-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          </DialogTitle>
+        </DialogHeader>
 
-        <DialogContent sx={{ pt: 2 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {/* Basic Information */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Basic Information
-              </Typography>
-              <TextField
-                fullWidth
-                label="Title"
-                value={formData.title}
-                onChange={handleInputChange("title")}
-                placeholder="Enter a title for your share"
-                margin="dense"
-              />
-              <TextField
-                fullWidth
-                label="Description"
-                value={formData.description}
-                onChange={handleInputChange("description")}
-                placeholder="Describe what you're sharing"
-                multiline
-                rows={2}
-                margin="dense"
-              />
-            </Box>
-
-            {/* Tags */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Tags
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, mb: 1, flexWrap: "wrap" }}>
-                {formData.tags.map((tag, index) => (
-                  <Chip
-                    key={index}
-                    label={tag}
-                    onDelete={() => handleRemoveTag(tag)}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                ))}
-              </Box>
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <TextField
-                  size="small"
-                  placeholder="Add a tag"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddTag()}
+        <div className="flex flex-col gap-6 pt-2">
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <p className="text-sm font-medium">Basic Information</p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={handleInputChange("title")}
+                  placeholder="Enter a title for your share"
                 />
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleAddTag}
-                  disabled={!newTag.trim()}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={handleInputChange("description")}
+                  placeholder="Describe what you're sharing"
+                  rows={2}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-4">
+            <p className="text-sm font-medium">Tags</p>
+            <div className="mb-2 flex flex-wrap gap-2">
+              {formData.tags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="flex items-center gap-1 pr-1"
                 >
-                  Add
-                </Button>
-              </Box>
-            </Box>
+                  {tag}
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className="hover:bg-accent hover:text-accent-foreground ml-1 rounded-full transition-colors"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Add a tag"
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleAddTag()}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAddTag}
+                disabled={!newTag.trim()}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
 
-            <Divider />
+          <Separator />
 
-            {/* Permissions */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Permissions & Settings
-              </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.isPublic}
-                      onChange={handleInputChange("isPublic")}
-                      color="primary"
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <VisibilityIcon fontSize="small" />
-                      <Typography variant="body2">
-                        Make public (anyone with link can view)
-                      </Typography>
-                    </Box>
-                  }
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.allowComments}
-                      onChange={handleInputChange("allowComments")}
-                      color="primary"
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CommentIcon fontSize="small" />
-                      <Typography variant="body2">Allow comments</Typography>
-                    </Box>
-                  }
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={formData.allowDownload}
-                      onChange={handleInputChange("allowDownload")}
-                      color="primary"
-                    />
-                  }
-                  label={
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <DownloadIcon fontSize="small" />
-                      <Typography variant="body2">Allow download</Typography>
-                    </Box>
+          {/* Permissions */}
+          <div className="space-y-4">
+            <p className="text-sm font-medium">Permissions & Settings</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Eye className="size-4" />
+                  <Label htmlFor="isPublic" className="text-sm font-normal">
+                    Make public (anyone with link can view)
+                  </Label>
+                </div>
+                <Switch
+                  id="isPublic"
+                  checked={formData.isPublic}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, isPublic: checked }))
                   }
                 />
-              </Box>
-            </Box>
+              </div>
 
-            <Divider />
-
-            {/* Advanced Options */}
-            <Box>
-              <Typography variant="subtitle2" gutterBottom>
-                Advanced Options
-              </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <TextField
-                  fullWidth
-                  type="datetime-local"
-                  label="Expires At"
-                  value={formData.expiresAt}
-                  onChange={handleInputChange("expiresAt")}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ScheduleIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  helperText="Leave empty for no expiration"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="size-4" />
+                  <Label
+                    htmlFor="allowComments"
+                    className="text-sm font-normal"
+                  >
+                    Allow comments
+                  </Label>
+                </div>
+                <Switch
+                  id="allowComments"
+                  checked={formData.allowComments}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, allowComments: checked }))
+                  }
                 />
+              </div>
 
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Maximum Views"
-                  value={formData.maxViews}
-                  onChange={handleInputChange("maxViews")}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <VisibilityIcon fontSize="small" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  helperText="Leave empty for unlimited views"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Download className="size-4" />
+                  <Label
+                    htmlFor="allowDownload"
+                    className="text-sm font-normal"
+                  >
+                    Allow download
+                  </Label>
+                </div>
+                <Switch
+                  id="allowDownload"
+                  checked={formData.allowDownload}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, allowDownload: checked }))
+                  }
                 />
-              </Box>
-            </Box>
+              </div>
+            </div>
+          </div>
 
-            {error && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {error}
-              </Alert>
-            )}
-          </Box>
-        </DialogContent>
+          <Separator />
 
-        <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={handleClose} disabled={isLoading}>
+          {/* Advanced Options */}
+          <div className="space-y-4">
+            <p className="text-sm font-medium">Advanced Options</p>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="expiresAt">Expires At</Label>
+                <div className="relative">
+                  <Calendar className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                  <Input
+                    id="expiresAt"
+                    type="datetime-local"
+                    value={formData.expiresAt}
+                    onChange={handleInputChange("expiresAt")}
+                    className="pl-10"
+                  />
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Leave empty for no expiration
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="maxViews">Maximum Views</Label>
+                <div className="relative">
+                  <Eye className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                  <Input
+                    id="maxViews"
+                    type="number"
+                    value={formData.maxViews}
+                    onChange={handleInputChange("maxViews")}
+                    className="pl-10"
+                  />
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  Leave empty for unlimited views
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <Alert variant="destructive" className="mt-2">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </div>
+
+        <DialogFooter className="px-6 pb-6">
+          <Button onClick={handleClose} disabled={isLoading} variant="outline">
             Cancel
           </Button>
           <Button
             onClick={handleShare}
-            variant="contained"
+            variant="default"
             disabled={isLoading}
-            startIcon={<ShareIcon />}
+            className="gap-2"
           >
+            <Share2 className="size-4" />
             {isLoading ? "Creating Share..." : "Create Share"}
           </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

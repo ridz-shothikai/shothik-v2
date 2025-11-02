@@ -1,37 +1,21 @@
-import { ai_agent_list } from "@/config/config/agents";
-import useResponsive from "@/hooks/useResponsive";
-import { keyframes } from "@emotion/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  ArrowBackIos,
-  AttachFile,
-  AutoMode,
-  Send,
-  SmartToy,
-} from "@mui/icons-material";
-import {
-  Box,
-  IconButton,
-  Stack,
-  TextField,
   Tooltip,
-  Typography,
-} from "@mui/material";
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ai_agent_list } from "@/config/config/agents";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { ArrowLeft, Bot, Loader2, Paperclip, Send } from "lucide-react";
 import { useRef, useState } from "react";
-
-export const loadingSpin = keyframes`
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  `;
 
 export default function InputArea({ addChatHistory, loading, showTitle }) {
   const [files, setFiles] = useState(null);
   const [value, setValue] = useState("");
   const filesRef = useRef(null);
-  const isMobile = useResponsive("down", "sm");
+  const isMobile = useIsMobile();
   const [selectedAgent, setSelectedAgent] = useState(null);
 
   const handleAdd = (e) => {
@@ -54,97 +38,66 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
   };
 
   return (
-    <Stack alignItems="center" sx={{ width: "100%" }}>
+    <div className="flex w-full items-center justify-center">
       {showTitle && !selectedAgent && (
-        <Box mb={1}>
-          <Typography
-            fontWeight={600}
-            fontSize={22}
-            mb={1}
-            textAlign="center"
-            sx={{ color: "primary.main" }}
-          >
+        <div className="mb-2">
+          <h3 className="text-primary mb-2 text-center text-[22px] font-semibold">
             Shothik AI multi Agent solution
-          </Typography>
-          <Stack flexDirection="row" alignItems="center" gap={0.5}>
+          </h3>
+          <div className="flex items-center gap-2">
             {ai_agent_list.map((agent, index) => (
-              <Stack
-                sx={{
-                  border: "1px solid",
-                  borderColor: "primary.main",
-                  paddingX: 2,
-                  paddingY: 0.5,
-                  backgroundColor: "#cbe9dd",
-                  borderRadius: 2,
-                  color: "primary.darker",
-                  cursor: "pointer",
-                }}
+              <div
+                className="border-primary bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer rounded-lg border px-4 py-1 transition-colors"
                 onClick={() => setSelectedAgent(agent)}
                 key={index}
               >
-                <Typography fontSize={14}>{agent.title}</Typography>
-              </Stack>
+                <span className="text-sm font-medium">{agent.title}</span>
+              </div>
             ))}
-          </Stack>
-        </Box>
+          </div>
+        </div>
       )}
       {selectedAgent && (
-        <Stack
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="flex-start"
-          sx={{
-            width: isMobile ? "100%" : "80%",
-            border: "1px solid",
-            borderColor: "primary.main",
-            borderTopLeftRadius: "8px",
-            borderTopRightRadius: "8px",
-            borderBottom: "none",
-            backgroundColor: "#cbe9dd",
-            color: "primary.darker",
-          }}
+        <div
+          className={cn(
+            "border-primary bg-primary/10 text-primary flex items-center justify-start rounded-t-lg border border-b-0",
+            isMobile ? "w-full" : "w-[80%]",
+          )}
         >
-          <IconButton onClick={() => setSelectedAgent(null)}>
-            <ArrowBackIos fontSize="small" />
-          </IconButton>
-          <Typography>{selectedAgent.title}</Typography>
-        </Stack>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSelectedAgent(null)}
+            className="h-9 w-9"
+          >
+            <ArrowLeft className="size-4" />
+          </Button>
+          <span className="text-sm font-medium">{selectedAgent.title}</span>
+        </div>
       )}
-      <Box
-        component="form"
+      <form
         onSubmit={handleAdd}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          flexDirection: showTitle ? "column" : "row",
-          justifyContent: "space-between",
-          padding: 2,
-          border: "1px solid",
-          borderColor: "primary.main",
-          borderBottomLeftRadius: "8px",
-          borderBottomRightRadius: "8px",
-          borderTopLeftRadius: selectedAgent ? 0 : "8px",
-          borderTopRightRadius: selectedAgent ? 0 : "8px",
-          width: isMobile ? "100%" : "80%",
-        }}
+        className={cn(
+          "border-primary flex items-center rounded-lg border p-4",
+          selectedAgent && "rounded-t-none",
+          isMobile ? "w-full" : "w-[80%]",
+          showTitle ? "flex-col" : "flex-row",
+          "justify-between",
+        )}
       >
-        <Stack
-          flexDirection="row"
-          alignItems="center"
-          sx={{
-            width: isMobile && !showTitle ? undefined : "100%",
-            justifyContent: isMobile && !showTitle ? undefined : "flex-start",
-          }}
+        <div
+          className={cn(
+            "flex w-full items-center",
+            isMobile && !showTitle && "w-auto",
+          )}
         >
-          <SmartToy sx={{ color: "#00A76F", mr: 1 }} />
-          <TextField
-            fullWidth
-            variant="standard"
+          <Bot className="text-primary mr-3 size-5" />
+          <Input
             placeholder="Give a task to Shothik AI Agent"
-            slotProps={{
-              input: { disableUnderline: true },
-            }}
-            sx={{ minWidth: isMobile ? 200 : 300 }}
+            className={cn(
+              "w-full border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+              isMobile ? "min-w-[200px]" : "min-w-[300px]",
+            )}
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
@@ -152,63 +105,54 @@ export default function InputArea({ addChatHistory, loading, showTitle }) {
           <input
             type="file"
             ref={filesRef}
-            hidden
+            className="hidden"
             accept=".pdf,.jpg,.jpeg,.png"
             multiple
             onChange={handleInputChange}
           />
-        </Stack>
+        </div>
 
-        <Stack
-          flexDirection="row"
-          alignItems="center"
-          sx={{
-            width: isMobile && !showTitle ? undefined : "100%",
-            justifyContent: isMobile && !showTitle ? undefined : "flex-end",
-          }}
+        <div
+          className={cn(
+            "flex w-full items-center justify-end",
+            isMobile && !showTitle && "w-auto",
+          )}
         >
-          <Tooltip
-            title={
-              filesRef?.current?.files?.length
-                ? `${filesRef.current.files.length} Files selected`
-                : "Attach files"
-            }
-          >
-            <IconButton
-              sx={{
-                position: "relative",
-                "&:hover .filesCount": { display: "none" },
-              }}
-              onClick={handleFileInputClick}
-              type="button"
-            >
-              {files ? (
-                <Typography
-                  sx={{ position: "absolute", top: -5, right: 5 }}
-                  className="filesCount"
-                  fontSize={14}
-                >
-                  {Array.from(files).length}
-                </Typography>
-              ) : null}
-              <AttachFile fontSize="small" />
-            </IconButton>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                type="button"
+                onClick={handleFileInputClick}
+                className="group relative"
+              >
+                {files && (
+                  <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full text-xs font-semibold group-hover:hidden">
+                    {Array.from(files).length}
+                  </span>
+                )}
+                <Paperclip className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {filesRef?.current?.files?.length
+                  ? `${filesRef.current.files.length} Files selected`
+                  : "Attach files"}
+              </p>
+            </TooltipContent>
           </Tooltip>
 
-          <IconButton disabled={loading} type="submit" color="primary">
+          <Button disabled={loading} type="submit" size="icon">
             {loading ? (
-              <AutoMode
-                sx={{
-                  animation: `${loadingSpin} 1s linear infinite`,
-                  color: "primary.main",
-                }}
-              />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Send />
+              <Send className="size-4" />
             )}
-          </IconButton>
-        </Stack>
-      </Box>
-    </Stack>
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

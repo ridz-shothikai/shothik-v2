@@ -1,8 +1,14 @@
 "use client";
 
+import { buttonVariants } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { UploadFileRounded } from "@mui/icons-material";
-import { Button, CircularProgress, Tooltip } from "@mui/material";
+import { Upload } from "lucide-react";
 import mammoth from "mammoth";
 import { useRef, useState } from "react";
 import { pdfjs } from "react-pdf";
@@ -92,36 +98,40 @@ const ButtonInsertDocumentText = ({ className, onApply, onChange }) => {
   };
 
   return (
-    <Tooltip
-      className={cn(className)}
-      title="Upload File"
-      arrow
-      placement="top"
-    >
-      <Button
-        className="!relative shrink-0 whitespace-nowrap"
-        component="label"
-        tabIndex={-1}
-        color="success"
-        variant="outlined"
-        size="small"
-        startIcon={
-          isProcessing ? <CircularProgress size={16} /> : <UploadFileRounded />
-        }
-        disabled={isProcessing}
-      >
-        Upload Document
-        <input
-          ref={inputRef}
-          onChange={(e) => {
-            handleFileChange(e);
-            onChange?.(e);
-          }}
-          type="file"
-          accept="application/pdf, .docx"
-          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-        />
-      </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <label
+          className={cn(
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "relative shrink-0 cursor-pointer",
+            isProcessing && "pointer-events-none opacity-50",
+            className,
+          )}
+        >
+          <div className="flex items-center gap-2">
+            {isProcessing ? (
+              <Spinner className="size-4" />
+            ) : (
+              <Upload className="size-4" />
+            )}
+            <span>Upload Document</span>
+          </div>
+          <input
+            ref={inputRef}
+            onChange={(e) => {
+              handleFileChange(e);
+              onChange?.(e);
+            }}
+            type="file"
+            accept="application/pdf, .docx"
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            disabled={isProcessing}
+          />
+        </label>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p>Upload File</p>
+      </TooltipContent>
     </Tooltip>
   );
 };

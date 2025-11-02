@@ -1,5 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { Button } from "@mui/material";
+import { forwardRef } from "react";
 
 const TrackedButton = forwardRef(
   (
@@ -41,5 +42,7 @@ const TrackedButton = forwardRef(
     );
   },
 );
+
+TrackedButton.displayName = "TrackedButton";
 
 export default TrackedButton;

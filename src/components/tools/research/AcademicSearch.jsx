@@ -1,60 +1,22 @@
-import {
-  Article,
-  CalendarToday,
-  CloudDownload,
-  MenuBook,
-  Person,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Chip,
-  IconButton,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import * as motion from "motion/react-client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, DownloadCloud, FileText, User } from "lucide-react";
+import { motion } from "motion/react";
 
 const AcademicSearch = ({ data }) => {
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
-
   return (
     <Card>
-      <CardContent>
-        <Stack direction="row" alignItems="center" spacing={0.5}>
-          <Box>
-            <IconButton
-              color="text.secondary"
-              aria-label="Book"
-              sx={{ bgcolor: "rgba(73, 149, 87, 0.04)" }}
-            >
-              <MenuBook sx={{ fontSize: 22 }} />
-            </IconButton>
-          </Box>
-          <Box>
-            <Typography sx={{ fontWeight: "bold", fontSize: 17 }}>
-              Academic Papers
-            </Typography>
-            <Typography
-              sx={{ color: "text.secondary", fontSize: 15 }}
-            >{`Found ${data?.length} papers`}</Typography>
-          </Box>
-        </Stack>
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{
-            overflowX: "auto",
-            mt: 2,
-            pb: 1,
-            scrollbarWidth: "none",
-            "&::-webkit-scrollbar": { display: "none" },
-          }}
-        >
+      <CardContent className="p-6">
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/5 flex h-10 w-10 items-center justify-center rounded-lg">
+            <FileText className="text-primary size-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold">Academic Papers</h2>
+            <p className="text-muted-foreground text-sm">{`Found ${data?.length} papers`}</p>
+          </div>
+        </div>
+        <div className="mt-8 flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [-webkit-scrollbar]:hidden">
           {data?.map((paper, index) => (
             <motion.div
               key={paper.url || index}
@@ -62,122 +24,75 @@ const AcademicSearch = ({ data }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <Card
-                sx={{
-                  width: 300,
-                  flexShrink: 0,
-                  bgcolor: "background.paper",
-                  boxShadow: 0,
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "divider",
-                  borderRadius: "10px",
-                  transition: "all 0.2s",
-                  "&:hover": { boxShadow: 3 },
-                  p: 0,
-                }}
-              >
-                <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-                  <Stack spacing={1}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 1,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}
-                    >
+              <Card className="w-[300px] shrink-0 border-none shadow-none transition-shadow hover:shadow-md">
+                <CardContent className="p-3">
+                  <div className="flex flex-col gap-2">
+                    <h3 className="line-clamp-1 text-sm font-semibold">
                       {paper.title}
-                    </Typography>
+                    </h3>
 
                     {paper.author && (
-                      <Box>
-                        <Chip
-                          icon={<Person sx={{ fontSize: 20 }} />}
-                          label={
-                            paper.author.split(";").slice(0, 2).join(", ") +
-                            (paper.author.split(";").length > 2
-                              ? " et al."
-                              : "")
-                          }
-                          sx={{
-                            borderRadius: "5px",
-                            bgcolor: dark ? "#2b323b" : "#f5f5f5",
-                            color: "text.secondary",
-                            "& .MuiChip-icon": { color: "inherit" },
-                          }}
-                        />
-                      </Box>
+                      <div>
+                        <div className="bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs">
+                          <User className="size-4" />
+                          <span>
+                            {paper.author.split(";").slice(0, 2).join(", ") +
+                              (paper.author.split(";").length > 2
+                                ? " et al."
+                                : "")}
+                          </span>
+                        </div>
+                      </div>
                     )}
 
                     {paper.publishedDate && (
-                      <Box>
-                        <Chip
-                          icon={<CalendarToday sx={{ fontSize: 17 }} />}
-                          label={new Date(
-                            paper.publishedDate,
-                          ).toLocaleDateString()}
-                          sx={{
-                            borderRadius: "7px",
-                            bgcolor: dark ? "#2b323b" : "#f5f5f5",
-                            color: "text.secondary",
-                            "& .MuiChip-icon": { color: "inherit" },
-                          }}
-                        />
-                      </Box>
+                      <div>
+                        <div className="bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs">
+                          <Calendar className="size-4" />
+                          <span>
+                            {new Date(paper.publishedDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
                     )}
 
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 4,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                        }}
-                      >
+                    <div>
+                      <p className="text-muted-foreground line-clamp-4 text-xs">
                         {paper.text}
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
 
-                    <Box sx={{ display: "flex", gap: 2 }}>
+                    <div className="flex gap-2">
                       <Button
-                        variant="outlined"
+                        variant="outline"
                         onClick={() => window.open(paper.url, "_blank")}
-                        sx={{ flexGrow: 1 }}
+                        className="flex-1"
                       >
-                        <Article sx={{ fontSize: 18, mr: 1 }} />
+                        <FileText className="size-4" />
                         View Paper
                       </Button>
 
                       {paper.url.includes("arxiv.org") && (
                         <Button
-                          variant="outlined"
+                          variant="outline"
                           onClick={() =>
                             window.open(
                               paper.url.replace("abs", "pdf"),
                               "_blank",
                             )
                           }
-                          sx={{
-                            backgroundColor: "transparent",
-                            "&:hover": {
-                              backgroundColor: "rgba(138, 71, 255, 0.1)",
-                            },
-                          }}
+                          className="hover:bg-primary/10 bg-transparent"
                         >
-                          <CloudDownload sx={{ fontSize: 18 }} />
+                          <DownloadCloud className="size-4" />
                         </Button>
                       )}
-                    </Box>
-                  </Stack>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </Stack>
+        </div>
       </CardContent>
     </Card>
   );

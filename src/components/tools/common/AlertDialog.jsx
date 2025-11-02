@@ -1,14 +1,14 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { setShowLoginModal } from "@/redux/slice/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slice/tools";
-import SvgColor from "@/resource/SvgColor";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import Stack from "@mui/material/Stack";
-import { alpha } from "@mui/system";
+import { Lock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -21,79 +21,44 @@ export default function AlertDialog() {
   console.log(user, "alert dialog user data");
 
   return (
-    <Dialog
-      open={showAlert}
-      onClose={() => dispatch(setShowAlert(false))}
-      fullWidth
-      maxWidth="xs"
-    >
-      <span
-        style={{
-          marginBottom: -30,
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-        }}
-      >
-        <span style={{ paddingTop: 20, paddingRight: 20 }}>
-          <SvgColor
-            src="/icons/close.svg"
-            onClick={() => dispatch(setAlertMessage(false))}
-            className="cursor-pointer"
-          />
-        </span>
-      </span>
-      <DialogContent>
-        <Stack sx={{ pt: { xs: 3, md: 5 } }}>
-          <SvgColor
-            color="primary.main"
-            src={"/tools/ic-lock.svg"}
-            className="mx-auto h-24 w-24"
-          />
-        </Stack>
-        <DialogContentText
-          sx={{ pt: { xs: 3, md: 3 }, textAlign: "center" }}
-          id="alert-dialog-description"
-        >
+    <Dialog open={showAlert} onOpenChange={() => dispatch(setShowAlert(false))}>
+      <DialogContent className="max-w-xs">
+        <div className="-mb-7 flex items-center justify-end">
+          <div className="pt-5 pr-5">
+            <button
+              onClick={() => dispatch(setAlertMessage(false))}
+              className="cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="pt-3 md:pt-5">
+          <Lock className="text-primary mx-auto h-24 w-24" />
+        </div>
+        <DialogDescription className="pt-3 text-center md:pt-3">
           {alertMessage}
-        </DialogContentText>
+        </DialogDescription>
+        <DialogFooter className="mb-1.5 md:mb-2.5">
+          {alertMessage !== "You can't use less than 30 words" && (
+            <Button
+              className="bg-foreground text-background hover:bg-foreground/90 w-full"
+              variant="default"
+              size="default"
+              onClick={() => {
+                if (!user) {
+                  dispatch(setShowLoginModal(true));
+                } else {
+                  dispatch(setShowAlert(false));
+                  router.push("/pricing");
+                }
+              }}
+            >
+              {!user ? "Login" : "Upgrade now"}
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
-      <DialogActions sx={{ mb: { xs: 1.5, md: 2.5 } }}>
-        {alertMessage !== "You can't use less than 30 words" && (
-          <Button
-            fullWidth
-            color="inherit"
-            sx={{
-              bgcolor: (theme) =>
-                theme.palette.mode === "dark"
-                  ? theme.palette.grey[300]
-                  : theme.palette.grey[900],
-              color: (theme) =>
-                theme.palette.mode === "dark"
-                  ? theme.palette.grey[900]
-                  : theme.palette.grey[300],
-              "&:hover": {
-                bgcolor: (theme) =>
-                  theme.palette.mode === "dark"
-                    ? alpha(theme.palette.grey[300], 0.9)
-                    : alpha(theme.palette.grey[900], 0.9),
-              },
-            }}
-            variant="contained"
-            size="medium"
-            onClick={() => {
-              if (!user) {
-                dispatch(setShowLoginModal(true));
-              } else {
-                dispatch(setShowAlert(false));
-                router.push("/pricing");
-              }
-            }}
-          >
-            {!user ? "Login" : "Upgrade now"}
-          </Button>
-        )}
-      </DialogActions>
     </Dialog>
   );
 }

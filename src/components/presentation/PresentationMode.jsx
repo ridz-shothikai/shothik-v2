@@ -1,7 +1,8 @@
-import { Box, IconButton, Modal, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-
-import { useEffect, useState, useRef, useCallback } from "react";
+import { Dialog, DialogOverlay, DialogPortal } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const SLIDE_WIDTH = 1280;
 const SLIDE_HEIGHT = 720;
@@ -113,86 +114,57 @@ export const PresentationMode = ({ slides, open, onClose }) => {
   const currentSlide = slides[currentIndex];
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        ref={containerRef}
-        onClick={handleNext} // Left-click anywhere to advance the slide
-        sx={{
-          width: "100vw",
-          height: "100vh",
-          bgcolor: "black",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          outline: "none",
-          cursor: "pointer",
-          overflow: "hidden",
-        }}
-      >
-        {/* Close Button */}
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent the click from advancing the slide
-            onClose();
-          }}
-          sx={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-            color: "white",
-            bgcolor: "rgba(0,0,0,0.5)",
-            zIndex: 1000,
-            "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
-          }}
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogPortal>
+        <DialogOverlay className="bg-foreground" />
+        <DialogPrimitive.Content
+          className={cn(
+            "bg-foreground fixed inset-0 z-50 flex h-screen w-screen max-w-none cursor-pointer items-center justify-center overflow-hidden rounded-none border-0 p-0 outline-none",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          )}
         >
-          <CloseIcon />
-        </IconButton>
+          <div
+            ref={containerRef}
+            onClick={handleNext}
+            className="relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden outline-none"
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent the click from advancing the slide
+                onClose();
+              }}
+              className="text-background bg-foreground/50 hover:bg-foreground/80 absolute top-4 right-4 z-[1000] rounded-full p-2 transition-colors"
+              aria-label="Close presentation"
+            >
+              <X className="h-5 w-5" />
+            </button>
 
-        {/* Scaled Slide Iframe */}
-        <Box
-          sx={{
-            width: `${SLIDE_WIDTH}px`,
-            height: `${SLIDE_HEIGHT}px`,
-            transform: `scale(${scale})`,
-            transformOrigin: "center center",
-            transition: "transform 0.3s ease",
-            bgcolor: "#f0f0f0",
-            boxShadow: "0 0 30px rgba(255,255,255,0.2)",
-            flexShrink: 0,
-          }}
-        >
-          <iframe
-            srcDoc={currentSlide.body}
-            style={{
-              width: "100%",
-              height: "100%",
-              border: "none",
-              pointerEvents: "none",
-              display: "block",
-            }}
-            title={`Slide ${currentIndex + 1}`}
-          />
-        </Box>
+            {/* Scaled Slide Iframe */}
+            <div
+              className="bg-muted shrink-0 shadow-2xl transition-transform duration-300 ease-in-out"
+              style={{
+                width: `${SLIDE_WIDTH}px`,
+                height: `${SLIDE_HEIGHT}px`,
+                transform: `scale(${scale})`,
+                transformOrigin: "center center",
+              }}
+            >
+              <iframe
+                srcDoc={currentSlide.body}
+                className="pointer-events-none block h-full w-full border-0"
+                title={`Slide ${currentIndex + 1}`}
+              />
+            </div>
 
-        {/* Slide Counter */}
-        <Typography
-          sx={{
-            position: "absolute",
-            bottom: 20,
-            left: "50%",
-            transform: "translateX(-50%)",
-            color: "white",
-            bgcolor: "rgba(0,0,0,0.5)",
-            px: 2,
-            py: 1,
-            borderRadius: 2,
-            fontFamily: "sans-serif",
-            zIndex: 1000,
-          }}
-        >
-          {currentIndex + 1} / {slides.length}
-        </Typography>
-      </Box>
-    </Modal>
+            {/* Slide Counter */}
+            <span className="text-background bg-foreground/50 absolute bottom-5 left-1/2 z-[1000] -translate-x-1/2 rounded-lg px-4 py-2 font-sans">
+              {currentIndex + 1} / {slides.length}
+            </span>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPortal>
+    </Dialog>
   );
 };

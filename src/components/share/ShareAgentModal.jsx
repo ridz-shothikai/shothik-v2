@@ -1,39 +1,40 @@
 "use client";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import {
   useCreatePrivateShareMutation,
   useCreatePublicShareMutation,
 } from "@/redux/api/shareAgent/shareAgentApi";
 import {
-  Add as AddIcon,
-  Close as CloseIcon,
-  ContentCopy as CopyIcon,
-  Delete as DeleteIcon,
-  Email as EmailIcon,
+  Copy,
+  Info,
   Link as LinkIcon,
-  Settings as SettingsIcon,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  IconButton,
-  InputAdornment,
-  Snackbar,
-  Switch,
-  Tab,
-  Tabs,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+  Mail,
+  Plus,
+  Settings,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ShareAgentModal = ({
@@ -77,7 +78,17 @@ const ShareAgentModal = ({
     }
   }, [open, defaultTab]);
 
-  const handleTabChange = (event, newValue) => {
+  // Auto-hide snackbar after 4 seconds
+  useEffect(() => {
+    if (snackbar.open) {
+      const timer = setTimeout(() => {
+        setSnackbar({ ...snackbar, open: false });
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [snackbar]);
+
+  const handleTabChange = (newValue) => {
     setActiveTab(newValue);
     // Reset state when switching tabs
     setEmails([]);
@@ -190,16 +201,6 @@ const ShareAgentModal = ({
     }
   };
 
-  const handleSettingChange = (setting) => (event) => {
-    setSettings({
-      ...settings,
-      [setting]:
-        event.target.type === "checkbox"
-          ? event.target.checked
-          : event.target.value,
-    });
-  };
-
   const handleClose = () => {
     // Reset all state
     setActiveTab(0);
@@ -221,311 +222,338 @@ const ShareAgentModal = ({
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-            minHeight: "500px",
-          },
-        }}
-      >
-        <DialogTitle
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            pb: 1,
-          }}
-        >
-          <Typography variant="h6" component="div" fontWeight={600}>
-            Share AI Research
-          </Typography>
-          <IconButton onClick={handleClose} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+      <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+        <DialogContent className="min-h-[500px] max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between pr-8">
+              <span className="text-lg font-semibold">Share AI Research</span>
+            </DialogTitle>
+          </DialogHeader>
 
-        <Box sx={{ borderBottom: 1, borderColor: "divider", px: 3 }}>
-          <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab
-              icon={<EmailIcon />}
-              label="Private (Email)"
-              iconPosition="start"
-            />
-            <Tab icon={<LinkIcon />} label="Public Link" iconPosition="start" />
-          </Tabs>
-        </Box>
+          <Tabs
+            value={activeTab.toString()}
+            onValueChange={(value) => handleTabChange(parseInt(value))}
+            className="w-full"
+          >
+            <div className="border-border border-b px-3">
+              <TabsList className="w-full">
+                <TabsTrigger value="0" className="flex-1 gap-2">
+                  <Mail className="h-4 w-4" />
+                  Private (Email)
+                </TabsTrigger>
+                <TabsTrigger value="1" className="flex-1 gap-2">
+                  <LinkIcon className="h-4 w-4" />
+                  Public Link
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-        <DialogContent sx={{ pt: 3, px: 3 }}>
-          {/* Private Share Tab */}
-          {activeTab === 0 && (
-            <Box>
-              <Typography variant="body2" color="text.secondary" mb={2}>
-                Share this research privately by sending an email invitation
-              </Typography>
+            <div className="px-3 pt-4">
+              <TabsContent value="0" className="mt-0 space-y-4">
+                <p className="text-muted-foreground text-sm">
+                  Share this research privately by sending an email invitation
+                </p>
 
-              {/* Email Input */}
-              <Box mb={3}>
-                <TextField
-                  fullWidth
-                  label="Add email addresses"
-                  placeholder="Enter email and press Enter"
-                  value={currentEmail}
-                  onChange={(e) => setCurrentEmail(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleAddEmail}
-                          edge="end"
-                          disabled={!currentEmail}
+                {/* Email Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="email-input">Add email addresses</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="email-input"
+                      placeholder="Enter email and press Enter"
+                      value={currentEmail}
+                      onChange={(e) => setCurrentEmail(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleAddEmail}
+                      disabled={!currentEmail}
+                      size="icon"
+                      variant="outline"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-muted-foreground text-xs">
+                    Press Enter or click + to add
+                  </p>
+                </div>
+
+                {/* Email Chips */}
+                {emails.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {emails.map((email, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="flex items-center gap-1 pr-1"
+                      >
+                        {email}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4 p-0 hover:bg-transparent"
+                          onClick={() => handleRemoveEmail(email)}
                         >
-                          <AddIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  helperText="Press Enter or click + to add"
-                />
-              </Box>
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
-              {/* Email Chips */}
-              {emails.length > 0 && (
-                <Box mb={3} display="flex" flexWrap="wrap" gap={1}>
-                  {emails.map((email, index) => (
-                    <Chip
-                      key={index}
-                      label={email}
-                      onDelete={() => handleRemoveEmail(email)}
-                      deleteIcon={<DeleteIcon />}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  ))}
-                </Box>
-              )}
+                {/* Custom Message */}
+                <div className="space-y-2">
+                  <Label htmlFor="private-message">
+                    Custom message (optional)
+                  </Label>
+                  <Textarea
+                    id="private-message"
+                    placeholder="Add a personal message to your email..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </TabsContent>
 
-              {/* Custom Message */}
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Custom message (optional)"
-                placeholder="Add a personal message to your email..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-            </Box>
-          )}
+              <TabsContent value="1" className="mt-0 space-y-4">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Anyone with this link can view your research. You can
+                    customize access settings below.
+                  </AlertDescription>
+                </Alert>
 
-          {/* Public Link Tab */}
-          {activeTab === 1 && (
-            <Box>
-              <Alert severity="info" sx={{ mb: 3 }}>
-                <Typography variant="body2">
-                  Anyone with this link can view your research. You can
-                  customize access settings below.
-                </Typography>
-              </Alert>
+                <div className="space-y-2">
+                  <Label htmlFor="public-message">Description (optional)</Label>
+                  <Textarea
+                    id="public-message"
+                    placeholder="Add a description for this shared link..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
 
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Description (optional)"
-                placeholder="Add a description for this shared link..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                sx={{ mb: 2 }}
-              />
-            </Box>
-          )}
-
-          {/* Share Link Display */}
-          {shareLink && (
-            <Box
-              mt={3}
-              p={2}
-              sx={{
-                bgcolor: "success.light",
-                borderRadius: 1,
-                border: "1px solid",
-                borderColor: "success.main",
-              }}
-            >
-              <Typography variant="subtitle2" color="success.dark" gutterBottom>
-                ✓ Share link created successfully!
-              </Typography>
-              <Box display="flex" alignItems="center" gap={1} mt={1}>
-                <TextField
-                  fullWidth
-                  value={shareLink}
-                  size="small"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <Tooltip title="Copy link">
-                  <IconButton onClick={handleCopyLink} color="primary">
-                    <CopyIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Box>
-          )}
-
-          {/* Advanced Settings */}
-          <Box mt={3}>
-            <Button
-              startIcon={<SettingsIcon />}
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              sx={{ mb: 2 }}
-            >
-              {showAdvanced ? "Hide" : "Show"} Advanced Settings
-            </Button>
-
-            {showAdvanced && (
-              <Box
-                p={2}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  bgcolor: "background.paper",
-                }}
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.requireSignIn}
-                      onChange={handleSettingChange("requireSignIn")}
-                    />
-                  }
-                  label={
-                    <Box>
-                      <Typography variant="body2">Require sign-in</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Viewers must be logged in to access
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ mb: 2, display: "flex", alignItems: "flex-start" }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.allowCopy}
-                      onChange={handleSettingChange("allowCopy")}
-                    />
-                  }
-                  label="Allow copying content"
-                  sx={{ mb: 2 }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.allowExport}
-                      onChange={handleSettingChange("allowExport")}
-                    />
-                  }
-                  label="Allow exporting"
-                  sx={{ mb: 2 }}
-                />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={settings.trackViews}
-                      onChange={handleSettingChange("trackViews")}
-                    />
-                  }
-                  label="Track views"
-                  sx={{ mb: 2 }}
-                />
-
-                <TextField
-                  fullWidth
-                  type="password"
-                  label="Password protection (optional)"
-                  value={settings.password}
-                  onChange={handleSettingChange("password")}
-                  sx={{ mb: 2 }}
-                  helperText="Leave empty for no password"
-                />
-
-                <TextField
-                  fullWidth
-                  type="datetime-local"
-                  label="Expiry date (optional)"
-                  value={settings.expiryDate}
-                  onChange={handleSettingChange("expiryDate")}
-                  InputLabelProps={{ shrink: true }}
-                  helperText="Leave empty for no expiration"
-                />
-              </Box>
+          <div className="space-y-4">
+            {/* Share Link Display */}
+            {shareLink && (
+              <div className="border-primary bg-primary/10 rounded-md border p-4">
+                <p className="text-primary mb-2 text-sm font-medium">
+                  ✓ Share link created successfully!
+                </p>
+                <div className="mt-2 flex items-center gap-2">
+                  <Input value={shareLink} readOnly className="flex-1" />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        onClick={handleCopyLink}
+                        size="icon"
+                        variant="outline"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Copy link</TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
             )}
-          </Box>
-        </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={handleClose} color="inherit">
-            Cancel
-          </Button>
-          {activeTab === 0 && (
-            <Button
-              variant="contained"
-              onClick={handlePrivateShare}
-              disabled={isPrivateLoading || emails.length === 0}
-              startIcon={
-                isPrivateLoading ? (
-                  <CircularProgress size={20} />
+            {/* Advanced Settings */}
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="mb-2"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                {showAdvanced ? "Hide" : "Show"} Advanced Settings
+              </Button>
+
+              {showAdvanced && (
+                <div className="border-border bg-background space-y-4 rounded-md border p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <Label
+                        htmlFor="require-signin"
+                        className="text-sm font-medium"
+                      >
+                        Require sign-in
+                      </Label>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        Viewers must be logged in to access
+                      </p>
+                    </div>
+                    <Switch
+                      id="require-signin"
+                      checked={settings.requireSignIn}
+                      onCheckedChange={(checked) =>
+                        setSettings({ ...settings, requireSignIn: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <Label htmlFor="allow-copy" className="text-sm font-medium">
+                      Allow copying content
+                    </Label>
+                    <Switch
+                      id="allow-copy"
+                      checked={settings.allowCopy}
+                      onCheckedChange={(checked) =>
+                        setSettings({ ...settings, allowCopy: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <Label
+                      htmlFor="allow-export"
+                      className="text-sm font-medium"
+                    >
+                      Allow exporting
+                    </Label>
+                    <Switch
+                      id="allow-export"
+                      checked={settings.allowExport}
+                      onCheckedChange={(checked) =>
+                        setSettings({ ...settings, allowExport: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <Label
+                      htmlFor="track-views"
+                      className="text-sm font-medium"
+                    >
+                      Track views
+                    </Label>
+                    <Switch
+                      id="track-views"
+                      checked={settings.trackViews}
+                      onCheckedChange={(checked) =>
+                        setSettings({ ...settings, trackViews: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">
+                      Password protection (optional)
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={settings.password}
+                      onChange={(e) =>
+                        setSettings({ ...settings, password: e.target.value })
+                      }
+                      placeholder="Leave empty for no password"
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      Leave empty for no password
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="expiry-date">Expiry date (optional)</Label>
+                    <Input
+                      id="expiry-date"
+                      type="datetime-local"
+                      value={settings.expiryDate}
+                      onChange={(e) =>
+                        setSettings({ ...settings, expiryDate: e.target.value })
+                      }
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      Leave empty for no expiration
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="px-3 pb-2">
+            <Button onClick={handleClose} variant="outline">
+              Cancel
+            </Button>
+            {activeTab === 0 && (
+              <Button
+                variant="default"
+                onClick={handlePrivateShare}
+                disabled={isPrivateLoading || emails.length === 0}
+              >
+                {isPrivateLoading ? (
+                  <>
+                    <Spinner className="mr-2 h-4 w-4" />
+                    Sending...
+                  </>
                 ) : (
-                  <EmailIcon />
-                )
-              }
-            >
-              {isPrivateLoading
-                ? "Sending..."
-                : `Send to ${emails.length} recipient(s)`}
-            </Button>
-          )}
-          {activeTab === 1 && (
-            <Button
-              variant="contained"
-              onClick={handlePublicShare}
-              disabled={isPublicLoading}
-              startIcon={
-                isPublicLoading ? <CircularProgress size={20} /> : <LinkIcon />
-              }
-            >
-              {isPublicLoading ? "Creating..." : "Generate Public Link"}
-            </Button>
-          )}
-        </DialogActions>
+                  <>
+                    <Mail className="mr-2 h-4 w-4" />
+                    Send to {emails.length} recipient(s)
+                  </>
+                )}
+              </Button>
+            )}
+            {activeTab === 1 && (
+              <Button
+                variant="default"
+                onClick={handlePublicShare}
+                disabled={isPublicLoading}
+              >
+                {isPublicLoading ? (
+                  <>
+                    <Spinner className="mr-2 h-4 w-4" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Generate Public Link
+                  </>
+                )}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      {/* Snackbar Toast */}
+      {snackbar.open && (
+        <div className="fixed bottom-5 left-1/2 z-50 max-w-md min-w-[300px] -translate-x-1/2">
+          <Alert
+            variant={snackbar.severity === "error" ? "destructive" : "default"}
+            className={cn(
+              snackbar.severity === "success" &&
+                "border-primary bg-primary/10 text-primary",
+              snackbar.severity === "warning" &&
+                "border-border bg-background text-foreground",
+            )}
+          >
+            <AlertDescription className="flex items-center justify-between">
+              <span>{snackbar.message}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseSnackbar}
+                className="ml-2 h-4 w-4"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
     </>
   );
 };

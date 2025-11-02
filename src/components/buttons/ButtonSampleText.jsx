@@ -1,8 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { SaveAsOutlined } from "@mui/icons-material";
-import { Button, Tooltip } from "@mui/material";
+import { FileText } from "lucide-react";
 
 const ButtonSampleText = ({
   className,
@@ -23,27 +28,32 @@ const ButtonSampleText = ({
     }
   };
 
-  return (
-    <Tooltip
-      className={cn(className)}
-      title="Try sample text"
-      arrow
-      placement="top"
+  const button = (
+    <Button
+      variant="outline"
+      size="sm"
+      className={cn("shrink-0 whitespace-nowrap", className)}
+      onClick={(e) => {
+        handleSampleText();
+        onClick?.(e);
+      }}
+      {...props}
     >
-      <Button
-        className="shrink-0 whitespace-nowrap"
-        color="primary"
-        variant="outlined"
-        size="small"
-        onClick={(e) => {
-          handleSampleText();
-          onClick?.(e);
-        }}
-        startIcon={<SaveAsOutlined />}
-        {...props}
-      >
-        Try Sample
-      </Button>
+      <FileText className="size-4" />
+      Try Sample
+    </Button>
+  );
+
+  if (!isTooltip) {
+    return button;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent side="top">
+        <p>Try sample text</p>
+      </TooltipContent>
     </Tooltip>
   );
 };

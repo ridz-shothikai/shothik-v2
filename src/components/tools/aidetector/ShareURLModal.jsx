@@ -1,13 +1,9 @@
 import CopyButton from "@/components/(secondary-layout)/(blogs-page)/details/CopyButton";
-import { Close } from "@mui/icons-material";
-import {
-  Box,
-  Dialog,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import {
   FacebookIcon,
   FacebookShareButton,
@@ -26,81 +22,58 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
   });
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-      <Stack
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        gap={2}
-        sx={{ paddingY: 3, paddingX: 2, position: "relative" }}
-      >
-        <IconButton
-          onClick={handleClose}
-          sx={{ position: "absolute", top: 0, right: 0 }}
-        >
-          <Close />
-        </IconButton>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogContent showCloseButton={false} className={cn("max-w-xs")}>
+        <div className="relative flex flex-col items-center justify-center gap-4 px-4 py-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClose}
+            className="absolute top-0 right-0"
+          >
+            <X className="size-4" />
+          </Button>
 
-        <Typography variant="h5">Share</Typography>
-        <TextField
-          value={shareUrl}
-          fullWidth
-          slotProps={{
-            input: {
-              endAdornment: <CopyButton text={shareUrl} />,
-            },
-          }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              paddingY: 0.5,
-              paddingRight: 0,
-              "& fieldset": {
-                borderColor: "divider",
-              },
-              "&:hover fieldset": {
-                borderColor: "divider",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "divider",
-              },
-            },
-            "& .MuiInputBase-input": {
-              paddingY: 0,
-            },
-          }}
-        />
-        <Stack flexDirection="row" gap={1} alignItems="center">
-          <Box>
-            <FacebookShareButton
-              url={shareUrl}
-              quote={title}
-              hashtag={`#${hashtags[0]}`}
-              content={outputContend}
-            >
-              <FacebookIcon size={32} round />
-            </FacebookShareButton>
-          </Box>
-          <Box>
-            <TwitterShareButton
-              url={shareUrl}
-              title={title}
-              hashtags={hashtags}
-            >
-              <TwitterIcon size={32} round />
-            </TwitterShareButton>
-          </Box>
-          <Box>
-            <LinkedinShareButton
-              url={shareUrl}
-              title={title}
-              summary={outputContend}
-              source={process.env.NEXT_PUBLIC_FRONTEND_URL}
-            >
-              <LinkedinIcon size={32} round />
-            </LinkedinShareButton>
-          </Box>
-        </Stack>
-      </Stack>
+          <h2 className="text-xl font-semibold">Share</h2>
+          <div className="relative w-full">
+            <Input value={shareUrl} readOnly className={cn("pr-10")} />
+            <div className="absolute top-1/2 right-1 -translate-y-1/2">
+              <CopyButton text={shareUrl} />
+            </div>
+          </div>
+          <div className="flex flex-row items-center gap-1">
+            <div>
+              <FacebookShareButton
+                url={shareUrl}
+                quote={title}
+                hashtag={`#${hashtags[0]}`}
+                content={outputContend}
+              >
+                <FacebookIcon size={32} round />
+              </FacebookShareButton>
+            </div>
+            <div>
+              <TwitterShareButton
+                url={shareUrl}
+                title={title}
+                hashtags={hashtags}
+              >
+                <TwitterIcon size={32} round />
+              </TwitterShareButton>
+            </div>
+            <div>
+              <LinkedinShareButton
+                url={shareUrl}
+                title={title}
+                summary={outputContend}
+                source={process.env.NEXT_PUBLIC_FRONTEND_URL}
+              >
+                <LinkedinIcon size={32} round />
+              </LinkedinShareButton>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 };

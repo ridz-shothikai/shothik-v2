@@ -1,8 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ContentPaste } from "@mui/icons-material";
-import { Button, Tooltip } from "@mui/material";
+import { ClipboardPaste } from "lucide-react";
 
 const ButtonPasteText = ({
   className,
@@ -21,22 +26,32 @@ const ButtonPasteText = ({
     }
   };
 
+  const button = (
+    <Button
+      variant="outline"
+      size="sm"
+      className={cn("shrink-0 whitespace-nowrap", className)}
+      onClick={(e) => {
+        handlePaste(e);
+        onClick?.(e);
+      }}
+      {...props}
+    >
+      <ClipboardPaste className="size-4" />
+      Paste Text
+    </Button>
+  );
+
+  if (!isTooltip) {
+    return button;
+  }
+
   return (
-    <Tooltip className={cn(className)} title="Paste text" arrow placement="top">
-      <Button
-        className="shrink-0 whitespace-nowrap"
-        color="primary"
-        variant="outlined"
-        size="small"
-        onClick={(e) => {
-          handlePaste(e);
-          onClick?.(e);
-        }}
-        startIcon={<ContentPaste />}
-        {...props}
-      >
-        Paste Text
-      </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent side="top">
+        <p>Paste text</p>
+      </TooltipContent>
     </Tooltip>
   );
 };

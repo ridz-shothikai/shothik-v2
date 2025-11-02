@@ -1,158 +1,77 @@
-import { ExpandMore, Language } from "@mui/icons-material";
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Card,
-  CardContent,
-  CircularProgress,
-  Divider,
-  Skeleton,
-  Stack,
-  Typography,
-} from "@mui/material";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react";
 
 export default function WebLoadingState() {
   return (
-    <Box sx={{ width: "100%" }}>
+    <div className="w-full">
       <Accordion
-        defaultExpanded
-        sx={{
-          backgroundColor: "Background",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "divider",
-          borderRadius: "10px",
-          overflow: "hidden",
-          width: "100%",
-        }}
+        type="single"
+        defaultValue="web-search"
+        collapsible
+        className="w-full"
       >
-        <AccordionSummary
-          expandIcon={<ExpandMore sx={{ color: "text.secondary" }} />}
-          aria-controls="panel-search-content"
-          id="panel-search-header"
-          sx={{
-            p: 2,
-            backgroundColor: "background.paper",
-            display: "flex",
-            alignItems: "center",
-          }}
+        <AccordionItem
+          value="web-search"
+          className="overflow-hidden rounded-[10px] border"
         >
-          <Box sx={{ p: 1, borderRadius: "8px" }}>
-            <Language sx={{ fontSize: 20, color: "text.secondary" }} />
-          </Box>
-          <Box sx={{ ml: 2 }}>
-            <Typography
-              variant="subtitle1"
-              sx={{ fontWeight: "medium", textAlign: "left" }}
-            >
-              Running Web Search
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <CircularProgress
-                size={12}
-                sx={{
-                  color: "text.secondary",
-                  animation: "bounce 0.3s infinite alternate",
-                }}
-              />
-              <CircularProgress
-                size={12}
-                sx={{
-                  color: "text.secondary",
-                  animation: "bounce 0.3s infinite alternate 0.15s",
-                }}
-              />
-              <CircularProgress
-                size={12}
-                sx={{
-                  color: "text.secondary",
-                  animation: "bounce 0.3s infinite alternate 0.3s",
-                }}
-              />
-            </Box>
-          </Box>
-        </AccordionSummary>
-        <Divider />
-        <AccordionDetails
-          sx={{ p: 2, bgcolor: "background.paper", borderRadius: "5px" }}
-        >
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{
-              overflowX: "auto",
-              mt: 2,
-              pb: 1,
-              scrollbarWidth: "none",
-              "&::-webkit-scrollbar": { display: "none" },
-            }}
-          >
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                sx={{
-                  width: 300,
-                  flexShrink: 0,
-                  bgcolor: "background.paper",
-                  boxShadow: 0,
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "divider",
-                  borderRadius: "10px",
-                  transition: "all 0.2s",
-                  "&:hover": { boxShadow: 3 },
-                }}
-              >
-                <CardContent>
-                  <Stack gap={1}>
-                    <Stack direction="row" spacing={1}>
-                      <Skeleton
-                        variant="circular"
-                        width={40}
-                        height={40}
-                        animation="wave"
-                        sx={{ animationDuration: "0.8s" }}
-                      />
-                      <Stack>
-                        <Skeleton
-                          variant="text"
-                          width="auto"
-                          height={10}
-                          animation="wave"
-                          sx={{ animationDuration: "0.8s" }}
-                        />
-                        <Skeleton
-                          variant="text"
-                          width="auto"
-                          height={10}
-                          animation="wave"
-                          sx={{ animationDuration: "0.8s" }}
-                        />
-                      </Stack>
-                    </Stack>
-                    <Skeleton
-                      variant="rounded"
-                      width="100%"
-                      height={20}
-                      animation="wave"
-                      sx={{ animationDuration: "0.8s" }}
-                    />
-                    <Skeleton
-                      variant="rounded"
-                      width="100%"
-                      height={20}
-                      animation="wave"
-                      sx={{ animationDuration: "0.8s" }}
-                    />
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
-        </AccordionDetails>
+          <AccordionTrigger className="px-2 py-2 hover:no-underline">
+            <div className="flex w-full items-center">
+              <div className="rounded-lg p-1">
+                <Globe className="text-muted-foreground h-5 w-5" />
+              </div>
+              <div className="ml-2 flex-1 text-left">
+                <p className="text-base font-medium">Running Web Search</p>
+                <div className="mt-1 flex gap-1">
+                  <div className="border-muted-foreground h-3 w-3 animate-spin rounded-full border-2 border-t-transparent" />
+                  <div
+                    className="border-muted-foreground h-3 w-3 animate-spin rounded-full border-2 border-t-transparent"
+                    style={{ animationDelay: "0.15s" }}
+                  />
+                  <div
+                    className="border-muted-foreground h-3 w-3 animate-spin rounded-full border-2 border-t-transparent"
+                    style={{ animationDelay: "0.3s" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="bg-background rounded-b-[5px] p-2">
+            <div className="mt-2 flex flex-row gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {[1, 2, 3].map((i) => (
+                <Card
+                  key={i}
+                  className={cn(
+                    "bg-card w-[300px] shrink-0 rounded-[10px] border shadow-none transition-all duration-200",
+                    "hover:shadow-md",
+                  )}
+                >
+                  <CardContent>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex flex-row gap-1">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex flex-1 flex-col gap-1">
+                          <Skeleton className="h-2.5 w-full" />
+                          <Skeleton className="h-2.5 w-full" />
+                        </div>
+                      </div>
+                      <Skeleton className="h-5 w-full rounded-md" />
+                      <Skeleton className="h-5 w-full rounded-md" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
-    </Box>
+    </div>
   );
 }

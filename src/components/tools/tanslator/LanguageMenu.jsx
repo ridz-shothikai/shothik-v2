@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { detectLanguageV2 } from "@/hooks/languageDitectorV2";
+import { cn } from "@/lib/utils";
 import { FluentMdl2Switch } from "@/resource/assets/LanguageToggleSwitch";
-import { KeyboardArrowDown } from "@mui/icons-material";
-import { Button, Stack } from "@mui/material";
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";
 
@@ -46,18 +47,14 @@ const LanguageMenu = ({
   }
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ mb: 1 }}
-    >
+    <div className="mb-1 flex flex-row items-center justify-center">
       <Button
         disabled={isLoading}
         onClick={(e) => handleLanguage(e, "fromLang")}
-        endIcon={<KeyboardArrowDown fontSize="small" />}
+        variant="ghost"
       >
         {translateLang.fromLang}
+        <ChevronDown className="h-4 w-4" />
       </Button>
       <LanguageMenus
         anchorEl={anchorEl}
@@ -67,19 +64,23 @@ const LanguageMenu = ({
       />
       <Button
         onClick={handleReverseTranslation}
-        sx={{ cursor: isLoading ? "default" : "pointer" }}
         disabled={!userInput || isLoading}
+        variant="ghost"
+        className={cn(
+          !userInput || isLoading ? "cursor-default" : "cursor-pointer",
+        )}
       >
-        <FluentMdl2Switch />
+        <FluentMdl2Switch className="h-4 w-4" />
       </Button>
       <Button
         disabled={isLoading}
         onClick={(e) => handleLanguage(e, "toLang")}
-        endIcon={<KeyboardArrowDown fontSize="small" />}
+        variant="ghost"
       >
         {translateLang.toLang}
+        <ChevronDown className="h-4 w-4" />
       </Button>
-    </Stack>
+    </div>
   );
 };
 

@@ -1,15 +1,9 @@
 import { modes } from "@/_mock/tools/paraphrase";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import SvgColor from "@/resource/SvgColor";
-import { Close, Lock } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Grid2,
-  IconButton,
-  Modal,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Lock, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -24,117 +18,89 @@ const ModeModal = ({
   const [showAlert, setShowAlert] = useState(false);
 
   return (
-    <Modal
-      sx={{ zIndex: 1300 }}
-      keepMounted
-      open={showModeModal}
-      onClose={handleClose}
-    >
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "0px",
-          width: "100%",
-          height: "auto",
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          px: 4,
-          pt: 3,
-          pb: 2,
-          borderTopLeftRadius: "5px",
-          borderTopRightRadius: "5px",
-        }}
-      >
-        <Typography variant="h5">Choose a mode</Typography>
-
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            position: "absolute",
-            right: 5,
-            top: 5,
-            zIndex: 1,
-          }}
+    <>
+      <Dialog open={showModeModal} onOpenChange={handleClose}>
+        <DialogContent
+          className={cn(
+            "fixed top-auto right-0 bottom-0 left-0 w-full max-w-none translate-x-0 translate-y-0 rounded-t-lg rounded-b-none p-6 pb-4",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+          )}
+          showCloseButton={false}
         >
-          <Close />
-        </IconButton>
+          <div className="relative">
+            <h2 className="text-xl font-semibold">Choose a mode</h2>
 
-        <Grid2 container spacing={2} mt={2}>
-          {modes.map((mode, index) => (
-            <Grid2 size={{ xs: 6, md: 4 }} key={index}>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-                spacing={1}
-                sx={{
-                  p: 1,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  cursor: "pointer",
-                  color:
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClose}
+              className="absolute top-0 right-0 z-10"
+            >
+              <X className="size-4" />
+            </Button>
+
+            <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+              {modes.map((mode, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex items-center justify-center gap-1 rounded-md border p-2",
+                    "cursor-pointer transition-colors",
                     selectedMode === mode.value
-                      ? "primary.main"
-                      : "text.primary",
-                  bgcolor:
-                    selectedMode === mode.value ? "primary.lighter" : "unset",
-                }}
-                onClick={() => {
-                  if (isLoading) return; // Disable click if loading
-                  if (mode.package.includes(userPackage || "free")) {
-                    setSelectedMode(mode.value);
-                    handleClose();
-                  } else {
-                    setShowAlert(true);
-                  }
-                }}
-              >
-                {!mode.package.includes(userPackage || "free") && (
-                  <Lock sx={{ width: 12, height: 12 }} />
-                )}
-                <Typography sx={{ fontWeight: 600, fontSize: 14 }}>
-                  {mode.value}
-                </Typography>
-              </Stack>
-            </Grid2>
-          ))}
-        </Grid2>
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-background text-foreground",
+                    isLoading && "pointer-events-none opacity-50",
+                  )}
+                  onClick={() => {
+                    if (isLoading) return; // Disable click if loading
+                    if (mode.package.includes(userPackage || "free")) {
+                      setSelectedMode(mode.value);
+                      handleClose();
+                    } else {
+                      setShowAlert(true);
+                    }
+                  }}
+                >
+                  {!mode.package.includes(userPackage || "free") && (
+                    <Lock className="size-3" />
+                  )}
+                  <span className="text-sm font-semibold">{mode.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-        <Modal open={showAlert} onClose={() => setShowAlert(false)}>
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: "0px",
-              width: "100%",
-              height: "auto",
-              bgcolor: "rgba(0,0,0, 0.6)",
-              zIndex: 999,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingY: 5,
-            }}
-          >
+      <Dialog open={showAlert} onOpenChange={() => setShowAlert(false)}>
+        <DialogContent
+          className={cn(
+            "fixed top-auto right-0 bottom-0 left-0 w-full max-w-none translate-x-0 translate-y-0 rounded-t-lg rounded-b-none p-0",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+            "bg-background/80 backdrop-blur-md",
+          )}
+          showCloseButton={false}
+        >
+          <div className="flex min-h-[200px] items-center justify-center py-10">
             <Link href="/pricing?redirect=paraphrase">
               <Button
-                color="primary"
-                size="medium"
-                variant="contained"
-                startIcon={
-                  <SvgColor
-                    src="/navbar/diamond.svg"
-                    className="h-5 w-5 md:h-6 md:w-6"
-                  />
-                }
+                variant="default"
+                size="default"
+                className="flex items-center gap-2"
               >
+                <SvgColor
+                  src="/navbar/diamond.svg"
+                  className="h-5 w-5 md:h-6 md:w-6"
+                />
                 Upgrade Plan
               </Button>
             </Link>
-          </Box>
-        </Modal>
-      </Box>
-    </Modal>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

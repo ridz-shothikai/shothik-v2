@@ -1,32 +1,29 @@
-import { Person } from "@mui/icons-material";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { User } from "lucide-react";
 import * as motion from "motion/react-client";
-import React from "react";
 
 const UserMessage = ({ message }) => {
   return (
-    <Stack
-      component={motion.div}
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      direction="row"
-      alignItems="center"
-      gap={1}
-      mb={1}
+      className={cn("mb-1 flex flex-row items-center gap-1")}
     >
-      <IconButton
-        color="text.secondary"
+      <Button
+        variant="ghost"
+        size="icon"
         aria-label="User"
-        sx={{
-          bgcolor: "rgba(73, 149, 87, 0.04)",
-          borderRadius: "5px",
-        }}
+        className={cn(
+          "h-auto w-auto rounded-[5px] p-1.5",
+          "bg-primary/5 text-muted-foreground",
+        )}
       >
-        <Person size={20} />
-      </IconButton>
-      <Typography>{message.content}</Typography>
-    </Stack>
+        <User className="h-5 w-5" />
+      </Button>
+      <span className="text-base">{message.content}</span>
+    </motion.div>
   );
 };
 

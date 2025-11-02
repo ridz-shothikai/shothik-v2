@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { cn } from "@/lib/utils";
 import AgentMessage from "./AgentMessage";
 import UserMessage from "./UserMessage";
 
@@ -10,11 +10,10 @@ export default function ChatContainer({
   messageBottomRef,
 }) {
   return (
-    <Stack
+    <div
       ref={ref}
       onScroll={onScroll}
-      spacing={2}
-      sx={{ flexGrow: 1, overflowY: "auto", mb: 2 }}
+      className={cn("mb-4 flex flex-1 flex-col gap-4 overflow-y-auto")}
     >
       {chatHistory.map((message, index) =>
         message.role === "user" ? (
@@ -29,6 +28,6 @@ export default function ChatContainer({
       )}
 
       <div ref={messageBottomRef} />
-    </Stack>
+    </div>
   );
 }

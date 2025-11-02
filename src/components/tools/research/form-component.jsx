@@ -1,20 +1,15 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import { useUploadImageMutation } from "@/redux/api/auth/authApi";
-import styled from "@emotion/styled";
-import { ArrowUpward, Attachment, CloudUpload } from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  IconButton,
-  Paper,
-  Stack,
-  TextField,
-  Tooltip,
-  tooltipClasses,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { ArrowUp, Paperclip, Upload } from "lucide-react";
 import * as motion from "motion/react-client";
 import { useCallback, useRef, useState } from "react";
 import AttachmentPreview from "./AttachmentPreview";
@@ -75,53 +70,40 @@ const ToolbarButton = ({ group, isSelected, onClick }) => {
   const Icon = group.icon;
   const isMobile = useResponsive("sm");
 
-  const HtmlTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.background.paper,
-      color: theme.palette.text.primary,
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: `1px solid ${theme.palette.divider}`,
-    },
-  }));
-
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     onClick();
   };
 
+  const buttonContent = (
+    <Button
+      variant="ghost"
+      size="icon"
+      className={cn("h-9 w-9", isSelected && "bg-accent")}
+      onClick={handleClick}
+    >
+      <Icon size={20} />
+    </Button>
+  );
+
   // Use regular button for mobile
   if (isMobile) {
-    return (
-      <IconButton onClick={handleClick}>
-        <Icon size={20} />
-      </IconButton>
-    );
+    return buttonContent;
   }
 
   return (
-    <HtmlTooltip
-      title={
-        <Box>
-          <Typography variant="subtitle2">{group.name}</Typography>
-          <Typography sx={{ color: "text.secondary" }} variant="caption">
+    <Tooltip>
+      <TooltipTrigger asChild>{buttonContent}</TooltipTrigger>
+      <TooltipContent className="bg-background text-foreground border-border max-w-[220px] border">
+        <div className="flex flex-col">
+          <p className="text-xs font-semibold">{group.name}</p>
+          <p className="text-muted-foreground text-[10px]">
             {group.description}
-          </Typography>
-        </Box>
-      }
-    >
-      <IconButton
-        sx={{
-          backgroundColor: isSelected ? "action.hover" : "transparent",
-        }}
-        onClick={handleClick}
-      >
-        <Icon size={20} />
-      </IconButton>
-    </HtmlTooltip>
+          </p>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 };
 
@@ -196,8 +178,6 @@ const FormComponent = ({
   const [uploadQueue, setUploadQueue] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const postSubmitFileInputRef = useRef(null);
-  const theme = useTheme();
-  const dark = theme.palette.mode === "dark";
   const enqueueSnackbar = useSnackbar();
   const [uploadImage] = useUploadImageMutation();
 
@@ -392,20 +372,11 @@ const FormComponent = ({
   }, [attachments.length, hasSubmitted, fileInputRef]);
 
   return (
-    <Card
-      component="div"
-      sx={{
-        padding: 1,
-        borderWidth: "1px",
-        borderStyle: "solid",
-        width: "100%",
-        borderColor:
-          dark && isDragging
-            ? "#ededed"
-            : !dark && isDragging
-              ? "#ccc"
-              : "divider",
-      }}
+    <div
+      className={cn(
+        "relative w-full rounded-lg border p-4",
+        isDragging && "border-primary",
+      )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -415,88 +386,25 @@ const FormComponent = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          style={{
-            backdropFilter: "blur(2px)",
-            backgroundColor: dark
-              ? "rgba(38, 38, 38, 0.8)"
-              : "rgba(255, 255, 255, 0.8)",
-            borderRadius: "12px",
-            border: `1px dashed ${
-              dark ? theme.palette.grey[700] : theme.palette.grey[300]
-            }`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            margin: "0.5rem",
-            position: "absolute",
-            inset: 0,
-            zIndex: 50,
-          }}
+          className="bg-background/80 absolute inset-0 z-50 m-2 flex items-center justify-center rounded-xl border border-dashed backdrop-blur-sm"
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              px: 3,
-              py: 4,
-            }}
-          >
-            <Paper
-              elevation={3}
-              sx={{
-                p: 1.5,
-                borderRadius: "50%",
-                backgroundColor:
-                  theme.palette.mode === "dark"
-                    ? theme.palette.grey[800]
-                    : theme.palette.grey[100],
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CloudUpload
-                size={24}
-                color={
-                  theme.palette.mode === "dark"
-                    ? theme.palette.grey[400]
-                    : theme.palette.grey[600]
-                }
-              />
-            </Paper>
-            <Box textAlign="center">
-              <Typography
-                variant="body2"
-                sx={{
-                  color:
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[400]
-                      : theme.palette.grey[600],
-                  fontWeight: 500,
-                }}
-              >
-                Drop images here
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  color:
-                    theme.palette.mode === "dark"
-                      ? theme.palette.grey[500]
-                      : theme.palette.grey[500],
-                }}
-              >
+          <div className="flex items-center gap-8 px-3 py-4">
+            <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full shadow-lg">
+              <Upload size={24} className="text-muted-foreground" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium">Drop images here</p>
+              <p className="text-muted-foreground text-xs">
                 Max {MAX_IMAGES} images
-              </Typography>
-            </Box>
-          </Box>
+              </p>
+            </div>
+          </div>
         </motion.div>
       )}
 
       <input
         type="file"
-        hidden
+        className="hidden"
         ref={fileInputRef}
         multiple
         onChange={handleFileChange}
@@ -505,8 +413,7 @@ const FormComponent = ({
       />
 
       {(attachments.length > 0 || uploadQueue.length > 0) && (
-        <Stack direction="row" flexWrap="wrap" gap={1}>
-          {/* Existing attachment previews */}
+        <div className="mb-2 flex flex-wrap gap-2">
           {attachments.map((attachment, index) => (
             <AttachmentPreview
               key={attachment.url}
@@ -528,77 +435,67 @@ const FormComponent = ({
               isUploading={true}
             />
           ))}
-        </Stack>
+        </div>
       )}
 
-      <Box sx={{ position: "relative" }}>
-        <TextField
-          name="question"
-          type="text"
-          ref={inputRef}
-          placeholder={
-            hasSubmitted ? "Ask a new question..." : "Ask a question..."
-          }
-          fullWidth
-          sx={{ "& .MuiOutlinedInput-notchedOutline": { border: "none" } }}
-          value={input || ""}
-          onChange={(e) => setInput(e.target.value)}
-          disabled={isLoading}
-        />
-
-        <Stack
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Stack flexDirection="row" alignItems="center" gap={2}>
-            {!hasSubmitted ? (
-              <>
-                <SelectionContent
-                  selectedGroup={selectedGroup}
-                  onGroupSelect={handleGroupSelect}
-                />
-                <ModelSwitcher
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                  showExperimentalModels={true}
-                  attachments={attachments}
-                  models={models}
-                />
-              </>
-            ) : null}
-          </Stack>
-
-          <Stack flexDirection="row" alignItems="center" gap={1}>
-            <IconButton
-              color="text.secondary"
-              aria-label="Stop"
-              sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-              onClick={(event) => {
-                event.preventDefault();
-                triggerFileInput();
-              }}
-              disabled={isLoading}
-            >
-              <Attachment
-                sx={{ transform: "rotate(135deg)" }}
-                fontSize="small"
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-1 items-center gap-2">
+          {!hasSubmitted ? (
+            <>
+              <SelectionContent
+                selectedGroup={selectedGroup}
+                onGroupSelect={handleGroupSelect}
               />
-            </IconButton>
+              <ModelSwitcher
+                selectedModel={selectedModel}
+                setSelectedModel={setSelectedModel}
+                showExperimentalModels={true}
+                attachments={attachments}
+                models={models}
+              />
+            </>
+          ) : null}
 
-            <IconButton
-              color="text.secondary"
-              aria-label="Submit"
-              sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
-              onClick={onSubmit}
-              disabled={!input || isLoading}
-            >
-              <ArrowUpward fontSize="small" />
-            </IconButton>
-          </Stack>
-        </Stack>
-      </Box>
-    </Card>
+          <Input
+            name="question"
+            type="text"
+            ref={inputRef}
+            placeholder={
+              hasSubmitted ? "Ask a new question..." : "Ask a question..."
+            }
+            className="flex-1 border-none"
+            value={input || ""}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-primary/5 hover:bg-primary/10 h-9 w-9"
+            onClick={(event) => {
+              event.preventDefault();
+              triggerFileInput();
+            }}
+            disabled={isLoading}
+          >
+            <Paperclip className="h-4 w-4 rotate-45" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-primary/5 hover:bg-primary/10 h-9 w-9"
+            onClick={onSubmit}
+            disabled={!input || isLoading}
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

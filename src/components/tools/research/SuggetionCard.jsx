@@ -1,23 +1,18 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import {
-  AttachMoney,
+  Brain,
   Code,
-  Favorite,
+  DollarSign,
   Flag,
-  Group,
-  Language,
-  Psychology,
-  SportsFootball,
-  SportsSoccer,
+  Football,
+  Heart,
+  Languages,
+  SoccerBall,
   TrendingUp,
-} from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+  Users,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
@@ -42,107 +37,59 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
 
   const getIconForCategory = (category) => {
     const iconMap = {
-      trending: <TrendingUp size="small" />,
-      community: <Group size="small" />,
-      science: <Psychology size="small" />,
-      tech: <Code size="small" />,
-      travel: <Language size="small" />,
-      politics: <Flag size="small" />,
-      health: <Favorite size="small" />,
-      sports: <SportsSoccer size="small" />,
-      finance: <AttachMoney size="small" />,
-      football: <SportsFootball size="small" />,
+      trending: <TrendingUp className="h-4 w-4" />,
+      community: <Users className="h-4 w-4" />,
+      science: <Brain className="h-4 w-4" />,
+      tech: <Code className="h-4 w-4" />,
+      travel: <Languages className="h-4 w-4" />,
+      politics: <Flag className="h-4 w-4" />,
+      health: <Heart className="h-4 w-4" />,
+      sports: <SoccerBall className="h-4 w-4" />,
+      finance: <DollarSign className="h-4 w-4" />,
+      football: <Football className="h-4 w-4" />,
     };
 
-    return iconMap[category] || <TrendingUp size="small" />;
+    return iconMap[category] || <TrendingUp className="h-4 w-4" />;
   };
 
   if (!trendingQueries?.length) {
     return (
-      <Box sx={{ mt: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            overflowX: "auto",
-            paddingBottom: 2,
-            paddingX: 2,
-            scrollBehavior: "smooth",
-            "&::-webkit-scrollbar": { display: "none" },
-          }}
+      <div className="mt-8">
+        <div
+          className={cn(
+            "flex gap-4 overflow-x-auto scroll-smooth px-2 pb-4 [&::-webkit-scrollbar]:hidden",
+          )}
         >
           {[1, 2, 3, 4, 5, 6].map((_, index) => (
-            <Box
+            <div
               key={index}
-              sx={{
-                flexShrink: 0,
-                height: 48,
-                width: 120,
-                borderRadius: 2,
-                background: "background.paper",
-                borderwidth: "1px",
-                borderStyle: "solid",
-                borderColor: "divider",
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 1.5,
-                padding: 2,
-              }}
+              className={cn(
+                "bg-card border-border h-12 w-[120px] shrink-0 rounded-md border",
+                "flex items-start gap-3 p-4",
+              )}
             >
               {/* Skeleton placeholder for image */}
-              <Skeleton
-                variant="rectangular"
-                sx={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: 1,
-                  backgroundColor: "rgba(200, 200, 200, 0.5)",
-                  animation: "pulse 1.5s infinite",
-                }}
-              />
+              <Skeleton className="h-4 w-4 rounded" />
 
               {/* Text skeleton */}
-              <Box sx={{ flex: 1, spaceY: 1 }}>
-                <Skeleton
-                  sx={{
-                    height: 10,
-                    borderRadius: 1,
-                    backgroundColor: "divider",
-                    animation: `pulse 1.5s infinite ease-in-out`,
-                    animationDelay: `${index * 0.2}s`,
-                  }}
-                />
-                <Skeleton
-                  sx={{
-                    height: 8,
-                    width: "50%",
-                    backgroundColor: "divider",
-                    borderRadius: 1,
-                    animation: `pulse 1.5s infinite ease-in-out`,
-                    animationDelay: `${index * 0.2}s`,
-                  }}
-                />
-              </Box>
-            </Box>
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-2.5 rounded" />
+                <Skeleton className="h-2 w-1/2 rounded" />
+              </div>
+            </div>
           ))}
-        </Box>
-      </Box>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Box
+    <div className="mt-4">
+      <div
         ref={scrollRef}
-        sx={{
-          display: "flex",
-          gap: 1,
-          overflowX: "auto",
-          paddingBottom: 2,
-          paddingX: 2,
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": { display: "none" },
-        }}
+        className={cn(
+          "flex gap-2 overflow-x-auto scroll-smooth px-2 pb-4 [&::-webkit-scrollbar]:hidden",
+        )}
         onTouchStart={() => setIsPaused(true)}
         onTouchEnd={() => {
           // Add a small delay before resuming animation on mobile
@@ -158,76 +105,43 @@ export const SuggestionCards = ({ trendingQueries, handleExampleClick }) => {
             <Card
               key={index}
               onClick={() => handleExampleClick(query)}
-              sx={{
-                backgroundColor: "background.paper",
-                transition: "all 0.2s ease-out",
-                boxShadow: 0,
-                borderRadius: 1,
-                "&:hover": {
-                  boxShadow: 2,
-                },
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 1,
-                minWidth: 150,
-                cursor: "pointer",
-              }}
+              className={cn(
+                "bg-card rounded shadow-none transition-all duration-200 hover:shadow-md",
+                "flex min-w-[150px] cursor-pointer flex-row items-center p-2",
+              )}
             >
-              <CardContent
-                sx={{
-                  display: "flex",
-                  alignItems: "start",
-                  flexDirection: "row",
-                  padding: 0,
-                  "&:last-child": { paddingBottom: 0 },
-                }}
-              >
-                <IconButton
-                  color="text.secondary"
-                  aria-label="User"
-                  sx={{
-                    bgcolor: "rgba(73, 149, 87, 0.04)",
-                    borderRadius: "5px",
-                    p: 0.1,
-                    fontSize: 16,
-                  }}
+              <CardContent className="flex flex-row items-start p-0 last:pb-0">
+                <div
+                  className={cn(
+                    "bg-primary/5 text-muted-foreground rounded-[5px] p-0.5",
+                    "flex items-center justify-center",
+                  )}
+                  aria-label="Category"
                 >
                   {getIconForCategory(query.category)}
-                </IconButton>
-                <Box
-                  sx={{
-                    flexGrow: 1,
-                    textAlign: "left",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontWeight: "medium",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 1,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
+                </div>
+                <div className="flex-grow overflow-hidden text-left">
+                  <p
+                    className={cn(
+                      "line-clamp-1 font-medium",
+                      "text-sm leading-normal",
+                    )}
                   >
                     {query.text}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "text.secondary",
-                      textTransform: "capitalize",
-                    }}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-muted-foreground capitalize",
+                      "text-xs leading-normal",
+                    )}
                   >
                     {query.category}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };

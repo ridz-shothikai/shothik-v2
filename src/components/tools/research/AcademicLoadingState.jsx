@@ -1,61 +1,49 @@
-import { Book } from "@mui/icons-material";
-
-const {
-  Card,
-  CardContent,
-  IconButton,
-  Box,
-  Typography,
-  Skeleton,
-} = require("@mui/material");
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { Book } from "lucide-react";
 
 export const AcademicLoadingState = () => {
   return (
     <Card
-      sx={{
-        position: "relative",
-        width: "100%",
-        height: "100px",
-        my: 2,
-        overflow: "hidden",
-        boxShadow: "none",
-        display: "flex",
-        alignItems: "center",
-      }}
+      className={cn(
+        "relative my-4 h-[100px] w-full flex-row items-center overflow-hidden border-0 shadow-none",
+      )}
     >
-      <CardContent sx={{ p: 2, width: "100%" }}>
-        <Box display="flex" alignItems="center" gap={2}>
+      <CardContent className="w-full p-4">
+        <div className="flex items-center gap-4">
           {/* Icon Container */}
-          <IconButton
-            color="text.secondary"
+          <button
+            type="button"
             aria-label="User"
-            sx={{ bgcolor: "rgba(73, 149, 87, 0.04)", borderRadius: "5px" }}
+            className={cn(
+              "bg-muted/10 text-muted-foreground hover:bg-muted/20 rounded-md p-2 transition-colors",
+            )}
           >
-            <Book sx={{ color: "text.secondary", fontSize: 24 }} />
-          </IconButton>
+            <Book className="text-muted-foreground h-6 w-6" />
+          </button>
 
           {/* Loading Text & Animation */}
-          <Box>
-            <Typography variant="body1" fontWeight={500} color="text.secondary">
+          <div>
+            <p className="text-muted-foreground text-base font-medium">
               Searching academic papers...
-            </Typography>
+            </p>
 
             {/* Pulse Loading Effect */}
-            <Box display="flex" gap={1} mt={0.5}>
+            <div className="mt-1 flex gap-4">
               {[...Array(3)].map((_, i) => (
                 <Skeleton
                   key={i}
-                  width={`${Math.random() * 100 + 50}px`}
-                  height={20}
-                  sx={{
-                    animation: `pulse 1.5s infinite ease-in-out`,
+                  className="h-5 animate-pulse"
+                  style={{
+                    width: `${Math.random() * 100 + 50}px`,
                     animationDelay: `${i * 0.2}s`,
                   }}
                 />
               ))}
-            </Box>
-          </Box>
-        </Box>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,10 +1,10 @@
 "use client";
 import useSnackbar from "@/hooks/useSnackbar";
+import { cn } from "@/lib/utils";
 import {
   useGetResearchQuestionMutation,
   useResearchTrendingQuery,
 } from "@/redux/api/tools/toolsApi";
-import { Box, Stack, Typography } from "@mui/material";
 import * as motion from "motion/react-client";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
@@ -176,36 +176,21 @@ const ResearchContend = () => {
   };
 
   return (
-    <Box
-      sx={{
-        height: "calc(100vh - 70px)",
-        overflow: "auto",
-      }}
-    >
-      <Box
-        sx={{
-          width: { xs: "100%", md: "80%", lg: "60%" },
-          mx: "auto",
-          paddingTop: 2,
-          paddingBottom: 2,
-        }}
-      >
+    <div className={cn("h-[calc(100vh-70px)] overflow-auto")}>
+      <div className={cn("mx-auto w-full pt-2 pb-2 md:w-4/5 lg:w-3/5")}>
         {!hasSubmitted ? (
-          <Stack>
-            <Typography
-              component={motion.p}
+          <div className="flex flex-col">
+            <motion.p
               initial={{ x: -30, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              variant="h4"
-              sx={{
-                textAlign: "center",
-                mb: 2,
-                mt: { xs: 10, sm: 15, lg: 20 },
-              }}
+              className={cn(
+                "mt-10 mb-2 text-center sm:mt-[60px] lg:mt-20",
+                "text-2xl font-semibold tracking-tight",
+              )}
             >
               What do you want to explore?
-            </Typography>
+            </motion.p>
             <motion.div
               initial={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -232,10 +217,10 @@ const ResearchContend = () => {
                 handleExampleClick={handleExampleClick}
               />
             </motion.div>
-          </Stack>
+          </div>
         ) : null}
 
-        <Stack gap={1} sx={{ mb: 5 }}>
+        <div className={cn("mb-5 flex flex-col gap-1")}>
           {outputContend.map((message, index) =>
             message.role === "user" ? (
               <UserMessage key={index} message={message} />
@@ -255,14 +240,9 @@ const ResearchContend = () => {
               suggestedQuestions={suggestedQuestions}
             />
           ) : null}
-        </Stack>
+        </div>
 
-        <Box
-          sx={{
-            position: "sticky",
-            bottom: 0,
-          }}
-        >
+        <div className={cn("sticky bottom-0")}>
           {hasSubmitted && (
             <FormComponent
               input={userInput}
@@ -281,10 +261,10 @@ const ResearchContend = () => {
               setSelectedGroup={setSelectedGroup}
             />
           )}
-        </Box>
+        </div>
         <div ref={bottomRef} />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

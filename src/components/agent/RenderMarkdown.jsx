@@ -1,17 +1,13 @@
 "use client";
 import {
-  Box,
-  List,
-  ListItem,
-  Paper,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
+  TableHeader,
   TableRow,
-  Typography,
-} from "@mui/material";
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import {
   ArcElement,
   BarElement,
@@ -44,61 +40,99 @@ const RenderMarkdown = ({ content }) => {
   const renderer = {
     paragraph(children) {
       return (
-        <Typography key={this.elementId} sx={{ my: 1 }}>
+        <p key={this.elementId} className="text-foreground my-1">
           {children}
-        </Typography>
+        </p>
       );
     },
 
     heading(children, level) {
-      const variantMap = {
-        1: "h3",
-        2: "h4",
-        3: "h5",
-        4: "h6",
-        5: "subtitle1",
-        6: "subtitle2",
+      const variantClasses = {
+        1: "text-2xl font-semibold",
+        2: "text-xl font-semibold",
+        3: "text-lg font-medium",
+        4: "text-base font-medium",
+        5: "text-base",
+        6: "text-sm",
       };
-      return (
-        <Typography
-          key={this.elementId}
-          variant={variantMap[level] || "body1"}
-          sx={{ my: 2 }}
-        >
-          {children}
-        </Typography>
+      const classes = cn(
+        variantClasses[level] || "text-base",
+        "my-2 text-foreground",
       );
+
+      switch (level) {
+        case 1:
+          return (
+            <h1 key={this.elementId} className={classes}>
+              {children}
+            </h1>
+          );
+        case 2:
+          return (
+            <h2 key={this.elementId} className={classes}>
+              {children}
+            </h2>
+          );
+        case 3:
+          return (
+            <h3 key={this.elementId} className={classes}>
+              {children}
+            </h3>
+          );
+        case 4:
+          return (
+            <h4 key={this.elementId} className={classes}>
+              {children}
+            </h4>
+          );
+        case 5:
+          return (
+            <h5 key={this.elementId} className={classes}>
+              {children}
+            </h5>
+          );
+        case 6:
+          return (
+            <h6 key={this.elementId} className={classes}>
+              {children}
+            </h6>
+          );
+        default:
+          return (
+            <p key={this.elementId} className={classes}>
+              {children}
+            </p>
+          );
+      }
     },
 
     list(children, ordered) {
-      return (
-        <List
-          key={this.elementId}
-          component={ordered ? "ol" : "ul"}
-          sx={{
-            listStyleType: ordered ? "decimal" : "disc",
-            pl: 4,
-            color: "text.primary",
-            "& li": { display: "list-item" },
-          }}
-        >
-          {children}
-        </List>
+      const classes = cn(
+        "pl-4 text-foreground my-2",
+        ordered ? "list-decimal" : "list-disc",
+        "[&_li]:list-item",
       );
+
+      if (ordered) {
+        return (
+          <ol key={this.elementId} className={classes}>
+            {children}
+          </ol>
+        );
+      } else {
+        return (
+          <ul key={this.elementId} className={classes}>
+            {children}
+          </ul>
+        );
+      }
     },
 
     listItem(children) {
       return (
-        <ListItem
-          key={this.elementId}
-          sx={{
-            color: "text.primary",
-            display: "list-item",
-            p: 0,
-          }}
-        >
+        <li key={this.elementId} className="text-foreground list-item p-0">
           {children}
-        </ListItem>
+        </li>
       );
     },
 
@@ -112,14 +146,9 @@ const RenderMarkdown = ({ content }) => {
       if (!data) return null;
       if (data.type) {
         return (
-          <Box
+          <div
             key={this.elementId}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              my: 2,
-            }}
+            className="my-2 flex items-center justify-center"
           >
             {data.type === "bar" ? (
               <div style={{ height: "200px", width: "400px" }}>
@@ -130,30 +159,27 @@ const RenderMarkdown = ({ content }) => {
                 <Pie data={data.data} />
               </div>
             ) : null}
-          </Box>
+          </div>
         );
       } else {
         return data?.map((item, index) => (
-          <Box
-            key={index}
-            sx={{ height: "250px", overflow: "hidden", marginY: 2 }}
-          >
+          <div key={index} className="my-2 h-[250px] overflow-hidden">
             <SlidePreview src={item} />
-          </Box>
+          </div>
         ));
       }
     },
 
     table(children) {
       return (
-        <TableContainer key={this.elementId} component={Paper} sx={{ my: 2 }}>
-          <Table size="small">{children}</Table>
-        </TableContainer>
+        <div key={this.elementId} className="my-2">
+          <Table>{children}</Table>
+        </div>
       );
     },
 
     tableHead(children) {
-      return <TableHead key={this.elementId}>{children}</TableHead>;
+      return <TableHeader key={this.elementId}>{children}</TableHeader>;
     },
 
     tableBody(children) {
@@ -166,9 +192,9 @@ const RenderMarkdown = ({ content }) => {
 
     tableCell(children, { header }) {
       return header ? (
-        <TableCell key={this.elementId} component="th" scope="col">
+        <TableHead key={this.elementId}>
           <strong>{children}</strong>
-        </TableCell>
+        </TableHead>
       ) : (
         <TableCell key={this.elementId}>{children}</TableCell>
       );
