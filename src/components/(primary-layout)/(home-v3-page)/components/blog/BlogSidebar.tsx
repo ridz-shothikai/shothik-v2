@@ -30,7 +30,7 @@ export function BlogSidebar() {
                   {category.slug}
                 </Badge>
               </div>
-              <p className="text-caption text-foreground-tertiary mt-1">
+              <p className="text-caption text-muted-foreground mt-1">
                 {category.description}
               </p>
             </Link>
@@ -46,7 +46,7 @@ export function BlogSidebar() {
         >
           Stay Updated
         </h3>
-        <p className="text-body2 text-foreground-secondary mb-4">
+        <p className="text-body2 text-muted-foreground mb-4">
           Get the latest writing tips, AI tool guides, and academic resources
           delivered to your inbox.
         </p>
@@ -64,7 +64,7 @@ export function BlogSidebar() {
             Subscribe
           </button>
         </div>
-        <p className="text-caption text-foreground-tertiary mt-2">
+        <p className="text-caption text-muted-foreground mt-2">
           No spam. Unsubscribe anytime.
         </p>
       </Card>

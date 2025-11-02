@@ -1,4 +1,39 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import useNavItemFiles from "@/hooks/useNavItemFiles";
+import { useResearchAiToken } from "@/hooks/useRegisterResearchService";
+import useSheetAiToken from "@/hooks/useRegisterSheetService";
+import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
+import {
+  useFetchAllPresentationsQuery,
+  useUploadPresentationFilesMutation,
+} from "@/redux/api/presentation/presentationApi";
+import { useGetMyResearchChatsQuery } from "@/redux/api/research/researchChatApi";
+import { useGetMyChatsQuery } from "@/redux/api/sheet/sheetApi";
+import {
+  setResearchToken,
+  setSheetToken,
+  setShowLoginModal,
+} from "@/redux/slice/auth";
+import { setAgentHistoryMenu } from "@/redux/slice/tools";
 import {
   BookOpen,
   Bot,
@@ -20,41 +55,6 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Badge } from "../../src/components/ui/badge";
-import { Button } from "../../src/components/ui/button";
-import { Card, CardContent } from "../../src/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../../src/components/ui/dialog";
-import { Textarea } from "../../src/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../src/components/ui/tooltip";
-import useNavItemFiles from "../../src/hooks/useNavItemFiles";
-import { useResearchAiToken } from "../../src/hooks/useRegisterResearchService";
-import useSheetAiToken from "../../src/hooks/useRegisterSheetService";
-import useResponsive from "../../src/hooks/useResponsive";
-import { cn } from "../../src/lib/utils";
-import {
-  useFetchAllPresentationsQuery,
-  useUploadPresentationFilesMutation,
-} from "../../src/redux/api/presentation/presentationApi";
-import { useGetMyResearchChatsQuery } from "../../src/redux/api/research/researchChatApi";
-import { useGetMyChatsQuery } from "../../src/redux/api/sheet/sheetApi";
-import {
-  setResearchToken,
-  setSheetToken,
-  setShowLoginModal,
-} from "../../src/redux/slice/auth";
-import { setAgentHistoryMenu } from "../../src/redux/slice/tools";
 import ChatSidebar from "./ChatSidebar";
 import SearchDropdown from "./SearchDropDown";
 import { useAgentContext } from "./shared/AgentContextProvider";

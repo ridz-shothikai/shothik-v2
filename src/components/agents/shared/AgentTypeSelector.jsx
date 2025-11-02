@@ -1,9 +1,6 @@
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 import { Bot, Presentation } from "lucide-react";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "../../../src/components/ui/toggle-group";
-import { cn } from "../../../src/lib/utils";
 
 const AGENT_TYPES = [
   {

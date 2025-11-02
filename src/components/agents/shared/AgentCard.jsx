@@ -1,5 +1,5 @@
-import { Card, CardContent } from "../../../src/components/ui/card";
-import { cn } from "../../../src/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const AgentCard = ({ name, description, icon, actions }) => {
   return (

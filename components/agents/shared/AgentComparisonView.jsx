@@ -1,7 +1,7 @@
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Label } from "../../src/components/ui/label";
-import { Switch } from "../../src/components/ui/switch";
-import { cn } from "../../src/lib/utils";
 import AgentResponseDisplay from "./AgentResponseDisplay";
 
 // Simple diff highlighting: highlight lines that differ between responses

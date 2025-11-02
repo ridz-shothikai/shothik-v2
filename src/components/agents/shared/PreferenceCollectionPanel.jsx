@@ -1,16 +1,13 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 import { Clock, Palette, Sparkles, Users, Wand2, X } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "../../../src/components/ui/badge";
-import { Button } from "../../../src/components/ui/button";
-import { Card, CardContent } from "../../../src/components/ui/card";
-import { Input } from "../../../src/components/ui/input";
-import { Label } from "../../../src/components/ui/label";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "../../../src/components/ui/radio-group";
-import { Slider } from "../../../src/components/ui/slider";
-import { cn } from "../../../src/lib/utils";
 
 const COLOR_SCHEMES = [
   {

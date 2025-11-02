@@ -1,26 +1,50 @@
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useEffect, useState } from "react";
 
-// ----------------------------------------------------------------------
+// Tailwind's default breakpoints (you can edit these if customized)
+const breakpoints = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  "2xl": 1536,
+};
 
 export default function useResponsive(query, start, end) {
-  const theme = useTheme();
-  const mediaUp = useMediaQuery(theme.breakpoints.up(start));
-  const mediaDown = useMediaQuery(theme.breakpoints.down(start));
-  const mediaBetween = useMediaQuery(theme.breakpoints.between(start, end));
-  const mediaOnly = useMediaQuery(theme.breakpoints.only(start));
+  const getMatches = () => {
+    const min = start ? breakpoints[start] : null;
+    const max = end ? breakpoints[end] - 0.02 : null; // small offset to match Tailwind’s max-width logic
 
-  if (query === "up") {
-    return mediaUp;
-  }
+    switch (query) {
+      case "up":
+        return min ? window.matchMedia(`(min-width:${min}px)`).matches : false;
+      case "down":
+        return min
+          ? window.matchMedia(`(max-width:${min - 0.02}px)`).matches
+          : false;
+      case "between":
+        return min && max
+          ? window.matchMedia(`(min-width:${min}px) and (max-width:${max}px)`)
+              .matches
+          : false;
+      default: // "only"
+        return min && max
+          ? window.matchMedia(`(min-width:${min}px) and (max-width:${max}px)`)
+              .matches
+          : min
+            ? window.matchMedia(`(min-width:${min}px)`).matches
+            : false;
+    }
+  };
 
-  if (query === "down") {
-    return mediaDown;
-  }
+  const [matches, setMatches] = useState(
+    typeof window !== "undefined" ? getMatches() : false,
+  );
 
-  if (query === "between") {
-    return mediaBetween;
-  }
+  useEffect(() => {
+    const handleResize = () => setMatches(getMatches());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [query, start, end]);
 
-  return mediaOnly;
+  return matches;
 }

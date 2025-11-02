@@ -1,3 +1,9 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import {
   Accessibility,
   AlertTriangle,
@@ -10,16 +16,6 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "../../../src/components/ui/alert";
-import { Badge } from "../../../src/components/ui/badge";
-import { Button } from "../../../src/components/ui/button";
-import { Card, CardContent } from "../../../src/components/ui/card";
-import { Progress } from "../../../src/components/ui/progress";
-import { cn } from "../../../src/lib/utils";
 
 const getScoreVariant = (score) => {
   if (score >= 0.9) return "default";

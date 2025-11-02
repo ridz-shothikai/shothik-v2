@@ -1,17 +1,17 @@
-import { Facebook, Instagram, LinkedIn, Twitter } from "@mui/icons-material";
-import Discord from "../resource/assets/Discord";
+import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import Discord from "../resource/assets/Discord"; // keeping your custom one
 
 export const _socials = [
   {
     value: "linkedin",
     name: "LinkedIn",
-    icon: LinkedIn,
+    icon: Linkedin,
     color: "#0a66c2",
     path: "https://www.linkedin.com/company/shothik-ai/",
   },
   {
     value: "facebook",
-    name: "FaceBook",
+    name: "Facebook",
     icon: Facebook,
     color: "#1877F2",
     path: "https://www.facebook.com/shothik.ai",

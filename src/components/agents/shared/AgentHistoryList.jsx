@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   CheckCircle2,
   Clock,
@@ -5,8 +7,6 @@ import {
   XCircle,
 } from "lucide-react";
 import React from "react";
-import { Badge } from "../../src/components/ui/badge";
-import { cn } from "../../src/lib/utils";
 
 const STATUS_ICONS = {
   success: CheckCircle2,

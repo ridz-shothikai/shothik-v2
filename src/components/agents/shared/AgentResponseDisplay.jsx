@@ -1,10 +1,10 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import python from "react-syntax-highlighter/dist/esm/languages/hljs/python";
 import { github } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { Card, CardContent } from "../../../src/components/ui/card";
-import { cn } from "../../../src/lib/utils";
 
 SyntaxHighlighter.registerLanguage("javascript", js);
 SyntaxHighlighter.registerLanguage("python", python);

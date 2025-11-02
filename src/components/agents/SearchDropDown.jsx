@@ -1,19 +1,19 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Button } from "../../src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../src/components/ui/dropdown-menu";
-import useResponsive from "../../src/hooks/useResponsive";
-import { cn } from "../../src/lib/utils";
-import SvgColor from "../../src/resource/SvgColor";
+} from "@/components/ui/dropdown-menu";
+import useResponsive from "@/hooks/useResponsive";
+import { cn } from "@/lib/utils";
+import SvgColor from "@/resource/SvgColor";
+import { ChevronDown } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const SearchDropdown = ({ setResearchModel, setTopLevel }) => {
   const [open, setOpen] = useState(false);

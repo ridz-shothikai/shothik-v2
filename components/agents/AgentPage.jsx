@@ -15,20 +15,15 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 // New imports for 7-agent system
-import { Button } from "../../src/components/ui/button";
-import { Card, CardContent } from "../../src/components/ui/card";
-import { Spinner } from "../../src/components/ui/spinner";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../src/components/ui/tabs";
-import { Textarea } from "../../src/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useFetchLogsQuery,
   useFetchSlidesQuery,
-} from "../../src/redux/api/presentation/presentationApi";
+} from "@/redux/api/presentation/presentationApi";
 import { useAgentContext } from "./shared/AgentContextProvider";
 import InteractiveChatMessage from "./shared/InteractiveChatMessage";
 import PlanningProgressIndicator from "./shared/PlanningProgressIndicator";

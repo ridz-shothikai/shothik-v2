@@ -1,9 +1,8 @@
 // ====== For Slide creation handler ======
 
-import { authenticateToSheetService } from "../../../src/libs/sheetUtils";
-import { setPresentationState } from "../../../src/redux/slice/presentationSlice";
-import { setSheetState } from "../../../src/redux/slice/sheetSlice";
-import { createPresentationServer } from "../../../src/services/createPresentationServer";
+import { setPresentationState } from "@/redux/slice/presentationSlice";
+import { setSheetState } from "@/redux/slice/sheetSlice";
+import { createPresentationServer } from "@/services/createPresentationServer";
 
 // ====== For SLIDE generation handler ======
 async function handleSlideCreation(
@@ -15,7 +14,7 @@ async function handleSlideCreation(
   setIsSubmitting,
   setIsInitiatingPresentation,
   router,
-  showToast
+  showToast,
 ) {
   try {
     sessionStorage.setItem("initialPrompt", inputValue);
@@ -32,12 +31,12 @@ async function handleSlideCreation(
         presentationBlueprint: null,
         title: "Generating...",
         totalSlides: 0,
-      })
+      }),
     );
 
     console.log(
       "[AgentLandingPage] Initiating presentation with message:",
-      inputValue
+      inputValue,
     );
     const token = localStorage.getItem("accessToken");
 
@@ -70,7 +69,7 @@ async function handleSlideCreation(
 
     console.log(
       "[AgentLandingPage] Presentation initiated with ID:",
-      presentationId
+      presentationId,
     );
 
     if (presentationId) {
@@ -86,7 +85,7 @@ async function handleSlideCreation(
     setIsSubmitting(false);
     setIsInitiatingPresentation(false);
   }
-};
+}
 
 // ====== For SHEET generation handler ======
 async function handleSheetGenerationRequest(
@@ -99,7 +98,7 @@ async function handleSheetGenerationRequest(
   router,
   email,
   showToast,
-  refreshSheetAIToken
+  refreshSheetAIToken,
 ) {
   try {
     // console.log(inputValue, "input value");
@@ -113,7 +112,7 @@ async function handleSheetGenerationRequest(
         sheet: [],
         status: "idle",
         title: "Generating...",
-      })
+      }),
     );
 
     // console.log(
@@ -158,7 +157,7 @@ async function handleSheetGenerationRequest(
           body: JSON.stringify({
             name: `${inputValue} - ${new Date().toLocaleString()}`,
           }),
-        }
+        },
       );
       if (!response.ok) {
         // TODO: Here we need to show user a toast message that we failed
@@ -203,7 +202,7 @@ async function handleResearchRequest(
   setIsSubmitting,
   showToast,
   refreshResearchAiToken,
-  router
+  router,
 ) {
   console.log("research start", inputValue, researchModel, topLevel);
   try {
@@ -213,7 +212,7 @@ async function handleResearchRequest(
       JSON.stringify({
         topK: topLevel,
         model: researchModel === "gemini-2.0-flash" ? "basic" : "pro",
-      })
+      }),
     );
 
     const token = localStorage.getItem("accessToken");
@@ -251,7 +250,7 @@ async function handleResearchRequest(
           body: JSON.stringify({
             name: `${inputValue} - ${new Date().toLocaleString()}`,
           }),
-        }
+        },
       );
       if (!response.ok) {
         // console.log("Failed to create chat");
@@ -288,9 +287,8 @@ async function handleResearchRequest(
 // ====== For Calls generation handler ======
 // ====== For ALl Agents generation handler ======
 
-
 export {
-  handleSlideCreation,
-  handleSheetGenerationRequest,
   handleResearchRequest,
+  handleSheetGenerationRequest,
+  handleSlideCreation,
 };
