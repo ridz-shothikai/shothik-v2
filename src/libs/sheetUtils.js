@@ -4,7 +4,7 @@ export async function authenticateToSheetService(email) {
     try {
       await fetch(
         // "https://sheetai.pixigenai.com/api/auth/register_user",
-        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/auth/register_user`,
+        `${process.env.NEXT_PUBLIC_API_URL}/sheet/auth/register_user`,
         {
           method: "POST",
           headers: {
@@ -26,7 +26,7 @@ export async function authenticateToSheetService(email) {
     const loginResponse = await fetch(
       // "https://sheetai.pixigenai.com/api/auth/login",
       // "http://163.172.172.38:3005/api/auth/login",
-      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/auth/login`,
+      `${process.env.NEXT_PUBLIC_API_URL}/sheet/auth/login`,
       {
         method: "POST",
         headers: {

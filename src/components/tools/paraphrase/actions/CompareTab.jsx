@@ -153,11 +153,7 @@ const CompareTab = ({
   );
   const redirectPrefix = "p-v2";
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
-    "/" +
-    redirectPrefix +
-    "/api";
-  // const API_BASE = process.env.NEXT_PUBLIC_PARAPHRASE_API_URI;
+    process.env.NEXT_PUBLIC_API_URL + "/" + redirectPrefix + "/api";
 
   const getSynonymLabel = (step) => SYNONYMS[step] ?? SYNONYMS[minStep];
 

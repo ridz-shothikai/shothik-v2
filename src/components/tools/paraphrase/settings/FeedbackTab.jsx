@@ -28,9 +28,7 @@ const FeedbackTab = () => {
 
     try {
       const res = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api"
-        }/feedback`,
+        `${process.env.NEXT_PUBLIC_API_URL + "/p-v2/api"}/feedback`,
         {
           method: "POST",
           headers: {

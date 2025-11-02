@@ -26,7 +26,7 @@ const HistoryTab = ({ onClose }) => {
     (state) => state.paraphraseHistory,
   );
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL + "/p-v2/api";
 
   // const API_BASE = "http://localhost:3050/api";
 

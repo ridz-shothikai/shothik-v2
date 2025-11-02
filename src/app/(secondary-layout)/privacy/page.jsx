@@ -218,7 +218,7 @@ export default function PrivacyPage() {
                 documents on education, qualification, professional training,
                 employment agreements,{" "}
                 <a
-                  href={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/privacy`}
+                  href={`${process.env.NEXT_PUBLIC_APP_URL}/privacy`}
                   className="text-primary"
                 >
                   NDA agreements

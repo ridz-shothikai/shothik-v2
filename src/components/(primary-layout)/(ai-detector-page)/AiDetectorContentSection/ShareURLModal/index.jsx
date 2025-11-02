@@ -18,7 +18,7 @@ import {
 const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
   if (!history?._id) return null;
 
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${history._id}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/ai-detector?share_id=${history._id}`;
   let outputContend = "";
 
   history?.result?.sentences.forEach((item) => {
@@ -62,7 +62,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, history }) => {
               url={shareUrl}
               title={title}
               summary={outputContend}
-              source={process.env.NEXT_PUBLIC_FRONTEND_URL}
+              source={process.env.NEXT_PUBLIC_APP_URL}
             >
               <LinkedinIcon size={32} round />
             </LinkedinShareButton>

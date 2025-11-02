@@ -18,26 +18,28 @@ export const fetchAiDetectorSections = async (query = {}, payload = {}) => {
   queryParams.set("limit", limit.toString());
   queryParams.set("search", search.trim());
 
-  const response = await api.get(`/ai-detector/sections?${queryParams}`, {
+  const response = await api.get(`/api/ai-detector/sections?${queryParams}`, {
     ...payload,
   });
   return response?.data;
 };
 
 export const fetchAiDetectorSection = async (id, payload = {}) => {
-  const response = await api.get(`/ai-detector/section/${id}`, { ...payload });
+  const response = await api.get(`/api/ai-detector/section/${id}`, {
+    ...payload,
+  });
   return response?.data;
 };
 
 export const renameAiDetectorSection = async (id, payload = {}) => {
-  const response = await api.put(`/ai-detector/section-rename/${id}`, {
+  const response = await api.put(`/api/ai-detector/section-rename/${id}`, {
     ...payload,
   });
   return response?.data;
 };
 
 export const deleteAiDetectorSection = async (id, payload = {}) => {
-  const response = await api.delete(`/ai-detector/section-delete/${id}`, {
+  const response = await api.delete(`/api/ai-detector/section-delete/${id}`, {
     ...payload,
   });
   return response?.data;
@@ -51,18 +53,22 @@ export const fetchAiDetectorHistories = async (query = {}, payload = {}) => {
   queryParams.set("limit", limit.toString());
   queryParams.set("search", search.trim());
 
-  const response = await api.get(`/ai-detector/histories?${queryParams}`, {
+  const response = await api.get(`/api/ai-detector/histories?${queryParams}`, {
     ...payload,
   });
   return response?.data;
 };
 
 export const fetchAiDetectorHistory = async (id, payload = {}) => {
-  const response = await api.get(`/ai-detector/history/${id}`, { ...payload });
+  const response = await api.get(`/api/ai-detector/history/${id}`, {
+    ...payload,
+  });
   return response?.data;
 };
 
 export const fetchAiDetectorShare = async (id, payload = {}) => {
-  const response = await api.get(`/ai-detector/share/${id}`, { ...payload });
+  const response = await api.get(`/api/ai-detector/share/${id}`, {
+    ...payload,
+  });
   return response?.data;
 };

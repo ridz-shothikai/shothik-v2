@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const baseQuerySlide = fetchBaseQuery({
   mode: "cors",
-  baseUrl: process.env.NEXT_PUBLIC_API_URI_SLIDE,
+  baseUrl: process.env.NEXT_PUBLIC_SLIDE_API_URL,
   prepareHeaders: async (headers, { getState, endpoint }) => {
     const token =
       getState()?.auth?.accessToken || localStorage.getItem("accessToken");

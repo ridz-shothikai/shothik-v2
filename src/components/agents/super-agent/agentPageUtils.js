@@ -146,7 +146,7 @@ async function handleSheetGenerationRequest(
       response = await fetch(
         // "https://sheetai.pixigenai.com/api/chat/create_chat",
         // "http://163.172.172.38:3005/api/chat/create_chat",
-        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/chat/create_chat`,
+        `${process.env.NEXT_PUBLIC_API_URL}/sheet/chat/create_chat`,
         {
           method: "POST",
           headers: {
@@ -240,7 +240,7 @@ async function handleResearchRequest(
     let response;
     try {
       response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/chat/create_chat`,
+        `${process.env.NEXT_PUBLIC_API_URL}/deep-research/chat/create_chat`,
         {
           method: "POST",
           headers: {

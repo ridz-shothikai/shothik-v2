@@ -270,9 +270,9 @@ export default function usePresentationSocket(pId, token) {
       return;
     }
 
-    const base = process.env.NEXT_PUBLIC_API_URI_SLIDE;
+    const base = process.env.NEXT_PUBLIC_SLIDE_API_URL;
     if (!base) {
-      console.error("[Socket] ❌ NEXT_PUBLIC_API_URI_SLIDE not configured");
+      console.error("[Socket] ❌ NEXT_PUBLIC_SLIDE_API_URL not configured");
       return;
     }
 

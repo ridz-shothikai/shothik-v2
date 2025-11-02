@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
         title: metaTitle,
         description: metaDescription,
         images: [metaImage],
-        url: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/blogs/${slug}`,
+        url: `${process.env.NEXT_PUBLIC_APP_URL}/blogs/${slug}`,
         type: "website",
       },
       twitter: {

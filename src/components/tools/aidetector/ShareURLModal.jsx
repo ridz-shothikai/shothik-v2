@@ -14,7 +14,7 @@ import {
 } from "react-share";
 
 const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
-  const shareUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/ai-detector?share_id=${content._id}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL}/ai-detector?share_id=${content._id}`;
   let outputContend = "";
 
   content.sentences.forEach((item) => {
@@ -66,7 +66,7 @@ const ShareURLModal = ({ open, handleClose, title, hashtags, content }) => {
                 url={shareUrl}
                 title={title}
                 summary={outputContend}
-                source={process.env.NEXT_PUBLIC_FRONTEND_URL}
+                source={process.env.NEXT_PUBLIC_APP_URL}
               >
                 <LinkedinIcon size={32} round />
               </LinkedinShareButton>

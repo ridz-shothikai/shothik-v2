@@ -527,8 +527,7 @@ const ParaphraseContend = () => {
   };
 
   const fetchHistory = async () => {
-    const API_BASE =
-      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL + "/p-v2/api";
 
     // const API_BASE = "http://localhost:3050/api";
 
@@ -582,7 +581,7 @@ const ParaphraseContend = () => {
     // Reset completion flags
     setCompletedEvents({ plain: false, tagging: false, synonyms: false });
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX, {
+    const socket = io(process.env.NEXT_PUBLIC_API_URL, {
       path: "/p-v2/socket.io",
       transports: ["websocket"],
       auth: { token: accessToken },
@@ -590,7 +589,7 @@ const ParaphraseContend = () => {
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
     }); // prod
-    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
+    // const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET_URL, {
     //   path: "/socket.io",
     //   transports: ["websocket"],
     //   auth: { token: accessToken },
@@ -924,8 +923,7 @@ const ParaphraseContend = () => {
     reset = false,
     search = "",
   } = {}) => {
-    const API_BASE =
-      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL + "/p-v2/api";
 
     // const API_BASE = "http://localhost:3050/api";
     try {
@@ -978,7 +976,7 @@ const ParaphraseContend = () => {
   }, [isUpdatedFileHistory, accessToken]);
 
   // useEffect(() => {
-  //   const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET, {
+  //   const socket = io(process.env.NEXT_PUBLIC_PARAPHRASE_SOCKET_URL, {
   //     transports: ["websocket"],
   //     auth: { token: accessToken },
   //     reconnection: true,
@@ -1400,8 +1398,7 @@ const ParaphraseContend = () => {
   ]); // All the dependencies that should trigger re-paraphrasing are listed here.
 
   useEffect(() => {
-    const API_BASE =
-      process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/p-v2/api";
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL + "/p-v2/api";
 
     // const API_BASE = "http://localhost:3050/api";
 

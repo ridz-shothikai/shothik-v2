@@ -261,7 +261,7 @@ const ParaphraseOutput = ({
       setRephraseData([]); // Clear previous rephrase data immediately
 
       const url =
-        process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX +
+        process.env.NEXT_PUBLIC_API_URL +
         "/p-v2/api" +
         "/paraphrase-with-variantV2";
 

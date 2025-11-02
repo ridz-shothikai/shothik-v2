@@ -414,7 +414,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     if (!currentPresentationId) return;
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX || "";
       const token = localStorage.getItem("accessToken");
 
       const headers = {
@@ -562,7 +562,7 @@ export default function PresentationAgentPage({ specificAgent }) {
     ackTimeoutRef.current = setTimeout(() => setAwaitingAck(false), 5000); // 5s fallback
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI || "";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX || "";
       const token = localStorage.getItem("accessToken");
 
       const response = await fetch(

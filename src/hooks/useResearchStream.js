@@ -428,7 +428,7 @@ export const useResearchStream = () => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/research/create_research_queue`,
+          `${process.env.NEXT_PUBLIC_API_URL}/deep-research/research/create_research_queue`,
           {
             method: "POST",
             headers: {
