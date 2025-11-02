@@ -71,6 +71,7 @@ export default function SlidePreviewNavbar({
   shareSettings,
   PresentationTitle,
   isSharedPage = false,
+  projectId: projectIdProp,
 }) {
   // console.log(shareSettings, "shareSettings");
   const { openPresentation } = usePresentation();
@@ -78,7 +79,7 @@ export default function SlidePreviewNavbar({
   const isTablet = useResponsive("down", "md");
 
   const searchParams = useSearchParams();
-  const presentationId = searchParams.get("project_id");
+  const presentationId = projectIdProp || searchParams.get("project_id");
 
   const [exportOpen, setExportOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);

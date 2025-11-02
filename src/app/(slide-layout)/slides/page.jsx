@@ -7,10 +7,10 @@ import SlidePreviewNavbar from "@/components/slide/SlidePreviewNavbar";
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchSlidesQuery } from "@/redux/api/presentation/presentationApi";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-// --- Main Page Component ---
-export default function SlidesPreviewPage() {
+// --- Component that uses useSearchParams ---
+function SlidesPreviewContent() {
   const [shouldPollSlides, setShouldPollSlides] = useState(true);
   const searchParams = useSearchParams();
   const projectId = searchParams.get("project_id");
@@ -34,7 +34,7 @@ export default function SlidesPreviewPage() {
   if (slidesLoading) {
     return (
       <>
-        <SlidePreviewNavbar slidesData={null} />
+        <SlidePreviewNavbar slidesData={null} projectId={projectId} />
         <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
           <Spinner className="text-primary" />
           <p className="text-foreground">Loading slides...</p>
@@ -46,7 +46,7 @@ export default function SlidesPreviewPage() {
   if (slidesError) {
     return (
       <>
-        <SlidePreviewNavbar slidesData={null} />
+        <SlidePreviewNavbar slidesData={null} projectId={projectId} />
         <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
           <p className="text-destructive">Error loading slides</p>
         </div>
@@ -57,7 +57,7 @@ export default function SlidesPreviewPage() {
   if (!slidesData?.slides || slidesData.slides.length === 0) {
     return (
       <>
-        <SlidePreviewNavbar slidesData={null} />
+        <SlidePreviewNavbar slidesData={null} projectId={projectId} />
         <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
           <p className="text-foreground">No slides available</p>
         </div>
@@ -67,7 +67,7 @@ export default function SlidesPreviewPage() {
 
   return (
     <>
-      <SlidePreviewNavbar slidesData={slidesData} />
+      <SlidePreviewNavbar slidesData={slidesData} projectId={projectId} />
       <PresentationMode
         slides={slidesData?.slides || []}
         open={isPresentationOpen && slidesData?.slides?.length > 0}
@@ -87,5 +87,21 @@ export default function SlidesPreviewPage() {
         </div>
       </div>
     </>
+  );
+}
+
+// --- Main Page Component ---
+export default function SlidesPreviewPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-2">
+          <Spinner className="text-primary" />
+          <p className="text-foreground">Loading slides...</p>
+        </div>
+      }
+    >
+      <SlidesPreviewContent />
+    </Suspense>
   );
 }
