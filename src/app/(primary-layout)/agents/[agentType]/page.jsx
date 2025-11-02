@@ -1,6 +1,6 @@
 "use client";
-import { AgentContextProvider } from "@/../components/agents/shared/AgentContextProvider";
 import NotFound from "@/app/not-found";
+import { AgentContextProvider } from "@/components/agents/shared/AgentContextProvider";
 import ChatInput from "@/components/research/ui/ChatInput";
 import ResearchPageSkeletonLoader from "@/components/research/ui/ResearchPageSkeletonLoader";
 import { FooterCta } from "@/components/sheet/SheetAgentPage"; // Needs to move it to common or shared folder.
