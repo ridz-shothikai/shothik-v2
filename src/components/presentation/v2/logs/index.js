@@ -9,8 +9,6 @@ export { default as BrowserWorkerLog } from "./BrowserWorkerLog";
 export { default as KeywordResearchLog } from "./KeywordResearchLog";
 export { default as LogRouter } from "./LogRouter";
 export { default as PlanningLog } from "./PlanningLog";
+export { default as SlideGenerationLog } from "./SlideGenerationLog";
 export { default as SpecExtractorLog } from "./SpecExtractorLog";
 export { default as UserMessageLog } from "./UserMessageLog";
-
-// TODO: Export additional log components as they are implemented
-// export { default as SlideGenerationLog } from "./SlideGenerationLog";

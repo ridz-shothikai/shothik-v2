@@ -287,19 +287,31 @@ function ContentStrategySection({ contentStrategy }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const strategyTypes = [
-    { key: "opening_slides", label: "Opening", color: "bg-blue-500/20" },
+    {
+      key: "opening_slides",
+      label: "Opening",
+      //  color: "bg-blue-500/20"
+    },
     {
       key: "core_content_slides",
       label: "Core Content",
-      color: "bg-green-500/20",
+      //   color: "bg-green-500/20",
     },
     {
       key: "data_heavy_slides",
       label: "Data Heavy",
-      color: "bg-purple-500/20",
+      //   color: "bg-purple-500/20",
     },
-    { key: "story_slides", label: "Story", color: "bg-orange-500/20" },
-    { key: "closing_slides", label: "Closing", color: "bg-red-500/20" },
+    {
+      key: "story_slides",
+      label: "Story",
+      // color: "bg-orange-500/20"
+    },
+    {
+      key: "closing_slides",
+      label: "Closing",
+      //  color: "bg-red-500/20"
+    },
   ];
 
   return (
@@ -362,7 +374,7 @@ function ContentStrategySection({ contentStrategy }) {
  * Slide Outline Section Component
  */
 function SlideOutlineSection({ slideOutline }) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <section className="border-border bg-muted/20 rounded-md border">

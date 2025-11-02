@@ -4,6 +4,7 @@ import { MESSAGE_TYPES } from "@/utils/presentation/messageTypeClassifier.js";
 import BrowserWorkerLog from "./BrowserWorkerLog";
 import KeywordResearchLog from "./KeywordResearchLog";
 import PlanningLog from "./PlanningLog";
+import SlideGenerationLog from "./SlideGenerationLog";
 import SpecExtractorLog from "./SpecExtractorLog";
 import UserMessageLog from "./UserMessageLog";
 
@@ -36,9 +37,8 @@ export default function LogRouter({ log, onViewSummary }) {
     case MESSAGE_TYPES.PLANNING:
       return <PlanningLog log={log} />;
 
-    // TODO: Add more log types as we implement them
-    // case MESSAGE_TYPES.SLIDE_GENERATION:
-    //   return <SlideGenerationLog log={log} />;
+    case MESSAGE_TYPES.SLIDE_GENERATION:
+      return <SlideGenerationLog log={log} />;
 
     default:
       // Fallback for unknown log types
