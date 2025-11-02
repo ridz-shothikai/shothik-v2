@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import InputArea from "../InputAreas";
 import MessageBubble from "./MessageBubble";
 
-export default function PresentationLogsUi({ logs = [] }) {
+export default function PresentationLogsUi({ logs = [], onViewSummary }) {
   const scrollContainerRef = useRef(null);
 
   const isMobile = useResponsive("down", "md");
@@ -54,7 +54,11 @@ export default function PresentationLogsUi({ logs = [] }) {
               //   {l.text ?? "logs"} {/* render real text if available */}
               // </Typography>
 
-              <MessageBubble key={l.id || idx} logs={l} />
+              <MessageBubble
+                key={l.id || idx}
+                logs={l}
+                onViewSummary={onViewSummary}
+              />
             ))
           ) : (
             <p className="text-muted-foreground">No logs yet</p>

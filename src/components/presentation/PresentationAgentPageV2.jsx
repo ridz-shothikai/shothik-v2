@@ -3,12 +3,26 @@
 import usePresentationOrchestrator from "@/hooks/orchestrator/usePresentationOrchestrator";
 import { cn } from "@/lib/utils";
 import { selectPresentation } from "@/redux/slice/presentationSlice";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import PreviewPanel from "./PreviewPanel";
 import PresentationLogsUi from "./v2/PresentationLogsUi";
 
 export default function PresentationAgentPageV2({ presentationId }) {
   const presentationState = useSelector(selectPresentation);
+  const [browserWorkerSummary, setBrowserWorkerSummary] = useState(null);
+
+  // Handler for View button in BrowserWorkerLog
+  const handleViewSummary = (log) => {
+    if (log?.summary) {
+      setBrowserWorkerSummary(log.summary);
+    }
+  };
+
+  // Handler to close summary
+  const handleCloseSummary = () => {
+    setBrowserWorkerSummary(null);
+  };
 
   // Initialize orchestrator - handles all status-based logic
   const { hookStatus, error, retry, currentStatus, socketConnected } =
@@ -57,7 +71,10 @@ export default function PresentationAgentPageV2({ presentationId }) {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-1 overflow-hidden md:grid-cols-2">
           <div className="border-border flex h-full min-h-0 flex-col overflow-hidden border-r">
-            <PresentationLogsUi logs={presentationState.logs} />
+            <PresentationLogsUi
+              logs={presentationState.logs}
+              onViewSummary={handleViewSummary}
+            />
           </div>
           <div className="flex min-h-0 flex-col overflow-hidden">
             <PreviewPanel
@@ -67,6 +84,8 @@ export default function PresentationAgentPageV2({ presentationId }) {
               presentationId={presentationState.slideCurrentId}
               title={presentationState.title}
               status={presentationState.status}
+              browserWorkerSummary={browserWorkerSummary}
+              onCloseSummary={handleCloseSummary}
             />
           </div>
         </div>

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import SlidePreview from "./SlidePreview";
+import BrowserWorkerMarkdown from "./v2/BrowserWorkerMarkdown";
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -27,6 +28,8 @@ export default function PreviewPanel({
   onRegenerateWithFeedback,
   title,
   status,
+  browserWorkerSummary,
+  onCloseSummary,
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -68,65 +71,92 @@ export default function PreviewPanel({
                 {/* Sticky Header */}
                 <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-3 pt-3 pb-2">
                   <h6 className="min-w-0 overflow-hidden text-[0.9rem] font-medium text-ellipsis whitespace-nowrap sm:text-base md:text-[1.1rem]">
-                    {status !== "failed"
-                      ? title || slidesData?.title || "Generating..."
-                      : "Presentation generation failed"}
+                    {browserWorkerSummary
+                      ? "Research Summary"
+                      : status !== "failed"
+                        ? title || slidesData?.title || "Generating..."
+                        : "Presentation generation failed"}
                   </h6>
 
-                  {(status === "completed" || status === "saved") && (
-                    <div className="text-muted-foreground text-[0.8rem] sm:text-[0.9rem] md:text-base">
-                      {!hasReplay && (
-                        <Button
-                          asChild
-                          variant="link"
-                          className="text-primary h-auto p-0 text-[14px] whitespace-nowrap hover:underline"
-                        >
-                          <Link
-                            href={`/slides?project_id=${presentationId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View & Export
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
+                  {browserWorkerSummary && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (onCloseSummary) {
+                          onCloseSummary();
+                        }
+                      }}
+                      className="h-7 px-3 text-xs"
+                    >
+                      Close
+                    </Button>
                   )}
+
+                  {!browserWorkerSummary &&
+                    (status === "completed" || status === "saved") && (
+                      <div className="text-muted-foreground text-[0.8rem] sm:text-[0.9rem] md:text-base">
+                        {!hasReplay && (
+                          <Button
+                            asChild
+                            variant="link"
+                            className="text-primary h-auto p-0 text-[14px] whitespace-nowrap hover:underline"
+                          >
+                            <Link
+                              href={`/slides?project_id=${presentationId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View & Export
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    )}
                 </div>
 
                 {/* Scrollable Content */}
                 <div className="p-3 pt-0">
-                  {slidesData?.length === 0 ? (
-                    <div className="flex justify-center p-4">
-                      <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                  {/* Browser Worker Summary Markdown */}
+                  {browserWorkerSummary ? (
+                    <div className="prose prose-invert max-w-none">
+                      <BrowserWorkerMarkdown content={browserWorkerSummary} />
                     </div>
-                  ) : slidesData?.length > 0 ? (
-                    <div className="flex flex-col justify-center gap-2 pt-2">
-                      {slidesData?.map((slide, index) => (
-                        <SlidePreview
-                          key={index}
-                          slide={slide}
-                          index={index}
-                          activeTab={slideTabs[index] || "preview"}
-                          onTabChange={handleSlideTabChange}
-                          totalSlides={
-                            slidesData?.length || slidesData?.data?.length
-                          }
-                        />
-                      ))}
-
-                      {slidesLoading && (
+                  ) : (
+                    <>
+                      {slidesData?.length === 0 ? (
                         <div className="flex justify-center p-4">
                           <Loader2 className="text-primary h-8 w-8 animate-spin" />
                         </div>
+                      ) : slidesData?.length > 0 ? (
+                        <div className="flex flex-col justify-center gap-2 pt-2">
+                          {slidesData?.map((slide, index) => (
+                            <SlidePreview
+                              key={index}
+                              slide={slide}
+                              index={index}
+                              activeTab={slideTabs[index] || "preview"}
+                              onTabChange={handleSlideTabChange}
+                              totalSlides={
+                                slidesData?.length || slidesData?.data?.length
+                              }
+                            />
+                          ))}
+
+                          {slidesLoading && (
+                            <div className="flex justify-center p-4">
+                              <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="mt-8 p-3 text-center">
+                          <p className="text-muted-foreground">
+                            No slides generated
+                          </p>
+                        </div>
                       )}
-                    </div>
-                  ) : (
-                    <div className="mt-8 p-3 text-center">
-                      <p className="text-muted-foreground">
-                        No slides generated
-                      </p>
-                    </div>
+                    </>
                   )}
                 </div>
               </>
