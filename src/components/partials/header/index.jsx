@@ -145,7 +145,7 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "bg-card/70 supports-[backdrop-filter]:bg-background/60 relative z-50 h-12 border-b backdrop-blur-md lg:h-16",
+        "bg-card relative z-50 h-12 border-b backdrop-blur-lg lg:h-16",
       )}
     >
       <button
