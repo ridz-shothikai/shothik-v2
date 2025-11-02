@@ -4,7 +4,7 @@ import ToastApplier from "@/components/appliers/ToastApplier";
 import { LoginModal, RegisterModal } from "@/components/auth/AuthModal";
 import { Login } from "@/components/auth/components/Login";
 import { Register } from "@/components/auth/components/Register";
-import Providers from "@/config/Providers";
+import Providers from "@/providers";
 import "./globals.css";
 
 export const metadata = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { PAYMENT } from "@/config/config/route";
+import { PAYMENT } from "@/config/route";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useBkashPaymentMutation } from "@/redux/api/pricing/pricingApi";
 import { useSearchParams } from "next/navigation";

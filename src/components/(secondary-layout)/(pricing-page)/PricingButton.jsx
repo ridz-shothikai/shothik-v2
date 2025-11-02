@@ -1,6 +1,6 @@
 import { trackEvent } from "@/analysers/eventTracker";
 import { Button } from "@/components/ui/button";
-import { PAYMENT } from "@/config/config/route";
+import { PAYMENT } from "@/config/route";
 import { cn } from "@/lib/utils";
 import { setShowLoginModal } from "@/redux/slices/auth";
 import Link from "next/link";

@@ -1,9 +1,9 @@
-import { ICONS } from "../config/config/navConfig";
+import { NAV_ICONS } from "@/config/navigation";
 
 export const toolsData = {
   paraphrase: {
     name: "Paraphrase",
-    icon: ICONS.paraphrase,
+    icon: NAV_ICONS.paraphrase,
     iconColor: "#FF595E",
     videoId: "https://www.youtube.com/embed/6IpNTr69uHQ",
     title: "How to use Paraphrase?",
@@ -30,7 +30,7 @@ export const toolsData = {
   },
   humanize: {
     name: "Humanize GPT",
-    icon: ICONS.humanize,
+    icon: NAV_ICONS.humanize,
     iconColor: "#FF595E",
     videoId: "https://www.youtube.com/embed/SgGUjY-fJwg",
     title: "How to use Humanize GPT ?",
@@ -64,7 +64,7 @@ export const toolsData = {
   },
   grammar: {
     name: "Grammar Fix",
-    icon: ICONS.grammar,
+    icon: NAV_ICONS.grammar,
     iconColor: "#8AC926",
     videoId: "https://www.youtube.com/embed/r-nVddrU2l8",
     title: "How to use Grammar Fix?",
@@ -98,7 +98,7 @@ export const toolsData = {
   },
   aiDetector: {
     name: "AI Detector",
-    icon: ICONS.ai_detector,
+    icon: NAV_ICONS.ai_detector,
     iconColor: "#f29b18",
     videoId: "https://www.youtube.com/embed/1_PTDCLY_Ks",
     title: "How to use AI Detector?",
@@ -132,7 +132,7 @@ export const toolsData = {
   },
   summarize: {
     name: "Summarize",
-    icon: ICONS.summarize,
+    icon: NAV_ICONS.summarize,
     iconColor: "#FFAB00",
     videoId: "https://www.youtube.com/embed/apzjPgie070",
     title: "How to use Summarize?",
@@ -166,7 +166,7 @@ export const toolsData = {
   },
   translate: {
     name: "Translator",
-    icon: ICONS.translator,
+    icon: NAV_ICONS.translator,
     iconColor: "#A07EFB",
     videoId: "https://www.youtube.com/embed/HWj-WXP1w8w",
     title: "How to use Translator?",

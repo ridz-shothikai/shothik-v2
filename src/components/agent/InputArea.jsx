@@ -5,11 +5,25 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ai_agent_list } from "@/config/config/agents";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Bot, Loader2, Paperclip, Send } from "lucide-react";
 import { useRef, useState } from "react";
+
+const ai_agent_list = [
+  {
+    title: "Super Agent",
+    agent_name: "shothik_ai_agent",
+  },
+  {
+    title: "Deep Research",
+    agent_name: "deep_research_agent",
+  },
+  {
+    title: "Slider Deck",
+    agent_name: "slider_creator_agent",
+  },
+];
 
 export default function InputArea({ addChatHistory, loading, showTitle }) {
   const [files, setFiles] = useState(null);

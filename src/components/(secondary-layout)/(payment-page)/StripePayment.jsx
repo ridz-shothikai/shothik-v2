@@ -1,5 +1,5 @@
 "use client";
-import { PAYMENT } from "@/config/config/route";
+import { PAYMENT } from "@/config/route";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useStripePaymentMutation } from "@/redux/api/pricing/pricingApi";
 import { loadStripe } from "@stripe/stripe-js";

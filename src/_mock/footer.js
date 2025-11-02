@@ -1,4 +1,4 @@
-import { PATH_PAGE, PATH_TOOLS } from "../config/config/route";
+import { PATH_PAGE, PATH_TOOLS } from "@/config/route";
 
 export const LINKS = [
   {

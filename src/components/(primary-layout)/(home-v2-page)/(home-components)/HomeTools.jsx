@@ -1,4 +1,4 @@
-import { tools } from "@/config/config/navConfig";
+import { NAV_TOOLS } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import * as motion from "motion/react-client";
 import Link from "next/link";
@@ -37,7 +37,7 @@ export default function HomeTools() {
         </motion.h2>
 
         <div className="grid grid-cols-12 gap-3">
-          {tools.map((tool, i) =>
+          {NAV_TOOLS.map((tool, i) =>
             tool.link ? (
               <motion.div
                 key={tool.title}

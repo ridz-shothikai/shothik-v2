@@ -1,5 +1,5 @@
 "use client";
-import { PAYMENT } from "@/config/config/route";
+import { PAYMENT } from "@/config/route";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useRazorPaymentMutation } from "@/redux/api/pricing/pricingApi";
 import { useRouter, useSearchParams } from "next/navigation";

@@ -1,4 +1,4 @@
-import { useSnackbarHook } from "../config/NotificationProvider";
+import { useSnackbarHook } from "@/providers/NotificationProvider";
 
 const useSnackbar = () => {
   const {

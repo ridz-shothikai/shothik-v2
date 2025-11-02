@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { PATH_PAGE, PATH_TOOLS } from "@/config/config/route";
+import { PATH_PAGE, PATH_TOOLS } from "@/config/route";
 import { ChevronRight } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";

@@ -10,7 +10,7 @@ import {
   SidebarMenu,
   useSidebar,
 } from "@/components/ui/sidebar";
-import navConfig from "@/config/config/navConfig";
+import { NAV_ITEMS } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import Logo from "@/resource/assets/Logo";
 import { Dot } from "lucide-react";
@@ -65,7 +65,7 @@ export default function NavigationSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <div className="flex flex-col py-2">
-                {navConfig?.map((group) => {
+                {NAV_ITEMS?.map((group) => {
                   if (group?.roles && !group?.roles?.includes(user?.role)) {
                     return null;
                   }

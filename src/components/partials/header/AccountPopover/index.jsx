@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { PATH_ACCOUNT } from "@/config/config/route";
+import { PATH_ACCOUNT } from "@/config/route";
 import useSnackbar from "@/hooks/useSnackbar";
 import {
   logout,
