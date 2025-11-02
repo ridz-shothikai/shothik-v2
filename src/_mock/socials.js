@@ -1,5 +1,5 @@
+import DiscordIcon from "@/components/icons/DiscordIcon";
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
-import Discord from "../resource/assets/Discord"; // keeping your custom one
 
 export const _socials = [
   {
@@ -33,7 +33,7 @@ export const _socials = [
   {
     value: "discord",
     name: "Discord",
-    icon: Discord,
+    icon: DiscordIcon,
     color: "#5865f2",
     path: "https://discord.gg/pq2wTqXEpj",
   },

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import DiscordIcon from "@/components/icons/DiscordIcon";
 import { PATH_ACCOUNT } from "@/config/route";
 import useSnackbar from "@/hooks/useSnackbar";
 import {
@@ -12,7 +13,6 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "@/redux/slices/auth";
-import Discord from "@/resource/assets/Discord";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -160,7 +160,7 @@ export default function AccountPopover() {
             >
               <div className="hover:bg-primary/10 flex w-full items-center gap-3 px-3 py-2 text-sm">
                 <span className="inline-flex h-5 w-5 items-center justify-center">
-                  <Discord />
+                  <DiscordIcon />
                 </span>
                 <span>Join Us on Discord</span>
               </div>

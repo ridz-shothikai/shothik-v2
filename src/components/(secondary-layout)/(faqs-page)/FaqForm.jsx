@@ -1,9 +1,9 @@
 "use client";
+import FormProvider from "@/components/common/FormProvider";
+import RHFTextField from "@/components/common/RHFTextField";
 import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useContactMutation } from "@/redux/api/auth/authApi";
-import FormProvider from "@/resource/FormProvider";
-import RHFTextField from "@/resource/RHFTextField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";

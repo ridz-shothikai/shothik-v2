@@ -1,6 +1,6 @@
 import { LINKS } from "@/_mock/footer";
 import { _socials } from "@/_mock/socials";
-import Logo from "@/resource/assets/Logo";
+import Logo from "@/components/partials/logo";
 import Link from "next/link";
 import { Fragment } from "react";
 

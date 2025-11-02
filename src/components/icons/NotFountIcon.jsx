@@ -1,6 +1,4 @@
-"use client";
-
-function PageNotFoundIllustration({ className, ...other }) {
+const NotFountIcon = ({ className, ...other }) => {
   // Using CSS variables for theme colors
   const PRIMARY_LIGHT = "hsl(var(--primary) / 0.7)";
   const PRIMARY_MAIN = "hsl(var(--primary))";
@@ -79,6 +77,6 @@ function PageNotFoundIllustration({ className, ...other }) {
       </svg>
     </div>
   );
-}
+};
 
-export default PageNotFoundIllustration;
+export default NotFountIcon;

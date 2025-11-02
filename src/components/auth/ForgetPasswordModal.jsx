@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { setShowForgotPasswordModal } from "@/redux/slices/auth";
-import PasswordIcon from "@/resource/assets/PasswordIcon";
 import { ChevronLeft } from "lucide-react";
 import Head from "next/head";
 import { useDispatch, useSelector } from "react-redux";
 import AuthResetPasswordForm from "./AuthResetPasswordForm";
-
-// ----------------------------------------------------------------------
+import PasswordIcon from "@/components/icons/PasswordIcon";
 
 export default function ForgetPasswordModal() {
   const dispatch = useDispatch();

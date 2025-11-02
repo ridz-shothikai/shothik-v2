@@ -1,4 +1,5 @@
 import { trackEvent } from "@/analysers/eventTracker";
+import DotFlashing from "@/components/common/DotFlashing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -7,7 +8,6 @@ import {
   useGetAppModeQuery,
   useGetTransactionQuery,
 } from "@/redux/api/pricing/pricingApi";
-import DotFlashing from "@/resource/DotFlashing";
 import { Shield } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";

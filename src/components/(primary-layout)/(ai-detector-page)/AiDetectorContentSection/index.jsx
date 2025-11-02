@@ -2,6 +2,7 @@
 
 import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import BookIcon from "@/components/icons/BookIcon";
 import useScreenSize from "@/hooks/ui/useScreenSize";
 import useLoadingText from "@/hooks/useLoadingText";
@@ -20,7 +21,6 @@ import {
 } from "@/redux/slices/ai-detector-slice";
 import { setShowLoginModal } from "@/redux/slices/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slices/tools";
-import LoadingScreen from "@/resource/LoadingScreen";
 import {
   fetchAiDetectorSection,
   fetchAiDetectorSections,

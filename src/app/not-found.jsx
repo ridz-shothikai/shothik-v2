@@ -1,7 +1,7 @@
+import NotFountIcon from "@/components/icons/NotFountIcon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import PageNotFoundIllustration from "../resource/assets/notFound";
 
 export const metadata = {
   title: "404 Page Not Found | Shothik AI",
@@ -21,7 +21,7 @@ export default function NotFound() {
         mistyped the URL? Be sure to check your spelling.
       </p>
 
-      <PageNotFoundIllustration className={cn("my-5 h-[260px] sm:my-10")} />
+      <NotFountIcon className={cn("my-5 h-[260px] sm:my-10")} />
 
       <Button asChild size="lg">
         <Link href="/">Go to Home</Link>

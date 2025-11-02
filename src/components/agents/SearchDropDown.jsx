@@ -1,5 +1,6 @@
 "use client";
 
+import SvgColor from "@/components/common/SvgColor";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
-import SvgColor from "@/resource/SvgColor";
 import { ChevronDown } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";

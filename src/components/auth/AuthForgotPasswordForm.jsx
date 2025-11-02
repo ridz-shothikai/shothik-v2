@@ -1,11 +1,11 @@
 "use client";
+import FormProvider from "@/components/common/FormProvider";
+import RHFTextField from "@/components/common/RHFTextField";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import useSnackbar from "@/hooks/useSnackbar";
 import { useResetPasswordMutation } from "@/redux/api/auth/authApi";
 import { setShowLoginModal } from "@/redux/slices/auth";
-import FormProvider from "@/resource/FormProvider";
-import RHFTextField from "@/resource/RHFTextField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Check, Circle, Eye, EyeOff } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";

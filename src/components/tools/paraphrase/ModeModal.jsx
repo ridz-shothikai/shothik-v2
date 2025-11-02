@@ -1,8 +1,8 @@
 import { modes } from "@/_mock/tools/paraphrase";
+import SvgColor from "@/components/common/SvgColor";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import SvgColor from "@/resource/SvgColor";
 import { Lock, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

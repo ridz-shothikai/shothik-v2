@@ -1,5 +1,6 @@
 "use client";
 
+import Logo from "@/components/partials/logo";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NAV_ITEMS } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import Logo from "@/resource/assets/Logo";
 import { Dot } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";

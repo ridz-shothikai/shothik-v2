@@ -1,6 +1,4 @@
-"use client";
-
-function PasswordIcon({ className, ...other }) {
+const PasswordIcon = ({ className, ...other }) => {
   // Using CSS variables for theme colors
   const PRIMARY_MAIN = "hsl(var(--primary))";
   const WARNING_LIGHT = "hsl(var(--warning) / 0.7)";
@@ -109,6 +107,6 @@ function PasswordIcon({ className, ...other }) {
       </svg>
     </div>
   );
-}
+};
 
 export default PasswordIcon;

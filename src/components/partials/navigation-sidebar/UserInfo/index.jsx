@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 
+import DotFlashing from "@/components/common/DotFlashing";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import {
   setShowLoginModal,
   setShowRegisterModal,
 } from "@/redux/slices/auth";
-import DotFlashing from "@/resource/DotFlashing";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CustomAvatar from "./Avater";

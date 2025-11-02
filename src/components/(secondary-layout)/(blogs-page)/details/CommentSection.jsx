@@ -1,5 +1,6 @@
 "use client";
 import { refetchBlogDetails } from "@/app/actions";
+import TipTapEditor from "@/components/common/TipTapEditor";
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +14,6 @@ import {
   usePostCommentMutation,
   useRemoveCommentMutation,
 } from "@/redux/api/blog/blogApiSlice";
-import TipTapEditor from "@/resource/editor/TipTapEditor";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";

@@ -1,4 +1,4 @@
-import ComingSoon from "@/resource/ComingSoon";
+import ComingSoon from "@/components/common/ComingSoon";
 
 export async function generateMetadata() {
   return {

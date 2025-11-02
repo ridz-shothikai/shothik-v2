@@ -1,6 +1,7 @@
 "use client";
 import { trySamples } from "@/_mock/trySamples";
 import { trackEvent } from "@/analysers/eventTracker";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import UserActionInput from "@/components/tools/common/UserActionInput";
 import WordCounter from "@/components/tools/common/WordCounter";
 import { Card } from "@/components/ui/card";
@@ -17,7 +18,6 @@ import {
 } from "@/redux/api/tools/toolsApi";
 import { setShowLoginModal } from "@/redux/slices/auth";
 import { setAlertMessage, setShowAlert } from "@/redux/slices/tools";
-import LoadingScreen from "@/resource/LoadingScreen";
 import { useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

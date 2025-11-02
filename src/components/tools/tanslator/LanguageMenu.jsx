@@ -1,7 +1,7 @@
+import ArrowSwitchIcon from "@/components/icons/ArrowSwitchIcon";
 import { Button } from "@/components/ui/button";
 import { detectLanguageV2 } from "@/hooks/languageDitectorV2";
 import { cn } from "@/lib/utils";
-import { FluentMdl2Switch } from "@/resource/assets/LanguageToggleSwitch";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";
@@ -70,7 +70,7 @@ const LanguageMenu = ({
           !userInput || isLoading ? "cursor-default" : "cursor-pointer",
         )}
       >
-        <FluentMdl2Switch className="h-4 w-4" />
+        <ArrowSwitchIcon className="h-4 w-4" />
       </Button>
       <Button
         disabled={isLoading}

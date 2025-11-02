@@ -1,11 +1,11 @@
 "use client";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Footer from "@/components/partials/footer";
 import Header from "@/components/partials/header";
 import {
   useGetUserLimitQuery,
   useGetUserQuery,
 } from "@/redux/api/auth/authApi";
-import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";

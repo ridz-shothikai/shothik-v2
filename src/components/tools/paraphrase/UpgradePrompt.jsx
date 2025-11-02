@@ -1,5 +1,5 @@
+import SvgColor from "@/components/common/SvgColor";
 import { Button } from "@/components/ui/button";
-import SvgColor from "@/resource/SvgColor";
 import Link from "next/link";
 
 const UpgradePrompt = ({ onClose }) => {

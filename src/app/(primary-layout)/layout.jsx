@@ -2,6 +2,7 @@
 
 import AuthSuccessPopup from "@/components/auth/AuthSuccessPopoup";
 import VerifyEmailAlert from "@/components/auth/VerifyEmailAlert";
+import LoadingScreen from "@/components/common/LoadingScreen";
 import Footer from "@/components/partials/footer";
 import Header from "@/components/partials/header";
 import NavigationSidebar from "@/components/partials/navigation-sidebar";
@@ -14,7 +15,6 @@ import {
   useLoginMutation,
 } from "@/redux/api/auth/authApi";
 import { setShowLoginModal, setShowRegisterModal } from "@/redux/slices/auth";
-import LoadingScreen from "@/resource/LoadingScreen";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";

@@ -3,7 +3,12 @@ import { _socials } from "@/_mock/socials";
 import { team } from "@/_mock/team";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import CarouselArrows from "@/resource/carousel/CarouselArrows";
+import {
+  CarouselItem,
+  CarouselNext,
+  CarouselPrev,
+} from "@/components/ui/carousel";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -79,27 +84,23 @@ export default function AboutTeam() {
       </motion.div>
 
       <div className="relative mt-0">
-        <CarouselArrows
-          filled
-          shape="rounded"
-          onNext={handleNext}
-          onPrevious={handlePrev}
-          className="-z-10"
-          leftButtonProps={{
-            className: "z-10 left-6",
-          }}
-          rightButtonProps={{
-            className: "z-10 left-6",
-          }}
-        >
-          <Carousel ref={carouselRef} {...carouselSettings}>
-            {team.map((member, index) => (
-              <div key={index} className="px-1 py-10">
-                <MemberCard member={member} isFirst={index === 0} />
-              </div>
-            ))}
-          </Carousel>
-        </CarouselArrows>
+        <Carousel ref={carouselRef} {...carouselSettings}>
+          {team.map((member, index) => (
+            <CarouselItem key={index} className="px-1 py-10">
+              <MemberCard member={member} isFirst={index === 0} />
+            </CarouselItem>
+          ))}
+
+          {/* Left Arrow */}
+          <CarouselPrev className="bg-background/80 hover:bg-accent/90 absolute top-1/2 left-6 z-10 -translate-y-1/2 rounded-full p-2 shadow-md">
+            <ChevronLeft className="text-foreground h-5 w-5" />
+          </CarouselPrev>
+
+          {/* Right Arrow */}
+          <CarouselNext className="bg-background/80 hover:bg-accent/90 absolute top-1/2 right-6 z-10 -translate-y-1/2 rounded-full p-2 shadow-md">
+            <ChevronRight className="text-foreground h-5 w-5" />
+          </CarouselNext>
+        </Carousel>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-function Discord({ className, ...props }) {
+function DiscordIcon({ className, ...props }) {
   return (
     <svg
       className={cn("h-6 w-6", className)}
@@ -13,4 +13,4 @@ function Discord({ className, ...props }) {
   );
 }
 
-export default Discord;
+export default DiscordIcon;

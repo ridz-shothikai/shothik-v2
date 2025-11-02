@@ -1,5 +1,6 @@
 "use client";
 
+import SvgColor from "@/components/common/SvgColor";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/tooltip";
 import useWordLimit from "@/hooks/useWordLimit";
 import { cn } from "@/lib/utils";
-import SvgColor from "@/resource/SvgColor";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";

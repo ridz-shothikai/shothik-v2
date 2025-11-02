@@ -1,7 +1,7 @@
 import AuthForgotPasswordForm from "@/components/auth/AuthForgotPasswordForm";
 import ReturnToHome from "@/components/auth/components/ReturnToHome";
-import Logo from "@/resource/assets/Logo";
-import PasswordIcon from "@/resource/assets/PasswordIcon";
+import PasswordIcon from "@/components/icons/PasswordIcon";
+import Logo from "@/components/partials/logo";
 
 // ----------------------------------------------------------------------
 export async function generateMetadata() {

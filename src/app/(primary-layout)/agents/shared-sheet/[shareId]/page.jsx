@@ -1,6 +1,5 @@
 "use client";
 
-import Main from "@/components/layout/Main";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -616,7 +615,7 @@ export default function SharedSheetPage({ params }) {
   const hasData = rows.length > 0 && columns.length > 0;
 
   return (
-    <Main>
+    <main>
       {/* Sheet Title/Dropdown */}
       <div className="mb-2 flex items-center gap-1">
         <div className="bg-primary text-primary-foreground flex h-5 w-5 items-center justify-center rounded-full text-xs">
@@ -726,6 +725,6 @@ export default function SharedSheetPage({ params }) {
           Double-click to edit cells
         </p>
       </div>
-    </Main>
+    </main>
   );
 }
