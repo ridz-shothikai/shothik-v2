@@ -1,4 +1,5 @@
-import { FinalCTA, OneMoreThing } from "./components/common";
+import FinalCTA from "./components/common/FinalCTA";
+import OneMoreThing from "./components/common/OneMoreThing";
 import { InspirationGallery } from "./components/features/agents";
 import {
   ComparisonSection,
@@ -14,7 +15,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="pt-2">
+    <main>
       <ShothikHero />
       <InspirationGallery />
       <TrustedBy />
