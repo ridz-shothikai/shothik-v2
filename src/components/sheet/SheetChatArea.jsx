@@ -527,7 +527,7 @@ export default function SheetChatArea({
 
   const handleSimulationGeneration = async (simulationChatId) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/simulate_conversation`,
+      `${process.env.NEXT_PUBLIC_API_URL}/sheet/conversation/simulate_conversation`,
       {
         method: "POST",
         headers: {
@@ -545,7 +545,7 @@ export default function SheetChatArea({
 
   const handleUserSheetGeneration = async (prompt, chatId, token) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/conversation/create_conversation`,
+      `${process.env.NEXT_PUBLIC_API_URL}/sheet/conversation/create_conversation`,
       {
         method: "POST",
         headers: {

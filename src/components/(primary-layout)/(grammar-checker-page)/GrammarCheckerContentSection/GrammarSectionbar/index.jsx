@@ -68,7 +68,7 @@ const GrammarSectionbar = ({
   const { page = 1, limit = 10, total = 0 } = sectionsMeta || {};
   const hasMore = (sections?.length || 0) < total;
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/api";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL + "/api";
 
   // Sidebar toggles
   const handleCloseSidebar = () => {

@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const customModesApi = createApi({
   reducerPath: "customModesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_PARAPHRASE_API_URI + "/modes",
+    baseUrl: `${process.env.NEXT_PUBLIC_PARAPHRASE_API_URL}/api/modes`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.accessToken;
       if (token) {

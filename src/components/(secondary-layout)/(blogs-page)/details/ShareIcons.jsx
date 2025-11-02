@@ -37,7 +37,7 @@ const ShareIcons = ({ shareUrl, title, hashtags, content }) => {
           url={shareUrl}
           title={title}
           summary={content || ""}
-          source={process.env.NEXT_PUBLIC_FRONTEND_URL}
+          source={process.env.NEXT_PUBLIC_APP_URL}
         >
           <LinkedinIcon size={32} round />
         </LinkedinShareButton>

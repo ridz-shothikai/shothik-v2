@@ -17,7 +17,7 @@ export function useGetResearchChats() {
 
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/chat/get_my_chats`,
+          `${process.env.NEXT_PUBLIC_API_URL}/deep-research/chat/get_my_chats`,
           {
             method: "GET",
             signal,

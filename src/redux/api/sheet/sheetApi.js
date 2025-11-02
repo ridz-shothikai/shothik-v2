@@ -5,7 +5,7 @@ export const sheetApiSlice = createApi({
   reducerPath: "sheetApi",
   baseQuery: fetchBaseQuery({
     // baseUrl: "https://sheetai.pixigenai.com/api",
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet`,
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/sheet`,
     prepareHeaders: (headers) => {
       // const token = localStorage.getItem("sheetai-token");
       const token = localStorage.getItem("accessToken");
@@ -110,10 +110,17 @@ export const sheetApiSlice = createApi({
       query: () => "/chat/get_my_chats",
       providesTags: ["MyChats"],
     }),
-    
+
     // Save edited sheet data - try multiple approaches
     saveEditedSheetData: builder.mutation({
-      query: ({ chatId, conversationId, sheetData, columnOrder, rowOrder, metadata }) => ({
+      query: ({
+        chatId,
+        conversationId,
+        sheetData,
+        columnOrder,
+        rowOrder,
+        metadata,
+      }) => ({
         url: "/conversation/update_conversation/" + conversationId,
         method: "PUT",
         body: {
@@ -123,8 +130,8 @@ export const sheetApiSlice = createApi({
             ...metadata,
             chatId,
             lastEdited: new Date().toISOString(),
-            editType: 'cell_edit'
-          }
+            editType: "cell_edit",
+          },
         },
       }),
       invalidatesTags: ["ChatHistory"],
@@ -142,8 +149,8 @@ export const sheetApiSlice = createApi({
   }),
 });
 
-export const { 
-  useGetChatHistoryQuery, 
+export const {
+  useGetChatHistoryQuery,
   useGetMyChatsQuery,
-  useSaveEditedSheetDataMutation 
+  useSaveEditedSheetDataMutation,
 } = sheetApiSlice;

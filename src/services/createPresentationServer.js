@@ -1,5 +1,5 @@
 export async function createPresentationServer({ message, file_urls, token }) {
-  const api = `${process.env.NEXT_PUBLIC_API_URI_SLIDE}/create-presentation`; // TODO: This needs to be redirected.
+  const api = `${process.env.NEXT_PUBLIC_SLIDE_API_URL}/create-presentation`; // TODO: This needs to be redirected.
   /**
    * api return expected: 
    {

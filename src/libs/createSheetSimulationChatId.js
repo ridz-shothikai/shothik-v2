@@ -2,7 +2,7 @@ export const createSheetSimulationChatId = async (inputValue, router, sId) => {
   try {
     const response = await fetch(
       // "http://163.172.172.38:3005/api/chat/create_chat",
-      `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/sheet/chat/create_chat`,
+      `${process.env.NEXT_PUBLIC_API_URL}/sheet/chat/create_chat`,
       {
         method: "POST",
         headers: {

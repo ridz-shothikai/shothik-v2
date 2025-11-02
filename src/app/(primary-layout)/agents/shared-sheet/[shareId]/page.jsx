@@ -333,19 +333,19 @@ export default function SharedSheetPage({ params }) {
       console.log("Replicating chat:", { chatId, userId });
 
       // Get base URL from environment
-      const baseUrl = process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX;
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       console.log("🌐 Environment base URL:", baseUrl);
 
       if (!baseUrl) {
         console.error(
-          "API base URL not configured - NEXT_PUBLIC_API_URI_WITHOUT_PREFIX is missing",
+          "API base URL not configured - NEXT_PUBLIC_API_URL is missing",
         );
         showSnackbar("Configuration error. Please contact support.", "error");
         return;
       }
 
       // Construct the API URL
-      // NEXT_PUBLIC_API_URI_WITHOUT_PREFIX = https://api-qa.shothik.ai
+      // NEXT_PUBLIC_API_URL = https://api-qa.shothik.ai
       // We need to add: /sheet/chat/replicate_chat
       // Remove trailing slash if present
       const cleanBaseUrl = baseUrl.endsWith("/")

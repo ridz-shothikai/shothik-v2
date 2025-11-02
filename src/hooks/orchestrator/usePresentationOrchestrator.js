@@ -65,7 +65,7 @@ export default function usePresentationOrchestrator(presentationId) {
   // Get environment variables
   const token =
     typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  const API_URL = process.env.NEXT_PUBLIC_API_URI_SLIDE;
+  const API_URL = process.env.NEXT_PUBLIC_SLIDE_API_URL;
 
   // Initialize socket hook (only connects when needed)
   const { isConnected: socketConnected } = usePresentationSocket(

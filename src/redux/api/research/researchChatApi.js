@@ -1,10 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../config";
 
 export const researchChatApi = createApi({
   reducerPath: "researchChatApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX + "/deep-research",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL + "/deep-research",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
       if (token) headers.set("Authorization", `Bearer ${token}`);

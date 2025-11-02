@@ -29,7 +29,7 @@ export const useResearchSimulation = () => {
 
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX}/deep-research/research/simulate_research`,
+          `${process.env.NEXT_PUBLIC_API_URL}/deep-research/research/simulate_research`,
           {
             method: "POST",
             headers: {

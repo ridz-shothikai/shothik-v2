@@ -125,7 +125,7 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId }) => {
       if (response.success) {
         // Convert the share link to point to shared-sheet page
         const baseUrl =
-          process.env.NEXT_PUBLIC_FRONTEND_URL || window.location.origin;
+          process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
         const shareLink = `${baseUrl}/agents/shared-sheet/${response.data.shareId}`;
         setShareLink(shareLink);
         toast.success(
@@ -172,8 +172,7 @@ const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId }) => {
       if (response.success) {
         // Convert the share link to point to shared-sheet page
         const baseUrl =
-          process.env.NEXT_PUBLIC_API_URI_WITHOUT_PREFIX ||
-          window.location.origin;
+          process.env.NEXT_PUBLIC_API_URL || window.location.origin;
         const shareLink = response.data.shareLink;
         setShareLink(shareLink);
         toast.success("✓ Share link created successfully!");
