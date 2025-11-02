@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/lib/trackingList";
 import { cn } from "@/lib/utils";
-import { trackingList } from "@/libs/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { AnimatePresence, motion } from "framer-motion";
 import {

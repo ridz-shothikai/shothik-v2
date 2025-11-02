@@ -8,11 +8,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import createEnhancedIframeContent from "@/lib/presentationEditScripts";
 import { cn } from "@/lib/utils";
-import createEnhancedIframeContent from "@/libs/presentationEditScripts";
 import html2canvas from "html2canvas";
 import { Check, Copy } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Original slide dimensions
 const SLIDE_WIDTH = 1280;
@@ -353,7 +353,7 @@ export default function SlidePreview({
                   srcDoc={createEnhancedIframeContent(
                     slide.body || slide.html_content || slide.htmlContent,
                   )}
-                  style={iframeStyle as React.CSSProperties}
+                  style={iframeStyle}
                   title={`Slide ${slide.slide_index + 1}`}
                   sandbox="allow-scripts allow-same-origin"
                 />

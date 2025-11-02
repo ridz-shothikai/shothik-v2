@@ -1,7 +1,7 @@
 "use client";
 
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { Star } from "lucide-react";
 
 const AgenticHeroSection = () => {

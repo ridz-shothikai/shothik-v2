@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
 import { useExitIntent } from "@/hooks/useExitIntent";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 

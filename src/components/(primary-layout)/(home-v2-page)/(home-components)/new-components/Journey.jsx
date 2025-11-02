@@ -1,8 +1,8 @@
 "use client";
 
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/lib/trackingList";
 import { cn } from "@/lib/utils";
-import { trackingList } from "@/libs/trackingList";
 import { motion } from "framer-motion";
 import { Box as BoxIcon, Building2, CheckCircle, Globe } from "lucide-react";
 import Image from "next/image";

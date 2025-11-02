@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { motion } from "framer-motion";
 import { CheckCircle, Globe, Shield } from "lucide-react";

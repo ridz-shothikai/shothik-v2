@@ -1,7 +1,7 @@
 const PRIMARY_GREEN = "#07B37A";
 
 // Enhanced iframe content with selection handling
-const createEnhancedIframeContent = (originalContent) => {
+const createEnhancedIframeContent = (originalContent: string) => {
   return `
       <!DOCTYPE html>
       <html>

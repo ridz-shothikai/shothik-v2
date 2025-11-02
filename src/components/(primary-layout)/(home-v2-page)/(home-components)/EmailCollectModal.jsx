@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/lib/trackingList";
 import { cn } from "@/lib/utils";
-import { trackingList } from "@/libs/trackingList";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 

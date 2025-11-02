@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { motion } from "framer-motion";
 import { Brain, Languages, Palette, Rocket, Shield, Zap } from "lucide-react";
 

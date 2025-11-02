@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { motion } from "framer-motion";
 import {

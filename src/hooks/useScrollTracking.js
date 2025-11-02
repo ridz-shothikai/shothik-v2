@@ -1,6 +1,6 @@
 "use client";
 
-import throttle from "@/libs/throttle";
+import throttle from "@/lib/throttle";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useAnalytics } from "./useAnalytics";

@@ -8,7 +8,7 @@ import {
   getSimulationPrompt,
   isValidSimulation,
   SIMULATION_CONFIG,
-} from "@/libs/simulationHelper";
+} from "@/lib/simulationHelper";
 import { useEffect, useRef, useState } from "react";
 
 // Simulation detection and execution

@@ -3,7 +3,7 @@
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useScrollTracking } from "@/hooks/useScrollTracking";
 import { useSession } from "@/hooks/useSession";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { useEffect } from "react";
 
 export default function LandingPageAnalyticsProvider({ children }) {

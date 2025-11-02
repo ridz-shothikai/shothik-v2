@@ -35,10 +35,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useResponsive from "@/hooks/useResponsive";
+import { handleNativePptxExport } from "@/lib/nativePresentationExporter";
+import { handlePDFExport } from "@/lib/pdfPresentationExporter";
+import { handleAdvancedPptxExport } from "@/lib/";
 import { cn } from "@/lib/utils";
-import { handleNativePptxExport } from "@/libs/nativePresentationExporter";
-import { handlePDFExport } from "@/libs/pdfPresentationExporter";
-import { handleAdvancedPptxExport } from "@/libs/presentationExporter";
 import {
   useGenerateShareLinkMutation,
   useGetShareAnalyticsQuery,

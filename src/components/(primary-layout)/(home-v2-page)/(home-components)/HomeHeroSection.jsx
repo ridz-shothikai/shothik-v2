@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
-import { trackingList } from "@/libs/trackingList";
+import { trackingList } from "@/lib/trackingList";
 import { ArrowRight, Play } from "lucide-react";
 import BgContainer from "./components/hero/BgContainer";
 import Details from "./components/hero/Details";

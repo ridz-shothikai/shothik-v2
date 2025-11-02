@@ -3,8 +3,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useComponentTracking } from "@/hooks/useComponentTracking";
+import { trackingList } from "@/lib/trackingList";
 import { cn } from "@/lib/utils";
-import { trackingList } from "@/libs/trackingList";
 import { motion } from "framer-motion";
 import {
   Award,

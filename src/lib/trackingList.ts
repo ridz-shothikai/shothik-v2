@@ -38,4 +38,4 @@ export const trackingList = {
   REAL_RESULT: "real_result",
   // TRANSFORM_WRITING_CTA: "transform_writing_cta",
   START_WRITING_SECTION: "start_writing_section",
-};
+} as const;
