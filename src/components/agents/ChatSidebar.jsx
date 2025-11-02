@@ -39,7 +39,7 @@ export default function ChatSidebar({
       <SheetContent
         side="left"
         className={cn(
-          "absolute left-0 w-screen overflow-hidden p-0 sm:w-80 sm:max-w-[calc(100vw-320px)] md:left-[100px] md:w-[360px]",
+          "absolute w-screen overflow-hidden p-0 sm:w-80 sm:max-w-[calc(100vw-320px)] md:w-[360px]",
         )}
         style={{ zIndex: 1102 }}
       >
