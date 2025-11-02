@@ -2,7 +2,7 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 
 export const baseQuery = fetchBaseQuery({
   mode: "cors",
-  baseUrl: process.env.NEXT_PUBLIC_API_URI,
+  baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/api`,
   prepareHeaders: async (headers, { getState, endpoint }) => {
     const token =
       getState()?.auth?.accessToken || localStorage.getItem("accessToken");

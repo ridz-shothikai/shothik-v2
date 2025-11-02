@@ -34,7 +34,7 @@ class SheetAiStreamService {
     try {
       // Use fetch with streaming instead of EventSource
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/conversation/create-stream`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/sheet/conversation/create-stream`,
         {
           method: "POST",
           headers: {
@@ -339,7 +339,7 @@ class SheetAiStreamService {
   async stopConversation(conversationId) {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/conversation/stop/${conversationId}`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/sheet/conversation/stop/${conversationId}`,
         {
           method: "POST",
           headers: {
@@ -366,7 +366,7 @@ class SheetAiStreamService {
   async healthCheck() {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/health`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/sheet/health`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
