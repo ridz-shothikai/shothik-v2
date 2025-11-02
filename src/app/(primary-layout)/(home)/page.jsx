@@ -1,6 +1,5 @@
 // import HomeContentSection from "@/components/(primary-layout)/(home-v2-page)/HomeContentSection";
 
-import { ThemeRegistry } from "@/components/(primary-layout)/(home-v3-page)/components/providers";
 import HomeContentSection from "@/components/(primary-layout)/(home-v3-page)/page";
 
 export async function generateMetadata() {
@@ -119,11 +118,9 @@ const Home = async () => {
         </p>
       </div>
 
-      <ThemeRegistry>
-        <main className="container mx-auto">
-          <HomeContentSection />
-        </main>
-      </ThemeRegistry>
+      <main className="container mx-auto">
+        <HomeContentSection />
+      </main>
     </>
   );
 };

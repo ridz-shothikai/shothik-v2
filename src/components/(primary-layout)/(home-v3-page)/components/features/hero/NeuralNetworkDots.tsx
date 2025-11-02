@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useThemeMode } from "../../../contexts/ThemeContext";
+import { useSelector } from "react-redux";
 
 interface Dot {
   x: number;
@@ -9,13 +9,14 @@ interface Dot {
 }
 
 export default function NeuralNetworkDots() {
-  const { mode } = useThemeMode();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dotsRef = useRef<Dot[]>([]);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const pulsePhaseRef = useRef<number>(0);
 
-  const isDark = mode === "dark";
+  const { theme } = useSelector((state: any) => state.settings as any);
+
+  const isDark = theme === "dark";
   const dotColor = isDark ? "255, 255, 255" : "0, 167, 111";
   const baseOpacity = isDark ? 0.1 : 0.06;
 

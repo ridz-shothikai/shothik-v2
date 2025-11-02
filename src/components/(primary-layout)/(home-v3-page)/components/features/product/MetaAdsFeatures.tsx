@@ -14,12 +14,12 @@ import CanvasMockup from "./mockups/CanvasMockup";
 import DashboardMockup from "./mockups/DashboardMockup";
 import LaunchMockup from "./mockups/LaunchMockup";
 import MediaMockup from "./mockups/MediaMockup";
-// import MetaAutomationShowcase from "./showcases/MetaAutomationShowcase";
-import Showcase from "../../home/Showcase";
-import Showcase2 from "../../home/Showcase2";
-import Showcase3 from "../../home/Showcase3";
-import Showcase4 from "../../home/Showcase4";
-import Showcase5 from "../../home/Showcase5";
+
+import Showcase1 from "../../showcases/Showcase1";
+import Showcase2 from "../../showcases/Showcase2";
+import Showcase3 from "../../showcases/Showcase3";
+import Showcase4 from "../../showcases/Showcase4";
+import Showcase5 from "../../showcases/Showcase5";
 
 const accentColor = "#1877F2";
 
@@ -42,7 +42,7 @@ const features: Feature[] = [
       "Paste any product link and watch our AI analyze your competitors, extract market insights, and generate detailed buyer personas. Get actionable data that informs every campaign decision.",
     mockupType: "analysis",
     reverse: false,
-    Interactive: <Showcase />,
+    Interactive: <Showcase1 />,
   },
   {
     icon: <MessageSquare size={24} />,
