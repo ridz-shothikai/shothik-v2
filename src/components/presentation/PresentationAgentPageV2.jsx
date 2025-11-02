@@ -86,6 +86,7 @@ export default function PresentationAgentPageV2({ presentationId }) {
               status={presentationState.status}
               browserWorkerSummary={browserWorkerSummary}
               onCloseSummary={handleCloseSummary}
+              error={presentationState.error || error}
             />
           </div>
         </div>

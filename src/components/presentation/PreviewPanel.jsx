@@ -1,9 +1,10 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Chart, registerables } from "chart.js";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -30,6 +31,7 @@ export default function PreviewPanel({
   status,
   browserWorkerSummary,
   onCloseSummary,
+  error,
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -122,48 +124,90 @@ export default function PreviewPanel({
                     </div>
                   ) : (
                     <>
-                      {status === "failed" ? (
-                        <div className="mt-8 p-6 text-center">
-                          <h3 className="mb-2 text-lg font-semibold">
-                            Presentation Generation Failed
-                          </h3>
-                          <p className="text-muted-foreground mx-auto max-w-md text-sm">
-                            We encountered an error while generating your
-                            presentation. Please try creating a new presentation
-                            or contact support if the issue persists.
-                          </p>
-                        </div>
-                      ) : slidesData?.length === 0 ? (
-                        <div className="flex justify-center p-4">
-                          <Loader2 className="text-primary h-8 w-8 animate-spin" />
-                        </div>
-                      ) : slidesData?.length > 0 ? (
-                        <div className="flex flex-col justify-center gap-2 pt-2">
-                          {slidesData?.map((slide, index) => (
-                            <SlidePreview
-                              key={index}
-                              slide={slide}
-                              index={index}
-                              activeTab={slideTabs[index] || "preview"}
-                              onTabChange={handleSlideTabChange}
-                              totalSlides={
-                                slidesData?.length || slidesData?.data?.length
-                              }
-                            />
-                          ))}
-
-                          {slidesLoading && (
-                            <div className="flex justify-center p-4">
-                              <Loader2 className="text-primary h-8 w-8 animate-spin" />
-                            </div>
-                          )}
+                      {status === "failed" || error ? (
+                        <div className="mt-4 p-4">
+                          <Alert
+                            variant="default"
+                            className="border-amber-500/50 bg-amber-50/50 text-amber-900 dark:bg-amber-950/20 dark:text-amber-200 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400"
+                          >
+                            <AlertCircle className="h-5 w-5" />
+                            <AlertTitle className="mb-2 text-base font-semibold">
+                              Slide Generation Failed
+                            </AlertTitle>
+                            <AlertDescription className="text-sm text-amber-800 dark:text-amber-200/90">
+                              <p>
+                                We encountered an error while generating your
+                                presentation. Please try creating a new
+                                presentation or contact support if the issue
+                                persists.
+                              </p>
+                            </AlertDescription>
+                          </Alert>
                         </div>
                       ) : (
-                        <div className="mt-8 p-3 text-center">
-                          <p className="text-muted-foreground">
-                            No slides generated
-                          </p>
-                        </div>
+                        <>
+                          {/* Check if slidesData is an array or object with data property */}
+                          {(() => {
+                            const slidesArray = Array.isArray(slidesData)
+                              ? slidesData
+                              : slidesData?.data || [];
+                            const hasSlides = slidesArray?.length > 0;
+
+                            if (!hasSlides && !slidesLoading) {
+                              return (
+                                <div className="mt-4 p-4">
+                                  <Alert
+                                    variant="default"
+                                    className="border-muted"
+                                  >
+                                    <AlertCircle className="h-5 w-5" />
+                                    <AlertTitle className="mb-2 text-base font-semibold">
+                                      No Slides Generated
+                                    </AlertTitle>
+                                    <AlertDescription className="text-sm">
+                                      <p>
+                                        No slides were generated. This may
+                                        indicate an issue with the generation
+                                        process. Please try creating a new
+                                        presentation.
+                                      </p>
+                                    </AlertDescription>
+                                  </Alert>
+                                </div>
+                              );
+                            }
+
+                            if (hasSlides) {
+                              return (
+                                <div className="flex flex-col justify-center gap-2 pt-2">
+                                  {slidesArray.map((slide, index) => (
+                                    <SlidePreview
+                                      key={index}
+                                      slide={slide}
+                                      index={index}
+                                      activeTab={slideTabs[index] || "preview"}
+                                      onTabChange={handleSlideTabChange}
+                                      totalSlides={slidesArray.length}
+                                    />
+                                  ))}
+
+                                  {slidesLoading && (
+                                    <div className="flex justify-center p-4">
+                                      <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+
+                            // Loading state
+                            return (
+                              <div className="flex justify-center p-4">
+                                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                              </div>
+                            );
+                          })()}
+                        </>
                       )}
                     </>
                   )}
