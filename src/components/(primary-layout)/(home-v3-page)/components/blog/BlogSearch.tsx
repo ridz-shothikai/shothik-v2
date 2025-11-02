@@ -60,13 +60,13 @@ export function BlogSearch({ posts, onFilterChange }: BlogSearchProps) {
     <div className="space-y-4">
       {/* Search Input */}
       <div className="relative">
-        <Search className="text-foreground-tertiary absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+        <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <input
           type="text"
           placeholder="Search articles by title, tags, or author..."
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border-border bg-background text-foreground text-body2 placeholder:text-foreground-tertiary focus:ring-primary/20 focus:border-primary w-full rounded-lg border py-3 pr-4 pl-10 transition-all focus:ring-2 focus:outline-none"
+          className="border-border bg-background text-foreground text-body2 placeholder:text-muted-foreground focus:ring-primary/20 focus:border-primary w-full rounded-lg border py-3 pr-4 pl-10 transition-all focus:ring-2 focus:outline-none"
           data-testid="input-blog-search"
         />
       </div>
@@ -110,7 +110,7 @@ export function BlogSearch({ posts, onFilterChange }: BlogSearchProps) {
       {hasActiveFilters && (
         <button
           onClick={clearFilters}
-          className="text-body2 text-foreground-secondary hover:text-primary inline-flex items-center gap-2 transition-colors"
+          className="text-body2 text-muted-foreground hover:text-primary inline-flex items-center gap-2 transition-colors"
           data-testid="button-clear-filters"
         >
           <X className="h-4 w-4" />

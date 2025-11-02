@@ -4,7 +4,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
 import AnalyticsLoader from "../components/analytics/AnalyticsProvider";
 import store from "../redux/store";
-import MUIProvider from "./MUIProvider";
 import { NotificationProvider } from "./NotificationProvider";
 
 function ConditionalGoogleProvider({ children }) {
@@ -26,11 +25,9 @@ export default function Providers({ children }) {
   return (
     <Provider store={store}>
       <AnalyticsLoader />
-      <MUIProvider>
-        <NotificationProvider>
-          <ConditionalGoogleProvider>{children}</ConditionalGoogleProvider>
-        </NotificationProvider>
-      </MUIProvider>
+      <NotificationProvider>
+        <ConditionalGoogleProvider>{children}</ConditionalGoogleProvider>
+      </NotificationProvider>
     </Provider>
   );
 }

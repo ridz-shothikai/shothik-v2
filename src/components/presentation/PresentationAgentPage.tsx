@@ -1,6 +1,6 @@
 "use client";
 
-import { useAgentContext } from "@/../components/agents/shared/AgentContextProvider";
+import { useAgentContext } from "@/components/agents/shared/AgentContextProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";

@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<
               <h1 className="text-h2 text-foreground font-bold">
                 Something went wrong
               </h1>
-              <p className="text-body1 text-foreground-secondary">
+              <p className="text-body1 text-muted-foreground">
                 We apologize for the inconvenience. The error has been logged
                 and we'll look into it.
               </p>

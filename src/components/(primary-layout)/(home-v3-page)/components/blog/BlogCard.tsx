@@ -26,7 +26,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         >
           {/* Placeholder for blog image */}
           <div className="from-primary/10 absolute inset-0 flex items-center justify-center bg-gradient-to-br to-blue-500/10">
-            <span className="text-foreground-tertiary text-sm">
+            <span className="text-muted-foreground text-sm">
               {post.imageAlt}
             </span>
           </div>
@@ -63,11 +63,11 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
           </h3>
         </Link>
 
-        <p className="text-body2 text-foreground-secondary mb-4 line-clamp-2">
+        <p className="text-body2 text-muted-foreground mb-4 line-clamp-2">
           {post.description}
         </p>
 
-        <div className="text-caption text-foreground-tertiary flex items-center gap-4">
+        <div className="text-caption text-muted-foreground flex items-center gap-4">
           <div className="flex items-center gap-1">
             <User className="h-3.5 w-3.5" />
             <span>{post.author.name}</span>

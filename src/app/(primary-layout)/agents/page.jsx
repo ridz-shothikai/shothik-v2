@@ -1,6 +1,6 @@
 "use client";
-import AgentLandingPage from "@/../components/agents/AgentLandingPage";
-import { AgentContextProvider } from "@/../components/agents/shared/AgentContextProvider";
+import AgentLandingPage from "@/components/agents/AgentLandingPage";
+import { AgentContextProvider } from "@/components/agents/shared/AgentContextProvider";
 
 export default function AgentsPage() {
   // const [tutorialOpen, setTutorialOpen] = useState(false);

@@ -1,7 +1,7 @@
 "use client";
 
 // components/ChatArea.tsx
-import InteractiveChatMessage from "@/../components/agents/shared/InteractiveChatMessage";
+import InteractiveChatMessage from "@/components/agents/shared/InteractiveChatMessage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomSlideshowIcon } from "@/components/ui/CustomSlideshowIcon";
