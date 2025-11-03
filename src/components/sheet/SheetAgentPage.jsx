@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Toaster } from "@/components/ui/sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { CheckCircle, User } from "lucide-react";
@@ -154,9 +153,6 @@ export const FooterCta = ({ isMobile, showModal, setShowModal }) => {
         onClose={() => setShowModal(false)}
         onSubmit={handleEmailSubmit}
       />
-
-      {/* Toast notification */}
-      <Toaster />
     </>
   );
 };
