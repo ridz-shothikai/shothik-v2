@@ -1,12 +1,12 @@
 // hooks/useAutoFreeze.js
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import {
   detectAutoFreezeTerms,
   disableAutoFreezeTerm,
   enableAutoFreezeTerm,
   getDisabledTerms,
-} from "../utils/autoFreezeApi";
+} from "@/services/paraphrase.service";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 /**
  * Custom hook to manage auto-freeze functionality

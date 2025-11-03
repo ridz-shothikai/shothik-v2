@@ -1,5 +1,5 @@
 // File: src/utils/presentationDataParser.js
-import { enrichLogEntry } from "../../utils/presentation/messageTypeClassifier.js";
+import { enrichLogEntry } from "@/utils/presentation/messageTypeClassifier.js";
 /**
  * Presentation Data Parser
  *

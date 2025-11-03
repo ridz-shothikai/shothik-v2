@@ -157,9 +157,7 @@ export default function usePresentationOrchestrator(presentationId) {
           parseHistoryData,
           validateHistoryData,
           extractPresentationSummary,
-        } = await import(
-          "../../utils/presentation/presentationHistoryDataParser"
-        );
+        } = await import("@/utils/presentation/presentationHistoryDataParser");
 
         // Extract summary for logging
         const summary = extractPresentationSummary(rawData);

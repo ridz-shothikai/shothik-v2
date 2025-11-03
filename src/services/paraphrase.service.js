@@ -1,10 +1,5 @@
-// utils/autoFreezeApi.js
-
 const API_BASE = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX;
 
-/**
- * Detect auto-freeze terms
- */
 export const detectAutoFreezeTerms = async ({
   text,
   language = "en",

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import CustomUiButton from "@/components/ui/CustomUiButton";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { toggleUpdateFileHistory } from "@/redux/slices/paraphraseHistorySlice";
 import { CloudUpload, Download } from "lucide-react";
+import Image from "next/image";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UpgradePopover from "./UpgradePopover";
@@ -156,14 +156,20 @@ export default function MultipleFileUpload({
 
   return (
     <>
-      <CustomUiButton
+      <Button
         id="multi_upload_button"
-        textLable={"Multi Upload Document"}
-        startIconSrc={"/icons/cloud.svg"}
-        iconClassName={"w-4 h-4 lg:w-4 lg:h-4"}
         onClick={handleOpen}
-        className={`${shouldShowButton ? "flex" : "hidden"}`}
-      />
+        className={`items-center gap-2 ${shouldShowButton ? "inline-flex" : "hidden"}`}
+      >
+        <Image
+          src="/icons/cloud.svg"
+          alt="upload"
+          width={16}
+          height={16}
+          className="h-4 w-4 lg:h-4 lg:w-4"
+        />
+        <span>Multi Upload Document</span>
+      </Button>
       <Button
         id="multi_upload_close_button"
         className={`${shouldShowButton ? "flex" : "hidden"} absolute top-[-9999px] -z-50 opacity-0`}

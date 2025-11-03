@@ -1,10 +1,10 @@
 "use client";
 
-import { ChevronDown, ChevronUp, RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { historyGroupsByPeriod } from "@/utils/historyGroupsByPeriod";
+import { ChevronDown, ChevronUp, RefreshCw, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { historyGroupsByPeriod } from "../../../utils/historyGroupsByPeriod";
 import { truncateText } from "../paraphrase/actions/HistoryTab";
 
 export default function GPTHistoryTab({
@@ -68,10 +68,19 @@ export default function GPTHistoryTab({
         <h6 className="text-lg font-bold">History</h6>
         {accessToken && (
           <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={refetchHistory}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={refetchHistory}
+            >
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" /* onClick={handleDeleteAll} */>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7" /* onClick={handleDeleteAll} */
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -86,8 +95,11 @@ export default function GPTHistoryTab({
       ) : (
         groupedData?.map(({ period, history }) => (
           <div key={period} className="mb-2">
-            <div onClick={() => toggleGroup(period)} className="mb-1 flex cursor-pointer items-center justify-between px-2">
-              <span className="text-sm text-muted-foreground">{period}</span>
+            <div
+              onClick={() => toggleGroup(period)}
+              className="mb-1 flex cursor-pointer items-center justify-between px-2"
+            >
+              <span className="text-muted-foreground text-sm">{period}</span>
               {expandedGroups?.[period] ? (
                 <ChevronUp className="h-4 w-4" />
               ) : (
@@ -115,7 +127,7 @@ export default function GPTHistoryTab({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-destructive"
+                      className="text-destructive h-7 w-7"
                       onClick={(e) => {
                         e.stopPropagation();
                         // handleDeleteEntry(entry._id);
@@ -129,10 +141,14 @@ export default function GPTHistoryTab({
                       ? entry?.text
                       : truncateText(entry?.text, 20)}
                     {entry?.text?.split(" ")?.length > 20 && (
-                      <Button variant="link" className="ml-1 h-auto p-0" onClick={(e) => {
+                      <Button
+                        variant="link"
+                        className="ml-1 h-auto p-0"
+                        onClick={(e) => {
                           e.stopPropagation();
                           toggleEntryExpansion(period, i);
-                        }}>
+                        }}
+                      >
                         {expandedEntries?.[`${period}-${i}`]
                           ? "Read Less"
                           : "Read More"}
