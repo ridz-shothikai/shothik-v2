@@ -10,9 +10,8 @@ import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import EmailModal from "../EmailCollectModal";
-
 export default function ClaritySection() {
   const { componentRef, trackClick } = useComponentTracking(
     trackingList.PROCESS_STEP,

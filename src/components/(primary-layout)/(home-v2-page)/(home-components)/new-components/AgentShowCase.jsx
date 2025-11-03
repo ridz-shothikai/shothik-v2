@@ -21,9 +21,8 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import EmailModal from "../EmailCollectModal";
-
 const agents = [
   {
     id: "research-agent",

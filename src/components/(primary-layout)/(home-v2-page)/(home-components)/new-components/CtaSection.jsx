@@ -7,9 +7,8 @@ import { useRegisterUserToBetaListMutation } from "@/redux/api/auth/authApi";
 import { motion } from "framer-motion";
 import { CheckCircle, Globe, Shield } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import EmailModal from "../EmailCollectModal";
-
 export default function CTASection() {
   const [showModal, setShowModal] = useState(false);
 

@@ -20,8 +20,7 @@ import {
 } from "@/redux/api/shareAgent/shareAgentApi";
 import { Copy, Link, Mail, Share } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
-
+import { toast } from "react-toastify";
 const ShareSheetModal = ({ open, onClose, sheetId, sheetData, chatId }) => {
   const [activeTab, setActiveTab] = useState("private");
   const [message, setMessage] = useState("");

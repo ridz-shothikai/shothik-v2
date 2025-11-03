@@ -3,9 +3,8 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ContentEditable from "react-contenteditable";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import style from "./editor.module.css";
-
 const ParaphraseEditor = ({
   html,
   setHtml,

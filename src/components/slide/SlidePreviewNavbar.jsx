@@ -63,9 +63,8 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import { usePresentation } from "./context/SlideContextProvider";
-
 export default function SlidePreviewNavbar({
   slidesData,
   shareSettings,
