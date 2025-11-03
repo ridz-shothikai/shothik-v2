@@ -11,9 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useGlobalPlagiarismCheck from "@/hooks/useGlobalPlagiarismCheck";
 import useLoadingText from "@/hooks/useLoadingText";
-import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import { setShowLoginModal } from "@/redux/slices/auth";

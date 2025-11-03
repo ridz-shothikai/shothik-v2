@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { cn } from "@/lib/utils";
 import { ClipboardPaste, FlaskConical } from "lucide-react";
 import dynamic from "next/dynamic";

@@ -1,6 +1,6 @@
 "use client";
 
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 

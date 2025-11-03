@@ -34,7 +34,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { handleNativePptxExport } from "@/lib/nativePresentationExporter";
 import { handlePDFExport } from "@/lib/pdfPresentationExporter";
 import { handleAdvancedPptxExport } from "@/lib/presentationExporter";

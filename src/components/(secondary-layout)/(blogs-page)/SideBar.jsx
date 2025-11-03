@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { useCategoryQuery } from "@/redux/api/blog/blogApiSlice";
 import { ArrowRight, X } from "lucide-react";
 import { useState } from "react";

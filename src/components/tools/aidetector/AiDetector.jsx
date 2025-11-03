@@ -7,8 +7,8 @@ import WordCounter from "@/components/tools/common/WordCounter";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useLoadingText from "@/hooks/useLoadingText";
-import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import {

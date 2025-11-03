@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator";
 import { detectLanguage } from "@/hooks/languageDitector";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useDebounce from "@/hooks/useDebounce";
-import useResponsive from "@/hooks/useResponsive";
 import useSetState from "@/hooks/useSetState";
 import useSnackbar from "@/hooks/useSnackbar";
 import useWordLimit from "@/hooks/useWordLimit";

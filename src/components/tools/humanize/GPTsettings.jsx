@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { History, Keyboard, MessageSquare, Settings } from "lucide-react";
 import { useState } from "react";
 import SettingsSidebar from "../paraphrase/settings/SettingsSidebar";

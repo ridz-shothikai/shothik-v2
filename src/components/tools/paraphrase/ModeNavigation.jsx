@@ -15,8 +15,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { useCustomModes } from "@/hooks/useCustomModes";
-import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Gem, Lock, Pencil, Plus } from "lucide-react";

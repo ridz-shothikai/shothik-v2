@@ -4,7 +4,7 @@
 import InteractiveChatMessage from "@/components/agents/shared/InteractiveChatMessage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import {
   formatAgentName,
   formatTimestamp,

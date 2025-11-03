@@ -57,9 +57,9 @@ export default [
       // all: "off",
 
       // /* Base Rules */
-      "no-undef": "error",
-      "no-unused-vars": "off",
-      "no-console": "warn",
+      // "no-undef": "error",
+      // "no-unused-vars": "off",
+      // "no-console": "warn",
 
       // /* React.js Rules */
       "react/no-unescaped-entities": "off",
