@@ -22,8 +22,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { detectLanguage } from "@/hooks/languageDitector";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useDebounce from "@/hooks/useDebounce";
-import useResponsive from "@/hooks/useResponsive";
 import useSnackbar from "@/hooks/useSnackbar";
 import { cn } from "@/lib/utils";
 import {

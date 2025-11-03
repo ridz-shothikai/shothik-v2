@@ -8,7 +8,7 @@ import Header from "@/components/partials/header";
 import NavigationSidebar from "@/components/partials/navigation-sidebar";
 import AlertDialog from "@/components/tools/common/AlertDialog";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import {
   useGetUserLimitQuery,
   useGetUserQuery,

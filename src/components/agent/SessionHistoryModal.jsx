@@ -1,6 +1,6 @@
 import DotFlashing from "@/components/common/DotFlashing";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { cn } from "@/lib/utils";
 import { FileText, ListTodo } from "lucide-react";
 

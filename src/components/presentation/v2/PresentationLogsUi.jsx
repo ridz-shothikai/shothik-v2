@@ -1,6 +1,6 @@
 "use client";
 
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import InputArea from "../InputAreas";

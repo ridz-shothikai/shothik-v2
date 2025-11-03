@@ -2,7 +2,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import LanguageMenus from "../common/LanguageMenus";

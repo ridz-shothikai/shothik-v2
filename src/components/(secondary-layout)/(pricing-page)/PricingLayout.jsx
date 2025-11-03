@@ -1,8 +1,8 @@
 "use client";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useGeolocation from "@/hooks/useGeolocation";
-import useResponsive from "@/hooks/useResponsive";
 import { useGetPricingPlansQuery } from "@/redux/api/pricing/pricingApi";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";

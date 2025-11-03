@@ -4,8 +4,7 @@
 import InteractiveChatMessage from "@/components/agents/shared/InteractiveChatMessage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { CustomSlideshowIcon } from "@/components/ui/CustomSlideshowIcon";
-import useResponsive from "@/hooks/useResponsive";
+import useResponsive from "@/hooks/ui/useResponsive";
 import {
   formatAgentName,
   formatTimestamp,
@@ -1058,7 +1057,16 @@ export default function ChatArea({
               className="border-border bg-muted/50 flex cursor-pointer items-center gap-2 border p-2"
               onClick={handlePreviewOpen}
             >
-              <CustomSlideshowIcon className="text-primary h-7 w-7" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                width="24"
+                viewBox="0 0 24 24"
+                className="text-primary h-7 w-7"
+              >
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z" />
+              </svg>
               <h3 className="ml-0.5 text-lg font-semibold">Preview Slides</h3>
               {slides.length > 0 && (
                 <span className="text-muted-foreground mt-0.5 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl">

@@ -17,10 +17,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useResponsive from "@/hooks/ui/useResponsive";
 import useNavItemFiles from "@/hooks/useNavItemFiles";
 import { useResearchAiToken } from "@/hooks/useRegisterResearchService";
 import useSheetAiToken from "@/hooks/useRegisterSheetService";
-import useResponsive from "@/hooks/useResponsive";
 import { cn } from "@/lib/utils";
 import {
   useFetchAllPresentationsQuery,
