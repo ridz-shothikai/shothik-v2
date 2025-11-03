@@ -27,7 +27,7 @@ export const useResearchAiToken = () => {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/research/register-research-service`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/research/register-research-service`,
         {
           method: "POST",
           headers: {

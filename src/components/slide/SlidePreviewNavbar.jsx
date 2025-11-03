@@ -37,7 +37,7 @@ import {
 import useResponsive from "@/hooks/useResponsive";
 import { handleNativePptxExport } from "@/lib/nativePresentationExporter";
 import { handlePDFExport } from "@/lib/pdfPresentationExporter";
-import { handleAdvancedPptxExport } from "@/lib/";
+import { handleAdvancedPptxExport } from "@/lib/presentationExporter";
 import { cn } from "@/lib/utils";
 import {
   useGenerateShareLinkMutation,

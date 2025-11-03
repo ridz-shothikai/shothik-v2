@@ -27,7 +27,7 @@ const useSheetAIToken = () => {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/register-sheet-service`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/sheet/register-sheet-service`,
         {
           method: "POST",
           headers: {

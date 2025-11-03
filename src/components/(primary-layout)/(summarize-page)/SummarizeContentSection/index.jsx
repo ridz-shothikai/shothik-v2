@@ -277,7 +277,7 @@ const SummarizeContentSection = () => {
 
       try {
         setIsKeywordsLoading(true);
-        const url = process.env.NEXT_PUBLIC_API_URI + "/summarize-keywords";
+        const url = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX + "/summarize-keywords";
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -309,7 +309,7 @@ const SummarizeContentSection = () => {
       if (!accessToken) return;
 
       try {
-        const url = process.env.NEXT_PUBLIC_API_URI + "/summarize";
+        const url = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX + "/summarize";
         console.log("Streaming request to:", url);
         console.log("payload", payload);
 

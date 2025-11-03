@@ -3,7 +3,7 @@ import MainLayout from "@/components/(secondary-layout)/(blogs-page)/details/Mai
 export async function generateMetadata({ params }) {
   try {
     const { slug } = await params;
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/blog/${slug}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/blog/${slug}`);
     const blogData = await res.json();
 
     if (!blogData?.data) {
@@ -56,7 +56,7 @@ const BlogDetails = async ({ params }) => {
   try {
     const { slug } = await params;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/blog/${slug}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/blog/${slug}`);
     const blogData = await res.json();
 
     if (!blogData?.data) {

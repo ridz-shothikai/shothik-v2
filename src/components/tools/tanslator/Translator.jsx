@@ -47,7 +47,7 @@ const Translator = () => {
 
   async function fetchWithStreaming(payload, api = "/translator") {
     try {
-      const url = process.env.NEXT_PUBLIC_API_URI + api;
+      const url = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX + api;
       const response = await fetch(url, {
         method: "POST",
         headers: {

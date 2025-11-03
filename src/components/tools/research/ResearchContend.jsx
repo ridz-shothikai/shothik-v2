@@ -50,7 +50,7 @@ const ResearchContend = () => {
         return [...prev, userMessage, invocationMessage];
       });
 
-      const url = process.env.NEXT_PUBLIC_API_URI + "/research";
+      const url = process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX + "/research";
       const response = await fetch(url, {
         method: "POST",
         headers: {

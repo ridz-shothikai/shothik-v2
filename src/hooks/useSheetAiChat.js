@@ -12,7 +12,7 @@ export const useSheetAiChat = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URI}/sheet/chat/create`,
+        `${process.env.NEXT_PUBLIC_API_URL_WITH_PREFIX}/sheet/chat/create`,
         {
           method: "POST",
           headers: {

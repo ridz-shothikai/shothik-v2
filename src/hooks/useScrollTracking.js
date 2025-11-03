@@ -1,9 +1,21 @@
 "use client";
 
-import throttle from "@/lib/throttle";
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useAnalytics } from "./useAnalytics";
+
+const throttle = (func, limit) => {
+  let inThrottle;
+  return function () {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
 
 export const useScrollTracking = () => {
   const { trackEvent } = useAnalytics();
