@@ -1,4 +1,5 @@
 "use client";
+
 import enterprise_dark_logo from "@/../public/logos/enterprise_dark_logo.svg";
 import enterprise_plan_logo from "@/../public/logos/enterprise_plan_logo.svg";
 import pro_dark_logo from "@/../public/logos/pro_dark_logo.svg";
@@ -8,7 +9,6 @@ import unlimited_plan_logo from "@/../public/logos/unlimited_plan_logo.svg";
 import value_dark_logo from "@/../public/logos/value_dark_logo.svg";
 import value_plan_logo from "@/../public/logos/value_plan_logo.svg";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef } from "react";
@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 
 const Logo = forwardRef(({ className }, ref) => {
   const { user } = useSelector((state) => state.auth);
-  const { theme } = useTheme();
+  const { theme } = useSelector((state) => state.settings);
   const isDark = theme === "dark";
 
   const logoSrc =

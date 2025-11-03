@@ -4,50 +4,19 @@ import { team } from "@/_mock/team";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
+  Carousel,
+  CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrev,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as motion from "motion/react-client";
 import Image from "next/image";
-import { useRef, useState } from "react";
-import Carousel from "react-slick";
+import { useState } from "react";
 
 export default function AboutTeam() {
   const [_, setCurrentSlide] = useState(0);
-  const carouselRef = useRef(null);
-
-  const carouselSettings = {
-    infinite: false,
-    speed: 500,
-    slidesToShow: 4,
-    arrows: false,
-    slidesToScroll: 1,
-    beforeChange: (_, next) => setCurrentSlide(next),
-    responsive: [
-      {
-        breakpoint: 1279,
-        settings: { slidesToShow: 3 },
-      },
-      {
-        breakpoint: 959,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 600,
-        settings: { slidesToShow: 1 },
-      },
-    ],
-  };
-
-  const handlePrev = () => {
-    carouselRef.current?.slickPrev();
-  };
-
-  const handleNext = () => {
-    carouselRef.current?.slickNext();
-  };
 
   return (
     <div className="pb-10 text-center">
@@ -84,17 +53,22 @@ export default function AboutTeam() {
       </motion.div>
 
       <div className="relative mt-0">
-        <Carousel ref={carouselRef} {...carouselSettings}>
-          {team.map((member, index) => (
-            <CarouselItem key={index} className="px-1 py-10">
-              <MemberCard member={member} isFirst={index === 0} />
-            </CarouselItem>
-          ))}
+        <Carousel opts={{ align: "start" }} className="relative">
+          <CarouselContent>
+            {team.map((member, index) => (
+              <CarouselItem
+                key={index}
+                className="px-1 py-10 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+              >
+                <MemberCard member={member} isFirst={index === 0} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
           {/* Left Arrow */}
-          <CarouselPrev className="bg-background/80 hover:bg-accent/90 absolute top-1/2 left-6 z-10 -translate-y-1/2 rounded-full p-2 shadow-md">
+          <CarouselPrevious className="bg-background/80 hover:bg-accent/90 absolute top-1/2 left-6 z-10 -translate-y-1/2 rounded-full p-2 shadow-md">
             <ChevronLeft className="text-foreground h-5 w-5" />
-          </CarouselPrev>
+          </CarouselPrevious>
 
           {/* Right Arrow */}
           <CarouselNext className="bg-background/80 hover:bg-accent/90 absolute top-1/2 right-6 z-10 -translate-y-1/2 rounded-full p-2 shadow-md">

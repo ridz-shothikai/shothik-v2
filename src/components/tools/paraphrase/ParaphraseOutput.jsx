@@ -4,7 +4,6 @@ import {
   useParaphraseForTaggingMutation,
   useReportForSentenceMutation,
 } from "@/redux/api/tools/toolsApi";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import EditableOutput from "./EditableOutput";
 import RephraseSentenceNav from "./RephraseSentenceNav";
@@ -38,8 +37,8 @@ const ParaphraseOutput = ({
   const [anchorEl, setAnchorEl] = useState(null);
   const [sentence, setSentence] = useState("");
   const enqueueSnackbar = useSnackbar();
-  const { resolvedTheme } = useTheme();
-  const dark = resolvedTheme === "dark";
+  const { theme } = useSelector((state) => state.settings);
+  const isDark = theme === "dark";
 
   // CRITICAL: Use ref to track current request to prevent stale closures
   const currentRequestRef = useRef(paraphraseRequestCounter);
@@ -345,7 +344,7 @@ const ParaphraseOutput = ({
     <div className={cn("flex-1 overflow-y-auto p-2")}>
       <EditableOutput
         data={data}
-        dark={dark}
+        dark={isDark}
         setSynonymsOptions={setSynonymsOptions}
         setSentence={setSentence}
         setAnchorEl={setAnchorEl}

@@ -1,8 +1,14 @@
 import DotFlashing from "@/components/common/DotFlashing";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { useGetAppModeQuery } from "@/redux/api/pricing/pricingApi";
 import { useSearchParams } from "next/navigation";
-import Slider from "react-slick";
 import PricingButton from "./PricingButton";
 
 const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
@@ -64,78 +70,56 @@ const PricingSlider = ({ paymentMethod, country, data, yearly, user }) => {
       </div>
     );
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    arrows: false,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    initialSlide: 0,
-    responsive: [
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 1,
-        },
-      },
-    ],
-  };
-
   return (
     <div className="pricing_slider">
-      <Slider {...settings}>
-        {payload?.map((item, index) => (
-          <div
-            key={index}
-            className={cn("mr-6 flex-shrink-0 rounded-lg p-6 shadow-sm")}
-          >
-            <div>
-              <h3
-                className={cn(
-                  "mb-3 font-bold capitalize",
-                  item.subscription === "free"
-                    ? "text-muted-foreground"
-                    : "text-primary",
-                )}
-              >
-                {item.caption}
-              </h3>
-              <div className="mb-4 text-[22px] font-bold">
-                <sup className="font-normal">{item.currency}</sup>
-                {/dev|test/.test(modeResult?.data?.appMode)
-                  ? modePrice
-                  : item.price}
-                <sub className="text-muted-foreground"> / {item.plan}</sub>
+      <Carousel opts={{ align: "start" }}>
+        <CarouselContent>
+          {payload?.map((item, index) => (
+            <CarouselItem
+              key={index}
+              className="basis-full pr-6 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            >
+              <div className={cn("rounded-lg p-6 shadow-sm")}>
+                <div>
+                  <h3
+                    className={cn(
+                      "mb-3 font-bold capitalize",
+                      item.subscription === "free"
+                        ? "text-muted-foreground"
+                        : "text-primary",
+                    )}
+                  >
+                    {item.caption}
+                  </h3>
+                  <div className="mb-4 text-[22px] font-bold">
+                    <sup className="font-normal">{item.currency}</sup>
+                    {/dev|test/.test(modeResult?.data?.appMode)
+                      ? modePrice
+                      : item.price}
+                    <sub className="text-muted-foreground"> / {item.plan}</sub>
+                  </div>
+                  <p className="text-muted-foreground -mt-1 h-[26px] text-sm">
+                    {item.description}
+                  </p>
+                  <PricingButton
+                    user={user}
+                    caption={item.caption}
+                    id={item.id}
+                    paymentMethod={paymentMethod}
+                    redirect={redirect}
+                    subscription={item.subscription}
+                    yearly={yearly}
+                    yearly_plan_available={item.yearly_plan_available}
+                    outline={true}
+                  />
+                </div>
               </div>
-              <p className="text-muted-foreground -mt-1 h-[26px] text-sm">
-                {item.description}
-              </p>
-              <PricingButton
-                user={user}
-                caption={item.caption}
-                id={item.id}
-                paymentMethod={paymentMethod}
-                redirect={redirect}
-                subscription={item.subscription}
-                yearly={yearly}
-                yearly_plan_available={item.yearly_plan_available}
-                outline={true}
-              />
-            </div>
-          </div>
-        ))}
-      </Slider>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
   );
 };
