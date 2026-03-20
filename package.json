@@ -30,7 +30,7 @@
     "mammoth": "^1.9.0",
     "marked-react": "^3.0.0",
     "motion": "^12.4.10",
-    "next": "^15.2.2",
+    "next": "^15.5.14",
     "react": "^19.0.0",
     "react-contenteditable": "^3.3.7",
     "react-dom": "^19.0.0",
